@@ -22,6 +22,7 @@ export const DEMO_LIST = [
   { id: "external-filter", label: "External Filter" },
   { id: "loading-state", label: "Loading State" },
   { id: "infinite-scroll", label: "Infinite Scroll" },
+  { id: "window-infinite-scroll", label: "Window Infinite Scroll" },
   { id: "row-selection", label: "Row Selection" },
   { id: "csv-export", label: "CSV Export" },
   { id: "programmatic-control", label: "Programmatic Control" },

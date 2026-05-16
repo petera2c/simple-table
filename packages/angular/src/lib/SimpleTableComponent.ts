@@ -70,6 +70,8 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() totalRowCount?: SimpleTableAngularProps["totalRowCount"];
   @Input() height?: SimpleTableAngularProps["height"];
   @Input() maxHeight?: SimpleTableAngularProps["maxHeight"];
+  @Input() scrollParent?: SimpleTableAngularProps["scrollParent"];
+  @Input() infiniteScrollThreshold?: SimpleTableAngularProps["infiniteScrollThreshold"];
   @Input() columnResizing?: SimpleTableAngularProps["columnResizing"];
   @Input() columnReordering?: SimpleTableAngularProps["columnReordering"];
   @Input() editColumns?: SimpleTableAngularProps["editColumns"];
@@ -170,6 +172,9 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     if (this.totalRowCount !== undefined) props.totalRowCount = this.totalRowCount;
     if (this.height !== undefined) props.height = this.height;
     if (this.maxHeight !== undefined) props.maxHeight = this.maxHeight;
+    if (this.scrollParent !== undefined) props.scrollParent = this.scrollParent;
+    if (this.infiniteScrollThreshold !== undefined)
+      props.infiniteScrollThreshold = this.infiniteScrollThreshold;
     if (this.columnResizing !== undefined) props.columnResizing = this.columnResizing;
     if (this.columnReordering !== undefined) props.columnReordering = this.columnReordering;
     if (this.editColumns !== undefined) props.editColumns = this.editColumns;

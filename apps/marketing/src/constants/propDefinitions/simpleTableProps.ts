@@ -299,6 +299,43 @@ quickFilter={{
 }}`,
   },
   {
+    key: "scrollParent",
+    name: "scrollParent",
+    required: false,
+    description:
+      "Opts the table into 'window' / external scroll mode. When set and neither height nor maxHeight is provided, the table grows to its natural height inside the given parent and that parent's scroll position drives both row virtualization and onLoadMore. Accepts an element, the string \"window\", or a getter (useful for React/Angular refs that resolve after first render). The header is automatically pinned to the top of the parent's scroll viewport.",
+    type: 'HTMLElement | "window" | (() => HTMLElement | null)',
+    example: `// Page-level scroll (most common in real apps)
+<SimpleTable
+  defaultHeaders={headers}
+  rows={rows}
+  scrollParent="window"
+  onLoadMore={handleLoadMore}
+/>
+
+// Scroll inside a specific container (e.g. a side panel)
+<SimpleTable
+  defaultHeaders={headers}
+  rows={rows}
+  scrollParent={() => containerRef.current}
+  onLoadMore={handleLoadMore}
+/>`,
+  },
+  {
+    key: "infiniteScrollThreshold",
+    name: "infiniteScrollThreshold",
+    required: false,
+    description:
+      "Pixel distance from the bottom of the scrollable area at which onLoadMore fires. Defaults to 200. Increase for earlier pre-fetching; decrease to fire only very close to the bottom.",
+    type: "number",
+    example: `<SimpleTable
+  defaultHeaders={headers}
+  rows={rows}
+  onLoadMore={handleLoadMore}
+  infiniteScrollThreshold={400}
+/>`,
+  },
+  {
     key: "onSortChange",
     name: "onSortChange",
     required: false,

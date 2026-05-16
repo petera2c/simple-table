@@ -111,6 +111,10 @@ const registry: Record<
     import("./demos/infinite-scroll/InfiniteScrollDemo").then((m) => ({
       render: m.renderInfiniteScrollDemo,
     })),
+  "window-infinite-scroll": () =>
+    import("./demos/window-infinite-scroll/WindowInfiniteScrollDemo").then((m) => ({
+      render: m.renderWindowInfiniteScrollDemo,
+    })),
   "row-selection": () =>
     import("./demos/row-selection/RowSelectionDemo").then((m) => ({
       render: m.renderRowSelectionDemo,

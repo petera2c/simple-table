@@ -7,6 +7,12 @@ export interface ContentHeightConfig {
   totalRowCount: number;
   headerHeight?: number;
   footerHeight?: number;
+  /**
+   * Visible portion of the table inside an external scroll parent (in pixels).
+   * Only consulted when neither `height` nor `maxHeight` is set; enables
+   * virtualization driven by a window- or element-level scroller.
+   */
+  externalViewportHeight?: number;
 }
 
 /**
@@ -54,6 +60,7 @@ export const calculateContentHeight = ({
   totalRowCount,
   headerHeight,
   footerHeight,
+  externalViewportHeight,
 }: ContentHeightConfig): number | undefined => {
   // If maxHeight is provided, it takes precedence over height
   if (maxHeight) {
@@ -77,6 +84,13 @@ export const calculateContentHeight = ({
 
     // Content exceeds maxHeight - return scrollable area height
     return Math.max(0, maxHeightPx - actualHeaderHeight);
+  }
+
+  // External scroll mode: a consumer-supplied parent (element or window) drives
+  // virtualization. Only kicks in when neither height nor maxHeight is set.
+  if (externalViewportHeight !== undefined && externalViewportHeight > 0) {
+    const actualHeaderHeight = headerHeight || rowHeight;
+    return Math.max(0, externalViewportHeight - actualHeaderHeight);
   }
 
   // When no height is specified, return undefined to disable virtualization

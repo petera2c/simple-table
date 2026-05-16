@@ -152,7 +152,12 @@ export const createHeaderCellElement = (
   const filterIcon = createFilterIcon(header, context);
   const collapseIcon = createCollapseIcon(header, context);
 
-  if (reverse) {
+  // Right-pinned columns resize from their leading (left) edge so the handle
+  // sits between the main section and the pinned strip. `reverse` (RTL) flips
+  // the visual direction, so XOR it with the pinned-right flag.
+  const placeResizeHandleAtStart = reverse !== (context.pinned === "right");
+
+  if (placeResizeHandleAtStart) {
     const resizeHandle = createResizeHandle(
       header,
       context,
@@ -226,7 +231,7 @@ export const createHeaderCellElement = (
     if (sortIcon) cellElement.appendChild(sortIcon);
   }
 
-  if (!reverse) {
+  if (!placeResizeHandleAtStart) {
     const resizeHandle = createResizeHandle(
       header,
       context,
@@ -287,22 +292,26 @@ export const refreshHeaderCellIcons = (
     if (sortIcon) cellElement.insertBefore(sortIcon, cellElement.firstChild);
   } else if (!header.headerRenderer && header.align !== "right") {
     const resizeHandle = cellElement.querySelector(".st-header-resize-handle-container");
+    // In right-pinned cells the resize handle is the FIRST child (leading edge),
+    // so the trailing icons should just be appended rather than inserted before it.
+    const resizeHandleIsTrailing =
+      resizeHandle != null && resizeHandle !== cellElement.firstChild;
     if (sortIcon) {
-      if (resizeHandle) {
+      if (resizeHandleIsTrailing) {
         cellElement.insertBefore(sortIcon, resizeHandle);
       } else {
         cellElement.appendChild(sortIcon);
       }
     }
     if (filterIcon) {
-      if (resizeHandle) {
+      if (resizeHandleIsTrailing) {
         cellElement.insertBefore(filterIcon, resizeHandle);
       } else {
         cellElement.appendChild(filterIcon);
       }
     }
     if (collapseIcon) {
-      if (resizeHandle) {
+      if (resizeHandleIsTrailing) {
         cellElement.insertBefore(collapseIcon, resizeHandle);
       } else {
         cellElement.appendChild(collapseIcon);

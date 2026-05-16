@@ -33,6 +33,7 @@ export const registry: DemoRegistry = {
   "external-filter": () => import("./demos/external-filter/ExternalFilterDemo"),
   "loading-state": () => import("./demos/loading-state/LoadingStateDemo"),
   "infinite-scroll": () => import("./demos/infinite-scroll/InfiniteScrollDemo"),
+  "window-infinite-scroll": () => import("./demos/window-infinite-scroll/WindowInfiniteScrollDemo"),
   "row-selection": () => import("./demos/row-selection/RowSelectionDemo"),
   "csv-export": () => import("./demos/csv-export/CsvExportDemo"),
   "programmatic-control": () => import("./demos/programmatic-control/ProgrammaticControlDemo"),

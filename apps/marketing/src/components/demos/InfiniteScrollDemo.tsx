@@ -1,6 +1,6 @@
 import { SimpleTable } from "@simple-table/react";
 import type { ReactHeaderObject, Theme } from "@simple-table/react";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import "@simple-table/react/styles.css";
 
 // Define headers
@@ -101,33 +101,37 @@ const InfiniteScrollDemo = ({
   const [rows, setRows] = useState(initialData);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  // Synchronous re-entry guard. The `loading` state alone can't block
+  // back-to-back invocations: between the first `setLoading(true)` and React's
+  // next commit, the callback the table is holding still has `loading=false`
+  // in its closure, so multiple scroll-RAF ticks would all sneak past the guard.
+  const loadingRef = useRef(false);
 
-  // Simulate loading more data
   const handleLoadMore = useCallback(async () => {
-    if (loading || !hasMore) return;
-
+    if (loadingRef.current || !hasMore) return;
+    loadingRef.current = true;
     setLoading(true);
 
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
     try {
-      // Generate next batch of data
-      const nextStartId = rows.length + 1;
-      const newData = generateSampleData(nextStartId, 15);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Stop loading more after 200 records for demo purposes
-      if (nextStartId > 200) {
-        setHasMore(false);
-      } else {
-        setRows((prevRows) => [...prevRows, ...newData]);
-      }
+      // Compute the next id from the live `prev` so duplicate ids can't appear
+      // even if a stale closure ever runs this path.
+      setRows((prev) => {
+        const nextStartId = prev.length + 1;
+        if (nextStartId > 200) {
+          setHasMore(false);
+          return prev;
+        }
+        return [...prev, ...generateSampleData(nextStartId, 15)];
+      });
     } catch (error) {
       console.error("Failed to load more data:", error);
     } finally {
       setLoading(false);
+      loadingRef.current = false;
     }
-  }, [loading, hasMore, rows.length]);
+  }, [hasMore]);
 
   return (
     <div>

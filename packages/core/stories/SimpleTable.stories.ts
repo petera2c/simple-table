@@ -137,6 +137,10 @@ import {
   infiniteScrollExampleDefaults,
 } from "./examples/InfiniteScroll";
 import {
+  renderWindowInfiniteScrollExample,
+  windowInfiniteScrollExampleDefaults,
+} from "./examples/WindowInfiniteScroll";
+import {
   renderInfrastructureExample,
   infrastructureExampleDefaults,
 } from "./examples/infrastructure/InfrastructureExample";
@@ -425,6 +429,18 @@ export const InfiniteScroll: StoryObj = {
   render: (args) => renderInfiniteScrollExample(args),
   parameters: {
     docs: { description: { story: "Infinite scroll or load-more for large datasets." } },
+  },
+};
+export const WindowInfiniteScroll: StoryObj = {
+  ...storyArgs(windowInfiniteScrollExampleDefaults),
+  render: (args) => renderWindowInfiniteScrollExample(args),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Window-style infinite scroll: the table has no height/maxHeight and uses the outer page (`scrollParent`) to drive virtualization and onLoadMore.",
+      },
+    },
   },
 };
 export const InfrastructureExample: StoryObj = {

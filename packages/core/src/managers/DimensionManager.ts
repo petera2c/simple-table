@@ -9,6 +9,11 @@ export interface DimensionManagerConfig {
   totalRowCount: number;
   footerHeight?: number;
   containerElement?: HTMLElement;
+  /**
+   * Visible portion of the table inside an external scroll parent (in pixels).
+   * Drives virtualization when neither `height` nor `maxHeight` is set.
+   */
+  externalViewportHeight?: number;
 }
 
 export interface DimensionManagerState {
@@ -96,7 +101,15 @@ export class DimensionManager {
   }
 
   private calculateContentHeight(): number | undefined {
-    const { height, maxHeight, rowHeight, totalRowCount, headerHeight, footerHeight } = this.config;
+    const {
+      height,
+      maxHeight,
+      rowHeight,
+      totalRowCount,
+      headerHeight,
+      footerHeight,
+      externalViewportHeight,
+    } = this.config;
 
     if (maxHeight) {
       const maxHeightPx = this.convertHeightToPixels(maxHeight);
@@ -115,6 +128,12 @@ export class DimensionManager {
       }
 
       return Math.max(0, maxHeightPx - actualHeaderHeight);
+    }
+
+    // External scroll parent provides the viewport: only when no explicit height.
+    if (!height && externalViewportHeight !== undefined && externalViewportHeight > 0) {
+      const actualHeaderHeight = headerHeight || rowHeight;
+      return Math.max(0, externalViewportHeight - actualHeaderHeight);
     }
 
     if (!height) return undefined;
@@ -197,7 +216,12 @@ export class DimensionManager {
       needsUpdate = true;
     }
 
-    if (config.height || config.maxHeight || config.totalRowCount !== undefined) {
+    if (
+      config.height ||
+      config.maxHeight ||
+      config.totalRowCount !== undefined ||
+      config.externalViewportHeight !== undefined
+    ) {
       const contentHeight = this.calculateContentHeight();
       this.state = {
         ...this.state,

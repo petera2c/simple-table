@@ -87,6 +87,13 @@ export interface RenderContext {
   sortManager: SortManager | null;
   /** When true, body cells that stay visible get only position updates (no content/selection recalc). Used during vertical scroll for performance. */
   positionOnlyBody?: boolean;
+  /**
+   * Visible portion of the table inside an external scroll parent (in pixels).
+   * Set by {@link SimpleTableVanilla} per render when `config.scrollParent` is
+   * active and no explicit `height`/`maxHeight` is set. Drives virtualization
+   * the same way an explicit `height` does, but the scroll source is external.
+   */
+  externalViewportHeight?: number;
 }
 
 export interface RenderState {
@@ -391,6 +398,7 @@ export class RenderOrchestrator {
         !context.config.hideFooter
           ? context.customTheme.footerHeight
           : undefined,
+      externalViewportHeight: context.externalViewportHeight,
     });
 
     const shouldPaginate = context.config.shouldPaginate ?? false;
@@ -407,10 +415,16 @@ export class RenderOrchestrator {
       }
     }
 
+    // Sticky parents work in both bounded and external-scroll modes. In external
+    // mode the sticky-parents container's `top` is JS-driven by the externally
+    // -aware scrollTop (see TableRenderer.renderBody + stickyParentsRenderer),
+    // so we can pass `enableStickyParents` through unchanged.
+    const enableStickyParents = context.config.enableStickyParents ?? false;
+
     const scrollReuseKey =
       contentHeight === undefined
         ? ""
-        : `${canUseCache ? 1 : 0}|${contentHeight}|${state.currentPage}|${rowsPerPage}|${shouldPaginate}|${serverSidePagination}|${context.customTheme.rowHeight}|${calculatedHeaderHeight}|${totalRowCountForHeight}|${context.config.enableStickyParents ?? false}|${rowGroupingKey}|${flattenResult.flattenedRows.length}|${heightOffsetsLen}|${heightOffsetsChecksum}`;
+        : `${canUseCache ? 1 : 0}|${contentHeight}|${state.currentPage}|${rowsPerPage}|${shouldPaginate}|${serverSidePagination}|${context.customTheme.rowHeight}|${calculatedHeaderHeight}|${totalRowCountForHeight}|${enableStickyParents}|${rowGroupingKey}|${flattenResult.flattenedRows.length}|${heightOffsetsLen}|${heightOffsetsChecksum}`;
 
     const scrollReuseEligible =
       Boolean(context.positionOnlyBody) &&
@@ -427,7 +441,7 @@ export class RenderOrchestrator {
         rowHeight: context.customTheme.rowHeight,
         scrollTop: state.scrollTop,
         scrollDirection: state.scrollDirection,
-        enableStickyParents: context.config.enableStickyParents ?? false,
+        enableStickyParents,
         rowGrouping: context.config.rowGrouping,
       });
     } else {
@@ -445,7 +459,7 @@ export class RenderOrchestrator {
         scrollDirection: state.scrollDirection,
         heightOffsets: flattenResult.heightOffsets,
         customTheme: context.customTheme,
-        enableStickyParents: context.config.enableStickyParents ?? false,
+        enableStickyParents,
         rowGrouping: context.config.rowGrouping,
       });
 
@@ -554,6 +568,16 @@ export class RenderOrchestrator {
         }
       }
 
+      // External scroll mode: toggle the root mode class that opts the header
+      // into `position: sticky` and relaxes `overflow: hidden` on .st-wrapper
+      // so the sticky element can escape to the external scroll ancestor.
+      // Idempotent + re-evaluated each render so flipping between modes (e.g.
+      // user sets `height` later) cleanly removes the class.
+      elements.rootElement.classList.toggle(
+        "st-external-scroll",
+        context.externalViewportHeight !== undefined,
+      );
+
       const { customTheme } = context;
       rootStyle.setProperty("--st-main-section-width", `${mainSectionContainerWidth}px`);
       rootStyle.setProperty("--st-scrollbar-width", `${state.scrollbarWidth}px`);
@@ -563,6 +587,12 @@ export class RenderOrchestrator {
       );
       rootStyle.setProperty("--st-border-width", `${customTheme.borderWidth}px`);
       rootStyle.setProperty("--st-footer-height", `${customTheme.footerHeight}px`);
+      // Published so the sticky-parents overlay in external scroll mode can
+      // pin natively (`top: calc(var(--st-calculated-header-height) - var(--st-external-scroll-padding-top))`).
+      rootStyle.setProperty(
+        "--st-calculated-header-height",
+        `${calculatedHeaderHeight}px`,
+      );
 
       const columnResizing = context.config.columnResizing ?? false;
       elements.content.className = `st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`;
@@ -579,7 +609,7 @@ export class RenderOrchestrator {
       );
     }
 
-    this.renderBody(elements.bodyContainer, processedResult, effectiveHeaders, context);
+    this.renderBody(elements.bodyContainer, processedResult, effectiveHeaders, context, state);
 
     if (verticalScrollFastPath) {
       this.lastScrollRafPaintedRange = {
@@ -651,8 +681,9 @@ export class RenderOrchestrator {
     processedResult: any,
     effectiveHeaders: HeaderObject[],
     context: RenderContext,
+    state: RenderState,
   ): void {
-    const deps = this.buildRendererDeps(effectiveHeaders, context);
+    const deps = this.buildRendererDeps(effectiveHeaders, context, state);
     this.tableRenderer.renderBody(bodyContainer, processedResult, deps);
   }
 
@@ -746,9 +777,18 @@ export class RenderOrchestrator {
     }
   }
 
-  private buildRendererDeps(effectiveHeaders: HeaderObject[], context: RenderContext) {
+  private buildRendererDeps(
+    effectiveHeaders: HeaderObject[],
+    context: RenderContext,
+    state?: RenderState,
+  ) {
     return {
       accordionAxis: context.accordionAxis,
+      // External scroll mode hints — used by TableRenderer.renderBody to pick the
+      // right scrollTop source for the sticky-parents container (the main body
+      // does not scroll in external mode; the parent does).
+      externalScrollActive: context.externalViewportHeight !== undefined,
+      stickyParentsScrollTop: state?.scrollTop,
       animationCoordinator: context.animationCoordinator,
       config: context.config,
       customTheme: context.customTheme,

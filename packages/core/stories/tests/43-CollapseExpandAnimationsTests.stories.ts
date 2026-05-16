@@ -21,7 +21,7 @@ import { renderVanillaTable, addParagraph } from "../utils";
 import { waitForTable } from "./testUtils";
 
 const meta: Meta = {
-  title: "Tests/43 - Collapse/Expand Accordion Animations",
+  title: "Tests/43 - Collapse Expand Accordion Animations",
   tags: ["test", "animations", "collapse-expand"],
   parameters: {
     layout: "padded",
@@ -58,9 +58,7 @@ const findFirstBodyExpandIcon = (
 ): HTMLElement | null => {
   const bodyContainer = canvasElement.querySelector(".st-body-container");
   if (!bodyContainer) return null;
-  const rowCells = bodyContainer.querySelectorAll(
-    `.st-cell[data-row-index="${rowIndex}"]`,
-  );
+  const rowCells = bodyContainer.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
   for (const cell of Array.from(rowCells)) {
     const icon = cell.querySelector(".st-expand-icon-container");
     if (icon && icon.getAttribute("aria-hidden") !== "true") {
@@ -274,14 +272,10 @@ export const RowExpand_IncomingCellsStartAtZeroHeight = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
 
-    const bodyContainer = canvasElement.querySelector(
-      ".st-body-container",
-    ) as HTMLElement | null;
+    const bodyContainer = canvasElement.querySelector(".st-body-container") as HTMLElement | null;
     expect(bodyContainer).toBeTruthy();
 
-    const cellsBefore = bodyContainer!.querySelectorAll(
-      ".st-cell[data-row-index]",
-    );
+    const cellsBefore = bodyContainer!.querySelectorAll(".st-cell[data-row-index]");
     const rowCountBefore = new Set(
       Array.from(cellsBefore).map((c) => c.getAttribute("data-row-index")),
     ).size;
@@ -293,18 +287,13 @@ export const RowExpand_IncomingCellsStartAtZeroHeight = {
 
     // Sample synchronously: new cells exist with 0 height and the
     // accordion-grow marker, before any rAF has run to write the final size.
-    const cellsMid = bodyContainer!.querySelectorAll(
-      ".st-cell[data-row-index]",
-    );
-    const rowCountMid = new Set(
-      Array.from(cellsMid).map((c) => c.getAttribute("data-row-index")),
-    ).size;
+    const cellsMid = bodyContainer!.querySelectorAll(".st-cell[data-row-index]");
+    const rowCountMid = new Set(Array.from(cellsMid).map((c) => c.getAttribute("data-row-index")))
+      .size;
     expect(rowCountMid).toBeGreaterThan(rowCountBefore);
 
     const growingCells = Array.from(
-      bodyContainer!.querySelectorAll<HTMLElement>(
-        '.st-cell[data-st-accordion-grow="vertical"]',
-      ),
+      bodyContainer!.querySelectorAll<HTMLElement>('.st-cell[data-st-accordion-grow="vertical"]'),
     );
     expect(growingCells.length).toBeGreaterThan(0);
     for (const c of growingCells) {
@@ -352,9 +341,7 @@ export const Disabled_NoAccordionClass = {
     expect(root!.classList.contains(ACCORDION_CLASS)).toBe(false);
 
     // Final state reached immediately.
-    const q1Header = canvasElement.querySelector(
-      `.st-header-cell[data-accessor="q1"]`,
-    );
+    const q1Header = canvasElement.querySelector(`.st-header-cell[data-accessor="q1"]`);
     expect(q1Header).toBeNull();
   },
 };
