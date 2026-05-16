@@ -10,6 +10,50 @@ export interface ChangelogEntry {
     link?: string;
   }[];
 }
+export const v3_6_0: ChangelogEntry = {
+  version: "3.6.0",
+  date: "2026-05-15",
+  title: "Window / external scroll mode",
+  description:
+    "New scrollParent prop lets the table grow to its natural height inside a page-level or custom scroll container, while that parent's scroll drives virtualization and onLoadMore. Header automatically pins to the top of the parent's scroll viewport.",
+  changes: [
+    {
+      type: "feature",
+      description:
+        "New scrollParent prop (HTMLElement | \"window\" | () => HTMLElement | null) opts the table into external scroll mode when no height/maxHeight is set; the parent's scroll drives row virtualization.",
+      link: "/docs/infinite-scroll",
+    },
+    {
+      type: "feature",
+      description:
+        "onLoadMore now fires based on the external scroll parent's position relative to the table bottom when scrollParent is active.",
+      link: "/docs/infinite-scroll",
+    },
+    {
+      type: "feature",
+      description:
+        "New infiniteScrollThreshold prop (default 200px) exposes the bottom-distance at which onLoadMore fires.",
+      link: "/docs/infinite-scroll",
+    },
+    {
+      type: "feature",
+      description:
+        "Header is automatically sticky-pinned to the top of the external scroll parent's viewport in scrollParent mode. Auto-compensates for parent padding-top.",
+      link: "/docs/infinite-scroll",
+    },
+    {
+      type: "improvement",
+      description:
+        "Suppresses the browser's elastic rubber-band on the scroll parent while external scroll mode is active so the sticky header stays put during overscroll. Restored on detach.",
+    },
+    {
+      type: "improvement",
+      description:
+        "enableStickyParents (sticky row-group rows) is now safely no-op + warn when combined with scrollParent (incompatible CSS containing-block).",
+    },
+  ],
+};
+
 export const v3_5_3: ChangelogEntry = {
   version: "3.5.3",
   date: "2026-05-09",
@@ -1677,6 +1721,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_6_0,
   v3_5_3,
   v3_5_2,
   v3_4_2,

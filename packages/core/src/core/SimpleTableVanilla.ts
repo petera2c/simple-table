@@ -131,6 +131,18 @@ export class SimpleTableVanilla {
   private bodyContainerScrollListener: ((e: Event) => void) | null = null;
   /** One-shot warning for sticky-parents limitation under external scroll. */
   private warnedExternalStickyParents: boolean = false;
+  /**
+   * When external scroll mode is active we briefly take control of the scroll
+   * parent's `overscroll-behavior-y` to neutralize the browser's rubber-band /
+   * scroll-chaining at the boundaries. Without this, pulling past the top or
+   * bottom of the scroll parent visually translates the entire scroll content
+   * layer (including the CSS-sticky header), causing the header to "disappear"
+   * during overscroll bounces even though its layout position is unchanged.
+   * We record the previous inline value so {@link detachExternalScrollWiring}
+   * can restore it cleanly.
+   */
+  private overscrollBehaviorTarget: HTMLElement | null = null;
+  private overscrollBehaviorPrev: string = "";
 
   /**
    * Active accordion axis for the next render. Set by row/column collapse-
@@ -651,6 +663,7 @@ export class SimpleTableVanilla {
     }
 
     this.recomputeExternalScrollPaddingTop();
+    this.applyOverscrollContainment(parent);
   }
 
   private detachExternalScrollWiring(): void {
@@ -678,6 +691,37 @@ export class SimpleTableVanilla {
     if (elements) {
       elements.rootElement.style.removeProperty("--st-external-scroll-padding-top");
     }
+
+    this.restoreOverscrollBehavior();
+  }
+
+  /**
+   * Set `overscroll-behavior-y: none` on the resolved scroll parent (or
+   * `document.documentElement` for `scrollParent: "window"`). This neutralizes
+   * the browser's elastic rubber-band at the scroll boundaries, which would
+   * otherwise translate the entire scroll content layer (including our
+   * `position: sticky` header) during overscroll bounces — making the header
+   * visually disappear off the top of the parent. `contain` only stops scroll
+   * chaining; we need `none` to actually disable the elastic bounce on the
+   * scroll container itself. Previous inline value is captured so we can
+   * restore it on detach.
+   */
+  private applyOverscrollContainment(parent: ResolvedScrollParent): void {
+    const target: HTMLElement | null =
+      typeof Window !== "undefined" && parent instanceof Window
+        ? (typeof document !== "undefined" ? document.documentElement : null)
+        : (parent as HTMLElement | null);
+    if (!target) return;
+    this.overscrollBehaviorTarget = target;
+    this.overscrollBehaviorPrev = target.style.overscrollBehaviorY;
+    target.style.overscrollBehaviorY = "none";
+  }
+
+  private restoreOverscrollBehavior(): void {
+    if (!this.overscrollBehaviorTarget) return;
+    this.overscrollBehaviorTarget.style.overscrollBehaviorY = this.overscrollBehaviorPrev;
+    this.overscrollBehaviorTarget = null;
+    this.overscrollBehaviorPrev = "";
   }
 
   /**
