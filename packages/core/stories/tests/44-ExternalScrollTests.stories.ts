@@ -297,3 +297,166 @@ export const StickyHeaderInExternalScroll = {
     expect(Math.abs(headerTopAfter - containerTop)).toBeLessThan(3);
   },
 };
+
+// ============================================================================
+// TEST 6: Row grouping works in external scroll mode (and enableStickyParents
+// is safely no-op + warns, since position: sticky parent rows are incompatible
+// with the external scroll containing block).
+// ============================================================================
+
+const groupedHeaders: HeaderObject[] = [
+  // `expandable: true` is required for the column to render the
+  // expand/collapse chevron next to grouped parent rows.
+  { accessor: "name", label: "Name", width: 240, expandable: true },
+  { accessor: "id", label: "ID", width: 160, type: "string" },
+  { accessor: "value", label: "Value", width: 120, type: "number" },
+];
+
+const createGroupedRows = (groupCount: number, childrenPerGroup: number) =>
+  Array.from({ length: groupCount }, (_, gi) => ({
+    id: `group-${gi + 1}`,
+    name: `Group ${gi + 1}`,
+    value: (gi + 1) * 100,
+    children: Array.from({ length: childrenPerGroup }, (_, ci) => ({
+      id: `group-${gi + 1}-child-${ci + 1}`,
+      name: `Child ${ci + 1} of group ${gi + 1}`,
+      value: (gi + 1) * 100 + ci,
+    })),
+  }));
+
+export const RowGroupingInExternalScroll = {
+  tags: ["external-scroll"],
+  render: () => {
+    // Capture console.warn so we can assert the enableStickyParents conflict
+    // warning is emitted exactly once.
+    const captured: { warnings: string[] } = { warnings: [] };
+    (
+      window as unknown as { __externalGroupingWarnCapture?: { warnings: string[] } }
+    ).__externalGroupingWarnCapture = captured;
+
+    const previousWarn = console.warn;
+    console.warn = (...args: unknown[]) => {
+      captured.warnings.push(args.map((a) => String(a)).join(" "));
+      previousWarn.apply(console, args as []);
+    };
+    (
+      window as unknown as { __externalGroupingWarnRestore?: () => void }
+    ).__externalGroupingWarnRestore = () => {
+      console.warn = previousWarn;
+    };
+
+    const wrapper = document.createElement("div");
+    wrapper.style.padding = "1rem";
+
+    const scrollContainer = document.createElement("div");
+    scrollContainer.id = "external-scroll-host-grouping";
+    scrollContainer.style.height = "400px";
+    scrollContainer.style.overflow = "auto";
+    scrollContainer.style.border = "1px solid #ccc";
+    wrapper.appendChild(scrollContainer);
+
+    const tableContainer = document.createElement("div");
+    scrollContainer.appendChild(tableContainer);
+
+    // 50 groups × 20 children fully expanded = 1050 visible rows — plenty for
+    // virtualization to kick in inside a 400px viewport.
+    const table = new SimpleTableVanilla(tableContainer, {
+      defaultHeaders: groupedHeaders,
+      rows: createGroupedRows(50, 20),
+      getRowId: ({ row }) => String((row as { id?: string }).id),
+      rowGrouping: ["children"],
+      expandAll: true,
+      // Set deliberately to trigger the warn-and-noop path. The table must
+      // still render grouped rows correctly without any .st-sticky-top
+      // overlay (sticky parents are incompatible with external scroll mode).
+      enableStickyParents: true,
+      scrollParent: scrollContainer,
+    });
+    table.mount();
+    (wrapper as unknown as { _table?: SimpleTableVanilla })._table = table;
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    const scrollContainer = canvasElement.querySelector(
+      "#external-scroll-host-grouping",
+    ) as HTMLElement;
+    expect(scrollContainer).toBeTruthy();
+
+    const tableRoot = canvasElement.querySelector(".simple-table-root") as HTMLElement;
+    expect(tableRoot).toBeTruthy();
+
+    // External scroll mode is active even with rowGrouping configured.
+    expect(tableRoot.classList.contains("st-external-scroll")).toBe(true);
+
+    // Grouping warning was emitted because enableStickyParents was set alongside
+    // scrollParent. Exactly one warning, with the expected guidance.
+    const captured = (
+      window as unknown as { __externalGroupingWarnCapture?: { warnings: string[] } }
+    ).__externalGroupingWarnCapture;
+    expect(captured).toBeTruthy();
+    const stickyWarnings = captured!.warnings.filter((w) =>
+      w.includes("`enableStickyParents` is not supported"),
+    );
+    expect(stickyWarnings.length).toBe(1);
+
+    // No sticky-top overlay should be present — the warn-and-noop must skip
+    // building the sticky parents container in external scroll mode.
+    const stickyTopOverlay = canvasElement.querySelector(".st-sticky-top");
+    expect(stickyTopOverlay).toBeNull();
+
+    // Virtualization is active: only a subset of the 1050 expanded rows is rendered.
+    const renderedBeforeScroll = getRowCount(canvasElement);
+    expect(renderedBeforeScroll).toBeGreaterThan(0);
+    expect(renderedBeforeScroll).toBeLessThan(200);
+
+    // Group parent rows are present: the first rendered group's parent cell
+    // ("Group 1") should be in the DOM with the table fully scrolled to top.
+    const allCells = Array.from(canvasElement.querySelectorAll(".st-cell"));
+    const hasGroupParent = allCells.some((c) => c.textContent?.includes("Group 1"));
+    const hasGroupChild = allCells.some((c) =>
+      c.textContent?.includes("Child 1 of group 1"),
+    );
+    expect(hasGroupParent).toBe(true);
+    expect(hasGroupChild).toBe(true);
+
+    // Expand/collapse chevrons must render on the `expandable` column for the
+    // parent rows — this is the user-facing affordance for grouped rows.
+    const bodyContainer = canvasElement.querySelector(".st-body-container") as HTMLElement;
+    const expandIcons = bodyContainer.querySelectorAll(".st-expand-icon-container");
+    expect(expandIcons.length).toBeGreaterThan(0);
+
+    // Scroll the external container; row virtualization must shift the rendered
+    // window. We expect different row indices to be on screen after a large
+    // scroll, proving the external parent's scroll drives the body windowing.
+    const indicesBefore = new Set(
+      Array.from(canvasElement.querySelectorAll(".st-cell[data-row-index]")).map((c) =>
+        c.getAttribute("data-row-index"),
+      ),
+    );
+
+    scrollContainer.scrollTop = 8000; // well past the first viewport
+    scrollContainer.dispatchEvent(new Event("scroll", { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 200));
+
+    const indicesAfter = new Set(
+      Array.from(canvasElement.querySelectorAll(".st-cell[data-row-index]")).map((c) =>
+        c.getAttribute("data-row-index"),
+      ),
+    );
+    // The rendered window must have shifted — at least one new row index that
+    // wasn't visible before scrolling.
+    const newlyVisible = Array.from(indicesAfter).filter((idx) => !indicesBefore.has(idx));
+    expect(newlyVisible.length).toBeGreaterThan(0);
+
+    // Still no sticky parents overlay after scrolling.
+    expect(canvasElement.querySelector(".st-sticky-top")).toBeNull();
+
+    // Restore console.warn so we don't leak the wrapper into the next story.
+    const restore = (
+      window as unknown as { __externalGroupingWarnRestore?: () => void }
+    ).__externalGroupingWarnRestore;
+    restore?.();
+  },
+};
