@@ -276,7 +276,10 @@ const renderRowSeparators = (
 };
 
 // Main render function. When allRows is provided, separators are built from the full row list (including nested grid rows).
-// When positionOnly is true (e.g. scroll-driven), only positions are updated; content and separators are skipped for performance.
+// When positionOnly is true (e.g. scroll-driven), per-cell content/selection
+// refresh is skipped for performance, but cell positions AND row separators
+// still sync every frame so cells and their bottom borders appear together
+// as new rows enter the virtualized band.
 //
 // `fullCellLayout` (when provided) maps every cell id this section knows about
 // — including rows currently outside the virtualized band — to its destination
@@ -442,17 +445,21 @@ export const renderBodyCells = (
     }
   });
 
-  if (!positionOnly) {
-    // Remove separators that are no longer visible (only when doing full render)
-    const separatorMetadata = getSeparatorMetadata(container);
-    renderedSeparators.forEach((element, rowIndex) => {
-      if (!visibleRowIndices.has(rowIndex)) {
-        element.remove();
-        renderedSeparators.delete(rowIndex);
-        separatorMetadata.delete(rowIndex);
-      }
-    });
-  }
+  // Remove separators that are no longer visible. Done unconditionally —
+  // including on scroll-driven position-only renders — so the separator pass
+  // stays in lockstep with the cell pass. Without this, separators for rows
+  // scrolled out of the band would pile up as orphan DOM nodes until the
+  // scroll-end full render caught up, and separators for never-rendered rows
+  // scrolled into the band would be missing entirely (rows appearing without
+  // their bottom border for ~150ms while scrolling fast).
+  const separatorMetadata = getSeparatorMetadata(container);
+  renderedSeparators.forEach((element, rowIndex) => {
+    if (!visibleRowIndices.has(rowIndex)) {
+      element.remove();
+      renderedSeparators.delete(rowIndex);
+      separatorMetadata.delete(rowIndex);
+    }
+  });
 
   // Batch create new cells using DocumentFragment
   const fragment = document.createDocumentFragment();
@@ -586,8 +593,10 @@ export const renderBodyCells = (
     });
   }
 
-  // Render separators for visible rows (skip when positionOnly; row boundaries unchanged on horizontal scroll)
-  if (!positionOnly) {
-    renderRowSeparators(container, cellsToRender, context, renderedSeparators, allRows);
-  }
+  // Render separators in the same pass as cells so newly-scrolled-into-view
+  // rows get their bottom border in the same frame as their cells. The pass
+  // is cheap on scroll renders: it iterates `allRows` (one viewport-sized
+  // band) and only touches the DOM for separators whose top/strong-border/
+  // section-width actually changed (see `SeparatorMetadata` cache).
+  renderRowSeparators(container, cellsToRender, context, renderedSeparators, allRows);
 };
