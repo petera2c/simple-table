@@ -69,6 +69,7 @@ export interface SimpleTableProps {
   onFilterChange?: (filters: TableFilterState) => void; // Callback when filter is applied
   onGridReady?: () => void; // Custom handler for when the grid is ready
   onHeaderEdit?: (header: HeaderObject, newLabel: string) => void; // Callback when a header is edited
+  infiniteScrollThreshold?: number; // Pixel distance from the bottom of the scrollable area at which `onLoadMore` fires (default: 200)
   onLoadMore?: () => void; // Callback when user scrolls near bottom to load more data
   onNextPage?: OnNextPage; // Custom handler for next page
   onPageChange?: (page: number) => void | Promise<void>; // Callback when page changes (for server-side pagination)
@@ -81,6 +82,7 @@ export interface SimpleTableProps {
   getRowId?: GetRowId; // Function to generate unique row IDs for stable row identification across data changes. Receives row data, depth, index, paths, and grouping key. If not provided, uses index-based IDs.
   rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
+  scrollParent?: HTMLElement | "window" | (() => HTMLElement | null); // External scroll container that drives virtualization and onLoadMore when neither height nor maxHeight is set. Accepts an element, the string "window", or a getter (useful for refs that resolve after first render).
   selectableCells?: boolean; // Flag if can select cells
   selectableColumns?: boolean; // Flag for selectable column headers
   serverSidePagination?: boolean; // Flag to disable internal pagination slicing (for server-side pagination)

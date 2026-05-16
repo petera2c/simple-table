@@ -39,6 +39,12 @@ import {
 import { DOMManager } from "./dom/DOMManager";
 import { RenderOrchestrator, RenderContext, RenderState } from "./rendering/RenderOrchestrator";
 import { TableAPIImpl, TableAPIContext } from "./api/TableAPIImpl";
+import {
+  getExternalScrollMetrics,
+  isExternalScrollActive,
+  resolveScrollParent,
+  type ResolvedScrollParent,
+} from "../utils/externalScroll";
 
 import "../styles/all-themes.css";
 
@@ -106,6 +112,25 @@ export class SimpleTableVanilla {
   private scrollEndTimeoutId: number | null = null;
   private lastScrollTop: number = 0;
   private isUpdating: boolean = false;
+
+  /** Currently resolved external scroll parent (HTMLElement or window). Null when external scroll mode is inactive. */
+  private resolvedScrollParent: ResolvedScrollParent = null;
+  /** Bound scroll handler attached to the external scroll parent. */
+  private externalScrollListener: ((e: Event) => void) | null = null;
+  /** Bound resize handler attached to window when scrollParent is "window". */
+  private externalWindowResizeListener: (() => void) | null = null;
+  /** ResizeObserver watching the external scroll parent element. */
+  private externalParentResizeObserver: ResizeObserver | null = null;
+  /** Cached visible viewport height of the table inside the external parent. Fed into virtualization. */
+  private externalViewportHeight: number = 0;
+  /** True iff the body-container scroll listener is currently attached. */
+  private bodyScrollListenerAttached: boolean = false;
+  /** Bound mouseleave handler on the body container. */
+  private bodyContainerMouseLeaveListener: (() => void) | null = null;
+  /** Bound scroll handler attached to the body container (internal scroll mode). */
+  private bodyContainerScrollListener: ((e: Event) => void) | null = null;
+  /** One-shot warning for sticky-parents limitation under external scroll. */
+  private warnedExternalStickyParents: boolean = false;
 
   /**
    * Active accordion axis for the next render. Set by row/column collapse-
@@ -440,7 +465,7 @@ export class SimpleTableVanilla {
 
     this.scrollManager = new ScrollManager({
       onLoadMore: this.config.onLoadMore,
-      infiniteScrollThreshold: 200,
+      infiniteScrollThreshold: this.config.infiniteScrollThreshold ?? 200,
     });
 
     this.sectionScrollController = new SectionScrollController({
@@ -545,9 +570,217 @@ export class SimpleTableVanilla {
     const elements = this.domManager.getElements();
     if (!elements?.bodyContainer) return;
 
-    elements.bodyContainer.addEventListener("scroll", this.handleScroll.bind(this));
-    elements.bodyContainer.addEventListener("mouseleave", () => {
+    this.bodyContainerMouseLeaveListener = () => {
       this.clearHoveredRows();
+    };
+    elements.bodyContainer.addEventListener("mouseleave", this.bodyContainerMouseLeaveListener);
+
+    this.syncExternalScrollWiring();
+  }
+
+  /**
+   * Reconciles which element owns the vertical scroll listener based on the
+   * current `scrollParent` config. Called on mount and whenever `update()`
+   * could have changed the relevant inputs (`scrollParent` / `height` /
+   * `maxHeight`). Idempotent — safe to call repeatedly.
+   */
+  private syncExternalScrollWiring(): void {
+    const elements = this.domManager.getElements();
+    if (!elements?.bodyContainer) return;
+
+    const externalActive = isExternalScrollActive(
+      this.config.scrollParent,
+      this.config.height,
+      this.config.maxHeight,
+    );
+    const nextParent: ResolvedScrollParent = externalActive
+      ? resolveScrollParent(this.config.scrollParent)
+      : null;
+
+    if (nextParent !== this.resolvedScrollParent) {
+      this.detachExternalScrollWiring();
+    }
+
+    if (nextParent) {
+      this.attachExternalScrollWiring(nextParent);
+      this.ensureBodyScrollListenerDetached(elements.bodyContainer);
+      this.recomputeExternalViewportHeight();
+    } else {
+      this.ensureBodyScrollListenerAttached(elements.bodyContainer);
+      this.externalViewportHeight = 0;
+      if (this.dimensionManager) {
+        this.dimensionManager.updateConfig({ externalViewportHeight: undefined });
+      }
+    }
+
+    this.maybeWarnStickyParentsConflict(externalActive);
+  }
+
+  private ensureBodyScrollListenerAttached(bodyContainer: HTMLElement): void {
+    if (this.bodyScrollListenerAttached) return;
+    this.bodyContainerScrollListener = (e: Event) => this.handleScroll(e);
+    bodyContainer.addEventListener("scroll", this.bodyContainerScrollListener);
+    this.bodyScrollListenerAttached = true;
+  }
+
+  private ensureBodyScrollListenerDetached(bodyContainer: HTMLElement): void {
+    if (!this.bodyScrollListenerAttached) return;
+    if (this.bodyContainerScrollListener) {
+      bodyContainer.removeEventListener("scroll", this.bodyContainerScrollListener);
+      this.bodyContainerScrollListener = null;
+    }
+    this.bodyScrollListenerAttached = false;
+  }
+
+  private attachExternalScrollWiring(parent: ResolvedScrollParent): void {
+    if (!parent) return;
+    this.resolvedScrollParent = parent;
+
+    const handler = (e: Event) => this.handleExternalScroll(e);
+    this.externalScrollListener = handler;
+    parent.addEventListener("scroll", handler, { passive: true });
+
+    if (typeof Window !== "undefined" && parent instanceof Window) {
+      const resizeHandler = () => this.handleExternalResize();
+      this.externalWindowResizeListener = resizeHandler;
+      parent.addEventListener("resize", resizeHandler, { passive: true });
+    } else if (typeof ResizeObserver !== "undefined") {
+      const ro = new ResizeObserver(() => this.handleExternalResize());
+      ro.observe(parent as HTMLElement);
+      this.externalParentResizeObserver = ro;
+    }
+  }
+
+  private detachExternalScrollWiring(): void {
+    const parent = this.resolvedScrollParent;
+    if (parent && this.externalScrollListener) {
+      parent.removeEventListener("scroll", this.externalScrollListener);
+    }
+    this.externalScrollListener = null;
+
+    if (parent && this.externalWindowResizeListener && typeof Window !== "undefined" && parent instanceof Window) {
+      parent.removeEventListener("resize", this.externalWindowResizeListener);
+    }
+    this.externalWindowResizeListener = null;
+
+    if (this.externalParentResizeObserver) {
+      this.externalParentResizeObserver.disconnect();
+      this.externalParentResizeObserver = null;
+    }
+
+    this.resolvedScrollParent = null;
+  }
+
+  private maybeWarnStickyParentsConflict(externalActive: boolean): void {
+    if (!externalActive) return;
+    if (!this.config.enableStickyParents) return;
+    if (this.warnedExternalStickyParents) return;
+    this.warnedExternalStickyParents = true;
+    console.warn(
+      "SimpleTable: `enableStickyParents` is not supported when `scrollParent` is in use " +
+        "(external scroll mode). Sticky parent rows will not stick to the viewport. " +
+        "Use `height` or `maxHeight` for sticky parent behavior.",
+    );
+  }
+
+  /**
+   * Recompute the visible portion of the table inside the external scroll
+   * parent and push it into the DimensionManager so virtualization math
+   * picks it up. Cheap; called on scroll, on parent/window resize, and on
+   * every re-render where the resolved parent may have moved.
+   */
+  private recomputeExternalViewportHeight(): void {
+    if (!this.resolvedScrollParent) return;
+    const elements = this.domManager.getElements();
+    const tableRoot = elements?.rootElement ?? this.container;
+    const metrics = getExternalScrollMetrics(this.resolvedScrollParent, tableRoot);
+    if (!metrics) return;
+    const next = metrics.visibleViewportHeight;
+    if (next === this.externalViewportHeight) return;
+    this.externalViewportHeight = next;
+    if (this.dimensionManager) {
+      this.dimensionManager.updateConfig({ externalViewportHeight: next });
+    }
+  }
+
+  private handleExternalResize(): void {
+    this.recomputeExternalViewportHeight();
+    this.render("external-scroll-resize");
+  }
+
+  private handleExternalScroll(_e: Event): void {
+    const parent = this.resolvedScrollParent;
+    if (!parent) return;
+    const elements = this.domManager.getElements();
+    const tableRoot = elements?.rootElement ?? this.container;
+    const metrics = getExternalScrollMetrics(parent, tableRoot);
+    if (!metrics) return;
+
+    const newScrollTop = metrics.relativeScrollTop;
+
+    this.isScrolling = true;
+
+    if (this.scrollEndTimeoutId !== null) {
+      clearTimeout(this.scrollEndTimeoutId);
+    }
+    this.scrollEndTimeoutId = window.setTimeout(() => {
+      this.isScrolling = false;
+      this.scrollEndTimeoutId = null;
+      requestAnimationFrame(() => {
+        this.render("scroll-end");
+      });
+    }, 150);
+
+    if (this.scrollRafId !== null) {
+      cancelAnimationFrame(this.scrollRafId);
+    }
+
+    this.scrollRafId = requestAnimationFrame(() => {
+      const direction: "up" | "down" | "none" =
+        newScrollTop > this.lastScrollTop
+          ? "down"
+          : newScrollTop < this.lastScrollTop
+            ? "up"
+            : "none";
+
+      this.scrollTop = newScrollTop;
+      this.scrollDirection = direction;
+      this.lastScrollTop = newScrollTop;
+
+      // Visible viewport height can change as the table enters / leaves the
+      // parent's viewport (partial intersection at top or bottom). Push the
+      // current value into the DimensionManager so contentHeight tracks it.
+      if (metrics.visibleViewportHeight !== this.externalViewportHeight) {
+        this.externalViewportHeight = metrics.visibleViewportHeight;
+        if (this.dimensionManager) {
+          this.dimensionManager.updateConfig({
+            externalViewportHeight: metrics.visibleViewportHeight,
+          });
+        }
+      }
+
+      if (this.scrollManager) {
+        if (this.config.onLoadMore) {
+          // Compare against the table's bottom (not the parent's), so onLoadMore
+          // fires when the user has scrolled close to the end of the table even
+          // when the parent has more content below it.
+          const containerHeight = metrics.visibleViewportHeight;
+          const contentHeight =
+            metrics.relativeScrollTop + metrics.visibleViewportHeight + Math.max(0, metrics.distanceFromTableBottom);
+          this.scrollManager.handleScroll(
+            newScrollTop,
+            0,
+            containerHeight,
+            contentHeight,
+          );
+        } else {
+          this.scrollManager.handleScroll(newScrollTop, 0, 0, 0);
+        }
+      }
+
+      this.render("scroll-raf");
+
+      this.scrollRafId = null;
     });
   }
 
@@ -666,6 +899,10 @@ export class SimpleTableVanilla {
       rowSelectionManager: this.rowSelectionManager,
       rowStateMap: this.rowStateMap,
       positionOnlyBody: this._positionOnlyBody,
+      externalViewportHeight:
+        this.resolvedScrollParent && this.externalViewportHeight > 0
+          ? this.externalViewportHeight
+          : undefined,
       onRender: () => this.render("resizeHandler-onRender"),
       setIsResizing: (value: boolean) => {
         this.isResizing = value;
@@ -905,6 +1142,31 @@ export class SimpleTableVanilla {
       });
     }
 
+    if (
+      config.scrollParent !== undefined ||
+      config.height !== undefined ||
+      config.maxHeight !== undefined
+    ) {
+      this.syncExternalScrollWiring();
+    }
+
+    if (
+      (config.onLoadMore !== undefined || config.infiniteScrollThreshold !== undefined) &&
+      this.scrollManager
+    ) {
+      this.scrollManager.updateConfig({
+        onLoadMore: this.config.onLoadMore,
+        infiniteScrollThreshold: this.config.infiniteScrollThreshold ?? 200,
+      });
+    }
+
+    if (config.enableStickyParents !== undefined) {
+      this.warnedExternalStickyParents = false;
+      this.maybeWarnStickyParentsConflict(
+        isExternalScrollActive(this.config.scrollParent, this.config.height, this.config.maxHeight),
+      );
+    }
+
     this.isUpdating = false;
     this.render("update");
   }
@@ -926,6 +1188,19 @@ export class SimpleTableVanilla {
     if (this.scrollEndTimeoutId !== null) {
       clearTimeout(this.scrollEndTimeoutId);
       this.scrollEndTimeoutId = null;
+    }
+
+    this.detachExternalScrollWiring();
+    const elements = this.domManager.getElements();
+    if (elements?.bodyContainer) {
+      this.ensureBodyScrollListenerDetached(elements.bodyContainer);
+      if (this.bodyContainerMouseLeaveListener) {
+        elements.bodyContainer.removeEventListener(
+          "mouseleave",
+          this.bodyContainerMouseLeaveListener,
+        );
+        this.bodyContainerMouseLeaveListener = null;
+      }
     }
     if (this.accordionCleanupTimerId !== null) {
       window.clearTimeout(this.accordionCleanupTimerId);

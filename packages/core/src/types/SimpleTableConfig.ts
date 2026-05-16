@@ -68,6 +68,7 @@ export interface SimpleTableConfig {
   onFilterChange?: (filters: TableFilterState) => void;
   onGridReady?: () => void;
   onHeaderEdit?: (header: HeaderObject, newLabel: string) => void;
+  infiniteScrollThreshold?: number;
   onLoadMore?: () => void;
   onNextPage?: OnNextPage;
   onPageChange?: (page: number) => void | Promise<void>;
@@ -80,6 +81,7 @@ export interface SimpleTableConfig {
   getRowId?: GetRowId;
   rows: Row[];
   rowsPerPage?: number;
+  scrollParent?: HTMLElement | "window" | (() => HTMLElement | null);
   selectableCells?: boolean;
   selectableColumns?: boolean;
   serverSidePagination?: boolean;

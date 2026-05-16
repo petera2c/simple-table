@@ -87,6 +87,13 @@ export interface RenderContext {
   sortManager: SortManager | null;
   /** When true, body cells that stay visible get only position updates (no content/selection recalc). Used during vertical scroll for performance. */
   positionOnlyBody?: boolean;
+  /**
+   * Visible portion of the table inside an external scroll parent (in pixels).
+   * Set by {@link SimpleTableVanilla} per render when `config.scrollParent` is
+   * active and no explicit `height`/`maxHeight` is set. Drives virtualization
+   * the same way an explicit `height` does, but the scroll source is external.
+   */
+  externalViewportHeight?: number;
 }
 
 export interface RenderState {
@@ -391,6 +398,7 @@ export class RenderOrchestrator {
         !context.config.hideFooter
           ? context.customTheme.footerHeight
           : undefined,
+      externalViewportHeight: context.externalViewportHeight,
     });
 
     const shouldPaginate = context.config.shouldPaginate ?? false;
@@ -407,10 +415,19 @@ export class RenderOrchestrator {
       }
     }
 
+    // Sticky parents rely on `position: sticky` against the nearest scrolling
+    // ancestor — i.e. the body container — which is no longer the scroller in
+    // external scroll mode. Disable the feature when external mode is active
+    // so we don't render visually-broken sticky rows. A one-shot console.warn
+    // is emitted from SimpleTableVanilla when both flags collide.
+    const externalScrollActive = context.externalViewportHeight !== undefined;
+    const effectiveEnableStickyParents =
+      !externalScrollActive && (context.config.enableStickyParents ?? false);
+
     const scrollReuseKey =
       contentHeight === undefined
         ? ""
-        : `${canUseCache ? 1 : 0}|${contentHeight}|${state.currentPage}|${rowsPerPage}|${shouldPaginate}|${serverSidePagination}|${context.customTheme.rowHeight}|${calculatedHeaderHeight}|${totalRowCountForHeight}|${context.config.enableStickyParents ?? false}|${rowGroupingKey}|${flattenResult.flattenedRows.length}|${heightOffsetsLen}|${heightOffsetsChecksum}`;
+        : `${canUseCache ? 1 : 0}|${contentHeight}|${state.currentPage}|${rowsPerPage}|${shouldPaginate}|${serverSidePagination}|${context.customTheme.rowHeight}|${calculatedHeaderHeight}|${totalRowCountForHeight}|${effectiveEnableStickyParents}|${rowGroupingKey}|${flattenResult.flattenedRows.length}|${heightOffsetsLen}|${heightOffsetsChecksum}`;
 
     const scrollReuseEligible =
       Boolean(context.positionOnlyBody) &&
@@ -427,7 +444,7 @@ export class RenderOrchestrator {
         rowHeight: context.customTheme.rowHeight,
         scrollTop: state.scrollTop,
         scrollDirection: state.scrollDirection,
-        enableStickyParents: context.config.enableStickyParents ?? false,
+        enableStickyParents: effectiveEnableStickyParents,
         rowGrouping: context.config.rowGrouping,
       });
     } else {
@@ -445,7 +462,7 @@ export class RenderOrchestrator {
         scrollDirection: state.scrollDirection,
         heightOffsets: flattenResult.heightOffsets,
         customTheme: context.customTheme,
-        enableStickyParents: context.config.enableStickyParents ?? false,
+        enableStickyParents: effectiveEnableStickyParents,
         rowGrouping: context.config.rowGrouping,
       });
 
