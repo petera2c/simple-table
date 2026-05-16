@@ -30,6 +30,9 @@ const registry: Record<string, ReturnType<typeof lazy>> = {
   "external-filter": lazy(() => import("./demos/external-filter/ExternalFilterDemo")),
   "loading-state": lazy(() => import("./demos/loading-state/LoadingStateDemo")),
   "infinite-scroll": lazy(() => import("./demos/infinite-scroll/InfiniteScrollDemo")),
+  "window-infinite-scroll": lazy(
+    () => import("./demos/window-infinite-scroll/WindowInfiniteScrollDemo"),
+  ),
   "row-selection": lazy(() => import("./demos/row-selection/RowSelectionDemo")),
   "csv-export": lazy(() => import("./demos/csv-export/CsvExportDemo")),
   "programmatic-control": lazy(

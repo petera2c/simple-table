@@ -34,6 +34,7 @@
     "external-filter": () => import("./demos/external-filter/ExternalFilterDemo.svelte"),
     "loading-state": () => import("./demos/loading-state/LoadingStateDemo.svelte"),
     "infinite-scroll": () => import("./demos/infinite-scroll/InfiniteScrollDemo.svelte"),
+    "window-infinite-scroll": () => import("./demos/window-infinite-scroll/WindowInfiniteScrollDemo.svelte"),
     "row-selection": () => import("./demos/row-selection/RowSelectionDemo.svelte"),
     "csv-export": () => import("./demos/csv-export/CsvExportDemo.svelte"),
     "programmatic-control": () => import("./demos/programmatic-control/ProgrammaticControlDemo.svelte"),

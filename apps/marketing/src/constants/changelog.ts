@@ -10,8 +10,8 @@ export interface ChangelogEntry {
     link?: string;
   }[];
 }
-export const v3_6_1: ChangelogEntry = {
-  version: "3.6.1",
+export const v3_6_2: ChangelogEntry = {
+  version: "3.6.2",
   date: "2026-05-16",
   title: "Sticky row-group parents in external scroll",
   description:
@@ -41,7 +41,7 @@ export const v3_6_0: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "New scrollParent prop (HTMLElement | \"window\" | () => HTMLElement | null) opts the table into external scroll mode when no height/maxHeight is set; the parent's scroll drives row virtualization.",
+        'New scrollParent prop (HTMLElement | "window" | () => HTMLElement | null) opts the table into external scroll mode when no height/maxHeight is set; the parent\'s scroll drives row virtualization.',
       link: "/docs/infinite-scroll",
     },
     {
@@ -79,7 +79,8 @@ export const v3_5_3: ChangelogEntry = {
   version: "3.5.3",
   date: "2026-05-09",
   title: "Pinned & auto-expand resize fixes",
-  description: "Fixes for nested pinned headers, auto-expand resize math, and viewport-based width caps.",
+  description:
+    "Fixes for nested pinned headers, auto-expand resize math, and viewport-based width caps.",
   changes: [
     {
       type: "bugfix",
@@ -1742,7 +1743,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
-  v3_6_1,
+  v3_6_2,
   v3_6_0,
   v3_5_3,
   v3_5_2,

@@ -31,6 +31,7 @@ import { ExternalSortDemoComponent } from "./demos/external-sort/external-sort-d
 import { ExternalFilterDemoComponent } from "./demos/external-filter/external-filter-demo.component";
 import { LoadingStateDemoComponent } from "./demos/loading-state/loading-state-demo.component";
 import { InfiniteScrollDemoComponent } from "./demos/infinite-scroll/infinite-scroll-demo.component";
+import { WindowInfiniteScrollDemoComponent } from "./demos/window-infinite-scroll/window-infinite-scroll-demo.component";
 import { RowSelectionDemoComponent } from "./demos/row-selection/row-selection-demo.component";
 import { CsvExportDemoComponent } from "./demos/csv-export/csv-export-demo.component";
 import { ProgrammaticControlDemoComponent } from "./demos/programmatic-control/programmatic-control-demo.component";
@@ -85,6 +86,7 @@ const REGISTRY: Record<string, any> = {
   "external-filter": ExternalFilterDemoComponent,
   "loading-state": LoadingStateDemoComponent,
   "infinite-scroll": InfiniteScrollDemoComponent,
+  "window-infinite-scroll": WindowInfiniteScrollDemoComponent,
   "row-selection": RowSelectionDemoComponent,
   "csv-export": CsvExportDemoComponent,
   "programmatic-control": ProgrammaticControlDemoComponent,
@@ -143,6 +145,7 @@ const REGISTRY: Record<string, any> = {
     ExternalFilterDemoComponent,
     LoadingStateDemoComponent,
     InfiniteScrollDemoComponent,
+    WindowInfiniteScrollDemoComponent,
     RowSelectionDemoComponent,
     CsvExportDemoComponent,
     ProgrammaticControlDemoComponent,
