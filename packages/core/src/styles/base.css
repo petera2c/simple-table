@@ -968,6 +968,11 @@ input {
   gap: var(--st-spacing-medium);
 }
 
+.simple-table-root.st-footer-position-top .st-footer {
+  border-top: none;
+  border-bottom: var(--st-border-width) solid var(--st-border-color);
+}
+
 .st-footer-info {
   display: flex;
   align-items: center;

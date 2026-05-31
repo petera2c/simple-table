@@ -1,5 +1,6 @@
 import HeaderObject from "../../types/HeaderObject";
 import { ColumnEditorConfig } from "../../types/ColumnEditorConfig";
+import { IconsConfig } from "../../types/IconsConfig";
 import { ColumnEditorRowRendererComponents } from "../../types/ColumnEditorRowRendererProps";
 import {
   areAllChildrenHidden,
@@ -56,6 +57,8 @@ export interface CreateColumnEditorRowOptions {
   setExpandedHeaders: (headers: Set<string>) => void;
   setHoveredSeparatorIndex: (index: number | null) => void;
   columnEditorConfig: ColumnEditorConfig;
+  /** Resolved table icons; `icons.drag` overrides the default column-editor drag handle. */
+  icons?: IconsConfig;
   essentialAccessors?: ReadonlySet<string>;
   headers: HeaderObject[];
   setHeaders: (headers: HeaderObject[]) => void;
@@ -385,7 +388,15 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
 
   const dragIcon = document.createElement("div");
   dragIcon.className = "st-drag-icon-container";
-  dragIcon.innerHTML = DRAG_ICON_SVG;
+  const customDragIcon = options.icons?.drag;
+  if (typeof customDragIcon === "string") {
+    dragIcon.innerHTML = customDragIcon;
+  } else if (customDragIcon instanceof HTMLElement || customDragIcon instanceof SVGSVGElement) {
+    dragIcon.appendChild(customDragIcon.cloneNode(true));
+  } else {
+    dragIcon.innerHTML = DRAG_ICON_SVG;
+  }
+
 
   const label = document.createElement("div");
   label.className = "st-column-label-container";

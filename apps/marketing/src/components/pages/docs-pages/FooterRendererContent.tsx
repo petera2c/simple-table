@@ -99,6 +99,23 @@ const FooterRendererContent = () => {
           footer.
         </p>
 
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+          Set{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+            footerPosition=&quot;top&quot;
+          </code>{" "}
+          to render the footer above the table body instead of below it. This applies to both the
+          default footer and a custom{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+            footerRenderer
+          </code>
+          , and defaults to{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+            &quot;bottom&quot;
+          </code>
+          .
+        </p>
+
         <PropTable props={FOOTER_RENDERER_PROPS} title="Footer Renderer Configuration" />
 
         <PropTable props={FOOTER_RENDERER_PARAMS_PROPS} title="FooterRendererProps Interface" />

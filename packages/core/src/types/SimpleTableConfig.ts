@@ -23,6 +23,7 @@ import { ColumnEditorConfig } from "./ColumnEditorConfig";
 import { VanillaIconsConfig } from "./IconsConfig";
 import { QuickFilterConfig } from "./QuickFilterTypes";
 import { AnimationsConfig } from "./AnimationsConfig";
+import type { FooterPosition } from "./FooterPosition";
 
 export interface SimpleTableConfig {
   animations?: AnimationsConfig;
@@ -48,6 +49,8 @@ export interface SimpleTableConfig {
   externalFilterHandling?: boolean;
   externalSortHandling?: boolean;
   footerRenderer?: (props: FooterRendererProps) => HTMLElement | string | null;
+  /** Placement of the pagination footer. Default `"bottom"`. */
+  footerPosition?: FooterPosition;
   headerDropdown?: VanillaHeaderDropdown;
   height?: string | number;
   hideFooter?: boolean;

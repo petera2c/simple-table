@@ -10,6 +10,27 @@ export interface ChangelogEntry {
     link?: string;
   }[];
 }
+export const v3_6_3: ChangelogEntry = {
+  version: "3.6.3",
+  date: "2026-05-31",
+  title: "footerPosition prop",
+  description:
+    'New footerPosition prop renders the pagination footer (built-in or footerRenderer) above the table body when set to "top".',
+  changes: [
+    {
+      type: "feature",
+      description:
+        'New footerPosition prop ("top" | "bottom", default "bottom") controls placement of the pagination footer.',
+      link: "/docs/footer-renderer",
+    },
+    {
+      type: "feature",
+      description:
+        "Added a st-row-position-{position} class to every rendered row (body cells, state rows, and nested-grid rows), letting consumers style any specific row via CSS (e.g. .st-row-position-3 { ... }).",
+    },
+  ],
+};
+
 export const v3_6_2: ChangelogEntry = {
   version: "3.6.2",
   date: "2026-05-16",
@@ -1743,6 +1764,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_6_3,
   v3_6_2,
   v3_6_0,
   v3_5_3,

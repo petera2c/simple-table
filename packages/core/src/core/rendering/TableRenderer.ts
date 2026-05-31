@@ -455,7 +455,9 @@ export class TableRenderer {
       selectedRowCount,
       cellUpdateFlash: deps.config.cellUpdateFlash,
       useOddColumnBackground: deps.config.useOddColumnBackground,
-      useHoverRowBackground: deps.config.useHoverRowBackground,
+      // Defaults to true (documented default) so row hover works out of the box
+      // when consumers don't explicitly pass the flag. Explicit `false` is honored.
+      useHoverRowBackground: deps.config.useHoverRowBackground ?? true,
       useOddEvenRowBackground: deps.config.useOddEvenRowBackground,
       rowGrouping: deps.config.rowGrouping,
       headers: deps.effectiveHeaders,
@@ -902,6 +904,7 @@ export class TableRenderer {
         searchPlaceholder: mergedColumnEditorConfig.searchPlaceholder,
         searchFunction: mergedColumnEditorConfig.searchFunction,
         columnEditorConfig: mergedColumnEditorConfig,
+        icons: deps.resolvedIcons,
         essentialAccessors: deps.essentialAccessors,
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
@@ -927,6 +930,7 @@ export class TableRenderer {
         searchPlaceholder: mergedColumnEditorConfig.searchPlaceholder,
         searchFunction: mergedColumnEditorConfig.searchFunction,
         columnEditorConfig: mergedColumnEditorConfig,
+        icons: deps.resolvedIcons,
         essentialAccessors: deps.essentialAccessors,
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);

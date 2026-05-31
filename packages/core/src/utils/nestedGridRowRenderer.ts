@@ -91,7 +91,7 @@ export function createNestedGridRow(
   });
 
   const rowElement = document.createElement("div");
-  rowElement.className = "st-row st-nested-grid-row";
+  rowElement.className = `st-row st-nested-grid-row st-row-position-${tableRow.position}`;
   rowElement.dataset.index = String(tableRow.position);
   rowElement.style.position = "absolute";
   rowElement.style.left = "0";

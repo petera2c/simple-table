@@ -241,6 +241,15 @@ initialSortDirection="asc"`,
     example: `hideFooter={true}`,
   },
   {
+    key: "footerPosition",
+    name: "footerPosition",
+    required: false,
+    description:
+      'Placement of the pagination footer (built-in or footerRenderer). Use "top" to render above the table body; default is "bottom".',
+    type: '"top" | "bottom"',
+    example: `footerPosition="top"`,
+  },
+  {
     key: "quickFilter",
     name: "quickFilter",
     required: false,

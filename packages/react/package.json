@@ -1,12 +1,13 @@
 {
   "name": "@simple-table/react",
-  "version": "3.6.2",
+  "version": "3.6.3",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/types/react/src/index.d.ts",
   "scripts": {
     "build": "rollup -c",
     "preview": "rollup -c -w",
+    "test": "vitest run",
     "version:patch": "npm version patch && git push && git push --tags",
     "version:minor": "npm version minor && git push && git push --tags",
     "version:major": "npm version major && git push && git push --tags"
@@ -43,6 +44,7 @@
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "jsdom": "^24.1.3",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "rollup": "^2.79.2",
@@ -51,7 +53,8 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.37.0",
     "tslib": "^2.8.1",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "vitest": "^2.1.9"
   },
   "description": "React adapter for simple-table-core — use the Simple Table data grid with full React component support for renderers.",
   "repository": {

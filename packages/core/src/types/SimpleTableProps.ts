@@ -24,6 +24,7 @@ import { ColumnEditorConfig } from "./ColumnEditorConfig";
 import { IconsConfig } from "./IconsConfig";
 import { QuickFilterConfig } from "./QuickFilterTypes";
 import { AnimationsConfig } from "./AnimationsConfig";
+import type { FooterPosition } from "./FooterPosition";
 
 export interface SimpleTableProps {
   animations?: AnimationsConfig; // Cell animation configuration (FLIP-style on sort and programmatic column reorder). Defaults: enabled=true, duration=240ms, easing=cubic-bezier(0.2, 0.8, 0.2, 1).
@@ -49,6 +50,7 @@ export interface SimpleTableProps {
   externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
   externalSortHandling?: boolean; // Flag to let consumer handle sort logic completely
   footerRenderer?: (props: FooterRendererProps) => HTMLElement | string | null; // Custom footer renderer
+  footerPosition?: FooterPosition; // Pagination footer placement (default "bottom")
   headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
   height?: string | number; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer

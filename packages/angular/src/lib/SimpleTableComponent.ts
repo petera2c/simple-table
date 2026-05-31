@@ -87,6 +87,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() columnBorders?: SimpleTableAngularProps["columnBorders"];
   @Input() rowButtons?: SimpleTableAngularProps["rowButtons"];
   @Input() hideFooter?: SimpleTableAngularProps["hideFooter"];
+  @Input() footerPosition?: SimpleTableAngularProps["footerPosition"];
   @Input() initialSortColumn?: SimpleTableAngularProps["initialSortColumn"];
   @Input() initialSortDirection?: SimpleTableAngularProps["initialSortDirection"];
   @Input() expandAll?: SimpleTableAngularProps["expandAll"];
@@ -194,6 +195,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     if (this.columnBorders !== undefined) props.columnBorders = this.columnBorders;
     if (this.rowButtons !== undefined) props.rowButtons = this.rowButtons;
     if (this.hideFooter !== undefined) props.hideFooter = this.hideFooter;
+    if (this.footerPosition !== undefined) props.footerPosition = this.footerPosition;
     if (this.initialSortColumn !== undefined) props.initialSortColumn = this.initialSortColumn;
     if (this.initialSortDirection !== undefined)
       props.initialSortDirection = this.initialSortDirection;
