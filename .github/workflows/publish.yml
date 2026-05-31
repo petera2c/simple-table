@@ -12,6 +12,9 @@ permissions:
   contents: write
 
 jobs:
+  tests:
+    uses: ./.github/workflows/test.yml
+
   verify-examples:
     runs-on: ubuntu-latest
     steps:
@@ -37,7 +40,7 @@ jobs:
         run: pnpm run build:examples
 
   publish:
-    needs: verify-examples
+    needs: [tests, verify-examples]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

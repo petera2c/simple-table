@@ -455,7 +455,9 @@ export class TableRenderer {
       selectedRowCount,
       cellUpdateFlash: deps.config.cellUpdateFlash,
       useOddColumnBackground: deps.config.useOddColumnBackground,
-      useHoverRowBackground: deps.config.useHoverRowBackground,
+      // Defaults to true (documented default) so row hover works out of the box
+      // when consumers don't explicitly pass the flag. Explicit `false` is honored.
+      useHoverRowBackground: deps.config.useHoverRowBackground ?? true,
       useOddEvenRowBackground: deps.config.useOddEvenRowBackground,
       rowGrouping: deps.config.rowGrouping,
       headers: deps.effectiveHeaders,
