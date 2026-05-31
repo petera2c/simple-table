@@ -1165,6 +1165,10 @@ export class SimpleTableVanilla {
       this.domManager.updateTheme(config.theme);
     }
 
+    if (config.footerPosition !== undefined) {
+      this.domManager.syncFooterPosition(this.config.footerPosition);
+    }
+
     if (config.customTheme !== undefined) {
       const previousTheme = this.customTheme;
       this.customTheme = TableInitializer.mergeCustomTheme(this.config);

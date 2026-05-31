@@ -78,6 +78,11 @@ export class DOMManager {
     const footerContainer = document.createElement("div");
     footerContainer.id = "st-footer-container";
 
+    const footerAtTop = config.footerPosition === "top";
+    if (footerAtTop) {
+      rootElement.classList.add("st-footer-position-top");
+    }
+
     const ariaLiveRegion = document.createElement("div");
     ariaLiveRegion.setAttribute("aria-live", "polite");
     ariaLiveRegion.setAttribute("aria-atomic", "true");
@@ -88,8 +93,13 @@ export class DOMManager {
 
     contentWrapper.appendChild(content);
 
-    wrapperContainer.appendChild(contentWrapper);
-    wrapperContainer.appendChild(footerContainer);
+    if (footerAtTop) {
+      wrapperContainer.appendChild(footerContainer);
+      wrapperContainer.appendChild(contentWrapper);
+    } else {
+      wrapperContainer.appendChild(contentWrapper);
+      wrapperContainer.appendChild(footerContainer);
+    }
 
     rootElement.appendChild(wrapperContainer);
     rootElement.appendChild(ariaLiveRegion);
@@ -115,6 +125,33 @@ export class DOMManager {
     const root = this.elements.rootElement;
     const classes = root.className.replace(/\btheme-\S+/g, "").trim();
     root.className = `${classes} theme-${theme}`;
+  }
+
+  /** Reorders footer vs content when `footerPosition` changes after mount. */
+  syncFooterPosition(footerPosition: SimpleTableConfig["footerPosition"]): void {
+    if (!this.elements) return;
+
+    const { rootElement, wrapperContainer, contentWrapper, footerContainer } = this.elements;
+    const atTop = footerPosition === "top";
+    rootElement.classList.toggle("st-footer-position-top", atTop);
+
+    const scrollbar = wrapperContainer.querySelector(".st-horizontal-scrollbar-container");
+
+    if (atTop) {
+      if (footerContainer !== wrapperContainer.firstElementChild) {
+        wrapperContainer.insertBefore(footerContainer, contentWrapper);
+      }
+      if (scrollbar) {
+        wrapperContainer.appendChild(scrollbar);
+      }
+      return;
+    }
+
+    if (scrollbar && scrollbar.parentElement === wrapperContainer) {
+      wrapperContainer.insertBefore(footerContainer, scrollbar);
+    } else if (footerContainer !== wrapperContainer.lastElementChild) {
+      wrapperContainer.appendChild(footerContainer);
+    }
   }
 
   getElements(): DOMElements | null {

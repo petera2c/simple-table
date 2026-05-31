@@ -59,6 +59,7 @@ import type HeaderDropdownProps from "./types/HeaderDropdownProps";
 import type { HeaderDropdown } from "./types/HeaderDropdownProps";
 import type { RowButtonProps } from "./types/RowButton";
 import type FooterRendererProps from "./types/FooterRendererProps";
+import type { FooterPosition } from "./types/FooterPosition";
 import type {
   LoadingStateRenderer,
   ErrorStateRenderer,
@@ -117,6 +118,7 @@ export type {
   ExportValueProps,
   FilterCondition,
   FooterRendererProps,
+  FooterPosition,
   GetRowId,
   GetRowIdParams,
   IconsConfig,

@@ -1,6 +1,6 @@
 /**
  * FOOTER RENDERER TESTS
- * Tests for table footer: default footer with pagination, hideFooter.
+ * Tests for table footer: default footer with pagination, hideFooter, footerPosition.
  */
 
 import type { Meta } from "@storybook/html";
@@ -16,7 +16,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Tests for table footer: default footer with pagination info and navigation, hideFooter.",
+          "Tests for table footer: default footer with pagination info and navigation, hideFooter, footerPosition top.",
       },
     },
   },
@@ -68,6 +68,37 @@ export const FooterShowsCorrectRange = {
     await waitForTable();
     const resultsText = canvasElement.querySelector(".st-footer-results-text");
     expect(resultsText?.textContent).toContain("Showing 1 to 5 of 15 results");
+  },
+};
+
+export const FooterPositionTop = {
+  render: () => {
+    const { wrapper } = renderVanillaTable(headers, createData(25), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      shouldPaginate: true,
+      rowsPerPage: 10,
+      footerPosition: "top",
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const root = canvasElement.querySelector(".simple-table-root");
+    expect(root?.classList.contains("st-footer-position-top")).toBe(true);
+
+    const wrapperContainer = canvasElement.querySelector(".st-wrapper-container");
+    expect(wrapperContainer?.firstElementChild?.id).toBe("st-footer-container");
+
+    const footer = canvasElement.querySelector(".st-footer");
+    expect(footer).toBeTruthy();
+    expect(footer?.querySelector(".st-footer-pagination")).toBeTruthy();
+
+    const header = canvasElement.querySelector(".st-header-container");
+    const footerContainer = canvasElement.querySelector("#st-footer-container");
+    expect(footerContainer && header && footerContainer.compareDocumentPosition(header)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
   },
 };
 
