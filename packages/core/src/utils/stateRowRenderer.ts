@@ -52,7 +52,7 @@ export const createStateRow = (
   }
 
   const rowElement = document.createElement("div");
-  rowElement.className = "st-row st-state-row";
+  rowElement.className = `st-row st-state-row st-row-position-${position}`;
   rowElement.dataset.index = String(context.index);
 
   rowElement.style.width = "100%";

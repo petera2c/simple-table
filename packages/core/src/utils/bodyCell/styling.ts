@@ -111,6 +111,10 @@ const calculateBodyCellClasses = (cell: AbsoluteBodyCell, context: CellRenderCon
   // Build class names
   return [
     "st-cell",
+    // Stable, scroll-independent row position so consumers can target any row
+    // (e.g. `.st-row-position-3`). Uses the absolute table position rather than
+    // the virtualized slice index, which changes as rows are reused on scroll.
+    `st-row-position-${cell.tableRow.position}`,
     depth > 0 && header.expandable ? `st-cell-depth-${depth}` : "",
     isIndividuallySelected
       ? isInitialFocused
