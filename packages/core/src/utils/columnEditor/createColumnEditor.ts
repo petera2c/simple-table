@@ -2,6 +2,7 @@ import HeaderObject from "../../types/HeaderObject";
 import { ColumnEditorSearchFunction, ColumnEditorConfig } from "../../types/ColumnEditorConfig";
 import { createColumnEditorPopout } from "./createColumnEditorPopout";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
+import { IconsConfig } from "../../types/IconsConfig";
 import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
 
 export interface CreateColumnEditorOptions {
@@ -13,6 +14,7 @@ export interface CreateColumnEditorOptions {
   searchPlaceholder: string;
   searchFunction?: ColumnEditorSearchFunction;
   columnEditorConfig: ColumnEditorConfig;
+  icons?: IconsConfig;
   essentialAccessors?: ReadonlySet<string>;
   resetColumns?: () => void;
   setHeaders: (headers: HeaderObject[]) => void;
@@ -31,6 +33,7 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
     searchPlaceholder,
     searchFunction,
     columnEditorConfig,
+    icons,
     essentialAccessors,
     resetColumns,
     setHeaders,
@@ -69,6 +72,7 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
     searchPlaceholder,
     searchFunction,
     columnEditorConfig,
+    icons,
     essentialAccessors,
     resetColumns,
     setHeaders,
@@ -100,6 +104,9 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
       if (newOptions.essentialAccessors !== undefined) {
         essentialAccessors = newOptions.essentialAccessors;
       }
+      if (newOptions.icons !== undefined) {
+        icons = newOptions.icons;
+      }
       if (newOptions.resetColumns !== undefined) {
         resetColumns = newOptions.resetColumns;
       }
@@ -110,6 +117,7 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
         searchPlaceholder: newOptions.searchPlaceholder,
         searchFunction: newOptions.searchFunction,
         columnEditorConfig: newOptions.columnEditorConfig,
+        icons: newOptions.icons,
         essentialAccessors: newOptions.essentialAccessors,
         resetColumns: newOptions.resetColumns,
         setHeaders: newOptions.setHeaders,

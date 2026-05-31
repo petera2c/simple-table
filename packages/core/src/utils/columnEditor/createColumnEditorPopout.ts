@@ -4,6 +4,7 @@ import { ColumnEditorCustomRenderer } from "../../types/ColumnEditorCustomRender
 import { FlattenedHeader } from "../../types/FlattenedHeader";
 import { createColumnEditorRow } from "./createColumnEditorRow";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
+import { IconsConfig } from "../../types/IconsConfig";
 import { partitionRootHeadersByPin, PanelSection } from "../../utils/pinnedColumnUtils";
 
 export interface CreateColumnEditorPopoutOptions {
@@ -13,6 +14,7 @@ export interface CreateColumnEditorPopoutOptions {
   searchPlaceholder: string;
   searchFunction?: ColumnEditorSearchFunction;
   columnEditorConfig: ColumnEditorConfig;
+  icons?: IconsConfig;
   essentialAccessors?: ReadonlySet<string>;
   setHeaders: (headers: HeaderObject[]) => void;
   onColumnVisibilityChange?: (state: ColumnVisibilityState) => void;
@@ -142,6 +144,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     searchPlaceholder,
     searchFunction,
     columnEditorConfig,
+    icons,
     essentialAccessors,
     setHeaders,
     onColumnVisibilityChange,
@@ -355,6 +358,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
         setExpandedHeaders,
         setHoveredSeparatorIndex,
         columnEditorConfig,
+        icons,
         essentialAccessors: essentialAccessors ?? new Set(),
         headers,
         setHeaders,
@@ -405,6 +409,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     if (newOptions.searchPlaceholder !== undefined)
       searchPlaceholder = newOptions.searchPlaceholder;
     if (newOptions.searchFunction !== undefined) searchFunction = newOptions.searchFunction;
+    if (newOptions.icons !== undefined) icons = newOptions.icons;
     if (newOptions.essentialAccessors !== undefined) essentialAccessors = newOptions.essentialAccessors;
     if (newOptions.setHeaders !== undefined) setHeaders = newOptions.setHeaders;
     if (newOptions.onColumnVisibilityChange !== undefined)

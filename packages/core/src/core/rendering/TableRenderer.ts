@@ -904,6 +904,7 @@ export class TableRenderer {
         searchPlaceholder: mergedColumnEditorConfig.searchPlaceholder,
         searchFunction: mergedColumnEditorConfig.searchFunction,
         columnEditorConfig: mergedColumnEditorConfig,
+        icons: deps.resolvedIcons,
         essentialAccessors: deps.essentialAccessors,
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
@@ -929,6 +930,7 @@ export class TableRenderer {
         searchPlaceholder: mergedColumnEditorConfig.searchPlaceholder,
         searchFunction: mergedColumnEditorConfig.searchFunction,
         columnEditorConfig: mergedColumnEditorConfig,
+        icons: deps.resolvedIcons,
         essentialAccessors: deps.essentialAccessors,
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
