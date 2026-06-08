@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   description:
     SEO_STRINGS.examples.music?.description ||
     "Explore music artist analytics with Simple Table - track followers, popularity, playlist reach, and more.",
+  alternates: {
+    canonical: "/examples/music",
+  },
 };
 
 export default function MusicPage() {

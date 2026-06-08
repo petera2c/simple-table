@@ -146,7 +146,7 @@ export default function ProductionSection() {
             Dedicated Support
           </h3>
           <p className="text-gray-600 dark:text-gray-300">
-            Your feedback is important to us. Get timely technical support for your use cases.
+            Real humans, fast replies. Ask a question and actually get an answer.
           </p>
         </motion.div>
       </div>

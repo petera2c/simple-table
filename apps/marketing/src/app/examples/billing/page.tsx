@@ -5,6 +5,9 @@ import BillingExampleWrapper from "@/examples/billing/BillingExampleWrapper";
 export const metadata: Metadata = {
   title: SEO_STRINGS.examples.billing.title,
   description: SEO_STRINGS.examples.billing.description,
+  alternates: {
+    canonical: "/examples/billing",
+  },
 };
 
 export default function BillingExample() {
