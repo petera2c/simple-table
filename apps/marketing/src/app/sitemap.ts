@@ -2,7 +2,7 @@ import { readdirSync, statSync } from "fs";
 import { join } from "path";
 import type { MetadataRoute } from "next";
 import { BLOG_POSTS } from "@/constants/blogPosts";
-import { EXAMPLE_SLUGS, FRAMEWORK_HUB_IDS } from "@/constants/frameworkIntegrationHub";
+import { FRAMEWORK_HUB_IDS } from "@/constants/frameworkIntegrationHub";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 
 const SITE_URL = SEO_STRINGS.site.url.replace(/\/$/, "");
@@ -69,15 +69,6 @@ function expandDynamicRoutes(routes: string[]): string[] {
     if (route === "/blog/topic/[framework]" || route === "/frameworks/[framework]") {
       for (const id of FRAMEWORK_HUB_IDS) {
         expanded.push(route.replace("[framework]", id));
-      }
-      continue;
-    }
-
-    if (route === "/examples/[framework]/[example]") {
-      for (const id of FRAMEWORK_HUB_IDS) {
-        for (const slug of EXAMPLE_SLUGS) {
-          expanded.push(`/examples/${id}/${slug}`);
-        }
       }
       continue;
     }

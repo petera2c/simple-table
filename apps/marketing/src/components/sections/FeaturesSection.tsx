@@ -53,8 +53,7 @@ export default function FeaturesSection() {
           Full-Featured Data Grid Component
         </h2>
         <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          Make your data handling look professional. Here's what our component brings to your
-          projects
+          30+ features in the box, so you can stop gluing libraries together.
         </p>
       </div>
 

@@ -10,6 +10,23 @@ export interface ChangelogEntry {
     link?: string;
   }[];
 }
+export const v3_6_4: ChangelogEntry = {
+  version: "3.6.4",
+  date: "2026-06-08",
+  title: "Animation improvements",
+  description: "Animation improvements.",
+  changes: [
+    {
+      type: "improvement",
+      description: "FLIP animations for footerPosition: 'top'.",
+    },
+    {
+      type: "bugfix",
+      description: "Custom headerRenderer fix.",
+    },
+  ],
+};
+
 export const v3_6_3: ChangelogEntry = {
   version: "3.6.3",
   date: "2026-05-31",
@@ -1764,6 +1781,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_6_4,
   v3_6_3,
   v3_6_2,
   v3_6_0,

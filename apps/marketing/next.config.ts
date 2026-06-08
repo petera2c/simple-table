@@ -57,6 +57,11 @@ const config: NextConfig = {
         permanent: true,
       },
       {
+        source: "/examples/:framework(react|vue|angular|svelte|solid|vanilla)/:example",
+        destination: "/examples/:example",
+        permanent: true,
+      },
+      {
         source: "/examples",
         destination: "/examples/crm",
         permanent: true,

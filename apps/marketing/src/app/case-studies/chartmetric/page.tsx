@@ -114,7 +114,7 @@ export default function ChartMetricCaseStudyPage() {
               </div>
             </div>
             <div className="bg-linear-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 rounded-lg p-6">
-              <div className="text-2xl font-bold text-blue-700 dark:text-blue-200 mb-2">99%</div>
+              <div className="text-2xl font-bold text-blue-700 dark:text-blue-200 mb-2">100%</div>
               <div className="text-sm text-blue-600 dark:text-blue-300">
                 Customization needs met
               </div>
@@ -214,7 +214,7 @@ export default function ChartMetricCaseStudyPage() {
               <div className="space-y-4">
                 <p>
                   Simple Table was <strong>highly customizable</strong>—around{" "}
-                  <strong>99% of our needs</strong> were covered through built-in customization
+                  <strong>100% of our needs</strong> were covered through built-in customization
                   options such as <strong>CSS variable overrides</strong>,{" "}
                   <strong>custom icons</strong>, and <strong>custom headers</strong>. For edge
                   cases, we were able to rely on global class selectors.

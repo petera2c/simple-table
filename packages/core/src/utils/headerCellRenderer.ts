@@ -232,7 +232,7 @@ export const renderHeaderCells = (
         context.filters && context.filters[cell.header.accessor as any] ? "1" : "0";
       const iconStateKey = `${sortStateForCell}|${filterStateForCell}`;
       if (cellElement.dataset.stIconState !== iconStateKey) {
-        refreshHeaderCellIcons(cellElement, cell.header, context);
+        refreshHeaderCellIcons(cellElement, cell.header, context, cell.colIndex);
         cellElement.dataset.stIconState = iconStateKey;
       }
     }

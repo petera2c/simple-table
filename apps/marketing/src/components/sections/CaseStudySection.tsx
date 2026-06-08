@@ -49,7 +49,7 @@ export default function CaseStudySection() {
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">99%</div>
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">100%</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 Customization needs met
               </div>
@@ -58,9 +58,7 @@ export default function CaseStudySection() {
               <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-1">
                 Highly Responsive
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Support & bug fixes
-              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Support & bug fixes</div>
             </div>
           </div>
 

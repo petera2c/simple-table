@@ -816,14 +816,30 @@ export class AnimationCoordinator {
       // synthetic incoming origins): those are conceptual positions that
       // never had a real container anchor.
       let containerShiftX = 0;
-      let containerShiftY = 0;
+      const containerShiftY = 0;
       if (before.sourceContainer !== null) {
         // Cross-container case is rejected above; here sourceContainer
         // either equals `container` (siblings reflowing in their own
         // section) or is the same container for a retained ghost.
+        //
+        // Only the HORIZONTAL shift is corrected: the section panes are laid
+        // out side by side (pinned-left | main | pinned-right), so the only
+        // legitimate between-snapshot-and-play origin change is horizontal
+        // (e.g. pin/unpin grows pinned-left and slides main sideways).
+        //
+        // The VERTICAL origin is intentionally NOT corrected. A section's
+        // page-Y can transiently differ between snapshot and play without any
+        // real cell movement — most notably with `footerPosition: "top"`,
+        // where the footer is rendered by a framework adapter that commits its
+        // content on a later microtask. At play() time the top footer is
+        // momentarily empty (0px tall), so the header/body containers below it
+        // measure ~footerHeight higher than their final resting spot. Feeding
+        // that transient delta into the FLIP injected a phantom `dy` (the
+        // header text teleporting down by the footer height and animating back
+        // up). The footer settles before the next paint, so no real movement
+        // needs animating here.
         const playOrigin = getPlayContainerOrigin(container);
         containerShiftX = playOrigin.left - before.sourceContainerLeft;
-        containerShiftY = playOrigin.top - before.sourceContainerTop;
       }
 
       const dxRaw = beforeLeftClipped - currentLeft;

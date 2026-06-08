@@ -5,6 +5,9 @@ import InfrastructureExampleWrapper from "@/examples/infrastructure/Infrastructu
 export const metadata: Metadata = {
   title: SEO_STRINGS.examples.infrastructure.title,
   description: SEO_STRINGS.examples.infrastructure.description,
+  alternates: {
+    canonical: "/examples/infrastructure",
+  },
 };
 
 export default function InfrastructurePage() {

@@ -14,6 +14,33 @@ export const SALES_HEADERS: HeaderObject[] = [
     isSortable: true,
     isEditable: true,
     type: "string",
+    headerRenderer: ({ header, components }) => {
+      const wrap = document.createElement("div");
+      wrap.style.display = "flex";
+      wrap.style.alignItems = "center";
+      wrap.style.gap = "8px";
+
+      const icon = document.createElement("span");
+      icon.textContent = "🧑‍💼";
+      icon.setAttribute("aria-hidden", "true");
+
+      const label = components?.labelContent;
+      if (label instanceof HTMLElement) {
+        wrap.appendChild(icon);
+        wrap.appendChild(label);
+      } else {
+        const text = document.createElement("span");
+        text.style.fontWeight = "700";
+        text.textContent = String(header.label);
+        wrap.appendChild(icon);
+        wrap.appendChild(text);
+      }
+
+      const sortIcon = components?.sortIcon;
+      if (sortIcon instanceof HTMLElement) wrap.appendChild(sortIcon);
+
+      return wrap;
+    },
   },
   {
     pinned: "left",

@@ -4,10 +4,10 @@
  */
 
 import type { Meta } from "@storybook/html";
-import { expect } from "@storybook/test";
+import { expect, userEvent } from "@storybook/test";
 import { HeaderObject } from "../../src/index";
 import type { HeaderRenderer } from "../../src/types/HeaderRendererProps";
-import { waitForTable } from "./testUtils";
+import { waitForTable, waitUntil } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
 const meta: Meta = {
@@ -171,6 +171,78 @@ export const HeaderRendererWithFilterIcon = {
       // At minimum the custom header wrapper rendered
       expect(headerWithFilter).toBeTruthy();
     }
+  },
+};
+
+// ============================================================================
+// HEADER RENDERER WITH SORT ICON COMPONENT
+// Regression: a custom header that places `components.sortIcon` must show the
+// sort icon once the column becomes sorted — even though the cell (and the
+// headerRenderer) was first rendered while unsorted, when the icon did not yet
+// exist. The cell takes the in-place "update" path on sort rather than being
+// recreated, so the renderer must be re-run with the freshly built icon.
+// ============================================================================
+
+export const HeaderRendererSortIconAppearsOnSort = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      {
+        accessor: "name",
+        label: "Name",
+        width: 200,
+        type: "string",
+        isSortable: true,
+        headerRenderer: ({ components, header }) => {
+          const wrap = document.createElement("div");
+          wrap.setAttribute("data-testid", "sortable-custom-header");
+          wrap.style.display = "flex";
+          wrap.style.alignItems = "center";
+          wrap.style.gap = "4px";
+          const label = components?.labelContent;
+          if (label instanceof HTMLElement) wrap.appendChild(label);
+          else wrap.appendChild(document.createTextNode(String(header.label)));
+          const sortIcon = components?.sortIcon;
+          if (sortIcon instanceof HTMLElement) {
+            sortIcon.setAttribute("data-testid", "custom-sort-icon-slot");
+            wrap.appendChild(sortIcon);
+          }
+          return wrap;
+        },
+      },
+      { accessor: "score", label: "Score", width: 100, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "250px",
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    const customHeader = canvasElement.querySelector('[data-testid="sortable-custom-header"]');
+    expect(customHeader).toBeTruthy();
+
+    // Initially unsorted: no sort icon should be present inside the custom header.
+    expect(canvasElement.querySelector('[data-testid="custom-sort-icon-slot"]')).toBeNull();
+
+    // Click the header label to sort the column.
+    const headerCell = (customHeader as HTMLElement).closest(".st-header-cell") as HTMLElement;
+    const labelEl = headerCell.querySelector(".st-header-label") as HTMLElement;
+    const user = userEvent.setup();
+    await user.click(labelEl);
+
+    // After sorting, the custom header must now render `components.sortIcon`.
+    // The renderer re-runs and replaces the label content, so re-query the
+    // current nodes rather than reusing the pre-sort references.
+    await waitUntil(
+      () => canvasElement.querySelector('[data-testid="custom-sort-icon-slot"]') !== null,
+    );
+    const sortIconAfter = canvasElement.querySelector('[data-testid="custom-sort-icon-slot"]');
+    expect(sortIconAfter).toBeTruthy();
+    // The icon lives inside the custom header markup (not appended elsewhere).
+    const customHeaderAfter = canvasElement.querySelector('[data-testid="sortable-custom-header"]');
+    expect(customHeaderAfter?.contains(sortIconAfter)).toBe(true);
   },
 };
 

@@ -1,4 +1,9 @@
-import type { ReactHeaderObject, CellRendererProps, ValueGetterProps } from "@simple-table/react";
+import type {
+  ReactHeaderObject,
+  CellRendererProps,
+  HeaderRendererProps,
+  ValueGetterProps,
+} from "@simple-table/react";
 import type { CSSProperties, ReactNode } from "react";
 
 type SuccessHighStyle = { color: string; fontWeight: "bold" };
@@ -240,6 +245,16 @@ export const SALES_HEADERS: ReactHeaderObject[] = [
     isEditable: true,
     type: "string",
     tooltip: "Name of the sales representative",
+    // Custom header: person icon + the built-in label/sort slots so sorting still works.
+    headerRenderer: ({ header, components }: HeaderRendererProps) => (
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <span aria-hidden="true" style={{ fontSize: "16px" }}>
+          🧑‍💼
+        </span>
+        {components?.labelContent ?? <span style={{ fontWeight: 700 }}>{header.label}</span>}
+        {components?.sortIcon}
+      </div>
+    ),
   },
   {
     accessor: "salesMetrics",
