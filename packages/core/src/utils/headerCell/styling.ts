@@ -95,6 +95,53 @@ export const calculateHeaderCellClasses = (
     .join(" ");
 };
 
+/**
+ * Renders a custom header's `headerRenderer` output into the `.st-header-label`
+ * element, passing freshly built sort/filter/collapse icons as `components`.
+ *
+ * Shared by initial creation ({@link createHeaderCellElement}) and in-place icon
+ * refresh ({@link refreshHeaderCellIcons}). The refresh path is what makes
+ * `components.sortIcon` appear (and stay current) when sorting toggles after the
+ * cell already exists: the sort icon only exists for the active sort column, so a
+ * custom header must be re-rendered with the new icon instead of being skipped.
+ */
+const renderHeaderRendererContent = (
+  labelElement: HTMLElement,
+  header: AbsoluteCell["header"],
+  colIndex: number,
+  context: HeaderRenderContext,
+  icons: {
+    sortIcon: HTMLElement | null;
+    filterIcon: HTMLElement | null;
+    collapseIcon: HTMLElement | null;
+  },
+): void => {
+  const labelContent = createLabelContent(header, context);
+
+  const renderedContent = header.headerRenderer!({
+    accessor: header.accessor,
+    colIndex,
+    header,
+    components: {
+      sortIcon: icons.sortIcon || undefined,
+      filterIcon: icons.filterIcon || undefined,
+      collapseIcon: icons.collapseIcon || undefined,
+      labelContent,
+    },
+  });
+
+  labelElement.innerHTML = "";
+
+  // The headerRenderer should return a DOM element (HTMLElement). The React
+  // adapter wraps React-based headerRenderers to convert them to DOM elements.
+  if (renderedContent instanceof HTMLElement) {
+    labelElement.appendChild(renderedContent);
+  } else {
+    // Fallback to default rendering if not a DOM element.
+    labelElement.appendChild(labelContent);
+  }
+};
+
 export const createHeaderCellElement = (
   cell: AbsoluteCell,
   context: HeaderRenderContext,
@@ -178,28 +225,11 @@ export const createHeaderCellElement = (
   labelElement.className = "st-header-label";
 
   if (header.headerRenderer) {
-    const labelContent = createLabelContent(header, context);
-
-    const renderedContent = header.headerRenderer({
-      accessor: header.accessor,
-      colIndex,
-      header,
-      components: {
-        sortIcon: sortIcon || undefined,
-        filterIcon: filterIcon || undefined,
-        collapseIcon: collapseIcon || undefined,
-        labelContent: labelContent,
-      },
+    renderHeaderRendererContent(labelElement, header, colIndex, context, {
+      sortIcon,
+      filterIcon,
+      collapseIcon,
     });
-
-    // The headerRenderer should return a DOM element (HTMLElement)
-    // The React adapter wraps React-based headerRenderers to convert them to DOM elements
-    if (renderedContent instanceof HTMLElement) {
-      labelElement.appendChild(renderedContent);
-    } else {
-      // Fallback to default rendering if not a DOM element
-      labelElement.appendChild(labelContent);
-    }
   } else {
     const labelContent = createLabelContent(header, context);
     labelElement.appendChild(labelContent);
@@ -273,7 +303,29 @@ export const refreshHeaderCellIcons = (
   cellElement: HTMLElement,
   header: AbsoluteCell["header"],
   context: HeaderRenderContext,
+  colIndex: number,
 ): void => {
+  const sortIcon = createSortIcon(header, context);
+  const filterIcon = createFilterIcon(header, context);
+  const collapseIcon = createCollapseIcon(header, context);
+
+  // Custom headers own where the icons live (inside their own markup), so we
+  // can't surgically swap individual icon nodes. Re-run the renderer with the
+  // freshly built icons and replace the label content. Without this, a custom
+  // header's `components.sortIcon` never appears when the sort toggles after the
+  // cell was first created (the sort icon only exists for the active column).
+  if (header.headerRenderer) {
+    const labelElement = cellElement.querySelector(".st-header-label") as HTMLElement | null;
+    if (labelElement) {
+      renderHeaderRendererContent(labelElement, header, colIndex, context, {
+        sortIcon,
+        filterIcon,
+        collapseIcon,
+      });
+    }
+    return;
+  }
+
   const oldSortIcon = cellElement.querySelector('.st-icon-container[aria-label*="Sort"]');
   const oldFilterIcon = cellElement.querySelector('.st-icon-container[aria-label*="Filter"]');
   const oldCollapseIcon = cellElement.querySelector(".st-expand-icon-container");
@@ -282,15 +334,11 @@ export const refreshHeaderCellIcons = (
   oldFilterIcon?.remove();
   oldCollapseIcon?.remove();
 
-  const sortIcon = createSortIcon(header, context);
-  const filterIcon = createFilterIcon(header, context);
-  const collapseIcon = createCollapseIcon(header, context);
-
-  if (!header.headerRenderer && header.align === "right") {
+  if (header.align === "right") {
     if (collapseIcon) cellElement.insertBefore(collapseIcon, cellElement.firstChild);
     if (filterIcon) cellElement.insertBefore(filterIcon, cellElement.firstChild);
     if (sortIcon) cellElement.insertBefore(sortIcon, cellElement.firstChild);
-  } else if (!header.headerRenderer && header.align !== "right") {
+  } else {
     const resizeHandle = cellElement.querySelector(".st-header-resize-handle-container");
     // In right-pinned cells the resize handle is the FIRST child (leading edge),
     // so the trailing icons should just be appended rather than inserted before it.
@@ -350,5 +398,5 @@ export const updateHeaderCellElement = (
     cellElement.style.height = `${cell.height}px`;
   }
 
-  refreshHeaderCellIcons(cellElement, header, context);
+  refreshHeaderCellIcons(cellElement, header, context, colIndex);
 };

@@ -129,6 +129,7 @@ export const HeaderRendererWithFilterIcon = {
   render: () => {
     const headers: HeaderObject[] = [
       {
+        isSortable: true,
         accessor: "name",
         label: "Name",
         width: 200,
@@ -143,18 +144,30 @@ export const HeaderRendererWithFilterIcon = {
           const label = components?.labelContent;
           if (label instanceof HTMLElement) wrap.appendChild(label);
           const filterIcon = components?.filterIcon;
+          const sortIcon = components?.sortIcon;
+          if (sortIcon instanceof HTMLElement) {
+            sortIcon.setAttribute("data-testid", "sort-icon-slot");
+            wrap.appendChild(sortIcon);
+          }
           if (filterIcon instanceof HTMLElement) {
             filterIcon.setAttribute("data-testid", "filter-icon-slot");
             wrap.appendChild(filterIcon);
+          } else if (typeof filterIcon === "string") {
+            wrap.appendChild(document.createTextNode(filterIcon));
           }
           return wrap;
         },
       },
-      { accessor: "score", label: "Score", width: 100, type: "number" },
+      { accessor: "score", label: "Score", width: 100, type: "number", isSortable: true },
     ];
+    const customFilterIcon = document.createElement("div");
+    customFilterIcon.textContent = "Filter";
+    const customSortIcon = document.createElement("div");
+    customSortIcon.textContent = "Sort";
     const { wrapper } = renderVanillaTable(headers, createData(), {
       getRowId: (p) => String(p.row?.id),
       height: "250px",
+      icons: { filter: customFilterIcon, sortUp: customSortIcon, sortDown: customSortIcon },
     });
     return wrapper;
   },
