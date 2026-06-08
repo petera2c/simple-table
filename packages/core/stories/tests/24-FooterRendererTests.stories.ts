@@ -28,8 +28,8 @@ const createData = (n: number) =>
   Array.from({ length: n }, (_, i) => ({ id: i + 1, name: `Item ${i + 1}` }));
 
 const headers: HeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80, type: "number" },
-  { accessor: "name", label: "Name", width: 150, type: "string" },
+  { accessor: "id", label: "ID", width: 80, type: "number", isSortable: true },
+  { accessor: "name", label: "Name", width: 150, type: "string", isSortable: true },
 ];
 
 export const DefaultFooterWithPagination = {
@@ -176,7 +176,9 @@ export const FooterPrevDisabledOnFirstPage = {
     // On the first page the prev button should be disabled.
     // The footer renders page-number buttons first, then prev/next buttons,
     // so we select by aria-label to target the correct button.
-    const prevBtn = footer?.querySelector<HTMLButtonElement>('button[aria-label="Go to previous page"]');
+    const prevBtn = footer?.querySelector<HTMLButtonElement>(
+      'button[aria-label="Go to previous page"]',
+    );
     expect(prevBtn).toBeTruthy();
     expect(prevBtn?.disabled).toBe(true);
   },
