@@ -65,7 +65,7 @@ export const getHeaderPositionCache = (
   return headerPositionCacheMap.get(container)!;
 };
 
-export const REVERT_TO_PREVIOUS_HEADERS_DELAY = 1500;
+export const REVERT_TO_PREVIOUS_HEADERS_DELAY = 150;
 
 export const throttle = (callback: () => void, limit: number) => {
   const now = Date.now();
