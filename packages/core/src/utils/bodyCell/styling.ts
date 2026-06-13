@@ -21,6 +21,13 @@ const rowCellsMap = new Map<string, Set<HTMLElement>>();
 export interface CellLiveRef {
   row: Row;
   tableRow: TableRow;
+  // Latest render context for this cell. Refreshed every full render so the
+  // cell-registry `updateContent` path (driven by `updateData`, e.g. live
+  // metric ticks) re-renders content with the CURRENT theme/handlers instead
+  // of the context captured when the DOM cell was first created. Without this,
+  // a post-mount theme switch is immediately reverted on the next live update
+  // because the stale closure re-renders custom cell content with the old theme.
+  context: CellRenderContext;
 }
 export const cellLiveRefMap = new WeakMap<HTMLElement, CellLiveRef>();
 
@@ -199,13 +206,17 @@ export const createBodyCellElement = (
     header.type === "boolean" || header.type === "date" || header.type === "enum";
 
   const renderCellContent = () => {
+    // Always read the latest context from the live ref so re-renders triggered
+    // by `updateData` (cell registry `updateContent`) use the current theme and
+    // handlers rather than the context captured when this DOM cell was created.
+    const liveContext = cellLiveRefMap.get(cellElement)?.context ?? context;
     // For dropdown editors, keep the normal cell content visible
     // For inline editors, replace the cell content
     if (isEditing && !isEditInDropdown) {
       cellElement.innerHTML = "";
       // Remove tabindex from cell when editing to prevent focus conflicts
       cellElement.setAttribute("tabindex", "-1");
-      const editor = createEditor(cell, context, () => {
+      const editor = createEditor(cell, liveContext, () => {
         isEditing = false;
         // Restore tabindex when done editing
         cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
@@ -222,7 +233,7 @@ export const createBodyCellElement = (
       }
     } else if (isEditing && isEditInDropdown) {
       // For dropdown editing, create the dropdown but keep normal cell content
-      const editor = createEditor(cell, context, () => {
+      const editor = createEditor(cell, liveContext, () => {
         isEditing = false;
         // Re-render to show updated value
         renderCellContent();
@@ -242,7 +253,7 @@ export const createBodyCellElement = (
             ? "center-aligned"
             : "left-aligned"
       }`;
-      createCellContent(cell, context, contentSpan);
+      createCellContent(cell, liveContext, contentSpan);
       cellElement.appendChild(contentSpan);
     }
   };
@@ -255,7 +266,7 @@ export const createBodyCellElement = (
   // registry uses it. The chevron's click handler reads tableRow from this
   // ref via the cell DOM element so it sees the current rowId/rowIndexPath
   // after a sort instead of the stale closure values captured at create time.
-  const liveRef: CellLiveRef = { row: row as Row, tableRow: cell.tableRow };
+  const liveRef: CellLiveRef = { row: row as Row, tableRow: cell.tableRow, context };
   cellLiveRefMap.set(cellElement, liveRef);
 
   // Register cell in registry for direct updates
@@ -481,8 +492,9 @@ export const updateBodyCellElement = (
   if (existingRef) {
     existingRef.row = cell.row as Row;
     existingRef.tableRow = cell.tableRow;
+    existingRef.context = context;
   } else {
-    cellLiveRefMap.set(cellElement, { row: cell.row as Row, tableRow: cell.tableRow });
+    cellLiveRefMap.set(cellElement, { row: cell.row as Row, tableRow: cell.tableRow, context });
   }
 
   // Re-key the cell registry entry when this DOM cell is reused for a
