@@ -10,8 +10,8 @@ export interface ChangelogEntry {
     link?: string;
   }[];
 }
-export const v3_6_6: ChangelogEntry = {
-  version: "3.6.6",
+export const v3_6_7: ChangelogEntry = {
+  version: "3.6.7",
   date: "2026-06-13",
   title: "Bug fixes",
   description: "Bug fixes.",
@@ -1786,7 +1786,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
-  v3_6_6,
+  v3_6_7,
   v3_6_4,
   v3_6_3,
   v3_6_2,

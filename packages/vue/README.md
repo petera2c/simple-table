@@ -15,14 +15,14 @@
 
 Simple Table is available for the most popular frameworks:
 
-| Framework | Package | Version |
-|-----------|---------|---------|
-| **Vanilla JS** | [`simple-table-core`](https://www.npmjs.com/package/simple-table-core) | [![npm](https://img.shields.io/npm/v/simple-table-core.svg)](https://www.npmjs.com/package/simple-table-core) |
-| **React** | [`@simple-table/react`](https://www.npmjs.com/package/@simple-table/react) | [![npm](https://img.shields.io/npm/v/@simple-table/react.svg)](https://www.npmjs.com/package/@simple-table/react) |
-| **Vue 3** | [`@simple-table/vue`](https://www.npmjs.com/package/@simple-table/vue) | [![npm](https://img.shields.io/npm/v/@simple-table/vue.svg)](https://www.npmjs.com/package/@simple-table/vue) |
-| **Svelte** | [`@simple-table/svelte`](https://www.npmjs.com/package/@simple-table/svelte) | [![npm](https://img.shields.io/npm/v/@simple-table/svelte.svg)](https://www.npmjs.com/package/@simple-table/svelte) |
-| **Solid** | [`@simple-table/solid`](https://www.npmjs.com/package/@simple-table/solid) | [![npm](https://img.shields.io/npm/v/@simple-table/solid.svg)](https://www.npmjs.com/package/@simple-table/solid) |
-| **Angular** | [`@simple-table/angular`](https://www.npmjs.com/package/@simple-table/angular) | [![npm](https://img.shields.io/npm/v/@simple-table/angular.svg)](https://www.npmjs.com/package/@simple-table/angular) |
+| Framework      | Package                                                                        | Version                                                                                                               |
+| -------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| **Vanilla JS** | [`simple-table-core`](https://www.npmjs.com/package/simple-table-core)         | [![npm](https://img.shields.io/npm/v/simple-table-core.svg)](https://www.npmjs.com/package/simple-table-core)         |
+| **React**      | [`@simple-table/react`](https://www.npmjs.com/package/@simple-table/react)     | [![npm](https://img.shields.io/npm/v/@simple-table/react.svg)](https://www.npmjs.com/package/@simple-table/react)     |
+| **Vue 3**      | [`@simple-table/vue`](https://www.npmjs.com/package/@simple-table/vue)         | [![npm](https://img.shields.io/npm/v/@simple-table/vue.svg)](https://www.npmjs.com/package/@simple-table/vue)         |
+| **Svelte**     | [`@simple-table/svelte`](https://www.npmjs.com/package/@simple-table/svelte)   | [![npm](https://img.shields.io/npm/v/@simple-table/svelte.svg)](https://www.npmjs.com/package/@simple-table/svelte)   |
+| **Solid**      | [`@simple-table/solid`](https://www.npmjs.com/package/@simple-table/solid)     | [![npm](https://img.shields.io/npm/v/@simple-table/solid.svg)](https://www.npmjs.com/package/@simple-table/solid)     |
+| **Angular**    | [`@simple-table/angular`](https://www.npmjs.com/package/@simple-table/angular) | [![npm](https://img.shields.io/npm/v/@simple-table/angular.svg)](https://www.npmjs.com/package/@simple-table/angular) |
 
 ## Quick Start
 
@@ -133,13 +133,13 @@ For side projects and pre-revenue teams. Unlimited users per product license wit
 
 ### PRO - For Growing Businesses
 
-**$85/month** or **$850/year** (about 17% less than twelve monthly payments)
+**$85/month** or **$850/year**
 
 For revenue-generating companies: priority email and Discord support, bug support for production issues, and the commercial EULA. Unlimited users per product license.
 
 ### ENTERPRISE - For teams that need hands-on support
 
-**$350/month** or **$3,500/year** (about 17% less than twelve monthly payments)
+**$350/month** or **$3,500/year**
 
 Premium support with faster response times, direct access to core developers, feature request prioritization, and the commercial EULA. Unlimited users per product license.
 
