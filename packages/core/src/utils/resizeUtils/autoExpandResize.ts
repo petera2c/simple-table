@@ -16,7 +16,6 @@ export const handleResizeWithAutoExpand = ({
   headers,
   initialWidthsMap,
   isParentResize = false,
-  pinnedBodyViewportWidth,
   resizedHeader,
   reverse,
   rootPinned,
@@ -31,8 +30,6 @@ export const handleResizeWithAutoExpand = ({
   headers: HeaderObject[];
   initialWidthsMap: Map<string, number>;
   isParentResize?: boolean;
-  /** When set, caps pinned growth so column sums do not exceed this scrollport (policy max can be wider). */
-  pinnedBodyViewportWidth?: number;
   resizedHeader: HeaderObject;
   reverse: boolean;
   rootPinned: Pinned | undefined;
@@ -55,16 +52,13 @@ export const handleResizeWithAutoExpand = ({
     }
     const hasPinnedLeft = headers.some((h) => h.pinned === "left" && !h.hide);
     const hasPinnedRight = headers.some((h) => h.pinned === "right" && !h.hide);
-    const policyMax = getMaxPinnedSectionWidth(
+    // The policy max (a % of the container) is the correct, sufficient constraint
+    // on how wide a pinned section may grow.
+    const maxSectionWidth = getMaxPinnedSectionWidth(
       containerWidth,
       hasPinnedLeft,
       hasPinnedRight,
     );
-    const viewportCap =
-      pinnedBodyViewportWidth != null && pinnedBodyViewportWidth > 0
-        ? pinnedBodyViewportWidth
-        : Number.POSITIVE_INFINITY;
-    const maxSectionWidth = Math.min(policyMax, viewportCap);
     const headroom = Math.max(0, maxSectionWidth - pinnedSectionWidthSum());
     return Math.min(positiveDelta, headroom);
   };

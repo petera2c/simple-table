@@ -33,20 +33,6 @@ const LivePreview = ({
 
   const currentTheme = selectedTheme || mapWebsiteThemeToTableTheme(contextTheme);
   const stackBlitzUrl = getStackBlitzUrl(demoId, framework);
-  // #region agent log
-  fetch("http://127.0.0.1:7370/ingest/26f514b8-9d80-409e-b91d-53d50ab3600d", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "98f21d" },
-    body: JSON.stringify({
-      sessionId: "98f21d",
-      hypothesisId: "C",
-      location: "LivePreview.tsx:render",
-      message: "LivePreview render",
-      data: { demoId, isCodeVisible, themeType: typeof currentTheme },
-      timestamp: Date.now(),
-    }),
-  }).catch(() => {});
-  // #endregion
 
   const codeButton = (
     <Tooltip title={isCodeVisible ? "Show preview" : "Show code"}>
