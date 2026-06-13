@@ -19,6 +19,22 @@ interface LivePreviewProps {
   titleRenderer?: (buttons: { codeButton: ReactNode; sandboxButton: ReactNode }) => ReactNode;
 }
 
+/**
+ * Stable host that renders the `Preview` prop. Defined at module scope so its component identity
+ * never changes between LivePreview re-renders. This keeps the previewed demo mounted (no flicker)
+ * even when the parent passes a fresh inline `Preview` function each render, while still giving the
+ * demo its own Hook scope so toggling code/preview never changes LivePreview's own Hook count.
+ */
+const PreviewHost = ({
+  render,
+  height,
+  theme,
+}: {
+  render: LivePreviewProps["Preview"];
+  height?: string | number;
+  theme?: Theme;
+}) => render({ height, theme });
+
 const LivePreview = ({
   demoId,
   height = "auto",
@@ -63,7 +79,7 @@ const LivePreview = ({
           {isCodeVisible ? (
             <CodeBlock className="h-full" demoId={demoId} />
           ) : (
-            Preview({ height: demoHeight || height, theme: currentTheme })
+            <PreviewHost render={Preview} height={demoHeight || height} theme={currentTheme} />
           )}
         </div>
 
