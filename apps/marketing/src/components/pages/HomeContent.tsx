@@ -269,9 +269,9 @@ export default function HomeContent() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.3 }}
             >
-              A {SIMPLE_TABLE_INFO.bundleSizeMinGzip} data grid packed with 30+ features, dropped
-              into React, Vue, Angular, Svelte, Solid, or vanilla TypeScript in minutes — backed by
-              support that actually replies.
+              A lightweight data grid packed with 30+ features, dropped into React, Vue, Angular,
+              Svelte, Solid, or vanilla TypeScript in minutes — backed by support that actually
+              replies.
             </motion.p>
 
             <motion.div

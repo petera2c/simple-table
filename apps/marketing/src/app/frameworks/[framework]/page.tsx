@@ -14,19 +14,13 @@ import {
   getFrameworkHubFaqItems,
   getFrameworkHubWhyParagraph,
 } from "@/constants/frameworkHubSeoContent";
-import {
-  FRAMEWORK_COMPETITORS,
-  FRAMEWORK_ELEVATOR_PITCH,
-} from "@/constants/frameworkCompetitors";
+import { FRAMEWORK_COMPETITORS, FRAMEWORK_ELEVATOR_PITCH } from "@/constants/frameworkCompetitors";
 import type { Framework } from "@/providers/FrameworkProvider";
 import { getStackBlitzUrl } from "@/utils/getStackBlitzUrl";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import AIVisibilityEnhancer from "@/components/AIVisibilityEnhancer";
-import {
-  buildFaqPageJsonLd,
-  buildFrameworkHubSoftwareJsonLd,
-} from "@/utils/structuredData";
+import { buildFaqPageJsonLd, buildFrameworkHubSoftwareJsonLd } from "@/utils/structuredData";
 
 type PageProps = { params: Promise<{ framework: string }> };
 
@@ -112,8 +106,14 @@ export default async function FrameworkHubDetailPage({ params }: PageProps) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareLd) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+      />
       <BlogLayout>
         <nav className="text-sm text-gray-600 dark:text-gray-400 mb-6">
           <Link href="/frameworks" className="text-blue-600 dark:text-blue-400 hover:underline">
@@ -128,12 +128,12 @@ export default async function FrameworkHubDetailPage({ params }: PageProps) {
             {fw.label} integration
           </h1>
           <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl">
-            Install line, peers, styles, and a minimal import for {fw.label}. Live docs demos open in
-            StackBlitz in one click—no local clone required.
+            Install line, peers, styles, and a minimal import for {fw.label}. Live docs demos open
+            in StackBlitz in one click—no local clone required.
           </p>
         </header>
 
-        <div className="space-y-8 mb-12">
+        <div className="space-y-8">
           <section className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
               Why Simple Table on {fw.label}
@@ -189,8 +189,8 @@ export default async function FrameworkHubDetailPage({ params }: PageProps) {
             </pre>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-3">
               Documentation demos include <span className="font-medium">Open in StackBlitz</span> so
-              you can run and edit a full {fw.label} project in the browser. Start with the quick-start
-              sandbox below.
+              you can run and edit a full {fw.label} project in the browser. Start with the
+              quick-start sandbox below.
             </p>
           </section>
 
@@ -239,7 +239,9 @@ export default async function FrameworkHubDetailPage({ params }: PageProps) {
           </section>
 
           <section className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Next steps</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              Next steps
+            </h2>
             <div className="flex flex-wrap gap-3">
               <Link
                 href={pillarHref}
