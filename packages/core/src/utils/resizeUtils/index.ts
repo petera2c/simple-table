@@ -1,7 +1,6 @@
 import type HeaderObject from "../../types/HeaderObject";
 import type { Accessor } from "../../types/HeaderObject";
 import type { HandleResizeStartProps } from "../../types/HandleResizeStartProps";
-import type { Pinned } from "../../types/Pinned";
 import {
   findLeafHeaders,
   getHeaderWidthInPixels,
@@ -33,23 +32,6 @@ const resolveContainerWidthForResize = (
     return bodyContainer.clientWidth;
   }
   return main.clientWidth;
-};
-
-/** Scrollport width of the pinned body strip (fits column sums without horizontal scroll). */
-const readPinnedBodyViewportWidth = (
-  mainBodyRef: HandleResizeStartProps["mainBodyRef"],
-  rootPinned: Pinned | undefined,
-): number | undefined => {
-  const main = mainBodyRef?.current;
-  if (!main || !rootPinned) return undefined;
-  const tableRoot = main.closest(".simple-table-root");
-  if (!(tableRoot instanceof HTMLElement)) return undefined;
-  const sel =
-    rootPinned === "right" ? ".st-body-pinned-right" : ".st-body-pinned-left";
-  const pinned = tableRoot.querySelector(sel);
-  return pinned instanceof HTMLElement && pinned.clientWidth > 0
-    ? pinned.clientWidth
-    : undefined;
 };
 
 /**
@@ -223,10 +205,6 @@ export const handleResizeStart = ({
         headers,
         initialWidthsMap,
         isParentResize: childrenToResize.length > 1,
-        pinnedBodyViewportWidth: readPinnedBodyViewportWidth(
-          mainBodyRef,
-          rootPinned,
-        ),
         resizedHeader: headerToResize,
         reverse,
         rootPinned,
@@ -556,7 +534,6 @@ export const applyColumnAutoFitWithAutoExpand = ({
     headers,
     initialWidthsMap,
     isParentResize: childrenToResize.length > 1,
-    pinnedBodyViewportWidth: readPinnedBodyViewportWidth(mainBodyRef, rootPinned),
     resizedHeader: headerToResize,
     reverse,
     rootPinned,

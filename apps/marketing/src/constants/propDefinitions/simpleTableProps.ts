@@ -894,7 +894,6 @@ useEffect(() => {
     description:
       "Column editor UI: text, search, allowColumnPinning, customRenderer, rowRenderer, etc. See ColumnEditorConfig in API Reference.",
     type: "ColumnEditorConfig",
-    link: "/docs/column-editing",
     example: `columnEditorConfig={{
   text: "Columns",                      // Button text (default: "Columns")
   searchEnabled: true,                  // Enable search (default: true)

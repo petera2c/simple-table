@@ -19,7 +19,6 @@ const DOC_SLUG_TO_SEO_KEY: Record<string, SeoStringKey> = {
   "cell-renderer": "cellRenderer",
   "collapsible-columns": "collapsibleColumns",
   "column-alignment": "columnAlignment",
-  "column-editing": "columnEditing",
   "column-filtering": "columnFiltering",
   "column-pinning": "columnPinning",
   "column-reordering": "columnReordering",

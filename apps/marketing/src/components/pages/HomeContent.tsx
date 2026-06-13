@@ -390,25 +390,6 @@ export default function HomeContent() {
           ))}
         </motion.div>
 
-        <motion.div
-          className="flex justify-center flex-wrap gap-2 mb-16"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.95 }}
-          aria-label="Framework integration hubs"
-        >
-          {FRAMEWORKS.map((fw) => (
-            <Link
-              key={`hub-${fw}`}
-              href={`/frameworks/${fw}`}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/40 text-gray-700 dark:text-gray-300 hover:border-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-            >
-              <FrameworkIcon framework={fw} size={14} />
-              {FRAMEWORK_LABELS[fw]} hub
-            </Link>
-          ))}
-        </motion.div>
-
         {/* Trusted By Section */}
         <TrustedBySection />
 

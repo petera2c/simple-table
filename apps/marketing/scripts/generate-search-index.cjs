@@ -15,6 +15,9 @@ const path = require("path");
 
 const docsContentPath = path.join(__dirname, "../src/components/pages/docs-pages");
 
+// Doc ids that are temporarily hidden and should be excluded from the search index.
+const HIDDEN_DOC_IDS = new Set(["column-editing"]);
+
 /**
  * Extract text content from a React component file
  */
@@ -416,6 +419,11 @@ function generateSearchIndex() {
       .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2") // Handle acronyms like CSV
       .replace(/([a-z\d])([A-Z])/g, "$1-$2") // Handle regular PascalCase
       .toLowerCase();
+
+    if (HIDDEN_DOC_IDS.has(docId)) {
+      console.log(`Skipping hidden page: ${docId}`);
+      continue;
+    }
 
     const docPath = `/docs/${docId}`;
 

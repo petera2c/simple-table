@@ -324,14 +324,7 @@ import {
           />
 
           <p className="text-gray-700 dark:text-gray-300 mt-3">
-            Learn more in the{" "}
-            <Link
-              href="/docs/column-editing"
-              className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-            >
-              Column Editing documentation
-            </Link>
-            .
+            Learn more in the Column Editing documentation.
           </p>
         </div>
 
@@ -621,14 +614,6 @@ import {
           If you encounter any issues during migration, check out these resources:
         </p>
         <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-          <li>
-            <Link
-              href="/docs/column-editing"
-              className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-            >
-              Column Editing Documentation
-            </Link>
-          </li>
           <li>
             <Link
               href="/docs/custom-icons"

@@ -384,14 +384,7 @@ export default function CustomThemeContent() {
         </div>
 
         <p className="text-gray-700 dark:text-gray-300">
-          See the{" "}
-          <a
-            href="/docs/column-editing"
-            className="text-blue-600 dark:text-blue-400 hover:underline"
-          >
-            Column Editing
-          </a>{" "}
-          documentation for more details on the column editor features.
+          See the Column Editing documentation for more details on the column editor features.
         </p>
       </motion.div>
 

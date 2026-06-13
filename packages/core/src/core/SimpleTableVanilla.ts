@@ -669,7 +669,12 @@ export class SimpleTableVanilla {
     }
     this.externalScrollListener = null;
 
-    if (parent && this.externalWindowResizeListener && typeof Window !== "undefined" && parent instanceof Window) {
+    if (
+      parent &&
+      this.externalWindowResizeListener &&
+      typeof Window !== "undefined" &&
+      parent instanceof Window
+    ) {
       parent.removeEventListener("resize", this.externalWindowResizeListener);
     }
     this.externalWindowResizeListener = null;
@@ -705,7 +710,9 @@ export class SimpleTableVanilla {
   private applyOverscrollContainment(parent: ResolvedScrollParent): void {
     const target: HTMLElement | null =
       typeof Window !== "undefined" && parent instanceof Window
-        ? (typeof document !== "undefined" ? document.documentElement : null)
+        ? typeof document !== "undefined"
+          ? document.documentElement
+          : null
         : (parent as HTMLElement | null);
     if (!target) return;
     this.overscrollBehaviorTarget = target;
@@ -738,10 +745,7 @@ export class SimpleTableVanilla {
       const cs = getComputedStyle(parent);
       paddingTop = parseFloat(cs.paddingTop) || 0;
     }
-    elements.rootElement.style.setProperty(
-      "--st-external-scroll-padding-top",
-      `${paddingTop}px`,
-    );
+    elements.rootElement.style.setProperty("--st-external-scroll-padding-top", `${paddingTop}px`);
   }
 
   /**
@@ -828,13 +832,10 @@ export class SimpleTableVanilla {
           // when the parent has more content below it.
           const containerHeight = metrics.visibleViewportHeight;
           const contentHeight =
-            metrics.relativeScrollTop + metrics.visibleViewportHeight + Math.max(0, metrics.distanceFromTableBottom);
-          this.scrollManager.handleScroll(
-            newScrollTop,
-            0,
-            containerHeight,
-            contentHeight,
-          );
+            metrics.relativeScrollTop +
+            metrics.visibleViewportHeight +
+            Math.max(0, metrics.distanceFromTableBottom);
+          this.scrollManager.handleScroll(newScrollTop, 0, containerHeight, contentHeight);
         } else {
           this.scrollManager.handleScroll(newScrollTop, 0, 0, 0);
         }

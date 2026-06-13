@@ -135,9 +135,7 @@ export class SelectionManager {
     this.selectedColumns.forEach((colIndex) => {
       this.columnsWithSelectedCells.add(colIndex);
       this.config.tableRows.forEach((r) => {
-        this.selectedByRowIdColIndex.add(
-          `${rowIdToString(r.rowId)}\t${colIndex}`,
-        );
+        this.selectedByRowIdColIndex.add(`${rowIdToString(r.rowId)}\t${colIndex}`);
         this.rowsWithSelectedCells.add(rowIdToString(r.rowId));
       });
     });
@@ -162,15 +160,12 @@ export class SelectionManager {
       if (parts.length >= 3) {
         const colIndex = parseInt(parts[1], 10);
         const rowId = parts.slice(2).join("-");
-        if (!isNaN(colIndex))
-          this.selectedByRowIdColIndex.add(`${rowId}\t${colIndex}`);
+        if (!isNaN(colIndex)) this.selectedByRowIdColIndex.add(`${rowId}\t${colIndex}`);
       }
     });
     this.selectedColumns.forEach((colIndex) => {
       this.config.tableRows.forEach((r) => {
-        this.selectedByRowIdColIndex.add(
-          `${rowIdToString(r.rowId)}\t${colIndex}`,
-        );
+        this.selectedByRowIdColIndex.add(`${rowIdToString(r.rowId)}\t${colIndex}`);
       });
     });
   }
@@ -293,10 +288,7 @@ export class SelectionManager {
     } else if (event.key === "ArrowDown") {
       event.preventDefault();
       this.handleArrowDown(event, rowIndex, colIndex);
-    } else if (
-      event.key === "ArrowLeft" ||
-      (event.key === "Tab" && event.shiftKey)
-    ) {
+    } else if (event.key === "ArrowLeft" || (event.key === "Tab" && event.shiftKey)) {
       event.preventDefault();
       this.handleArrowLeft(event, rowIndex, colIndex);
     } else if (event.key === "ArrowRight" || event.key === "Tab") {
@@ -338,11 +330,7 @@ export class SelectionManager {
   /**
    * Handle arrow up key
    */
-  private handleArrowUp(
-    event: KeyboardEvent,
-    rowIndex: number,
-    colIndex: number,
-  ): void {
+  private handleArrowUp(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
     if (event.shiftKey) {
       if (!this.startCell) {
         this.startCell = this.initialFocusedCell!;
@@ -382,11 +370,7 @@ export class SelectionManager {
   /**
    * Handle arrow down key
    */
-  private handleArrowDown(
-    event: KeyboardEvent,
-    rowIndex: number,
-    colIndex: number,
-  ): void {
+  private handleArrowDown(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
     if (event.shiftKey) {
       if (!this.startCell) {
         this.startCell = this.initialFocusedCell!;
@@ -426,11 +410,7 @@ export class SelectionManager {
   /**
    * Handle arrow left key
    */
-  private handleArrowLeft(
-    event: KeyboardEvent,
-    rowIndex: number,
-    colIndex: number,
-  ): void {
+  private handleArrowLeft(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
     if (event.shiftKey && event.key === "ArrowLeft") {
       if (!this.startCell) {
         this.startCell = this.initialFocusedCell!;
@@ -480,11 +460,7 @@ export class SelectionManager {
   /**
    * Handle arrow right key
    */
-  private handleArrowRight(
-    event: KeyboardEvent,
-    rowIndex: number,
-    colIndex: number,
-  ): void {
+  private handleArrowRight(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
     const maxColIndex = this.config.enableRowSelection
       ? this.leafHeaders.length
       : this.leafHeaders.length - 1;
@@ -530,11 +506,7 @@ export class SelectionManager {
   /**
    * Handle home key
    */
-  private handleHome(
-    event: KeyboardEvent,
-    rowIndex: number,
-    colIndex: number,
-  ): void {
+  private handleHome(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
     if (event.shiftKey) {
       if (!this.startCell) {
         this.startCell = this.initialFocusedCell!;
@@ -578,11 +550,7 @@ export class SelectionManager {
   /**
    * Handle end key
    */
-  private handleEnd(
-    event: KeyboardEvent,
-    rowIndex: number,
-    colIndex: number,
-  ): void {
+  private handleEnd(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
     if (event.shiftKey) {
       if (!this.startCell) {
         this.startCell = this.initialFocusedCell!;
@@ -630,11 +598,7 @@ export class SelectionManager {
   /**
    * Handle page up key
    */
-  private handlePageUp(
-    event: KeyboardEvent,
-    rowIndex: number,
-    colIndex: number,
-  ): void {
+  private handlePageUp(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
     const pageSize = 10;
     let targetRow = Math.max(0, rowIndex - pageSize);
 
@@ -659,16 +623,9 @@ export class SelectionManager {
   /**
    * Handle page down key
    */
-  private handlePageDown(
-    event: KeyboardEvent,
-    rowIndex: number,
-    colIndex: number,
-  ): void {
+  private handlePageDown(event: KeyboardEvent, rowIndex: number, colIndex: number): void {
     const pageSize = 10;
-    let targetRow = Math.min(
-      this.config.tableRows.length - 1,
-      rowIndex + pageSize,
-    );
+    let targetRow = Math.min(this.config.tableRows.length - 1, rowIndex + pageSize);
 
     if (event.shiftKey) {
       if (!this.startCell) {
@@ -865,14 +822,8 @@ export class SelectionManager {
       allCells.forEach((cellElement) => {
         if (!(cellElement instanceof HTMLElement)) return;
 
-        const rowIndex = parseInt(
-          cellElement.getAttribute("data-row-index") || "-1",
-          10,
-        );
-        const colIndex = parseInt(
-          cellElement.getAttribute("data-col-index") || "-1",
-          10,
-        );
+        const rowIndex = parseInt(cellElement.getAttribute("data-row-index") || "-1", 10);
+        const colIndex = parseInt(cellElement.getAttribute("data-col-index") || "-1", 10);
         const rowId = cellElement.getAttribute("data-row-id");
 
         if (rowIndex < 0 || colIndex < 0 || !rowId) return;
@@ -887,29 +838,19 @@ export class SelectionManager {
         // Update copy flash classes
         if (this.copyFlashCells.has(cellId)) {
           cellElement.classList.add(
-            isInitialFocused
-              ? "st-cell-copy-flash-first"
-              : "st-cell-copy-flash",
+            isInitialFocused ? "st-cell-copy-flash-first" : "st-cell-copy-flash",
           );
         } else {
-          cellElement.classList.remove(
-            "st-cell-copy-flash-first",
-            "st-cell-copy-flash",
-          );
+          cellElement.classList.remove("st-cell-copy-flash-first", "st-cell-copy-flash");
         }
 
         // Update warning flash classes
         if (this.warningFlashCells.has(cellId)) {
           cellElement.classList.add(
-            isInitialFocused
-              ? "st-cell-warning-flash-first"
-              : "st-cell-warning-flash",
+            isInitialFocused ? "st-cell-warning-flash-first" : "st-cell-warning-flash",
           );
         } else {
-          cellElement.classList.remove(
-            "st-cell-warning-flash-first",
-            "st-cell-warning-flash",
-          );
+          cellElement.classList.remove("st-cell-warning-flash-first", "st-cell-warning-flash");
         }
       });
     });
@@ -977,8 +918,7 @@ export class SelectionManager {
       const leafIndices = getHeaderLeafIndices(header, colIndex);
       const isHeaderSelected = leafIndices.some((c) => this.selectedColumns.has(c));
       const hasHighlighted =
-        !isHeaderSelected &&
-        leafIndices.some((c) => this.columnsWithSelectedCells.has(c));
+        !isHeaderSelected && leafIndices.some((c) => this.columnsWithSelectedCells.has(c));
 
       if (isHeaderSelected) {
         el.classList.add("st-header-selected");
@@ -1015,13 +955,9 @@ export class SelectionManager {
    */
   private syncAllCellClasses(): void {
     const root = this.config.tableRoot ?? document;
-    const allCells = root.querySelectorAll(
-      ".st-cell[data-row-index][data-col-index][data-row-id]",
-    );
+    const allCells = root.querySelectorAll(".st-cell[data-row-index][data-col-index][data-row-id]");
     const noSelection =
-      !this.fullTableSelected &&
-      this.selectedCells.size === 0 &&
-      this.selectedColumns.size === 0;
+      !this.fullTableSelected && this.selectedCells.size === 0 && this.selectedColumns.size === 0;
 
     if (noSelection) {
       for (let i = 0; i < allCells.length; i++) {
@@ -1044,14 +980,8 @@ export class SelectionManager {
       const cellElement = allCells[i];
       if (!(cellElement instanceof HTMLElement)) continue;
 
-      const rowIndex = parseInt(
-        cellElement.getAttribute("data-row-index") || "-1",
-        10,
-      );
-      const colIndex = parseInt(
-        cellElement.getAttribute("data-col-index") || "-1",
-        10,
-      );
+      const rowIndex = parseInt(cellElement.getAttribute("data-row-index") || "-1", 10);
+      const colIndex = parseInt(cellElement.getAttribute("data-col-index") || "-1", 10);
       const rowId = cellElement.getAttribute("data-row-id");
 
       if (rowIndex < 0 || colIndex < 0 || !rowId) continue;
@@ -1065,17 +995,13 @@ export class SelectionManager {
 
       const desiredClasses = new Set<string>();
       if (isIndividuallySelected) {
-        desiredClasses.add(
-          isInitialFocused ? "st-cell-selected-first" : "st-cell-selected",
-        );
+        desiredClasses.add(isInitialFocused ? "st-cell-selected-first" : "st-cell-selected");
         const borderClasses = borderClass.split(" ").filter(Boolean);
         borderClasses.forEach((cls) => desiredClasses.add(cls));
       }
       if (isColumnSelected) {
         desiredClasses.add(
-          isInitialFocused
-            ? "st-cell-column-selected-first"
-            : "st-cell-column-selected",
+          isInitialFocused ? "st-cell-column-selected-first" : "st-cell-column-selected",
         );
       }
 
@@ -1095,8 +1021,7 @@ export class SelectionManager {
       }
       if (isInitialFocused && document.activeElement !== cellElement) {
         const activeElement = document.activeElement;
-        const isActiveInsideCell =
-          activeElement && cellElement.contains(activeElement);
+        const isActiveInsideCell = activeElement && cellElement.contains(activeElement);
         if (!isActiveInsideCell) {
           // Prevent the browser from scrolling the body container to show the anchor;
           // that fights drag auto-scroll at the bottom and causes scroll jitter.
@@ -1129,8 +1054,7 @@ export class SelectionManager {
   isSelected({ colIndex, rowIndex, rowId }: Cell): boolean {
     if (this.fullTableSelected) return true;
     const rowIdStr = String(rowId);
-    if (this.selectedByRowIdColIndex.has(`${rowIdStr}\t${colIndex}`))
-      return true;
+    if (this.selectedByRowIdColIndex.has(`${rowIdStr}\t${colIndex}`)) return true;
     // Fallback: DOM may have virtualized rowIndex; try direct key
     const tableRowIndex = this.rowIdToTableIndex.get(rowIdStr);
     if (tableRowIndex !== undefined) {
@@ -1178,8 +1102,7 @@ export class SelectionManager {
     const bottomRowId = bottomRow ? rowIdToString(bottomRow.rowId) : null;
 
     const topSelected =
-      topRowId !== null &&
-      this.isSelected({ colIndex, rowIndex: tableIndex - 1, rowId: topRowId });
+      topRowId !== null && this.isSelected({ colIndex, rowIndex: tableIndex - 1, rowId: topRowId });
     const bottomSelected =
       bottomRowId !== null &&
       this.isSelected({
@@ -1198,17 +1121,12 @@ export class SelectionManager {
       rowId,
     });
 
-    if (
-      !topRowId ||
-      !topSelected ||
-      (this.selectedColumns.has(colIndex) && tableIndex === 0)
-    )
+    if (!topRowId || !topSelected || (this.selectedColumns.has(colIndex) && tableIndex === 0))
       classes.push("st-selected-top-border");
     if (
       !bottomRowId ||
       !bottomSelected ||
-      (this.selectedColumns.has(colIndex) &&
-        tableIndex === this.config.tableRows.length - 1)
+      (this.selectedColumns.has(colIndex) && tableIndex === this.config.tableRows.length - 1)
     )
       classes.push("st-selected-bottom-border");
     if (!leftSelected) classes.push("st-selected-left-border");
@@ -1402,9 +1320,7 @@ export class SelectionManager {
       !!this.config.enableRowSelection,
     );
     if (this.selectedCells.size === newSelectedCells.size) {
-      const allSame = Array.from(newSelectedCells).every((id) =>
-        this.selectedCells.has(id),
-      );
+      const allSame = Array.from(newSelectedCells).every((id) => this.selectedCells.has(id));
       if (allSame) return;
     }
     this.selectedCells = newSelectedCells;
@@ -1415,26 +1331,15 @@ export class SelectionManager {
   /**
    * Get cell from mouse position
    */
-  private getCellFromMousePosition(
-    clientX: number,
-    clientY: number,
-  ): Cell | null {
-    return getCellFromMousePositionUtil(
-      clientX,
-      clientY,
-      this.config.tableRoot ?? document,
-    );
+  private getCellFromMousePosition(clientX: number, clientY: number): Cell | null {
+    return getCellFromMousePositionUtil(clientX, clientY, this.config.tableRoot ?? document);
   }
 
   /**
    * Handle auto-scrolling when dragging near edges
    */
   private handleAutoScroll(clientX: number, clientY: number): void {
-    handleAutoScrollUtil(
-      clientX,
-      clientY,
-      this.config.tableRoot ?? document,
-    );
+    handleAutoScrollUtil(clientX, clientY, this.config.tableRoot ?? document);
   }
 
   /**
@@ -1466,9 +1371,7 @@ export class SelectionManager {
       }
     }
 
-    this.scrollAnimationFrame = requestAnimationFrame(() =>
-      this.continuousScroll(),
-    );
+    this.scrollAnimationFrame = requestAnimationFrame(() => this.continuousScroll());
   }
 
   /**
@@ -1528,9 +1431,7 @@ export class SelectionManager {
     document.addEventListener("mousemove", this.globalMouseMoveHandler);
     document.addEventListener("mouseup", this.globalMouseUpHandler);
 
-    this.scrollAnimationFrame = requestAnimationFrame(() =>
-      this.continuousScroll(),
-    );
+    this.scrollAnimationFrame = requestAnimationFrame(() => this.continuousScroll());
   }
 
   /**
@@ -1538,15 +1439,10 @@ export class SelectionManager {
    * Uses the pointer position to resolve the cell under the cursor (same as continuousScroll)
    * so virtualization/recycled DOM does not apply stale cellData from the firing element.
    */
-  handleMouseOver(
-    cellFromElement: Cell,
-    clientX: number,
-    clientY: number,
-  ): void {
+  handleMouseOver(cellFromElement: Cell, clientX: number, clientY: number): void {
     if (!this.config.selectableCells) return;
     if (this.isSelecting && this.startCell) {
-      const resolved =
-        this.getCellFromMousePosition(clientX, clientY) ?? cellFromElement;
+      const resolved = this.getCellFromMousePosition(clientX, clientY) ?? cellFromElement;
       this.updateSelectionRange(this.startCell, resolved);
     }
   }

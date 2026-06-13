@@ -125,12 +125,6 @@ export const docSections: DocSection[] = [
         icon: faMousePointer,
       },
       {
-        id: "column-editing",
-        label: "Column Editing",
-        path: "/docs/column-editing",
-        icon: faEdit,
-      },
-      {
         id: "nested-headers",
         label: "Nested Headers",
         path: "/docs/nested-headers",

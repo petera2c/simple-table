@@ -106,6 +106,8 @@ function categorize(route: string): { priority: number; changeFrequency: ChangeF
 const NON_INDEXABLE_SEGMENTS = new Set([
   "/not-found",
   "/mobile-unsupported",
+  // Temporarily hidden from sitemap; page route still exists but is unlinked.
+  "/docs/column-editing",
 ]);
 
 export default function sitemap(): MetadataRoute.Sitemap {

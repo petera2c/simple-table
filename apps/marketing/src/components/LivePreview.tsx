@@ -63,7 +63,7 @@ const LivePreview = ({
           {isCodeVisible ? (
             <CodeBlock className="h-full" demoId={demoId} />
           ) : (
-            <Preview height={demoHeight || height} theme={currentTheme} />
+            Preview({ height: demoHeight || height, theme: currentTheme })
           )}
         </div>
 
