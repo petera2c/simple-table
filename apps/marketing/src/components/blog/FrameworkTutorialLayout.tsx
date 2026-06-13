@@ -21,10 +21,7 @@ import {
   buildFaqPageJsonLd,
   buildTechArticleJsonLd,
 } from "@/utils/structuredData";
-import {
-  FRAMEWORK_HUB_BY_ID,
-  type HubFrameworkId,
-} from "@/constants/frameworkIntegrationHub";
+import { FRAMEWORK_HUB_BY_ID, type HubFrameworkId } from "@/constants/frameworkIntegrationHub";
 import OtherFrameworksCallout from "@/components/OtherFrameworksCallout";
 
 export interface LibraryRow {
@@ -312,7 +309,9 @@ export default function FrameworkTutorialLayout(props: FrameworkTutorialLayoutPr
                         {snippet.title}
                       </h3>
                       {snippet.description && (
-                        <p className="mb-3 text-gray-700 dark:text-gray-300">{snippet.description}</p>
+                        <p className="mb-3 text-gray-700 dark:text-gray-300">
+                          {snippet.description}
+                        </p>
                       )}
                       <CodeBlock
                         className="mb-2"
@@ -413,12 +412,13 @@ export default function FrameworkTutorialLayout(props: FrameworkTutorialLayoutPr
           </section>
         </article>
 
-        <OtherFrameworksCallout currentFramework={props.framework} />
-
         <CallToActionCard
           title={props.ctaTitle}
           description={props.ctaDescription}
-          primaryButton={{ text: "View documentation", href: props.docsHref ?? "/docs/installation" }}
+          primaryButton={{
+            text: "View documentation",
+            href: props.docsHref ?? "/docs/installation",
+          }}
           secondaryButton={{ text: "Try interactive demo", href: "/examples" }}
         />
       </BlogLayout>

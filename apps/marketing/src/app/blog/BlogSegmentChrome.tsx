@@ -8,15 +8,12 @@ import {
   shouldShowOtherFrameworksCallout,
 } from "@/constants/blogPosts";
 import { FRAMEWORK_HUB_PILLAR_BLOG_SLUG } from "@/constants/frameworkPillarBlogs";
-import {
-  buildBreadcrumbListJsonLd,
-  buildTechArticleJsonLd,
-} from "@/utils/structuredData";
+import { buildBreadcrumbListJsonLd, buildTechArticleJsonLd } from "@/utils/structuredData";
 
 const PILLAR_SLUGS_WITH_OWN_JSONLD = new Set(
   Object.entries(FRAMEWORK_HUB_PILLAR_BLOG_SLUG)
     .filter(([id]) => id !== "react")
-    .map(([, slug]) => slug)
+    .map(([, slug]) => slug),
 );
 
 export default function BlogSegmentChrome({ children }: { children: React.ReactNode }) {
@@ -59,11 +56,7 @@ export default function BlogSegmentChrome({ children }: { children: React.ReactN
         />
       ) : null}
       {children}
-      {showCallout ? (
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
-          <OtherFrameworksCallout currentFramework={frameworkId ?? "react"} />
-        </div>
-      ) : null}
+      {showCallout ? <OtherFrameworksCallout currentFramework={frameworkId ?? "react"} /> : null}
     </>
   );
 }

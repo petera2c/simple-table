@@ -30,39 +30,41 @@ export default function OtherFrameworksCallout({
   const heading = currentFramework === "react" ? "Not using React?" : `Not using ${currentLabel}?`;
 
   return (
-    <aside
-      className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-950/40 p-6 shadow-sm mb-8"
-      aria-labelledby="other-frameworks-heading"
-    >
-      <h2
-        id="other-frameworks-heading"
-        className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2"
+    <div className="max-w-4xl mx-auto mb-8">
+      <aside
+        className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-950/40 p-6 shadow-sm w-full"
+        aria-labelledby="other-frameworks-heading"
       >
-        <FontAwesomeIcon icon={faLayerGroup} className="text-blue-600 dark:text-blue-400" />
-        {heading}
-      </h2>
-      <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-        Simple Table uses one shared core with official adapters for{" "}
-        {others.map((fw) => fw.label).join(", ")}. Open a setup hub for install commands, styles,
-        and a StackBlitz quick start—same grid features across stacks.
-      </p>
-      <div className="flex flex-wrap gap-2">
-        <Link
-          href="/frameworks"
-          className="inline-flex items-center rounded-lg bg-blue-600 text-white px-3 py-1.5 text-sm font-medium hover:bg-blue-700"
+        <h2
+          id="other-frameworks-heading"
+          className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2"
         >
-          All framework hubs
-        </Link>
-        {others.map((fw) => (
+          <FontAwesomeIcon icon={faLayerGroup} className="text-blue-600 dark:text-blue-400" />
+          {heading}
+        </h2>
+        <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+          Simple Table uses one shared core with official adapters for{" "}
+          {others.map((fw) => fw.label).join(", ")}. Open a setup hub for install commands, styles,
+          and a StackBlitz quick start—same grid features across stacks.
+        </p>
+        <div className="flex flex-wrap gap-2">
           <Link
-            key={fw.id}
-            href={`/frameworks/${fw.id}`}
-            className="inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm text-gray-800 dark:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-900/50"
+            href="/frameworks"
+            className="inline-flex items-center rounded-lg bg-blue-600 text-white px-3 py-1.5 text-sm font-medium hover:bg-blue-700"
           >
-            {fw.label}
+            All framework hubs
           </Link>
-        ))}
-      </div>
-    </aside>
+          {others.map((fw) => (
+            <Link
+              key={fw.id}
+              href={`/frameworks/${fw.id}`}
+              className="inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-1.5 text-sm text-gray-800 dark:text-gray-200 hover:bg-white/60 dark:hover:bg-gray-900/50"
+            >
+              {fw.label}
+            </Link>
+          ))}
+        </div>
+      </aside>
+    </div>
   );
 }

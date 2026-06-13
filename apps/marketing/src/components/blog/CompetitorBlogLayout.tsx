@@ -20,10 +20,7 @@ import {
   buildFaqPageJsonLd,
   buildTechArticleJsonLd,
 } from "@/utils/structuredData";
-import {
-  FRAMEWORK_HUB_BY_ID,
-  type HubFrameworkId,
-} from "@/constants/frameworkIntegrationHub";
+import { FRAMEWORK_HUB_BY_ID, type HubFrameworkId } from "@/constants/frameworkIntegrationHub";
 import OtherFrameworksCallout from "@/components/OtherFrameworksCallout";
 
 export interface ComparisonRow {
@@ -228,10 +225,7 @@ export default function CompetitorBlogLayout(props: CompetitorBlogLayoutProps) {
               <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                 {props.whyChoose.competitor.items.map((item) => (
                   <li key={item} className="flex items-start gap-2">
-                    <FontAwesomeIcon
-                      icon={faCheckCircle}
-                      className="text-blue-500 mt-1 shrink-0"
-                    />
+                    <FontAwesomeIcon icon={faCheckCircle} className="text-blue-500 mt-1 shrink-0" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -340,8 +334,6 @@ export default function CompetitorBlogLayout(props: CompetitorBlogLayoutProps) {
             </div>
           </section>
         </article>
-
-        <OtherFrameworksCallout currentFramework={props.framework} />
 
         <CallToActionCard
           title={props.ctaTitle}
