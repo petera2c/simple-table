@@ -110,44 +110,6 @@ const HeaderRendererDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const [starData, setStarData] = useState(INITIAL_STAR_DATA);
-  const [sortConfig, setSortConfig] = useState<{ key: string; direction: "asc" | "desc" } | null>(
-    null,
-  );
-
-  const handleSort = (key: string) => {
-    let direction: "asc" | "desc" = "asc";
-
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
-    }
-
-    const sortedData = [...starData].sort((a, b) => {
-      const aValue = a[key as keyof typeof a];
-      const bValue = b[key as keyof typeof b];
-
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        return direction === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-      }
-
-      if (typeof aValue === "number" && typeof bValue === "number") {
-        return direction === "asc" ? aValue - bValue : bValue - aValue;
-      }
-
-      return 0;
-    });
-
-    setStarData(sortedData);
-    setSortConfig({ key, direction });
-  };
-
-  const getSortIndicator = (key: string) => {
-    if (!sortConfig || sortConfig.key !== key) {
-      return "↕️";
-    }
-    return sortConfig.direction === "asc" ? "↑" : "↓";
-  };
-
   // Theme-based color configuration
   const getThemeColors = (theme?: Theme) => {
     switch (theme) {
@@ -197,52 +159,78 @@ const HeaderRendererDemo = ({
     }
   };
 
-  // Custom header layout + styling. Use the column label as React text (same idea as
-  // packages/examples/react header-renderer demo). Do not put core's `components.labelContent`
-  // in JSX unless it is a React element: before the adapter maps slots, it is a live DOM
-  // node — truthy so `|| header.label` never runs, and React will not render raw Nodes.
-  const createHeaderRenderer = (key: string, label: string) => {
-    return (_props: HeaderRendererProps) => {
+  // Custom header layout + styling. Each renderer is mounted as its own React component
+  // (the adapter renders `<Component {...props} />`), so hooks like `useState` are safe.
+  // We use that to drive a hover state and apply the theme accent colors below.
+  const createHeaderRenderer = (key: string, label: string, icon: string, sublabel: string) => {
+    const HeaderCell = (_props: HeaderRendererProps) => {
       const colors = getThemeColors(theme);
+      const [hovered, setHovered] = useState(false);
 
       return (
         <div
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
+            gap: 10,
+            width: "100%",
             cursor: "pointer",
-            color: colors.baseColor,
-            fontWeight: 600,
-            fontSize: "14px",
-            padding: "4px 12px",
-            transition: "all 0.2s ease",
-          }}
-          onClick={() => handleSort(key)}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.hoverColor;
-            e.currentTarget.style.transform = "translateY(-1px)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = colors.baseColor;
-            e.currentTarget.style.transform = "translateY(0)";
+            userSelect: "none",
+            paddingLeft: 12,
           }}
         >
-          <span style={{ display: "flex", alignItems: "center" }}>{label}</span>
           <span
+            aria-hidden
             style={{
-              fontSize: "12px",
-              opacity: 0.7,
-              transition: "all 0.2s ease",
-              color: sortConfig && sortConfig.key === key ? colors.sortActiveColor : "inherit",
-              fontWeight: sortConfig && sortConfig.key === key ? 700 : 400,
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              width: 26,
+              height: 26,
+              borderRadius: 8,
+              fontSize: 14,
+              backgroundColor: hovered ? `${colors.sortActiveColor}1f` : `${colors.baseColor}14`,
+              transition: "background-color 140ms ease",
             }}
           >
-            {getSortIndicator(key)}
+            {icon}
+          </span>
+          <span style={{ display: "flex", flexDirection: "column", lineHeight: 1.2, minWidth: 0 }}>
+            <span
+              style={{
+                fontWeight: 600,
+                fontSize: 13,
+                color: hovered ? colors.hoverColor : colors.baseColor,
+                transition: "color 140ms ease",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {label}
+            </span>
+            <span
+              style={{
+                fontSize: 9,
+                fontWeight: 600,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: colors.baseColor,
+                opacity: 0.55,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {sublabel}
+            </span>
           </span>
         </div>
       );
     };
+
+    return HeaderCell;
   };
 
   const headers: ReactHeaderObject[] = useMemo(
@@ -250,65 +238,55 @@ const HeaderRendererDemo = ({
       {
         accessor: "id",
         label: "ID",
-        width: 80,
+        width: 120,
         type: "number",
-        headerRenderer: createHeaderRenderer("id", "ID"),
+        headerRenderer: createHeaderRenderer("id", "ID", "#", "Catalog"),
+        isSortable: true,
       },
       {
         accessor: "starName",
         label: "Star Name",
-        width: 200,
+        width: 140,
         type: "string",
-        headerRenderer: createHeaderRenderer("starName", "Star Name"),
+        headerRenderer: createHeaderRenderer("starName", "Star Name", "⭐", "Designation"),
+        isSortable: true,
       },
       {
         accessor: "constellation",
         label: "Constellation",
-        width: 150,
+        width: 170,
         type: "string",
-        headerRenderer: createHeaderRenderer("constellation", "Constellation"),
+        headerRenderer: createHeaderRenderer("constellation", "Constellation", "✦", "Region"),
+        isSortable: true,
       },
       {
         accessor: "magnitude",
         label: "Magnitude",
-        width: 120,
+        width: 140,
         type: "number",
         isSortable: true,
         filterable: true,
-        headerRenderer: ({ components, header }: HeaderRendererProps) => (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
-              gap: 4,
-              flexWrap: "wrap",
-            }}
-          >
-            {components?.labelContent ?? <span>{header.label}</span>}
-            {components?.sortIcon}
-            {components?.filterIcon}
-            {components?.collapseIcon}
-          </div>
-        ),
+        headerRenderer: createHeaderRenderer("magnitude", "Magnitude", "✨", "Brightness"),
         align: "right",
       },
       {
         accessor: "spectralClass",
         label: "Spectral Class",
-        width: 140,
+        width: 150,
         type: "string",
-        headerRenderer: createHeaderRenderer("spectralClass", "Class"),
+        headerRenderer: createHeaderRenderer("spectralClass", "Class", "🌡️", "Spectral"),
+        isSortable: true,
       },
       {
         accessor: "distanceLY",
         label: "Distance (LY)",
-        width: 130,
+        width: 150,
         type: "number",
-        headerRenderer: createHeaderRenderer("distanceLY", "Distance"),
+        headerRenderer: createHeaderRenderer("distanceLY", "Distance", "📡", "Light Years"),
+        isSortable: true,
       },
     ],
-    [sortConfig, theme],
+    [theme],
   );
 
   return (
@@ -316,9 +294,12 @@ const HeaderRendererDemo = ({
       columnResizing
       defaultHeaders={headers}
       height={height}
-      rows={starData}
+      rows={INITIAL_STAR_DATA}
       selectableCells
       theme={theme}
+      customTheme={{
+        headerHeight: 48,
+      }}
     />
   );
 };
