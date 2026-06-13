@@ -1,32 +1,16 @@
-import { Metadata } from "next";
-import ColumnEditingContent from "@/components/pages/docs-pages/ColumnEditingContent";
-import { SEO_STRINGS } from "@/constants/strings/seo";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
+// This page is temporarily hidden. The content lives in
+// `@/components/pages/docs-pages/ColumnEditingContent` and can be restored by
+// rendering it here again and re-adding the route to docsNavigation, the search
+// index, and the sitemap.
 export const metadata: Metadata = {
-  title: SEO_STRINGS.columnEditing.title,
-  description: SEO_STRINGS.columnEditing.description,
-  keywords: SEO_STRINGS.columnEditing.keywords,
-  openGraph: {
-    title: SEO_STRINGS.columnEditing.title,
-    description: SEO_STRINGS.columnEditing.description,
-    type: "article",
-    images: [SEO_STRINGS.site.ogImage],
-    siteName: SEO_STRINGS.site.name,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: SEO_STRINGS.columnEditing.title,
-    description: SEO_STRINGS.columnEditing.description,
-    creator: SEO_STRINGS.site.creator,
-    images: SEO_STRINGS.site.ogImage.url,
-  },
-  alternates: {
-    canonical: "/docs/column-editing",
-  },
+  robots: { index: false, follow: false },
 };
 
 const ColumnEditingPage = () => {
-  return <ColumnEditingContent />;
+  notFound();
 };
 
 export default ColumnEditingPage;

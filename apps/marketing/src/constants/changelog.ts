@@ -492,7 +492,6 @@ export const v2_4_4: ChangelogEntry = {
     {
       type: "bugfix",
       description: "Fixed a drag/drop bug in the column editor popout.",
-      link: "/docs/column-editing",
     },
   ],
 };
@@ -569,19 +568,16 @@ export const v2_4_1: ChangelogEntry = {
       type: "feature",
       description:
         "Added drag-and-drop column reordering in the column editor with visual drop indicators",
-      link: "/docs/column-editing",
     },
     {
       type: "feature",
       description:
         "Added built-in search functionality in the column editor with support for custom search functions",
-      link: "/docs/column-editing",
     },
     {
       type: "feature",
       description:
         "Added columnEditorConfig prop to replace columnEditorText with more configuration options",
-      link: "/docs/column-editing",
     },
     {
       type: "feature",
@@ -593,7 +589,6 @@ export const v2_4_1: ChangelogEntry = {
       type: "improvement",
       description:
         "Improved column editor UI/UX with better spacing, sticky search bar, and text overflow handling",
-      link: "/docs/column-editing",
     },
     {
       type: "improvement",
@@ -657,13 +652,11 @@ export const v2_3_1: ChangelogEntry = {
       type: "feature",
       description:
         "Added toggleColumnEditor() method to programmatically open, close, or toggle the column editor menu. Call with true to open, false to close, or no argument to toggle.",
-      link: "/docs/column-editing",
     },
     {
       type: "feature",
       description:
         "Added applyColumnVisibility() method to programmatically control which columns are visible. Pass a partial or complete visibility state object to show/hide specific columns. Perfect for implementing custom column visibility presets or views.",
-      link: "/docs/column-editing",
     },
   ],
 };
@@ -679,7 +672,6 @@ export const v2_3_0: ChangelogEntry = {
       type: "bugfix",
       description:
         "Fixed column visibility checkbox logic in the column editing popout. Checkboxes are now checked when columns are visible, and unchecked when hidden (previously was inverted).",
-      link: "/docs/column-editing",
     },
   ],
 };
