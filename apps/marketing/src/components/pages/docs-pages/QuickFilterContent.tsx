@@ -473,7 +473,6 @@ const QuickFilterContent = () => {
           integrating with external search components.
         </p>
 
-
         <p className="text-gray-700 dark:text-gray-300 mt-4">
           For more details, see the{" "}
           <a
