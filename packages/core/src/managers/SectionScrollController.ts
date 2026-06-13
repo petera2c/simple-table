@@ -7,7 +7,14 @@ interface RegisteredPane {
 }
 
 export interface SectionScrollControllerConfig {
+  /** Heavy body virtualization. Throttled to every {@link VIRTUALIZATION_THRESHOLD_PX}px. */
   onMainSectionScrollLeft?: (scrollLeft: number) => void;
+  /**
+   * Lightweight header re-render, run on every main-section scroll frame (not throttled) so the
+   * header tracks the body fluidly during momentum. Re-rendering only the (few) header cells each
+   * frame avoids the stepwise "stagger" that throttled header virtualization produces.
+   */
+  onMainSectionHeaderFrame?: (scrollLeft: number) => void;
 }
 
 /** Run column virtualization only when scroll has moved by at least this many px (reduces lag; scroll position still syncs every scroll). */
@@ -36,6 +43,15 @@ export class SectionScrollController {
   private isSyncing = false;
   /** Last scrollLeft at which we ran main-section virtualization; used to run heavy ops only every N px. */
   private lastMainVirtualizationScrollLeft: number | null = null;
+  /**
+   * True while a touch-driven scroll (including post-release momentum) is in progress on a body
+   * pane. While true, we must not write scrollLeft to scroll-container followers (the horizontal
+   * scrollbar), because on iOS that cancels the body's inertial momentum. Such followers are
+   * reconciled once scrolling settles.
+   */
+  private isTouchScrolling = false;
+  /** Scroll-idle timer used to detect the end of a touch-driven scroll (incl. momentum). */
+  private touchSettleTimeoutId: number | null = null;
 
   constructor(config: SectionScrollControllerConfig = {}) {
     this.config = config;
@@ -62,7 +78,23 @@ export class SectionScrollController {
     }
 
     panes.add({ element, role });
-    this.addScrollListener(sectionId, element);
+
+    // Header and sticky panes are pure followers: the user never scrolls them directly, so we
+    // make them non-scroll-containers (overflow:hidden) and keep them synced via programmatic
+    // scrollLeft. This is critical on iOS: setting scrollLeft on a *scroll container* during the
+    // body's inertial (momentum) scroll cancels the momentum, but setting it on a non-scroll
+    // container does not. Pure followers also get no scroll listener, which avoids the echo
+    // scroll events (a programmatic scrollLeft write still fires a `scroll` event) being
+    // re-processed as a fresh source and triggering redundant header virtualization (jitter).
+    const isPureFollower = role === "header" || role === "sticky";
+    if (isPureFollower) {
+      element.style.overflowX = "hidden";
+    } else {
+      this.addScrollListener(sectionId, element);
+      if (role === "body") {
+        this.addTouchTracking(sectionId, element);
+      }
+    }
     // Sync new pane to current section scroll position (e.g. when scrollbar is created after header/body)
     const current = this.scrollLeftBySection[sectionId] ?? 0;
     if (element.scrollLeft !== current) {
@@ -142,12 +174,24 @@ export class SectionScrollController {
 
       const panes = this.panesBySection.get(sectionId);
       if (panes) {
-        panes.forEach(({ element: paneEl }) => {
-          if (paneEl !== element && paneEl.scrollLeft !== value) {
-            paneEl.scrollLeft = value;
-          }
+        panes.forEach(({ element: paneEl, role }) => {
+          if (paneEl === element || paneEl.scrollLeft === value) return;
+          // The horizontal scrollbar is a scroll container; writing its scrollLeft during a
+          // touch-driven body scroll cancels iOS momentum. Skip it while touch-scrolling; it is
+          // reconciled when scrolling settles. Header/sticky are non-scroll-containers (safe), and
+          // body is only a follower on desktop (no momentum to break).
+          if (role === "scrollbar" && this.isTouchScrolling) return;
+          paneEl.scrollLeft = value;
         });
       }
+
+      if (this.isTouchScrolling) this.scheduleTouchSettle(sectionId);
+
+      // Header tracks every frame (cheap) so it doesn't visually step/stagger behind the body.
+      if (sectionId === "main" && this.config.onMainSectionHeaderFrame) {
+        this.config.onMainSectionHeaderFrame(value);
+      }
+
       // Virtualization (main section only): run only every N px so scroll position sync paints without being blocked
       if (
         sectionId === "main" &&
@@ -165,6 +209,53 @@ export class SectionScrollController {
     element.addEventListener("scroll", handler, { passive: true });
   }
 
+  /**
+   * Track touch-driven scrolling on a body pane. While a touch (and its post-release momentum) is
+   * active, scroll-container followers (the horizontal scrollbar) are not written, to preserve iOS
+   * momentum; they are reconciled when scrolling settles.
+   */
+  private addTouchTracking(sectionId: SectionId, element: HTMLElement): void {
+    element.addEventListener(
+      "touchstart",
+      () => {
+        this.isTouchScrolling = true;
+        if (this.touchSettleTimeoutId !== null) {
+          clearTimeout(this.touchSettleTimeoutId);
+          this.touchSettleTimeoutId = null;
+        }
+      },
+      { passive: true },
+    );
+    // Momentum may continue after release; arm the settle timer so scroll-container followers
+    // reconcile even if no further scroll events arrive (e.g. a tap, or a drag with no fling).
+    element.addEventListener("touchend", () => this.scheduleTouchSettle(sectionId), {
+      passive: true,
+    });
+  }
+
+  /**
+   * (Re)arm the scroll-idle timer that marks the end of a touch-driven scroll. When it fires (no
+   * scroll for the idle window, i.e. momentum has stopped), reconcile scroll-container followers
+   * (the scrollbar) to the final position, which we deliberately skipped during the touch scroll.
+   */
+  private scheduleTouchSettle(sectionId: SectionId): void {
+    if (this.touchSettleTimeoutId !== null) clearTimeout(this.touchSettleTimeoutId);
+    this.touchSettleTimeoutId = window.setTimeout(() => {
+      this.touchSettleTimeoutId = null;
+      this.isTouchScrolling = false;
+      const value = this.scrollLeftBySection[sectionId] ?? 0;
+      const panes = this.panesBySection.get(sectionId);
+      if (!panes) return;
+      this.isSyncing = true;
+      panes.forEach(({ element: paneEl, role }) => {
+        if (role === "scrollbar" && paneEl.scrollLeft !== value) {
+          paneEl.scrollLeft = value;
+        }
+      });
+      this.isSyncing = false;
+    }, 100);
+  }
+
   private removeScrollListener(element: HTMLElement): void {
     const handler = this.scrollHandlers.get(element);
     if (handler) {
@@ -174,6 +265,10 @@ export class SectionScrollController {
   }
 
   destroy(): void {
+    if (this.touchSettleTimeoutId !== null) {
+      clearTimeout(this.touchSettleTimeoutId);
+      this.touchSettleTimeoutId = null;
+    }
     (["pinned-left", "main", "pinned-right"] as SectionId[]).forEach((sectionId) =>
       this.unregisterSection(sectionId),
     );

@@ -478,20 +478,28 @@ export class SimpleTableVanilla {
       infiniteScrollThreshold: this.config.infiniteScrollThreshold ?? 200,
     });
 
+    const renderHeaderForScroll = (scrollLeft: number) => {
+      const header = this.domManager.getRefs().mainHeaderRef.current;
+      const sel = this.selectionManager;
+      const liveSelection =
+        sel && (this.config.selectableCells || this.config.selectableColumns)
+          ? {
+              columnsWithSelectedCells: sel.getColumnsWithSelectedCells(),
+              selectedColumns: sel.getSelectedColumns(),
+            }
+          : undefined;
+      (header as any)?.__renderHeaderCells?.(scrollLeft, liveSelection);
+    };
+
     this.sectionScrollController = new SectionScrollController({
+      // Header is light: re-render it every scroll frame so it tracks the body fluidly.
+      onMainSectionHeaderFrame: (scrollLeft) => {
+        renderHeaderForScroll(scrollLeft);
+      },
+      // Body virtualization is heavier: the controller throttles this to every N px.
       onMainSectionScrollLeft: (scrollLeft) => {
-        const refs = this.domManager.getRefs();
-        const header = refs.mainHeaderRef.current;
-        const body = refs.mainBodyRef.current;
-        const sel = this.selectionManager;
-        const liveSelection =
-          sel && (this.config.selectableCells || this.config.selectableColumns)
-            ? {
-                columnsWithSelectedCells: sel.getColumnsWithSelectedCells(),
-                selectedColumns: sel.getSelectedColumns(),
-              }
-            : undefined;
-        (header as any)?.__renderHeaderCells?.(scrollLeft, liveSelection);
+        renderHeaderForScroll(scrollLeft);
+        const body = this.domManager.getRefs().mainBodyRef.current;
         (body as any)?.__renderBodyCells?.(scrollLeft);
       },
     });
