@@ -31,7 +31,7 @@ export default function OtherFrameworksCallout({
 
   return (
     <aside
-      className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-950/40 p-6 shadow-sm"
+      className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-950/40 p-6 shadow-sm mb-8"
       aria-labelledby="other-frameworks-heading"
     >
       <h2
