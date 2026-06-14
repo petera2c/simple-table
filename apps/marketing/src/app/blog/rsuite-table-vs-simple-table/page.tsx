@@ -165,7 +165,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">License</td>
                     <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
-                    <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
+                    <td className="p-3 text-green-600 dark:text-green-400">Community License</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">

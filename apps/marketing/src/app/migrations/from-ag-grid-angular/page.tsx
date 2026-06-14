@@ -29,11 +29,11 @@ export default function FromAgGridAngularPage() {
       competitorName="AG Grid Angular"
       competitorPackage="ag-grid-angular"
       introParagraphs={[
-        "AG Grid Angular is a powerful data grid, but its bundle is large and many of the features Angular teams reach for live behind the Enterprise tier. Simple Table for Angular is an MIT-licensed alternative that ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing in the standard package.",
+        "AG Grid Angular is a powerful data grid, but its bundle is large and many of the features Angular teams reach for live behind the Enterprise tier. Simple Table for Angular is a source-available alternative that ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing in the standard package—free for pre-revenue teams under the Simple Table Community License.",
         "This guide assumes you have an existing Angular 17/18/19 standalone-components app using AG Grid Angular and you want to swap it for @simple-table/angular without rewriting your data layer.",
       ]}
       whyMigrate={[
-        "All grouping, pinning, and editing features are MIT—no Enterprise license to renew.",
+        "All grouping, pinning, and editing features are free for pre-revenue teams (source-available)—no Enterprise license to renew.",
         "Smaller install: ~70 kB gzipped vs AG Grid's full theme + community runtime.",
         "Idiomatic Angular signals API; no zone tricks needed.",
         "Same engine across React/Vue/Svelte/Solid/Vanilla if your stack expands.",
@@ -86,7 +86,7 @@ import "@simple-table/angular/styles.css";`,
       gotchas={[
         { title: "Stable row ids are required", body: "Simple Table needs a stable id per row. Use a database id or a generated uuid." },
         { title: "No CSR-specific zone tricks", body: "Simple Table for Angular plays well with the new signals API. If you used onGridReady or detectChanges hacks, you can usually delete them." },
-        { title: "AG Grid Enterprise features", body: "Pivoting, master/detail, and integrated charts are AG-specific. Open an issue if you have one of these workflows—Simple Table covers grouping/aggregations and most reporting needs in MIT." },
+        { title: "AG Grid Enterprise features", body: "Pivoting, master/detail, and integrated charts are AG-specific. Open an issue if you have one of these workflows—Simple Table covers grouping/aggregations and most reporting needs in the source-available package." },
       ]}
       faqs={[
         { question: "Does this work with Angular Material themes?", answer: "Yes. Simple Table doesn't ship its own design system—theme it via CSS variables to match Material, Tailwind, or your own design tokens." },

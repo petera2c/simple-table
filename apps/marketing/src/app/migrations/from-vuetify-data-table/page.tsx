@@ -30,7 +30,7 @@ export default function FromVuetifyDataTablePage() {
       competitorPackage="vuetify-data-table"
       introParagraphs={[
         "Vuetify is a complete Material Design system, and v-data-table is a fine general-purpose grid inside that system. The trade-off: you ship the Vuetify runtime, theme, icons, and Sass even when you only want a single grid.",
-        "Simple Table for Vue is an MIT-licensed Vue 3 data grid in @simple-table/vue. It works in Composition API + <script setup>, Nuxt 3 / Nuxt 4, and any Vite-based Vue app—with virtualization, pinning, grouping, and editing built in.",
+        "Simple Table for Vue is a source-available Vue 3 data grid in @simple-table/vue. It works in Composition API + <script setup>, Nuxt 3 / Nuxt 4, and any Vite-based Vue app—with virtualization, pinning, grouping, and editing built in.",
         "This guide walks you through replacing v-data-table with Simple Table while keeping your Vuetify forms and dialogs in place if you still want them.",
       ]}
       whyMigrate={[

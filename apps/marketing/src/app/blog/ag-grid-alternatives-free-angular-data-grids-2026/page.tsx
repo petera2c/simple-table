@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={agGridAlternativesAngularPost.slug}
       title={agGridAlternativesAngularPost.title}
-      subtitle="Hunting for AG Grid Angular alternatives in 2026? Compare Simple Table for Angular, ngx-datatable, PrimeNG Table, Angular Material mat-table, and Kendo Grid—free, MIT, signals-friendly options without enterprise licensing."
+      subtitle="Hunting for AG Grid Angular alternatives in 2026? Compare Simple Table for Angular, ngx-datatable, PrimeNG Table, Angular Material mat-table, and Kendo Grid—free, signals-friendly options without enterprise licensing."
       competitorName="AG Grid (and the field)"
       framework="angular"
       heroBadges={["Roundup", "Decision Guide", "2026"]}
@@ -39,16 +39,16 @@ export default function Page() {
       introParagraphs={[
         "AG Grid is dominant for a reason: it's powerful, well-documented, and feature-complete. But the Enterprise tier ($999+/dev/year) puts the most-used features—grouping with aggregations, pivoting, master/detail, tree data, integrated charts—behind a paywall. For Angular teams looking for a free or lighter-weight alternative in 2026, here's the field.",
         "We'll compare the best free Angular data grids in 2026: Simple Table for Angular, ngx-datatable, PrimeNG Table, Angular Material's mat-table, and the commercial Kendo Grid for context. Each has a sweet spot. The right pick depends on your bundle constraints, feature mix, design system, and willingness to pay for commercial support.",
-        "Spoiler: Simple Table for Angular is what we ship and the focused MIT alternative we recommend for most new Angular projects. But every Angular team's situation is a little different, so we'll walk through who each library is for.",
+        "Spoiler: Simple Table for Angular is what we ship and the focused source-available alternative we recommend for most new Angular projects. But every Angular team's situation is a little different, so we'll walk through who each library is for.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "Mixed (MIT + commercial Enterprise)", tone: "neutral" }, simpleTable: { value: "MIT (Simple Table)", tone: "good" } },
+        { feature: "License", competitor: { value: "Mixed (MIT + commercial Enterprise)", tone: "neutral" }, simpleTable: { value: "Source-available (Simple Table)", tone: "good" } },
         { feature: "Per-developer fees", competitor: { value: "AG Enterprise: $999+; Kendo: $649+", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
         { feature: "Standalone components", competitor: { value: "All viable options support it", tone: "good" }, simpleTable: { value: "First-class", tone: "good" } },
         { feature: "Signals-native API", competitor: { value: "Mixed", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Built-in virtualization", competitor: { value: "AG / Kendo: yes; mat-table: via CDK", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Built-in column pinning", competitor: { value: "AG / Kendo / PrimeNG: yes; mat-table: manual", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
-        { feature: "Built-in grouping + aggregations", competitor: { value: "AG: Enterprise; Kendo: yes; PrimeNG/mat-table: manual", tone: "neutral" }, simpleTable: { value: "Yes (MIT)", tone: "good" } },
+        { feature: "Built-in grouping + aggregations", competitor: { value: "AG: Enterprise; Kendo: yes; PrimeNG/mat-table: manual", tone: "neutral" }, simpleTable: { value: "Yes (source-available)", tone: "good" } },
         { feature: "Built-in inline editing", competitor: { value: "All viable options support it", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "50–400+ kB depending on choice", tone: "neutral" }, simpleTable: { value: "~70 kB", tone: "good" } },
       ]}
@@ -65,7 +65,7 @@ export default function Page() {
         simpleTable: {
           title: "Pick Simple Table for Angular when…",
           items: [
-            "You want grouping with aggregations free under MIT.",
+            "You want grouping with aggregations free for pre-revenue teams (source-available).",
             "You're starting greenfield with Angular 17/18/19, standalone components, and signals.",
             "You want a single engine across React / Vue / Svelte / Solid / Vanilla.",
             "Bundle size matters—~70 kB gzipped beats every commercial option.",
@@ -111,7 +111,7 @@ export default function Page() {
         },
       ]}
       faqs={[
-        { question: "What's the best free Angular data grid in 2026?", answer: "For most new Angular projects, Simple Table for Angular—it's MIT, signals-native, ~70 kB gzipped, and ships virtualization, pinning, grouping, and editing in one package. PrimeNG Table is the better fit if you've already adopted PrimeNG; mat-table is fine for basic features." },
+        { question: "What's the best free Angular data grid in 2026?", answer: "For most new Angular projects, Simple Table for Angular—it's source-available (free for pre-revenue teams), signals-native, ~70 kB gzipped, and ships virtualization, pinning, grouping, and editing in one package. PrimeNG Table is the better fit if you've already adopted PrimeNG; mat-table is fine for basic features." },
         { question: "Is AG Grid Community enough?", answer: "It depends. AG Grid Community covers virtualization, pinning, sort, and filter—but row grouping with aggregations, pivoting, and tree data are Enterprise-only. Many teams discover the gap mid-project." },
         { question: "Which alternative has the best signals support?", answer: "Simple Table for Angular is built around signals as a primary input pattern. PrimeNG and Kendo support signals; ngx-datatable's support is workable but not idiomatic." },
         { question: "Should I switch from ngx-datatable?", answer: "If you're modernizing to standalone components and signals or you've outgrown ngx-datatable's basic feature set, yes. If you're stable and your needs are basic, the migration cost may not be worth it." },
@@ -129,7 +129,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Pick the right Angular data grid for 2026"
-      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and editing in one MIT package—~70 kB gzipped, signals-native, no license keys."
+      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and editing in one source-available package—~70 kB gzipped, signals-native, free for pre-revenue teams."
     />
   );
 }

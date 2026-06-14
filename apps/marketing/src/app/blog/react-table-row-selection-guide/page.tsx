@@ -321,7 +321,7 @@ export default function ReactTableRowSelectionPage() {
                   <li>
                     ✓{" "}
                     <Link
-                      href="/blog/mit-licensed-react-tables-accessibility-keyboard-navigation"
+                      href="/blog/free-react-tables-accessibility-keyboard-navigation"
                       className="text-blue-600 dark:text-blue-400 hover:underline"
                     >
                       Accessibility built-in
@@ -548,7 +548,7 @@ export default function ReactTableRowSelectionPage() {
                   Simple Table implements proper ARIA roles and keyboard patterns by default. Learn
                   more in our{" "}
                   <Link
-                    href="/blog/mit-licensed-react-tables-accessibility-keyboard-navigation"
+                    href="/blog/free-react-tables-accessibility-keyboard-navigation"
                     className="text-purple-600 dark:text-purple-400 hover:underline font-semibold"
                   >
                     comprehensive accessibility comparison
@@ -626,7 +626,7 @@ export default function ReactTableRowSelectionPage() {
                     Simple Table provides Tab navigation, Space/Enter for toggling, and proper ARIA
                     labels. See{" "}
                     <Link
-                      href="/blog/mit-licensed-react-tables-accessibility-keyboard-navigation"
+                      href="/blog/free-react-tables-accessibility-keyboard-navigation"
                       className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
                     >
                       accessibility comparison
@@ -950,7 +950,7 @@ export default function ReactTableRowSelectionPage() {
                         → Filtering Guide
                       </Link>
                       <Link
-                        href="/blog/mit-licensed-react-tables-accessibility-keyboard-navigation"
+                        href="/blog/free-react-tables-accessibility-keyboard-navigation"
                         className="text-blue-600 dark:text-blue-400 hover:underline"
                       >
                         → Accessibility Comparison

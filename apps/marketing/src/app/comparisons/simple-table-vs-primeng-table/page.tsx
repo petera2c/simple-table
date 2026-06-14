@@ -32,12 +32,12 @@ export default function SimpleTableVsPrimengTablePage() {
       heroBadges={[
         { icon: faTrophy, label: "Standalone-first" },
         { icon: faBolt, label: "Smaller bundle" },
-        { icon: faDollarSign, label: "Free under MIT" },
+        { icon: faDollarSign, label: "Free for pre-revenue teams" },
         { icon: faPalette, label: "Themeable via CSS variables" },
       ]}
       introParagraphs={[
         "PrimeNG's <p-table> is the well-known Angular component table from PrimeFaces. It's full-featured, but it ships as part of a much larger UI library—pulling in PrimeNG runtime, theming primitives, and PrimeIcons. If you only need a data grid, that's a lot of dependencies for one component.",
-        "Simple Table for Angular gives you a focused, MIT-licensed data grid that sits on Angular 17+ standalone components. It ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing in a single ~70 kB gzipped package.",
+        "Simple Table for Angular gives you a focused, source-available data grid that sits on Angular 17+ standalone components. It ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing in a single ~70 kB gzipped package.",
         "This comparison helps you decide whether to keep adding PrimeNG just for the table—or swap it for a slimmer, idiomatic Angular grid.",
       ]}
       whyChooseSimpleTable={[
@@ -61,7 +61,7 @@ export default function SimpleTableVsPrimengTablePage() {
         { feature: "Inline cell editing", simpleTable: { verdict: "yes", note: "Built-in." }, competitor: { verdict: "yes", note: "p-cellEditor template." } },
         { feature: "Custom cell / header / footer renderers", simpleTable: { verdict: "yes", note: "Any Angular component." }, competitor: { verdict: "yes", note: "ng-template directives." } },
         { feature: "Theming", simpleTable: { verdict: "yes", note: "CSS variables; bring-your-own theme." }, competitor: { verdict: "yes", note: "PrimeNG themes (Aura, Lara, Material)." } },
-        { feature: "License", simpleTable: { verdict: "yes", note: "MIT." }, competitor: { verdict: "yes", note: "MIT." } },
+        { feature: "License", simpleTable: { verdict: "yes", note: "Community License." }, competitor: { verdict: "yes", note: "MIT." } },
       ]}
       bundleSizeNote={
         <>Bundle: Simple Table for Angular ships ~70 kB gzipped including the engine and Angular bindings. PrimeNG&apos;s @primeng/table requires the broader primeng package + theme assets, typically adding 200–400 kB depending on which theme is loaded.</>

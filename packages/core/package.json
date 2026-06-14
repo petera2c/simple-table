@@ -1,6 +1,6 @@
 {
   "name": "simple-table-core",
-  "version": "3.7.2",
+  "version": "3.7.3",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/src/index.d.ts",
@@ -28,7 +28,7 @@
     "./styles/base.css": "./src/styles/base.css",
     "./styles/themes/*.css": "./src/styles/themes/*.css"
   },
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "files": [
     "dist",
     "src/styles",
@@ -117,7 +117,6 @@
     "grid.js alternative",
     "jspreadsheet alternative",
     "free data grid",
-    "mit data grid",
     "lightweight data grid",
     "virtualized table",
     "virtual scrolling table",

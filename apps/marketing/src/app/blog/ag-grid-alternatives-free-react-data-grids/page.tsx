@@ -85,7 +85,7 @@ export default function AgGridAlternativesPage() {
           </span>
           <span className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
             <FontAwesomeIcon icon={faTrophy} />
-            MIT Licensed
+            Source-Available
           </span>
         </div>
 
@@ -413,7 +413,7 @@ export default function AgGridAlternativesPage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>100% free:</strong> MIT licensed, no enterprise tier, no surprises
+                      <strong>Free for pre-revenue teams:</strong> source-available under the Simple Table Community License; Pro/Enterprise for revenue-generating use
                     </span>
                   </li>
                 </ul>
@@ -457,7 +457,7 @@ export default function AgGridAlternativesPage() {
                       License
                     </span>
                     <span className="text-sm font-bold text-green-600 dark:text-green-400">
-                      MIT
+                      Community License
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -1017,7 +1017,7 @@ export default function AgGridAlternativesPage() {
                     <td className="p-3 text-green-600 dark:text-green-400 font-bold">
                       {SIMPLE_TABLE_INFO.bundleSizeMinGzip}
                     </td>
-                    <td className="p-3 text-gray-700 dark:text-gray-300">MIT</td>
+                    <td className="p-3 text-gray-700 dark:text-gray-300">Community License</td>
                     <td className="p-3 text-gray-700 dark:text-gray-300">
                       Quick setup, full features
                     </td>

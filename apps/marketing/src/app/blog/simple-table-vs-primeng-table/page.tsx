@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsPrimeNgTablePost.title,
   description: simpleTableVsPrimeNgTablePost.description,
   keywords:
-    "primeng table alternative, primeng datatable replacement, angular data grid, angular standalone components grid, simple table angular, mit angular table, primeng vs simple table",
+    "primeng table alternative, primeng datatable replacement, angular data grid, angular standalone components grid, simple table angular, primeng vs simple table",
   openGraph: {
     title: simpleTableVsPrimeNgTablePost.title,
     description: simpleTableVsPrimeNgTablePost.description,
@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={simpleTableVsPrimeNgTablePost.slug}
       title={simpleTableVsPrimeNgTablePost.title}
-      subtitle="PrimeNG Table is great if you already use PrimeNG. If you're pulling in PrimeNG just for the table, Simple Table for Angular is a smaller, focused alternative—same virtualization, pinning, grouping, and editing in MIT."
+      subtitle="PrimeNG Table is great if you already use PrimeNG. If you're pulling in PrimeNG just for the table, Simple Table for Angular is a smaller, focused alternative—same virtualization, pinning, grouping, and editing, free for pre-revenue teams (source-available)."
       competitorName="PrimeNG Table"
       framework="angular"
       heroBadges={["Comparison", "Bundle size", "Decision Guide"]}
@@ -38,11 +38,11 @@ export default function Page() {
       dateModified={simpleTableVsPrimeNgTablePost.updatedAt}
       introParagraphs={[
         "PrimeNG is a complete Angular UI suite, and PrimeNG Table is one of its strongest components. If your project is already on PrimeNG with shared theming (Lara, Aura, Material), the table 'just fits.'",
-        "But many Angular teams pull in PrimeNG specifically for the data grid—and end up shipping the rest of the suite, the icon set, and theming primitives along with it. Simple Table for Angular is the focused alternative: an MIT-licensed standalone component that drops into any Angular app without a design system tax.",
+        "But many Angular teams pull in PrimeNG specifically for the data grid—and end up shipping the rest of the suite, the icon set, and theming primitives along with it. Simple Table for Angular is the focused alternative: a source-available standalone component (free for pre-revenue teams) that drops into any Angular app without a design system tax.",
         "This article compares Simple Table for Angular against PrimeNG Table on bundle size, virtualization, grouping, editing, and developer experience so you can decide if a focused grid is the better trade.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT (with paid Pro)", tone: "neutral" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT (with paid Pro)", tone: "neutral" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite + theme + icons)", tone: "bad" }, simpleTable: { value: "~70 kB", tone: "good" } },
         { feature: "Standalone components", competitor: { value: "Yes (Angular 17+)", tone: "good" }, simpleTable: { value: "First-class", tone: "good" } },
         { feature: "Signals-native API", competitor: { value: "Partial", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
@@ -107,7 +107,7 @@ export default function Page() {
       faqs={[
         { question: "Can I keep PrimeNG and add Simple Table just for some screens?", answer: "Yes. Many teams keep PrimeNG for forms / dialogs and switch only the data grid to Simple Table when bundle size matters on that route." },
         { question: "Does Simple Table support PrimeNG-style row expansion?", answer: "Yes. Row grouping, expandable rows, and tree data are all built-in." },
-        { question: "What about PrimeNG Pro features?", answer: "PrimeNG's Pro tier mainly adds a few advanced components and themes. The core p-table features (sort, virtualization, frozen columns) are MIT in both PrimeNG and Simple Table." },
+        { question: "What about PrimeNG Pro features?", answer: "PrimeNG's Pro tier mainly adds a few advanced components and themes. The core p-table features (sort, virtualization, frozen columns) are MIT in PrimeNG and source-available in Simple Table (free for pre-revenue teams)." },
       ]}
       conclusionParagraphs={[
         "PrimeNG Table is the right call when you're invested in the PrimeNG ecosystem. Simple Table for Angular wins when the data grid is your primary need and you don't want a design system tagging along.",
@@ -119,7 +119,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Drop the PrimeNG runtime, keep the data grid"
-      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and editing in ~70 kB gzipped—signals-native, MIT, no design system required."
+      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and editing in ~70 kB gzipped—signals-native, source-available (free for pre-revenue teams), no design system required."
     />
   );
 }

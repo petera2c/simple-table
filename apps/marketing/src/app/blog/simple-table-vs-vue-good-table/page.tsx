@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsVueGoodTablePost.title,
   description: simpleTableVsVueGoodTablePost.description,
   keywords:
-    "vue good table alternative, vue good table next, vue 3 data grid, simple table vue, mit vue table, composition api data grid",
+    "vue good table alternative, vue good table next, vue 3 data grid, simple table vue, composition api data grid",
   openGraph: {
     title: simpleTableVsVueGoodTablePost.title,
     description: simpleTableVsVueGoodTablePost.description,
@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={simpleTableVsVueGoodTablePost.slug}
       title={simpleTableVsVueGoodTablePost.title}
-      subtitle="Vue Good Table is straightforward and works well for read-heavy tables. Once you need row virtualization, column pinning, or grouping with aggregations, Simple Table for Vue is the focused MIT alternative."
+      subtitle="Vue Good Table is straightforward and works well for read-heavy tables. Once you need row virtualization, column pinning, or grouping with aggregations, Simple Table for Vue is the focused source-available alternative."
       competitorName="Vue Good Table Next"
       framework="vue"
       heroBadges={["Comparison", "Decision Guide"]}
@@ -38,11 +38,11 @@ export default function Page() {
       dateModified={simpleTableVsVueGoodTablePost.updatedAt}
       introParagraphs={[
         "Vue Good Table (and its Vue 3 successor, vue-good-table-next) is a popular, friendly Vue table component. It's a sensible default when you want sort, paginate, search, and custom cells without much fuss.",
-        "Where it shows its age: row virtualization, column pinning, and grouping with aggregations either aren't first-class or require a fair amount of manual work. Simple Table for Vue ships those features in one MIT-licensed Vue 3 package.",
+        "Where it shows its age: row virtualization, column pinning, and grouping with aggregations either aren't first-class or require a fair amount of manual work. Simple Table for Vue ships those features in one source-available Vue 3 package.",
         "This article compares the two on bundle, virtualization, grouping, editing, and idiomatic Vue 3 ergonomics so you can decide if Simple Table for Vue is the better fit.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Vue 3 support", competitor: { value: "Yes (vue-good-table-next)", tone: "good" }, simpleTable: { value: "Yes (idiomatic)", tone: "good" } },
         { feature: "Composition API + <script setup>", competitor: { value: "Workable", tone: "neutral" }, simpleTable: { value: "First-class", tone: "good" } },
         { feature: "Row virtualization", competitor: { value: "No", tone: "bad" }, simpleTable: { value: "Built-in", tone: "good" } },
@@ -108,8 +108,8 @@ export default function Page() {
         { question: "Does Simple Table support search and global filtering?", answer: "Yes. Column filters are first-class; combine them for global-search-like behavior, or pre-filter rows in your composable." },
       ]}
       conclusionParagraphs={[
-        "Vue Good Table is fine for read-heavy admin views with modest row counts. The moment you need virtualization, pinning, or grouping with aggregations, Simple Table for Vue is the focused MIT upgrade.",
-        "Both are MIT and Vue 3 compatible. The decision is about feature scope and dataset size, not licensing.",
+        "Vue Good Table is fine for read-heavy admin views with modest row counts. The moment you need virtualization, pinning, or grouping with aggregations, Simple Table for Vue is the focused source-available upgrade.",
+        "Vue Good Table is MIT and Simple Table is source-available (free for pre-revenue teams); both are Vue 3 compatible. The decision is about feature scope and dataset size, not licensing.",
       ]}
       relatedLinks={[
         { href: "/blog/vue-nuxt-data-grid-simple-table", label: "Pillar guide: the best free Vue / Nuxt data grid in 2026" },
@@ -117,7 +117,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Outgrowing Vue Good Table?"
-      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one MIT package—~70 kB gzipped, idiomatic Vue 3."
+      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—~70 kB gzipped, idiomatic Vue 3."
     />
   );
 }

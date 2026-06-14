@@ -66,6 +66,11 @@ const config: NextConfig = {
         destination: "/examples/crm",
         permanent: true,
       },
+      {
+        source: "/blog/mit-licensed-react-tables-accessibility-keyboard-navigation",
+        destination: "/blog/free-react-tables-accessibility-keyboard-navigation",
+        permanent: true,
+      },
       // Redirect 2025 blog posts to 2026 versions
       {
         source: "/blog/best-free-react-data-grid-2025",

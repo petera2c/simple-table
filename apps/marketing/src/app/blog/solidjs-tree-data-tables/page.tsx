@@ -47,7 +47,7 @@ export default function Page() {
         { title: "Combinable with sort/filter", body: "Filter the leaves; the right ancestors stay visible to preserve context." },
       ]}
       libraryRows={[
-        { library: "Simple Table for Solid", support: { value: "Built-in (MIT)", tone: "good" }, notes: "Hierarchical rows with built-in expand/collapse and chevron renderer." },
+        { library: "Simple Table for Solid", support: { value: "Built-in (source-available)", tone: "good" }, notes: "Hierarchical rows with built-in expand/collapse and chevron renderer." },
         { library: "TanStack Solid Table", support: { value: "Headless", tone: "neutral" }, notes: "expanding feature gives state; you render chevron + indent yourself." },
         { library: "Kobalte primitives", support: { value: "Not applicable", tone: "neutral" }, notes: "Kobalte is a primitives library, not a data-grid solution." },
       ]}
@@ -69,7 +69,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "Tree data in SolidJS is straightforward with Simple Table—provide hierarchy on each row and Simple Table handles the rest. TanStack Solid Table is headless—you build chevron + indent yourself.",
-        "If you need hierarchical data alongside virtualization and pinning, Simple Table for Solid is the focused MIT pick.",
+        "If you need hierarchical data alongside virtualization and pinning, Simple Table for Solid is the focused source-available pick.",
       ]}
       relatedLinks={[
         { href: "/blog/solidjs-data-grid-simple-table", label: "Pillar guide: best free SolidJS data grid in 2026" },
@@ -77,7 +77,7 @@ export default function Page() {
         { href: "/frameworks/solid", label: "Solid integration hub" },
       ]}
       ctaTitle="Add tree data to your Solid grid"
-      ctaDescription="Simple Table for Solid ships tree data, virtualization, pinning, and editing in one MIT package—~70 kB gzipped, signals-native."
+      ctaDescription="Simple Table for Solid ships tree data, virtualization, pinning, and editing in one source-available package—~70 kB gzipped, signals-native."
       docsHref="/docs/nested-tables"
     />
   );

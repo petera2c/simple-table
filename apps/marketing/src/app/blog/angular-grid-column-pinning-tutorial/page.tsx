@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Wide tables with 20+ columns become unusable without pinning. Users lose context as they scroll horizontally—what row am I on? Pin the identifier column on the left and an actions column on the right and the UX clicks back into place.",
         "This tutorial walks through column pinning patterns for the Angular data grid landscape and shows the Simple Table for Angular setup with signals.",
-        "If you also need virtualization, grouping with aggregations, and inline editing alongside pinning, Simple Table for Angular is the focused MIT pick.",
+        "If you also need virtualization, grouping with aggregations, and inline editing alongside pinning, Simple Table for Angular is the focused source-available pick.",
       ]}
       whyItMatters={[
         { title: "Context anchoring", body: "Users don't lose track of what row they're on as they scroll horizontally." },
@@ -83,7 +83,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Add column pinning to your Angular grid"
-      ctaDescription="Simple Table for Angular ships left/right pinning, virtualization, and grouping in one MIT package—~70 kB gzipped, signals-native."
+      ctaDescription="Simple Table for Angular ships left/right pinning, virtualization, and grouping in one source-available package—free for pre-revenue teams, ~70 kB gzipped, signals-native."
       docsHref="/docs/column-pinning"
     />
   );

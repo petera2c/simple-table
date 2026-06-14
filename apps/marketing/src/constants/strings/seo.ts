@@ -370,7 +370,7 @@ export const SEO_STRINGS = {
     mitLicensedAccessibility: {
       title: "React Table Keyboard Navigation & Accessibility | WCAG 2.1 Compliant",
       description:
-        "Build accessible React tables with keyboard navigation, screen reader support, and WCAG 2.1 compliance. Compare accessibility features in Simple Table, TanStack Table, and other MIT-licensed grids.",
+        "Build accessible React tables with keyboard navigation, screen reader support, and WCAG 2.1 compliance. Compare accessibility features in Simple Table, TanStack Table, and other free React grids.",
       keywords: [
         "react table accessibility",
         "react table keyboard navigation",

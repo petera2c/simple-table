@@ -32,12 +32,12 @@ export default function SimpleTableVsSvelteHeadlessTablePage() {
       heroBadges={[
         { icon: faTrophy, label: "Built for Svelte 4 / Svelte 5" },
         { icon: faBolt, label: "1M+ rows virtualization" },
-        { icon: faDollarSign, label: "Free under MIT" },
+        { icon: faDollarSign, label: "Free for pre-revenue teams" },
         { icon: faCode, label: "Runes-friendly" },
       ]}
       introParagraphs={[
         "svelte-headless-table is the canonical headless table builder for Svelte. It gives you reactive plugins (sort, filter, group, paginate) and total markup freedom—you write the table HTML yourself. That's powerful, but you also own all the wiring: virtualization, pinning, themes, accessibility.",
-        "Simple Table for Svelte takes the opposite trade. @simple-table/svelte is batteries-included: virtualization for 1M+ rows, column pinning, row grouping with aggregations, inline editing, and themes ship in the box, all under MIT.",
+        "Simple Table for Svelte takes the opposite trade. @simple-table/svelte is batteries-included: virtualization for 1M+ rows, column pinning, row grouping with aggregations, inline editing, and themes ship in the box, all free for pre-revenue teams (source-available).",
         "This comparison helps you decide which trade is right: build-from-primitives versus get-a-table-now.",
       ]}
       whyChooseSimpleTable={[
@@ -62,7 +62,7 @@ export default function SimpleTableVsSvelteHeadlessTablePage() {
         { feature: "Inline cell editing", simpleTable: { verdict: "yes", note: "Built-in." }, competitor: { verdict: "no", note: "Not provided; build your own." } },
         { feature: "Themeable via CSS variables", simpleTable: { verdict: "yes" }, competitor: { verdict: "yes", note: "Bring your own CSS." } },
         { feature: "TypeScript types", simpleTable: { verdict: "yes" }, competitor: { verdict: "yes" } },
-        { feature: "License", simpleTable: { verdict: "yes", note: "MIT." }, competitor: { verdict: "yes", note: "MIT." } },
+        { feature: "License", simpleTable: { verdict: "yes", note: "Community License." }, competitor: { verdict: "yes", note: "MIT." } },
       ]}
       installCommand="npm install @simple-table/svelte"
       migrationCallout={<>svelte-headless-table&apos;s <code>createTable</code> + plugin pipeline becomes Simple Table&apos;s declarative <code>defaultHeaders</code> + <code>rows</code>. You give up some plugin extensibility in exchange for a working data grid out of the box.</>}
@@ -73,7 +73,7 @@ export default function SimpleTableVsSvelteHeadlessTablePage() {
       ]}
       conclusion={
         <>
-          <p>If you want maximum DOM control and your data grid needs are simple, svelte-headless-table is excellent. If you want a serious data grid—virtualization, pinning, grouping, editing—shipping in days instead of weeks, Simple Table for Svelte is the right MIT alternative.</p>
+          <p>If you want maximum DOM control and your data grid needs are simple, svelte-headless-table is excellent. If you want a serious data grid—virtualization, pinning, grouping, editing—shipping in days instead of weeks, Simple Table for Svelte is the right source-available alternative.</p>
         </>
       }
       relatedLinks={[

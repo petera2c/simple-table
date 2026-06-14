@@ -150,7 +150,7 @@ Simple, transparent pricing that never changes based on your revenue or team siz
 
 **$0/forever**
 
-For side projects and pre-revenue teams. Unlimited users per product license with full access to all core features, built-in themes, TypeScript support, and the MIT License for **zero-revenue** companies only. If your company generates revenue, use Pro or Enterprise.
+For side projects and pre-revenue teams. Unlimited users per product license with full access to all core features, built-in themes, TypeScript support, and the Simple Table Community License for **zero-revenue** companies only. If your company generates revenue, use Pro or Enterprise.
 
 ### PRO - For Growing Businesses
 
@@ -177,7 +177,7 @@ Join our growing community to ask questions or share feedback:
 
 **Dual Licensed:**
 
-- **Free Tier**: MIT License for zero-revenue individuals, startups, and organizations — see [LICENSE](LICENSE)
+- **Free Tier**: Simple Table Community License (source-available) for zero-revenue individuals, startups, and organizations — see [LICENSE](LICENSE)
 - **Pro and Enterprise**: Commercial EULA for revenue-generating companies — see [EULA.txt](EULA.txt)
 
 By using Simple Table, you agree to the terms in [EULA.txt](EULA.txt) where applicable.

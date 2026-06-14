@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Row selection drives bulk actions: delete, archive, export, assign. Get it wrong and users misclick or struggle on touch screens.",
         "This tutorial walks through single, multi, and checkbox selection patterns for Svelte / SvelteKit and shows the Simple Table for Svelte setup with both Svelte 4 stores and Svelte 5 runes.",
-        "If you also need pinning, virtualization, and grouping with aggregations alongside selection, Simple Table for Svelte is the focused MIT pick.",
+        "If you also need pinning, virtualization, and grouping with aggregations alongside selection, Simple Table for Svelte is the focused source-available pick.",
       ]}
       whyItMatters={[
         { title: "Bulk actions", body: "Selection enables archive, delete, export, assign, etc. Without it, users repeat per-row actions." },
@@ -78,7 +78,7 @@ export default function Page() {
         { href: "/frameworks/svelte", label: "Svelte integration hub" },
       ]}
       ctaTitle="Add row selection to your Svelte grid"
-      ctaDescription="Simple Table for Svelte ships single, multi, and checkbox selection in one MIT package—~70 kB gzipped, Svelte 5 runes ready."
+      ctaDescription="Simple Table for Svelte ships single, multi, and checkbox selection in one source-available package—~70 kB gzipped, Svelte 5 runes ready."
       docsHref="/docs/row-selection"
     />
   );

@@ -32,12 +32,12 @@ export default function SimpleTableVsPrimeVueDataTablePage() {
       heroBadges={[
         { icon: faTrophy, label: "Smaller bundle" },
         { icon: faBolt, label: "1M+ rows virtualization" },
-        { icon: faDollarSign, label: "Free under MIT" },
+        { icon: faDollarSign, label: "Free for pre-revenue teams" },
         { icon: faPalette, label: "Theme via CSS variables" },
       ]}
       introParagraphs={[
         "PrimeVue's DataTable is the de facto component table for teams already on PrimeVue. It works, but it inherits PrimeVue's runtime, PrimeIcons, theming primitives, and Sass overrides—even when all you want is a single grid.",
-        "Simple Table for Vue is a focused, MIT-licensed Vue 3 data grid in @simple-table/vue. It runs in Composition API, <script setup>, Nuxt 3/4, and any Vite-powered Vue app, and ships virtualization, pinning, grouping, and inline editing out of the box.",
+        "Simple Table for Vue is a focused, source-available Vue 3 data grid in @simple-table/vue. It runs in Composition API, <script setup>, Nuxt 3/4, and any Vite-powered Vue app, and ships virtualization, pinning, grouping, and inline editing out of the box.",
         "If you've been pulling in PrimeVue just for the table, this comparison helps you decide whether a slimmer dedicated grid would be the better choice.",
       ]}
       whyChooseSimpleTable={[
@@ -61,7 +61,7 @@ export default function SimpleTableVsPrimeVueDataTablePage() {
         { feature: "Inline cell editing", simpleTable: { verdict: "yes" }, competitor: { verdict: "yes", note: "Editor templates." } },
         { feature: "Custom cell / header / footer renderers", simpleTable: { verdict: "yes", note: "Vue components." }, competitor: { verdict: "yes", note: "Slot templates." } },
         { feature: "Theme via CSS variables", simpleTable: { verdict: "yes", note: "Bring-your-own theme." }, competitor: { verdict: "partial", note: "PrimeVue themes (Aura, Lara, Material)." } },
-        { feature: "License", simpleTable: { verdict: "yes", note: "MIT." }, competitor: { verdict: "yes", note: "MIT." } },
+        { feature: "License", simpleTable: { verdict: "yes", note: "Community License." }, competitor: { verdict: "yes", note: "MIT." } },
       ]}
       bundleSizeNote={<>PrimeVue DataTable is bundled inside primevue. Including the table + a theme + PrimeIcons typically adds 200–400 kB gzipped. Simple Table for Vue is ~70 kB gzipped with no extra design system.</>}
       installCommand="npm install @simple-table/vue"

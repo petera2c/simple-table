@@ -32,7 +32,7 @@ export default function SimpleTableVsTabulatorVanillaPage() {
       heroBadges={[
         { icon: faTrophy, label: "TypeScript-first" },
         { icon: faBolt, label: "1M+ rows virtualization" },
-        { icon: faDollarSign, label: "Free under MIT" },
+        { icon: faDollarSign, label: "Free for pre-revenue teams" },
         { icon: faCode, label: "Framework-agnostic core" },
       ]}
       introParagraphs={[
@@ -60,7 +60,7 @@ export default function SimpleTableVsTabulatorVanillaPage() {
         { feature: "Inline cell editing", simpleTable: { verdict: "yes" }, competitor: { verdict: "yes" } },
         { feature: "Custom cell / header / footer renderers", simpleTable: { verdict: "yes" }, competitor: { verdict: "yes" } },
         { feature: "ESM-first packaging", simpleTable: { verdict: "yes" }, competitor: { verdict: "partial", note: "ESM available; CommonJS legacy still common." } },
-        { feature: "License", simpleTable: { verdict: "yes", note: "MIT." }, competitor: { verdict: "yes", note: "MIT." } },
+        { feature: "License", simpleTable: { verdict: "yes", note: "Community License." }, competitor: { verdict: "yes", note: "MIT." } },
       ]}
       installCommand="npm install simple-table-core"
       migrationCallout={<>Tabulator&apos;s <code>new Tabulator(el, {`{ columns, data }`})</code> maps to simple-table-core&apos;s <code>new SimpleTableVanilla(el, {`{ defaultHeaders, rows }`})</code>. The data shape is similar; cell formatters become functions returning DOM nodes or framework components.</>}
@@ -71,7 +71,7 @@ export default function SimpleTableVsTabulatorVanillaPage() {
       ]}
       conclusion={
         <>
-          <p>If you have an existing Tabulator codebase with a happy team and you don&apos;t need framework adapters, stay on Tabulator. If you&apos;re starting fresh and want strict TypeScript types, ESM-first packaging, and a single engine across stacks, simple-table-core is the modern MIT alternative.</p>
+          <p>If you have an existing Tabulator codebase with a happy team and you don&apos;t need framework adapters, stay on Tabulator. If you&apos;re starting fresh and want strict TypeScript types, ESM-first packaging, and a single engine across stacks, simple-table-core is the modern source-available alternative.</p>
         </>
       }
       relatedLinks={[

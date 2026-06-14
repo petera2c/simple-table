@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsPrimeVueDatatablePost.title,
   description: simpleTableVsPrimeVueDatatablePost.description,
   keywords:
-    "primevue datatable alternative, prime vue alternative, vue 3 data grid, nuxt 3 data grid, primevue vs simple table, simple table vue, mit vue table, composition api data grid",
+    "primevue datatable alternative, prime vue alternative, vue 3 data grid, nuxt 3 data grid, primevue vs simple table, simple table vue, composition api data grid",
   openGraph: {
     title: simpleTableVsPrimeVueDatatablePost.title,
     description: simpleTableVsPrimeVueDatatablePost.description,
@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={simpleTableVsPrimeVueDatatablePost.slug}
       title={simpleTableVsPrimeVueDatatablePost.title}
-      subtitle="PrimeVue DataTable is a great component for teams already on PrimeVue. If your only PrimeVue usage is the data grid, Simple Table for Vue is a smaller, focused alternative—same virtualization, pinning, grouping, and editing in MIT."
+      subtitle="PrimeVue DataTable is a great component for teams already on PrimeVue. If your only PrimeVue usage is the data grid, Simple Table for Vue is a smaller, focused alternative—same virtualization, pinning, grouping, and editing, free for pre-revenue teams (source-available)."
       competitorName="PrimeVue DataTable"
       framework="vue"
       heroBadges={["Comparison", "Bundle size", "Decision Guide"]}
@@ -38,11 +38,11 @@ export default function Page() {
       dateModified={simpleTableVsPrimeVueDatatablePost.updatedAt}
       introParagraphs={[
         "PrimeVue is the Vue port of PrimeNG—and DataTable is its flagship grid. It's powerful, well-supported, and 'just works' if PrimeVue is already your design system.",
-        "But many Vue 3 teams pull in PrimeVue specifically for DataTable and end up shipping the PrimeVue runtime, a theme (Aura, Lara, Material), and PrimeIcons along with it. Simple Table for Vue is the focused alternative: an MIT-licensed Vue 3 data grid that runs in Composition API, <script setup>, Nuxt 3, and Nuxt 4 without a design system tax.",
+        "But many Vue 3 teams pull in PrimeVue specifically for DataTable and end up shipping the PrimeVue runtime, a theme (Aura, Lara, Material), and PrimeIcons along with it. Simple Table for Vue is the focused alternative: a source-available Vue 3 data grid that runs in Composition API, <script setup>, Nuxt 3, and Nuxt 4 without a design system tax.",
         "This article compares Simple Table for Vue against PrimeVue DataTable on bundle size, virtualization, grouping, editing, and developer experience—so you can decide if a focused grid is the better trade.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite + theme + icons)", tone: "bad" }, simpleTable: { value: "~70 kB", tone: "good" } },
         { feature: "Vue 3 + Composition API + <script setup>", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (idiomatic)", tone: "good" } },
         { feature: "Nuxt 3 / Nuxt 4 SSR", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
@@ -121,7 +121,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Drop the PrimeVue runtime, keep the data grid"
-      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one MIT package—~70 kB gzipped, idiomatic for Vue 3, Nuxt 3, and Nuxt 4."
+      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—~70 kB gzipped, idiomatic for Vue 3, Nuxt 3, and Nuxt 4."
     />
   );
 }

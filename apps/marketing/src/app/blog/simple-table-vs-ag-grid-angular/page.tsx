@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsAgGridAngularPost.title,
   description: simpleTableVsAgGridAngularPost.description,
   keywords:
-    "ag grid angular alternative, angular data grid, angular standalone components grid, angular 17 data grid, angular 18 data grid, angular 19 data grid, simple table angular, mit angular table, ag-grid angular replacement",
+    "ag grid angular alternative, angular data grid, angular standalone components grid, angular 17 data grid, angular 18 data grid, angular 19 data grid, simple table angular, ag-grid angular replacement",
   openGraph: {
     title: simpleTableVsAgGridAngularPost.title,
     description: simpleTableVsAgGridAngularPost.description,
@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={simpleTableVsAgGridAngularPost.slug}
       title={simpleTableVsAgGridAngularPost.title}
-      subtitle="AG Grid Angular is powerful but expensive once you need grouping, pivoting, or master-detail. Simple Table for Angular delivers virtualization, pinning, grouping with aggregations, and inline editing free under MIT—idiomatic for standalone components and signals."
+      subtitle="AG Grid Angular is powerful but expensive once you need grouping, pivoting, or master-detail. Simple Table for Angular delivers virtualization, pinning, grouping with aggregations, and inline editing free for pre-revenue teams (source-available)—idiomatic for standalone components and signals."
       competitorName="AG Grid Angular"
       framework="angular"
       heroBadges={["Comparison", "Decision Guide", "Pricing"]}
@@ -38,12 +38,12 @@ export default function Page() {
       dateModified={simpleTableVsAgGridAngularPost.updatedAt}
       introParagraphs={[
         "Angular teams choosing a data grid in 2026 keep landing on the same question: do we live with AG Grid's bundle size and Enterprise license fees, or pick something lighter? AG Grid is genuinely powerful, but a lot of the features Angular shops want—row grouping with aggregations, pivoting, master/detail, integrated charts—live behind the $999+/developer/year Enterprise tier.",
-        "Simple Table for Angular is the MIT-licensed alternative built around modern Angular. It ships as @simple-table/angular, runs natively in standalone components, plays well with signals, and supports Angular 17, 18, and 19 without zone-tweak workarounds. You get virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline cell editing in a single ~70 kB gzipped package—no license keys.",
+        "Simple Table for Angular is the source-available alternative built around modern Angular. It ships as @simple-table/angular, runs natively in standalone components, plays well with signals, and supports Angular 17, 18, and 19 without zone-tweak workarounds. You get virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline cell editing in a single ~70 kB gzipped package—free for pre-revenue teams, with Pro/Enterprise for revenue-generating use.",
         "This article is the side-by-side that helps Angular teams decide. We break down license cost, bundle size, idiomatic Angular API, virtualization behavior, grouping/aggregation parity, and the migration path so you can confidently pick the right grid for your stack.",
         "If you're skimming, the executive summary is: AG Grid Angular is the safer pick if your team already uses it heavily and depends on Enterprise-only features like pivoting or integrated charts. For everyone else—new Angular projects, teams that want signals-friendly ergonomics, or teams trying to escape Enterprise renewals—Simple Table for Angular wins on cost, bundle size, and developer experience.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT (Community) + commercial Enterprise", tone: "neutral" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT (Community) + commercial Enterprise", tone: "neutral" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Per-developer cost", competitor: { value: "$999+ /year (Enterprise)", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
         { feature: "Bundle size (gzipped, typical app)", competitor: { value: "200–400+ kB", tone: "bad" }, simpleTable: { value: "~70 kB", tone: "good" } },
         { feature: "Standalone components", competitor: { value: "Supported", tone: "neutral" }, simpleTable: { value: "First-class", tone: "good" } },
@@ -68,7 +68,7 @@ export default function Page() {
         simpleTable: {
           title: "Choose Simple Table for Angular when…",
           items: [
-            "You want grouping, aggregations, and tree data in MIT—no Enterprise license to renew.",
+            "You want grouping, aggregations, and tree data free for pre-revenue teams (source-available)—no Enterprise license to renew.",
             "You're starting a new Angular 17/18/19 project with standalone components and signals.",
             "Your bundle budget is tight (target ~70 kB vs 200–400+ kB).",
             "You also build React / Vue / Svelte / Solid surfaces and want one shared engine and data shape.",
@@ -96,7 +96,7 @@ export default function Page() {
           title: "Up for AG Grid renewal, scope creeping",
           body: "Five engineers means a $5k+ annual line item. You don't use pivoting; you mostly use grouping and grid editing.",
           recommendation: "simpleTable",
-          recommendationLabel: "Migrate to Simple Table for Angular—grouping and editing are MIT and your renewal goes away.",
+          recommendationLabel: "Migrate to Simple Table for Angular—grouping and editing are free for pre-revenue teams (source-available) and your renewal goes away.",
         },
         {
           emoji: "📊",
@@ -116,13 +116,13 @@ export default function Page() {
       faqs={[
         { question: "Will I lose virtualization performance switching from AG Grid to Simple Table?", answer: "No. Simple Table ships row + column virtualization for 1M+ row datasets. Performance benchmarks at typical Angular app sizes (10k–500k rows) are competitive." },
         { question: "Does Simple Table for Angular work with Angular Material themes?", answer: "Yes. Simple Table doesn't ship its own design system—theme it via CSS variables to match Material, your design tokens, or any custom theme." },
-        { question: "Is row grouping and aggregations really free?", answer: "Yes. Grouping, aggregations, and tree data are all included in the MIT package. No Enterprise tier, no license keys, no commercial paperwork." },
+        { question: "Is row grouping and aggregations really free?", answer: "Yes, for pre-revenue teams. Grouping, aggregations, and tree data are all included under the Simple Table Community License (source-available). Revenue-generating use needs a Pro/Enterprise license." },
         { question: "Can I migrate one feature area at a time?", answer: "Yes. Simple Table for Angular and AG Grid Angular can coexist while you migrate. The data shape is similar and you can move route-by-route." },
         { question: "What about AG Grid's pivoting and integrated charts?", answer: "Those are AG-specific Enterprise features. If they're core to your product, AG Grid Angular is the right pick. If you're not using them, Simple Table covers the rest." },
       ]}
       conclusionParagraphs={[
         "AG Grid Angular is feature-complete and battle-tested—but you pay for that completeness in bundle size and per-developer license fees, especially once you reach for grouping, pivoting, or tree data.",
-        "Simple Table for Angular delivers the 80% of features that most Angular teams actually need (virtualization, pinning, grouping with aggregations, inline editing, custom renderers) in a smaller, MIT-licensed, signals-friendly package. For new Angular projects and most existing teams without AG-specific Enterprise dependencies, it's the better trade.",
+        "Simple Table for Angular delivers the 80% of features that most Angular teams actually need (virtualization, pinning, grouping with aggregations, inline editing, custom renderers) in a smaller, source-available, signals-friendly package. For new Angular projects and most existing teams without AG-specific Enterprise dependencies, it's the better trade.",
         "Migrate one feature area at a time if you're an existing AG Grid customer; start with Simple Table from day one if you're greenfield.",
       ]}
       relatedLinks={[
@@ -132,7 +132,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Drop the AG Grid Enterprise renewal"
-      ctaDescription="Simple Table for Angular gives you grouping, pinning, virtualization, and inline editing under MIT—signals-native, ~70 kB gzipped, no license keys. Try it in StackBlitz or follow the install guide."
+      ctaDescription="Simple Table for Angular gives you grouping, pinning, virtualization, and inline editing free for pre-revenue teams (source-available)—signals-native, ~70 kB gzipped, Pro/Enterprise for revenue-generating use. Try it in StackBlitz or follow the install guide."
     />
   );
 }

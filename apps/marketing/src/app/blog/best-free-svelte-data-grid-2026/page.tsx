@@ -42,7 +42,7 @@ export default function Page() {
         "Quick takeaway: Simple Table for Svelte is the best free option for most teams who want a focused, batteries-included data grid that works on Svelte 5 today.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT (most options)", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT (most options)", tone: "good" }, simpleTable: { value: "Source-available", tone: "good" } },
         { feature: "Approach", competitor: { value: "Headless / suite / styled <table>", tone: "neutral" }, simpleTable: { value: "Batteries-included", tone: "good" } },
         { feature: "Svelte 4 support", competitor: { value: "All viable options", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Svelte 5 / runes support", competitor: { value: "Mixed", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
@@ -67,7 +67,7 @@ export default function Page() {
             "You want batteries-included virtualization, pinning, grouping, and editing.",
             "You're targeting Svelte 5 / runes today.",
             "You also build React / Vue / Angular / Solid surfaces and want one engine.",
-            "You want a focused, standalone MIT data grid without a suite.",
+            "You want a focused, standalone source-available data grid without a suite.",
           ],
         },
       }}
@@ -102,13 +102,13 @@ export default function Page() {
         },
       ]}
       faqs={[
-        { question: "What's the best Svelte data grid in 2026?", answer: "For most teams, Simple Table for Svelte. It's MIT, batteries-included, runes-ready, and ~70 kB gzipped. Stay headless if you want full UI control; use suite grids if you've adopted that suite." },
+        { question: "What's the best Svelte data grid in 2026?", answer: "For most teams, Simple Table for Svelte. It's source-available (free for pre-revenue teams), batteries-included, runes-ready, and ~70 kB gzipped. Stay headless if you want full UI control; use suite grids if you've adopted that suite." },
         { question: "Is svelte-headless-table dead?", answer: "No, but it's evolved more slowly than the broader Svelte ecosystem. Runes support is community-led." },
         { question: "Does Simple Table for Svelte support SvelteKit SSR?", answer: "Yes. ESM-first, SSR-friendly, works with @sveltejs/adapter-* out of the box." },
       ]}
       conclusionParagraphs={[
         "Svelte's data grid landscape isn't as crowded as React's, but the options are well-defined. Pick batteries-included Simple Table for Svelte unless you specifically want headless or have a suite-level commitment.",
-        "All viable options are MIT and free, so the decision is feature scope, runes maturity, and your team's appetite for building UI from primitives.",
+        "All viable options are free to start—Simple Table is source-available (free for pre-revenue teams), the others MIT—so the decision is feature scope, runes maturity, and your team's appetite for building UI from primitives.",
       ]}
       relatedLinks={[
         { href: "/blog/sveltekit-data-table-simple-table", label: "Pillar guide: the best free SvelteKit data table in 2026" },
@@ -118,7 +118,7 @@ export default function Page() {
         { href: "/frameworks/svelte", label: "Svelte integration hub" },
       ]}
       ctaTitle="Pick the right Svelte data grid for 2026"
-      ctaDescription="Simple Table for Svelte ships virtualization, pinning, grouping, and editing in one MIT package—runes-ready, ~70 kB gzipped."
+      ctaDescription="Simple Table for Svelte ships virtualization, pinning, grouping, and editing in one source-available package—runes-ready, ~70 kB gzipped."
     />
   );
 }

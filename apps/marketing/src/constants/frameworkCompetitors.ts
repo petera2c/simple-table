@@ -56,14 +56,14 @@ export const FRAMEWORK_COMPETITORS: Record<HubFrameworkId, string[]> = {
  */
 export const FRAMEWORK_ELEVATOR_PITCH: Record<HubFrameworkId, string> = {
   react:
-    "A React data grid that ships virtualization, pinning, grouping, and inline editing for free under MIT—no AG Grid Enterprise license, no TanStack-style headless wiring.",
-  vue: "A Vue 3 / Nuxt data grid with virtualization, pinning, grouping, and inline editing built-in—free under MIT, no need to adopt Vuetify, PrimeVue, or Element Plus to get a real table.",
+    "A React data grid that ships virtualization, pinning, grouping, and inline editing free for pre-revenue teams (source-available)—no AG Grid Enterprise license, no TanStack-style headless wiring.",
+  vue: "A Vue 3 / Nuxt data grid with virtualization, pinning, grouping, and inline editing built-in—free for pre-revenue teams (source-available), no need to adopt Vuetify, PrimeVue, or Element Plus to get a real table.",
   angular:
-    "An Angular standalone component data grid with virtualization, pinning, grouping, and inline editing—free under MIT, the AG-Grid-Enterprise feature surface without the AG-Grid-Enterprise license.",
+    "An Angular standalone component data grid with virtualization, pinning, grouping, and inline editing—free for pre-revenue teams (source-available), the AG-Grid-Enterprise feature surface without the AG-Grid-Enterprise license.",
   svelte:
-    "A Svelte / SvelteKit data table with virtualization, pinning, grouping, and inline editing—free under MIT, the only batteries-included option vs. svelte-headless-table.",
+    "A Svelte / SvelteKit data table with virtualization, pinning, grouping, and inline editing—free for pre-revenue teams (source-available), the only batteries-included option vs. svelte-headless-table.",
   solid:
-    "A Solid.js data grid that respects fine-grained reactivity and ships virtualization, pinning, grouping, and inline editing—free under MIT, no TanStack Solid Table headless wiring.",
+    "A Solid.js data grid that respects fine-grained reactivity and ships virtualization, pinning, grouping, and inline editing—free for pre-revenue teams (source-available), no TanStack Solid Table headless wiring.",
   vanilla:
-    "A vanilla TypeScript / web-component data grid: simple-table-core ships virtualization, pinning, grouping, and editing without React/Vue/Angular in the bundle—free under MIT, MIT-clean alternative to Tabulator and Handsontable.",
+    "A vanilla TypeScript / web-component data grid: simple-table-core ships virtualization, pinning, grouping, and editing without React/Vue/Angular in the bundle—free for pre-revenue teams (source-available), a dependency-free alternative to Tabulator and Handsontable.",
 };

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsNgxDatatablePost.title,
   description: simpleTableVsNgxDatatablePost.description,
   keywords:
-    "ngx-datatable alternative, swimlane datatable replacement, angular data grid, angular standalone components grid, angular 17 data grid, angular 18 data grid, simple table angular, mit angular table",
+    "ngx-datatable alternative, swimlane datatable replacement, angular data grid, angular standalone components grid, angular 17 data grid, angular 18 data grid, simple table angular",
   openGraph: {
     title: simpleTableVsNgxDatatablePost.title,
     description: simpleTableVsNgxDatatablePost.description,
@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={simpleTableVsNgxDatatablePost.slug}
       title={simpleTableVsNgxDatatablePost.title}
-      subtitle="ngx-datatable was the de facto Angular grid for years, but its release cadence has slowed and its NgModule-era API feels dated next to standalone components and signals. Simple Table for Angular is a modern, signals-friendly MIT alternative."
+      subtitle="ngx-datatable was the de facto Angular grid for years, but its release cadence has slowed and its NgModule-era API feels dated next to standalone components and signals. Simple Table for Angular is a modern, signals-friendly source-available alternative."
       competitorName="ngx-datatable"
       framework="angular"
       heroBadges={["Comparison", "Migration", "Decision Guide"]}
@@ -38,11 +38,11 @@ export default function Page() {
       dateModified={simpleTableVsNgxDatatablePost.updatedAt}
       introParagraphs={[
         "@swimlane/ngx-datatable was a first choice for Angular data grids for nearly a decade. It works, it's familiar, and it's installed in thousands of production Angular apps. But two things have changed: Angular's standalone components and signals have shifted what 'idiomatic' means, and ngx-datatable's release cadence has slowed enough that teams are routinely waiting on Angular-version compatibility patches.",
-        "Simple Table for Angular is the MIT-licensed alternative built specifically for modern Angular. @simple-table/angular is a standalone component that supports Angular 17, 18, and 19, plays well with signals, and ships virtualization, pinning, grouping with aggregations, and inline editing in one ~70 kB gzipped package.",
+        "Simple Table for Angular is the source-available alternative built specifically for modern Angular. @simple-table/angular is a standalone component that supports Angular 17, 18, and 19, plays well with signals, and ships virtualization, pinning, grouping with aggregations, and inline editing in one ~70 kB gzipped package.",
         "This article walks through the real differences between ngx-datatable and Simple Table for Angular—API ergonomics, feature parity, performance, and migration cost—so you can decide whether your existing ngx-datatable app should keep upgrading or jump.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Active maintenance cadence", competitor: { value: "Slower", tone: "bad" }, simpleTable: { value: "Active", tone: "good" } },
         { feature: "Standalone components", competitor: { value: "Workable, NgModule legacy", tone: "neutral" }, simpleTable: { value: "First-class", tone: "good" } },
         { feature: "Signals-native API", competitor: { value: "No", tone: "bad" }, simpleTable: { value: "Yes", tone: "good" } },
@@ -86,7 +86,7 @@ export default function Page() {
           title: "Internal reporting tool needing grouping + aggregations",
           body: "You need expanded/collapsed groups with sum, avg, and count footers. ngx-datatable doesn't ship this directly.",
           recommendation: "simpleTable",
-          recommendationLabel: "Choose Simple Table—grouping with aggregations is built-in and MIT.",
+          recommendationLabel: "Choose Simple Table—grouping with aggregations is built-in and source-available (free for pre-revenue teams).",
         },
         {
           emoji: "🧱",
@@ -111,7 +111,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "ngx-datatable is fine if you're happy where you are and your needs are basic. If your Angular app is migrating to standalone components and signals—or you've outgrown ngx-datatable's basic feature set—Simple Table for Angular is the natural upgrade path.",
-        "It's a half-day to a week of migration work depending on how many tables you have, and the result is a smaller, more idiomatic Angular grid that ships pinning, grouping with aggregations, and inline editing in MIT.",
+        "It's a half-day to a week of migration work depending on how many tables you have, and the result is a smaller, more idiomatic Angular grid that ships pinning, grouping with aggregations, and inline editing free for pre-revenue teams (source-available).",
       ]}
       relatedLinks={[
         { href: "/comparisons/simple-table-vs-ngx-datatable", label: "Detailed comparison: Simple Table vs ngx-datatable" },
@@ -120,7 +120,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Move from ngx-datatable to a modern Angular grid"
-      ctaDescription="Simple Table for Angular is signals-friendly, MIT-licensed, ~70 kB gzipped, and ships pinning, grouping, and inline editing. Try it in StackBlitz or follow the migration guide."
+      ctaDescription="Simple Table for Angular is signals-friendly, source-available (free for pre-revenue teams), ~70 kB gzipped, and ships pinning, grouping, and inline editing. Try it in StackBlitz or follow the migration guide."
     />
   );
 }

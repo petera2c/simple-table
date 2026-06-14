@@ -47,7 +47,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const fw = FRAMEWORK_HUB_BY_ID[raw];
   const competitors = FRAMEWORK_COMPETITORS[raw];
   const title = `${fw.label} data grid setup | Simple Table`;
-  const description = `Install ${fw.npmPackage} for ${fw.label}: npm command, styles import, peers (${fw.peerSummary}), FAQs, pillar guide, and links to runnable examples and docs. Free MIT alternative to ${competitors.slice(0, 3).join(", ")}.`;
+  const description = `Install ${fw.npmPackage} for ${fw.label}: npm command, styles import, peers (${fw.peerSummary}), FAQs, pillar guide, and links to runnable examples and docs. Free source-available alternative to ${competitors.slice(0, 3).join(", ")}.`;
   const lowerLabel = fw.label.toLowerCase();
   return {
     title,
@@ -202,9 +202,9 @@ export default async function FrameworkHubDetailPage({ params }: PageProps) {
               {elevatorPitch}
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-              If you have evaluated any of the libraries below, Simple Table is a drop-in MIT
-              alternative that ships virtualization, pinning, grouping, and inline editing without a
-              Pro license:
+              If you have evaluated any of the libraries below, Simple Table is a drop-in
+              source-available alternative that ships virtualization, pinning, grouping, and inline
+              editing without a Pro license:
             </p>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700 dark:text-gray-300">
               {competitors.map((name) => (

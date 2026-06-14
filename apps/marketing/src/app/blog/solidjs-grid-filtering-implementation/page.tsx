@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Filtering is the bread-and-butter feature users hit before sorting or even rendering all rows. Get the typing wrong (string vs number vs date) and your filter UX feels broken.",
         "This tutorial walks through column filters, a global quick filter, and custom predicates for the SolidJS data grid landscape and shows the Simple Table for Solid setup with signals.",
-        "If you also need pinning, virtualization, and grouping with aggregations alongside filtering, Simple Table for Solid ships them all in one MIT package.",
+        "If you also need pinning, virtualization, and grouping with aggregations alongside filtering, Simple Table for Solid ships them all in one source-available package.",
       ]}
       whyItMatters={[
         { title: "Faster discovery", body: "Users find rows by typing or selecting; they don't scan thousands of rows visually." },
@@ -77,7 +77,7 @@ export default function Page() {
         { href: "/frameworks/solid", label: "Solid integration hub" },
       ]}
       ctaTitle="Add filtering to your Solid grid"
-      ctaDescription="Simple Table for Solid ships column filters, quick filter, and custom predicates in one MIT package—~70 kB gzipped, signals-native."
+      ctaDescription="Simple Table for Solid ships column filters, quick filter, and custom predicates in one source-available package—~70 kB gzipped, signals-native."
       docsHref="/docs/column-filtering"
     />
   );

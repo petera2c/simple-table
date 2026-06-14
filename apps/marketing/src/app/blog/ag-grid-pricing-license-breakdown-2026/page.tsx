@@ -938,7 +938,7 @@ export default function AgGridPricingPage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Skip the $25K+ AG Grid bill. Start with Simple Table's FREE tier."
-        description="Get enterprise features like row grouping, aggregation, and column pinning in the FREE tier. Optional PRO plan ($85/mo) adds priority support. MIT-licensed, lightweight, and built for modern React apps. Save thousands compared to AG Grid."
+        description="Get enterprise features like row grouping, aggregation, and column pinning in the FREE tier. Optional PRO plan ($85/mo) adds priority support. Source-available, free for pre-revenue teams, lightweight, and built for modern React apps. Save thousands compared to AG Grid."
         primaryButton={{
           text: "Start Free",
           href: "/docs/installation",

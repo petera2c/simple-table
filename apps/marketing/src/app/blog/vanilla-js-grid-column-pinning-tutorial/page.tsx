@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Wide tables with 20+ columns become unusable without pinning. Users lose context as they scroll horizontally—what row am I on? Pin the identifier column on the left and an actions column on the right and the UX clicks back into place.",
         "This tutorial walks through column pinning patterns for the vanilla JS / TS data grid landscape and shows the simple-table-core setup with strict TypeScript.",
-        "If you also need virtualization, grouping with aggregations, and inline editing alongside pinning, simple-table-core is the focused MIT pick—~70 kB gzipped, framework-agnostic.",
+        "If you also need virtualization, grouping with aggregations, and inline editing alongside pinning, simple-table-core is the focused source-available pick—~70 kB gzipped, framework-agnostic.",
       ]}
       whyItMatters={[
         { title: "Context anchoring", body: "Users don't lose track of what row they're on as they scroll horizontally." },
@@ -79,7 +79,7 @@ export default function Page() {
         { href: "/frameworks/vanilla", label: "Vanilla TS integration hub" },
       ]}
       ctaTitle="Add column pinning to your vanilla TS grid"
-      ctaDescription="simple-table-core ships left/right pinning, virtualization, and grouping in one MIT package—~70 kB gzipped, strict TypeScript, ESM-first."
+      ctaDescription="simple-table-core ships left/right pinning, virtualization, and grouping in one source-available package—~70 kB gzipped, strict TypeScript, ESM-first."
       docsHref="/docs/column-pinning"
     />
   );

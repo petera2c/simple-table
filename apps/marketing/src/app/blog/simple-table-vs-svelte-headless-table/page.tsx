@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsSvelteHeadlessTablePost.title,
   description: simpleTableVsSvelteHeadlessTablePost.description,
   keywords:
-    "svelte-headless-table alternative, sveltekit data grid, svelte 5 table, runes data grid, simple table svelte, mit svelte table, headless vs batteries-included svelte",
+    "svelte-headless-table alternative, sveltekit data grid, svelte 5 table, runes data grid, simple table svelte, headless vs batteries-included svelte",
   openGraph: {
     title: simpleTableVsSvelteHeadlessTablePost.title,
     description: simpleTableVsSvelteHeadlessTablePost.description,
@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={simpleTableVsSvelteHeadlessTablePost.slug}
       title={simpleTableVsSvelteHeadlessTablePost.title}
-      subtitle="svelte-headless-table is a great primitive for hand-built grids. Simple Table for Svelte is batteries-included: virtualization, pinning, grouping with aggregations, and inline editing in one MIT package—Svelte 4 and Svelte 5 ready."
+      subtitle="svelte-headless-table is a great primitive for hand-built grids. Simple Table for Svelte is batteries-included: virtualization, pinning, grouping with aggregations, and inline editing in one source-available package (free for pre-revenue teams)—Svelte 4 and Svelte 5 ready."
       competitorName="svelte-headless-table"
       framework="svelte"
       heroBadges={["Comparison", "Decision Guide", "Svelte 5 Ready"]}
@@ -38,11 +38,11 @@ export default function Page() {
       dateModified={simpleTableVsSvelteHeadlessTablePost.updatedAt}
       introParagraphs={[
         "svelte-headless-table is the headless approach to Svelte data grids: it gives you state, derivations, and column models, and you build the UI. It's a great fit when you want full control over markup and the design tokens.",
-        "Simple Table for Svelte is the batteries-included approach: virtualization, column pinning, row grouping with aggregations, and inline editing all ship in one MIT package. Svelte 4 today, Svelte 5 with runes ready.",
+        "Simple Table for Svelte is the batteries-included approach: virtualization, column pinning, row grouping with aggregations, and inline editing all ship in one source-available package, free for pre-revenue teams. Svelte 4 today, Svelte 5 with runes ready.",
         "This article compares the two so you can pick the one that fits your team's appetite for building UI from primitives.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Approach", competitor: { value: "Headless (BYO UI)", tone: "neutral" }, simpleTable: { value: "Batteries-included", tone: "good" } },
         { feature: "Svelte 4 support", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Svelte 5 / runes support", competitor: { value: "Partial / community", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
@@ -109,7 +109,7 @@ export default function Page() {
         { question: "What about TanStack Table for Svelte?", answer: "TanStack is also headless. Simple Table for Svelte is batteries-included by design—same trade-off as headless vs batteries-included in React." },
       ]}
       conclusionParagraphs={[
-        "Both are MIT, both are Svelte-native, and both are maintained. The choice is philosophy.",
+        "svelte-headless-table is MIT and Simple Table is source-available (free for pre-revenue teams); both are Svelte-native and maintained. The choice is philosophy.",
         "If you want primitives and full UI control, stay on svelte-headless-table. If you want virtualization, pinning, grouping with aggregations, and editing without building them, switch to Simple Table for Svelte.",
       ]}
       relatedLinks={[
@@ -119,7 +119,7 @@ export default function Page() {
         { href: "/frameworks/svelte", label: "Svelte integration hub" },
       ]}
       ctaTitle="Want a batteries-included Svelte data grid?"
-      ctaDescription="Simple Table for Svelte ships virtualization, pinning, grouping, and editing in one MIT package—Svelte 4 and Svelte 5 ready."
+      ctaDescription="Simple Table for Svelte ships virtualization, pinning, grouping, and editing in one source-available package—free for pre-revenue teams, Svelte 4 and Svelte 5 ready."
     />
   );
 }

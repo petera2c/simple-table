@@ -89,9 +89,10 @@ export default function EULAPage() {
               </li>
               <li>
                 <strong>Permissions:</strong> Full access to the Simple Table library (sorting,
-                filtering, editing), themes, and TypeScript support. Governed by the MIT License
-                (see LICENSE file in repository), allowing modification and distribution subject to
-                MIT terms.
+                filtering, editing), themes, and TypeScript support. Governed by the Simple Table
+                Community License (see LICENSE file in repository), allowing modification and
+                distribution subject to the Community License terms, including its zero-revenue
+                limitation.
               </li>
               <li>
                 <strong>Support:</strong> Community support only (e.g., GitHub issues).
@@ -118,7 +119,7 @@ export default function EULAPage() {
               </li>
               <li>
                 <strong>License Type:</strong> Proprietary license under this Agreement,
-                supplementing MIT License for core features.
+                supplementing the Simple Table Community License for core features.
               </li>
               <li>
                 <strong>Fees:</strong> $85/month (or annual equivalent) per Product. First 50
@@ -146,7 +147,7 @@ export default function EULAPage() {
 
             <p className="text-gray-700 dark:text-gray-300 mt-4">
               <strong>General Restrictions:</strong> You may not: (i) reverse engineer, decompile,
-              or disassemble the Software beyond MIT License permissions; (ii) remove proprietary
+              or disassemble the Software beyond Community License permissions; (ii) remove proprietary
               notices; (iii) sublicense, rent, or lease the Software outside your Product; (iv)
               violate laws; or (v) create competing products. Licensor retains all intellectual
               property rights.
@@ -178,8 +179,9 @@ export default function EULAPage() {
               4. Updates
             </h2>
             <p className="text-gray-700 dark:text-gray-300">
-              Free Licensees receive updates via the MIT-licensed repository. Pro Licensees get
-              early access to new features. Continued use after updates accepts any revised terms.
+              Free Licensees receive updates via the source-available repository under the Community
+              License. Pro Licensees get early access to new features. Continued use after updates
+              accepts any revised terms.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-8 mb-4">

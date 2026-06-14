@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsFlowbiteSvelteTablePost.title,
   description: simpleTableVsFlowbiteSvelteTablePost.description,
   keywords:
-    "flowbite svelte table alternative, sveltekit data grid, svelte tailwind table, simple table svelte, mit svelte table, virtualized svelte table",
+    "flowbite svelte table alternative, sveltekit data grid, svelte tailwind table, simple table svelte, virtualized svelte table",
   openGraph: {
     title: simpleTableVsFlowbiteSvelteTablePost.title,
     description: simpleTableVsFlowbiteSvelteTablePost.description,
@@ -42,7 +42,7 @@ export default function Page() {
         "This article compares both: when Flowbite is enough and when you need a real data grid.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Type of component", competitor: { value: "Styled <table>", tone: "neutral" }, simpleTable: { value: "Full data grid", tone: "good" } },
         { feature: "Tailwind theming", competitor: { value: "Native", tone: "good" }, simpleTable: { value: "CSS variables (Tailwind-friendly)", tone: "good" } },
         { feature: "Built-in row virtualization", competitor: { value: "No", tone: "bad" }, simpleTable: { value: "Yes", tone: "good" } },
@@ -110,7 +110,7 @@ export default function Page() {
         { href: "/frameworks/svelte", label: "Svelte integration hub" },
       ]}
       ctaTitle="Outgrew Flowbite Svelte Table?"
-      ctaDescription="Simple Table for Svelte ships virtualization, pinning, grouping, and editing in one MIT package—Tailwind-friendly via CSS variables."
+      ctaDescription="Simple Table for Svelte ships virtualization, pinning, grouping, and editing in one source-available package—free for pre-revenue teams, Tailwind-friendly via CSS variables."
     />
   );
 }

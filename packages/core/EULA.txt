@@ -4,25 +4,25 @@ Product: A single software application, website, or service developed by you tha
 Users: Individuals accessing or using the Product, including employees, contractors, or end-users.
 
 2. Grant of LicenseSubject to compliance with this Agreement and payment of applicable fees, Licensor grants you a non-exclusive, non-transferable, revocable license to use the Software:2.1 Free License  Scope: Use in one (1) Product for non-commercial purposes or commercial purposes if your company has no revenue (pre-revenue). Unlimited Users per Product.  
-Permissions: Full access to the Simple Table library (sorting, filtering, editing), themes, and TypeScript support. Governed by the MIT License (see LICENSE file in repository), allowing modification and distribution subject to MIT terms.  
+Permissions: Full access to the Simple Table library (sorting, filtering, editing), themes, and TypeScript support. Governed by the Simple Table Community License (see LICENSE file in repository), allowing modification and distribution subject to the Community License terms, including its zero-revenue limitation.  
 Support: Community support only (e.g., GitHub issues).  
 Limitations: No access to Pro features (e.g., priority support, early access). Commercial use is permitted only for pre-revenue companies.
 
 2.2 Pro License  Scope: Use in one (1) Product for commercial or non-commercial purposes. Unlimited Users per Product.  
 Permissions: All Free License features, plus priority email/Discord support, direct developer access, feature request prioritization, early access to new features, and custom implementation guidance.  
-License Type: Proprietary license under this Agreement, supplementing MIT License for core features.  
+License Type: Proprietary license under this Agreement, supplementing the Simple Table Community License for core features.  
 Fees: $85/month (or annual equivalent) per Product. First 50 customers receive 50% off ($42.50/month) with code "first_50" (limited time). Fees are non-refundable except as per Section 7.  
 Support: Priority support (24-48 hour response), up to 4 hours/month custom guidance (additional hours at $100/hour).  
 Limitations: Additional Products require separate licenses. You may not redistribute the Software or make it available as a standalone product or service.
 
-General Restrictions:  You may not: (i) reverse engineer, decompile, or disassemble the Software beyond MIT License permissions; (ii) remove proprietary notices; (iii) sublicense, rent, or lease the Software outside your Product; (iv) violate laws; or (v) create competing products.  
+General Restrictions:  You may not: (i) reverse engineer, decompile, or disassemble the Software beyond Community License permissions; (ii) remove proprietary notices; (iii) sublicense, rent, or lease the Software outside your Product; (iv) violate laws; or (v) create competing products.  
 Licensor retains all intellectual property rights.
 
 3. Pricing and PaymentPricing is fixed per Product, regardless of revenue or team size. See https://www.simple-table.com/pricing for details.  
 Pro License fees recur automatically. Manage billing at https://www.simple-table.com/pricing.  
 Payments in USD. Late payments may suspend Pro features. Taxes are your responsibility.
 
-4. UpdatesFree Licensees receive updates via the MIT-licensed repository. Pro Licensees get early access to new features.  
+4. UpdatesFree Licensees receive updates via the source-available repository under the Community License. Pro Licensees get early access to new features.  
 Continued use after updates accepts any revised terms.
 
 5. SupportFree License: Community forums only.  

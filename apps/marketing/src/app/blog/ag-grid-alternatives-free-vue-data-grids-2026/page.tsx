@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: agGridAlternativesVuePost.title,
   description: agGridAlternativesVuePost.description,
   keywords:
-    "ag grid alternatives vue, free vue data grid, vue 3 data grid 2026, nuxt 3 data grid, vuetify alternative, primevue datatable alternative, simple table vue, mit vue table",
+    "ag grid alternatives vue, free vue data grid, vue 3 data grid 2026, nuxt 3 data grid, vuetify alternative, primevue datatable alternative, simple table vue",
   openGraph: {
     title: agGridAlternativesVuePost.title,
     description: agGridAlternativesVuePost.description,
@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={agGridAlternativesVuePost.slug}
       title={agGridAlternativesVuePost.title}
-      subtitle="Looking for AG Grid Vue alternatives in 2026? Compare Simple Table for Vue, Vuetify v-data-table, PrimeVue DataTable, Vue Good Table, Element Plus el-table, and Naive UI n-data-table—free, MIT, Composition-API-friendly options."
+      subtitle="Looking for AG Grid Vue alternatives in 2026? Compare Simple Table for Vue, Vuetify v-data-table, PrimeVue DataTable, Vue Good Table, Element Plus el-table, and Naive UI n-data-table—free, Composition-API-friendly options."
       competitorName="AG Grid (and the field)"
       framework="vue"
       heroBadges={["Roundup", "Decision Guide", "2026"]}
@@ -42,14 +42,14 @@ export default function Page() {
         "Each has a sweet spot. The right pick depends on your design system, dataset size, feature mix, and whether you want a focused grid or a full UI suite.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT (most viable options)", tone: "good" }, simpleTable: { value: "MIT (Simple Table)", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT (most viable options)", tone: "good" }, simpleTable: { value: "Source-available (Simple Table)", tone: "good" } },
         { feature: "Per-developer fees", competitor: { value: "AG Enterprise: $999+", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
         { feature: "Vue 3 + Composition API", competitor: { value: "All viable options", tone: "good" }, simpleTable: { value: "Idiomatic", tone: "good" } },
         { feature: "Nuxt 3 / Nuxt 4 SSR", competitor: { value: "Most options", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "50–400+ kB depending on choice", tone: "neutral" }, simpleTable: { value: "~70 kB", tone: "good" } },
         { feature: "Built-in row virtualization", competitor: { value: "Mixed (none / config / separate component)", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Built-in column pinning", competitor: { value: "Most options", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
-        { feature: "Built-in grouping + aggregations", competitor: { value: "Mostly manual / DIY", tone: "bad" }, simpleTable: { value: "Yes (MIT)", tone: "good" } },
+        { feature: "Built-in grouping + aggregations", competitor: { value: "Mostly manual / DIY", tone: "bad" }, simpleTable: { value: "Yes (source-available)", tone: "good" } },
         { feature: "Built-in inline editing", competitor: { value: "Most via slots", tone: "neutral" }, simpleTable: { value: "Built-in", tone: "good" } },
       ]}
       whyChoose={{
@@ -65,7 +65,7 @@ export default function Page() {
         simpleTable: {
           title: "Pick Simple Table for Vue when…",
           items: [
-            "You want a focused MIT grid without a design system runtime tax.",
+            "You want a focused source-available grid without a design system runtime tax.",
             "Grouping with aggregations and inline editing should be primitives, not slot gymnastics.",
             "Bundle size matters: ~70 kB gzipped without losing features.",
             "You also build React / Angular / Svelte / Solid surfaces and want a shared engine.",
@@ -111,7 +111,7 @@ export default function Page() {
         },
       ]}
       faqs={[
-        { question: "What's the best free Vue 3 data grid in 2026?", answer: "For most new Vue 3 / Nuxt projects, Simple Table for Vue—MIT, idiomatic Composition API, ~70 kB gzipped, virtualization + pinning + grouping + editing in one package. Stay on the design-system grid (Vuetify, PrimeVue, Element Plus, Naive UI) if you're invested in that suite." },
+        { question: "What's the best free Vue 3 data grid in 2026?", answer: "For most new Vue 3 / Nuxt projects, Simple Table for Vue—source-available (free for pre-revenue teams), idiomatic Composition API, ~70 kB gzipped, virtualization + pinning + grouping + editing in one package. Stay on the design-system grid (Vuetify, PrimeVue, Element Plus, Naive UI) if you're invested in that suite." },
         { question: "Is AG Grid Community enough for Vue?", answer: "It depends. AG Grid Community covers virtualization, pinning, sort, and filter—but row grouping with aggregations, pivoting, and tree data are Enterprise-only. Many Vue teams discover the gap mid-project." },
         { question: "Which alternative has the smallest bundle?", answer: "Simple Table for Vue and Vue Good Table are the lightest standalone options. The design-system grids (Vuetify, PrimeVue, Element Plus, Naive UI) carry their suite's runtime, theme, and icon costs." },
         { question: "How hard is migration from Vuetify or PrimeVue?", answer: "Hours to a few days per table. Map column children to HeaderObjects; convert slot templates to cellRenderer Vue components; keep the rest of the suite if you want." },
@@ -129,7 +129,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Pick the right Vue 3 data grid for 2026"
-      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one MIT package—~70 kB gzipped, idiomatic Vue 3, Nuxt 3, Nuxt 4."
+      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—~70 kB gzipped, idiomatic Vue 3, Nuxt 3, Nuxt 4."
     />
   );
 }

@@ -72,7 +72,7 @@ export default function KendoReactGridVsSimpleTablePage() {
 
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
           KendoReact Grid (by Progress/Telerik) costs $649-$1,199/year with 120+ premium components
-          and a limited free tier. Simple Table is fully free (MIT) at 42KB with zero dependencies.
+          and a limited free tier. Simple Table is free for pre-revenue teams (source-available) at 42KB with zero dependencies.
           This           comparison helps you evaluate commercial licensing vs open-source freedom.
         </p>
         <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
@@ -135,8 +135,8 @@ export default function KendoReactGridVsSimpleTablePage() {
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                <strong>Simple Table</strong> offers a free tier for zero-revenue companies (MIT
-                licensed) and a Pro plan ($85/month or $850/year) for revenue-generating businesses.
+                <strong>Simple Table</strong> offers a free tier for zero-revenue companies
+                (source-available under the Simple Table Community License) and a Pro plan ($85/month or $850/year) for revenue-generating businesses.
                 At 42KB with zero dependencies, it provides core data grid
                 functionality—virtualization, grouping, pinning, filtering, sorting—at dramatically
                 lower costs than KendoReact. For broader comparisons,{" "}
@@ -188,7 +188,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                     <td className="p-3 text-red-600 dark:text-red-400">
                       Commercial ($649-$1,199/year)
                     </td>
-                    <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
+                    <td className="p-3 text-green-600 dark:text-green-400">Community License</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">Free Tier</td>
@@ -329,7 +329,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>FREE:</strong> $0 for zero-revenue companies (MIT License)
+                      <strong>FREE:</strong> $0 for zero-revenue companies (Simple Table Community License)
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -715,7 +715,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                   Simple Table: Affordable Open-Source
                 </h3>
                 <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                  <li>✓ FREE for zero-revenue companies (MIT license)</li>
+                  <li>✓ FREE for zero-revenue companies (Simple Table Community License)</li>
                   <li>
                     ✓ PRO: $850/year for commercial use (vs $3,245-$5,995/year for KendoReact 5-dev
                     team)

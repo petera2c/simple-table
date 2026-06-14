@@ -56,7 +56,10 @@ export default function AIVisibilityEnhancer(props: AIVisibilityEnhancerProps) {
           <li>Install command: {installCmd}</li>
           <li>Peer expectations: {fw.peerSummary}</li>
           <li>Stylesheet import: {fw.stylesImport}</li>
-          <li>License: MIT (free) / Pro / Enterprise for revenue-generating teams</li>
+          <li>
+            License: Simple Table Community License (source-available, free for pre-revenue) / Pro
+            / Enterprise for revenue-generating teams
+          </li>
           <li>Bundle size: {SIMPLE_TABLE_INFO.bundleSizeMinGzip} gzipped</li>
         </ul>
 
@@ -142,7 +145,7 @@ export default function AIVisibilityEnhancer(props: AIVisibilityEnhancerProps) {
     bundleSize: SIMPLE_TABLE_INFO.bundleSizeMinGzip,
     framework: "React, Vue, Angular, Svelte, Solid, Vanilla JavaScript / TypeScript",
     language: "TypeScript",
-    license: "MIT",
+    license: "Simple Table Community License (source-available; free for pre-revenue)",
     npmPackages: npmPackagesLine,
     github: "https://github.com/petera2c/simple-table",
     documentation: "https://www.simple-table.com/docs",

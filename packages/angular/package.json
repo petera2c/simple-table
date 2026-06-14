@@ -1,6 +1,6 @@
 {
   "name": "@simple-table/angular",
-  "version": "3.7.2",
+  "version": "3.7.3",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/types/angular/src/index.d.ts",
@@ -23,7 +23,7 @@
     },
     "./styles.css": "./dist/styles.css"
   },
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "publishConfig": {
     "access": "public"
   },
@@ -98,7 +98,6 @@
     "angular material table alternative",
     "material table alternative",
     "free angular data grid",
-    "mit angular data grid",
     "typescript data grid"
   ]
 }

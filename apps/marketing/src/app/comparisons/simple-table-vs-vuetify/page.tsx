@@ -32,12 +32,12 @@ export default function SimpleTableVsVuetifyPage() {
       heroBadges={[
         { icon: faTrophy, label: "Built for Vue 3 / Nuxt" },
         { icon: faBolt, label: "1M+ rows virtualization" },
-        { icon: faDollarSign, label: "Free under MIT" },
+        { icon: faDollarSign, label: "Free for pre-revenue teams" },
         { icon: faGears, label: "Composition API + <script setup>" },
       ]}
       introParagraphs={[
         "Vuetify's <v-data-table> is the most-used Vue 3 data table because Vuetify is a popular UI library—but the table inherits the entire Vuetify runtime, theming, and Material Design opinions. If you don't want Vuetify, you don't get v-data-table.",
-        "Simple Table for Vue ships @simple-table/vue: a focused, MIT-licensed Vue 3 data grid that works in Composition API + <script setup>, Nuxt 3/4, and any Vite-powered Vue app. It includes virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing in ~70 kB gzipped.",
+        "Simple Table for Vue ships @simple-table/vue: a focused, source-available Vue 3 data grid that works in Composition API + <script setup>, Nuxt 3/4, and any Vite-powered Vue app. It includes virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing in ~70 kB gzipped.",
         "This comparison helps you decide whether you really want Vuetify for one component, or whether a slimmer dedicated data grid is the better fit.",
       ]}
       whyChooseSimpleTable={[
@@ -62,7 +62,7 @@ export default function SimpleTableVsVuetifyPage() {
         { feature: "Inline cell editing", simpleTable: { verdict: "yes", note: "Built-in." }, competitor: { verdict: "no", note: "Not provided; bring your own form layer." } },
         { feature: "Theme via CSS variables", simpleTable: { verdict: "yes", note: "Bring-your-own theme." }, competitor: { verdict: "partial", note: "Tied to Vuetify theming." } },
         { feature: "Nuxt 3 SSR support", simpleTable: { verdict: "yes", note: "SSR-friendly." }, competitor: { verdict: "yes", note: "@nuxtjs/vuetify or auto-imports." } },
-        { feature: "License", simpleTable: { verdict: "yes", note: "MIT." }, competitor: { verdict: "yes", note: "MIT." } },
+        { feature: "License", simpleTable: { verdict: "yes", note: "Community License." }, competitor: { verdict: "yes", note: "MIT." } },
       ]}
       bundleSizeNote={<>v-data-table is bundled inside Vuetify; even with tree-shaking, expect 200–400 kB gzipped for a typical Vuetify install. Simple Table for Vue is ~70 kB gzipped, no extra design system.</>}
       installCommand="npm install @simple-table/vue"
@@ -74,7 +74,7 @@ export default function SimpleTableVsVuetifyPage() {
       ]}
       conclusion={
         <>
-          <p>If you&apos;re already on Vuetify, v-data-table is the path of least resistance. If you only need a data grid—or you want a tighter bundle, real virtualization, and grouping/editing in one library—Simple Table for Vue is the right MIT alternative.</p>
+          <p>If you&apos;re already on Vuetify, v-data-table is the path of least resistance. If you only need a data grid—or you want a tighter bundle, real virtualization, and grouping/editing in one library—Simple Table for Vue is the right source-available alternative.</p>
         </>
       }
       relatedLinks={[

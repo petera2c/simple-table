@@ -42,14 +42,14 @@ export default function Page() {
         "Quick takeaway: simple-table-core is the best free TypeScript-first option for most teams who want a data grid (not a spreadsheet) with the option to add framework adapters later.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT (most options) / Non-commercial (Handsontable)", tone: "neutral" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT (most options) / Non-commercial (Handsontable)", tone: "neutral" }, simpleTable: { value: "Source-available", tone: "good" } },
         { feature: "Type of component", competitor: { value: "Data grid / spreadsheet / read-first", tone: "neutral" }, simpleTable: { value: "Data grid", tone: "good" } },
         { feature: "TypeScript-first", competitor: { value: "Mixed (definitions vs strict)", tone: "neutral" }, simpleTable: { value: "Yes (strict)", tone: "good" } },
         { feature: "ESM-first packaging", competitor: { value: "Mixed", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Framework portability", competitor: { value: "Standalone only (most)", tone: "neutral" }, simpleTable: { value: "5 framework adapters", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "25–200+ kB depending on choice", tone: "neutral" }, simpleTable: { value: "~50 kB", tone: "good" } },
         { feature: "Built-in row virtualization", competitor: { value: "Mixed", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
-        { feature: "Built-in grouping + aggregations", competitor: { value: "Mostly manual", tone: "bad" }, simpleTable: { value: "Yes (MIT)", tone: "good" } },
+        { feature: "Built-in grouping + aggregations", competitor: { value: "Mostly manual", tone: "bad" }, simpleTable: { value: "Yes (source-available)", tone: "good" } },
         { feature: "Built-in inline editing", competitor: { value: "Mixed", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
       ]}
       whyChoose={{
@@ -69,7 +69,7 @@ export default function Page() {
             "You're using ESM packaging and modern bundlers (Vite, esbuild).",
             "You may add React / Vue / Angular / Svelte / Solid surfaces later and want one engine.",
             "Bundle size matters—~50 kB gzipped without losing virtualization or grouping.",
-            "You need MIT licensing for any commercial context.",
+            "You want source-available licensing that's free for pre-revenue teams (Pro/Enterprise for revenue-generating use).",
           ],
         },
       }}
@@ -104,8 +104,8 @@ export default function Page() {
         },
       ]}
       faqs={[
-        { question: "What's the best free vanilla JavaScript data grid in 2026?", answer: "For most teams that want a data grid (not a spreadsheet), simple-table-core. It's MIT, TypeScript-first, ~50 kB gzipped, and the same engine ships in @simple-table/{react,vue,angular,svelte,solid}. Pick Tabulator if you're already invested in its API or need built-in PDF/CSV export breadth." },
-        { question: "Is Handsontable free for commercial use?", answer: "No—Handsontable's non-commercial license restricts commercial use. You'd need a paid license for commercial products. simple-table-core is MIT for any context." },
+        { question: "What's the best free vanilla JavaScript data grid in 2026?", answer: "For most teams that want a data grid (not a spreadsheet), simple-table-core. It's source-available (free for pre-revenue teams), TypeScript-first, ~50 kB gzipped, and the same engine ships in @simple-table/{react,vue,angular,svelte,solid}. Pick Tabulator if you're already invested in its API or need built-in PDF/CSV export breadth." },
+        { question: "Is Handsontable free for commercial use?", answer: "No—Handsontable's non-commercial license restricts commercial use. You'd need a paid license for commercial products. simple-table-core is source-available and free for pre-revenue teams (Pro/Enterprise for revenue-generating use)." },
         { question: "Which has the smallest bundle?", answer: "Grid.js (~25 kB) for read-first tables; simple-table-core (~50 kB) for full data grids; Tabulator (~80–120 kB) and Handsontable (~150–200 kB) for richer feature sets." },
       ]}
       conclusionParagraphs={[
@@ -121,7 +121,7 @@ export default function Page() {
         { href: "/frameworks/vanilla", label: "Vanilla TypeScript hub" },
       ]}
       ctaTitle="Pick the right vanilla JS data grid for 2026"
-      ctaDescription="simple-table-core ships virtualization, pinning, grouping, and editing in one MIT package—~50 kB gzipped, TypeScript-first, with framework adapters for React, Vue, Angular, Svelte, and Solid."
+      ctaDescription="simple-table-core ships virtualization, pinning, grouping, and editing in one source-available package—~50 kB gzipped, TypeScript-first, with framework adapters for React, Vue, Angular, Svelte, and Solid."
     />
   );
 }

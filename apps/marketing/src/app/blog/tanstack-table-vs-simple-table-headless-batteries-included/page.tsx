@@ -106,8 +106,9 @@ export default function TanStackVsSimpleTablePage() {
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                Both TanStack Table and Simple Table are excellent, MIT-licensed options with strong
-                TypeScript support (both have generous free tiers). But they serve different needs
+                Both TanStack Table (MIT) and Simple Table (source-available, free for pre-revenue
+                teams) are excellent options with strong TypeScript support (both have generous free
+                tiers). But they serve different needs
                 and come with very different development experiences. Choosing the wrong approach
                 can cost you weeks of development time or lock you into an architecture that doesn't
                 fit your needs. For a broader overview, check out our guide to{" "}

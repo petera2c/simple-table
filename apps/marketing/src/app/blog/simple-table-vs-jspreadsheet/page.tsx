@@ -43,7 +43,7 @@ export default function Page() {
       ]}
       comparisonRows={[
         { feature: "Type of component", competitor: { value: "Spreadsheet UI", tone: "neutral" }, simpleTable: { value: "Data grid", tone: "good" } },
-        { feature: "License", competitor: { value: "MIT (CE) / Commercial (Pro)", tone: "neutral" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT (CE) / Commercial (Pro)", tone: "neutral" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "TypeScript-first", competitor: { value: "Definitions exist", tone: "neutral" }, simpleTable: { value: "Yes (strict)", tone: "good" } },
         { feature: "Cell formulas (=A1+B1)", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "No", tone: "neutral" } },
         { feature: "Cell ranges + selection", competitor: { value: "Yes (Excel-like)", tone: "good" }, simpleTable: { value: "Range selection (basic)", tone: "neutral" } },
@@ -110,7 +110,7 @@ export default function Page() {
         { href: "/frameworks/vanilla", label: "Vanilla TypeScript hub" },
       ]}
       ctaTitle="Need a vanilla TypeScript data grid?"
-      ctaDescription="simple-table-core ships virtualization, pinning, grouping, and editing in one MIT package—~50 kB gzipped, framework-agnostic."
+      ctaDescription="simple-table-core ships virtualization, pinning, grouping, and editing in one source-available package—~50 kB gzipped, framework-agnostic."
     />
   );
 }

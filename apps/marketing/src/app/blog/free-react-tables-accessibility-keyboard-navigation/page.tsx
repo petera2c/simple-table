@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     images: SEO_STRINGS.site.ogImage.url,
   },
   alternates: {
-    canonical: "/blog/mit-licensed-react-tables-accessibility-keyboard-navigation",
+    canonical: "/blog/free-react-tables-accessibility-keyboard-navigation",
   },
 };
 
@@ -51,7 +51,7 @@ export default function AccessibilityComparisonPage() {
       {/* Hero Section */}
       <section className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900 dark:to-blue-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
-          MIT-Licensed React Tables: Accessibility & Keyboard Navigation Comparison
+          Free React Tables: Accessibility & Keyboard Navigation Comparison
         </h1>
 
         <div className="flex justify-center mb-4 gap-2 flex-wrap">
@@ -65,7 +65,7 @@ export default function AccessibilityComparisonPage() {
           </span>
           <span className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
             <FontAwesomeIcon icon={faShieldAlt} />
-            MIT Licensed
+            Free Libraries
           </span>
           <span className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
             <FontAwesomeIcon icon={faGavel} />
@@ -75,7 +75,7 @@ export default function AccessibilityComparisonPage() {
 
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
           Which free React data grids actually work for keyboard users and screen readers? A
-          comprehensive comparison of accessibility features across MIT-licensed table libraries.
+          comprehensive comparison of accessibility features across free React table libraries.
         </p>
       </section>
 
@@ -100,7 +100,7 @@ export default function AccessibilityComparisonPage() {
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                This guide evaluates MIT-licensed React data grids through the lens of accessibility
+                This guide evaluates free React data grids through the lens of accessibility
                 and keyboard navigation. We'll test real-world scenarios: Can blind users navigate
                 with screen readers? Can keyboard-only users sort and filter? Are focus indicators
                 visible? Do touch targets meet minimum size requirements?
@@ -371,7 +371,7 @@ export default function AccessibilityComparisonPage() {
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
             <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
               <FontAwesomeIcon icon={faBalanceScale} className="text-blue-500" />
-              Accessibility Comparison: MIT-Licensed React Grids
+              Accessibility Comparison: Free React Grids
             </h2>
 
             <p className="mb-6 text-gray-700 dark:text-gray-300">
@@ -979,8 +979,8 @@ export default function AccessibilityComparisonPage() {
                 </p>
                 <p className="text-gray-700 dark:text-gray-300 mb-4">
                   <strong>For most teams:</strong> Simple Table offers the best combination of
-                  accessibility, performance, and ease of use. It's accessible by default, MIT
-                  licensed, and requires zero accessibility expertise to use correctly.
+                  accessibility, performance, and ease of use. It's accessible by default,
+                  source-available, and requires zero accessibility expertise to use correctly.
                 </p>
                 <div className="flex gap-3 flex-wrap text-sm">
                   <Link

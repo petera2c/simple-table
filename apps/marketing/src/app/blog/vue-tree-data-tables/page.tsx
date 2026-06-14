@@ -47,7 +47,7 @@ export default function Page() {
         { title: "Combinable with sort/filter", body: "Filter the leaves; the right ancestors stay visible to preserve context." },
       ]}
       libraryRows={[
-        { library: "Simple Table for Vue", support: { value: "Built-in (MIT)", tone: "good" }, notes: "Hierarchical rows with built-in expand/collapse and chevron renderer." },
+        { library: "Simple Table for Vue", support: { value: "Built-in (Community License)", tone: "good" }, notes: "Hierarchical rows with built-in expand/collapse and chevron renderer." },
         { library: "PrimeVue TreeTable", support: { value: "Built-in", tone: "good" }, notes: "<TreeTable> separate from <DataTable>; different API surface." },
         { library: "Element Plus el-table", support: { value: "Built-in", tone: "good" }, notes: "row-key + tree-props + lazy + load." },
         { library: "Vuetify v-data-table", support: { value: "Manual", tone: "bad" }, notes: "No native tree data—pre-flatten and render with row templates." },
@@ -71,7 +71,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "Tree data in Vue 3 is straightforward with Simple Table—provide hierarchy on each row and Simple Table handles the rest. PrimeVue and Element Plus support it but with separate components or props; Vuetify requires DIY.",
-        "If you need hierarchical data alongside virtualization and pinning, Simple Table for Vue is the focused MIT pick.",
+        "If you need hierarchical data alongside virtualization and pinning, Simple Table for Vue is the focused source-available pick.",
       ]}
       relatedLinks={[
         { href: "/blog/vue-nuxt-data-grid-simple-table", label: "Pillar guide: best free Vue / Nuxt data grid in 2026" },
@@ -79,7 +79,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Add tree data to your Vue 3 grid"
-      ctaDescription="Simple Table for Vue ships tree data, virtualization, pinning, and editing in one MIT package—~70 kB gzipped, Composition-API-friendly."
+      ctaDescription="Simple Table for Vue ships tree data, virtualization, pinning, and editing in one source-available package—~70 kB gzipped, Composition-API-friendly."
       docsHref="/docs/nested-tables"
     />
   );

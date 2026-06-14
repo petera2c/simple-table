@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsKendoGridAngularPost.title,
   description: simpleTableVsKendoGridAngularPost.description,
   keywords:
-    "kendo grid angular alternative, kendo ui angular replacement, telerik grid angular, free kendo angular alternative, angular data grid pricing, simple table angular, mit angular table",
+    "kendo grid angular alternative, kendo ui angular replacement, telerik grid angular, free kendo angular alternative, angular data grid pricing, simple table angular",
   openGraph: {
     title: simpleTableVsKendoGridAngularPost.title,
     description: simpleTableVsKendoGridAngularPost.description,
@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={simpleTableVsKendoGridAngularPost.slug}
       title={simpleTableVsKendoGridAngularPost.title}
-      subtitle="Kendo Grid for Angular costs $649+ per developer per year. Simple Table for Angular delivers virtualization, pinning, grouping, and editing free under MIT—no license keys, no commercial paperwork, no annual renewals."
+      subtitle="Kendo Grid for Angular costs $649+ per developer per year. Simple Table for Angular delivers virtualization, pinning, grouping, and editing free for pre-revenue teams (source-available)—no annual renewals, with Pro/Enterprise for revenue-generating use."
       competitorName="Kendo Grid for Angular"
       framework="angular"
       heroBadges={["Comparison", "Pricing", "Decision Guide"]}
@@ -38,11 +38,11 @@ export default function Page() {
       dateModified={simpleTableVsKendoGridAngularPost.updatedAt}
       introParagraphs={[
         "Kendo UI for Angular's Grid is a feature-complete commercial component. It's stable, well-supported by Progress/Telerik, and trusted in countless enterprise apps. The price is the price: license fees start around $649/dev/year and scale with your headcount.",
-        "Simple Table for Angular is the free MIT alternative built around modern Angular. @simple-table/angular ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing in the standard package—idiomatic for standalone components and signals.",
+        "Simple Table for Angular is the source-available alternative built around modern Angular, free for pre-revenue teams. @simple-table/angular ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing in the standard package—idiomatic for standalone components and signals.",
         "This article weighs the cost of Kendo Grid against the modern Angular ergonomics and zero-license-fee story of Simple Table for Angular.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "Commercial ($649+ /dev/year)", tone: "bad" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "Commercial ($649+ /dev/year)", tone: "bad" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Annual renewal", competitor: { value: "Required", tone: "bad" }, simpleTable: { value: "None", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite)", tone: "bad" }, simpleTable: { value: "~70 kB", tone: "good" } },
         { feature: "Standalone components", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "First-class", tone: "good" } },
@@ -94,7 +94,7 @@ export default function Page() {
           title: "Startup picking a stack in 2026",
           body: "New Angular 19 SaaS, pre-revenue, doesn't want to pay for grid licenses.",
           recommendation: "simpleTable",
-          recommendationLabel: "Pick Simple Table for Angular—free MIT and idiomatic for modern Angular.",
+          recommendationLabel: "Pick Simple Table for Angular—free for pre-revenue teams (source-available) and idiomatic for modern Angular.",
         },
         {
           emoji: "📚",
@@ -105,13 +105,13 @@ export default function Page() {
         },
       ]}
       faqs={[
-        { question: "Will I lose enterprise support switching to MIT?", answer: "You give up a commercial support contract. You gain GitHub Issues, Discord, and the ability to read / patch the source. Many teams find that's enough; some prefer the commercial backstop. It depends on your org." },
+        { question: "Will I lose enterprise support switching to a source-available grid?", answer: "You give up a commercial support contract. You gain GitHub Issues, Discord, and the ability to read / patch the source. Many teams find that's enough; some prefer the commercial backstop. It depends on your org." },
         { question: "Does Simple Table for Angular cover everything Kendo Grid does?", answer: "It covers the headline features: virtualization, pinning, grouping with aggregations, tree data, inline editing, custom cells, multi-column sort, filtering. Kendo's PDF / Excel export and Reporting integrations are Kendo-specific—you'd need a separate solution if you depend on those." },
         { question: "How long does the migration take?", answer: "Usually a few sprints depending on table count and customizations. The data shape is similar to Kendo's: column definitions become HeaderObjects, rows are adapted to Simple Table's row shape, and Kendo cell templates become Simple Table cellRenderers." },
         { question: "Can I run them side by side during migration?", answer: "Yes. Simple Table and Kendo Grid coexist fine in the same app—migrate one route at a time and remove Kendo when the last consumer is gone." },
       ]}
       conclusionParagraphs={[
-        "Kendo Grid for Angular is excellent if you've made the commercial bet and use the suite broadly. If your usage is grid-centric and the annual license is showing up as a renewal you'd rather not pay, Simple Table for Angular delivers the same headline features under MIT.",
+        "Kendo Grid for Angular is excellent if you've made the commercial bet and use the suite broadly. If your usage is grid-centric and the annual license is showing up as a renewal you'd rather not pay, Simple Table for Angular delivers the same headline features free for pre-revenue teams (source-available).",
         "The math gets compelling fast: a 10-engineer team saves $6k+/year in licenses while shipping a smaller, signals-friendly grid. Pick the choice that fits your support and budget posture.",
       ]}
       relatedLinks={[
@@ -120,7 +120,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Drop the Kendo renewal, keep the data grid"
-      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and editing in one MIT package—no license keys, ~70 kB gzipped, signals-native."
+      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and editing in one source-available package—free for pre-revenue teams, ~70 kB gzipped, signals-native."
     />
   );
 }

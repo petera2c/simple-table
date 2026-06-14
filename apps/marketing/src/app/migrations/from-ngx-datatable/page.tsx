@@ -30,7 +30,7 @@ export default function FromNgxDatatablePage() {
       competitorPackage="ngx-datatable"
       introParagraphs={[
         "@swimlane/ngx-datatable was a popular Angular data grid for years. Active maintenance has slowed and the API leans on NgModule patterns that feel awkward in standalone-component apps.",
-        "Simple Table for Angular is an MIT-licensed alternative built around standalone components and signals. It ships virtualization, pinning, grouping with aggregations, and inline editing in the box.",
+        "Simple Table for Angular is a source-available alternative built around standalone components and signals. It ships virtualization, pinning, grouping with aggregations, and inline editing in the box.",
         "This guide walks an existing Angular app from ngx-datatable to @simple-table/angular without touching your data layer.",
       ]}
       whyMigrate={[

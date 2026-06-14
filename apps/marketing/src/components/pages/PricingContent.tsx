@@ -64,7 +64,7 @@ const PricingContent: React.FC = () => {
           { text: "All features included", included: true, highlight: true },
           { text: "Community support", included: true, highlight: true },
           {
-            text: "MIT License - for zero revenue companies only",
+            text: "Community License - for zero revenue companies only",
             included: true,
             highlight: false,
           },
@@ -349,7 +349,7 @@ const PricingContent: React.FC = () => {
                   rel="noopener noreferrer"
                   className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
                 >
-                  View {plan.name === "FREE" ? "MIT License" : "EULA"}
+                  View {plan.name === "FREE" ? "Community License" : "EULA"}
                 </a>
               </div>
             </motion.div>
@@ -407,7 +407,7 @@ const PricingContent: React.FC = () => {
                   href="/legal/license"
                   className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
                 >
-                  MIT License
+                  Community License
                 </a>{" "}
                 <span className="text-gray-600 dark:text-gray-400">(for FREE plan)</span>
               </li>

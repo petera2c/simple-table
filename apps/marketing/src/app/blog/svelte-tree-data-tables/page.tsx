@@ -47,7 +47,7 @@ export default function Page() {
         { title: "Combinable with sort/filter", body: "Filter the leaves; the right ancestors stay visible to preserve context." },
       ]}
       libraryRows={[
-        { library: "Simple Table for Svelte", support: { value: "Built-in (MIT)", tone: "good" }, notes: "Hierarchical rows with built-in expand/collapse and chevron renderer." },
+        { library: "Simple Table for Svelte", support: { value: "Built-in (source-available)", tone: "good" }, notes: "Hierarchical rows with built-in expand/collapse and chevron renderer." },
         { library: "svelte-headless-table", support: { value: "Plugin (manual)", tone: "neutral" }, notes: "addExpandedRows; rendering and indent are DIY." },
         { library: "SVAR DataGrid (Svelte)", support: { value: "Built-in (commercial)", tone: "neutral" }, notes: "Tree built-in but commercial license required." },
         { library: "Flowbite Svelte Table", support: { value: "Manual", tone: "bad" }, notes: "Markup-only—pre-flatten and render hierarchy yourself." },
@@ -70,7 +70,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "Tree data in Svelte is straightforward with Simple Table—provide hierarchy on each row and Simple Table handles the rest. svelte-headless-table requires plugin wiring; SVAR ships it commercially; Flowbite is DIY.",
-        "If you need hierarchical data alongside virtualization and pinning, Simple Table for Svelte is the focused MIT pick.",
+        "If you need hierarchical data alongside virtualization and pinning, Simple Table for Svelte is the focused source-available pick.",
       ]}
       relatedLinks={[
         { href: "/blog/sveltekit-data-table-simple-table", label: "Pillar guide: best free SvelteKit data table in 2026" },
@@ -78,7 +78,7 @@ export default function Page() {
         { href: "/frameworks/svelte", label: "Svelte integration hub" },
       ]}
       ctaTitle="Add tree data to your Svelte grid"
-      ctaDescription="Simple Table for Svelte ships tree data, virtualization, pinning, and editing in one MIT package—~70 kB gzipped, Svelte 5 runes ready."
+      ctaDescription="Simple Table for Svelte ships tree data, virtualization, pinning, and editing in one source-available package—~70 kB gzipped, Svelte 5 runes ready."
       docsHref="/docs/nested-tables"
     />
   );

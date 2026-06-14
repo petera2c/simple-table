@@ -30,7 +30,7 @@ export default function FromPrimeVueDataTablePage() {
       competitorPackage="primevue-datatable"
       introParagraphs={[
         "PrimeVue DataTable is a feature-rich grid for teams already on PrimeVue. The cost is that you carry the PrimeVue runtime, a theme (Aura, Lara, or Material), and PrimeIcons even when you only want a single table.",
-        "Simple Table for Vue is an MIT-licensed Vue 3 data grid that runs in Composition API + <script setup>, Nuxt 3, and Nuxt 4 with no design-system dependencies. It ships virtualization, pinning, grouping, and editing in the box.",
+        "Simple Table for Vue is a source-available Vue 3 data grid that runs in Composition API + <script setup>, Nuxt 3, and Nuxt 4 with no design-system dependencies. It ships virtualization, pinning, grouping, and editing in the box.",
         "This guide shows how to swap PrimeVue DataTable for @simple-table/vue without removing the rest of your PrimeVue components.",
       ]}
       whyMigrate={[

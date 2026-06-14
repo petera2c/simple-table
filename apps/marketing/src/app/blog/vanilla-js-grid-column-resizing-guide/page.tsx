@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Column resizing is one of those features users miss only when it's gone. The moment a content cell truncates with an ellipsis, somebody reaches for the column edge and tries to drag.",
         "This tutorial walks through column resizing patterns for the vanilla JavaScript / TypeScript data grid landscape—Tabulator, Grid.js, Handsontable, jSpreadsheet—and shows the simple-table-core setup for framework-agnostic apps.",
-        "If you want a strict-TypeScript, ESM-first, MIT-licensed core grid that you can mount in any framework or no framework, simple-table-core is ~70 kB gzipped with built-in resize, pinning, and virtualization.",
+        "If you want a strict-TypeScript, ESM-first, source-available core grid that you can mount in any framework or no framework, simple-table-core is ~70 kB gzipped with built-in resize, pinning, and virtualization.",
       ]}
       whyItMatters={[
         { title: "Density vs scannability", body: "Users adjust columns to suit their screen and the row data they're scanning—you don't have to guess for them." },
@@ -71,7 +71,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "Column resizing in vanilla JS / TS is a single option on simple-table-core. Tabulator and Handsontable ship it but at much larger bundle sizes; Grid.js requires DIY.",
-        "If you need a framework-agnostic, strict-TypeScript core grid with resize, pinning, and virtualization, simple-table-core is the focused MIT pick—~70 kB gzipped.",
+        "If you need a framework-agnostic, strict-TypeScript core grid with resize, pinning, and virtualization, simple-table-core is the focused source-available pick—~70 kB gzipped.",
       ]}
       relatedLinks={[
         { href: "/blog/vanilla-typescript-data-grid-simple-table-core", label: "Pillar guide: best free vanilla TypeScript data grid in 2026" },
@@ -79,7 +79,7 @@ export default function Page() {
         { href: "/frameworks/vanilla", label: "Vanilla TS integration hub" },
       ]}
       ctaTitle="Add column resizing to your vanilla TS grid"
-      ctaDescription="simple-table-core ships resize, pinning, grouping, and editing in one MIT package—~70 kB gzipped, strict TypeScript, ESM-first."
+      ctaDescription="simple-table-core ships resize, pinning, grouping, and editing in one source-available package—~70 kB gzipped, strict TypeScript, ESM-first."
       docsHref="/docs/column-resizing"
     />
   );

@@ -71,8 +71,9 @@ export default function KaTableVsSimpleTablePage() {
 
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
           ka-table brings a Redux-inspired controlled approach with explicit state management.
-          Simple Table offers batteries-included functionality with minimal setup. Both are MIT
-          licensed and free—but they serve different developer philosophies. This comparison helps
+          Simple Table offers batteries-included functionality with minimal setup. ka-table is MIT
+          licensed and Simple Table is source-available (free for pre-revenue teams)—but they serve
+          different developer philosophies. This comparison helps
           you choose the right fit.
         </p>
         <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
@@ -96,8 +97,9 @@ export default function KaTableVsSimpleTablePage() {
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 You're building a React data table and evaluating options. Both{" "}
-                <strong>ka-table</strong> and <strong>Simple Table</strong> are lightweight,
-                MIT-licensed libraries with no runtime dependencies. But they take fundamentally
+                <strong>ka-table</strong> and <strong>Simple Table</strong> are lightweight
+                libraries with no runtime dependencies—ka-table is MIT licensed and Simple Table is
+                source-available (free for pre-revenue teams). But they take fundamentally
                 different approaches to table state management and developer experience.
               </p>
 
@@ -152,7 +154,7 @@ export default function KaTableVsSimpleTablePage() {
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">License</td>
                     <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
-                    <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
+                    <td className="p-3 text-green-600 dark:text-green-400">Community License</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
@@ -919,7 +921,8 @@ export default function KaTableVsSimpleTablePage() {
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                Both ka-table and Simple Table are excellent, MIT-licensed options for React tables.
+                Both ka-table and Simple Table are excellent options for React tables—ka-table is
+                MIT licensed and Simple Table is source-available (free for pre-revenue teams).
                 Simple Table ships the same core with official adapters for{" "}
                 {SIMPLE_TABLE_FRAMEWORKS_SHORT}. The choice comes down to your{" "}
                 <strong>state management philosophy</strong>:
@@ -968,7 +971,8 @@ export default function KaTableVsSimpleTablePage() {
                 For teams with Redux experience or complex state synchronization needs, ka-table's
                 explicit control is valuable. For most React apps prioritizing fast iteration and
                 minimal boilerplate, Simple Table's pragmatic approach wins. Both are
-                production-ready, actively maintained, and MIT licensed. You can't go wrong with
+                production-ready and actively maintained—ka-table is MIT licensed and Simple Table
+                is source-available (free for pre-revenue teams). You can't go wrong with
                 either—just pick the philosophy that matches your project. For more context on React
                 table options,{" "}
                 <Link

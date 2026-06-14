@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsTanstackSolidTablePost.title,
   description: simpleTableVsTanstackSolidTablePost.description,
   keywords:
-    "tanstack solid table alternative, solidjs data grid, solid-start data table, signals data grid, simple table solid, mit solid table, headless vs batteries-included solid",
+    "tanstack solid table alternative, solidjs data grid, solid-start data table, signals data grid, simple table solid, headless vs batteries-included solid",
   openGraph: {
     title: simpleTableVsTanstackSolidTablePost.title,
     description: simpleTableVsTanstackSolidTablePost.description,
@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={simpleTableVsTanstackSolidTablePost.slug}
       title={simpleTableVsTanstackSolidTablePost.title}
-      subtitle="TanStack Solid Table is headless—you bring the markup. Simple Table for Solid is batteries-included with virtualization, pinning, grouping with aggregations, and inline editing in one MIT package, built on Solid signals."
+      subtitle="TanStack Solid Table is headless—you bring the markup. Simple Table for Solid is batteries-included with virtualization, pinning, grouping with aggregations, and inline editing in one source-available package, built on Solid signals."
       competitorName="TanStack Solid Table"
       framework="solid"
       heroBadges={["Comparison", "Decision Guide", "Signals-Native"]}
@@ -38,11 +38,11 @@ export default function Page() {
       dateModified={simpleTableVsTanstackSolidTablePost.updatedAt}
       introParagraphs={[
         "TanStack Solid Table is the Solid adapter of TanStack Table—headless primitives for state, sorting, filtering, and column models. You wire the UI yourself: every <td>, every interaction, every virtualization integration.",
-        "Simple Table for Solid is batteries-included: virtualization, column pinning, row grouping with aggregations, and inline editing all ship in one MIT package, built on Solid's fine-grained reactivity.",
+        "Simple Table for Solid is batteries-included: virtualization, column pinning, row grouping with aggregations, and inline editing all ship in one source-available package, built on Solid's fine-grained reactivity.",
         "This article compares the two so you can pick the one that fits your team's appetite for building UI from primitives.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Approach", competitor: { value: "Headless (BYO UI)", tone: "neutral" }, simpleTable: { value: "Batteries-included", tone: "good" } },
         { feature: "Solid signals integration", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "First-class", tone: "good" } },
         { feature: "Solid-Start support", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
@@ -109,7 +109,7 @@ export default function Page() {
         { question: "Does Simple Table for Solid use signals?", answer: "Yes. Inputs accept signals or static values; updates flow through Solid's fine-grained reactivity." },
       ]}
       conclusionParagraphs={[
-        "Both are MIT, both are Solid-native, and both are maintained. The choice is philosophy.",
+        "TanStack Solid Table is MIT and Simple Table for Solid is source-available (free for pre-revenue teams); both are Solid-native and maintained. The choice is philosophy.",
         "If you want primitives and full UI control, stay on TanStack Solid Table. If you want virtualization, pinning, grouping with aggregations, and editing without building them, switch to Simple Table for Solid.",
       ]}
       relatedLinks={[
@@ -118,7 +118,7 @@ export default function Page() {
         { href: "/frameworks/solid", label: "Solid integration hub" },
       ]}
       ctaTitle="Want a batteries-included Solid data grid?"
-      ctaDescription="Simple Table for Solid ships virtualization, pinning, grouping, and editing in one MIT package—signals-native, ~70 kB gzipped."
+      ctaDescription="Simple Table for Solid ships virtualization, pinning, grouping, and editing in one source-available package—signals-native, ~70 kB gzipped."
     />
   );
 }

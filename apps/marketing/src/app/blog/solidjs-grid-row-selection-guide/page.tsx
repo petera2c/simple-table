@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Row selection drives bulk actions: delete, archive, export, assign. Get it wrong and users misclick or struggle on touch screens.",
         "This tutorial walks through single, multi, and checkbox selection patterns for SolidJS data grids and shows the Simple Table for Solid setup with signals.",
-        "If you also need pinning, virtualization, and grouping with aggregations alongside selection, Simple Table for Solid is the focused MIT pick.",
+        "If you also need pinning, virtualization, and grouping with aggregations alongside selection, Simple Table for Solid is the focused source-available pick.",
       ]}
       whyItMatters={[
         { title: "Bulk actions", body: "Selection enables archive, delete, export, assign, etc. Without it, users repeat per-row actions." },
@@ -77,7 +77,7 @@ export default function Page() {
         { href: "/frameworks/solid", label: "Solid integration hub" },
       ]}
       ctaTitle="Add row selection to your Solid grid"
-      ctaDescription="Simple Table for Solid ships single, multi, and checkbox selection in one MIT package—~70 kB gzipped, signals-native."
+      ctaDescription="Simple Table for Solid ships single, multi, and checkbox selection in one source-available package—~70 kB gzipped, signals-native."
       docsHref="/docs/row-selection"
     />
   );

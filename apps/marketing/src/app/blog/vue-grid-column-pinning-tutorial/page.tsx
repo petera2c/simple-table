@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Wide tables with 20+ columns become unusable without pinning. Users lose context as they scroll horizontally—what row am I on? Pin the identifier column on the left and an actions column on the right and the UX clicks back into place.",
         "This tutorial walks through column pinning patterns for Vue 3 data grids and shows the Simple Table for Vue setup with the Composition API.",
-        "If you also need virtualization, grouping with aggregations, and inline editing alongside pinning, Simple Table for Vue is the focused MIT pick.",
+        "If you also need virtualization, grouping with aggregations, and inline editing alongside pinning, Simple Table for Vue is the focused source-available pick.",
       ]}
       whyItMatters={[
         { title: "Context anchoring", body: "Users don't lose track of what row they're on as they scroll horizontally." },
@@ -79,7 +79,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Add column pinning to your Vue 3 grid"
-      ctaDescription="Simple Table for Vue ships left/right pinning, virtualization, and grouping in one MIT package—~70 kB gzipped, Composition-API-friendly."
+      ctaDescription="Simple Table for Vue ships left/right pinning, virtualization, and grouping in one source-available package—~70 kB gzipped, Composition-API-friendly."
       docsHref="/docs/column-pinning"
     />
   );

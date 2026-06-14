@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsVuetifyDataTablePost.title,
   description: simpleTableVsVuetifyDataTablePost.description,
   keywords:
-    "vuetify data table alternative, v-data-table replacement, vue 3 data grid, nuxt 3 data grid, vuetify alternative, simple table vue, mit vue table, composition api data grid",
+    "vuetify data table alternative, v-data-table replacement, vue 3 data grid, nuxt 3 data grid, vuetify alternative, simple table vue, composition api data grid",
   openGraph: {
     title: simpleTableVsVuetifyDataTablePost.title,
     description: simpleTableVsVuetifyDataTablePost.description,
@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={simpleTableVsVuetifyDataTablePost.slug}
       title={simpleTableVsVuetifyDataTablePost.title}
-      subtitle="Vuetify v-data-table is fine if you live in Vuetify. Pulling in the entire Vuetify runtime, theme, and Sass for one data grid is a lot. Simple Table for Vue is a focused, MIT-licensed Vue 3 data grid that ships virtualization, pinning, grouping, and editing in ~70 kB."
+      subtitle="Vuetify v-data-table is fine if you live in Vuetify. Pulling in the entire Vuetify runtime, theme, and Sass for one data grid is a lot. Simple Table for Vue is a focused, source-available Vue 3 data grid that ships virtualization, pinning, grouping, and editing in ~70 kB."
       competitorName="Vuetify v-data-table"
       framework="vue"
       heroBadges={["Comparison", "Bundle size", "Decision Guide"]}
@@ -38,11 +38,11 @@ export default function Page() {
       dateModified={simpleTableVsVuetifyDataTablePost.updatedAt}
       introParagraphs={[
         "Vuetify is a complete Material Design system for Vue 3, and v-data-table is its general-purpose grid. If your app is already on Vuetify—forms, dialogs, layout—the table 'just works.'",
-        "But many Vue teams reach for Vuetify mainly for the data grid and end up shipping Material Design, Vuetify's theming runtime, and Material Design Icons along for the ride. Simple Table for Vue is the focused alternative: an MIT-licensed Vue 3 data grid in @simple-table/vue, runs in Composition API + <script setup>, Nuxt 3, and Nuxt 4 without a design system tax.",
+        "But many Vue teams reach for Vuetify mainly for the data grid and end up shipping Material Design, Vuetify's theming runtime, and Material Design Icons along for the ride. Simple Table for Vue is the focused alternative: a source-available Vue 3 data grid in @simple-table/vue, runs in Composition API + <script setup>, Nuxt 3, and Nuxt 4 without a design system tax.",
         "This article compares the two head-to-head: bundle, virtualization, grouping, editing, and the migration path if you decide v-data-table no longer fits.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite + theme + icons)", tone: "bad" }, simpleTable: { value: "~70 kB", tone: "good" } },
         { feature: "Vue 3 + Composition API + <script setup>", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (idiomatic)", tone: "good" } },
         { feature: "Nuxt 3 / Nuxt 4 SSR", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
@@ -110,7 +110,7 @@ export default function Page() {
         { question: "Will I lose Material Design styling?", answer: "Not entirely. Theme Simple Table via CSS variables to match Material density and tokens. The visual outcome can be very close." },
       ]}
       conclusionParagraphs={[
-        "Vuetify v-data-table is the right call when Vuetify is your design system. If v-data-table is the only Vuetify component you actually use, Simple Table for Vue gives you a focused, smaller, idiomatic Vue 3 data grid for the same MIT cost.",
+        "Vuetify v-data-table is the right call when Vuetify is your design system. If v-data-table is the only Vuetify component you actually use, Simple Table for Vue gives you a focused, smaller, idiomatic Vue 3 data grid that's free for pre-revenue teams (source-available).",
         "Migrate one screen at a time, keep Vuetify for the rest of the app, and watch your bundle drop by 200–400 kB.",
       ]}
       relatedLinks={[
@@ -120,7 +120,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Drop the Vuetify runtime, keep the data grid"
-      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one MIT package—~70 kB gzipped, idiomatic for Vue 3, Nuxt 3, and Nuxt 4."
+      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—~70 kB gzipped, idiomatic for Vue 3, Nuxt 3, and Nuxt 4."
     />
   );
 }

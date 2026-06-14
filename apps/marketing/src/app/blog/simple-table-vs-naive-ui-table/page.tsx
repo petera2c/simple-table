@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsNaiveUiTablePost.title,
   description: simpleTableVsNaiveUiTablePost.description,
   keywords:
-    "naive ui alternative, naive ui data table alternative, n-data-table replacement, vue 3 data grid, simple table vue, mit vue table, composition api data grid",
+    "naive ui alternative, naive ui data table alternative, n-data-table replacement, vue 3 data grid, simple table vue, composition api data grid",
   openGraph: {
     title: simpleTableVsNaiveUiTablePost.title,
     description: simpleTableVsNaiveUiTablePost.description,
@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={simpleTableVsNaiveUiTablePost.slug}
       title={simpleTableVsNaiveUiTablePost.title}
-      subtitle="Naive UI's n-data-table is a polished, TypeScript-first Vue 3 component library grid. If you don't already use the rest of Naive UI, Simple Table for Vue is a focused MIT alternative—same virtualization, pinning, grouping, and editing without the design system."
+      subtitle="Naive UI's n-data-table is a polished, TypeScript-first Vue 3 component library grid. If you don't already use the rest of Naive UI, Simple Table for Vue is a focused source-available alternative—same virtualization, pinning, grouping, and editing without the design system."
       competitorName="Naive UI Data Table"
       framework="vue"
       heroBadges={["Comparison", "Bundle size", "Decision Guide"]}
@@ -38,11 +38,11 @@ export default function Page() {
       dateModified={simpleTableVsNaiveUiTablePost.updatedAt}
       introParagraphs={[
         "Naive UI is one of the most pleasant Vue 3 component libraries—TypeScript-first, themeable, well-designed. n-data-table is its grid component: feature-rich and idiomatic for Composition API.",
-        "If Naive UI is already your design system, you'll keep n-data-table. If you're pulling Naive UI in for the table specifically, Simple Table for Vue is the focused alternative: an MIT-licensed Vue 3 data grid that runs in <script setup>, Nuxt 3, and Nuxt 4 without the rest of the suite.",
+        "If Naive UI is already your design system, you'll keep n-data-table. If you're pulling Naive UI in for the table specifically, Simple Table for Vue is the focused alternative: a source-available Vue 3 data grid that runs in <script setup>, Nuxt 3, and Nuxt 4 without the rest of the suite.",
         "This article compares both on bundle, virtualization, grouping with aggregations, editing, and Vue 3 ergonomics.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Vue 3 + TypeScript", competitor: { value: "Yes (TS-first)", tone: "good" }, simpleTable: { value: "Yes (TS-first)", tone: "good" } },
         { feature: "Composition API + <script setup>", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (idiomatic)", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "150–300 kB (suite + theme)", tone: "neutral" }, simpleTable: { value: "~70 kB", tone: "good" } },
@@ -102,7 +102,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "Naive UI's n-data-table is excellent if you're using Naive UI broadly. Simple Table for Vue wins when the grid is what you actually need and the rest of the suite isn't pulling weight.",
-        "Both are MIT, both are Vue 3-native, both are TypeScript-first. The choice is scope and feature set.",
+        "Naive UI is MIT and Simple Table is source-available (free for pre-revenue teams); both are Vue 3-native and TypeScript-first. The choice is scope and feature set.",
       ]}
       relatedLinks={[
         { href: "/blog/vue-nuxt-data-grid-simple-table", label: "Pillar guide: the best free Vue / Nuxt data grid in 2026" },
@@ -110,7 +110,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Need the grid, not the suite?"
-      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one MIT package—~70 kB gzipped, idiomatic Vue 3."
+      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—~70 kB gzipped, idiomatic Vue 3."
     />
   );
 }

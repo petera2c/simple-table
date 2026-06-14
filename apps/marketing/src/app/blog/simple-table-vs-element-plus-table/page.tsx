@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsElementPlusTablePost.title,
   description: simpleTableVsElementPlusTablePost.description,
   keywords:
-    "element plus table alternative, el-table replacement, vue 3 data grid, element plus alternative, simple table vue, mit vue table, composition api data grid",
+    "element plus table alternative, el-table replacement, vue 3 data grid, element plus alternative, simple table vue, composition api data grid",
   openGraph: {
     title: simpleTableVsElementPlusTablePost.title,
     description: simpleTableVsElementPlusTablePost.description,
@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={simpleTableVsElementPlusTablePost.slug}
       title={simpleTableVsElementPlusTablePost.title}
-      subtitle="Element Plus's el-table is a fine grid if Element Plus is your design system. If you're pulling Element Plus in just for el-table, Simple Table for Vue is a smaller, focused MIT alternative for Vue 3 / Nuxt."
+      subtitle="Element Plus's el-table is a fine grid if Element Plus is your design system. If you're pulling Element Plus in just for el-table, Simple Table for Vue is a smaller, focused source-available alternative for Vue 3 / Nuxt."
       competitorName="Element Plus el-table"
       framework="vue"
       heroBadges={["Comparison", "Bundle size", "Decision Guide"]}
@@ -38,11 +38,11 @@ export default function Page() {
       dateModified={simpleTableVsElementPlusTablePost.updatedAt}
       introParagraphs={[
         "Element Plus is a popular Vue 3 component library, especially in Asia and across enterprise Vue teams. el-table is its data grid component—mature, feature-rich, and tightly integrated with the rest of Element Plus.",
-        "If Element Plus is your design system, you'll keep el-table. If you pulled in Element Plus mainly for el-table, Simple Table for Vue is the focused alternative: an MIT-licensed Vue 3 data grid that runs in Composition API + <script setup>, Nuxt 3, and Nuxt 4 without a design system tax.",
+        "If Element Plus is your design system, you'll keep el-table. If you pulled in Element Plus mainly for el-table, Simple Table for Vue is the focused alternative: a source-available Vue 3 data grid that runs in Composition API + <script setup>, Nuxt 3, and Nuxt 4 without a design system tax.",
         "This article walks through the trade-offs—bundle, virtualization, grouping, editing, and idiomatic Vue 3 ergonomics.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite + theme + icons)", tone: "bad" }, simpleTable: { value: "~70 kB", tone: "good" } },
         { feature: "Vue 3 + Composition API", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (idiomatic)", tone: "good" } },
         { feature: "Nuxt 3 / Nuxt 4 SSR", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
@@ -111,7 +111,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Outgrowing el-table?"
-      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one MIT package—~70 kB gzipped, idiomatic Vue 3."
+      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—~70 kB gzipped, idiomatic Vue 3."
     />
   );
 }

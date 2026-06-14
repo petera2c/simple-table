@@ -44,14 +44,14 @@ export default function VueNuxtDataGridPillarPage() {
       hubId="vue"
       heroBadges={[
         { icon: faTrophy, label: "Best for Vue 3 / Nuxt", tone: "yellow" },
-        { icon: faDollarSign, label: "100% Free, MIT", tone: "green" },
+        { icon: faDollarSign, label: "Free for pre-revenue teams", tone: "green" },
         { icon: faCode, label: "Composition API", tone: "blue" },
         { icon: faRocket, label: "Vite & Nuxt Ready", tone: "purple" },
       ]}
       introHeading="The Vue 3 / Nuxt data grid landscape in 2026"
       introParagraphs={[
         "Vue and Nuxt teams shipping admin panels, finance tools, internal CRMs, and back-office dashboards usually pick from a familiar shortlist: Vuetify's v-data-table, PrimeVue DataTable, Element Plus el-table, Naive UI's n-data-table, Vue Good Table, Quasar QTable, or AG Grid Vue. Each works for read-mostly tables. None ship full-blown row+column virtualization, pinning, grouping, and inline editing without you adopting an entire UI ecosystem (Vuetify, Element Plus, PrimeVue) or paying AG Grid Enterprise.",
-        "Simple Table for Vue is the alternative: a single component that drops into Vue 3 SFCs and Nuxt apps with the full grid feature set—sorting, filtering, virtualization, column pinning, row grouping, nested headers, cell editing, and theming—free under MIT for individuals and zero-revenue companies. It's powered by simple-table-core, the same engine the React, Angular, Svelte, Solid, and vanilla adapters use, so you get parity across stacks.",
+        "Simple Table for Vue is the alternative: a single component that drops into Vue 3 SFCs and Nuxt apps with the full grid feature set—sorting, filtering, virtualization, column pinning, row grouping, nested headers, cell editing, and theming—free under the Simple Table Community License for individuals and zero-revenue companies. It's powered by simple-table-core, the same engine the React, Angular, Svelte, Solid, and vanilla adapters use, so you get parity across stacks.",
         "This pillar guide shows when Simple Table is the right Vue / Nuxt data grid, how it compares with Vuetify, PrimeVue, Vue Good Table, and Element Plus, and exactly how to wire it up in a Vue 3 SFC or a Nuxt page.",
       ]}
       whatYoullLearn={[
@@ -83,7 +83,7 @@ export default function VueNuxtDataGridPillarPage() {
         },
         {
           icon: faShieldHalved,
-          title: "MIT for free, sane pricing if you make money",
+          title: "Free for pre-revenue teams, sane pricing if you make money",
           body: "Free for individuals and zero-revenue projects. Per-product Pro/Enterprise pricing for revenue-generating teams—no per-seat AG Grid Enterprise invoice that scales with headcount.",
           tone: "amber",
         },
@@ -129,7 +129,7 @@ export default function VueNuxtDataGridPillarPage() {
         },
         {
           feature: "License",
-          ours: { tone: "neutral", label: "MIT / Pro" },
+          ours: { tone: "neutral", label: "Community / Pro" },
           values: [
             { tone: "neutral", label: "MIT" },
             { tone: "neutral", label: "MIT" },

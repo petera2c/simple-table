@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Column resizing is one of those features users miss only when it's gone. The moment a content cell truncates with an ellipsis, somebody reaches for the column edge and tries to drag.",
         "This tutorial walks through column resizing patterns for the Vue 3 data grid landscape and shows the Simple Table for Vue setup with the Composition API.",
-        "If you also need pinning, virtualization, and grouping with aggregations, Simple Table for Vue ships them all in one MIT package—~70 kB gzipped, Composition-API-friendly.",
+        "If you also need pinning, virtualization, and grouping with aggregations, Simple Table for Vue ships them all in one source-available package—~70 kB gzipped, Composition-API-friendly.",
       ]}
       whyItMatters={[
         { title: "Density vs scannability", body: "Users adjust columns to suit their screen and the row data they're scanning—you don't have to guess for them." },
@@ -71,7 +71,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "Column resizing in Vue 3 is a one-line prop on Simple Table. PrimeVue and Naive UI ship it natively too; Vuetify and Element Plus require manual wiring.",
-        "If you need resize alongside virtualization, pinning, and grouping, Simple Table for Vue is the focused MIT pick—~70 kB gzipped.",
+        "If you need resize alongside virtualization, pinning, and grouping, Simple Table for Vue is the focused source-available pick—~70 kB gzipped.",
       ]}
       relatedLinks={[
         { href: "/blog/vue-nuxt-data-grid-simple-table", label: "Pillar guide: best free Vue / Nuxt data grid in 2026" },
@@ -79,7 +79,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Add column resizing to your Vue 3 grid"
-      ctaDescription="Simple Table for Vue ships resize, pinning, grouping, and editing in one MIT package—~70 kB gzipped, Composition-API-friendly, Nuxt-ready."
+      ctaDescription="Simple Table for Vue ships resize, pinning, grouping, and editing in one source-available package—~70 kB gzipped, Composition-API-friendly, Nuxt-ready."
       docsHref="/docs/column-resizing"
     />
   );

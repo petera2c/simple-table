@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsSvarDatagridPost.title,
   description: simpleTableVsSvarDatagridPost.description,
   keywords:
-    "svar datagrid alternative, svar svelte alternative, sveltekit data grid, svelte 5 table, simple table svelte, mit svelte table",
+    "svar datagrid alternative, svar svelte alternative, sveltekit data grid, svelte 5 table, simple table svelte",
   openGraph: {
     title: simpleTableVsSvarDatagridPost.title,
     description: simpleTableVsSvarDatagridPost.description,
@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={simpleTableVsSvarDatagridPost.slug}
       title={simpleTableVsSvarDatagridPost.title}
-      subtitle="SVAR DataGrid is feature-rich for Svelte but assumes you're adopting SVAR's component ecosystem. Simple Table for Svelte is a focused, standalone MIT alternative—virtualization, pinning, grouping, and editing in one package."
+      subtitle="SVAR DataGrid is feature-rich for Svelte but assumes you're adopting SVAR's component ecosystem. Simple Table for Svelte is a focused, standalone source-available alternative—virtualization, pinning, grouping, and editing in one package, free for pre-revenue teams."
       competitorName="SVAR DataGrid"
       framework="svelte"
       heroBadges={["Comparison", "Decision Guide", "Svelte 5 Ready"]}
@@ -38,11 +38,11 @@ export default function Page() {
       dateModified={simpleTableVsSvarDatagridPost.updatedAt}
       introParagraphs={[
         "SVAR (Webix) ships a polished suite of Svelte components, of which DataGrid is the flagship. It's feature-rich and well-supported, but adopting it tends to mean adopting the rest of SVAR's ecosystem and styling conventions.",
-        "Simple Table for Svelte is a focused alternative: an MIT-licensed Svelte data grid that doesn't assume any larger design system, ships virtualization and grouping built in, and works on Svelte 4 today and Svelte 5 with runes ready.",
+        "Simple Table for Svelte is a focused alternative: a source-available Svelte data grid (free for pre-revenue teams) that doesn't assume any larger design system, ships virtualization and grouping built in, and works on Svelte 4 today and Svelte 5 with runes ready.",
         "This article compares both on bundle, virtualization, grouping, editing, and standalone fit.",
       ]}
       comparisonRows={[
-        { feature: "License (DataGrid)", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License (DataGrid)", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Standalone usage", competitor: { value: "Assumes SVAR ecosystem", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Svelte 4 support", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Svelte 5 / runes support", competitor: { value: "Mixed / evolving", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
@@ -64,7 +64,7 @@ export default function Page() {
         simpleTable: {
           title: "Switch to Simple Table for Svelte when…",
           items: [
-            "You want a standalone, focused MIT data grid without a suite.",
+            "You want a standalone, focused source-available data grid without a suite.",
             "You're targeting Svelte 5 / runes today.",
             "You also build React / Vue / Angular / Solid surfaces and want one engine.",
             "Bundle size matters and you don't want SVAR's runtime if you only need the grid.",
@@ -100,8 +100,8 @@ export default function Page() {
         { question: "Does Simple Table support tree data?", answer: "Yes—expandable / nested rows with virtualization are first-class." },
       ]}
       conclusionParagraphs={[
-        "If SVAR's ecosystem fits your team, SVAR DataGrid is solid. If you want a standalone, runes-ready, lightweight MIT alternative, Simple Table for Svelte is the focused choice.",
-        "Both are MIT and Svelte-native. The choice is suite vs focused, and runes maturity.",
+        "If SVAR's ecosystem fits your team, SVAR DataGrid is solid. If you want a standalone, runes-ready, lightweight source-available alternative, Simple Table for Svelte is the focused choice.",
+        "SVAR DataGrid is MIT and Simple Table is source-available (free for pre-revenue teams); both are Svelte-native. The choice is suite vs focused, and runes maturity.",
       ]}
       relatedLinks={[
         { href: "/blog/sveltekit-data-table-simple-table", label: "Pillar guide: the best free SvelteKit data table in 2026" },
@@ -109,7 +109,7 @@ export default function Page() {
         { href: "/frameworks/svelte", label: "Svelte integration hub" },
       ]}
       ctaTitle="Want a focused Svelte data grid?"
-      ctaDescription="Simple Table for Svelte ships virtualization, pinning, grouping, and editing in one MIT package—runes-ready, ~70 kB gzipped."
+      ctaDescription="Simple Table for Svelte ships virtualization, pinning, grouping, and editing in one source-available package—free for pre-revenue teams, runes-ready, ~70 kB gzipped."
     />
   );
 }

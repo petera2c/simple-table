@@ -72,7 +72,8 @@ export default function MantineDatatableVsSimpleTablePage() {
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
           Mantine DataTable brings beautiful, dark-theme-aware tables to Mantine UI apps with
           extensive features. Simple Table offers standalone flexibility without framework lock-in.
-          Both are MIT licensed—but which fits your project? This comparison covers bundle size,
+          Mantine DataTable is MIT licensed and Simple Table is source-available (free for
+          pre-revenue teams)—but which fits your project? This comparison covers bundle size,
           Mantine dependencies, and real-world use cases.
         </p>
         <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
@@ -159,7 +160,7 @@ export default function MantineDatatableVsSimpleTablePage() {
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">License</td>
                     <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
-                    <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
+                    <td className="p-3 text-green-600 dark:text-green-400">Community License</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
@@ -907,8 +908,9 @@ export default function MantineDatatableVsSimpleTablePage() {
               <p className="text-gray-700 dark:text-gray-300">
                 For React apps without Mantine, mobile-first products, or teams avoiding design system
                 lock-in, Simple Table's lightweight approach wins. For Mantine UI apps where
-                consistency trumps bundle size, Mantine DataTable is excellent. Both are MIT
-                licensed and production-ready—choose based on your constraints, not arbitrary
+                consistency trumps bundle size, Mantine DataTable is excellent. Both are
+                production-ready—Mantine DataTable is MIT licensed and Simple Table is
+                source-available (free for pre-revenue teams)—choose based on your constraints, not arbitrary
                 preferences. For more context on choosing the right table library,{" "}
                 <Link
                   href="/blog/best-free-react-data-grid-2026"

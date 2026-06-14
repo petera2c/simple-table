@@ -42,7 +42,7 @@ export default function Page() {
         "This article compares the two on TypeScript ergonomics, ESM packaging, framework portability, bundle size, and feature scope.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "TypeScript", competitor: { value: "Definitions exist", tone: "neutral" }, simpleTable: { value: "First-class (strict)", tone: "good" } },
         { feature: "ESM-first packaging", competitor: { value: "Mixed", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Framework portability", competitor: { value: "Standalone only", tone: "neutral" }, simpleTable: { value: "Same engine, 5 framework adapters", tone: "good" } },
@@ -103,7 +103,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "Tabulator is a solid choice and we have nothing bad to say about it. simple-table-core wins when you want TypeScript-first ergonomics, ESM-first packaging, and the option to add framework adapters later without changing engines.",
-        "Both are MIT and both are mature. Pick simple-table-core for greenfield TypeScript work; stay on Tabulator if your codebase is already deeply invested.",
+        "Tabulator is MIT and simple-table-core is source-available (free for pre-revenue teams); both are mature. Pick simple-table-core for greenfield TypeScript work; stay on Tabulator if your codebase is already deeply invested.",
       ]}
       relatedLinks={[
         { href: "/comparisons/simple-table-vs-tabulator-vanilla", label: "Detailed comparison: simple-table-core vs Tabulator" },
@@ -112,7 +112,7 @@ export default function Page() {
         { href: "/frameworks/vanilla", label: "Vanilla TypeScript hub" },
       ]}
       ctaTitle="Want a TypeScript-first vanilla data grid?"
-      ctaDescription="simple-table-core ships virtualization, pinning, grouping, and editing in one MIT package—~50 kB gzipped, ESM-first, with framework adapters for React, Vue, Angular, Svelte, and Solid."
+      ctaDescription="simple-table-core ships virtualization, pinning, grouping, and editing in one source-available package—~50 kB gzipped, ESM-first, with framework adapters for React, Vue, Angular, Svelte, and Solid."
     />
   );
 }

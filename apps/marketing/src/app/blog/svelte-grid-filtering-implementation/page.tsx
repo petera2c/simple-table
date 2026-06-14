@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Filtering is the bread-and-butter feature users hit before sorting or even rendering all rows. Get the typing wrong (string vs number vs date) and your filter UX feels broken.",
         "This tutorial walks through column filters, a global quick filter, and custom predicates for the Svelte data grid landscape and shows the Simple Table for Svelte setup with both Svelte 4 stores and Svelte 5 runes.",
-        "If you also need pinning, virtualization, and grouping with aggregations alongside filtering, Simple Table for Svelte ships them all in one MIT package.",
+        "If you also need pinning, virtualization, and grouping with aggregations alongside filtering, Simple Table for Svelte ships them all in one source-available package.",
       ]}
       whyItMatters={[
         { title: "Faster discovery", body: "Users find rows by typing or selecting; they don't scan thousands of rows visually." },
@@ -78,7 +78,7 @@ export default function Page() {
         { href: "/frameworks/svelte", label: "Svelte integration hub" },
       ]}
       ctaTitle="Add filtering to your Svelte grid"
-      ctaDescription="Simple Table for Svelte ships column filters, quick filter, and custom predicates in one MIT package—~70 kB gzipped, Svelte 5 runes ready."
+      ctaDescription="Simple Table for Svelte ships column filters, quick filter, and custom predicates in one source-available package—~70 kB gzipped, Svelte 5 runes ready."
       docsHref="/docs/column-filtering"
     />
   );

@@ -42,14 +42,14 @@ export default function Page() {
         "Quick takeaway: Simple Table for Solid is the best free option for most teams who want a focused, batteries-included data grid built on Solid signals.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT (TanStack/Kobalte) / Mixed (AG Grid)", tone: "neutral" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT (TanStack/Kobalte) / Mixed (AG Grid)", tone: "neutral" }, simpleTable: { value: "Source-available", tone: "good" } },
         { feature: "Per-developer fees", competitor: { value: "AG Enterprise: $999+", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
         { feature: "Approach", competitor: { value: "Headless / primitives / commercial", tone: "neutral" }, simpleTable: { value: "Batteries-included", tone: "good" } },
         { feature: "Solid signals integration", competitor: { value: "Yes (most options)", tone: "good" }, simpleTable: { value: "First-class", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "14–400+ kB depending on choice", tone: "neutral" }, simpleTable: { value: "~70 kB", tone: "good" } },
         { feature: "Built-in row virtualization", competitor: { value: "Mixed (none/yes)", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Built-in column pinning", competitor: { value: "Mixed", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
-        { feature: "Built-in grouping + aggregations", competitor: { value: "Enterprise / DIY / no", tone: "bad" }, simpleTable: { value: "Yes (MIT)", tone: "good" } },
+        { feature: "Built-in grouping + aggregations", competitor: { value: "Enterprise / DIY / no", tone: "bad" }, simpleTable: { value: "Yes (source-available)", tone: "good" } },
         { feature: "Built-in inline editing", competitor: { value: "Mixed", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
       ]}
       whyChoose={{
@@ -102,12 +102,12 @@ export default function Page() {
         },
       ]}
       faqs={[
-        { question: "What's the best Solid data grid in 2026?", answer: "For most teams, Simple Table for Solid. It's MIT, batteries-included, signals-native, and ~70 kB gzipped. Stay headless if you want full UI control; use AG Grid Enterprise if you depend on its Enterprise-only features." },
+        { question: "What's the best Solid data grid in 2026?", answer: "For most teams, Simple Table for Solid. It's source-available (free for pre-revenue teams), batteries-included, signals-native, and ~70 kB gzipped. Stay headless if you want full UI control; use AG Grid Enterprise if you depend on its Enterprise-only features." },
         { question: "Is AG Grid Community enough?", answer: "It depends. AG Grid Community covers virtualization, pinning, sort, and filter—but row grouping with aggregations, pivoting, and tree data are Enterprise-only. Many teams hit the gap mid-project." },
         { question: "Does Simple Table for Solid support Solid-Start SSR?", answer: "Yes. ESM-first, SSR-friendly, works with Solid-Start out of the box." },
       ]}
       conclusionParagraphs={[
-        "Solid's data grid options are well-defined: headless (TanStack), batteries-included (Simple Table), or commercial (AG Grid). For most teams, Simple Table for Solid is the right MIT pick.",
+        "Solid's data grid options are well-defined: headless (TanStack), batteries-included (Simple Table), or commercial (AG Grid). For most teams, Simple Table for Solid is the right source-available pick.",
         "Pick TanStack if you want full UI control. Pick AG Grid Enterprise if you depend on pivoting / master-detail. Pick Simple Table for everything else.",
       ]}
       relatedLinks={[
@@ -117,7 +117,7 @@ export default function Page() {
         { href: "/frameworks/solid", label: "Solid integration hub" },
       ]}
       ctaTitle="Pick the right Solid data grid for 2026"
-      ctaDescription="Simple Table for Solid ships virtualization, pinning, grouping, and editing in one MIT package—signals-native, ~70 kB gzipped."
+      ctaDescription="Simple Table for Solid ships virtualization, pinning, grouping, and editing in one source-available package—signals-native, ~70 kB gzipped."
     />
   );
 }

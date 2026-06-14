@@ -47,7 +47,7 @@ export default function Page() {
         { title: "Combinable with sort/filter", body: "Filter the leaves; the right ancestors stay visible to preserve context." },
       ]}
       libraryRows={[
-        { library: "simple-table-core", support: { value: "Built-in (MIT)", tone: "good" }, notes: "Hierarchical rows with built-in expand/collapse and chevron renderer." },
+        { library: "simple-table-core", support: { value: "Built-in (Community License)", tone: "good" }, notes: "Hierarchical rows with built-in expand/collapse and chevron renderer." },
         { library: "Tabulator", support: { value: "Built-in", tone: "good" }, notes: "dataTree: true; supports lazy loading via dataTreeChildField." },
         { library: "Grid.js", support: { value: "Manual", tone: "bad" }, notes: "No native tree—pre-flatten and render hierarchy yourself." },
         { library: "Handsontable", support: { value: "Built-in (commercial)", tone: "neutral" }, notes: "Tree built-in but commercial license required." },
@@ -71,7 +71,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "Tree data in vanilla JS / TS is straightforward with simple-table-core—provide hierarchy on each row and the grid handles the rest. Tabulator supports it natively too; Grid.js requires DIY; Handsontable is commercial.",
-        "If you need hierarchical data alongside virtualization and pinning, simple-table-core is the focused MIT pick.",
+        "If you need hierarchical data alongside virtualization and pinning, simple-table-core is the focused source-available pick.",
       ]}
       relatedLinks={[
         { href: "/blog/vanilla-typescript-data-grid-simple-table-core", label: "Pillar guide: best free vanilla TypeScript data grid in 2026" },
@@ -79,7 +79,7 @@ export default function Page() {
         { href: "/frameworks/vanilla", label: "Vanilla TS integration hub" },
       ]}
       ctaTitle="Add tree data to your vanilla TS grid"
-      ctaDescription="simple-table-core ships tree data, virtualization, pinning, and editing in one MIT package—~70 kB gzipped, strict TypeScript, ESM-first."
+      ctaDescription="simple-table-core ships tree data, virtualization, pinning, and editing in one source-available package—~70 kB gzipped, strict TypeScript, ESM-first."
       docsHref="/docs/nested-tables"
     />
   );

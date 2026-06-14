@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Wide tables with 20+ columns become unusable without pinning. Users lose context as they scroll horizontally—what row am I on? Pin the identifier column on the left and an actions column on the right and the UX clicks back into place.",
         "This tutorial walks through column pinning patterns for Svelte data grids and shows the Simple Table for Svelte setup with both Svelte 4 stores and Svelte 5 runes.",
-        "If you also need virtualization, grouping with aggregations, and inline editing alongside pinning, Simple Table for Svelte is the focused MIT pick.",
+        "If you also need virtualization, grouping with aggregations, and inline editing alongside pinning, Simple Table for Svelte is the focused source-available pick.",
       ]}
       whyItMatters={[
         { title: "Context anchoring", body: "Users don't lose track of what row they're on as they scroll horizontally." },
@@ -78,7 +78,7 @@ export default function Page() {
         { href: "/frameworks/svelte", label: "Svelte integration hub" },
       ]}
       ctaTitle="Add column pinning to your Svelte grid"
-      ctaDescription="Simple Table for Svelte ships left/right pinning, virtualization, and grouping in one MIT package—~70 kB gzipped, Svelte 5 runes ready."
+      ctaDescription="Simple Table for Svelte ships left/right pinning, virtualization, and grouping in one source-available package—~70 kB gzipped, Svelte 5 runes ready."
       docsHref="/docs/column-pinning"
     />
   );

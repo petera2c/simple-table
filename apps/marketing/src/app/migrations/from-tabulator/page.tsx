@@ -50,7 +50,7 @@ export default function FromTabulatorPage() {
         { competitor: "data: Record<string, unknown>[]", simpleTable: "rows: Row[]", notes: "See the Simple Table docs for the row shape." },
         { competitor: "columns[]", simpleTable: "defaultHeaders[]", notes: "title → label; field → accessor; width unchanged." },
         { competitor: "frozen: true", simpleTable: "HeaderObject.pinned", notes: "Built-in pinning, declarative on the header." },
-        { competitor: "groupBy + groupHeader", simpleTable: "Row grouping + aggregations", notes: "Built-in MIT grouping with aggregators." },
+        { competitor: "groupBy + groupHeader", simpleTable: "Row grouping + aggregations", notes: "Built-in source-available grouping with aggregators." },
         { competitor: "formatter / mutator", simpleTable: "cellRenderer", notes: "Return a DOM node or a string from a render function." },
         { competitor: "Tabulator theme CSS", simpleTable: "simple-table-core/styles.css", notes: "Theme via CSS variables." },
       ]}

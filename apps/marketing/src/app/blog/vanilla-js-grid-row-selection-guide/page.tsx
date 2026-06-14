@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Row selection drives bulk actions: delete, archive, export, assign. Get it wrong and users misclick or struggle on touch screens.",
         "This tutorial walks through single, multi, and checkbox selection patterns for the vanilla JS / TS data grid landscape and shows the simple-table-core setup with strict TypeScript.",
-        "If you want a framework-agnostic, strict-TypeScript core grid that works in any host (web component, micro-frontend, plain HTML), simple-table-core is ~70 kB gzipped and MIT-licensed.",
+        "If you want a framework-agnostic, strict-TypeScript core grid that works in any host (web component, micro-frontend, plain HTML), simple-table-core is ~70 kB gzipped and source-available.",
       ]}
       whyItMatters={[
         { title: "Bulk actions", body: "Selection enables archive, delete, export, assign, etc. Without it, users repeat per-row actions." },
@@ -79,7 +79,7 @@ export default function Page() {
         { href: "/frameworks/vanilla", label: "Vanilla TS integration hub" },
       ]}
       ctaTitle="Add row selection to your vanilla TS grid"
-      ctaDescription="simple-table-core ships single, multi, and checkbox selection in one MIT package—~70 kB gzipped, strict TypeScript, ESM-first."
+      ctaDescription="simple-table-core ships single, multi, and checkbox selection in one source-available package—~70 kB gzipped, strict TypeScript, ESM-first."
       docsHref="/docs/row-selection"
     />
   );

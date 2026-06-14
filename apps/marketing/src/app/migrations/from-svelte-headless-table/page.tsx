@@ -30,7 +30,7 @@ export default function FromSvelteHeadlessTablePage() {
       competitorPackage="svelte-headless-table"
       introParagraphs={[
         "svelte-headless-table is a popular headless table builder—you compose plugins (sort, filter, group, paginate) and write the HTML yourself. It's powerful but you own all the wiring: virtualization, pinning, themes, accessibility.",
-        "Simple Table for Svelte is an MIT-licensed Svelte 4 / Svelte 5 data grid that ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing in the box.",
+        "Simple Table for Svelte is a source-available Svelte 4 / Svelte 5 data grid that ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing in the box.",
         "This guide shows how to swap an existing svelte-headless-table view for @simple-table/svelte when your headless setup has grown more complex than you wanted.",
       ]}
       whyMigrate={[

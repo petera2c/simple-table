@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Row selection drives bulk actions: delete, archive, export, assign. Get it wrong and users misclick or struggle on touch screens.",
         "This tutorial walks through single, multi, and checkbox selection patterns for Vue 3 data grids and shows the Simple Table for Vue setup with the Composition API.",
-        "If you also need pinning, virtualization, and grouping with aggregations alongside selection, Simple Table for Vue is the focused MIT pick.",
+        "If you also need pinning, virtualization, and grouping with aggregations alongside selection, Simple Table for Vue is the focused source-available pick.",
       ]}
       whyItMatters={[
         { title: "Bulk actions", body: "Selection enables archive, delete, export, assign, etc. Without it, users repeat per-row actions." },
@@ -79,7 +79,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Add row selection to your Vue 3 grid"
-      ctaDescription="Simple Table for Vue ships single, multi, and checkbox selection in one MIT package—~70 kB gzipped, Composition-API-friendly, Nuxt-ready."
+      ctaDescription="Simple Table for Vue ships single, multi, and checkbox selection in one source-available package—~70 kB gzipped, Composition-API-friendly, Nuxt-ready."
       docsHref="/docs/row-selection"
     />
   );

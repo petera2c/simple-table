@@ -44,14 +44,14 @@ export default function SolidJsDataGridPillarPage() {
       hubId="solid"
       heroBadges={[
         { icon: faTrophy, label: "Best for Solid 1+", tone: "yellow" },
-        { icon: faDollarSign, label: "100% Free, MIT", tone: "green" },
+        { icon: faDollarSign, label: "Free for pre-revenue teams", tone: "green" },
         { icon: faCode, label: "Signals & TypeScript", tone: "blue" },
         { icon: faRocket, label: "Solid Start Ready", tone: "purple" },
       ]}
       introHeading="The Solid.js data grid landscape in 2026"
       introParagraphs={[
         "Solid is fast. Its fine-grained reactivity model and compile-time JSX deliver some of the best browser performance available—but the data grid ecosystem hasn't fully caught up. TanStack Solid Table is a port of the popular React headless library, Kobalte ships a low-level table primitive, and most Solid teams either render plain <table> tags or build their own grid on top of Solid signals.",
-        "Simple Table for Solid plugs that gap. A single component drops into Solid 1+ projects (including Solid Start) with full sorting, filtering, virtualization, column pinning, row grouping, nested headers, cell editing, and theming—free under MIT for individuals and zero-revenue companies. It's powered by simple-table-core, the same vanilla TypeScript engine the React, Vue, Angular, Svelte, and vanilla adapters share, but with first-class signal-driven props on the Solid side.",
+        "Simple Table for Solid plugs that gap. A single component drops into Solid 1+ projects (including Solid Start) with full sorting, filtering, virtualization, column pinning, row grouping, nested headers, cell editing, and theming—free for individuals and zero-revenue companies under the Simple Table Community License. It's powered by simple-table-core, the same vanilla TypeScript engine the React, Vue, Angular, Svelte, and vanilla adapters share, but with first-class signal-driven props on the Solid side.",
         "This pillar guide explains when Simple Table is the right Solid data grid, how it compares with TanStack Solid Table and Kobalte's table primitives, and exactly how to install and use it in a Solid Start app.",
       ]}
       whatYoullLearn={[
@@ -83,8 +83,8 @@ export default function SolidJsDataGridPillarPage() {
         },
         {
           icon: faShieldHalved,
-          title: "MIT for free, simple licensing for revenue",
-          body: "Free for individuals and zero-revenue projects under MIT. Per-product Pro/Enterprise licensing for revenue-generating teams—no per-developer fees.",
+          title: "Free for pre-revenue teams, simple licensing for revenue",
+          body: "Free for individuals and zero-revenue projects under the Simple Table Community License. Per-product Pro/Enterprise licensing for revenue-generating teams—no per-developer fees.",
           tone: "amber",
         },
       ]}
@@ -129,7 +129,7 @@ export default function SolidJsDataGridPillarPage() {
         },
         {
           feature: "License",
-          ours: { tone: "neutral", label: "MIT / Pro" },
+          ours: { tone: "neutral", label: "Community License / Pro" },
           values: [
             { tone: "neutral", label: "MIT" },
             { tone: "neutral", label: "MIT" },

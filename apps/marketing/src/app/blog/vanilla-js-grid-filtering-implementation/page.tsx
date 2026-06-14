@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Filtering is the bread-and-butter feature users hit before sorting or even rendering all rows. Get the typing wrong (string vs number vs date) and your filter UX feels broken.",
         "This tutorial walks through column filters, a global quick filter, and custom predicates for the vanilla JS / TS data grid landscape and shows the simple-table-core setup with strict TypeScript.",
-        "If you want a framework-agnostic, MIT-licensed grid with built-in filtering, simple-table-core is ~70 kB gzipped and works in any host.",
+        "If you want a framework-agnostic, source-available grid with built-in filtering, simple-table-core is ~70 kB gzipped and works in any host.",
       ]}
       whyItMatters={[
         { title: "Faster discovery", body: "Users find rows by typing or selecting; they don't scan thousands of rows visually." },
@@ -79,7 +79,7 @@ export default function Page() {
         { href: "/frameworks/vanilla", label: "Vanilla TS integration hub" },
       ]}
       ctaTitle="Add filtering to your vanilla TS grid"
-      ctaDescription="simple-table-core ships column filters, quick filter, and custom predicates in one MIT package—~70 kB gzipped, strict TypeScript, ESM-first."
+      ctaDescription="simple-table-core ships column filters, quick filter, and custom predicates in one source-available package—~70 kB gzipped, strict TypeScript, ESM-first."
       docsHref="/docs/column-filtering"
     />
   );

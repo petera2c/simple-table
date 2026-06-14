@@ -993,7 +993,7 @@ export default function HandsontablePricingPage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Skip the $22K+ Handsontable bill. Start with Simple Table's FREE tier."
-        description="Get data grid features like sorting, filtering, editing, row grouping, and column pinning in the FREE tier. Optional PRO plan ($85/mo) adds priority support. MIT-licensed, lightweight, and built for modern React apps. Save thousands compared to Handsontable."
+        description="Get data grid features like sorting, filtering, editing, row grouping, and column pinning in the FREE tier. Optional PRO plan ($85/mo) adds priority support. Source-available, free for pre-revenue teams, lightweight, and built for modern React apps. Save thousands compared to Handsontable."
         primaryButton={{
           text: "Start Free",
           href: "/docs/installation",

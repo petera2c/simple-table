@@ -44,12 +44,12 @@ export default function SimpleTableVsNgxDatatablePage() {
       heroBadges={[
         { icon: faTrophy, label: "Built for Angular 17+" },
         { icon: faBolt, label: "Active maintenance" },
-        { icon: faDollarSign, label: "Free under MIT" },
+        { icon: faDollarSign, label: "Free for pre-revenue teams" },
         { icon: faGears, label: "Standalone components" },
       ]}
       introParagraphs={[
         "ngx-datatable (Swimlane's open-source Angular data table) was the most-used free Angular grid for years. It still works, but maintenance has slowed: Angular 16/17/18/19 compatibility lands late, the API predates standalone components and signals, and key features like column pinning beyond the simple frozen-left model are missing.",
-        "Simple Table for Angular targets the same niche—a free Angular data grid—but on Angular 17+ standalone-component primitives. It ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing under MIT.",
+        "Simple Table for Angular targets the same niche—a free Angular data grid—but on Angular 17+ standalone-component primitives. It ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing—free for pre-revenue teams (source-available).",
         "If you've been thinking 'I should probably move off ngx-datatable,' here's the side-by-side that justifies the move.",
       ]}
       whyChooseSimpleTable={[
@@ -107,7 +107,7 @@ export default function SimpleTableVsNgxDatatablePage() {
         },
         {
           feature: "License",
-          simpleTable: { verdict: "yes", note: "MIT (free)." },
+          simpleTable: { verdict: "yes", note: "Community License (free for pre-revenue teams)." },
           competitor: { verdict: "yes", note: "MIT." },
         },
       ]}
@@ -138,7 +138,7 @@ export default function SimpleTableVsNgxDatatablePage() {
         {
           question: "Can I migrate one screen at a time?",
           answer:
-            "Yes. Both libraries are MIT and can coexist in the same Angular app. Migrate the highest-traffic screen first, then move the rest.",
+            "Yes. ngx-datatable is MIT and Simple Table is source-available; both can coexist in the same Angular app. Migrate the highest-traffic screen first, then move the rest.",
         },
         {
           question: "Does Simple Table support row detail and group headers like ngx-datatable?",
@@ -151,7 +151,7 @@ export default function SimpleTableVsNgxDatatablePage() {
           <p>
             ngx-datatable was great for its era. In 2026, with Angular 17+ standalone components, signals,
             and stricter bundle budgets, Simple Table for Angular delivers a more modern API, better
-            virtualization, and active maintenance—still under MIT.
+            virtualization, and active maintenance—source-available and free for pre-revenue teams.
           </p>
         </>
       }

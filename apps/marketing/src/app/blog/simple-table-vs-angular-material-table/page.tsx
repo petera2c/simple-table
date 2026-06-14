@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsAngularMaterialTablePost.title,
   description: simpleTableVsAngularMaterialTablePost.description,
   keywords:
-    "angular material table alternative, mat-table replacement, angular data grid, angular standalone components grid, simple table angular, mit angular table, mat-table vs simple table",
+    "angular material table alternative, mat-table replacement, angular data grid, angular standalone components grid, simple table angular, mat-table vs simple table",
   openGraph: {
     title: simpleTableVsAngularMaterialTablePost.title,
     description: simpleTableVsAngularMaterialTablePost.description,
@@ -38,11 +38,11 @@ export default function Page() {
       dateModified={simpleTableVsAngularMaterialTablePost.updatedAt}
       introParagraphs={[
         "Angular Material's mat-table is a great primitive: composable, well-documented, and integrated tightly with the rest of Material's MDC components. The catch is that it's deliberately minimal. Sort, paginate, and basic filtering ship as MatSort / MatPaginator helpers, but virtualization, column pinning, row grouping with aggregations, and inline editing are all things you build yourself.",
-        "Simple Table for Angular is a complementary alternative. It's MIT-licensed, ships virtualization, pinning, grouping, and editing as first-class features, and themes against Material design tokens via CSS variables—so you can keep your Material look-and-feel without writing a renderer pipeline.",
+        "Simple Table for Angular is a complementary alternative. It's source-available (free for pre-revenue teams), ships virtualization, pinning, grouping, and editing as first-class features, and themes against Material design tokens via CSS variables—so you can keep your Material look-and-feel without writing a renderer pipeline.",
         "If you've ever tried to wire mat-table + CDK virtual scroll + manual sticky columns + custom sort/group code together, this comparison will save you a lot of plumbing.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Standalone components", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Out-of-the-box rendering", competitor: { value: "Composable primitive", tone: "neutral" }, simpleTable: { value: "Batteries-included grid", tone: "good" } },
         { feature: "Row virtualization", competitor: { value: "Via CDK virtual scroll (manual)", tone: "neutral" }, simpleTable: { value: "Built-in", tone: "good" } },
@@ -110,7 +110,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "mat-table is a great primitive when your needs match its scope: composable, Material-native, MIT. The moment you need virtualization + pinning + grouping + editing as a coherent package, you're better off swapping the table layer.",
-        "Simple Table for Angular gives you those features in one MIT package and still themes against Material via CSS variables. You keep your design system, you stop building data-grid plumbing.",
+        "Simple Table for Angular gives you those features in one source-available package and still themes against Material via CSS variables. You keep your design system, you stop building data-grid plumbing.",
       ]}
       relatedLinks={[
         { href: "/blog/angular-data-grid-simple-table", label: "Pillar guide: the best free Angular data grid in 2026" },
@@ -118,7 +118,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Stop building grid plumbing on top of mat-table"
-      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and inline editing—Material-compatible theming via CSS variables, ~70 kB gzipped, MIT."
+      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and inline editing—Material-compatible theming via CSS variables, ~70 kB gzipped, source-available (free for pre-revenue teams)."
     />
   );
 }

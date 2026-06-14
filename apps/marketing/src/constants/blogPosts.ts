@@ -198,10 +198,10 @@ export const tanstackVsSimpleTablePost: BlogPostMetadata = {
 };
 
 export const mitLicensedAccessibilityPost: BlogPostMetadata = {
-  title: "MIT-Licensed React Tables: Accessibility & Keyboard Navigation Comparison",
+  title: "Free React Tables: Accessibility & Keyboard Navigation Comparison",
   description:
-    "Which free React data grids actually work for keyboard users and screen readers? Comprehensive WCAG 2.1 comparison of accessibility features across MIT-licensed table libraries.",
-  slug: "mit-licensed-react-tables-accessibility-keyboard-navigation",
+    "Which free React data grids actually work for keyboard users and screen readers? Comprehensive WCAG 2.1 comparison of accessibility features across free React table libraries.",
+  slug: "free-react-tables-accessibility-keyboard-navigation",
   tags: ["react", "accessibility", "keyboard-navigation", "wcag"],
   createdAt: "2025-11-22",
   updatedAt: "2025-11-22",
@@ -391,7 +391,7 @@ export const rsuiteTableVsSimpleTablePost: BlogPostMetadata = {
 
 export const devextremeGridVsSimpleTablePost: BlogPostMetadata = {
   title: "DevExtreme React Grid vs Simple Table: $899/year Enterprise vs Free Open-Source",
-  description: `DevExtreme React Grid costs $899/year with 80+ premium components. Simple Table is free (MIT) at 42KB with zero dependencies and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial enterprise features vs open-source flexibility.`,
+  description: `DevExtreme React Grid costs $899/year with 80+ premium components. Simple Table is free for pre-revenue teams (source-available) at 42KB with zero dependencies and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial enterprise features vs source-available flexibility.`,
   slug: "devextreme-grid-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "commercial", "pricing"],
   createdAt: "2026-02-05",
@@ -400,7 +400,7 @@ export const devextremeGridVsSimpleTablePost: BlogPostMetadata = {
 
 export const kendoreactGridVsSimpleTablePost: BlogPostMetadata = {
   title: "KendoReact Grid vs Simple Table: $649/year Premium vs Free Open-Source",
-  description: `KendoReact Grid (by Progress/Telerik) costs $649-$1,199/year with 120+ components. Simple Table is free (MIT) at 42KB with official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial licensing vs open-source freedom for React data grids.`,
+  description: `KendoReact Grid (by Progress/Telerik) costs $649-$1,199/year with 120+ components. Simple Table is free for pre-revenue teams (source-available) at 42KB with official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial licensing vs source-available freedom for React data grids.`,
   slug: "kendoreact-grid-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "commercial", "pricing"],
   createdAt: "2026-02-05",
@@ -409,7 +409,7 @@ export const kendoreactGridVsSimpleTablePost: BlogPostMetadata = {
 
 export const smartGridVsSimpleTablePost: BlogPostMetadata = {
   title: "Smart React Grid vs Simple Table: $399 Commercial vs Free Open-Source",
-  description: `Smart React Grid (HTML Elements) costs $399-$1,499 with enterprise features. Simple Table is free (MIT) at 42KB with zero dependencies and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial vs open-source React data grids.`,
+  description: `Smart React Grid (HTML Elements) costs $399-$1,499 with enterprise features. Simple Table is free for pre-revenue teams (source-available) at 42KB with zero dependencies and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial vs source-available React data grids.`,
   slug: "smart-grid-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "commercial", "pricing"],
   createdAt: "2026-02-05",
@@ -472,9 +472,9 @@ export const vanillaDataGridPillarPost: BlogPostMetadata = {
 
 // Angular
 export const simpleTableVsAgGridAngularPost: BlogPostMetadata = {
-  title: "Simple Table vs AG Grid Angular: Free MIT Data Grid for Angular 17/18/19",
+  title: "Simple Table vs AG Grid Angular: Free Source-Available Data Grid for Angular 17/18/19",
   description:
-    "AG Grid Angular charges per developer for grouping, pivoting, and master-detail. Simple Table for Angular ships virtualization, pinning, grouping, and editing free under MIT—with idiomatic standalone-component support.",
+    "AG Grid Angular charges per developer for grouping, pivoting, and master-detail. Simple Table for Angular ships virtualization, pinning, grouping, and editing free for pre-revenue teams (source-available)—with idiomatic standalone-component support.",
   slug: "simple-table-vs-ag-grid-angular",
   tags: ["angular", "comparison", "alternatives", "ag-grid"],
   createdAt: "2026-04-26",
@@ -484,7 +484,7 @@ export const simpleTableVsAgGridAngularPost: BlogPostMetadata = {
 export const simpleTableVsNgxDatatablePost: BlogPostMetadata = {
   title: "Simple Table vs ngx-datatable: A Modern Alternative for Angular 17+",
   description:
-    "ngx-datatable's Angular 17+ standalone story is dated. Simple Table for Angular is signals-friendly, MIT-licensed, and ships pinning, grouping with aggregations, virtualization, and inline editing in the box.",
+    "ngx-datatable's Angular 17+ standalone story is dated. Simple Table for Angular is signals-friendly, source-available, and ships pinning, grouping with aggregations, virtualization, and inline editing in the box.",
   slug: "simple-table-vs-ngx-datatable",
   tags: ["angular", "comparison", "alternatives", "ngx-datatable"],
   createdAt: "2026-04-26",
@@ -494,7 +494,7 @@ export const simpleTableVsNgxDatatablePost: BlogPostMetadata = {
 export const simpleTableVsPrimeNgTablePost: BlogPostMetadata = {
   title: "Simple Table vs PrimeNG Table: Lightweight Angular Data Grid Comparison",
   description:
-    "PrimeNG Table is great if you already use PrimeNG. Simple Table for Angular is a smaller, focused alternative when DataTable is your only PrimeNG component—same virtualization, pinning, grouping, and editing in MIT.",
+    "PrimeNG Table is great if you already use PrimeNG. Simple Table for Angular is a smaller, focused alternative when DataTable is your only PrimeNG component—same virtualization, pinning, grouping, and editing, free for pre-revenue teams (source-available).",
   slug: "simple-table-vs-primeng-table",
   tags: ["angular", "comparison", "alternatives", "primeng"],
   createdAt: "2026-04-26",
@@ -504,7 +504,7 @@ export const simpleTableVsPrimeNgTablePost: BlogPostMetadata = {
 export const simpleTableVsAngularMaterialTablePost: BlogPostMetadata = {
   title: "Simple Table vs Angular Material Table (mat-table): Beyond MDC Primitives",
   description:
-    "Angular Material's mat-table is composable but you build virtualization, pinning, grouping, and editing yourself. Simple Table for Angular ships all of that in MIT—works alongside Material themes via CSS variables.",
+    "Angular Material's mat-table is composable but you build virtualization, pinning, grouping, and editing yourself. Simple Table for Angular ships all of that free for pre-revenue teams (source-available)—works alongside Material themes via CSS variables.",
   slug: "simple-table-vs-angular-material-table",
   tags: ["angular", "comparison", "alternatives", "angular-material"],
   createdAt: "2026-04-26",
@@ -512,9 +512,9 @@ export const simpleTableVsAngularMaterialTablePost: BlogPostMetadata = {
 };
 
 export const simpleTableVsKendoGridAngularPost: BlogPostMetadata = {
-  title: "Simple Table vs Kendo Grid for Angular: $649+ Commercial vs Free MIT",
+  title: "Simple Table vs Kendo Grid for Angular: $649+ Commercial vs Free Source-Available",
   description:
-    "Kendo Grid for Angular costs $649+ per developer per year. Simple Table for Angular is free under MIT with virtualization, pinning, grouping, and editing built in—no license keys, no commercial paperwork.",
+    "Kendo Grid for Angular costs $649+ per developer per year. Simple Table for Angular is free for pre-revenue teams (source-available) with virtualization, pinning, grouping, and editing built in—no license keys, no commercial paperwork.",
   slug: "simple-table-vs-kendo-grid-angular",
   tags: ["angular", "comparison", "alternatives", "kendo-ui", "pricing"],
   createdAt: "2026-04-26",
@@ -524,7 +524,7 @@ export const simpleTableVsKendoGridAngularPost: BlogPostMetadata = {
 export const agGridAlternativesAngularPost: BlogPostMetadata = {
   title: "AG Grid Alternatives: Best Free Angular Data Grids in 2026",
   description:
-    "Looking for AG Grid Angular alternatives? Compare Simple Table for Angular, ngx-datatable, PrimeNG Table, Angular Material mat-table, and others. Free, MIT, signals-friendly options without enterprise licensing.",
+    "Looking for AG Grid Angular alternatives? Compare Simple Table for Angular, ngx-datatable, PrimeNG Table, Angular Material mat-table, and others. Free, signals-friendly options without enterprise licensing.",
   slug: "ag-grid-alternatives-free-angular-data-grids-2026",
   tags: ["angular", "alternatives", "comparison", "ag-grid"],
   createdAt: "2026-04-26",
@@ -535,7 +535,7 @@ export const agGridAlternativesAngularPost: BlogPostMetadata = {
 export const simpleTableVsVuetifyDataTablePost: BlogPostMetadata = {
   title: "Simple Table vs Vuetify v-data-table: Focused Vue 3 Data Grid Comparison",
   description:
-    "Vuetify v-data-table requires the full Vuetify runtime + Material theme. Simple Table for Vue is a focused MIT data grid that works in Composition API + <script setup>, Nuxt 3/4, and Vite without a design system tax.",
+    "Vuetify v-data-table requires the full Vuetify runtime + Material theme. Simple Table for Vue is a focused source-available data grid that works in Composition API + <script setup>, Nuxt 3/4, and Vite without a design system tax.",
   slug: "simple-table-vs-vuetify-data-table",
   tags: ["vue", "comparison", "alternatives", "vuetify"],
   createdAt: "2026-04-26",
@@ -545,7 +545,7 @@ export const simpleTableVsVuetifyDataTablePost: BlogPostMetadata = {
 export const simpleTableVsPrimeVueDatatablePost: BlogPostMetadata = {
   title: "Simple Table vs PrimeVue DataTable: Lightweight Vue 3 Data Grid",
   description:
-    "PrimeVue DataTable bundles in PrimeVue's runtime + theme + PrimeIcons. Simple Table for Vue is a focused MIT alternative for Vue 3 / Nuxt with virtualization, pinning, grouping, and editing in one library.",
+    "PrimeVue DataTable bundles in PrimeVue's runtime + theme + PrimeIcons. Simple Table for Vue is a focused source-available alternative for Vue 3 / Nuxt with virtualization, pinning, grouping, and editing in one library.",
   slug: "simple-table-vs-primevue-datatable",
   tags: ["vue", "comparison", "alternatives", "primevue"],
   createdAt: "2026-04-26",
@@ -555,7 +555,7 @@ export const simpleTableVsPrimeVueDatatablePost: BlogPostMetadata = {
 export const simpleTableVsVueGoodTablePost: BlogPostMetadata = {
   title: "Simple Table vs Vue Good Table Next: Vue 3 Data Grid Comparison",
   description:
-    "Vue Good Table is straightforward but doesn't ship row virtualization or column pinning. Simple Table for Vue covers those plus grouping with aggregations and inline editing—same MIT license, modern Composition API.",
+    "Vue Good Table is straightforward but doesn't ship row virtualization or column pinning. Simple Table for Vue covers those plus grouping with aggregations and inline editing—free for pre-revenue teams (source-available), modern Composition API.",
   slug: "simple-table-vs-vue-good-table",
   tags: ["vue", "comparison", "alternatives", "vue-good-table"],
   createdAt: "2026-04-26",
@@ -575,7 +575,7 @@ export const simpleTableVsElementPlusTablePost: BlogPostMetadata = {
 export const simpleTableVsNaiveUiTablePost: BlogPostMetadata = {
   title: "Simple Table vs Naive UI Data Table: Focused Vue 3 Data Grid",
   description:
-    "Naive UI's data-table is a great component-library grid. Simple Table for Vue is a smaller, focused MIT alternative with built-in virtualization, pinning, grouping with aggregations, and inline editing.",
+    "Naive UI's data-table is a great component-library grid. Simple Table for Vue is a smaller, focused source-available alternative with built-in virtualization, pinning, grouping with aggregations, and inline editing.",
   slug: "simple-table-vs-naive-ui-table",
   tags: ["vue", "comparison", "alternatives", "naive-ui"],
   createdAt: "2026-04-26",
@@ -585,7 +585,7 @@ export const simpleTableVsNaiveUiTablePost: BlogPostMetadata = {
 export const agGridAlternativesVuePost: BlogPostMetadata = {
   title: "AG Grid Alternatives: Best Free Vue 3 Data Grids in 2026",
   description:
-    "Looking for AG Grid Vue alternatives? Compare Simple Table for Vue, Vuetify, PrimeVue, Vue Good Table, Element Plus, and Naive UI. Free, MIT, Composition-API-friendly options without enterprise licensing.",
+    "Looking for AG Grid Vue alternatives? Compare Simple Table for Vue, Vuetify, PrimeVue, Vue Good Table, Element Plus, and Naive UI. Free, Composition-API-friendly options without enterprise licensing.",
   slug: "ag-grid-alternatives-free-vue-data-grids-2026",
   tags: ["vue", "alternatives", "comparison", "ag-grid"],
   createdAt: "2026-04-26",
@@ -596,7 +596,7 @@ export const agGridAlternativesVuePost: BlogPostMetadata = {
 export const simpleTableVsSvelteHeadlessTablePost: BlogPostMetadata = {
   title: "Simple Table vs svelte-headless-table: Batteries-Included vs Headless Svelte Grid",
   description:
-    "svelte-headless-table is great primitives. Simple Table for Svelte is batteries-included: virtualization, pinning, grouping with aggregations, and inline editing in one MIT package—Svelte 4 and Svelte 5 ready.",
+    "svelte-headless-table is great primitives. Simple Table for Svelte is batteries-included: virtualization, pinning, grouping with aggregations, and inline editing in one source-available package—Svelte 4 and Svelte 5 ready.",
   slug: "simple-table-vs-svelte-headless-table",
   tags: ["svelte", "sveltekit", "comparison", "alternatives", "svelte-headless-table"],
   createdAt: "2026-04-26",
@@ -604,9 +604,9 @@ export const simpleTableVsSvelteHeadlessTablePost: BlogPostMetadata = {
 };
 
 export const simpleTableVsSvarDatagridPost: BlogPostMetadata = {
-  title: "Simple Table vs SVAR DataGrid: Free MIT Svelte Data Grid Comparison",
+  title: "Simple Table vs SVAR DataGrid: Free Source-Available Svelte Data Grid Comparison",
   description:
-    "SVAR DataGrid for Svelte is feature-rich but bundles in SVAR's component ecosystem. Simple Table for Svelte is a smaller, focused MIT alternative with virtualization, pinning, grouping, and editing built in.",
+    "SVAR DataGrid for Svelte is feature-rich but bundles in SVAR's component ecosystem. Simple Table for Svelte is a smaller, focused source-available alternative with virtualization, pinning, grouping, and editing built in.",
   slug: "simple-table-vs-svar-datagrid",
   tags: ["svelte", "sveltekit", "comparison", "alternatives", "svar-datagrid"],
   createdAt: "2026-04-26",
@@ -696,9 +696,10 @@ export const simpleTableVsGridJsPost: BlogPostMetadata = {
 };
 
 export const simpleTableVsHandsontableVanillaPost: BlogPostMetadata = {
-  title: "simple-table-core vs Handsontable (Vanilla JS): MIT Data Grid vs Commercial Spreadsheet",
+  title:
+    "simple-table-core vs Handsontable (Vanilla JS): Source-Available Data Grid vs Commercial Spreadsheet",
   description:
-    "Handsontable's non-commercial license blocks production SaaS use. simple-table-core is MIT-licensed for any context and ships virtualization, pinning, grouping, and editing in vanilla TypeScript.",
+    "Handsontable's non-commercial license blocks production SaaS use. simple-table-core is source-available—free for pre-revenue teams, with Pro/Enterprise tiers for revenue-generating use—and ships virtualization, pinning, grouping, and editing in vanilla TypeScript.",
   slug: "simple-table-vs-handsontable-vanilla",
   tags: ["vanilla", "vanilla-typescript", "comparison", "alternatives", "handsontable"],
   createdAt: "2026-04-26",

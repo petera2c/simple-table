@@ -1,6 +1,6 @@
 {
   "name": "@simple-table/svelte",
-  "version": "3.7.2",
+  "version": "3.7.3",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/types/index.d.ts",
@@ -23,7 +23,7 @@
     },
     "./styles.css": "./dist/styles.css"
   },
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "publishConfig": {
     "access": "public"
   },
@@ -90,7 +90,6 @@
     "carbon svelte table alternative",
     "ag-grid alternative",
     "free svelte data grid",
-    "mit svelte data grid",
     "typescript data grid"
   ]
 }

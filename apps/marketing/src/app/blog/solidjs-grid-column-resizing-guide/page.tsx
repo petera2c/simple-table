@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Column resizing is one of those features users miss only when it's gone. The moment a content cell truncates with an ellipsis, somebody reaches for the column edge and tries to drag.",
         "This tutorial walks through column resizing patterns for the Solid ecosystem—TanStack Solid Table, Kobalte primitives, and Simple Table for Solid—and shows the signals-native setup.",
-        "If you also need pinning, virtualization, and grouping with aggregations, Simple Table for Solid ships them all in one MIT package.",
+        "If you also need pinning, virtualization, and grouping with aggregations, Simple Table for Solid ships them all in one source-available package.",
       ]}
       whyItMatters={[
         { title: "Density vs scannability", body: "Users adjust columns to suit their screen and the row data they're scanning—you don't have to guess for them." },
@@ -69,7 +69,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "Column resizing in SolidJS is a one-line prop on Simple Table. TanStack Solid Table is headless and requires DIY handles; Kobalte doesn't ship a grid.",
-        "If you need resize alongside virtualization, pinning, and grouping, Simple Table for Solid is the focused MIT pick—signals-native, ~70 kB gzipped.",
+        "If you need resize alongside virtualization, pinning, and grouping, Simple Table for Solid is the focused source-available pick—signals-native, ~70 kB gzipped.",
       ]}
       relatedLinks={[
         { href: "/blog/solidjs-data-grid-simple-table", label: "Pillar guide: best free SolidJS data grid in 2026" },
@@ -77,7 +77,7 @@ export default function Page() {
         { href: "/frameworks/solid", label: "Solid integration hub" },
       ]}
       ctaTitle="Add column resizing to your Solid grid"
-      ctaDescription="Simple Table for Solid ships resize, pinning, grouping, and editing in one MIT package—~70 kB gzipped, signals-native, Solid-Start ready."
+      ctaDescription="Simple Table for Solid ships resize, pinning, grouping, and editing in one source-available package—~70 kB gzipped, signals-native, Solid-Start ready."
       docsHref="/docs/column-resizing"
     />
   );

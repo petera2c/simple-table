@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Filtering is the bread-and-butter feature users hit before sorting or even rendering all rows. Get the typing wrong (string vs number vs date) and your filter UX feels broken.",
         "This tutorial walks through column filters, a global quick filter, and custom predicates for Vue 3 data grids and shows the Simple Table for Vue setup with the Composition API.",
-        "If you also need pinning, virtualization, and grouping with aggregations alongside filtering, Simple Table for Vue ships them all in one MIT package.",
+        "If you also need pinning, virtualization, and grouping with aggregations alongside filtering, Simple Table for Vue ships them all in one source-available package.",
       ]}
       whyItMatters={[
         { title: "Faster discovery", body: "Users find rows by typing or selecting; they don't scan thousands of rows visually." },
@@ -79,7 +79,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Add filtering to your Vue 3 grid"
-      ctaDescription="Simple Table for Vue ships column filters, quick filter, and custom predicates in one MIT package—~70 kB gzipped, Composition-API-friendly."
+      ctaDescription="Simple Table for Vue ships column filters, quick filter, and custom predicates in one source-available package—~70 kB gzipped, Composition-API-friendly."
       docsHref="/docs/column-filtering"
     />
   );

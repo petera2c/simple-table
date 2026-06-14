@@ -322,7 +322,7 @@ export default function Footer() {
                       isActive("/legal/license") ? "text-white font-medium" : ""
                     }`}
                   >
-                    MIT License
+                    Community License
                   </Link>
                 </li>
               </ul>

@@ -44,14 +44,14 @@ export default function SvelteKitDataTablePillarPage() {
       hubId="svelte"
       heroBadges={[
         { icon: faTrophy, label: "Best for Svelte 5 / SvelteKit", tone: "yellow" },
-        { icon: faDollarSign, label: "100% Free, MIT", tone: "green" },
+        { icon: faDollarSign, label: "Free for pre-revenue teams", tone: "green" },
         { icon: faCode, label: "Runes & TypeScript", tone: "blue" },
         { icon: faRocket, label: "SvelteKit Ready", tone: "purple" },
       ]}
       introHeading="The Svelte / SvelteKit data table landscape in 2026"
       introParagraphs={[
         "Svelte and SvelteKit teams ship admin tools, dashboards, and SaaS UIs that need real data tables—not just basic <table> tags. The choices today are limited: svelte-headless-table is great for headless logic but hands you no UI; SVAR DataGrid is a polished commercial option; Flowbite-Svelte and Skeleton ship table primitives without virtualization or grouping. There's no obvious 'free, batteries-included, virtualized, editable' Svelte data grid.",
-        "Simple Table for Svelte fills that gap. A single Svelte component drops into Svelte 4, Svelte 5 (runes), and SvelteKit projects with full sorting, filtering, virtualization, column pinning, row grouping, nested headers, cell editing, and theming—free under MIT for individuals and zero-revenue companies. It's powered by simple-table-core, the same engine the React, Vue, Angular, Solid, and vanilla adapters share, so the API and behavior match across stacks.",
+        "Simple Table for Svelte fills that gap. A single Svelte component drops into Svelte 4, Svelte 5 (runes), and SvelteKit projects with full sorting, filtering, virtualization, column pinning, row grouping, nested headers, cell editing, and theming—free for individuals and zero-revenue companies under the Simple Table Community License. It's powered by simple-table-core, the same engine the React, Vue, Angular, Solid, and vanilla adapters share, so the API and behavior match across stacks.",
         "This pillar guide explains when Simple Table is the right Svelte data table, how it compares with svelte-headless-table, SVAR DataGrid, and Flowbite-Svelte, and exactly how to install and use it in a SvelteKit page.",
       ]}
       whatYoullLearn={[
@@ -83,8 +83,8 @@ export default function SvelteKitDataTablePillarPage() {
         },
         {
           icon: faShieldHalved,
-          title: "MIT for free, simple licensing for revenue",
-          body: "Free for individuals and zero-revenue projects under MIT. Per-product Pro/Enterprise licensing for revenue-generating teams—no per-developer fees.",
+          title: "Free for pre-revenue teams, simple licensing for revenue",
+          body: "Free for individuals and zero-revenue projects under the Simple Table Community License. Per-product Pro/Enterprise licensing for revenue-generating teams—no per-developer fees.",
           tone: "amber",
         },
       ]}
@@ -129,7 +129,7 @@ export default function SvelteKitDataTablePillarPage() {
         },
         {
           feature: "License",
-          ours: { tone: "neutral", label: "MIT / Pro" },
+          ours: { tone: "neutral", label: "Community License / Pro" },
           values: [
             { tone: "neutral", label: "MIT" },
             { tone: "neutral", label: "Commercial" },
@@ -182,7 +182,7 @@ export default function SvelteKitDataTablePillarPage() {
         {
           question: "How does it compare with SVAR DataGrid?",
           answer:
-            "SVAR DataGrid is a polished, feature-rich commercial Svelte grid. Simple Table covers the same broad surface area (virtualization, pinning, grouping, editing) under MIT for individuals and zero-revenue projects, with simple per-product pricing for revenue-generating teams.",
+            "SVAR DataGrid is a polished, feature-rich commercial Svelte grid. Simple Table covers the same broad surface area (virtualization, pinning, grouping, editing) under the Simple Table Community License for individuals and zero-revenue projects, with simple per-product pricing for revenue-generating teams.",
         },
       ]}
       conclusionHeading="The verdict for Svelte and SvelteKit teams"

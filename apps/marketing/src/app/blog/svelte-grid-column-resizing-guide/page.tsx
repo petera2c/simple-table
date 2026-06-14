@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Column resizing is one of those features users miss only when it's gone. The moment a content cell truncates with an ellipsis, somebody reaches for the column edge and tries to drag.",
         "This tutorial walks through column resizing patterns for the Svelte data grid landscape—svelte-headless-table, SVAR DataGrid, Flowbite—and shows the Simple Table for Svelte setup with both Svelte 4 stores and Svelte 5 runes.",
-        "If you also need pinning, virtualization, and grouping with aggregations, Simple Table for Svelte ships them all in one MIT package.",
+        "If you also need pinning, virtualization, and grouping with aggregations, Simple Table for Svelte ships them all in one source-available package.",
       ]}
       whyItMatters={[
         { title: "Density vs scannability", body: "Users adjust columns to suit their screen and the row data they're scanning—you don't have to guess for them." },
@@ -70,7 +70,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "Column resizing in Svelte / SvelteKit is a one-line prop on Simple Table. svelte-headless-table is fully headless (you build resize yourself); SVAR ships it but is commercial; Flowbite is markup-only.",
-        "If you need resize alongside virtualization, pinning, and grouping, Simple Table for Svelte is the focused MIT pick—Svelte 5 runes ready.",
+        "If you need resize alongside virtualization, pinning, and grouping, Simple Table for Svelte is the focused source-available pick—Svelte 5 runes ready.",
       ]}
       relatedLinks={[
         { href: "/blog/sveltekit-data-table-simple-table", label: "Pillar guide: best free SvelteKit data table in 2026" },
@@ -78,7 +78,7 @@ export default function Page() {
         { href: "/frameworks/svelte", label: "Svelte integration hub" },
       ]}
       ctaTitle="Add column resizing to your Svelte grid"
-      ctaDescription="Simple Table for Svelte ships resize, pinning, grouping, and editing in one MIT package—~70 kB gzipped, Svelte 5 runes ready."
+      ctaDescription="Simple Table for Svelte ships resize, pinning, grouping, and editing in one source-available package—~70 kB gzipped, Svelte 5 runes ready."
       docsHref="/docs/column-resizing"
     />
   );

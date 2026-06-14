@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Org charts, file systems, BOMs, ledger structures—real-world data is rarely flat. Tree-data tables let users expand and collapse rows in place to drill down without losing context.",
         "This tutorial covers tree-data patterns in Angular: parent/child rendering, lazy loading children, and expand-all / collapse-all controls. We compare PrimeNG TreeTable, AG Grid (Enterprise) and Simple Table for Angular.",
-        "Note: AG Grid Tree Data is an Enterprise-tier feature ($999+/dev/year). Simple Table for Angular ships tree data in MIT.",
+        "Note: AG Grid Tree Data is an Enterprise-tier feature ($999+/dev/year). Simple Table for Angular ships tree data free for pre-revenue teams (source-available).",
       ]}
       whyItMatters={[
         { title: "Drill-down without losing context", body: "Users see parent and children in the same surface; no modal or detail-page round-trips." },
@@ -47,7 +47,7 @@ export default function Page() {
         { title: "Combinable with sort/filter", body: "Filter the leaves; the right ancestors stay visible to preserve context." },
       ]}
       libraryRows={[
-        { library: "Simple Table for Angular", support: { value: "Built-in (MIT)", tone: "good" }, notes: "Hierarchical rows with built-in expand/collapse and chevron renderer." },
+        { library: "Simple Table for Angular", support: { value: "Built-in (Community License)", tone: "good" }, notes: "Hierarchical rows with built-in expand/collapse and chevron renderer." },
         { library: "AG Grid Angular", support: { value: "Enterprise only", tone: "bad" }, notes: "treeData: true; requires AG Grid Enterprise license." },
         { library: "PrimeNG TreeTable", support: { value: "Built-in", tone: "good" }, notes: "<p-treeTable> separate component from <p-table>; different API." },
         { library: "ngx-datatable", support: { value: "Manual", tone: "bad" }, notes: "No native tree—pre-flatten and render with row templates yourself." },
@@ -75,7 +75,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "Tree data in Angular is straightforward with Simple Table—provide hierarchy on each row and Simple Table handles the rest. AG Grid requires Enterprise; PrimeNG splits it into a separate TreeTable component; mat-table requires mat-tree (a different component).",
-        "If you need hierarchical data alongside virtualization and pinning, Simple Table for Angular is the focused MIT pick.",
+        "If you need hierarchical data alongside virtualization and pinning, Simple Table for Angular is the focused source-available pick.",
       ]}
       relatedLinks={[
         { href: "/blog/angular-data-grid-simple-table", label: "Pillar guide: best free Angular data grid in 2026" },
@@ -83,7 +83,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Add tree data to your Angular grid"
-      ctaDescription="Simple Table for Angular ships tree data, virtualization, pinning, and editing in one MIT package—~70 kB gzipped, signals-native."
+      ctaDescription="Simple Table for Angular ships tree data, virtualization, pinning, and editing in one source-available package—free for pre-revenue teams, ~70 kB gzipped, signals-native."
       docsHref="/docs/nested-tables"
     />
   );

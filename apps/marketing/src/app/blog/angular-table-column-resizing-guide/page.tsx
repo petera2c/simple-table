@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "You're building an Angular admin tool. The Description column is too narrow, the ID column is too wide. Users want Excel-like control. That's column resizing—and it's surprisingly easy to get wrong if you wire mouse and touch events yourself.",
         "This guide compares column-resizing implementations across the Angular data grid landscape (AG Grid Angular, ngx-datatable, PrimeNG, mat-table, Simple Table for Angular) and shows the idiomatic standalone-component setup for Simple Table.",
-        "If you're greenfield on Angular 17/18/19 and want resizing that integrates with virtualization, pinning, and grouping, Simple Table for Angular is the focused MIT pick. Read on for the implementation details.",
+        "If you're greenfield on Angular 17/18/19 and want resizing that integrates with virtualization, pinning, and grouping, Simple Table for Angular is the focused source-available pick. Read on for the implementation details.",
       ]}
       whyItMatters={[
         { title: "User control", body: "Different users need different column widths. Resizing puts that control in their hands rather than your design system's." },
@@ -82,7 +82,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "Column resizing in Angular is a single input on Simple Table. AG Grid covers it out of the box too, but with verbose config. PrimeNG and ngx-datatable need more wiring; mat-table needs custom directives.",
-        "If you're greenfield on Angular 17+ and want resize, pinning, virtualization, grouping, and editing in one MIT package, Simple Table for Angular is the focused pick.",
+        "If you're greenfield on Angular 17+ and want resize, pinning, virtualization, grouping, and editing in one source-available package, Simple Table for Angular is the focused pick.",
       ]}
       relatedLinks={[
         { href: "/blog/angular-data-grid-simple-table", label: "Pillar guide: best free Angular data grid in 2026" },
@@ -90,7 +90,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Add column resizing to your Angular grid"
-      ctaDescription="Simple Table for Angular ships resize, pinning, grouping, and editing in one MIT package—~70 kB gzipped, signals-native, standalone-component-friendly."
+      ctaDescription="Simple Table for Angular ships resize, pinning, grouping, and editing in one source-available package—free for pre-revenue teams, ~70 kB gzipped, signals-native, standalone-component-friendly."
       docsHref="/docs/column-resizing"
     />
   );
