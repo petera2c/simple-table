@@ -406,6 +406,11 @@ export const createStickyParentsContainer = (
   // Create main container
   const container = document.createElement("div");
   container.className = "st-sticky-top";
+  // The sticky overlay is a purely visual duplicate of parent rows that are
+  // already present in the grid. Hide it from assistive technology so screen
+  // readers don't announce the rows twice and so its duplicated gridcells
+  // don't appear in the accessibility tree without a valid row parent.
+  container.setAttribute("aria-hidden", "true");
   container.style.height = `${stickyHeight}px`;
   container.style.width = containerWidth;
   if (props.externalScrollActive) {

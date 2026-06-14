@@ -1,3 +1,5 @@
+import { cleanupAriaRows } from "../ariaRowOwnership";
+
 // Event listener tracking - store listeners per element
 const elementListenersMap = new WeakMap<HTMLElement, Array<{
   event: string;
@@ -44,5 +46,6 @@ export const cleanupBodyCellRendering = (container?: HTMLElement) => {
       element.remove();
     });
     renderedCells.clear();
+    cleanupAriaRows(container);
   }
 };

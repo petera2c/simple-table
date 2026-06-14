@@ -14,6 +14,7 @@ import { updateExpandIconState } from "./bodyCell/expansion";
 import { updateCheckboxElement } from "./columnEditor/createCheckbox";
 import { isRowExpanded, expandStateKey } from "./rowUtils";
 import { applyRowSeparatorSectionWidth, createRowSeparator } from "./rowSeparatorRenderer";
+import { getOrCreateRowElement, reconcileRowElements } from "./ariaRowOwnership";
 import { calculateSeparatorTopPosition } from "./infiniteScrollUtils";
 import { DEFAULT_CUSTOM_THEME } from "../types/CustomTheme";
 import type TableRow from "../types/TableRow";
@@ -461,8 +462,14 @@ export const renderBodyCells = (
     }
   });
 
-  // Batch create new cells using DocumentFragment
-  const fragment = document.createDocumentFragment();
+  // Cells are nested inside `role="row"` elements (see ariaRowOwnership) so the
+  // grid → rowgroup → row → gridcell hierarchy is valid. The row elements use
+  // `display: contents`, so cell positioning is unchanged.
+  const maxHeaderDepth = context.maxHeaderDepth ?? 1;
+  const bodyRowKey = (cell: AbsoluteBodyCell): string => String(cell.stableRowKey ?? cell.rowId);
+  const bodyRowIndex = (cell: AbsoluteBodyCell): number =>
+    cell.tableRow.position + maxHeaderDepth + 1;
+
   const cellsToCreate: Array<{ cell: AbsoluteBodyCell; cellId: string }> = [];
 
   // First pass: identify cells to create vs update
@@ -476,6 +483,10 @@ export const renderBodyCells = (
       cellsToCreate.push({ cell, cellId });
     } else {
       const cellElement = renderedCells.get(cellId)!;
+
+      // Keep the owning row's index in sync (cheap attr update; no reparent so
+      // running cell transitions are unaffected).
+      getOrCreateRowElement(container, bodyRowKey(cell), bodyRowIndex(cell));
 
       if (positionOnly) {
         // Scroll-driven update: only update position; skip content and checkbox/expand sync
@@ -531,6 +542,13 @@ export const renderBodyCells = (
     const claimed = animationCoordinator?.claimRetainedForReuse(cellId, container);
     if (claimed) {
       updateBodyCellElement(claimed, cell, context);
+      // The claimed ghost shares this cellId, so it already lives in the
+      // matching (stable-keyed) row element; just refresh that row's index.
+      // Avoid reparenting so the in-flight transition isn't cancelled.
+      const claimedRow = getOrCreateRowElement(container, bodyRowKey(cell), bodyRowIndex(cell));
+      if (claimed.parentElement !== claimedRow) {
+        claimedRow.appendChild(claimed);
+      }
       renderedCells.set(cellId, claimed);
       return;
     }
@@ -563,14 +581,12 @@ export const renderBodyCells = (
       accordionGrowFromZero.push({ element: cellElement, cell });
     }
 
-    fragment.appendChild(cellElement);
+    // Append the new cell into its row element (creating the row on first use)
+    // so it becomes a DOM descendant of a `role="row"`.
+    const rowEl = getOrCreateRowElement(container, bodyRowKey(cell), bodyRowIndex(cell));
+    rowEl.appendChild(cellElement);
     renderedCells.set(cellId, cellElement);
   });
-
-  // Single DOM operation to add all new cells
-  if (fragment.childNodes.length > 0) {
-    container.appendChild(fragment);
-  }
 
   // Schedule the accordion size growth on the next two rAFs. The first frame
   // commits the zero-size paint; the second writes the final size, and the
@@ -599,4 +615,8 @@ export const renderBodyCells = (
   // band) and only touches the DOM for separators whose top/strong-border/
   // section-width actually changed (see `SeparatorMetadata` cache).
   renderRowSeparators(container, cellsToRender, context, renderedSeparators, allRows);
+
+  // Drop row elements that no longer hold any cells (retained animation ghosts
+  // keep their row alive until they finish and remove themselves).
+  reconcileRowElements(container);
 };

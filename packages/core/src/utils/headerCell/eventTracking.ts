@@ -1,4 +1,5 @@
 import HeaderObject from "../../types/HeaderObject";
+import { cleanupAriaRows } from "../ariaRowOwnership";
 
 // Event listener tracking - store listeners per element
 const elementListenersMap = new WeakMap<
@@ -113,5 +114,6 @@ export const cleanupHeaderCellRendering = (container?: HTMLElement) => {
     renderedCells.clear();
     getHeaderPositionCache(container).clear();
     removeFloatingHeaderTooltips(container);
+    cleanupAriaRows(container);
   }
 };

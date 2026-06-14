@@ -17,6 +17,7 @@ import {
 import { updateHeaderSelectionCheckbox } from "./headerCell/selection";
 import { updateHeaderCollapseIconState } from "./headerCell/collapsing";
 import { hasCollapsibleChildren } from "./collapseUtils";
+import { getOrCreateRowElement, reconcileRowElements } from "./ariaRowOwnership";
 import type HeaderObject from "../types/HeaderObject";
 
 // Re-export types for backward compatibility
@@ -96,6 +97,19 @@ export const renderHeaderCells = (
     cellsToRender.map((cell) => getCellId({ accessor: cell.header.accessor, rowId: "header" })),
   );
 
+  // Header cells are nested inside `role="row"` elements so every columnheader
+  // has a valid row parent (grid → rowgroup → row → columnheader). Cells are
+  // grouped into rows by their vertical band (`top`); distinct bands become
+  // 1-based row levels (one row per level for nested/grouped headers). The row
+  // elements use `display: contents`, so cell positioning is unchanged.
+  const headerBandLevels = new Map<number, number>();
+  Array.from(new Set(absoluteCells.map((c) => Math.round(c.top))))
+    .sort((a, b) => a - b)
+    .forEach((band, level) => headerBandLevels.set(band, level));
+  const headerRowKey = (cell: AbsoluteCell): string => `header-band-${Math.round(cell.top)}`;
+  const headerRowIndex = (cell: AbsoluteCell): number =>
+    (headerBandLevels.get(Math.round(cell.top)) ?? 0) + 1;
+
   const positionCache = getHeaderPositionCache(container);
 
   // Active accordion axis for hide/show/pin/unpin renders (set by
@@ -146,8 +160,6 @@ export const renderHeaderCells = (
     removeFloatingHeaderTooltips(container);
   }
 
-  // Batch create new cells using DocumentFragment
-  const fragment = document.createDocumentFragment();
   const cellsToCreate: Array<{
     cell: AbsoluteCell;
     cellId: string;
@@ -166,6 +178,8 @@ export const renderHeaderCells = (
     } else {
       // Use cached position to detect change (avoid DOM reads / layout thrash)
       const cellElement = renderedCells.get(cellId)!;
+      // Keep the owning row's index in sync (cheap attr update, no reparent).
+      getOrCreateRowElement(container, headerRowKey(cell), headerRowIndex(cell));
       // Keep grid column index in sync when columns reorder / pin / hide so
       // SelectionManager.syncHeaderSelectionClasses (reads aria-colindex) matches
       // body cells' data-col-index.
@@ -284,7 +298,10 @@ export const renderHeaderCells = (
       accordionGrowFromZero.push({ element: cellElement, cell });
     }
 
-    fragment.appendChild(cellElement);
+    // Append the new header cell into its row element (creating the row on
+    // first use) so it becomes a DOM descendant of a `role="row"`.
+    const rowEl = getOrCreateRowElement(container, headerRowKey(cell), headerRowIndex(cell));
+    rowEl.appendChild(cellElement);
     renderedCells.set(cellId, cellElement);
     positionCache.set(cellId, {
       left: cell.left,
@@ -293,11 +310,6 @@ export const renderHeaderCells = (
       height: cell.height,
     });
   });
-
-  // Single DOM operation to add all new cells
-  if (fragment.childNodes.length > 0) {
-    container.appendChild(fragment);
-  }
 
   if (accordionAxis && accordionGrowFromZero.length > 0) {
     requestAnimationFrame(() => {
@@ -319,4 +331,7 @@ export const renderHeaderCells = (
   if (!context.pinned) {
     container.dataset.lastScrollLeft = String(scrollLeft);
   }
+
+  // Drop row elements that no longer hold any header cells.
+  reconcileRowElements(container);
 };

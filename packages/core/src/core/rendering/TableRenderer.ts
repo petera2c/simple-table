@@ -145,11 +145,16 @@ export class TableRenderer {
       canDisplaySection(deps.effectiveHeaders, undefined) ||
       canDisplaySection(deps.effectiveHeaders, "right");
     container.style.minHeight = hasAnyVisibleSection ? "" : `${calculatedHeaderHeight}px`;
-    container.setAttribute("aria-rowcount", String(1 + deps.localRows.length));
-    container.setAttribute(
-      "aria-colcount",
-      String(deps.effectiveHeaders.length),
-    );
+
+    // `aria-rowcount`/`aria-colcount` must live on the element with the grid
+    // role (`.st-content`, the header container's parent), not on the header
+    // container itself — those attributes are only valid on a grid/table/
+    // treegrid element. (`.st-header-container` has no role.)
+    const gridElement = container.parentElement;
+    if (gridElement) {
+      gridElement.setAttribute("aria-rowcount", String(1 + deps.localRows.length));
+      gridElement.setAttribute("aria-colcount", String(deps.effectiveHeaders.length));
+    }
 
     const dimensionState = deps.dimensionManager?.getState() ?? {
       containerWidth: 0,

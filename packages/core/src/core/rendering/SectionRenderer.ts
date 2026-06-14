@@ -246,7 +246,9 @@ export class SectionRenderer {
           : pinned === "right"
             ? "st-header-pinned-right"
             : "st-header-main";
-      section.setAttribute("role", "rowgroup");
+      // Section is a visual-only sub-container; the ARIA rowgroup lives on the
+      // header/body container (its parent). Leaving the section role-less keeps
+      // it transparent so the row elements it holds resolve to that rowgroup.
       this.headerSections.set(sectionKey, section);
     }
 
@@ -360,7 +362,9 @@ export class SectionRenderer {
           : pinned === "right"
             ? "st-body-pinned-right"
             : "st-body-main";
-      section.setAttribute("role", "rowgroup");
+      // Section is a visual-only sub-container; the ARIA rowgroup lives on the
+      // body container (its parent). Leaving the section role-less keeps it
+      // transparent so the row elements it holds resolve to that rowgroup.
       this.bodySections.set(sectionKey, section);
     }
 

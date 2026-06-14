@@ -48,12 +48,16 @@ export const TableStructureAriaAttributes = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    const headerContainer = canvasElement.querySelector(".st-header-container");
-    if (!headerContainer) throw new Error("Header container not found");
-    const ariaRowCount = headerContainer.getAttribute("aria-rowcount");
+    // `aria-rowcount`/`aria-colcount` live on the element carrying the grid
+    // role (`.st-content`), since those attributes are only valid on a
+    // grid/table/treegrid element.
+    const gridElement = canvasElement.querySelector('[role="grid"]');
+    if (!gridElement) throw new Error("Grid element not found");
+    expect(gridElement.classList.contains("st-content")).toBe(true);
+    const ariaRowCount = gridElement.getAttribute("aria-rowcount");
     expect(ariaRowCount).toBeTruthy();
     expect(Number(ariaRowCount)).toBeGreaterThanOrEqual(11);
-    const ariaColCount = headerContainer.getAttribute("aria-colcount");
+    const ariaColCount = gridElement.getAttribute("aria-colcount");
     expect(ariaColCount).toBeTruthy();
     expect(Number(ariaColCount)).toBe(4);
     const headerCells = canvasElement.querySelectorAll(".st-header-cell");
@@ -64,6 +68,8 @@ export const TableStructureAriaAttributes = {
     });
     const bodyContainer = canvasElement.querySelector(".st-body-container");
     if (!bodyContainer) throw new Error("Body container not found");
+    // The body scroll region must be keyboard focusable (WCAG 2.1.1).
+    expect(bodyContainer.getAttribute("tabindex")).toBe("0");
     const bodyCells = bodyContainer.querySelectorAll(".st-cell");
     expect(bodyCells.length).toBeGreaterThan(0);
     bodyCells.forEach((cell) => {
@@ -72,6 +78,23 @@ export const TableStructureAriaAttributes = {
       expect(cell.getAttribute("aria-colindex")).toBeTruthy();
       expect(Number(cell.getAttribute("aria-colindex"))).toBeGreaterThan(0);
     });
+    // Every gridcell must be a DOM descendant of a `role="row"` element so the
+    // grid → rowgroup → row → gridcell hierarchy is valid.
+    const ariaRows = canvasElement.querySelectorAll('.st-aria-row[role="row"]');
+    expect(ariaRows.length).toBeGreaterThan(0);
+    const firstBodyCell = bodyContainer.querySelector(".st-cell");
+    expect(firstBodyCell).toBeTruthy();
+    const owningRow = firstBodyCell!.closest('[role="row"]');
+    expect(owningRow).toBeTruthy();
+    expect(owningRow!.classList.contains("st-aria-row")).toBe(true);
+    expect(owningRow!.getAttribute("aria-rowindex")).toBeTruthy();
+    // The header columnheaders must likewise sit under a row.
+    const firstHeaderCell = canvasElement.querySelector(".st-header-cell");
+    expect(firstHeaderCell!.closest('[role="row"]')).toBeTruthy();
+    // The grid's two row groups are the header and body containers.
+    const headerContainer = canvasElement.querySelector(".st-header-container");
+    expect(headerContainer?.getAttribute("role")).toBe("rowgroup");
+    expect(bodyContainer.getAttribute("role")).toBe("rowgroup");
   },
 };
 
