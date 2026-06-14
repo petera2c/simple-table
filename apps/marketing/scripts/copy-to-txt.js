@@ -9,6 +9,11 @@ const __dirname = dirname(__filename);
 const MONOREPO_ROOT = join(__dirname, "../../..");
 const EXAMPLES_BASE = join(MONOREPO_ROOT, "packages/examples");
 const OUTPUT_DIR = join(__dirname, "../public/txt-demos");
+// Display-only, hand-written minimal snippets that override the full demo source
+// shown in the Code toggle. Located in the marketing app (not packages/examples)
+// so they never leak into the StackBlitz folder copy. The full runnable demo
+// remains the source of truth for the live preview and StackBlitz.
+const SNIPPETS_DIR = join(__dirname, "../snippets");
 
 const FRAMEWORKS = ["react", "vue", "angular", "svelte", "solid", "vanilla"];
 
@@ -31,6 +36,16 @@ async function getDemoDirs(framework) {
       console.warn(`Demos directory not found for ${framework}: ${demosDir}`);
       return [];
     }
+    throw err;
+  }
+}
+
+async function readSnippetOverride(framework, demoId) {
+  const overridePath = join(SNIPPETS_DIR, framework, `${demoId}.txt`);
+  try {
+    return await fs.readFile(overridePath, "utf8");
+  } catch (err) {
+    if (err.code === "ENOENT") return null;
     throw err;
   }
 }
@@ -89,7 +104,8 @@ async function copyToTxt() {
       await fs.mkdir(frameworkDir, { recursive: true });
 
       for (const demoId of demoIds) {
-        const content = await readDemoFiles(framework, demoId);
+        const override = await readSnippetOverride(framework, demoId);
+        const content = override ?? (await readDemoFiles(framework, demoId));
         if (!content) {
           console.warn(`  ⚠ No source files for ${framework}/${demoId}`);
           continue;
@@ -97,7 +113,7 @@ async function copyToTxt() {
 
         const destPath = join(frameworkDir, `${demoId}.txt`);
         await fs.writeFile(destPath, content, "utf8");
-        console.log(`  ✓ ${framework}/${demoId}.txt`);
+        console.log(`  ✓ ${framework}/${demoId}.txt${override ? " (snippet)" : ""}`);
         total++;
       }
     }
