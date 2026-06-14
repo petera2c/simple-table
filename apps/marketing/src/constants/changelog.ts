@@ -10,6 +10,18 @@ export interface ChangelogEntry {
     link?: string;
   }[];
 }
+export const v3_7_2: ChangelogEntry = {
+  version: "3.7.2",
+  date: "2026-06-13",
+  title: "Scroll fix",
+  description: "Scroll fix.",
+  changes: [
+    {
+      type: "bugfix",
+      description: "Mobile horizontal scroll fix.",
+    },
+  ],
+};
 export const v3_7_1: ChangelogEntry = {
   version: "3.7.1",
   date: "2026-06-13",
@@ -1811,6 +1823,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_7_2,
   v3_7_1,
   v3_7_0,
   v3_6_8,

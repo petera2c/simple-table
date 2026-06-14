@@ -9,12 +9,6 @@ interface RegisteredPane {
 export interface SectionScrollControllerConfig {
   /** Heavy body virtualization. Throttled to every {@link VIRTUALIZATION_THRESHOLD_PX}px. */
   onMainSectionScrollLeft?: (scrollLeft: number) => void;
-  /**
-   * Lightweight header re-render, run on every main-section scroll frame (not throttled) so the
-   * header tracks the body fluidly during momentum. Re-rendering only the (few) header cells each
-   * frame avoids the stepwise "stagger" that throttled header virtualization produces.
-   */
-  onMainSectionHeaderFrame?: (scrollLeft: number) => void;
 }
 
 /** Run column virtualization only when scroll has moved by at least this many px (reduces lag; scroll position still syncs every scroll). */
@@ -38,6 +32,8 @@ export class SectionScrollController {
     ["pinned-right", new Set<RegisteredPane>()],
   ]);
   private scrollHandlers: WeakMap<HTMLElement, () => void> = new WeakMap();
+  /** Non-passive touchmove handlers on header panes that cancel iOS touch scrolling. */
+  private headerTouchMoveHandlers: WeakMap<HTMLElement, (e: TouchEvent) => void> = new WeakMap();
   private config: SectionScrollControllerConfig;
   /** Guard to avoid re-entrancy when we programmatically set scrollLeft on other panes */
   private isSyncing = false;
@@ -89,12 +85,30 @@ export class SectionScrollController {
     const isPureFollower = role === "header" || role === "sticky";
     if (isPureFollower) {
       element.style.overflowX = "hidden";
-    } else {
-      this.addScrollListener(sectionId, element);
+    }
+    // Sticky is a pure follower (never user-scrolled), so it gets no scroll listener. Header, body
+    // and scrollbar can all be scroll sources (e.g. wheel/trackpad over the header still scrolls an
+    // overflow:hidden element on desktop), so they listen and propagate to the rest of the section.
+    if (role !== "sticky") {
+      this.addScrollListener(sectionId, element, role);
       if (role === "body") {
         this.addTouchTracking(sectionId, element);
       }
     }
+    // Completely disable touch scrolling on the header (mobile). iOS still scrolls overflow:hidden
+    // elements by touch and does not honor `touch-action` on a scroll container, so the reliable fix
+    // is to cancel the touch scroll via a non-passive `touchmove` preventDefault. This MUST be
+    // attached AFTER addScrollListener() above, because addScrollListener begins by calling
+    // removeScrollListener(element), which also strips this touchmove handler — attaching first would
+    // immediately remove it. Desktop wheel is unaffected (it does not dispatch touch events), so the
+    // header still scrolls and syncs the body on desktop; the header is not a scroll surface on mobile.
+    if (role === "header") {
+      element.style.touchAction = "none";
+      const preventTouchScroll = (e: TouchEvent) => e.preventDefault();
+      this.headerTouchMoveHandlers.set(element, preventTouchScroll);
+      element.addEventListener("touchmove", preventTouchScroll, { passive: false });
+    }
+
     // Sync new pane to current section scroll position (e.g. when scrollbar is created after header/body)
     const current = this.scrollLeftBySection[sectionId] ?? 0;
     if (element.scrollLeft !== current) {
@@ -164,10 +178,20 @@ export class SectionScrollController {
     });
   }
 
-  private addScrollListener(sectionId: SectionId, element: HTMLElement): void {
+  private addScrollListener(
+    sectionId: SectionId,
+    element: HTMLElement,
+    sourceRole: SectionPaneRole,
+  ): void {
     this.removeScrollListener(element);
     const handler = () => {
       if (this.isSyncing) return;
+      // During a touch-driven body scroll (and its momentum), only the body may act as the scroll
+      // source. Ignore scroll events from other panes — notably the header's echo event produced by
+      // our own programmatic scrollLeft sync — because propagating them would write the body's
+      // scrollLeft and cancel iOS inertial momentum.
+      if (this.isTouchScrolling && sourceRole !== "body") return;
+
       const value = element.scrollLeft;
       this.scrollLeftBySection[sectionId] = value;
       this.isSyncing = true;
@@ -186,11 +210,6 @@ export class SectionScrollController {
       }
 
       if (this.isTouchScrolling) this.scheduleTouchSettle(sectionId);
-
-      // Header tracks every frame (cheap) so it doesn't visually step/stagger behind the body.
-      if (sectionId === "main" && this.config.onMainSectionHeaderFrame) {
-        this.config.onMainSectionHeaderFrame(value);
-      }
 
       // Virtualization (main section only): run only every N px so scroll position sync paints without being blocked
       if (
@@ -261,6 +280,11 @@ export class SectionScrollController {
     if (handler) {
       element.removeEventListener("scroll", handler);
       this.scrollHandlers.delete(element);
+    }
+    const touchMoveHandler = this.headerTouchMoveHandlers.get(element);
+    if (touchMoveHandler) {
+      element.removeEventListener("touchmove", touchMoveHandler);
+      this.headerTouchMoveHandlers.delete(element);
     }
   }
 
