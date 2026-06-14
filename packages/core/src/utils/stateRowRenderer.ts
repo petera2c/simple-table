@@ -53,6 +53,9 @@ export const createStateRow = (
 
   const rowElement = document.createElement("div");
   rowElement.className = `st-row st-state-row st-row-position-${position}`;
+  // State indicators (loading/error/empty) are full-width rows in the grid, so
+  // they must carry the row → gridcell hierarchy like any other row.
+  rowElement.setAttribute("role", "row");
   rowElement.dataset.index = String(context.index);
 
   rowElement.style.width = "100%";
@@ -66,6 +69,7 @@ export const createStateRow = (
 
   const cellElement = document.createElement("div");
   cellElement.className = "st-cell st-state-row-cell";
+  cellElement.setAttribute("role", "gridcell");
   cellElement.style.width = "100%";
   cellElement.style.padding = "0";
 

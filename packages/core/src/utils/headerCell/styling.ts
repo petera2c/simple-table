@@ -5,6 +5,7 @@ import { AbsoluteCell, HeaderRenderContext } from "./types";
 import { createSortIcon } from "./sorting";
 import { createFilterIcon } from "./filtering";
 import { createCollapseIcon } from "./collapsing";
+import { getHeaderColspan, hasCollapsibleChildren } from "../collapseUtils";
 import { createResizeHandle } from "./resizing";
 import { createLabelContent, createEditableInput } from "./editing";
 import {
@@ -165,6 +166,18 @@ export const createHeaderCellElement = (
   cellElement.setAttribute("data-accessor", String(header.accessor));
   cellElement.setAttribute("role", "columnheader");
   cellElement.setAttribute("aria-colindex", String(colIndex + 1));
+  // Grouped/nested header cells span their visible leaf columns; expose that
+  // span so the column hierarchy isn't flattened for AT.
+  if (header.children && header.children.length > 0) {
+    const colspan = getHeaderColspan(header, context.headers, context.collapsedHeaders);
+    cellElement.setAttribute("aria-colspan", String(colspan));
+  }
+  // A collapsible column header is itself the expand/collapse control's owner,
+  // so expose its expanded state on the columnheader (not only on the icon).
+  if (hasCollapsibleChildren(header)) {
+    const collapsedSet = context.getCollapsedHeaders?.() ?? context.collapsedHeaders;
+    cellElement.setAttribute("aria-expanded", String(!collapsedSet.has(header.accessor)));
+  }
 
   if (header.isSortable) {
     if (context.sort?.key.accessor === header.accessor) {

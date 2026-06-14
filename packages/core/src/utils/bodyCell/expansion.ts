@@ -17,6 +17,7 @@ export const createExpandIcon = (
   }`;
   outerContainer.setAttribute("role", "button");
   outerContainer.setAttribute("aria-label", isExpanded ? "Collapse row" : "Expand row");
+  outerContainer.setAttribute("aria-expanded", String(isExpanded));
   outerContainer.setAttribute("tabindex", "0");
 
   // Use the icon from context (matches React implementation: {icons.expand})
@@ -200,9 +201,9 @@ export const updateExpandIconState = (
       iconContainer.classList.toggle("expanded", isExpanded);
       iconContainer.classList.toggle("collapsed", !isExpanded);
       iconContainer.setAttribute("aria-label", isExpanded ? labelExpanded : labelCollapsed);
-      if (options?.syncAriaExpanded) {
-        iconContainer.setAttribute("aria-expanded", String(isExpanded));
-      }
+      // The chevron always carries aria-expanded (set at creation), so keep it
+      // in sync on every toggle regardless of the legacy opt-in flag.
+      iconContainer.setAttribute("aria-expanded", String(isExpanded));
     });
   });
 };

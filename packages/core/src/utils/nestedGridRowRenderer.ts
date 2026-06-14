@@ -92,6 +92,10 @@ export function createNestedGridRow(
 
   const rowElement = document.createElement("div");
   rowElement.className = `st-row st-nested-grid-row st-row-position-${tableRow.position}`;
+  // Keep the grid hierarchy valid: this full-width expansion is a row whose
+  // single cell hosts the nested grid (row → gridcell → grid), rather than a
+  // bare div sitting directly under the rowgroup.
+  rowElement.setAttribute("role", "row");
   rowElement.dataset.index = String(tableRow.position);
   rowElement.style.position = "absolute";
   rowElement.style.left = "0";
@@ -105,6 +109,7 @@ export function createNestedGridRow(
   rowElement.style.boxSizing = "border-box";
 
   const innerContainer = document.createElement("div");
+  innerContainer.setAttribute("role", "gridcell");
   innerContainer.style.height = "100%";
   innerContainer.style.width = "100%";
   rowElement.appendChild(innerContainer);
@@ -167,6 +172,11 @@ export function createNestedGridSpacer(
 
   const spacer = document.createElement("div");
   spacer.className = "st-row st-nested-grid-spacer";
+  // Pinned spacer is a purely visual filler that mirrors the main section's
+  // nested row height; hide it from the accessibility tree so it isn't a
+  // non-row child of the rowgroup and isn't announced twice.
+  spacer.setAttribute("role", "presentation");
+  spacer.setAttribute("aria-hidden", "true");
   spacer.dataset.index = String(tableRow.position);
   spacer.style.position = "absolute";
   spacer.style.left = "0";
