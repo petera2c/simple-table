@@ -196,9 +196,7 @@ input {
    on top of the body's virtualized-out top region. */
 .simple-table-root.st-external-scroll .st-sticky-top {
   position: sticky;
-  top: calc(
-    var(--st-calculated-header-height, 0px) - var(--st-external-scroll-padding-top, 0px)
-  );
+  top: calc(var(--st-calculated-header-height, 0px) - var(--st-external-scroll-padding-top, 0px));
 }
 
 .st-wrapper-container {
@@ -731,6 +729,7 @@ input {
   justify-content: center;
   margin-left: 4px;
   border-radius: 4px;
+  align-self: stretch;
   transition: outline 0.2s ease;
 }
 
