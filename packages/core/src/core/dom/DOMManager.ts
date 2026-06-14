@@ -65,7 +65,11 @@ export class DOMManager {
     // region (a sibling of the content wrapper) OUTSIDE the grid, so it is not
     // reported as a disallowed grid child, and ensures the element carrying
     // `aria-rowcount`/`aria-colcount` is a valid grid container.
-    content.setAttribute("role", "grid");
+    // Row-grouped data is a hierarchy of expandable rows, which is the
+    // `treegrid` pattern (rows carry aria-level/posinset/setsize/expanded);
+    // a flat table stays a plain `grid`.
+    const isTreeGrid = Array.isArray(config.rowGrouping) && config.rowGrouping.length > 0;
+    content.setAttribute("role", isTreeGrid ? "treegrid" : "grid");
     // Match RenderOrchestrator so DimensionManager's first clientWidth read (before any render)
     // already excludes the column editor strip when editColumns is on.
     content.style.width = config.editColumns

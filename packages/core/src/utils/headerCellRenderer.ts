@@ -16,7 +16,7 @@ import {
 } from "./headerCell/styling";
 import { updateHeaderSelectionCheckbox } from "./headerCell/selection";
 import { updateHeaderCollapseIconState } from "./headerCell/collapsing";
-import { hasCollapsibleChildren } from "./collapseUtils";
+import { hasCollapsibleChildren, getHeaderColspan } from "./collapseUtils";
 import { getOrCreateRowElement, reconcileRowElements } from "./ariaRowOwnership";
 import type HeaderObject from "../types/HeaderObject";
 
@@ -103,9 +103,19 @@ export const renderHeaderCells = (
   // 1-based row levels (one row per level for nested/grouped headers). The row
   // elements use `display: contents`, so cell positioning is unchanged.
   const headerBandLevels = new Map<number, number>();
-  Array.from(new Set(absoluteCells.map((c) => Math.round(c.top))))
-    .sort((a, b) => a - b)
-    .forEach((band, level) => headerBandLevels.set(band, level));
+  const headerBandTops = Array.from(new Set(absoluteCells.map((c) => Math.round(c.top)))).sort(
+    (a, b) => a - b,
+  );
+  headerBandTops.forEach((band, level) => headerBandLevels.set(band, level));
+  // Number of header rows (bands) a header cell covers vertically, for
+  // `aria-rowspan`: a leaf column standing alongside a grouped column spans
+  // every header row, so it must declare that span instead of skipping rows.
+  const computeHeaderRowSpan = (cell: AbsoluteCell): number => {
+    const top = cell.top;
+    const bottom = cell.top + cell.height;
+    const covered = headerBandTops.filter((t) => t >= top - 1 && t < bottom - 1).length;
+    return covered > 0 ? covered : 1;
+  };
   const headerRowKey = (cell: AbsoluteCell): string => `header-band-${Math.round(cell.top)}`;
   const headerRowIndex = (cell: AbsoluteCell): number =>
     (headerBandLevels.get(Math.round(cell.top)) ?? 0) + 1;
@@ -184,6 +194,14 @@ export const renderHeaderCells = (
       // SelectionManager.syncHeaderSelectionClasses (reads aria-colindex) matches
       // body cells' data-col-index.
       cellElement.setAttribute("aria-colindex", String(cell.colIndex + 1));
+      // Keep the grouped-header span current when collapse/hide changes which
+      // leaf columns are visible under this header.
+      if (cell.header.children && cell.header.children.length > 0) {
+        cellElement.setAttribute(
+          "aria-colspan",
+          String(getHeaderColspan(cell.header, context.headers, context.collapsedHeaders)),
+        );
+      }
       const cached = positionCache.get(cellId);
       const positionChanged =
         !cached ||
@@ -231,6 +249,7 @@ export const renderHeaderCells = (
       // Sync header collapse icon direction when collapsed state changes (same animation as body expand icon)
       if (hasCollapsibleChildren(cell.header)) {
         const isCollapsed = context.collapsedHeaders.has(cell.header.accessor);
+        cellElement.setAttribute("aria-expanded", String(!isCollapsed));
         updateHeaderCollapseIconState(cellElement, isCollapsed, cell.header.label);
       }
 
@@ -331,6 +350,20 @@ export const renderHeaderCells = (
   if (!context.pinned) {
     container.dataset.lastScrollLeft = String(scrollLeft);
   }
+
+  // Apply aria-rowspan for cells that span multiple header rows (covers both
+  // newly-created and reused cells). Only multi-row spans are annotated; a
+  // single-band header cell defaults to rowspan 1 and needs no attribute.
+  cellsToRender.forEach((cell) => {
+    const el = renderedCells.get(getCellId({ accessor: cell.header.accessor, rowId: "header" }));
+    if (!el) return;
+    const span = computeHeaderRowSpan(cell);
+    if (span > 1) {
+      el.setAttribute("aria-rowspan", String(span));
+    } else if (el.hasAttribute("aria-rowspan")) {
+      el.removeAttribute("aria-rowspan");
+    }
+  });
 
   // Drop row elements that no longer hold any header cells.
   reconcileRowElements(container);

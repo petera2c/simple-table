@@ -26,6 +26,7 @@ import type { AnimationCoordinator, CellPosition } from "../../managers/Animatio
 import type { AccordionAxis } from "../../utils/accordionAnimation";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
 import { canDisplaySection } from "../../utils/generalUtils";
+import { flattenHeaders } from "../../utils/headerUtils";
 import type TableRow from "../../types/TableRow";
 import { rowIdToString } from "../../utils/rowUtils";
 
@@ -154,6 +155,14 @@ export class TableRenderer {
     if (gridElement) {
       gridElement.setAttribute("aria-rowcount", String(1 + deps.localRows.length));
       gridElement.setAttribute("aria-colcount", String(deps.effectiveHeaders.length));
+      // Row selection uses checkboxes (multiple rows can be selected), so the
+      // grid advertises multi-select; AT then announces selection state read
+      // from each row/cell's `aria-selected`.
+      if (deps.config.enableRowSelection) {
+        gridElement.setAttribute("aria-multiselectable", "true");
+      } else {
+        gridElement.removeAttribute("aria-multiselectable");
+      }
     }
 
     const dimensionState = deps.dimensionManager?.getState() ?? {
@@ -447,6 +456,13 @@ export class TableRenderer {
     const selectedRowCount =
       deps.rowSelectionManager?.getSelectedRowCount() ?? 0;
     const maxHeaderDepth = dimensionState.maxHeaderDepth ?? 1;
+
+    // The row's identity column (first non-selection leaf) carries
+    // role="rowheader"; computed once per render and read per cell.
+    const rowHeaderAccessor = flattenHeaders(deps.effectiveHeaders).find(
+      (h) => !h.isSelectionColumn,
+    )?.accessor;
+
     const bodyContext: CellRenderContext = {
       collapsedHeaders: deps.collapsedHeaders,
       collapsedRows: deps.getCollapsedRows(),
@@ -466,6 +482,7 @@ export class TableRenderer {
       useOddEvenRowBackground: deps.config.useOddEvenRowBackground,
       rowGrouping: deps.config.rowGrouping,
       headers: deps.effectiveHeaders,
+      rowHeaderAccessor,
       rowHeight: deps.customTheme.rowHeight,
       maxHeaderDepth,
       heightOffsets: processedResult.paginatedHeightOffsets,

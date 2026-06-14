@@ -91,6 +91,12 @@ export interface CellRenderContext {
   useOddEvenRowBackground?: boolean;
   rowGrouping?: string[];
   headers: HeaderObject[];
+  /**
+   * Accessor of the column whose body cells identify the row and should carry
+   * `role="rowheader"` (the first non-selection leaf column). Other data cells
+   * remain `role="gridcell"`.
+   */
+  rowHeaderAccessor?: Accessor;
   rowHeight: number;
   /** Number of header rows (for aria-rowindex: position + maxHeaderDepth + 1) */
   maxHeaderDepth?: number;

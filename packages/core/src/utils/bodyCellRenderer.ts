@@ -12,7 +12,7 @@ import {
 } from "./bodyCell/styling";
 import { updateExpandIconState } from "./bodyCell/expansion";
 import { updateCheckboxElement } from "./columnEditor/createCheckbox";
-import { isRowExpanded, expandStateKey } from "./rowUtils";
+import { isRowExpanded, expandStateKey, hasNestedRows, rowIdToString } from "./rowUtils";
 import { applyRowSeparatorSectionWidth, createRowSeparator } from "./rowSeparatorRenderer";
 import { getOrCreateRowElement, reconcileRowElements } from "./ariaRowOwnership";
 import { calculateSeparatorTopPosition } from "./infiniteScrollUtils";
@@ -470,6 +470,89 @@ export const renderBodyCells = (
   const bodyRowIndex = (cell: AbsoluteBodyCell): number =>
     cell.tableRow.position + maxHeaderDepth + 1;
 
+  // Mirror per-cell selection onto the owning `role="row"` so the row-level
+  // selection state is exposed (the standard place for grid selection),
+  // alongside the cell-level `aria-selected` set in bodyCell/styling.
+  const applyRowSelectionState = (rowEl: HTMLElement, cell: AbsoluteBodyCell): void => {
+    if (!context.enableRowSelection) {
+      if (rowEl.hasAttribute("aria-selected")) rowEl.removeAttribute("aria-selected");
+      return;
+    }
+    rowEl.setAttribute("aria-selected", context.isRowSelected?.(cell.rowId) ? "true" : "false");
+  };
+
+  // Treegrid semantics for hierarchical (row-grouped) data: each row exposes
+  // its depth (aria-level), its position within its sibling set
+  // (aria-posinset/aria-setsize), and — for expandable group rows — its
+  // expand state (aria-expanded). Gated on rowGrouping so flat grids stay
+  // plain grids without implied tree structure.
+  const isTreeGrid = !!context.rowGrouping && context.rowGrouping.length > 0;
+  const tableRowKey = (tr: TableRow): string =>
+    String(tr.stableRowKey ?? rowIdToString(tr.rowId));
+
+  // posinset/setsize from the full visible row list: group rows by parent path
+  // + depth so siblings under the same parent are counted together.
+  const rowPositionInfo = new Map<string, { posinset: number; setsize: number }>();
+  if (isTreeGrid && allRows && allRows.length > 0) {
+    const siblingGroups = new Map<string, TableRow[]>();
+    for (const tr of allRows) {
+      const path = tr.rowIndexPath ?? [];
+      const parentKey = `${tr.depth}|${path.slice(0, -1).join("/")}`;
+      let group = siblingGroups.get(parentKey);
+      if (!group) {
+        group = [];
+        siblingGroups.set(parentKey, group);
+      }
+      group.push(tr);
+    }
+    siblingGroups.forEach((siblings) => {
+      siblings
+        .slice()
+        .sort((a, b) => a.position - b.position)
+        .forEach((tr, index) => {
+          rowPositionInfo.set(tableRowKey(tr), { posinset: index + 1, setsize: siblings.length });
+        });
+    });
+  }
+
+  const getRowExpansion = (tr: TableRow): { expandable: boolean; expanded: boolean } => {
+    const depth = tr.depth;
+    const groupingKey = context.rowGrouping?.[depth];
+    const cellHasChildren = groupingKey ? hasNestedRows(tr.row, groupingKey) : false;
+    const canExpandFurther = !!context.rowGrouping && depth < context.rowGrouping.length;
+    const isRowExpandable = context.canExpandRowGroup ? context.canExpandRowGroup(tr.row) : true;
+    const hasDynamicLoading = !!context.onRowGroupExpand;
+    const expandable =
+      (cellHasChildren && canExpandFurther && isRowExpandable) ||
+      (hasDynamicLoading && canExpandFurther && isRowExpandable);
+    if (!expandable) return { expandable: false, expanded: false };
+    const expanded = isRowExpanded(
+      expandStateKey(tr),
+      depth,
+      new Set(context.expandedDepths),
+      context.expandedRows,
+      context.collapsedRows,
+    );
+    return { expandable: true, expanded };
+  };
+
+  const applyRowTreeState = (rowEl: HTMLElement, cell: AbsoluteBodyCell): void => {
+    if (!isTreeGrid) return;
+    const tr = cell.tableRow;
+    rowEl.setAttribute("aria-level", String(tr.depth + 1));
+    const info = rowPositionInfo.get(tableRowKey(tr));
+    if (info) {
+      rowEl.setAttribute("aria-posinset", String(info.posinset));
+      rowEl.setAttribute("aria-setsize", String(info.setsize));
+    }
+    const { expandable, expanded } = getRowExpansion(tr);
+    if (expandable) {
+      rowEl.setAttribute("aria-expanded", String(expanded));
+    } else if (rowEl.hasAttribute("aria-expanded")) {
+      rowEl.removeAttribute("aria-expanded");
+    }
+  };
+
   const cellsToCreate: Array<{ cell: AbsoluteBodyCell; cellId: string }> = [];
 
   // First pass: identify cells to create vs update
@@ -486,7 +569,13 @@ export const renderBodyCells = (
 
       // Keep the owning row's index in sync (cheap attr update; no reparent so
       // running cell transitions are unaffected).
-      getOrCreateRowElement(container, bodyRowKey(cell), bodyRowIndex(cell));
+      const existingRowEl = getOrCreateRowElement(
+        container,
+        bodyRowKey(cell),
+        bodyRowIndex(cell),
+      );
+      applyRowSelectionState(existingRowEl, cell);
+      applyRowTreeState(existingRowEl, cell);
 
       if (positionOnly) {
         // Scroll-driven update: only update position; skip content and checkbox/expand sync
@@ -546,6 +635,8 @@ export const renderBodyCells = (
       // matching (stable-keyed) row element; just refresh that row's index.
       // Avoid reparenting so the in-flight transition isn't cancelled.
       const claimedRow = getOrCreateRowElement(container, bodyRowKey(cell), bodyRowIndex(cell));
+      applyRowSelectionState(claimedRow, cell);
+      applyRowTreeState(claimedRow, cell);
       if (claimed.parentElement !== claimedRow) {
         claimedRow.appendChild(claimed);
       }
@@ -584,6 +675,8 @@ export const renderBodyCells = (
     // Append the new cell into its row element (creating the row on first use)
     // so it becomes a DOM descendant of a `role="row"`.
     const rowEl = getOrCreateRowElement(container, bodyRowKey(cell), bodyRowIndex(cell));
+    applyRowSelectionState(rowEl, cell);
+    applyRowTreeState(rowEl, cell);
     rowEl.appendChild(cellElement);
     renderedCells.set(cellId, cellElement);
   });

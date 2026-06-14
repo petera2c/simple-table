@@ -178,12 +178,21 @@ export const createBodyCellElement = (
     accessor: header.accessor,
     rowId: cell.stableRowKey ?? rowId,
   });
-  cellElement.setAttribute("role", "gridcell");
+  // The identity column (first non-selection leaf) identifies the row, so its
+  // cells are row headers; all other data cells are gridcells.
+  const isRowHeaderCell =
+    context.rowHeaderAccessor !== undefined && header.accessor === context.rowHeaderAccessor;
+  cellElement.setAttribute("role", isRowHeaderCell ? "rowheader" : "gridcell");
   cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
   // ARIA: 1-based row index in the full grid (matches main: position + maxHeaderDepth + 1)
   const maxHeaderDepth = context.maxHeaderDepth ?? 1;
   cellElement.setAttribute("aria-rowindex", String(cell.tableRow.position + maxHeaderDepth + 1));
   cellElement.setAttribute("aria-colindex", String(colIndex + 1));
+  // Expose per-cell selection state only when row selection is enabled, so a
+  // non-selectable grid doesn't imply selectability via stray aria-selected.
+  if (context.enableRowSelection) {
+    cellElement.setAttribute("aria-selected", context.isRowSelected?.(rowId) ? "true" : "false");
+  }
 
   // Set data attributes for selection manager to query
   cellElement.setAttribute("data-row-index", String(rowIndex));
@@ -470,6 +479,23 @@ export const updateBodyCellElement = (
   const maxHeaderDepth = context.maxHeaderDepth ?? 1;
   cellElement.setAttribute("aria-rowindex", String(cell.tableRow.position + maxHeaderDepth + 1));
   cellElement.setAttribute("aria-colindex", String(colIndex + 1));
+  // Keep per-cell selection state current (selection changes re-run this path
+  // via calculateBodyCellClasses → updateBodyCellElement).
+  if (context.enableRowSelection) {
+    cellElement.setAttribute("aria-selected", context.isRowSelected?.(rowId) ? "true" : "false");
+  } else if (cellElement.hasAttribute("aria-selected")) {
+    cellElement.removeAttribute("aria-selected");
+  }
+  // Keep the row-header role current if the identity column changed (e.g. the
+  // first column was hidden/reordered).
+  const desiredRole =
+    context.rowHeaderAccessor !== undefined &&
+    cell.header.accessor === context.rowHeaderAccessor
+      ? "rowheader"
+      : "gridcell";
+  if (cellElement.getAttribute("role") !== desiredRole) {
+    cellElement.setAttribute("role", desiredRole);
+  }
 
   // Re-key the row hover map when this cell is reused for a different row
   // (happens after a sort because the cell DOM node now survives via

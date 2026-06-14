@@ -71,6 +71,28 @@ export const hasCollapsibleChildren = (header: HeaderObject): boolean => {
 };
 
 /**
+ * Number of visible leaf (bottom-level) columns a header spans, for
+ * `aria-colspan` on grouped/nested header cells. Leaf headers that are hidden
+ * (`hide`) or suppressed by their parent's collapsed state are excluded so the
+ * announced span matches the columns actually rendered. Leaf headers return 1.
+ */
+export const getHeaderColspan = (
+  header: HeaderObject,
+  rootHeaders: HeaderObject[],
+  collapsedHeaders: Set<Accessor>,
+): number => {
+  if (!header.children || header.children.length === 0) return 1;
+  const leaves = flattenHeaders(header.children);
+  let span = 0;
+  for (const leaf of leaves) {
+    if (leaf.hide) continue;
+    if (shouldHideWhenParentCollapsed(leaf, rootHeaders, collapsedHeaders)) continue;
+    span += 1;
+  }
+  return span;
+};
+
+/**
  * Get all leaf (bottom-level) headers that should be visible when a parent is collapsed
  * Uses flattenHeaders for consistent leaf detection
  */
