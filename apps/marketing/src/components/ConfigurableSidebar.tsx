@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { useIsMobile } from "../hooks/useIsMobile";
@@ -27,11 +26,8 @@ const ConfigurableSidebar: React.FC<ConfigurableSidebarProps> = ({ config, class
   if (isMobile) return null;
 
   return (
-    <motion.div
-      initial={{ x: -100, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className={`shrink-0 sticky top-4 mb-4 self-start h-[calc(100dvh-64px-32px)] 
+    <div
+      className={`shrink-0 mt-2 sm:mt-3 md:mt-4 mb-4 self-start h-[calc(100dvh-64px-32px)] 
         bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm flex flex-col rounded-xl 
         shadow-[4px_0_16px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_16px_rgba(0,0,0,0.3)] 
         p-1 overflow-visible z-1 ${width ? "" : "w-64"} ${className}`}
@@ -51,7 +47,7 @@ const ConfigurableSidebar: React.FC<ConfigurableSidebarProps> = ({ config, class
           {footerContent}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 };
 
