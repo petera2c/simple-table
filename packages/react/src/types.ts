@@ -215,5 +215,4 @@ export type {
   LoadingStateRendererProps,
   ErrorStateRendererProps,
   EmptyStateRendererProps,
-  ColumnEditorCustomRendererProps,
 };

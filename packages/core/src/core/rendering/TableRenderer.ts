@@ -91,6 +91,13 @@ export interface TableRendererDeps {
 export class TableRenderer {
   private sectionRenderer: SectionRenderer;
   private footerInstance: ReturnType<typeof createTableFooter> | null = null;
+  // Cache of the inputs that produced the current custom footer DOM, so we can
+  // skip wiping + recreating it when nothing relevant changed (e.g. on a
+  // scroll-end re-render). Recreating it would leave the container momentarily
+  // empty — fatal for async framework adapters (React portals) whose content
+  // commits a frame later — collapsing the flex body and resetting scrollTop.
+  private lastCustomFooterRenderer: unknown = null;
+  private lastCustomFooterKey: string | null = null;
   private columnEditorInstance: ReturnType<typeof createColumnEditor> | null = null;
   private horizontalScrollbarRef: { current: HTMLElement | null } = {
     current: null,
@@ -776,6 +783,11 @@ export class TableRenderer {
     const hasCustomFooter = Boolean(deps.config.footerRenderer);
     const hasPaginationFooter = deps.config.shouldPaginate && !deps.config.hideFooter;
 
+    if (!hasCustomFooter) {
+      this.lastCustomFooterRenderer = null;
+      this.lastCustomFooterKey = null;
+    }
+
     if (!hasCustomFooter && !hasPaginationFooter) {
       container.innerHTML = "";
       return;
@@ -787,6 +799,26 @@ export class TableRenderer {
     if (hasCustomFooter) {
       const startRow = (currentPage - 1) * rowsPerPage + 1;
       const endRow = Math.min(currentPage * rowsPerPage, totalRows);
+
+      // Reuse the already-rendered custom footer when none of its inputs
+      // changed. Without this, every full render (including scroll-end) wipes
+      // the container and re-invokes the renderer; with an async adapter the
+      // new content lands a frame later, leaving a 0px footer that collapses
+      // the body's scroll overflow and snaps scrollTop back to 0.
+      const customFooterKey = `${currentPage}|${totalRows}|${rowsPerPage}|${totalPages}|${
+        deps.config.hideFooter ? 1 : 0
+      }`;
+      if (
+        container.childNodes.length > 0 &&
+        this.lastCustomFooterRenderer === deps.config.footerRenderer &&
+        this.lastCustomFooterKey === customFooterKey
+      ) {
+        this.footerInstance = null;
+        return;
+      }
+      this.lastCustomFooterRenderer = deps.config.footerRenderer;
+      this.lastCustomFooterKey = customFooterKey;
+
       const renderedContent = deps.config.footerRenderer!({
         currentPage,
         endRow,

@@ -50,6 +50,14 @@ const ContextIsolationContent = () => {
             A second <strong>grouped + aggregated</strong> table (regions → teams → reps) with sum and
             average rollups and sticky parents.
           </li>
+          <li>
+            A third <strong>“Saved View”</strong> table that persists column order, width, visibility,
+            pinning, and sort to <code>localStorage</code> and restores them on mount. Its
+            context-aware column-editor panel exposes both a built-in{" "}
+            <code>resetColumns()</code> (back to the persisted snapshot) and a custom{" "}
+            <strong>reset to true defaults</strong> (clears storage and remounts from the original
+            column config).
+          </li>
         </ul>
 
         <div className="rounded-lg border border-gray-200 dark:border-gray-700 p-4">

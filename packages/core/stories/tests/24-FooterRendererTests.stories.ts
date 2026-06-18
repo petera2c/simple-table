@@ -38,7 +38,7 @@ export const DefaultFooterWithPagination = {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
       shouldPaginate: true,
-      rowsPerPage: 10,
+      rowsPerPage: 7,
     });
     return wrapper;
   },

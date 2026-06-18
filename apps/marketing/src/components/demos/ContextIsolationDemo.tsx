@@ -2,6 +2,7 @@
 
 import React, {
   createContext,
+  useCallback,
   useContext,
   useMemo,
   useRef,
@@ -15,12 +16,14 @@ import type {
   CellRendererProps,
   ColumnEditorCustomRendererProps,
   ColumnEditorRowRendererProps,
+  ColumnVisibilityState,
   FooterRendererProps,
   HeaderDropdownProps,
   HeaderRendererProps,
   ReactHeaderObject,
   ReactIconsConfig,
   RowSelectionChangeProps,
+  SortColumn,
   TableAPI,
 } from "@simple-table/react";
 import "@simple-table/react/styles.css";
@@ -841,6 +844,229 @@ function updateRegionTree(
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// "Saved view" persistence (localStorage) + true-defaults reset
+//
+// Demonstrates the recommended pattern when persisting column config: the live
+// layout (order / width / visibility / pinning / sort) is saved to localStorage
+// and restored on mount, while the *pristine* column config is kept in code as
+// the single source of truth for "reset to true defaults". The built-in
+// `resetColumns` resets to whatever `defaultHeaders` currently is (the persisted
+// snapshot); the custom reset clears storage and remounts from the originals.
+// ─────────────────────────────────────────────────────────────────────────────
+const SAVED_VIEW_STORAGE_KEY = "st-context-isolation-saved-view";
+
+interface PersistedColumn {
+  accessor: string;
+  hide?: boolean;
+  width?: number;
+  pinned?: "left" | "right";
+}
+
+interface PersistedLayout {
+  columns: PersistedColumn[];
+  sort: { accessor: string; direction: "asc" | "desc" } | null;
+}
+
+// Pristine, never-mutated column config. Rebuilt fresh so the table never
+// mutates the originals we reset back to.
+function buildSavedBaseHeaders(): ReactHeaderObject[] {
+  return [
+    {
+      accessor: "rep",
+      label: "Sales Rep",
+      width: 220,
+      type: "string",
+      pinned: "left",
+      isSortable: true,
+      cellRenderer: RepCell,
+      headerRenderer: makeHeader("🧑‍💼"),
+    },
+    {
+      accessor: "status",
+      label: "Status",
+      width: 150,
+      type: "enum",
+      enumOptions: STATUS_OPTIONS,
+      isSortable: true,
+      cellRenderer: StatusBadgeCell,
+      headerRenderer: makeHeader("🏷️"),
+    },
+    {
+      accessor: "team",
+      label: "Team",
+      width: 140,
+      type: "string",
+      isSortable: true,
+      headerRenderer: makeHeader("👥"),
+    },
+    {
+      accessor: "revenue",
+      label: "Revenue",
+      width: 150,
+      type: "number",
+      align: "right",
+      isSortable: true,
+      cellRenderer: CurrencyCell,
+      headerRenderer: makeHeader("💰"),
+    },
+    {
+      accessor: "deals",
+      label: "Deals",
+      width: 110,
+      type: "number",
+      align: "right",
+      isSortable: true,
+      headerRenderer: makeHeader("🤝"),
+    },
+    {
+      accessor: "quota",
+      label: "Quota",
+      width: 160,
+      type: "number",
+      isSortable: true,
+      cellRenderer: QuotaCell,
+      headerRenderer: makeHeader("🎯"),
+    },
+    {
+      accessor: "rating",
+      label: "Rating",
+      width: 130,
+      type: "number",
+      isSortable: true,
+      cellRenderer: RatingCell,
+      headerRenderer: makeHeader("⭐"),
+    },
+    {
+      accessor: "startDate",
+      label: "Start Date",
+      width: 140,
+      type: "date",
+      isSortable: true,
+      headerRenderer: makeHeader("📅"),
+    },
+    {
+      accessor: "active",
+      label: "Active",
+      width: 90,
+      type: "boolean",
+      headerRenderer: makeHeader("✅"),
+    },
+  ];
+}
+
+function columnsFromHeaders(headers: ReadonlyArray<ReactHeaderObject>): PersistedColumn[] {
+  return headers.map((h) => {
+    const col: PersistedColumn = { accessor: String(h.accessor) };
+    if (h.hide) col.hide = true;
+    if (typeof h.width === "number") col.width = h.width;
+    if (h.pinned === "left" || h.pinned === "right") col.pinned = h.pinned;
+    return col;
+  });
+}
+
+// Merge a persisted layout onto the pristine headers: reorder, then apply
+// hide/width/pinning. Columns added since the layout was saved are appended.
+function applyLayoutToHeaders(
+  base: ReactHeaderObject[],
+  layout: PersistedLayout | null,
+): ReactHeaderObject[] {
+  if (!layout || layout.columns.length === 0) return base;
+  const byAccessor = new Map(base.map((h) => [String(h.accessor), h]));
+  const used = new Set<string>();
+  const ordered: ReactHeaderObject[] = [];
+  for (const col of layout.columns) {
+    const header = byAccessor.get(col.accessor);
+    if (!header) continue;
+    used.add(col.accessor);
+    ordered.push({
+      ...header,
+      hide: col.hide ?? false,
+      pinned: col.pinned,
+      ...(col.width != null ? { width: col.width } : {}),
+    });
+  }
+  for (const header of base) {
+    if (!used.has(String(header.accessor))) ordered.push(header);
+  }
+  return ordered;
+}
+
+function loadSavedLayout(): PersistedLayout | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(SAVED_VIEW_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PersistedLayout;
+    if (!parsed || !Array.isArray(parsed.columns)) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function saveSavedLayout(layout: PersistedLayout): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(SAVED_VIEW_STORAGE_KEY, JSON.stringify(layout));
+  } catch {
+    // ignore quota / serialization errors in the demo
+  }
+}
+
+function clearSavedLayout(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(SAVED_VIEW_STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+}
+
+// Context-consuming column-editor panel for the saved-view table. Reads the host
+// accent via context (proving the portal/context bridge) and exposes BOTH reset
+// behaviours so the difference is visible.
+function SavedViewEditorPanel({
+  searchSection,
+  listSection,
+  resetColumns,
+  onResetTrueDefaults,
+}: ColumnEditorCustomRendererProps & { onResetTrueDefaults: () => void }) {
+  const { accent } = useAppSettings();
+  return (
+    <div>
+      <div style={{ fontWeight: 700, color: accent, padding: "6px 8px" }}>Saved view columns</div>
+      {searchSection}
+      {listSection}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 6,
+          padding: 8,
+          borderTop: "1px solid #e5e7eb",
+        }}
+      >
+        <button type="button" onClick={() => resetColumns?.()} style={buttonStyle}>
+          Reset to saved snapshot
+        </button>
+        <button
+          type="button"
+          onClick={onResetTrueDefaults}
+          style={{ ...buttonStyle, color: "#fff", background: accent, borderColor: accent }}
+        >
+          Reset to true defaults
+        </button>
+        <span style={{ fontSize: 11, color: "#6b7280", lineHeight: 1.4 }}>
+          “Saved snapshot” uses the built-in <code>resetColumns()</code> → restores the persisted{" "}
+          <code>defaultHeaders</code>. “True defaults” clears localStorage and remounts from the
+          original column config.
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Component
 // ─────────────────────────────────────────────────────────────────────────────
 function MegaTables() {
@@ -856,6 +1082,81 @@ function MegaTables() {
 
   const opsTableRef = useRef<TableAPI>(null);
   const rollupTableRef = useRef<TableAPI>(null);
+  const savedTableRef = useRef<TableAPI>(null);
+
+  // Saved-view persistence state. `savedMountKey` bumps to force a clean remount
+  // from the pristine config on "reset to true defaults".
+  const [savedMountKey, setSavedMountKey] = useState(0);
+  const [savedStatus, setSavedStatus] = useState("");
+  const savedLayoutRef = useRef<PersistedLayout | null>(null);
+
+  const savedHeaders = useMemo<ReactHeaderObject[]>(() => {
+    const layout = loadSavedLayout();
+    savedLayoutRef.current = layout;
+    return applyLayoutToHeaders(buildSavedBaseHeaders(), layout);
+    // Re-read persisted layout whenever we remount the saved-view table.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [savedMountKey]);
+
+  const savedInitialSort = useMemo(
+    () => loadSavedLayout()?.sort ?? null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [savedMountKey],
+  );
+
+  const persistSavedLayout = useCallback((next: PersistedLayout) => {
+    savedLayoutRef.current = next;
+    saveSavedLayout(next);
+    setSavedStatus(`Saved at ${new Date().toLocaleTimeString()}`);
+  }, []);
+
+  const handleSavedColumns = useCallback(
+    (headers: ReactHeaderObject[]) => {
+      persistSavedLayout({
+        columns: columnsFromHeaders(headers),
+        sort: savedLayoutRef.current?.sort ?? null,
+      });
+    },
+    [persistSavedLayout],
+  );
+
+  const handleSavedVisibility = useCallback(
+    (visibility: ColumnVisibilityState) => {
+      const baseCols =
+        savedLayoutRef.current?.columns ?? columnsFromHeaders(buildSavedBaseHeaders());
+      const columns = baseCols.map((col) =>
+        col.accessor in visibility ? { ...col, hide: !visibility[col.accessor] } : col,
+      );
+      persistSavedLayout({ columns, sort: savedLayoutRef.current?.sort ?? null });
+    },
+    [persistSavedLayout],
+  );
+
+  const handleSavedSort = useCallback(
+    (sort: SortColumn | null) => {
+      persistSavedLayout({
+        columns: savedLayoutRef.current?.columns ?? columnsFromHeaders(buildSavedBaseHeaders()),
+        sort: sort
+          ? { accessor: String(sort.key.accessor), direction: sort.direction }
+          : null,
+      });
+    },
+    [persistSavedLayout],
+  );
+
+  const resetSavedToTrueDefaults = useCallback(() => {
+    clearSavedLayout();
+    savedLayoutRef.current = null;
+    setSavedStatus("Reset to true defaults · localStorage cleared");
+    setSavedMountKey((key) => key + 1);
+  }, []);
+
+  const savedEditorPanel = useCallback(
+    (props: ColumnEditorCustomRendererProps) => (
+      <SavedViewEditorPanel {...props} onResetTrueDefaults={resetSavedToTrueDefaults} />
+    ),
+    [resetSavedToTrueDefaults],
+  );
 
   const handleRepEdit = ({ accessor, newValue, row }: CellChangeProps) => {
     const id = (row as { id?: number }).id;
@@ -1197,6 +1498,69 @@ function MegaTables() {
           expandAll={expandAll}
           selectableCells
           onCellEdit={handleRegionEdit}
+        />
+      </div>
+
+      {/* Table 3 — localStorage-persisted "saved view" with a true-defaults reset */}
+      <div>
+        <h3 style={{ fontWeight: 700, marginBottom: 8 }}>
+          Saved View (localStorage persistence)
+        </h3>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            gap: 8,
+            marginBottom: 8,
+            padding: 12,
+            borderRadius: 8,
+            border: "1px dashed #6ee7b7",
+            background: "#ecfdf5",
+            fontSize: 12,
+          }}
+        >
+          <span style={{ color: "#047857", fontWeight: 700 }}>
+            Column order, width, visibility, pinning &amp; sort persist to localStorage.
+          </span>
+          <span style={{ color: "#065f46" }}>
+            Reorder/resize/hide columns or sort, then reload the page — the layout is restored.
+          </span>
+          <span style={{ color: "#10b981", fontWeight: 600 }}>
+            {savedStatus || "No changes yet"}
+          </span>
+          <button type="button" onClick={resetSavedToTrueDefaults} style={buttonStyle}>
+            Clear saved layout
+          </button>
+        </div>
+        <SimpleTable
+          key={`saved-view-${savedMountKey}`}
+          ref={savedTableRef}
+          defaultHeaders={savedHeaders}
+          rows={repRows}
+          getRowId={({ row }) => String((row as { id?: number }).id)}
+          theme="light"
+          customTheme={{ rowHeight: 44, headerHeight: 44 }}
+          icons={icons}
+          height="360px"
+          selectableCells
+          columnResizing
+          columnReordering
+          editColumns
+          initialSortColumn={savedInitialSort?.accessor}
+          initialSortDirection={savedInitialSort?.direction}
+          onCellEdit={handleRepEdit}
+          onColumnOrderChange={handleSavedColumns}
+          onColumnWidthChange={handleSavedColumns}
+          onColumnVisibilityChange={handleSavedVisibility}
+          onSortChange={handleSavedSort}
+          columnEditorConfig={{
+            text: "Columns",
+            searchEnabled: true,
+            searchPlaceholder: "Search columns...",
+            rowRenderer: EditorRow,
+            customRenderer: savedEditorPanel,
+          }}
         />
       </div>
     </div>
