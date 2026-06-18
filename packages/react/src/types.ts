@@ -13,7 +13,7 @@ import type {
   EmptyStateRendererProps,
   HeaderDropdownProps as VanillaHeaderDropdownProps,
   ColumnEditorRowRendererProps as VanillaColumnEditorRowRendererProps,
-  ColumnEditorCustomRendererProps,
+  ColumnEditorCustomRendererProps as VanillaColumnEditorCustomRendererProps,
   ColumnEditorConfig,
 } from "simple-table-core";
 
@@ -44,6 +44,16 @@ export type ColumnEditorRowRendererProps = Omit<
   "components"
 > & {
   components: ColumnEditorRowRendererComponents;
+};
+
+/** Column editor custom-renderer slots as React nodes (core uses `HTMLElement`). */
+export type ColumnEditorCustomRendererProps = Omit<
+  VanillaColumnEditorCustomRendererProps,
+  "searchSection" | "listSection" | "resetSection"
+> & {
+  searchSection?: React.ReactNode;
+  listSection?: React.ReactNode;
+  resetSection?: React.ReactNode;
 };
 
 export type FooterRendererProps = Omit<

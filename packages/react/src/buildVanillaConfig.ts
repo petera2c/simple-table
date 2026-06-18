@@ -6,9 +6,13 @@ import type {
   ReactColumnEditorConfig,
   ReactIconsConfig,
 } from "./types";
+import type { PortalBridge } from "./PortalBridge";
 import {
   wrapReactRenderer,
   wrapReactRendererIntoFragment,
+  wrapReactHeaderRenderer,
+  wrapReactHeaderDropdown,
+  wrapReactFooterRenderer,
   wrapReactColumnEditorRowRenderer,
   wrapReactColumnEditorCustomRenderer,
   wrapReactNode,
@@ -33,18 +37,25 @@ function transformIcons(icons: ReactIconsConfig): NonNullable<SimpleTableConfig[
   return result;
 }
 
-function transformColumnEditorConfig(config: ReactColumnEditorConfig): ColumnEditorConfig {
+function transformColumnEditorConfig(
+  config: ReactColumnEditorConfig,
+  bridge: PortalBridge,
+): ColumnEditorConfig {
   const { rowRenderer, customRenderer, ...rest } = config;
   return {
     ...rest,
     ...(rowRenderer
       ? {
-          rowRenderer: wrapReactColumnEditorRowRenderer(rowRenderer as ComponentType<object>) as any,
+          rowRenderer: wrapReactColumnEditorRowRenderer(
+            bridge,
+            rowRenderer as ComponentType<object>,
+          ) as any,
         }
       : {}),
     ...(customRenderer
       ? {
           customRenderer: wrapReactColumnEditorCustomRenderer(
+            bridge,
             customRenderer as ComponentType<object>,
           ) as any,
         }
@@ -52,36 +63,43 @@ function transformColumnEditorConfig(config: ReactColumnEditorConfig): ColumnEdi
   };
 }
 
-function transformHeader(header: ReactHeaderObject): HeaderObject {
+function transformHeader(header: ReactHeaderObject, bridge: PortalBridge): HeaderObject {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
 
   const transformed: HeaderObject = { ...(rest as any) };
 
   if (cellRenderer) {
     transformed.cellRenderer = wrapReactRendererIntoFragment(
+      bridge,
       cellRenderer as ComponentType<object>,
     ) as any;
   }
 
   if (headerRenderer) {
-    transformed.headerRenderer = wrapReactRenderer(headerRenderer as ComponentType<object>) as any;
+    transformed.headerRenderer = wrapReactHeaderRenderer(
+      bridge,
+      headerRenderer as ComponentType<any>,
+    ) as any;
   }
 
   if (children) {
-    transformed.children = children.map(transformHeader);
+    transformed.children = children.map((child) => transformHeader(child, bridge));
   }
 
   if (nestedTable) {
     // Recursively convert the nested table config. Rows are provided at
     // render time by the vanilla core, so we supply an empty placeholder.
     const nestedConfig = { ...nestedTable, rows: [] } as unknown as SimpleTableReactProps;
-    transformed.nestedTable = buildVanillaConfig(nestedConfig) as any;
+    transformed.nestedTable = buildVanillaConfig(nestedConfig, bridge) as any;
   }
 
   return transformed;
 }
 
-export function buildVanillaConfig(config: SimpleTableReactProps): SimpleTableConfig {
+export function buildVanillaConfig(
+  config: SimpleTableReactProps,
+  bridge: PortalBridge,
+): SimpleTableConfig {
   const {
     defaultHeaders,
     rows,
@@ -103,7 +121,7 @@ export function buildVanillaConfig(config: SimpleTableReactProps): SimpleTableCo
   const vanillaConfig: SimpleTableConfig = {
     ...rest,
     rows: rows as Row[],
-    defaultHeaders: defaultHeaders.map(transformHeader),
+    defaultHeaders: defaultHeaders.map((header) => transformHeader(header, bridge)),
     ...(onColumnOrderChange
       ? {
           onColumnOrderChange: (headers: HeaderObject[]) =>
@@ -131,14 +149,15 @@ export function buildVanillaConfig(config: SimpleTableReactProps): SimpleTableCo
   };
 
   if (footerRenderer !== undefined) {
-    vanillaConfig.footerRenderer = wrapReactRenderer(
-      footerRenderer as ComponentType<object>,
+    vanillaConfig.footerRenderer = wrapReactFooterRenderer(
+      bridge,
+      footerRenderer as ComponentType<any>,
     ) as any;
   }
 
   if (emptyStateRenderer !== undefined) {
     if (isReactComponent(emptyStateRenderer)) {
-      vanillaConfig.emptyStateRenderer = wrapReactRenderer(emptyStateRenderer) as any;
+      vanillaConfig.emptyStateRenderer = wrapReactRenderer(bridge, emptyStateRenderer) as any;
     } else {
       // Static ReactNode — TypeScript can't auto-narrow the union here, so cast explicitly.
       const node = emptyStateRenderer as ReactNode;
@@ -148,7 +167,7 @@ export function buildVanillaConfig(config: SimpleTableReactProps): SimpleTableCo
 
   if (errorStateRenderer !== undefined) {
     if (isReactComponent(errorStateRenderer)) {
-      vanillaConfig.errorStateRenderer = wrapReactRenderer(errorStateRenderer) as any;
+      vanillaConfig.errorStateRenderer = wrapReactRenderer(bridge, errorStateRenderer) as any;
     } else {
       const node = errorStateRenderer as ReactNode;
       vanillaConfig.errorStateRenderer = () => wrapReactNode(node);
@@ -157,7 +176,7 @@ export function buildVanillaConfig(config: SimpleTableReactProps): SimpleTableCo
 
   if (loadingStateRenderer !== undefined) {
     if (isReactComponent(loadingStateRenderer)) {
-      vanillaConfig.loadingStateRenderer = wrapReactRenderer(loadingStateRenderer) as any;
+      vanillaConfig.loadingStateRenderer = wrapReactRenderer(bridge, loadingStateRenderer) as any;
     } else {
       const node = loadingStateRenderer as ReactNode;
       vanillaConfig.loadingStateRenderer = () => wrapReactNode(node);
@@ -170,13 +189,14 @@ export function buildVanillaConfig(config: SimpleTableReactProps): SimpleTableCo
   }
 
   if (headerDropdown !== undefined) {
-    vanillaConfig.headerDropdown = wrapReactRenderer(
-      headerDropdown as ComponentType<object>,
+    vanillaConfig.headerDropdown = wrapReactHeaderDropdown(
+      bridge,
+      headerDropdown as ComponentType<any>,
     ) as any;
   }
 
   if (columnEditorConfig !== undefined) {
-    vanillaConfig.columnEditorConfig = transformColumnEditorConfig(columnEditorConfig);
+    vanillaConfig.columnEditorConfig = transformColumnEditorConfig(columnEditorConfig, bridge);
   }
 
   if (icons !== undefined) {

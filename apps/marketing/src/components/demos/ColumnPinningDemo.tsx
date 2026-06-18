@@ -197,6 +197,7 @@ const ColumnPinningDemo = ({
       height={height}
       rows={EMPLOYEE_DATA}
       theme={theme}
+      editColumns={true}
     />
   );
 };

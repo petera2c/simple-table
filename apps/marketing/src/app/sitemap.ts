@@ -108,6 +108,8 @@ const NON_INDEXABLE_SEGMENTS = new Set([
   "/mobile-unsupported",
   // Temporarily hidden from sitemap; page route still exists but is unlinked.
   "/docs/column-editing",
+  // Internal reproduction page; reachable by direct URL only.
+  "/sandbox/context-isolation",
 ]);
 
 export default function sitemap(): MetadataRoute.Sitemap {

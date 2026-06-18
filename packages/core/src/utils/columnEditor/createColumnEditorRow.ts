@@ -9,8 +9,9 @@ import {
   buildColumnVisibilityState,
   findClosestValidSeparatorIndex,
   FlattenedHeader,
+  HoveredSeparator,
 } from "./columnEditorUtils";
-import { swapHeaders } from "../../managers/DragHandlerManager";
+import { swapHeaders, getHeaderIndexPath } from "../../managers/DragHandlerManager";
 import { deepClone } from "../generalUtils";
 import { createCheckbox } from "./createCheckbox";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
@@ -45,17 +46,17 @@ export interface CreateColumnEditorRowOptions {
   doesAnyHeaderHaveChildren: boolean;
   draggingRow: FlattenedHeader | null;
   getDraggingRow?: () => FlattenedHeader | null;
-  getHoveredSeparatorIndex?: () => number | null;
+  getHoveredSeparator?: () => HoveredSeparator;
   expandedHeaders: Set<string>;
   flattenedHeaders: FlattenedHeader[];
   forceExpanded: boolean;
   header: HeaderObject;
-  hoveredSeparatorIndex: number | null;
+  hoveredSeparator: HoveredSeparator;
   panelSection?: PanelSection;
   rowIndex: number;
   setDraggingRow: (row: FlattenedHeader | null) => void;
   setExpandedHeaders: (headers: Set<string>) => void;
-  setHoveredSeparatorIndex: (index: number | null) => void;
+  setHoveredSeparator: (value: HoveredSeparator) => void;
   columnEditorConfig: ColumnEditorConfig;
   /** Resolved table icons; `icons.drag` overrides the default column-editor drag handle. */
   icons?: IconsConfig;
@@ -82,17 +83,17 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
     doesAnyHeaderHaveChildren,
     draggingRow,
     getDraggingRow,
-    getHoveredSeparatorIndex,
+    getHoveredSeparator,
     expandedHeaders,
     flattenedHeaders,
     forceExpanded,
     header,
-    hoveredSeparatorIndex,
+    hoveredSeparator,
     panelSection,
     rowIndex,
     setDraggingRow,
     setExpandedHeaders,
-    setHoveredSeparatorIndex,
+    setHoveredSeparator,
     headers,
     setHeaders,
     onColumnVisibilityChange,
@@ -117,12 +118,18 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
   const isExpanded = expandedHeaders.has(header.accessor);
   const shouldExpand = forceExpanded || isExpanded;
 
+  // The hovered separator index is section-relative, so only honor it when it
+  // belongs to this row's panel section. Otherwise the same index would light
+  // up a separator in every section (pinned-left / main / pinned-right).
+  const isHoveredSection =
+    hoveredSeparator !== null && hoveredSeparator.panelSection === (panelSection ?? "main");
+
   let scheduleExpandIconAnimation: (() => void) | undefined;
 
   if (rowIndex === 0) {
     const topSeparator = document.createElement("div");
     topSeparator.className = "st-column-editor-drag-separator";
-    topSeparator.style.opacity = hoveredSeparatorIndex === -1 ? "1" : "0";
+    topSeparator.style.opacity = isHoveredSection && hoveredSeparator!.index === -1 ? "1" : "0";
     fragment.appendChild(topSeparator);
   }
 
@@ -216,29 +223,35 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
         isTopHalfOfRow,
       });
 
-      setHoveredSeparatorIndex(validSeparatorIndex);
+      setHoveredSeparator(
+        validSeparatorIndex === null
+          ? null
+          : { panelSection: panelSection ?? "main", index: validSeparatorIndex },
+      );
     }
   };
 
   const onDragEnd = () => {
     const currentDraggingRow = getDraggingRow ? getDraggingRow() : draggingRow;
-    const currentHoveredSeparatorIndex = getHoveredSeparatorIndex
-      ? getHoveredSeparatorIndex()
-      : hoveredSeparatorIndex;
+    const currentHoveredSeparator = getHoveredSeparator
+      ? getHoveredSeparator()
+      : hoveredSeparator;
 
     const cancelDrag = () => {
       setDraggingRow(null);
-      setHoveredSeparatorIndex(null);
+      setHoveredSeparator(null);
     };
 
     if (
       !currentDraggingRow ||
-      currentHoveredSeparatorIndex === null ||
+      currentHoveredSeparator === null ||
       currentDraggingRow.panelSection !== panelSection
     ) {
       cancelDrag();
       return;
     }
+
+    const currentHoveredSeparatorIndex = currentHoveredSeparator.index;
 
     const targetRowIndex =
       currentDraggingRow.visualIndex >= currentHoveredSeparatorIndex
@@ -277,33 +290,28 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
       return;
     }
 
-    let updatedHeaders: HeaderObject[];
+    // The flattened rows carry section-relative index paths (each pinned
+    // section is flattened independently), but `swapHeaders` mutates the full
+    // `headers` tree. Resolve the real tree paths from the accessors so the
+    // swap targets the correct columns when pinned sections offset the indices.
+    const draggedGlobalPath = getHeaderIndexPath(headers, currentDraggingRow.header.accessor);
+    const hoveredGlobalPath = getHeaderIndexPath(headers, hoveredHeader.header.accessor);
 
-    if (currentDraggingRow.indexPath.length === 1) {
-      // Root-level drag within the same panel section: use swapHeaders
-      const { newHeaders, emergencyBreak } = swapHeaders(
-        headers,
-        currentDraggingRow.indexPath,
-        hoveredHeader.indexPath,
-      );
-      if (emergencyBreak) {
-        cancelDrag();
-        return;
-      }
-      updatedHeaders = newHeaders;
-    } else {
-      // Nested drag: swap siblings
-      const { newHeaders, emergencyBreak } = swapHeaders(
-        headers,
-        currentDraggingRow.indexPath,
-        hoveredHeader.indexPath,
-      );
-      if (emergencyBreak) {
-        cancelDrag();
-        return;
-      }
-      updatedHeaders = newHeaders;
+    if (!draggedGlobalPath || !hoveredGlobalPath) {
+      cancelDrag();
+      return;
     }
+
+    const { newHeaders, emergencyBreak } = swapHeaders(
+      headers,
+      draggedGlobalPath,
+      hoveredGlobalPath,
+    );
+    if (emergencyBreak) {
+      cancelDrag();
+      return;
+    }
+    const updatedHeaders = newHeaders;
 
     applyHeaderOrder(updatedHeaders);
     cancelDrag();
@@ -520,7 +528,8 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
 
   const bottomSeparator = document.createElement("div");
   bottomSeparator.className = "st-column-editor-drag-separator";
-  bottomSeparator.style.opacity = hoveredSeparatorIndex === rowIndex ? "1" : "0";
+  bottomSeparator.style.opacity =
+    isHoveredSection && hoveredSeparator!.index === rowIndex ? "1" : "0";
   fragment.appendChild(bottomSeparator);
 
   return { fragment, scheduleExpandIconAnimation };

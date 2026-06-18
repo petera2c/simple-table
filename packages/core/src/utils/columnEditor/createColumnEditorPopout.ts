@@ -3,6 +3,7 @@ import { ColumnEditorSearchFunction, ColumnEditorConfig } from "../../types/Colu
 import { ColumnEditorCustomRenderer } from "../../types/ColumnEditorCustomRendererProps";
 import { FlattenedHeader } from "../../types/FlattenedHeader";
 import { createColumnEditorRow } from "./createColumnEditorRow";
+import { HoveredSeparator } from "./columnEditorUtils";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
 import { IconsConfig } from "../../types/IconsConfig";
 import { partitionRootHeadersByPin, PanelSection } from "../../utils/pinnedColumnUtils";
@@ -154,7 +155,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
 
   let searchTerm = "";
   let draggingRow: FlattenedHeader | null = null;
-  let hoveredSeparatorIndex: number | null = null;
+  let hoveredSeparator: HoveredSeparator = null;
   let isDragging = false;
 
   const initialExpanded = new Set<string>();
@@ -222,11 +223,11 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
   };
 
   const clearHoverSeparator = () => {
-    hoveredSeparatorIndex = null;
+    hoveredSeparator = null;
   };
 
-  const setHoveredSeparatorIndex = (index: number | null) => {
-    hoveredSeparatorIndex = index;
+  const setHoveredSeparator = (value: HoveredSeparator) => {
+    hoveredSeparator = value;
 
     if (!isDragging) {
       render();
@@ -242,17 +243,24 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
   };
 
   const updateSeparatorVisibility = () => {
-    const separators = listsContainer.querySelectorAll(".st-column-editor-drag-separator");
+    // Separators are scoped per section list. Within a section the separator
+    // order is [top, after-row-0, after-row-1, ...], so sepIndex - 1 maps to the
+    // section-relative index the row builder uses (-1 = top). The hovered index
+    // is only valid for its own panel section, so non-hovered sections clear.
+    const sectionLists = listsContainer.querySelectorAll<HTMLElement>(
+      ".st-column-editor-list-section",
+    );
 
-    separators.forEach((separator, sepIndex) => {
-      const htmlSeparator = separator as HTMLElement;
+    sectionLists.forEach((listEl) => {
+      const section = listEl.dataset.panelSection as PanelSection | undefined;
+      const isHoveredSection = hoveredSeparator !== null && hoveredSeparator.panelSection === section;
+      const separators = listEl.querySelectorAll<HTMLElement>(".st-column-editor-drag-separator");
 
-      if (sepIndex === 0) {
-        htmlSeparator.style.opacity = hoveredSeparatorIndex === -1 ? "1" : "0";
-      } else {
-        const rowIndex = sepIndex - 1;
-        htmlSeparator.style.opacity = hoveredSeparatorIndex === rowIndex ? "1" : "0";
-      }
+      separators.forEach((separator, sepIndex) => {
+        const sepRowIndex = sepIndex - 1;
+        separator.style.opacity =
+          isHoveredSection && hoveredSeparator!.index === sepRowIndex ? "1" : "0";
+      });
     });
   };
 
@@ -333,6 +341,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
 
     const listEl = document.createElement("div");
     listEl.className = "st-column-editor-list st-column-editor-list-section";
+    listEl.dataset.panelSection = panelSection;
     targetContainer.appendChild(listEl);
 
     const flattenedHeaders = getFlattenedHeaders(sectionHeaders, panelSection);
@@ -346,17 +355,17 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
         doesAnyHeaderHaveChildren: hasChildren,
         draggingRow,
         getDraggingRow: () => draggingRow,
-        getHoveredSeparatorIndex: () => hoveredSeparatorIndex,
+        getHoveredSeparator: () => hoveredSeparator,
         expandedHeaders,
         flattenedHeaders,
         forceExpanded: searchEnabled && searchTerm.trim().length > 0,
         header: flatItem.header,
-        hoveredSeparatorIndex,
+        hoveredSeparator,
         panelSection,
         rowIndex: flatItem.visualIndex,
         setDraggingRow,
         setExpandedHeaders,
-        setHoveredSeparatorIndex,
+        setHoveredSeparator,
         columnEditorConfig,
         icons,
         essentialAccessors: essentialAccessors ?? new Set(),

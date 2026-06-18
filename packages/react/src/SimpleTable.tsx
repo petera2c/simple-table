@@ -2,6 +2,7 @@ import React, { useLayoutEffect, useRef } from "react";
 import { SimpleTableVanilla } from "simple-table-core";
 import type { SimpleTableConfig, TableAPI } from "simple-table-core";
 import { buildVanillaConfig } from "./buildVanillaConfig";
+import { PortalBridge, useTablePortals } from "./PortalBridge";
 import type { SimpleTableReactProps, TableInstance } from "./types";
 
 /** Top-level referential equality; avoids pushing duplicate `update` when parent re-renders with a new props object. */
@@ -44,6 +45,13 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
   function SimpleTable(props, ref) {
     const containerRef = useRef<HTMLDivElement>(null);
 
+    // One PortalBridge per table instance. Custom cell/header/footer renderers
+    // register their React subtrees here; the bridge renders them via portals
+    // (see the JSX below) so they live inside this host tree and inherit context.
+    const bridgeRef = useRef<PortalBridge | null>(null);
+    if (bridgeRef.current === null) bridgeRef.current = new PortalBridge();
+    const bridge = bridgeRef.current;
+
     // Typed as the local TableInstance interface — not the concrete
     // SimpleTableVanilla class — so the component stays decoupled from
     // internal implementation details.
@@ -58,45 +66,43 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
     // buildVanillaConfig receives the complete SimpleTableReactProps shape.
     const reactProps = props as SimpleTableReactProps;
 
-    // Mount the vanilla instance once. We defer with queueMicrotask so nested
-    // createRoot + flushSync inside cell renderers does not run during React's
-    // commit phase (React warns: "flushSync was called from inside a lifecycle method").
+    // Mount the vanilla instance once. Custom renderers now register portals
+    // (no nested createRoot/flushSync), so we can mount synchronously here.
     useLayoutEffect(() => {
       const container = containerRef.current;
       if (!container) return;
 
-      let cancelled = false;
-      queueMicrotask(() => {
-        if (cancelled || !containerRef.current) return;
+      const instance = new SimpleTableVanilla(container, buildVanillaConfig(reactProps, bridge));
+      instance.mount();
+      instanceRef.current = instance;
 
-        const instance = new SimpleTableVanilla(
-          containerRef.current,
-          buildVanillaConfig(reactProps),
-        );
-        instance.mount();
-        instanceRef.current = instance;
+      // The full config (including defaultHeaders) was just applied via mount();
+      // seed the sync refs so the prop-sync effect's first run is a no-op and
+      // doesn't immediately re-apply (and re-render) the same config.
+      lastSyncedPropsRef.current = reactProps;
+      syncedDefaultHeadersRef.current = reactProps.defaultHeaders;
 
-        if (ref) {
-          const api = instance.getAPI();
-          if (typeof ref === "function") {
-            ref(api);
-          } else {
-            ref.current = api;
-          }
+      // Prune portal entries whose host container core has recycled/detached.
+      const detachObserver = bridge.attach(container);
+
+      if (ref) {
+        const api = instance.getAPI();
+        if (typeof ref === "function") {
+          ref(api);
+        } else {
+          ref.current = api;
         }
-      });
+      }
 
       return () => {
-        cancelled = true;
-        const instance = instanceRef.current;
-        if (instance) {
-          instance.destroy();
-          instanceRef.current = null;
-          syncedDefaultHeadersRef.current = undefined;
-          lastSyncedPropsRef.current = null;
-          if (ref && typeof ref !== "function") {
-            ref.current = null;
-          }
+        detachObserver();
+        instance.destroy();
+        instanceRef.current = null;
+        syncedDefaultHeadersRef.current = undefined;
+        lastSyncedPropsRef.current = null;
+        bridge.clear();
+        if (ref && typeof ref !== "function") {
+          ref.current = null;
         }
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -117,23 +123,26 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
       }
       lastSyncedPropsRef.current = reactProps;
 
-      const fullConfig = buildVanillaConfig(reactProps);
+      const fullConfig = buildVanillaConfig(reactProps, bridge);
 
-      queueMicrotask(() => {
-        if (instanceRef.current !== instance) return;
+      if (syncedDefaultHeadersRef.current !== reactProps.defaultHeaders) {
+        syncedDefaultHeadersRef.current = reactProps.defaultHeaders;
+        instance.update(fullConfig);
+        return;
+      }
 
-        if (syncedDefaultHeadersRef.current !== reactProps.defaultHeaders) {
-          syncedDefaultHeadersRef.current = reactProps.defaultHeaders;
-          instance.update(fullConfig);
-          return;
-        }
-
-        const { defaultHeaders: _headers, ...rest } = fullConfig;
-        instance.update(rest as Partial<SimpleTableConfig>);
-      });
+      const { defaultHeaders: _headers, ...rest } = fullConfig;
+      instance.update(rest as Partial<SimpleTableConfig>);
     }, [reactProps]);
 
-    return <div ref={containerRef} />;
+    const portals = useTablePortals(bridge);
+
+    return (
+      <>
+        <div ref={containerRef} />
+        {portals}
+      </>
+    );
   },
 );
 

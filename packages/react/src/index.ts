@@ -23,6 +23,7 @@ export type {
   HeaderRendererProps,
   ColumnEditorRowRendererComponents,
   ColumnEditorRowRendererProps,
+  ColumnEditorCustomRendererProps,
   FooterRendererProps,
   HeaderDropdownProps,
 } from "./types";
@@ -45,7 +46,6 @@ export type {
   ColumnEditorConfig,
   ColumnEditorRowRenderer,
   ColumnEditorCustomRenderer,
-  ColumnEditorCustomRendererProps,
   ColumnEditorSearchFunction,
   ColumnType,
   ColumnVisibilityState,

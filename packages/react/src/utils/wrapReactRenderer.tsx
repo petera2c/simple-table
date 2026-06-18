@@ -1,30 +1,19 @@
 import React from "react";
-import { flushSync } from "react-dom";
-import { createRoot } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import type {
   ColumnEditorCustomRendererProps as VanillaColumnEditorCustomRendererProps,
   ColumnEditorRowRendererProps as VanillaColumnEditorRowRendererProps,
+  HeaderRendererProps as VanillaHeaderRendererProps,
+  HeaderDropdownProps as VanillaHeaderDropdownProps,
+  FooterRendererProps as VanillaFooterRendererProps,
 } from "simple-table-core";
-import { domSlotToReactNode, mapColumnEditorRowComponentsForReact } from "./ImperativeDomSlot";
-
-/**
- * Nested `createRoot` renders use `flushSync` so the host has real DOM before
- * simple-table-core appends it. `flushSync` must not run while React is already
- * in a lifecycle commit (e.g. `useEffect` / `flushPassiveEffects`). Scheduling
- * one microtask runs the commit after the caller stack unwinds, which clears
- * that warning while still completing before paint in normal browser scheduling.
- */
-function scheduleNestedRootCommit(
-  root: ReturnType<typeof createRoot>,
-  element: React.ReactElement,
-): void {
-  queueMicrotask(() => {
-    flushSync(() => {
-      root.render(element);
-    });
-  });
-}
+import type { PortalBridge } from "../PortalBridge";
+import {
+  domSlotToReactNode,
+  mapColumnEditorRowComponentsForReact,
+  mapHeaderRendererComponentsForReact,
+  mapFooterIconsForReact,
+} from "./ImperativeDomSlot";
 
 /**
  * After assigning innerHTML from renderToStaticMarkup, drop the temporary host
@@ -47,35 +36,111 @@ function unwrapStaticMarkupHost(container: HTMLDivElement): HTMLElement {
  * Wraps a React component into a function that returns an HTMLElement, matching
  * the vanilla renderer contract expected by simple-table-core.
  *
- * Uses `createRoot` so event handlers work (same idea as Vue/Svelte/Solid adapters).
- * When core replaces or clears that DOM, the root is detached like other adapters.
+ * The component is registered with the {@link PortalBridge} rather than mounted
+ * in its own `createRoot`, so it renders as part of the host React tree and
+ * inherits context. The returned container is filled on the host's next render.
  */
 export function wrapReactRenderer<P extends object>(
+  bridge: PortalBridge,
   Component: React.ComponentType<P>,
 ): (props: P) => HTMLElement {
   return (props: P): HTMLElement => {
     const container = document.createElement("div");
-    const root = createRoot(container);
-    scheduleNestedRootCommit(root, <Component {...(props as any)} />);
+    bridge.register(<Component {...(props as any)} />, container);
     return container;
   };
 }
 
 /**
- * Like {@link wrapReactRenderer} for column editor rows: core passes `components.*` as
- * live DOM nodes; this maps them to React hosts so consumers can use normal JSX.
+ * Like {@link wrapReactRenderer} but uses `display: contents` so layout is
+ * unchanged when core appends this node (no extra box vs a plain div). Used for
+ * cell renderers.
+ */
+export function wrapReactRendererIntoFragment<P extends object>(
+  bridge: PortalBridge,
+  Component: React.ComponentType<P>,
+): (props: P) => HTMLElement {
+  return (props: P): HTMLElement => {
+    const container = document.createElement("div");
+    container.style.display = "contents";
+    bridge.register(<Component {...(props as any)} />, container);
+    return container;
+  };
+}
+
+/**
+ * Like {@link wrapReactRenderer} for header renderers: core passes `components.*`
+ * (sortIcon / filterIcon / collapseIcon / labelContent) as live DOM nodes; this
+ * bridges them to React nodes so consumers can use them directly in JSX.
+ */
+export function wrapReactHeaderRenderer(
+  bridge: PortalBridge,
+  Component: React.ComponentType<VanillaHeaderRendererProps>,
+): (props: VanillaHeaderRendererProps) => HTMLElement {
+  return (props: VanillaHeaderRendererProps): HTMLElement => {
+    const container = document.createElement("div");
+    const reactProps = {
+      ...props,
+      components: mapHeaderRendererComponentsForReact(props.components),
+    };
+    bridge.register(<Component {...(reactProps as any)} />, container);
+    return container;
+  };
+}
+
+/**
+ * Like {@link wrapReactHeaderRenderer} for the header dropdown, which shares the
+ * same `components` slot shape.
+ */
+export function wrapReactHeaderDropdown(
+  bridge: PortalBridge,
+  Component: React.ComponentType<VanillaHeaderDropdownProps>,
+): (props: VanillaHeaderDropdownProps) => HTMLElement {
+  return (props: VanillaHeaderDropdownProps): HTMLElement => {
+    const container = document.createElement("div");
+    const reactProps = {
+      ...props,
+      components: mapHeaderRendererComponentsForReact(props.components),
+    };
+    bridge.register(<Component {...(reactProps as any)} />, container);
+    return container;
+  };
+}
+
+/**
+ * Like {@link wrapReactRenderer} for footer renderers: bridges the `nextIcon` /
+ * `prevIcon` pagination slots (live DOM) to React nodes for JSX use.
+ */
+export function wrapReactFooterRenderer(
+  bridge: PortalBridge,
+  Component: React.ComponentType<VanillaFooterRendererProps>,
+): (props: VanillaFooterRendererProps) => HTMLElement {
+  return (props: VanillaFooterRendererProps): HTMLElement => {
+    const container = document.createElement("div");
+    const reactProps = {
+      ...props,
+      ...mapFooterIconsForReact({ nextIcon: props.nextIcon, prevIcon: props.prevIcon }),
+    };
+    bridge.register(<Component {...(reactProps as any)} />, container);
+    return container;
+  };
+}
+
+/**
+ * Like {@link wrapReactRenderer} for column editor rows: core passes `components.*`
+ * as live DOM nodes; this maps them to React nodes so consumers can use normal JSX.
  */
 export function wrapReactColumnEditorRowRenderer(
+  bridge: PortalBridge,
   Component: React.ComponentType<object>,
 ): (props: VanillaColumnEditorRowRendererProps) => HTMLElement {
   return (props: VanillaColumnEditorRowRendererProps): HTMLElement => {
     const container = document.createElement("div");
-    const root = createRoot(container);
     const reactProps = {
       ...props,
       components: mapColumnEditorRowComponentsForReact(props.components),
     };
-    scheduleNestedRootCommit(root, <Component {...(reactProps as any)} />);
+    bridge.register(<Component {...(reactProps as any)} />, container);
     return container;
   };
 }
@@ -85,42 +150,26 @@ export function wrapReactColumnEditorRowRenderer(
  * `columnEditorConfig.customRenderer` the same way as row slots.
  */
 export function wrapReactColumnEditorCustomRenderer(
+  bridge: PortalBridge,
   Component: React.ComponentType<object>,
 ): (props: VanillaColumnEditorCustomRendererProps) => HTMLElement {
   return (props: VanillaColumnEditorCustomRendererProps): HTMLElement => {
     const container = document.createElement("div");
-    const root = createRoot(container);
     const reactProps = {
       ...props,
       searchSection: props.searchSection ? domSlotToReactNode(props.searchSection) : null,
       listSection: domSlotToReactNode(props.listSection),
       resetSection: props.resetSection ? domSlotToReactNode(props.resetSection) : null,
     };
-    scheduleNestedRootCommit(root, <Component {...(reactProps as any)} />);
+    bridge.register(<Component {...(reactProps as any)} />, container);
     return container;
   };
 }
 
 /**
- * Like wrapReactRenderer but uses `display: contents` so layout is unchanged
- * when core appends this node (no extra box vs a plain div).
- * Commit scheduling matches {@link wrapReactRenderer} (microtask + flushSync).
- */
-export function wrapReactRendererIntoFragment<P extends object>(
-  Component: React.ComponentType<P>,
-): (props: P) => HTMLElement {
-  return (props: P): HTMLElement => {
-    const container = document.createElement("div");
-    container.style.display = "contents";
-    const root = createRoot(container);
-    scheduleNestedRootCommit(root, <Component {...(props as any)} />);
-    return container;
-  };
-}
-
-/**
- * Renders a static ReactNode into an HTMLElement.
- * Used for props like tableEmptyStateRenderer that are not called with arguments.
+ * Renders a static ReactNode into an HTMLElement using server-side static
+ * rendering. Used for props like tableEmptyStateRenderer that are static markup
+ * (not interactive and not called with arguments). These do not need context.
  */
 export function wrapReactNode(node: React.ReactNode): HTMLElement {
   const container = document.createElement("div");
@@ -131,9 +180,6 @@ export function wrapReactNode(node: React.ReactNode): HTMLElement {
 /**
  * Converts a ReactNode to an HTML string using server-side static rendering.
  * Used for icon props where the vanilla table expects a string | HTMLElement | SVGSVGElement.
- * Uses renderToStaticMarkup so it works synchronously from any context — including
- * inside a useEffect — unlike createRoot alone without a follow-up commit, which
- * can yield empty output when React defers the nested root.
  */
 export function reactNodeToHtmlString(node: React.ReactNode): string {
   return renderToStaticMarkup(<>{node}</>);
