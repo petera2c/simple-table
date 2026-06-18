@@ -27,7 +27,7 @@ const ConfigurableSidebar: React.FC<ConfigurableSidebarProps> = ({ config, class
 
   return (
     <div
-      className={`shrink-0 mt-2 sm:mt-3 md:mt-4 mb-4 self-start h-[calc(100dvh-64px-32px)] 
+      className={`shrink-0 sticky top-2 sm:top-3 md:top-4 mb-4 self-start h-[calc(100dvh-64px-32px)] 
         bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm flex flex-col rounded-xl 
         shadow-[4px_0_16px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_16px_rgba(0,0,0,0.3)] 
         p-1 overflow-visible z-1 ${width ? "" : "w-64"} ${className}`}
