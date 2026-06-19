@@ -115,4 +115,12 @@ export class TableInitializer {
   static getInitialExpandedDepths(config: SimpleTableConfig): Set<number> {
     return initializeExpandedDepths(config.expandAll ?? true, config.rowGrouping);
   }
+
+  static resolveConfigDefaults<T extends { selectableCells?: boolean; selectableColumns?: boolean }>(config: T): T {
+    const resolved = { ...config };
+    if (resolved.selectableCells && resolved.selectableColumns === undefined) {
+      resolved.selectableColumns = true;
+    }
+    return resolved;
+  }
 }

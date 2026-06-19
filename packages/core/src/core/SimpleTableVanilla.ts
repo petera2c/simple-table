@@ -165,6 +165,7 @@ export class SimpleTableVanilla {
 
   constructor(container: HTMLElement, config: SimpleTableConfig) {
     this.container = container;
+    config = TableInitializer.resolveConfigDefaults(config);
     this.config = config;
 
     this.customTheme = TableInitializer.mergeCustomTheme(config);
@@ -1112,7 +1113,7 @@ export class SimpleTableVanilla {
 
   update(config: Partial<SimpleTableConfig>): void {
     this.isUpdating = true;
-    this.config = { ...this.config, ...config };
+    this.config = TableInitializer.resolveConfigDefaults({ ...this.config, ...config });
 
     if (config.animations !== undefined) {
       this.applyAnimationsConfig(config.animations);
