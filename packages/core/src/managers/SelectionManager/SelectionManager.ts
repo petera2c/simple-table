@@ -336,11 +336,13 @@ export class SelectionManager {
         this.startCell = this.initialFocusedCell!;
       }
 
-      let targetRow = rowIndex - 1;
-
-      if (event.ctrlKey || event.metaKey) {
-        const edge = this.findEdgeInDirection(rowIndex, colIndex, "up");
-        targetRow = edge.rowIndex;
+      let targetRow: number;
+      if (rowIndex > this.startCell.rowIndex) {
+        // Collapse selection upwards back to the anchor row
+        targetRow = this.startCell.rowIndex;
+      } else {
+        // Expand selection upwards all the way to the top
+        targetRow = 0;
       }
 
       if (targetRow >= 0) {
@@ -376,11 +378,13 @@ export class SelectionManager {
         this.startCell = this.initialFocusedCell!;
       }
 
-      let targetRow = rowIndex + 1;
-
-      if (event.ctrlKey || event.metaKey) {
-        const edge = this.findEdgeInDirection(rowIndex, colIndex, "down");
-        targetRow = edge.rowIndex;
+      let targetRow: number;
+      if (rowIndex < this.startCell.rowIndex) {
+        // Collapse selection downwards back to the anchor row
+        targetRow = this.startCell.rowIndex;
+      } else {
+        // Expand selection downwards all the way to the bottom
+        targetRow = this.config.tableRows.length - 1;
       }
 
       if (targetRow < this.config.tableRows.length) {
@@ -416,15 +420,13 @@ export class SelectionManager {
         this.startCell = this.initialFocusedCell!;
       }
 
-      let targetCol = colIndex - 1;
-
-      if (event.ctrlKey || event.metaKey) {
-        const edge = this.findEdgeInDirection(rowIndex, colIndex, "left");
-        targetCol = edge.colIndex;
+      let targetCol: number;
+      if (colIndex > this.startCell.colIndex) {
+        // Collapse selection to the left back to the anchor column
+        targetCol = this.startCell.colIndex;
       } else {
-        if (this.config.enableRowSelection && targetCol === 0) {
-          return;
-        }
+        // Expand selection to the left all the way to the first column
+        targetCol = this.config.enableRowSelection ? 1 : 0;
       }
 
       if (targetCol >= 0) {
@@ -470,11 +472,13 @@ export class SelectionManager {
         this.startCell = this.initialFocusedCell!;
       }
 
-      let targetCol = colIndex + 1;
-
-      if (event.ctrlKey || event.metaKey) {
-        const edge = this.findEdgeInDirection(rowIndex, colIndex, "right");
-        targetCol = edge.colIndex;
+      let targetCol: number;
+      if (colIndex < this.startCell.colIndex) {
+        // Collapse selection to the right back to the anchor column
+        targetCol = this.startCell.colIndex;
+      } else {
+        // Expand selection to the right all the way to the last column
+        targetCol = maxColIndex;
       }
 
       if (targetCol <= maxColIndex) {
