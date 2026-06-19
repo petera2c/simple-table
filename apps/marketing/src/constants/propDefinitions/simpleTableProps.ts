@@ -872,7 +872,7 @@ useEffect(() => {
     key: "rowButtons",
     name: "rowButtons",
     required: false,
-    description: "Array of buttons to show in each row.",
+    description: "Array of buttons to show in each row. Requires `enableRowSelection` to be true as these render inside the selection column. Use `customTheme.selectionColumnWidth` to adjust the width. Note: functions must return vanilla HTMLElements.",
     type: "RowButton[]",
     example: `rowButtons={[
   ({ row }) => <button onClick={() => editRow(row)}>Edit</button>,
