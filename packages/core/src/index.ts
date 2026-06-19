@@ -73,7 +73,7 @@ import type { ColumnEditorConfig, ColumnEditorSearchFunction } from "./types/Col
 import type { IconsConfig } from "./types/IconsConfig";
 import type { GetRowId, GetRowIdParams } from "./types/GetRowId";
 import type { SimpleTableConfig } from "./types/SimpleTableConfig";
-import type { SimpleTableProps } from "./types/SimpleTableProps";
+import type { SimpleTableProps, RowSelectionConfig } from "./types/SimpleTableProps";
 import type { AnimationsConfig } from "./types/AnimationsConfig";
 import type { RowId } from "./types/RowId";
 import type { PinnedSectionsState } from "./types/PinnedSectionsState";
@@ -140,6 +140,7 @@ export type {
   RowButtonProps,
   RowId,
   RowSelectionChangeProps,
+  RowSelectionConfig,
   RowState,
   SetHeaderRenameProps,
   SharedTableProps,

@@ -417,6 +417,8 @@ export class SimpleTableVanilla {
       copyHeadersToClipboard: this.config.copyHeadersToClipboard,
       customTheme: this.customTheme,
       tableRoot: this.container,
+      rowSelectionConfig: this.config.rowSelectionConfig,
+      rowSelectionManager: this.rowSelectionManager,
       onSelectionDragEnd: () => {
         this.renderOrchestrator.invalidateCache("context");
         this.renderOrchestrator.invalidateCache("body");
@@ -1205,12 +1207,15 @@ export class SimpleTableVanilla {
     }
 
     if (
-      (config.selectableColumns !== undefined || config.selectableCells !== undefined) &&
+      (config.selectableColumns !== undefined ||
+        config.selectableCells !== undefined ||
+        config.rowSelectionConfig !== undefined) &&
       this.selectionManager
     ) {
       this.selectionManager.updateConfig({
         selectableColumns: this.config.selectableColumns ?? false,
         selectableCells: this.config.selectableCells ?? false,
+        rowSelectionConfig: this.config.rowSelectionConfig,
       });
     }
 
@@ -1339,6 +1344,7 @@ export class SimpleTableVanilla {
       getCachedProcessedResult: () => this.renderOrchestrator.getLastProcessedResult(),
       expandedDepthsManager: this.expandedDepthsManager,
       selectionManager: this.selectionManager,
+      rowSelectionManager: this.rowSelectionManager,
       sortManager: this.sortManager,
       filterManager: this.filterManager,
       onRender: () => this.render("columnEditor-onRender"),

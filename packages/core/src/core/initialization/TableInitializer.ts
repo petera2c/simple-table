@@ -1,4 +1,5 @@
 import { SimpleTableConfig } from "../../types/SimpleTableConfig";
+import { RowSelectionConfig } from "../../types/SimpleTableProps";
 import { CustomTheme, DEFAULT_CUSTOM_THEME } from "../../types/CustomTheme";
 import { DEFAULT_COLUMN_EDITOR_CONFIG } from "../../types/ColumnEditorConfig";
 import { ColumnEditorRowRenderer } from "../../types/ColumnEditorRowRendererProps";
@@ -116,10 +117,28 @@ export class TableInitializer {
     return initializeExpandedDepths(config.expandAll ?? true, config.rowGrouping);
   }
 
-  static resolveConfigDefaults<T extends { selectableCells?: boolean; selectableColumns?: boolean }>(config: T): T {
+  static resolveConfigDefaults<T extends {
+    selectableCells?: boolean;
+    selectableColumns?: boolean;
+    enableRowSelection?: boolean;
+    rowSelectionConfig?: RowSelectionConfig;
+  }>(config: T): T {
     const resolved = { ...config };
     if (resolved.selectableCells && resolved.selectableColumns === undefined) {
       resolved.selectableColumns = true;
+    }
+    if (resolved.enableRowSelection) {
+      const originalConfig = resolved.rowSelectionConfig || {};
+      const showCheckboxes = originalConfig.showCheckboxes ?? true;
+      resolved.rowSelectionConfig = {
+        showCheckboxes,
+        enableClickSelection: originalConfig.enableClickSelection ?? (!showCheckboxes ? true : false),
+        enableKeyboardNavigation: originalConfig.enableKeyboardNavigation ?? (!showCheckboxes ? true : false),
+        mode: originalConfig.mode ?? 'multi',
+      };
+      if (!showCheckboxes) {
+        resolved.selectableCells = false;
+      }
     }
     return resolved;
   }

@@ -14,6 +14,7 @@ import type {
   VanillaErrorStateRenderer,
   VanillaLoadingStateRenderer,
 } from "../../types/RowStateRendererProps";
+import { RowSelectionConfig } from "../../types/SimpleTableProps";
 
 type SetStateAction<T> = T | ((prevState: T) => T);
 type Dispatch<A> = (value: A) => void;
@@ -83,6 +84,7 @@ export interface CellRenderContext {
   // Configuration
   columnBorders: boolean;
   enableRowSelection?: boolean;
+  rowSelectionConfig?: RowSelectionConfig;
   /** Used for context cache invalidation when row selection changes */
   selectedRowCount?: number;
   cellUpdateFlash?: boolean;
@@ -113,6 +115,7 @@ export interface CellRenderContext {
   handleRowSelect?: (rowId: string, checked: boolean) => void;
   handleMouseDown: (cell: CellData) => void;
   handleMouseOver: (cell: CellData, clientX: number, clientY: number) => void;
+  handleRowClick?: (rowId: string, rowIndex: number, shiftKey: boolean, ctrlKey: boolean) => void;
 
   // Refs and state setters
   cellRegistry?: Map<string, CellRegistryEntry>;

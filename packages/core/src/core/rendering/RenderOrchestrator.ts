@@ -184,7 +184,8 @@ export class RenderOrchestrator {
   ): HeaderObject[] {
     let processedHeaders = [...headers];
 
-    if (config.enableRowSelection && !headers?.[0]?.isSelectionColumn) {
+    const showSelectionColumn = config.enableRowSelection && (config.rowSelectionConfig?.showCheckboxes !== false);
+    if (showSelectionColumn && !headers?.[0]?.isSelectionColumn) {
       const selectionHeader = createSelectionHeader(customTheme.selectionColumnWidth);
       processedHeaders = [selectionHeader, ...processedHeaders];
     }

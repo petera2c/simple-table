@@ -95,4 +95,16 @@ export interface SimpleTableProps {
   useHoverRowBackground?: boolean; // Flag for using hover row background
   useOddColumnBackground?: boolean; // Flag for using column background
   useOddEvenRowBackground?: boolean; // Flag for using odd/even row background
+  rowSelectionConfig?: RowSelectionConfig; // Configuration for advanced row selection settings
+}
+
+export interface RowSelectionConfig {
+  /** Whether to show the checkbox column. Default: true */
+  showCheckboxes?: boolean;
+  /** Whether clicking a row cell selects the row. Default: false (true if showCheckboxes is false) */
+  enableClickSelection?: boolean;
+  /** Whether arrow keys and home/end select rows. Default: false (true if showCheckboxes is false) */
+  enableKeyboardNavigation?: boolean;
+  /** Selection mode. Default: 'multi' */
+  mode?: 'single' | 'multi';
 }

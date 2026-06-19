@@ -34,6 +34,7 @@ export class SelectionManager {
   private warningFlashCells: Set<string> = new Set();
   private isSelecting: boolean = false;
   private startCell: Cell | null = null;
+  private rowAnchorIndex: number | null = null;
 
   // Event handlers that need to be cleaned up
   private keydownHandler: ((event: KeyboardEvent) => void) | null = null;
@@ -208,7 +209,8 @@ export class SelectionManager {
    * Handle keyboard events for navigation and clipboard operations
    */
   private handleKeyDown(event: KeyboardEvent): void {
-    if (!this.config.selectableCells) return;
+    const isRowKeyboardNav = Boolean(this.config.rowSelectionConfig?.enableKeyboardNavigation) && Boolean(this.config.rowSelectionManager);
+    if (!this.config.selectableCells && !isRowKeyboardNav) return;
     if (!this.initialFocusedCell) return;
 
     // Don't intercept if user is typing in a form element
@@ -279,6 +281,10 @@ export class SelectionManager {
       if (currentRowIndex !== -1) {
         rowIndex = currentRowIndex;
       } else return;
+    }
+
+    if (this.handleRowKeyboardNavigation(event, rowIndex, colIndex)) {
+      return;
     }
 
     // Handle keyboard navigation
@@ -1382,21 +1388,29 @@ export class SelectionManager {
    * Handle mouse down on a cell to start selection
    */
   handleMouseDown({ colIndex, rowIndex, rowId }: Cell): void {
-    if (!this.config.selectableCells) return;
+    const isRowSelection = !this.config.selectableCells && Boolean(this.config.rowSelectionConfig?.enableClickSelection) && Boolean(this.config.rowSelectionManager);
+    if (!this.config.selectableCells && !isRowSelection) return;
 
     this.fullTableSelected = false;
     this.isSelecting = true;
     this.startCell = { rowIndex, colIndex, rowId };
 
-    setTimeout(() => {
-      this.selectedColumns = new Set();
-      this.lastSelectedColumnIndex = null;
-      const cellId = createSetString({ colIndex, rowIndex, rowId });
-      this.selectedCells = new Set([cellId]);
+    if (isRowSelection) {
+      this.rowAnchorIndex = rowIndex;
       this.initialFocusedCell = { rowIndex, colIndex, rowId };
-      this.updateDerivedState();
-      this.updateAllCellClasses();
-    }, 0);
+      const newSelected = new Set<string>([String(rowId)]);
+      this.config.rowSelectionManager!.setSelectedRows(newSelected);
+    } else {
+      setTimeout(() => {
+        this.selectedColumns = new Set();
+        this.lastSelectedColumnIndex = null;
+        const cellId = createSetString({ colIndex, rowIndex, rowId });
+        this.selectedCells = new Set([cellId]);
+        this.initialFocusedCell = { rowIndex, colIndex, rowId };
+        this.updateDerivedState();
+        this.updateAllCellClasses();
+      }, 0);
+    }
 
     this.currentMouseX = null;
     this.currentMouseY = null;
@@ -1444,10 +1458,129 @@ export class SelectionManager {
    * so virtualization/recycled DOM does not apply stale cellData from the firing element.
    */
   handleMouseOver(cellFromElement: Cell, clientX: number, clientY: number): void {
-    if (!this.config.selectableCells) return;
+    const isRowSelection = !this.config.selectableCells && Boolean(this.config.rowSelectionConfig?.enableClickSelection) && Boolean(this.config.rowSelectionManager);
+    if (!this.config.selectableCells && !isRowSelection) return;
+
     if (this.isSelecting && this.startCell) {
       const resolved = this.getCellFromMousePosition(clientX, clientY) ?? cellFromElement;
-      this.updateSelectionRange(this.startCell, resolved);
+      if (isRowSelection) {
+        const start = Math.min(this.startCell.rowIndex, resolved.rowIndex);
+        const end = Math.max(this.startCell.rowIndex, resolved.rowIndex);
+        const newSelected = new Set<string>();
+        for (let i = start; i <= end; i++) {
+          const tr = this.config.tableRows[i];
+          if (tr) {
+            newSelected.add(rowIdToString(tr.rowId));
+          }
+        }
+        this.config.rowSelectionManager!.setSelectedRows(newSelected);
+      } else {
+        this.updateSelectionRange(this.startCell, resolved);
+      }
     }
+  }
+
+  handleRowClick(rowId: string, rowIndex: number, shiftKey: boolean, ctrlKey: boolean): void {
+    const rowSelectionManager = this.config.rowSelectionManager;
+    if (!rowSelectionManager) return;
+
+    const mode = this.config.rowSelectionConfig?.mode ?? 'multi';
+
+    if (mode === 'single') {
+      const newSelected = new Set<string>([rowId]);
+      rowSelectionManager.setSelectedRows(newSelected);
+      this.rowAnchorIndex = rowIndex;
+      return;
+    }
+
+    if (ctrlKey) {
+      const wasSelected = rowSelectionManager.isRowSelected(rowId);
+      rowSelectionManager.handleRowSelect(rowId, !wasSelected);
+      this.rowAnchorIndex = rowIndex;
+    } else if (shiftKey && this.rowAnchorIndex !== null) {
+      const start = Math.min(this.rowAnchorIndex, rowIndex);
+      const end = Math.max(this.rowAnchorIndex, rowIndex);
+      const newSelected = new Set<string>();
+      for (let i = start; i <= end; i++) {
+        const tr = this.config.tableRows[i];
+        if (tr) {
+          newSelected.add(rowIdToString(tr.rowId));
+        }
+      }
+      rowSelectionManager.setSelectedRows(newSelected);
+    } else {
+      const newSelected = new Set<string>([rowId]);
+      rowSelectionManager.setSelectedRows(newSelected);
+      this.rowAnchorIndex = rowIndex;
+    }
+  }
+
+  private handleRowKeyboardNavigation(event: KeyboardEvent, rowIndex: number, colIndex: number): boolean {
+    const isRowSelection = !this.config.selectableCells && Boolean(this.config.rowSelectionConfig?.enableKeyboardNavigation) && Boolean(this.config.rowSelectionManager);
+    if (!isRowSelection) return false;
+
+    let newRowIndex = rowIndex;
+
+    if (event.key === "ArrowUp") {
+      newRowIndex = Math.max(0, rowIndex - 1);
+    } else if (event.key === "ArrowDown") {
+      newRowIndex = Math.min(this.config.tableRows.length - 1, rowIndex + 1);
+    } else if (event.key === "Home") {
+      newRowIndex = 0;
+    } else if (event.key === "End") {
+      newRowIndex = this.config.tableRows.length - 1;
+    } else {
+      return false;
+    }
+
+    event.preventDefault();
+
+    const targetRow = this.config.tableRows[newRowIndex];
+    if (!targetRow) return true;
+    const targetRowId = rowIdToString(targetRow.rowId);
+
+    // Update focused cell / row position
+    this.initialFocusedCell = { rowIndex: newRowIndex, colIndex, rowId: targetRowId };
+
+    const mode = this.config.rowSelectionConfig?.mode ?? 'multi';
+    if (mode === 'single') {
+      const newSelected = new Set<string>([targetRowId]);
+      this.config.rowSelectionManager!.setSelectedRows(newSelected);
+      this.rowAnchorIndex = newRowIndex;
+    } else {
+      if (event.shiftKey) {
+        if (this.rowAnchorIndex === null || this.rowAnchorIndex === undefined) {
+          this.rowAnchorIndex = rowIndex;
+        }
+        const start = Math.min(this.rowAnchorIndex, newRowIndex);
+        const end = Math.max(this.rowAnchorIndex, newRowIndex);
+        const newSelected = new Set<string>();
+        for (let i = start; i <= end; i++) {
+          const tr = this.config.tableRows[i];
+          if (tr) {
+            newSelected.add(rowIdToString(tr.rowId));
+          }
+        }
+        this.config.rowSelectionManager!.setSelectedRows(newSelected);
+      } else {
+        const newSelected = new Set<string>([targetRowId]);
+        this.config.rowSelectionManager!.setSelectedRows(newSelected);
+        this.rowAnchorIndex = newRowIndex;
+      }
+    }
+
+    // Scroll into view
+    setTimeout(() => {
+      if (this.initialFocusedCell) {
+        scrollCellIntoView(
+          this.initialFocusedCell,
+          this.config.rowHeight,
+          this.config.customTheme,
+          this.config.tableRows,
+        );
+      }
+    }, 0);
+
+    return true;
   }
 }

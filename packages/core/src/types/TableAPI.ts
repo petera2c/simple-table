@@ -52,4 +52,7 @@ export type TableAPI = {
   clearSelection: () => void;
   selectCell: (cell: Cell) => void;
   selectCellRange: (startCell: Cell, endCell: Cell) => void;
+  toggleRowSelection: (rowId: string, isSelected?: boolean) => void;
+  getSelectedRows: () => string[];
+  getRow: (rowId: string) => any | null;
 };
