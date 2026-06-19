@@ -579,11 +579,13 @@ export class RenderOrchestrator {
       );
 
       const { customTheme } = context;
+      const hideToggle = mergedColumnEditorConfig.hideToggle ?? false;
+      const editorWidth = context.config.editColumns && !hideToggle ? COLUMN_EDIT_WIDTH : 0;
       rootStyle.setProperty("--st-main-section-width", `${mainSectionContainerWidth}px`);
       rootStyle.setProperty("--st-scrollbar-width", `${state.scrollbarWidth}px`);
       rootStyle.setProperty(
         "--st-editor-width",
-        `${context.config.editColumns ? COLUMN_EDIT_WIDTH : 0}px`,
+        `${editorWidth}px`,
       );
       rootStyle.setProperty("--st-border-width", `${customTheme.borderWidth}px`);
       rootStyle.setProperty("--st-footer-height", `${customTheme.footerHeight}px`);
@@ -596,8 +598,8 @@ export class RenderOrchestrator {
 
       const columnResizing = context.config.columnResizing ?? false;
       elements.content.className = `st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`;
-      elements.content.style.width = context.config.editColumns
-        ? `calc(100% - ${COLUMN_EDIT_WIDTH}px)`
+      elements.content.style.width = editorWidth > 0
+        ? `calc(100% - ${editorWidth}px)`
         : "100%";
 
       this.renderHeader(

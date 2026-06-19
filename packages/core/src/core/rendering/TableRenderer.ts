@@ -726,6 +726,7 @@ export class TableRenderer {
           collapsedHeaders: deps.collapsedHeaders,
           customTheme: deps.customTheme,
           editColumns: deps.config.editColumns ?? false,
+          hideToggle: deps.config.columnEditorConfig?.hideToggle ?? false,
           headers: deps.effectiveHeaders,
           rowHeight: deps.customTheme.rowHeight,
           heightOffsets: processedResult.paginatedHeightOffsets,
@@ -924,6 +925,7 @@ export class TableRenderer {
         columnEditorConfig: mergedColumnEditorConfig,
         icons: deps.resolvedIcons,
         essentialAccessors: deps.essentialAccessors,
+        hideToggle: mergedColumnEditorConfig.hideToggle,
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
           if (this.columnEditorInstance) {
@@ -950,6 +952,7 @@ export class TableRenderer {
         columnEditorConfig: mergedColumnEditorConfig,
         icons: deps.resolvedIcons,
         essentialAccessors: deps.essentialAccessors,
+        hideToggle: mergedColumnEditorConfig.hideToggle,
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
           if (this.columnEditorInstance) {

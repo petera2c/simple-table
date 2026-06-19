@@ -21,6 +21,7 @@ export interface CreateColumnEditorOptions {
   onColumnVisibilityChange?: (state: ColumnVisibilityState) => void;
   onColumnOrderChange?: (headers: HeaderObject[]) => void;
   setOpen: (open: boolean) => void;
+  hideToggle?: boolean;
 }
 
 export const createColumnEditor = (options: CreateColumnEditorOptions) => {
@@ -40,6 +41,7 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
     onColumnVisibilityChange,
     onColumnOrderChange,
     setOpen,
+    hideToggle,
   } = options;
 
   if (!editColumns) {
@@ -53,17 +55,26 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
 
   const container = document.createElement("div");
   container.className = `st-column-editor ${open ? "open" : ""}`;
-  container.style.width = `${COLUMN_EDIT_WIDTH}px`;
+  if (hideToggle) {
+    container.style.width = "0px";
+    container.style.borderLeft = "none";
+  } else {
+    container.style.width = `${COLUMN_EDIT_WIDTH}px`;
+  }
 
   const handleClick = (e: MouseEvent) => {
     setOpen(!open);
   };
 
   const textDiv = document.createElement("div");
-  textDiv.className = "st-column-editor-text";
-  textDiv.textContent = columnEditorText;
-  container.addEventListener("click", handleClick);
-  container.appendChild(textDiv);
+  if (hideToggle) {
+    textDiv.style.display = "none";
+  } else {
+    textDiv.className = "st-column-editor-text";
+    textDiv.textContent = columnEditorText;
+    container.addEventListener("click", handleClick);
+    container.appendChild(textDiv);
+  }
 
   const popout = createColumnEditorPopout({
     headers,
@@ -99,6 +110,22 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
 
       if (newOptions.columnEditorText !== undefined) {
         textDiv.textContent = newOptions.columnEditorText;
+      }
+
+      if (newOptions.hideToggle !== undefined) {
+        hideToggle = newOptions.hideToggle;
+        if (hideToggle) {
+          container.style.width = "0px";
+          container.style.borderLeft = "none";
+          textDiv.style.display = "none";
+          container.removeEventListener("click", handleClick);
+        } else {
+          container.style.width = `${COLUMN_EDIT_WIDTH}px`;
+          container.style.removeProperty("border-left");
+          textDiv.style.display = "";
+          textDiv.className = "st-column-editor-text";
+          container.addEventListener("click", handleClick);
+        }
       }
 
       if (newOptions.essentialAccessors !== undefined) {

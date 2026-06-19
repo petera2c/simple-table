@@ -72,8 +72,10 @@ export class DOMManager {
     content.setAttribute("role", isTreeGrid ? "treegrid" : "grid");
     // Match RenderOrchestrator so DimensionManager's first clientWidth read (before any render)
     // already excludes the column editor strip when editColumns is on.
-    content.style.width = config.editColumns
-      ? `calc(100% - ${COLUMN_EDIT_WIDTH}px)`
+    const hideToggle = config.columnEditorConfig?.hideToggle ?? false;
+    const editorWidth = config.editColumns && !hideToggle ? COLUMN_EDIT_WIDTH : 0;
+    content.style.width = editorWidth > 0
+      ? `calc(100% - ${editorWidth}px)`
       : "100%";
 
     const headerContainer = document.createElement("div");

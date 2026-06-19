@@ -48,6 +48,7 @@ export interface StickyParentsRenderContext {
   collapsedHeaders: Set<string>;
   customTheme: CustomTheme;
   editColumns: boolean;
+  hideToggle?: boolean;
   headers: HeaderObject[];
   rowHeight: number;
   heightOffsets: HeightOffsets | undefined;
@@ -399,9 +400,8 @@ export const createStickyParentsContainer = (
       : 0;
 
   // Calculate width accounting for scrollbar
-  const containerWidth = `calc(100% - ${props.scrollbarWidth}px - ${
-    context.editColumns ? `${COLUMN_EDIT_WIDTH}px` : "0px"
-  })`;
+  const editorWidth = context.editColumns && !context.hideToggle ? COLUMN_EDIT_WIDTH : 0;
+  const containerWidth = `calc(100% - ${props.scrollbarWidth}px - ${editorWidth}px)`;
 
   // Create main container
   const container = document.createElement("div");

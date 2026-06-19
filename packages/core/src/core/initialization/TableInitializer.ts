@@ -32,6 +32,7 @@ export interface MergedColumnEditorConfig {
   searchEnabled: boolean;
   searchPlaceholder: string;
   allowColumnPinning: boolean;
+  hideToggle: boolean;
   searchFunction?: (header: HeaderObject, searchText: string) => boolean;
   rowRenderer?: ColumnEditorRowRenderer;
   customRenderer?: ColumnEditorCustomRenderer;
@@ -82,6 +83,9 @@ export class TableInitializer {
       allowColumnPinning:
         config.columnEditorConfig?.allowColumnPinning ??
         DEFAULT_COLUMN_EDITOR_CONFIG.allowColumnPinning,
+      hideToggle:
+        config.columnEditorConfig?.hideToggle ??
+        DEFAULT_COLUMN_EDITOR_CONFIG.hideToggle,
       searchFunction: config.columnEditorConfig?.searchFunction,
       rowRenderer: config.columnEditorConfig?.rowRenderer,
       customRenderer: config.columnEditorConfig?.customRenderer,
