@@ -100,4 +100,87 @@ describe("SimpleTable (React adapter) — auto-size columns", () => {
     await waitForText(host, "status:archived");
     expect(host.querySelectorAll(".status-badge").length).toBeGreaterThan(0);
   });
+
+  it("mounts multiple auto columns alongside a React renderer", async () => {
+    const multiHeaders: ReactHeaderObject[] = [
+      { accessor: "id", label: "ID", width: "auto", type: "number" },
+      { accessor: "name", label: "Name", width: "auto", type: "string" },
+      {
+        accessor: "status",
+        label: "Status",
+        width: "auto",
+        type: "string",
+        cellRenderer: StatusBadge,
+      },
+    ];
+    const multiRows = [
+      { id: 1, name: "Alpha", status: "active" },
+      { id: 2, name: "Beta", status: "pending" },
+    ];
+
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    container = host;
+    root = createRoot(host);
+    root.render(
+      createElement(SimpleTable, {
+        defaultHeaders: multiHeaders,
+        rows: multiRows,
+        getRowId: (p) => String((p.row as { id?: number })?.id),
+        height: "250px",
+        theme: "light",
+      }),
+    );
+
+    await waitForText(host, "status:active");
+    expect(host.textContent).toContain("Alpha");
+    expect(host.querySelectorAll(".status-badge").length).toBeGreaterThan(0);
+  });
+
+  it("mounts a 1k-row dataset with an auto column", async () => {
+    const bigRows = Array.from({ length: 1000 }, (_, i) => ({
+      id: i + 1,
+      status: i % 2 === 0 ? "active" : "pending",
+    }));
+
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    container = host;
+    root = createRoot(host);
+    root.render(
+      createElement(SimpleTable, {
+        defaultHeaders: headers,
+        rows: bigRows,
+        getRowId: (p) => String((p.row as { id?: number })?.id),
+        height: "250px",
+        theme: "light",
+      }),
+    );
+
+    await waitForText(host, "status:active");
+    expect(host.querySelectorAll(".status-badge").length).toBeGreaterThan(0);
+  });
+
+  it("is idempotent across repeated re-renders with identical props", async () => {
+    const host = mountTable();
+    await waitForText(host, "status:active");
+
+    // Re-render twice with the same props; the post-mount re-fit must not throw
+    // and the content must stay stable.
+    for (let i = 0; i < 2; i++) {
+      root!.render(
+        createElement(SimpleTable, {
+          defaultHeaders: headers,
+          rows,
+          getRowId: (p) => String((p.row as { id?: number })?.id),
+          height: "250px",
+          theme: "light",
+        }),
+      );
+      await wait(50);
+    }
+
+    await waitForText(host, "status:active");
+    expect(host.querySelectorAll(".status-badge").length).toBeGreaterThan(0);
+  });
 });

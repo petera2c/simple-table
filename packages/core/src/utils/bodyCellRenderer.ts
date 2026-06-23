@@ -9,6 +9,7 @@ import {
   updateBodyCellElement,
   updateBodyCellPosition,
   untrackCellByRow,
+  unregisterCellFromRegistry,
 } from "./bodyCell/styling";
 import { updateExpandIconState } from "./bodyCell/expansion";
 import { updateCheckboxElement } from "./columnEditor/createCheckbox";
@@ -441,6 +442,7 @@ export const renderBodyCells = (
         // reflow around the change.
       }
 
+      unregisterCellFromRegistry(element, context.cellRegistry);
       element.remove();
       renderedCells.delete(cellId);
     }

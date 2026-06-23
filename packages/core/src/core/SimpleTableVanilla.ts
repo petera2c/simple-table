@@ -22,6 +22,7 @@ import AriaAnnouncementManager from "../hooks/ariaAnnouncements";
 
 import { calculateScrollbarWidth } from "../hooks/scrollbarWidth";
 import { generateRowId, rowIdToString } from "../utils/rowUtils";
+import { untrackCellByRow } from "../utils/bodyCell/styling";
 import { deepClone } from "../utils/generalUtils";
 import { getCellId } from "../utils/cellUtils";
 import {
@@ -1432,6 +1433,20 @@ export class SimpleTableVanilla {
     this.expandedDepthsManager?.destroy();
     this.ariaAnnouncementManager?.destroy();
     this.animationCoordinator.destroy();
+
+    // Release live-update registries so their `updateContent` closures (which
+    // capture cell/header DOM nodes) no longer pin detached elements in memory.
+    this.cellRegistry.clear();
+    this.headerRegistry.clear();
+
+    // Untrack this instance's still-visible cells from the module-level
+    // rowCellsMap. Scoped to this table's DOM subtree so other live tables
+    // sharing that map are unaffected. Scrolled-out cells were already
+    // untracked during rendering.
+    root.querySelectorAll<HTMLElement>("[data-row-id]").forEach((el) => {
+      const rowId = el.getAttribute("data-row-id");
+      if (rowId) untrackCellByRow(rowId, el);
+    });
 
     this.renderOrchestrator.cleanup();
     this.domManager.destroy(this.container);

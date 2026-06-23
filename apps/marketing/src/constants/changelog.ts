@@ -11,6 +11,18 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v3_8_0: ChangelogEntry = {
+  version: "3.8.0",
+  date: "2026-06-22",
+  title: 'Auto-size columns (width: "auto")',
+  description: 'Added width: "auto" for content-fit columns.',
+  changes: [
+    {
+      type: "feature",
+      description: 'Added width: "auto" to size columns to their content.',
+    },
+  ],
+};
 export const v3_7_3: ChangelogEntry = {
   version: "3.7.3",
   date: "2026-06-13",
@@ -1836,6 +1848,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_8_0,
   v3_7_3,
   v3_7_2,
   v3_7_1,

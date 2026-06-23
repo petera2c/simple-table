@@ -689,15 +689,21 @@ export const calculateHeaderContentWidth = (
 
     document.body.removeChild(tempDiv);
 
-    // Also fold in any already-rendered (visible) cells for this column. This
-    // captures custom renderer / React output accurately for the rows currently
-    // on screen, without painting anything at the wrong width.
+    // Also fold in any already-rendered (visible) cells for this column, but only
+    // when their content actually OVERFLOWS the current (provisional) column box.
+    // `.st-cell-content` is a block that fills the cell, so `scrollWidth` equals
+    // the column width whenever the content fits — folding that in unconditionally
+    // would pin every column to its provisional width and prevent shrinking. We
+    // only trust a rendered cell when `scrollWidth > clientWidth` (content is
+    // clipped and genuinely wider than the column), which is exactly the case the
+    // fold-in is for: wide custom-renderer / React-portal output the off-screen
+    // text pass can't measure.
     const renderedCells = domQueryRoot.querySelectorAll(
       `[id$="-${accessor}"] .st-cell-content`,
     );
     renderedCells.forEach((node) => {
       const el = node as HTMLElement;
-      if (el.scrollWidth > 0) {
+      if (el.scrollWidth > el.clientWidth + 1) {
         sampleWidths.push(el.scrollWidth + cellPaddingLeft + cellPaddingRight);
       }
     });

@@ -3,7 +3,7 @@ import type Row from "../../types/Row";
 import type TableRow from "../../types/TableRow";
 import { getCellId } from "../cellUtils";
 import { getNestedValue, setNestedValue } from "../rowUtils";
-import { AbsoluteBodyCell, CellData, CellRenderContext } from "./types";
+import { AbsoluteBodyCell, CellData, CellRegistryEntry, CellRenderContext } from "./types";
 import { addTrackedEventListener } from "./eventTracking";
 import { createEditor } from "./editing";
 import { createCellContent } from "./content";
@@ -54,6 +54,21 @@ export const untrackCellByRow = (rowId: string, cellElement: HTMLElement): void 
     if (cellSet.size === 0) {
       rowCellsMap.delete(rowId);
     }
+  }
+};
+
+// Evict a cell's entry from the live-update registry when its DOM node is
+// permanently removed (e.g. scrolled out of the virtualized band). Without
+// this, the registry retains a closure over the detached cell element and its
+// live ref, growing unbounded as the user scrolls a large dataset.
+export const unregisterCellFromRegistry = (
+  cellElement: HTMLElement,
+  cellRegistry?: Map<string, CellRegistryEntry>,
+): void => {
+  const key = cellRegistryKeyMap.get(cellElement);
+  if (key !== undefined) {
+    cellRegistry?.delete(key);
+    cellRegistryKeyMap.delete(cellElement);
   }
 };
 

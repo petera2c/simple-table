@@ -30,8 +30,8 @@ const COLUMN_WIDTH_PROPS: PropInfo[] = [
     name: "HeaderObject.width",
     required: true,
     description:
-      "Defines the width of the column. Can be a fixed pixel value (number) or '1fr' for auto-sizing columns that share available space proportionally.",
-    type: "number | '1fr'",
+      "Defines the width of the column. Can be a fixed pixel value (number), '1fr' to share available space proportionally, or 'auto' to size the column to fit its content (header + sampled cells, clamped by minWidth/maxWidth).",
+    type: "number | '1fr' | 'auto'",
     link: "/docs/api-reference#header-object",
     example: `// Fixed width in pixels
 { 
@@ -46,6 +46,14 @@ const COLUMN_WIDTH_PROPS: PropInfo[] = [
   label: "Name", 
   width: "1fr",
   minWidth: 120
+}
+
+// Content-fit with "auto"
+{ 
+  accessor: "email", 
+  label: "Email", 
+  width: "auto",
+  maxWidth: 300
 }`,
   },
   {
@@ -53,7 +61,7 @@ const COLUMN_WIDTH_PROPS: PropInfo[] = [
     name: "HeaderObject.minWidth",
     required: false,
     description:
-      "Sets the minimum width constraint for auto-sizing columns (those using '1fr'). Prevents columns from becoming too narrow when space is limited. Note: When autoExpandColumns is enabled, minWidth is NOT enforced during initial scaling.",
+      "Sets the minimum width constraint for flexible ('1fr') and content-fit ('auto') columns. Prevents columns from becoming too narrow. Note: When autoExpandColumns is enabled, minWidth is NOT enforced during initial scaling.",
     type: "number",
     example: `// Auto-sizing column with minimum width
 { 
@@ -101,8 +109,10 @@ const ColumnWidthContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Simple Table provides flexible column width options including fixed widths, auto-sizing with{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">"1fr"</code>, and
+        Simple Table provides flexible column width options including fixed widths, flexible sizing
+        with <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">"1fr"</code>,
+        content-fit sizing with{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">"auto"</code>, and
         proportional scaling with{" "}
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
           autoExpandColumns
@@ -212,6 +222,24 @@ const ColumnWidthContent = () => {
         </p>
 
         <PropTable props={COLUMN_WIDTH_PROPS} title="Column Width Properties" />
+
+        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 p-4 rounded-lg mt-4">
+          <h3 className="font-semibold text-gray-800 dark:text-white mb-2">
+            Content-fit with "auto"
+          </h3>
+          <p className="text-gray-700 dark:text-gray-300">
+            Set{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
+              width: "auto"
+            </code>{" "}
+            to size a column to fit its content. The width is measured from the header plus a sample
+            of rows, clamped by{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">minWidth</code>{" "}
+            /{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">maxWidth</code>
+            , with rare outliers clipped so one giant value can&apos;t blow out the column.
+          </p>
+        </div>
       </motion.div>
 
       <motion.h2
@@ -220,7 +248,7 @@ const ColumnWidthContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.7 }}
       >
-        Understanding Auto-Sizing
+        Understanding Flexible Sizing ("1fr")
       </motion.h2>
 
       <motion.div
@@ -232,7 +260,7 @@ const ColumnWidthContent = () => {
         <p className="text-gray-700 dark:text-gray-300 mb-4">
           When you set{" "}
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">width: "1fr"</code>,
-          the column becomes flexible and shares the available space with other auto-sizing columns:
+          the column becomes flexible and shares the available space with other flexible columns:
         </p>
 
         <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 p-4 rounded-lg mb-4">
@@ -247,7 +275,7 @@ const ColumnWidthContent = () => {
                 width: "1fr"
               </code>
             </li>
-            <li>Each auto-sizing column gets an equal share of the available space</li>
+            <li>Each flexible column gets an equal share of the available space</li>
             <li>
               The{" "}
               <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
@@ -276,14 +304,14 @@ const ColumnWidthContent = () => {
               <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
                 width: "1fr"
               </code>{" "}
-              (auto)
+              (flexible)
             </li>
             <li>
               Column C:{" "}
               <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
                 width: "1fr"
               </code>{" "}
-              (auto)
+              (flexible)
             </li>
             <li>
               Column D:{" "}
@@ -315,7 +343,7 @@ const ColumnWidthContent = () => {
         transition={{ duration: 0.5, delay: 1.0 }}
       >
         <p className="text-gray-700 dark:text-gray-300 mb-4">
-          Auto-sizing columns automatically adapt when:
+          Flexible ("1fr") columns automatically adapt when:
         </p>
 
         <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2 mb-4">
@@ -328,8 +356,8 @@ const ColumnWidthContent = () => {
         <div className="bg-green-50 dark:bg-green-900/30 border-l-4 border-green-400 dark:border-green-700 p-4 rounded-lg">
           <h3 className="font-bold text-gray-800 dark:text-white mb-2">Pro Tip</h3>
           <p className="text-gray-700 dark:text-gray-300">
-            Auto-sizing works great with column resizing! When users manually resize a column, the
-            other auto-sizing columns automatically adjust to fill or use the freed space. Try it in
+            Flexible columns work great with column resizing! When users manually resize a column,
+            the other "1fr" columns automatically adjust to fill or use the freed space. Try it in
             the demo above by enabling column resizing.
           </p>
         </div>
