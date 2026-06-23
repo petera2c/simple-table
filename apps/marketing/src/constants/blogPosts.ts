@@ -78,13 +78,13 @@ export const nestedHeadersReactTablesPost: BlogPostMetadata = {
 };
 
 export const bestFreeReactDataGridPost: BlogPostMetadata = {
-  title: "Best Free React Data Grid: Why Simple Table Stands Out in 2026",
+  title: "Best Free React Data Grid 2026: Top Picks Compared",
   description:
-    "Discover why Simple Table is the best free React data grid in 2026. Compare features, performance, and ease of use against popular alternatives like AG Grid, TanStack Table, and Material-UI.",
+    "The best free React data grids in 2026 compared on features, bundle size, and performance — top open-source and free-tier picks with honest pros and cons.",
   slug: "best-free-react-data-grid-2026",
   tags: ["react", "comparison", "alternatives", "best-practices"],
   createdAt: "2025-06-21",
-  updatedAt: "2026-01-13",
+  updatedAt: "2026-06-22",
 };
 
 export const customizingReactTableLookPost: BlogPostMetadata = {
@@ -108,13 +108,13 @@ export const mobileCompatibilityReactTablesPost: BlogPostMetadata = {
 };
 
 export const bestReactTableLibraries2026Post: BlogPostMetadata = {
-  title: "Top React Table Libraries for 2026: Streamlining Data in Style",
+  title: "Best React Table Libraries 2026: Ranked & Compared",
   description:
-    "Discover the best React table libraries in 2026. Compare Simple Table, TanStack Table, AG Grid, Handsontable, and more. Find the perfect solution for your project with detailed pros, cons, and use cases.",
+    "Compare the best React table libraries in 2026 — Simple Table, TanStack Table, AG Grid, MUI, and more. Features, bundle size, pricing, and which one to pick.",
   slug: "best-react-table-libraries-2026",
   tags: ["react", "comparison", "alternatives"],
   createdAt: "2025-10-07",
-  updatedAt: "2026-01-13",
+  updatedAt: "2026-06-22",
 };
 
 export const customFooterRenderersPost: BlogPostMetadata = {
@@ -139,13 +139,13 @@ export const replicatingGojiberryUIPost: BlogPostMetadata = {
 };
 
 export const agGridAlternativesPost: BlogPostMetadata = {
-  title: "AG Grid Alternatives: 7 Best Free React Data Grids (2025)",
+  title: "AG Grid Alternatives: 7 Best Free React Data Grids (2026)",
   description:
     "Looking for an AG Grid alternative? Discover 7 powerful, free React data grids that deliver enterprise features without the enterprise price tag or vendor lock-in.",
   slug: "ag-grid-alternatives-free-react-data-grids",
   tags: ["react", "alternatives", "comparison", "ag-grid"],
   createdAt: "2025-11-15",
-  updatedAt: "2025-11-15",
+  updatedAt: "2026-06-22",
 };
 
 export const bundleSizeComparisonPost: BlogPostMetadata = {
@@ -179,13 +179,13 @@ export const handsontableAlternativesPost: BlogPostMetadata = {
 };
 
 export const agGridPricing2026Post: BlogPostMetadata = {
-  title: "AG Grid Pricing & License Breakdown 2026: What You Actually Pay",
+  title: "AG Grid Pricing & License Cost 2026 (Per Developer)",
   description:
-    "Complete breakdown of AG Grid's 2026 pricing: from $999/dev/year to enterprise costs. Understand hidden fees, licensing terms, and free alternatives that could save you $25K+.",
+    "AG Grid Enterprise is $999/developer/year. Full 2026 license breakdown: pricing tiers, hidden renewal fees, real team costs, and free alternatives that save $25K+.",
   slug: "ag-grid-pricing-license-breakdown-2026",
   tags: ["react", "ag-grid", "pricing", "comparison"],
   createdAt: "2025-11-22",
-  updatedAt: "2026-01-13",
+  updatedAt: "2026-06-22",
 };
 
 export const tanstackVsSimpleTablePost: BlogPostMetadata = {
@@ -257,12 +257,13 @@ export const reactTreeDataHierarchicalPost: BlogPostMetadata = {
 };
 
 export const materialReactTableVsSimpleTablePost: BlogPostMetadata = {
-  title: "Material React Table vs Simple Table: Material-UI Integration vs Lightweight Grid",
-  description: `Compare Material React Table (MRT) with Simple Table. Analyze bundle size, Material-UI integration, TanStack Table foundation, and when to use each in React. Simple Table also ships adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`,
+  title: "Material React Table vs Simple Table (2026)",
+  description:
+    "Material React Table (MRT) vs Simple Table: compare bundle size, the Material-UI dependency, features, and which lightweight React grid to choose in 2026.",
   slug: "material-react-table-vs-simple-table",
   tags: ["react", "comparison", "material-ui", "material-react-table"],
   createdAt: "2025-12-14",
-  updatedAt: "2025-12-14",
+  updatedAt: "2026-06-22",
 };
 
 export const reactTableRowSelectionPost: BlogPostMetadata = {
@@ -286,13 +287,13 @@ export const autoExpandColumnsReactTablesPost: BlogPostMetadata = {
 };
 
 export const reactTableColumnResizingGuidePost: BlogPostMetadata = {
-  title: "React Table Column Resizing: Implementation Guide & Best Libraries (2026)",
+  title: "React Table Column Resizing Guide (2026)",
   description:
-    "Learn how to implement resizable columns in React tables. Compare Simple Table, TanStack Table, AG Grid, and more. Includes code examples, best practices, and auto-expand integration.",
+    "Add resizable columns to a React table with step-by-step code. Plus how Simple Table, TanStack Table, and AG Grid compare on column resizing and auto-expand.",
   slug: "react-table-column-resizing-guide",
   tags: ["react", "column-resizing", "tutorial", "comparison", "features"],
   createdAt: "2026-01-13",
-  updatedAt: "2026-01-13",
+  updatedAt: "2026-06-22",
 };
 
 export const editableReactDataGridsPost: BlogPostMetadata = {
@@ -315,14 +316,24 @@ export const nestedTablesReactPost: BlogPostMetadata = {
   updatedAt: "2026-01-24",
 };
 
-export const handsontablePricing2026Post: BlogPostMetadata = {
-  title: "Handsontable Pricing Breakdown 2026: What You Actually Pay Per Developer",
+export const reactTableInfiniteScrollPost: BlogPostMetadata = {
+  title: "React Table Infinite Scroll & Lazy Loading: Complete Guide (2026)",
   description:
-    "Complete breakdown of Handsontable's 2026 pricing: from $899/dev/year to enterprise costs. Understand licensing terms, hidden fees, and free alternatives that could save you $20K+.",
+    "Implement infinite scroll and lazy loading in React data grids. Learn Simple Table's onLoadMore callback, window vs container scroll, row virtualization, and server-side pagination—with production-ready code and pitfalls to avoid.",
+  slug: "react-table-infinite-scroll",
+  tags: ["react", "infinite-scroll", "performance", "tutorial"],
+  createdAt: "2026-06-22",
+  updatedAt: "2026-06-22",
+};
+
+export const handsontablePricing2026Post: BlogPostMetadata = {
+  title: "Handsontable Pricing 2026: Cost Per Developer",
+  description:
+    "Handsontable costs $899/developer/year. Full 2026 pricing breakdown: license tiers, hidden fees, and free alternatives that could save your team $20K+.",
   slug: "handsontable-pricing-breakdown-2026",
   tags: ["react", "handsontable", "pricing", "comparison", "alternatives"],
   createdAt: "2026-01-30",
-  updatedAt: "2026-01-30",
+  updatedAt: "2026-06-22",
 };
 
 export const tabulatorAlternativesReact2026Post: BlogPostMetadata = {
@@ -345,12 +356,13 @@ export const kaTableVsSimpleTablePost: BlogPostMetadata = {
 };
 
 export const mantineDatatableVsSimpleTablePost: BlogPostMetadata = {
-  title: "Mantine DataTable vs Simple Table: Mantine UI Integration vs Standalone Grid",
-  description: `Mantine DataTable brings beautiful Mantine UI styling with 95KB overhead. Simple Table is standalone at 42KB with adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare features, Mantine dependencies, customization, and when each fits your React project.`,
+  title: "Mantine DataTable vs Simple Table (2026 Comparison)",
+  description:
+    "Mantine DataTable vs Simple Table: compare bundle size (95KB vs 42KB), the Mantine UI dependency, features, and which React grid fits your project in 2026.",
   slug: "mantine-datatable-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "mantine"],
   createdAt: "2026-02-05",
-  updatedAt: "2026-02-05",
+  updatedAt: "2026-06-22",
 };
 
 export const muiDatatablesVsSimpleTablePost: BlogPostMetadata = {
@@ -624,13 +636,13 @@ export const simpleTableVsFlowbiteSvelteTablePost: BlogPostMetadata = {
 };
 
 export const bestFreeSvelteDataGridPost: BlogPostMetadata = {
-  title: "Best Free Svelte Data Grid in 2026: Top SvelteKit Table Libraries Compared",
+  title: "Best Free Svelte Data Grid 2026: Top Picks Compared",
   description:
-    "Compare the best free Svelte data grids in 2026: Simple Table for Svelte, svelte-headless-table, SVAR DataGrid, Flowbite Svelte Table, and more. Bundle size, features, Svelte 5 support, and licensing.",
+    "The best free Svelte data grids in 2026 — Simple Table, svelte-headless-table, SVAR DataGrid, and more — compared on bundle size, features, and Svelte 5 support.",
   slug: "best-free-svelte-data-grid-2026",
   tags: ["svelte", "sveltekit", "comparison", "alternatives", "best-practices"],
   createdAt: "2026-04-26",
-  updatedAt: "2026-04-26",
+  updatedAt: "2026-06-22",
 };
 
 // Solid
@@ -707,13 +719,13 @@ export const simpleTableVsHandsontableVanillaPost: BlogPostMetadata = {
 };
 
 export const bestVanillaJsDataGridPost: BlogPostMetadata = {
-  title: "Best Vanilla JavaScript Data Grid in 2026: Free Framework-Agnostic Tables Compared",
+  title: "Best Vanilla JS Data Grid 2026: Free Options Compared",
   description:
-    "Compare the best free vanilla JS / TypeScript data grids in 2026: simple-table-core, Tabulator, Jspreadsheet, Grid.js, Handsontable, and more. Bundle size, TypeScript support, and licensing.",
+    "The best free vanilla JS & TypeScript data grids in 2026 — simple-table-core, Tabulator, Jspreadsheet, Grid.js, Handsontable — compared on size, TS, and license.",
   slug: "best-vanilla-js-data-grid-2026",
   tags: ["vanilla", "vanilla-typescript", "comparison", "alternatives", "best-practices"],
   createdAt: "2026-04-26",
-  updatedAt: "2026-04-26",
+  updatedAt: "2026-06-22",
 };
 
 // Tier 2 — framework-mirrored tutorial posts (column resizing, row selection,
@@ -1044,6 +1056,7 @@ export const BLOG_POSTS: BlogPostMetadata[] = [
   kaTableVsSimpleTablePost,
   tabulatorAlternativesReact2026Post,
   handsontablePricing2026Post,
+  reactTableInfiniteScrollPost,
   nestedTablesReactPost,
   editableReactDataGridsPost,
   reactTableColumnResizingGuidePost,
