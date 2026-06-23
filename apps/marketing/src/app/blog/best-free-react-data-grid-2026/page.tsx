@@ -109,6 +109,20 @@ export default function BestFreeReactDataGrid2026Page() {
                 out in such a competitive landscape?
               </p>
 
+              <p className="mb-4 text-gray-700 dark:text-gray-300">
+                This guide focuses strictly on <strong>100% free and open-source</strong> options—no
+                per-seat licenses and no paywalled features. If you also want to weigh paid and
+                commercial libraries (AG Grid Enterprise, MUI X Premium, and others) in the same
+                comparison, see our broader{" "}
+                <Link
+                  href="/blog/best-react-table-libraries-2026"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  best React table libraries of 2026
+                </Link>{" "}
+                roundup.
+              </p>
+
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <FontAwesomeIcon icon={faCheckCircle} className="text-blue-500" />

@@ -78,9 +78,9 @@ export const nestedHeadersReactTablesPost: BlogPostMetadata = {
 };
 
 export const bestFreeReactDataGridPost: BlogPostMetadata = {
-  title: "Best Free React Data Grid 2026: Top Picks Compared",
+  title: "Best Free & Open-Source React Data Grids (2026)",
   description:
-    "The best free React data grids in 2026 compared on features, bundle size, and performance — top open-source and free-tier picks with honest pros and cons.",
+    "The best 100% free and open-source React data grids in 2026 — no per-seat license, no paywalled features. Compared on bundle size, features, and licensing.",
   slug: "best-free-react-data-grid-2026",
   tags: ["react", "comparison", "alternatives", "best-practices"],
   createdAt: "2025-06-21",
@@ -314,6 +314,16 @@ export const nestedTablesReactPost: BlogPostMetadata = {
   tags: ["react", "nested-tables", "hierarchical-data", "tutorial", "advanced"],
   createdAt: "2026-01-24",
   updatedAt: "2026-01-24",
+};
+
+export const reactCustomCellRendererPost: BlogPostMetadata = {
+  title: "Custom Cell Renderers in React Tables: Badges, Progress Bars & Buttons (2026)",
+  description:
+    "Render anything inside React data grid cells—status badges, progress bars, avatars, and action buttons. Learn Simple Table's cellRenderer API, when to use valueFormatter instead, and performance best practices, with copy-paste recipes.",
+  slug: "react-table-custom-cell-renderer",
+  tags: ["react", "cell-renderer", "customization", "tutorial"],
+  createdAt: "2026-06-22",
+  updatedAt: "2026-06-22",
 };
 
 export const reactTableInfiniteScrollPost: BlogPostMetadata = {
@@ -1056,6 +1066,7 @@ export const BLOG_POSTS: BlogPostMetadata[] = [
   kaTableVsSimpleTablePost,
   tabulatorAlternativesReact2026Post,
   handsontablePricing2026Post,
+  reactCustomCellRendererPost,
   reactTableInfiniteScrollPost,
   nestedTablesReactPost,
   editableReactDataGridsPost,

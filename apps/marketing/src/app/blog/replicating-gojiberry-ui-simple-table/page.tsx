@@ -24,6 +24,10 @@ export const metadata: Metadata = {
   title: SEO_STRINGS.blogPosts.replicatingGojiberryUI.title,
   description: SEO_STRINGS.blogPosts.replicatingGojiberryUI.description,
   keywords: SEO_STRINGS.blogPosts.replicatingGojiberryUI.keywords,
+  // Thin, brand-replication post that only attracts off-topic noise queries
+  // (e.g. "zonetweak", "gojiberry"). De-indexed to consolidate topical focus;
+  // page stays live and crawlable (follow: true) and can be re-indexed anytime.
+  robots: { index: false, follow: true },
   openGraph: {
     title: SEO_STRINGS.blogPosts.replicatingGojiberryUI.title,
     description: SEO_STRINGS.blogPosts.replicatingGojiberryUI.description,

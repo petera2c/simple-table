@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>simple-table-core memory harness</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      /* Fixed-size mount points so virtualization has a stable viewport. */
+      #core-root,
+      #react-root {
+        width: 900px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="core-root"></div>
+    <div id="react-root"></div>
+    <script type="module" src="./main.tsx"></script>
+  </body>
+</html>

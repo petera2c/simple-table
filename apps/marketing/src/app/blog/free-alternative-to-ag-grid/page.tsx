@@ -2,6 +2,7 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode, faTable, faDollarSign, faUser, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { Metadata } from "next";
+import Link from "next/link";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import { freeAlternativeToAgGridPost } from "@/constants/blogPosts";
 import BlogLayout from "@/components/BlogLayout";
@@ -76,6 +77,17 @@ export default function FreeAlternativeToAgGridPage() {
                 While working on a React side project, I realized I needed a reliable data grid to
                 bring my ideas to life, but with no budget to spend on expensive tools, I decided to
                 build my own solution from scratch.
+              </p>
+
+              <p className="mb-4 text-gray-700 dark:text-gray-300">
+                Prefer a side-by-side list instead of a story? See our roundup of the{" "}
+                <Link
+                  href="/blog/ag-grid-alternatives-free-react-data-grids"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  7 best free AG Grid alternatives for React
+                </Link>
+                .
               </p>
 
               <h4 className="mb-2 text-gray-900 dark:text-gray-100 text-lg font-medium">

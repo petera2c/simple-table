@@ -117,7 +117,15 @@ export default function BestReactTableLibraries2026Page() {
                 >
                   AG Grid alternatives
                 </Link>
-                ? We've got you covered.
+                ? We've got you covered. And if you only want the 100% free and open-source picks
+                (no paid tiers), jump to our{" "}
+                <Link
+                  href="/blog/best-free-react-data-grid-2026"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  best free &amp; open-source React data grids
+                </Link>{" "}
+                roundup.
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">

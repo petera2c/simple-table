@@ -110,6 +110,9 @@ const NON_INDEXABLE_SEGMENTS = new Set([
   "/docs/column-editing",
   // Internal reproduction page; reachable by direct URL only.
   "/sandbox/context-isolation",
+  // Thin brand-replication post, noindexed (only attracts off-topic noise
+  // queries). Page route still exists; remove this line to re-include.
+  "/blog/replicating-gojiberry-ui-simple-table",
 ]);
 
 export default function sitemap(): MetadataRoute.Sitemap {

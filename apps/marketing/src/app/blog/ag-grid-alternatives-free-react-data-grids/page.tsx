@@ -67,7 +67,7 @@ export default function AgGridAlternativesPage() {
       {/* Hero Section */}
       <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
-          AG Grid Alternatives: 7 Best Free React Data Grids (2025)
+          AG Grid Alternatives: 7 Best Free React Data Grids (2026)
         </h1>
 
         <div className="flex justify-center mb-4 gap-2 flex-wrap">
@@ -120,7 +120,14 @@ export default function AgGridAlternativesPage() {
                 For projects with budget constraints or those that don't need the full enterprise
                 feature set, you might be looking for alternatives. The good news? The React
                 ecosystem offers several excellent options that are completely free and may better
-                fit your specific needs.
+                fit your specific needs. Curious why we built one of them? Read the{" "}
+                <Link
+                  href="/blog/free-alternative-to-ag-grid"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  story behind Simple Table, a free alternative to AG Grid
+                </Link>
+                .
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
