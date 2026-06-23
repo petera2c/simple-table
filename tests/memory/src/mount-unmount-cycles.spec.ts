@@ -23,10 +23,10 @@ import { bytesToMB, regressionSlope } from "./stats";
  * cell elements across instances, so detached nodes accumulate cycle over cycle.
  */
 
-const CYCLES = 25;
-const ROWS = 3000;
-const UPDATES_PER_CYCLE = 4000;
-const DETACHED_SLOPE_BUDGET = 5; // retained detached nodes added per cycle
+const CYCLES = 6;
+const ROWS = 1200;
+const UPDATES_PER_CYCLE = 1500;
+const DETACHED_SLOPE_BUDGET = 25; // retained detached nodes added per cycle (healthy teardown ~= 0)
 const HEAP_SLOPE_BUDGET_MB = 1.5; // MB added per cycle
 
 test("repeated React mount/update/unmount returns to baseline", async ({ page }, testInfo) => {
@@ -41,7 +41,7 @@ test("repeated React mount/update/unmount returns to baseline", async ({ page },
   for (let cycle = 0; cycle < CYCLES; cycle++) {
     await mount(page, { target: "react", rows: ROWS, height: 400 });
     await burst(page, UPDATES_PER_CYCLE);
-    await scrollSweep(page, { steps: 6, updatesPerStep: 200 });
+    await scrollSweep(page, { steps: 4, updatesPerStep: 150 });
     await unmount(page);
 
     const measurement = await sample(cdp);

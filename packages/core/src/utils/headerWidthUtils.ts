@@ -2,11 +2,106 @@ import {
   TABLE_HEADER_CELL_WIDTH_DEFAULT,
   CHART_COLUMN_TYPES,
   OPTIMAL_CHART_COLUMN_WIDTH,
+  AUTO_SIZE_HEAD_SAMPLE_SIZE,
+  AUTO_SIZE_STRIDED_SAMPLE_SIZE,
+  AUTO_SIZE_MAX_WIDTH,
+  AUTO_SIZE_OUTLIER_PERCENTILE,
+  AUTO_SIZE_OUTLIER_THRESHOLD,
+  AUTO_SIZE_MIN_SAMPLE_FOR_CLIP,
+  AUTO_SIZE_WIDTH_BUFFER,
 } from "../consts/general-consts";
 import { MIN_COLUMN_WIDTH } from "../consts/column-constraints";
 import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
 import { getCellId } from "./cellUtils";
 import { getNestedValue } from "./rowUtils";
+
+/**
+ * Build the set of row indices to sample for auto-size measurement.
+ * Hybrid strategy: the first `headSize` rows (always include the top / initial
+ * viewport) plus `stridedSize` rows spread at an even stride across the rest of
+ * the dataset, so wide values deeper in the data are caught without scanning
+ * every row. Strided (not random) keeps the result deterministic across renders.
+ */
+export const buildHybridSampleIndices = (
+  rowCount: number,
+  headSize: number,
+  stridedSize: number,
+): number[] => {
+  if (rowCount <= 0) return [];
+  const head = Math.max(0, Math.floor(headSize));
+  const strided = Math.max(0, Math.floor(stridedSize));
+
+  if (rowCount <= head + strided) {
+    return Array.from({ length: rowCount }, (_, i) => i);
+  }
+
+  const indices = new Set<number>();
+  for (let i = 0; i < Math.min(head, rowCount); i++) {
+    indices.add(i);
+  }
+
+  const remainingStart = head;
+  const remainingCount = rowCount - remainingStart;
+  if (strided > 0 && remainingCount > 0) {
+    const stride = Math.max(1, Math.floor(remainingCount / strided));
+    for (let k = 0; k < strided; k++) {
+      const idx = remainingStart + k * stride;
+      if (idx >= rowCount) break;
+      indices.add(idx);
+    }
+    // Always include the very last row so the deepest values are considered.
+    indices.add(rowCount - 1);
+  }
+
+  return Array.from(indices).sort((a, b) => a - b);
+};
+
+/** Linear-interpolated percentile (0-100) of a numeric array. */
+export const percentileOf = (values: number[], percentile: number): number => {
+  if (values.length === 0) return 0;
+  if (values.length === 1) return values[0];
+  const sorted = [...values].sort((a, b) => a - b);
+  const p = Math.min(100, Math.max(0, percentile));
+  const rank = (p / 100) * (sorted.length - 1);
+  const low = Math.floor(rank);
+  const high = Math.ceil(rank);
+  if (low === high) return sorted[low];
+  const frac = rank - low;
+  return sorted[low] + (sorted[high] - sorted[low]) * frac;
+};
+
+/**
+ * Choose a representative "content width" from sampled cell widths, clipping
+ * outliers only when they clearly stand apart from the bulk of the data.
+ *
+ * - Uses the true max when the column is uniform (max close to the percentile),
+ *   so nothing legitimate gets truncated.
+ * - Falls back to the percentile width only when `max > p * (1 + threshold)` and
+ *   there are enough samples to trust the percentile, so a single rogue 2000px
+ *   row can't define the whole column.
+ */
+export const selectContentWidthWithOutlierClip = (
+  widths: number[],
+  options?: {
+    percentile?: number;
+    threshold?: number;
+    minSampleForClip?: number;
+  },
+): number => {
+  if (widths.length === 0) return 0;
+  const max = Math.max(...widths);
+  const percentile = options?.percentile ?? AUTO_SIZE_OUTLIER_PERCENTILE;
+  const threshold = options?.threshold ?? AUTO_SIZE_OUTLIER_THRESHOLD;
+  const minSampleForClip = options?.minSampleForClip ?? AUTO_SIZE_MIN_SAMPLE_FOR_CLIP;
+
+  if (widths.length < minSampleForClip) return max;
+
+  const p = percentileOf(widths, percentile);
+  if (p > 0 && max > p * (1 + threshold)) {
+    return p;
+  }
+  return max;
+};
 
 /**
  * Find all leaf headers (headers without children) in a header tree
@@ -75,13 +170,24 @@ export const DEFAULT_FR_PX = 150;
 /** Default total table width used when normalizing fr/% if container width unknown */
 export const DEFAULT_TABLE_WIDTH = 800;
 
-type WidthSpec = { type: "px"; value: number } | { type: "fr"; value: number } | { type: "pct"; value: number };
+type WidthSpec =
+  | { type: "px"; value: number }
+  | { type: "fr"; value: number }
+  | { type: "pct"; value: number }
+  | { type: "auto" };
+
+/** True when a header's width requests content-based auto-sizing (`width: "auto"`). */
+export const isAutoWidth = (header: HeaderObject): boolean =>
+  typeof header.width === "string" && header.width.trim().toLowerCase() === "auto";
 
 function parseWidthSpec(header: HeaderObject): WidthSpec | null {
   if (header.hide) return null;
   if (typeof header.width === "number") return { type: "px", value: header.width };
   if (typeof header.width !== "string") return null;
   const s = header.width.trim();
+  // "auto" columns get a provisional pixel width until measured; flag them explicitly
+  // (rather than silently falling back to the default) so the engine can resolve them.
+  if (s.toLowerCase() === "auto") return { type: "auto" };
   if (s.endsWith("px")) return { type: "px", value: parseFloat(s) || 0 };
   if (s.endsWith("fr")) return { type: "fr", value: parseFloat(s) || 1 };
   if (s.endsWith("%")) return { type: "pct", value: parseFloat(s) || 0 };
@@ -138,7 +244,19 @@ function buildSectionWidthMap(
       widthMap.set(h.accessor as string, TABLE_HEADER_CELL_WIDTH_DEFAULT);
       return;
     }
-    if (spec.type === "px") widthMap.set(h.accessor as string, spec.value);
+    if (spec.type === "auto") {
+      // Provisional width until the auto-size pass measures real content.
+      const minW =
+        typeof h.minWidth === "number"
+          ? h.minWidth
+          : typeof h.minWidth === "string"
+            ? parseFloat(String(h.minWidth)) || 0
+            : 0;
+      widthMap.set(
+        h.accessor as string,
+        Math.max(TABLE_HEADER_CELL_WIDTH_DEFAULT, minW),
+      );
+    } else if (spec.type === "px") widthMap.set(h.accessor as string, spec.value);
     else if (spec.type === "fr") {
       const frAssigned = spec.value * pxPerFr;
       const minW =
@@ -330,15 +448,42 @@ export const calculateHeaderContentWidth = (
   accessor: Accessor,
   options?: {
     rows?: any[]; // Array of row data to sample
-    header?: HeaderObject; // Header object for valueFormatter/valueGetter
-    maxWidth?: number; // Maximum width (default: 500px)
-    sampleSize?: number; // Number of rows to sample (default: 50)
+    header?: HeaderObject; // Header object for valueFormatter/valueGetter/cellRenderer
+    maxWidth?: number; // Maximum width hard cap (default: AUTO_SIZE_MAX_WIDTH)
+    /** Leading rows always measured (default AUTO_SIZE_HEAD_SAMPLE_SIZE) */
+    headSampleSize?: number;
+    /** Rows sampled at an even stride across the rest (default AUTO_SIZE_STRIDED_SAMPLE_SIZE) */
+    stridedSampleSize?: number;
+    /** Back-compat: when set, used as the head sample size (strided defaults to 0) */
+    sampleSize?: number;
+    /** Outlier clip percentile (default AUTO_SIZE_OUTLIER_PERCENTILE) */
+    outlierPercentile?: number;
+    /** Outlier clip threshold fraction (default AUTO_SIZE_OUTLIER_THRESHOLD) */
+    outlierThreshold?: number;
+    /** When "header", ignore cell content and fit the header label only */
+    autoSizeMode?: "content" | "header";
+    /** Theme passed to a custom cellRenderer during measurement */
+    theme?: any;
     /** Scope `.st-cell-content` font/padding sampling to this table instance */
     styleRoot?: ParentNode | null;
   },
 ): number => {
-  const { rows, header, maxWidth = 500, sampleSize = 50, styleRoot } =
-    options || {};
+  const {
+    rows,
+    header,
+    maxWidth = AUTO_SIZE_MAX_WIDTH,
+    headSampleSize,
+    stridedSampleSize,
+    sampleSize,
+    outlierPercentile,
+    outlierThreshold,
+    autoSizeMode = header?.autoSizeMode ?? "content",
+    theme,
+    styleRoot,
+  } = options || {};
+  const headSize = headSampleSize ?? sampleSize ?? AUTO_SIZE_HEAD_SAMPLE_SIZE;
+  const stridedSize =
+    stridedSampleSize ?? (sampleSize != null ? 0 : AUTO_SIZE_STRIDED_SAMPLE_SIZE);
   const domQueryRoot: ParentNode = styleRoot ?? document;
   // Get the header cell element from the DOM
   const headerCellElement = document.getElementById(getCellId({ accessor, rowId: "header" }));
@@ -434,23 +579,25 @@ export const calculateHeaderContentWidth = (
   }
 
   // Now measure cell content widths from row data
-  let maxCellWidth = 0;
+  let cellContentWidth = 0;
 
   // For chart columns, skip cell content measurement and use a minimum width
   const isChartColumn = header && header.type && CHART_COLUMN_TYPES.includes(header.type as any);
 
-  if (rows && rows.length > 0 && !isChartColumn) {
-    // Sample rows for performance
-    const rowsToSample = Math.min(rows.length, sampleSize);
-
-    // Create a temporary element to measure text
+  if (rows && rows.length > 0 && !isChartColumn && autoSizeMode !== "header") {
+    // Hidden, off-screen measurement container (never touches the visible table,
+    // so resolving widths before paint produces no flicker).
     const tempDiv = document.createElement("div");
     tempDiv.style.visibility = "hidden";
     tempDiv.style.position = "absolute";
+    tempDiv.style.top = "-99999px";
+    tempDiv.style.left = "-99999px";
     tempDiv.style.whiteSpace = "nowrap";
     tempDiv.style.width = "auto";
+    tempDiv.style.display = "inline-block";
 
-    // Copy font styles from a sample cell content span
+    // Copy font styles + padding from a sample cell content span so measured
+    // text matches the real cell font.
     let cellPaddingLeft = 0;
     let cellPaddingRight = 0;
     const sampleCellContent = domQueryRoot.querySelector(
@@ -461,29 +608,36 @@ export const calculateHeaderContentWidth = (
       tempDiv.style.font = cellStyle.font;
       tempDiv.style.fontSize = cellStyle.fontSize;
       tempDiv.style.fontFamily = cellStyle.fontFamily;
-      // Get padding from the cell content span
       cellPaddingLeft = parseFloat(cellStyle.paddingLeft) || 0;
       cellPaddingRight = parseFloat(cellStyle.paddingRight) || 0;
     }
 
     document.body.appendChild(tempDiv);
 
-    for (let i = 0; i < rowsToSample; i++) {
+    const sampleWidths: number[] = [];
+
+    const measureText = (text: string): number => {
+      tempDiv.textContent = text;
+      return tempDiv.offsetWidth + cellPaddingLeft + cellPaddingRight;
+    };
+
+    const sampleIndices = buildHybridSampleIndices(rows.length, headSize, stridedSize);
+
+    for (const i of sampleIndices) {
       const row = rows[i];
 
-      // Get the value using valueGetter if available, otherwise use accessor
+      // Resolve the raw value (valueGetter or nested accessor)
       let value;
       if (header?.valueGetter) {
         value = header.valueGetter({ accessor, row, rowIndex: i });
       } else {
-        // Use getNestedValue to support nested accessors like "user.name"
         value = getNestedValue(row, accessor);
       }
 
-      // Format the value if valueFormatter is available
-      let displayValue = value;
+      // Formatted value (used both for text fallback and passed to cellRenderer)
+      let formattedValue: any = value;
       if (header?.valueFormatter && value !== null && value !== undefined) {
-        displayValue = header.valueFormatter({
+        formattedValue = header.valueFormatter({
           accessor,
           colIndex: 0,
           row,
@@ -492,39 +646,95 @@ export const calculateHeaderContentWidth = (
         });
       }
 
-      // Convert to string for measurement
-      const textContent = displayValue != null ? String(displayValue) : "";
+      let measured = -1;
 
-      // Measure the text width
-      tempDiv.textContent = textContent;
-      const textWidth = tempDiv.offsetWidth;
+      // Custom renderer: measure the REAL rendered output (icons, badges, custom
+      // fonts). Vanilla renderers return a string/number/Node we can measure
+      // directly. React renderers return a fragment whose portal mounts
+      // asynchronously and measures as ~0 here; in that case we fall back to the
+      // formatted-text path below (and the rendered visible cells captured later).
+      if (header?.cellRenderer) {
+        try {
+          const rendered = header.cellRenderer({
+            accessor,
+            colIndex: 0,
+            row,
+            rowIndex: i,
+            theme,
+            value,
+            formattedValue,
+          } as any);
 
-      // Add cell padding to get total cell width
-      const cellWidth = textWidth + cellPaddingLeft + cellPaddingRight;
-
-      if (cellWidth > maxCellWidth) {
-        maxCellWidth = cellWidth;
+          if (typeof rendered === "string" || typeof rendered === "number") {
+            measured = measureText(String(rendered));
+          } else if (rendered instanceof Node) {
+            tempDiv.textContent = "";
+            tempDiv.appendChild(rendered);
+            const w = tempDiv.offsetWidth + cellPaddingLeft + cellPaddingRight;
+            tempDiv.textContent = "";
+            measured = w > cellPaddingLeft + cellPaddingRight ? w : -1;
+          }
+        } catch {
+          measured = -1;
+        }
       }
+
+      if (measured < 0) {
+        const textContent = formattedValue != null ? String(formattedValue) : "";
+        measured = measureText(textContent);
+      }
+
+      sampleWidths.push(measured);
     }
 
     document.body.removeChild(tempDiv);
+
+    // Also fold in any already-rendered (visible) cells for this column. This
+    // captures custom renderer / React output accurately for the rows currently
+    // on screen, without painting anything at the wrong width.
+    const renderedCells = domQueryRoot.querySelectorAll(
+      `[id$="-${accessor}"] .st-cell-content`,
+    );
+    renderedCells.forEach((node) => {
+      const el = node as HTMLElement;
+      if (el.scrollWidth > 0) {
+        sampleWidths.push(el.scrollWidth + cellPaddingLeft + cellPaddingRight);
+      }
+    });
+
+    cellContentWidth = selectContentWidthWithOutlierClip(sampleWidths, {
+      percentile: outlierPercentile,
+      threshold: outlierThreshold,
+    });
   }
 
-  // Use the larger of header width or max cell width
-  let optimalWidth = Math.max(totalWidth, maxCellWidth);
+  // In header-only mode the cell content is ignored entirely.
+  let optimalWidth = autoSizeMode === "header" ? totalWidth : Math.max(totalWidth, cellContentWidth);
 
   // For chart columns, apply a minimum width
   if (isChartColumn) {
     optimalWidth = Math.max(optimalWidth, OPTIMAL_CHART_COLUMN_WIDTH);
   }
 
-  // Apply max width constraint
-  if (optimalWidth > maxWidth) {
-    optimalWidth = maxWidth;
+  // Apply max width hard cap (per-column maxWidth wins when provided)
+  const headerMaxWidth =
+    typeof header?.maxWidth === "number"
+      ? header.maxWidth
+      : typeof header?.maxWidth === "string"
+        ? parseFloat(String(header.maxWidth)) || undefined
+        : undefined;
+  const effectiveMaxWidth = headerMaxWidth != null ? headerMaxWidth : maxWidth;
+  if (optimalWidth > effectiveMaxWidth) {
+    optimalWidth = effectiveMaxWidth;
   }
 
-  // Add a small buffer to account for rounding and browser rendering differences
-  const buffer = 2;
+  // Floor at the column's min width (or the global minimum)
+  const headerMinWidth =
+    typeof header?.minWidth === "number"
+      ? header.minWidth
+      : typeof header?.minWidth === "string"
+        ? parseFloat(String(header.minWidth)) || MIN_COLUMN_WIDTH
+        : MIN_COLUMN_WIDTH;
 
-  return Math.max(optimalWidth + buffer, MIN_COLUMN_WIDTH);
+  return Math.max(optimalWidth + AUTO_SIZE_WIDTH_BUFFER, headerMinWidth, MIN_COLUMN_WIDTH);
 };

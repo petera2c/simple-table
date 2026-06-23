@@ -76,6 +76,8 @@ export interface TableInstance {
   update(config: Partial<SimpleTableConfig>): void;
   destroy(): void;
   getAPI(): TableAPI;
+  /** Re-measure auto-size columns (used after async React renderers mount). */
+  refitAutoSizeColumns?(): void;
 }
 
 // ─── Icon overrides ──────────────────────────────────────────────────────────

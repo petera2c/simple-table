@@ -23,6 +23,12 @@ import AriaAnnouncementManager from "../hooks/ariaAnnouncements";
 import { calculateScrollbarWidth } from "../hooks/scrollbarWidth";
 import { generateRowId, rowIdToString } from "../utils/rowUtils";
 import { deepClone } from "../utils/generalUtils";
+import { getCellId } from "../utils/cellUtils";
+import {
+  calculateHeaderContentWidth,
+  getAllVisibleLeafHeaders,
+  isAutoWidth,
+} from "../utils/headerWidthUtils";
 import {
   ACCORDION_ANIMATION_CLASS,
   ACCORDION_CLEANUP_BUFFER_MS,
@@ -68,6 +74,12 @@ export class SimpleTableVanilla {
   private localRows: Row[] = [];
   private headers: HeaderObject[] = [];
   private essentialAccessors: Set<string> = new Set();
+  /** Accessors of leaf columns that should size to content (width:"auto" or autoSizeColumns). */
+  private autoSizeAccessors: Set<Accessor> = new Set();
+  /** Accessors awaiting a content-fit measurement on the next render. */
+  private pendingAutoSize: Set<Accessor> = new Set();
+  /** Guard against re-entrancy while the auto-size pass re-renders. */
+  private isAutoSizing: boolean = false;
   private currentPage: number = 1;
   private scrollTop: number = 0;
   private scrollDirection: "up" | "down" | "none" = "none";
@@ -179,6 +191,9 @@ export class SimpleTableVanilla {
 
     this.collapsedHeaders = TableInitializer.getInitialCollapsedHeaders(config.defaultHeaders);
     this.expandedDepths = TableInitializer.getInitialExpandedDepths(config);
+
+    this.autoSizeAccessors = this.computeAutoSizeAccessors();
+    this.pendingAutoSize = new Set(this.autoSizeAccessors);
 
     this.domManager = new DOMManager();
     this.renderOrchestrator = new RenderOrchestrator();
@@ -1062,6 +1077,124 @@ export class SimpleTableVanilla {
     };
   }
 
+  /** A leaf column that should size to content (declared with width:"auto"). */
+  private isAutoSizeLeaf(header: HeaderObject): boolean {
+    if (header.isSelectionColumn) return false;
+    return isAutoWidth(header);
+  }
+
+  private computeAutoSizeAccessors(): Set<Accessor> {
+    const set = new Set<Accessor>();
+    // Auto-size and autoExpandColumns are mutually exclusive (one hugs content,
+    // the other fills the container), so disable auto-size when expanding.
+    if (this.config.autoExpandColumns) return set;
+    const leaves = getAllVisibleLeafHeaders(this.headers, this.collapsedHeaders);
+    for (const leaf of leaves) {
+      if (this.isAutoSizeLeaf(leaf)) set.add(leaf.accessor);
+    }
+    return set;
+  }
+
+  private getAutoSizeStyleRoot(): ParentNode | null {
+    const main = this.domManager.getRefs().mainBodyRef?.current;
+    if (!main) return null;
+    return main.closest(".simple-table-root") ?? main;
+  }
+
+  /** Immutably write measured pixel widths into the leaf headers. */
+  private applyMeasuredWidths(widths: Map<Accessor, number>): void {
+    const apply = (h: HeaderObject): HeaderObject => {
+      const next = { ...h };
+      if (h.children && h.children.length > 0) {
+        next.children = h.children.map(apply);
+      } else if (widths.has(h.accessor)) {
+        next.width = widths.get(h.accessor) as number;
+      }
+      return next;
+    };
+    this.headers = this.headers.map(apply);
+  }
+
+  /**
+   * Measure and apply content-fit widths for any pending "auto" columns, then
+   * re-render once at the final widths. Called at the end of render(); the
+   * measurement reads the just-rendered (provisional-width) DOM and the
+   * corrective render happens in the same synchronous task, so there is no
+   * visible width snap.
+   */
+  private maybeAutoSizeColumns(): void {
+    if (this.isAutoSizing || this.pendingAutoSize.size === 0) return;
+    if (this.config.autoExpandColumns) {
+      this.pendingAutoSize.clear();
+      return;
+    }
+
+    // Need the rendered DOM (header cell + sample cell) to measure against.
+    const ready = [...this.pendingAutoSize].some((accessor) =>
+      document.getElementById(getCellId({ accessor, rowId: "header" })),
+    );
+    if (!ready) return;
+
+    this.isAutoSizing = true;
+    try {
+      const styleRoot = this.getAutoSizeStyleRoot();
+      const leaves = getAllVisibleLeafHeaders(this.headers, this.collapsedHeaders);
+      const leafByAccessor = new Map(leaves.map((leaf) => [leaf.accessor, leaf]));
+
+      const widths = new Map<Accessor, number>();
+      for (const accessor of this.pendingAutoSize) {
+        const leaf = leafByAccessor.get(accessor);
+        if (!leaf) continue;
+        // Sampling/outlier tuning uses internal defaults; per-column control is
+        // via the header's `maxWidth` / `minWidth` / `autoSizeMode`.
+        const width = calculateHeaderContentWidth(accessor, {
+          rows: this.localRows,
+          header: leaf,
+          styleRoot,
+          theme: this.config.theme,
+          autoSizeMode: leaf.autoSizeMode,
+        });
+        widths.set(accessor, width);
+      }
+
+      this.pendingAutoSize.clear();
+      if (widths.size === 0) return;
+
+      this.applyMeasuredWidths(widths);
+      this.renderOrchestrator.invalidateCache("header");
+
+      const elements = this.domManager.getElements();
+      const refs = this.domManager.getRefs();
+      if (elements) {
+        this.renderOrchestrator.render(
+          elements,
+          refs,
+          this.getRenderContext(),
+          this.getRenderState(),
+          this.mergedColumnEditorConfig,
+        );
+      }
+
+      if (this.config.onColumnWidthChange) {
+        this.config.onColumnWidthChange(this.headers);
+      }
+    } finally {
+      this.isAutoSizing = false;
+    }
+  }
+
+  /**
+   * Re-run the content-fit measurement for all auto-size columns. Useful for
+   * host frameworks (e.g. React) whose custom renderers mount asynchronously:
+   * calling this from a layout effect (pre-paint) re-measures once the real
+   * renderer DOM is present, so the column fits accurately without flicker.
+   */
+  public refitAutoSizeColumns(): void {
+    if (this.autoSizeAccessors.size === 0) return;
+    this.autoSizeAccessors.forEach((accessor) => this.pendingAutoSize.add(accessor));
+    this.render("auto-size-refit");
+  }
+
   private render(source?: string): void {
     if (!this.mounted) return;
 
@@ -1086,6 +1219,11 @@ export class SimpleTableVanilla {
       this.getRenderState(),
       this.mergedColumnEditorConfig,
     );
+
+    // Resolve any "auto" columns to a measured pixel width. This runs
+    // synchronously within the same task as the render above, so the corrective
+    // re-render paints once at the final width (no flicker).
+    this.maybeAutoSizeColumns();
 
     // Accordion axis is one-shot per collapse/expand toggle: clear it after
     // the render that consumed it so subsequent renders (sort, scroll,
@@ -1140,6 +1278,9 @@ export class SimpleTableVanilla {
         this.sortManager.updateConfig({ tableRows: this.localRows });
       }
       // SelectionManager will be updated with processed rows during render
+
+      // Re-fit auto-size columns against the new data (content width may change).
+      this.autoSizeAccessors.forEach((accessor) => this.pendingAutoSize.add(accessor));
     }
 
     if (config.defaultHeaders !== undefined) {
@@ -1150,6 +1291,8 @@ export class SimpleTableVanilla {
       this.captureAnimationSnapshot();
       this.headers = [...config.defaultHeaders];
       this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
+      this.autoSizeAccessors = this.computeAutoSizeAccessors();
+      this.pendingAutoSize = new Set(this.autoSizeAccessors);
 
       if (this.filterManager) {
         this.filterManager.updateConfig({ headers: this.headers });

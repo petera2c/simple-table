@@ -33,7 +33,8 @@ const getColumnWidthInPixels = (header: HeaderObject): number => {
     return parseFloat(width);
   }
 
-  // Default width if not specified or in unsupported format
+  // "auto" columns are resolved to a pixel width by the auto-size pass before
+  // this runs; until then (and for fr/%/unsupported) fall back to the default.
   return 150;
 };
 

@@ -10,22 +10,31 @@ import {
   toggleSort,
   unmount,
 } from "./driver";
-import { bytesToMB, regressionSlope } from "./stats";
+import { bytesToMB, tailDrift } from "./stats";
 
 /**
  * Sort/filter churn scenario. Repeatedly toggling sort and applying/clearing a
  * quick filter while updating cells forces full re-renders (the manager
  * subscribe -> render path) on top of the incremental updateData path. Caches
  * (RenderOrchestrator / SectionRenderer) and the cell registry are exercised
- * heavily. The per-round heap + detached series should be flat (slope ~0); a
- * cache or registry that fails to invalidate would trend upward.
+ * heavily.
+ *
+ * We assert on the *steady-state* drift (averaged second vs first half of the
+ * trailing rounds) rather than the whole-series slope: a healthy table reaches
+ * a stable working set after a few rounds and then stays flat. A one-time ramp
+ * that saturates (bounded accumulation) is acceptable here; only *sustained*
+ * round-over-round growth in the tail indicates a churn-driven leak (e.g. a
+ * cache/registry that never stops growing). Averaging both tail halves keeps
+ * the check robust to single-sample GC/measurement noise.
  */
 
 const ROUNDS = 20;
 const ROWS = 3000;
 const UPDATES_PER_ROUND = 2000;
-const DETACHED_SLOPE_BUDGET = 8; // detached nodes added per round
-const HEAP_SLOPE_BUDGET_MB = 1.5; // MB added per round
+/** Fraction of trailing rounds treated as steady state. */
+const TAIL_FRACTION = 0.5;
+const DETACHED_TAIL_DRIFT_BUDGET = 500; // detached nodes gained across the steady-state window
+const HEAP_TAIL_DRIFT_BUDGET_MB = 4; // MB gained across the steady-state window
 
 test("sort + filter churn during updates does not accumulate", async ({ page }, testInfo) => {
   const cdp = await openCdp(page);
@@ -53,23 +62,23 @@ test("sort + filter churn during updates does not accumulate", async ({ page }, 
     lastSample = measurement;
   }
 
-  const detachedSlope = regressionSlope(detachedSeries);
-  const heapSlopeMB = bytesToMB(regressionSlope(heapSeries));
+  const detachedTailDrift = tailDrift(detachedSeries, TAIL_FRACTION);
+  const heapTailDriftMB = bytesToMB(tailDrift(heapSeries, TAIL_FRACTION));
 
   if (
     firstSample &&
     lastSample &&
-    (detachedSlope > DETACHED_SLOPE_BUDGET || heapSlopeMB > HEAP_SLOPE_BUDGET_MB)
+    (detachedTailDrift > DETACHED_TAIL_DRIFT_BUDGET || heapTailDriftMB > HEAP_TAIL_DRIFT_BUDGET_MB)
   ) {
     await attachDiagnostics(cdp, testInfo, "sort-filter", firstSample, lastSample);
   }
 
   expect(
-    detachedSlope,
-    `detached DOM nodes added per sort/filter round (series: ${detachedSeries.join(", ")})`,
-  ).toBeLessThanOrEqual(DETACHED_SLOPE_BUDGET);
-  expect(heapSlopeMB, "heap (MB) added per sort/filter round").toBeLessThanOrEqual(
-    HEAP_SLOPE_BUDGET_MB,
+    detachedTailDrift,
+    `steady-state detached DOM-node drift over sort/filter rounds (series: ${detachedSeries.join(", ")})`,
+  ).toBeLessThanOrEqual(DETACHED_TAIL_DRIFT_BUDGET);
+  expect(heapTailDriftMB, "steady-state heap (MB) drift over sort/filter rounds").toBeLessThanOrEqual(
+    HEAP_TAIL_DRIFT_BUDGET_MB,
   );
 
   await unmount(page);

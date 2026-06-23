@@ -29,11 +29,47 @@ import { Button } from "antd";
 import { DEFAULT_EXAMPLE_PATH } from "@/constants/global";
 import ExampleLink from "@/components/ExampleLink";
 import {
+  buildBreadcrumbListJsonLd,
+  buildFaqPageJsonLd,
+  buildTechArticleJsonLd,
+} from "@/utils/structuredData";
+import { handsontableAlternativesPost } from "@/constants/blogPosts";
+import {
   SIMPLE_TABLE_INFO,
   HANDSONTABLE_INFO,
   TANSTACK_TABLE_INFO,
   AG_GRID_COMMUNITY_INFO,
 } from "@/constants/packageInfo";
+
+const FAQS: { question: string; answer: string }[] = [
+  {
+    question: "Is Handsontable free?",
+    answer:
+      "Handsontable is free only for non-commercial use under its evaluation license. Almost any revenue-related project — commercial apps, internal business tools, freelance or agency work — requires a paid commercial license, which starts at over $1,000 per developer per year.",
+  },
+  {
+    question: "What is the best free alternative to Handsontable for React?",
+    answer:
+      "For most React teams, Simple Table is the closest drop-in: it delivers spreadsheet-style editing, sorting, filtering, virtualization, and row grouping in roughly 42KB (about 4x lighter than Handsontable) and is source-available with a free tier for pre-revenue teams. React Data Grid (Adazzle) and TanStack Table are solid MIT-licensed options too.",
+  },
+  {
+    question: "Why do developers migrate away from Handsontable?",
+    answer:
+      "The two most common reasons are licensing and bundle size. Handsontable's non-commercial license rules out most real-world projects without a paid license, and it is one of the heaviest grids available, which hurts load times — especially on mobile.",
+  },
+  {
+    question: "Does Handsontable have a true open-source license?",
+    answer:
+      "Handsontable is source-available but not permissively licensed for commercial use. If you need a true MIT or permissive license, React Data Grid and TanStack Table qualify; Simple Table is source-available with a free community tier for pre-revenue teams.",
+  },
+  {
+    question: "How hard is it to migrate from Handsontable to Simple Table?",
+    answer:
+      "Most migrations take an afternoon. Column definitions map directly, the editing and keyboard model is similar, and Simple Table's prop-based API is generally simpler than Handsontable's settings object.",
+  },
+];
+
+const CANONICAL_PATH = "/blog/handsontable-alternatives-free-react";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.blogPosts.handsontableAlternatives.title,
@@ -59,12 +95,39 @@ export const metadata: Metadata = {
 };
 
 export default function HandsontableAlternativesPage() {
+  const articleLd = buildTechArticleJsonLd({
+    title: handsontableAlternativesPost.title,
+    description: handsontableAlternativesPost.description,
+    canonicalPath: CANONICAL_PATH,
+    datePublished: handsontableAlternativesPost.createdAt,
+    dateModified: handsontableAlternativesPost.updatedAt,
+  });
+  const faqLd = buildFaqPageJsonLd(FAQS);
+  const breadcrumbsLd = buildBreadcrumbListJsonLd([
+    { name: "Home", url: "/" },
+    { name: "Blog", url: "/blog" },
+    { name: "Handsontable Alternatives", url: CANONICAL_PATH },
+  ]);
+
   return (
-    <BlogLayout>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsLd) }}
+      />
+      <BlogLayout>
       {/* Hero Section */}
       <section className="bg-linear-to-r from-orange-50 to-blue-50 dark:from-orange-900 dark:to-blue-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
-          Handsontable Alternatives: Best Free Options for React (2025)
+          Handsontable Alternatives: Best Free Options for React (2026)
         </h1>
 
         <div className="flex justify-center mb-4 gap-2 flex-wrap">
@@ -116,7 +179,7 @@ export default function HandsontableAlternativesPage() {
                 The good news? The React ecosystem has excellent alternatives that offer similar
                 spreadsheet functionality, better performance, smaller bundle sizes, and truly free
                 licenses. In this guide, we'll explore the best Handsontable alternatives for React
-                in 2025.
+                in 2026.
               </p>
             </div>
           </div>
@@ -1077,6 +1140,91 @@ export default function HandsontableAlternativesPage() {
             </div>
           </div>
         </section>
+        {/* FAQ */}
+        <section id="faq">
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
+            <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
+              <FontAwesomeIcon icon={faLightbulb} className="text-blue-500" />
+              Frequently Asked Questions
+            </h2>
+
+            <div className="space-y-3">
+              {FAQS.map((faq) => (
+                <details
+                  key={faq.question}
+                  className="group bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+                >
+                  <summary className="p-4 cursor-pointer list-none flex items-start gap-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <span className="flex-1 font-semibold text-gray-900 dark:text-gray-100">
+                      {faq.question}
+                    </span>
+                    <span className="text-gray-400 transform group-open:rotate-90 transition-transform shrink-0">
+                      ›
+                    </span>
+                  </summary>
+                  <div className="px-4 pb-4 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {faq.answer}
+                  </div>
+                </details>
+              ))}
+            </div>
+
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              Want the exact numbers? See our{" "}
+              <Link
+                href="/blog/handsontable-pricing-breakdown-2026"
+                className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+              >
+                Handsontable pricing breakdown
+              </Link>
+              .
+            </p>
+          </div>
+        </section>
+
+        {/* Related guides */}
+        <section id="related-guides">
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm mb-8">
+            <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
+              <FontAwesomeIcon icon={faBalanceScale} className="text-purple-500" />
+              Related Guides
+            </h2>
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <li>
+                <Link
+                  href="/blog/handsontable-pricing-breakdown-2026"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  Handsontable pricing breakdown (cost per developer)
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/blog/best-react-table-libraries-2026"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  Best React table libraries in 2026 (ranked &amp; compared)
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/blog/best-free-react-data-grid-2026"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  Best free &amp; open-source React data grids
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/blog/tanstack-table-vs-ag-grid-comparison"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  TanStack Table vs AG Grid: complete comparison
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </section>
       </article>
 
       {/* Call to Action */}
@@ -1092,6 +1240,7 @@ export default function HandsontableAlternativesPage() {
           href: DEFAULT_EXAMPLE_PATH,
         }}
       />
-    </BlogLayout>
+      </BlogLayout>
+    </>
   );
 }

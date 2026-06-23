@@ -10,6 +10,14 @@ import { bytesToMB } from "./stats";
  */
 
 export async function gotoHarness(page: Page): Promise<void> {
+  // Surface in-page failures (uncaught errors, renderer crashes, console
+  // errors) in the test output; these otherwise manifest only as opaque
+  // "execution context destroyed" errors on the next page.evaluate.
+  page.on("pageerror", (err) => console.error(`[page error] ${err.message}`));
+  page.on("crash", () => console.error("[page crash] renderer process crashed"));
+  page.on("console", (msg) => {
+    if (msg.type() === "error") console.error(`[console.error] ${msg.text()}`);
+  });
   await page.goto("/");
   await page.waitForFunction(() => typeof window.__leak !== "undefined");
 }

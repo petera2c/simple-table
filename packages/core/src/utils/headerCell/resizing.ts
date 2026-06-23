@@ -75,9 +75,11 @@ export const createResizeHandle = (
   const measureOptions = (leafHeader: HeaderObject) => ({
     rows: context.rows,
     header: leafHeader,
-    maxWidth: 500,
-    sampleSize: 50,
+    // maxWidth/min/autoSizeMode are read from the header inside the measurer;
+    // hybrid sampling defaults apply. Visible rendered cells (already painted on
+    // double-click) are folded in for accurate custom-renderer widths.
     styleRoot: getStyleRoot(context),
+    autoSizeMode: leafHeader.autoSizeMode,
   });
 
   /** Auto-expand: mutate canonical storage + DOM-synced widths. Otherwise: effective tree (matches main). */

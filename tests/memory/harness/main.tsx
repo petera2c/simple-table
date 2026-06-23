@@ -38,6 +38,7 @@ let active: ActiveMount | null = null;
 let coreInstance: SimpleTableVanilla | null = null;
 let reactRoot: Root | null = null;
 let reactApi: TableAPI | null = null;
+let reactContainer: HTMLElement | null = null;
 let sortDir: "asc" | "desc" = "desc";
 
 function rootEl(id: string): HTMLElement {
@@ -70,7 +71,12 @@ async function unmountInternal(): Promise<void> {
     flushSync(() => reactRoot!.unmount());
     reactRoot = null;
     reactApi = null;
-    rootEl(REACT_ROOT_ID).innerHTML = "";
+    // Each mount uses a fresh child container; drop it so no per-cycle host node
+    // lingers and createRoot never reuses a previously-rooted node.
+    if (reactContainer && reactContainer.parentNode) {
+      reactContainer.parentNode.removeChild(reactContainer);
+    }
+    reactContainer = null;
   }
   active = null;
   await settle();
@@ -114,7 +120,10 @@ async function mountReact(options: MountOptions, data: StockRow[]): Promise<void
     },
   } as SimpleTableReactProps;
 
-  const root = createRoot(rootEl(REACT_ROOT_ID));
+  const container = document.createElement("div");
+  rootEl(REACT_ROOT_ID).appendChild(container);
+  reactContainer = container;
+  const root = createRoot(container);
   reactRoot = root;
   // flushSync forces a synchronous commit so the adapter's layout effect (which
   // assigns the ref) runs before mount() resolves.

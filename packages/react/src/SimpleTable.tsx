@@ -137,6 +137,21 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
 
     const portals = useTablePortals(bridge);
 
+    // Once custom-renderer portals have mounted, re-fit any auto-size columns so
+    // React renderer output (icons, badges, custom fonts) is measured from the
+    // real DOM. Runs in a layout effect (pre-paint) and only once, so there is
+    // no visible width snap. No-op when there are no auto-size columns.
+    const didInitialAutoSizeRef = useRef(false);
+    useLayoutEffect(() => {
+      if (didInitialAutoSizeRef.current) return;
+      const instance = instanceRef.current;
+      if (!instance) return;
+      if (Array.isArray(portals) && portals.length > 0) {
+        didInitialAutoSizeRef.current = true;
+        instance.refitAutoSizeColumns?.();
+      }
+    }, [portals]);
+
     return (
       <>
         <div ref={containerRef} />

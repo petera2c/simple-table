@@ -24,6 +24,13 @@ export type ColumnType =
   | "other";
 export type ShowWhen = "parentCollapsed" | "parentExpanded" | "always";
 
+/**
+ * Controls what an auto-sized column (`width: "auto"`) fits to:
+ * - "content" (default): fit the wider of the header and the sampled cell content
+ * - "header": fit the header label only (ignore cell content)
+ */
+export type AutoSizeMode = "content" | "header";
+
 export interface ChartOptions {
   min?: number; // Custom minimum value for chart scaling
   max?: number; // Custom maximum value for chart scaling
@@ -82,6 +89,13 @@ type HeaderObject = {
   accessor: Accessor;
   aggregation?: AggregationConfig;
   align?: "left" | "center" | "right";
+  /**
+   * When `width` is the string `"auto"`, the column is sized to fit its content
+   * on load (and re-fit when row data changes). `autoSizeMode` controls whether
+   * it fits the header + cells (`"content"`, default) or the header label only
+   * (`"header"`). `minWidth` / `maxWidth` clamp the computed width.
+   */
+  autoSizeMode?: AutoSizeMode;
   cellRenderer?: CellRenderer;
   chartOptions?: ChartOptions; // Options for chart rendering (lineAreaChart, barChart)
   children?: HeaderObject[];
@@ -126,8 +140,12 @@ type HeaderObject = {
   valueFormatter?: ValueFormatter; // Function to format the cell value for display (does not affect underlying data)
   valueGetter?: ValueGetter; // Function to get the value for sorting and operations
   showWhen?: ShowWhen; // Controls when child column is visible based on parent's collapsed state
+  /**
+   * Column width. A number or px/fr/% string sets a fixed/proportional width.
+   * The special value `"auto"` sizes the column to fit its content (see `autoSizeMode`).
+   */
   width: number | string;
-  maxWidth?: number | string;
+  maxWidth?: number | string; // Upper bound for width, including auto-sizing
 };
 
 export default HeaderObject;

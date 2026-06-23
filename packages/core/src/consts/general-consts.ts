@@ -26,3 +26,12 @@ export const TABLE_HEADER_CELL_WIDTH_DEFAULT = 150;
 export const PINNED_BORDER_WIDTH = 1;
 export const CHART_COLUMN_TYPES = ["lineAreaChart", "barChart"];
 export const OPTIMAL_CHART_COLUMN_WIDTH = 150;
+
+// Auto-size (width: "auto") defaults
+export const AUTO_SIZE_HEAD_SAMPLE_SIZE = 25; // leading rows always measured
+export const AUTO_SIZE_STRIDED_SAMPLE_SIZE = 75; // rows sampled at an even stride across the rest
+export const AUTO_SIZE_MAX_WIDTH = 500; // global hard cap when no per-column maxWidth
+export const AUTO_SIZE_OUTLIER_PERCENTILE = 95; // percentile used to clip outliers
+export const AUTO_SIZE_OUTLIER_THRESHOLD = 0.5; // clip only when max exceeds the percentile by this fraction
+export const AUTO_SIZE_MIN_SAMPLE_FOR_CLIP = 20; // below this many samples, never clip (use raw max)
+export const AUTO_SIZE_WIDTH_BUFFER = 2; // px buffer added to measured content width
