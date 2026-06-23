@@ -17,8 +17,8 @@ const headers: ReactHeaderObject[] = [
   // Fixed width for predictable layout
   { accessor: "age", label: "Age", width: 80, type: "number" },
 
-  // Auto-sizing column
-  { accessor: "department", label: "Department", width: "1fr", minWidth: 100, type: "string" },
+  // Content-fit width with "auto" - sizes to the column's content
+  { accessor: "department", label: "Department", width: "auto", minWidth: 100, type: "string" },
 
   // Fixed width
   { accessor: "salary", label: "Salary", width: 120, align: "right", type: "number" },

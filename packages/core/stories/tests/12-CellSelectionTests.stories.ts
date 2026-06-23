@@ -725,6 +725,85 @@ export const CopySelectionWithoutHeaders = {
 };
 
 // ============================================================================
+// LINKS INSIDE SELECTABLE CELLS
+// ============================================================================
+
+/**
+ * Regression: with `selectableCells` enabled, the cell mousedown handler used to
+ * `preventDefault()` and start a cell selection even when the press landed on an
+ * <a> rendered inside the cell. That cancelled the link's native default (href
+ * navigation) and forced a body re-render that swallowed the pending click.
+ * A link inside a cell must stay clickable and must not trigger cell selection.
+ */
+export const LinkInsideCellStaysClickable = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      {
+        accessor: "name",
+        label: "Product Name",
+        width: 240,
+        type: "string",
+        cellRenderer: ({ accessor, row }: { accessor: string; row: Record<string, unknown> }) => {
+          const link = document.createElement("a");
+          link.className = "cell-link";
+          link.href = "#product-details";
+          link.textContent = String(row[accessor] ?? "");
+          // Record clicks via a data attribute so the play function can assert the
+          // click reached the link. preventDefault keeps the test runner on-page.
+          link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const count = Number(link.dataset.clickCount ?? "0") + 1;
+            link.dataset.clickCount = String(count);
+          });
+          return link;
+        },
+      },
+      { accessor: "category", label: "Category", width: 150, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createProductData(), {
+      getRowId: (params) => String(params.row.id),
+      height: "400px",
+      selectableCells: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await clearCellSelection(canvasElement);
+
+    const link = canvasElement.querySelector("a.cell-link") as HTMLAnchorElement | null;
+    expect(link).toBeTruthy();
+
+    // Press on the link. The selection handler is attached to the containing
+    // cell, so the event bubbles up to it; it must not cancel the link default.
+    const pt = centerCoords(link!);
+    const mousedown = new MouseEvent("mousedown", {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      ...pt,
+    });
+    link!.dispatchEvent(mousedown);
+    expect(mousedown.defaultPrevented).toBe(false);
+
+    link!.dispatchEvent(
+      new MouseEvent("mouseup", { bubbles: true, cancelable: true, view: window, ...pt }),
+    );
+    await new Promise((r) => setTimeout(r, 150));
+
+    // Pressing a link must not start a cell selection.
+    expect(getSelectedCellCount(canvasElement)).toBe(0);
+
+    // The link's own click handler (client-side routing) must still fire.
+    link!.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
+    expect(Number(link!.dataset.clickCount ?? "0")).toBe(1);
+    // And it still must not have selected the cell.
+    expect(getSelectedCellCount(canvasElement)).toBe(0);
+  },
+};
+
+// ============================================================================
 // KEYBOARD SHORTCUTS
 // ============================================================================
 

@@ -460,6 +460,68 @@ export const ExcludeFromRenderNotInColumnEditor = {
   },
 };
 
+// Regression: an `excludeFromRender` column is skipped from cell/header layout,
+// so its width must NOT be added to the body section/row width. If it is, the
+// body row container ends up wider than the rendered cells by the sum of the
+// excluded column widths, leaving an empty horizontal-scroll region after the
+// last visible column (runaway scroll in scrollParent mode, clipped-but-wrong
+// in internal-scroll mode). This measures the real geometry in a browser —
+// the jsdom unit test cannot, since jsdom has no layout engine.
+export const ExcludeFromRenderDoesNotInflateRowWidth = {
+  render: () => {
+    // Visible columns are intentionally wide enough (sum = 2600px) to overflow
+    // the test viewport (Playwright default 1280px). The bug only manifests when
+    // rendered content exceeds the viewport: the body section width then tracks
+    // the column-width sum, so any width leaked by excludeFromRender columns
+    // shows up as scrollable empty space past the last visible column. When the
+    // content fits the viewport the separator legitimately spans the full
+    // viewport, which would mask the bug.
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 500, type: "number" },
+      { accessor: "name", label: "Name", width: 600, type: "string" },
+      { accessor: "role", label: "Role", width: 700, type: "string" },
+      { accessor: "region", label: "Region", width: 800, type: "string" },
+      // Export-only columns: rendered NOWHERE, so they must not widen the body.
+      { accessor: "secretA", label: "Secret A", width: 300, type: "string", excludeFromRender: true },
+      { accessor: "secretB", label: "Secret B", width: 300, type: "string", excludeFromRender: true },
+      { accessor: "secretC", label: "Secret C", width: 300, type: "string", excludeFromRender: true },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    const headerMain = canvasElement.querySelector(".st-header-main") as HTMLElement | null;
+    const bodyMain = canvasElement.querySelector(".st-body-main") as HTMLElement | null;
+    expect(headerMain).toBeTruthy();
+    expect(bodyMain).toBeTruthy();
+
+    // The excluded columns must not appear in the rendered DOM at all.
+    expect(canvasElement.querySelector('[data-accessor="secretA"]')).toBeFalsy();
+    expect(canvasElement.querySelector('[data-accessor="secretB"]')).toBeFalsy();
+    expect(canvasElement.querySelector('[data-accessor="secretC"]')).toBeFalsy();
+
+    // Rendered content width = sum of the four visible main columns (2600px).
+    const renderedWidth = headerMain!.scrollWidth;
+
+    // The body's row separator carries the body section width inline; with the
+    // bug it equals renderedWidth + 900 (the three 300px excluded columns),
+    // matching the reported symptom (header scrollWidth vs separator width).
+    const separator = bodyMain!.querySelector(".st-row-separator") as HTMLElement | null;
+    expect(separator).toBeTruthy();
+    const separatorWidth = parseFloat(separator!.style.width) || bodyMain!.scrollWidth;
+
+    const EXCLUDED_SUM = 900;
+    // Body width must track the rendered cells, not include the excluded columns.
+    expect(separatorWidth).toBeLessThan(renderedWidth + EXCLUDED_SUM / 2);
+    expect(Math.abs(separatorWidth - renderedWidth)).toBeLessThanOrEqual(3);
+  },
+};
+
 // ============================================================================
 // COLUMN EDITOR CUSTOM RENDERER
 // ============================================================================

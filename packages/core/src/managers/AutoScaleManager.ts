@@ -1,6 +1,6 @@
-import HeaderObject from "../types/HeaderObject";
+import HeaderObject, { Accessor } from "../types/HeaderObject";
 import { Pinned } from "../types/Pinned";
-import { getHeaderMinWidth } from "../utils/headerWidthUtils";
+import { getAllVisibleLeafHeaders, getHeaderMinWidth } from "../utils/headerWidthUtils";
 import { PreviousValueTracker } from "../hooks/previousValue";
 
 interface AutoScaleConfig {
@@ -10,23 +10,16 @@ interface AutoScaleConfig {
   pinnedRightWidth: number;
   mainBodyRef: { current: HTMLDivElement | null };
   isResizing?: boolean;
+  /**
+   * Currently collapsed header accessors. Auto-scale must only account for the
+   * leaf columns that are actually visible for the current collapsed state —
+   * otherwise it sums the widths of hidden child columns and under-expands,
+   * leaving empty space on the right.
+   */
+  collapsedHeaders?: Set<Accessor>;
 }
 
 type HeaderUpdateCallback = (headers: HeaderObject[]) => void;
-
-const getLeafHeaders = (headers: HeaderObject[], rootPinned?: Pinned): HeaderObject[] => {
-  const leaves: HeaderObject[] = [];
-  headers.forEach((header) => {
-    if (header.hide) return;
-    const currentRootPinned = rootPinned ?? header.pinned;
-    if (header.children && header.children.length > 0) {
-      leaves.push(...getLeafHeaders(header.children, currentRootPinned));
-    } else {
-      leaves.push(header);
-    }
-  });
-  return leaves;
-};
 
 const canAutoExpandSection = (
   leafHeaders: HeaderObject[],
@@ -98,6 +91,7 @@ export const applyAutoScaleToHeaders = (
     pinnedRightWidth,
     mainBodyRef,
     isResizing,
+    collapsedHeaders,
   } = options;
 
   if (!autoExpandColumns || containerWidth === 0 || isResizing) {
@@ -112,9 +106,13 @@ export const applyAutoScaleToHeaders = (
   const rightSectionHeaders = headers.filter((h) => h.pinned === "right");
   const mainSectionHeaders = headers.filter((h) => !h.pinned);
 
-  const leftLeafHeaders = getLeafHeaders(leftSectionHeaders, "left");
-  const rightLeafHeaders = getLeafHeaders(rightSectionHeaders, "right");
-  const mainLeafHeaders = getLeafHeaders(mainSectionHeaders, undefined);
+  // Only scale the leaf columns that are actually visible for the current
+  // collapsed state. Using getAllVisibleLeafHeaders (instead of walking every
+  // child) keeps the totals in sync with what the grid actually lays out, so
+  // collapsed sub-columns don't inflate the width sum and cause under-expansion.
+  const leftLeafHeaders = getAllVisibleLeafHeaders(leftSectionHeaders, collapsedHeaders);
+  const rightLeafHeaders = getAllVisibleLeafHeaders(rightSectionHeaders, collapsedHeaders);
+  const mainLeafHeaders = getAllVisibleLeafHeaders(mainSectionHeaders, collapsedHeaders);
 
   const canExpandLeft =
     leftLeafHeaders.length > 0 && canAutoExpandSection(leftLeafHeaders, pinnedLeftWidth);
@@ -152,18 +150,15 @@ export const applyAutoScaleToHeaders = (
     const currentRootPinned = rootPinned ?? header.pinned;
     const scaledChildren = header.children?.map((child) => scaleHeader(child, currentRootPinned));
 
-    if (!header.children || header.children.length === 0) {
-      const newWidth = scaledWidths.get(header.accessor as string);
-      if (newWidth !== undefined) {
-        return {
-          ...header,
-          width: newWidth,
-          children: scaledChildren,
-        };
-      }
-
+    // Apply the scaled width whenever this header is one of the visible leaves
+    // for the current collapsed state. This covers plain leaf columns as well as
+    // collapsed parents and singleRowChildren parents, which act as their own
+    // leaf column even though they still carry children.
+    const newWidth = scaledWidths.get(header.accessor as string);
+    if (newWidth !== undefined) {
       return {
         ...header,
+        width: newWidth,
         children: scaledChildren,
       };
     }

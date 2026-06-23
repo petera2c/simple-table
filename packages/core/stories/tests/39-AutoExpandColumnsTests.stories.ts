@@ -393,6 +393,57 @@ const clickExpandIcon = async (
   await new Promise((r) => setTimeout(r, 500));
 };
 
+/** Click the expand/collapse toggle on a collapsible column-group header. */
+const clickColumnCollapseToggle = async (
+  canvasElement: HTMLElement,
+  groupLabel: string,
+): Promise<void> => {
+  const headerCell = findHeaderCellByLabel(canvasElement, groupLabel);
+  if (!headerCell) throw new Error(`Group header "${groupLabel}" not found`);
+  const toggle = headerCell.querySelector(".st-collapsible-header-icon");
+  if (!toggle) throw new Error(`Collapse toggle not found on "${groupLabel}"`);
+  const user = userEvent.setup();
+  await user.click(toggle);
+  await new Promise((r) => setTimeout(r, 400));
+};
+
+/**
+ * Sum the rendered widths of the leaf body cells in a main-section row. One cell
+ * is rendered per visible leaf column, so this is an unambiguous measure of how
+ * much horizontal space the columns actually occupy (no nested-header double
+ * counting) — i.e. it detects empty space on the right.
+ */
+const getMainBodyRowWidth = (
+  canvasElement: HTMLElement,
+  rowIndex = 0,
+): number => {
+  const main = canvasElement.querySelector(".st-body-main");
+  if (!main) return 0;
+  const cells = main.querySelectorAll(`.st-cell[data-row-index="${rowIndex}"]`);
+  return Array.from(cells).reduce(
+    (sum, cell) => sum + (cell as HTMLElement).getBoundingClientRect().width,
+    0,
+  );
+};
+
+/** Assert the main-section columns fill the container width (no right-side gap). */
+const assertMainColumnsFillContainer = (
+  canvasElement: HTMLElement,
+  tolerance: number,
+  label: string,
+): void => {
+  const container = canvasElement.querySelector(
+    ".st-body-container",
+  ) as HTMLElement | null;
+  expect(container, "body container should exist").toBeTruthy();
+  const containerWidth = container?.clientWidth ?? 0;
+  const columnsWidth = getMainBodyRowWidth(canvasElement, 0);
+  expect(
+    Math.abs(columnsWidth - containerWidth),
+    `${label}: main columns width ${columnsWidth} should be within ${tolerance} of container ${containerWidth} (no empty space on the right)`,
+  ).toBeLessThanOrEqual(tolerance);
+};
+
 function renderWithWidth(
   headers: HeaderObject[],
   data: Row[],
@@ -892,6 +943,97 @@ export const AutoExpandGroupedExpandCollapse = {
     await clickExpandIcon(canvasElement, 0);
     const headerCellsAfterCollapse = getHeaderCells(canvasElement);
     expect(headerCellsAfterCollapse.length).toBeGreaterThanOrEqual(3);
+  },
+};
+
+// ============================================================================
+// AUTO EXPAND + COLLAPSIBLE COLUMN GROUPS
+// Regression: auto-expand must only account for the leaf columns visible for the
+// current collapsed state. Previously it summed hidden child widths, so a
+// collapsed group under-expanded and left empty space on the right.
+// ============================================================================
+
+export const AutoExpandCollapsibleColumnsFillContainer = {
+  tags: ["auto-expand-collapsible-fill"],
+  parameters: { tags: ["auto-expand-collapsible-fill"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 160, type: "string" },
+      {
+        accessor: "details",
+        label: "Details",
+        width: 160,
+        collapsible: true,
+        collapseDefault: true,
+        children: [
+          {
+            accessor: "detailA",
+            label: "Detail A",
+            width: 120,
+            showWhen: "parentExpanded",
+            type: "string",
+          },
+          {
+            accessor: "detailB",
+            label: "Detail B",
+            width: 120,
+            showWhen: "parentExpanded",
+            type: "string",
+          },
+          {
+            accessor: "detailC",
+            label: "Detail C",
+            width: 120,
+            showWhen: "parentExpanded",
+            type: "string",
+          },
+        ],
+      },
+      { accessor: "status", label: "Status", width: 140, type: "string" },
+    ];
+    const data: Row[] = Array.from({ length: 8 }, (_, i) => ({
+      id: i + 1,
+      name: `Person ${i + 1}`,
+      detailA: `A${i + 1}`,
+      detailB: `B${i + 1}`,
+      detailC: `C${i + 1}`,
+      status: i % 2 === 0 ? "Active" : "Inactive",
+    }));
+    return renderWithWidth(
+      headers,
+      data,
+      { autoExpandColumns: true, height: "400px" },
+      "1000px",
+    );
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const container = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLElement;
+    const containerWidth = container?.clientWidth ?? 1000;
+
+    // The group starts collapsed (collapseDefault). Its hidden Detail A/B/C
+    // columns must NOT count toward the width sum — the visible columns should
+    // expand to fill the whole container.
+    await waitForResizeSettle(canvasElement, STRICT_FILL_TOLERANCE, containerWidth);
+    expect(isColumnVisible(canvasElement, "Detail A")).toBe(false);
+    assertMainColumnsFillContainer(canvasElement, WIDTH_TOLERANCE, "initial collapsed");
+
+    // Expand the group: child columns reappear and the columns should still
+    // fill the container (now with more, narrower columns).
+    await clickColumnCollapseToggle(canvasElement, "Details");
+    await waitForResizeSettle(canvasElement, STRICT_FILL_TOLERANCE, containerWidth);
+    expect(isColumnVisible(canvasElement, "Detail A")).toBe(true);
+    assertMainColumnsFillContainer(canvasElement, WIDTH_TOLERANCE, "after expand");
+
+    // Collapse again: the regression case. The hidden children must drop out of
+    // the width calculation so the visible columns re-expand to fill the gap.
+    await clickColumnCollapseToggle(canvasElement, "Details");
+    await waitForResizeSettle(canvasElement, STRICT_FILL_TOLERANCE, containerWidth);
+    expect(isColumnVisible(canvasElement, "Detail A")).toBe(false);
+    assertMainColumnsFillContainer(canvasElement, WIDTH_TOLERANCE, "after collapse");
   },
 };
 

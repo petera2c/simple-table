@@ -327,8 +327,13 @@ export const createBodyCellElement = (
   // Event handlers for cell selection
   if (!isEditing && !isSelectionColumn) {
     const handleMouseDown = (event: Event) => {
-      event.preventDefault();
       const target = event.target as HTMLElement;
+      // Don't hijack presses that land on interactive content rendered inside a
+      // cell (links, buttons, form controls). Calling preventDefault() here would
+      // cancel their native default (e.g. an <a>'s href navigation), and starting
+      // a cell selection forces a body re-render that swallows the pending click.
+      if (target.closest("a, button, input, select, textarea, [contenteditable='true']")) return;
+      event.preventDefault();
       if (target.closest(".st-expand-icon-container")) return;
       const domRi = parseInt(cellElement.getAttribute("data-row-index") ?? "-1", 10);
       const domCi = parseInt(cellElement.getAttribute("data-col-index") ?? "-1", 10);

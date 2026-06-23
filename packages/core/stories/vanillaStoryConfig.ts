@@ -28,7 +28,6 @@ export interface UniversalVanillaArgs {
 }
 
 export const defaultVanillaArgs: UniversalVanillaArgs = {
-  autoExpandColumns: false,
   cellUpdateFlash: false,
   columnReordering: false,
   columnResizing: false,

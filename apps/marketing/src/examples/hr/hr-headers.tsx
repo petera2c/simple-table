@@ -422,7 +422,7 @@ export const HEADERS: ReactHeaderObject[] = [
   {
     accessor: "performanceScore",
     label: "Performance",
-    width: 160,
+    width: "auto",
     isSortable: true,
     isEditable: true,
     align: "center",
@@ -474,7 +474,7 @@ export const HEADERS: ReactHeaderObject[] = [
   {
     accessor: "department",
     label: "Department",
-    width: 150,
+    width: "auto",
     isSortable: true,
     isEditable: true,
     align: "left",
@@ -492,7 +492,7 @@ export const HEADERS: ReactHeaderObject[] = [
   {
     accessor: "email",
     label: "Email",
-    width: 280,
+    width: "auto",
     isSortable: true,
     isEditable: true,
     align: "left",
@@ -501,7 +501,7 @@ export const HEADERS: ReactHeaderObject[] = [
   {
     accessor: "location",
     label: "Location",
-    width: 130,
+    width: "auto",
     isSortable: true,
     isEditable: true,
     align: "left",
@@ -630,7 +630,7 @@ export const HEADERS: ReactHeaderObject[] = [
   {
     accessor: "isRemoteEligible",
     label: "Remote Eligible",
-    width: 140,
+    width: "auto",
     isSortable: true,
     isEditable: true,
     align: "center",

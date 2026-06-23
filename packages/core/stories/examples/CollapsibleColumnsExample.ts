@@ -4,10 +4,7 @@
  */
 import type { HeaderObject, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
-import {
-  defaultVanillaArgs,
-  type UniversalVanillaArgs,
-} from "../vanillaStoryConfig";
+import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 // Default args specific to CollapsibleColumnsExample (same as main)
 export const collapsibleColumnsExampleDefaults = {
@@ -405,6 +402,7 @@ const COLLAPSIBLE_HEADERS: HeaderObject[] = [
     width: 200,
     collapsible: true,
     singleRowChildren: true,
+    collapseDefault: true,
     valueFormatter: currencyFormatter,
     children: [
       {
@@ -454,6 +452,7 @@ const COLLAPSIBLE_HEADERS: HeaderObject[] = [
     label: "Monthly Performance",
     width: 800,
     collapsible: true,
+    collapseDefault: true,
     children: [
       {
         accessor: "avgMonthly",
@@ -589,6 +588,7 @@ const COLLAPSIBLE_HEADERS: HeaderObject[] = [
     accessor: "productCategories",
     label: "Product Categories",
     width: 450,
+    collapseDefault: true,
     collapsible: true,
     singleRowChildren: true,
     children: [
@@ -631,10 +631,9 @@ const COLLAPSIBLE_HEADERS: HeaderObject[] = [
   },
 ];
 
-export function renderCollapsibleColumnsExample(
-  args?: Partial<UniversalVanillaArgs>,
-): HTMLElement {
+export function renderCollapsibleColumnsExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
   const options = {
+    autoExpandColumns: true,
     ...defaultVanillaArgs,
     ...collapsibleColumnsExampleDefaults,
     ...args,

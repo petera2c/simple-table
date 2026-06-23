@@ -112,8 +112,12 @@ export const findLeafHeaders = (
   header: HeaderObject,
   collapsedHeaders?: Set<Accessor>,
 ): HeaderObject[] => {
-  // Skip hidden headers
-  if (header.hide) {
+  // Skip headers that are not part of the rendered table. `excludeFromRender`
+  // columns (e.g. CSV-export-only) are never laid out by SectionRenderer, so
+  // they must not contribute to section/row width either — otherwise the body
+  // row container ends up wider than the rendered cells by the sum of their
+  // widths, producing an empty horizontal-scroll region.
+  if (header.hide || header.excludeFromRender) {
     return [];
   }
 
@@ -343,8 +347,9 @@ export function normalizeHeaderWidths(
  * Get actual width of a header in pixels
  */
 export const getHeaderWidthInPixels = (header: HeaderObject): number => {
-  // Skip hidden headers
-  if (header.hide) {
+  // Headers excluded from the rendered table (hidden or export-only) take up no
+  // rendered width; see findLeafHeaders for why this matters for row width.
+  if (header.hide || header.excludeFromRender) {
     return 0;
   }
 

@@ -11,6 +11,35 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v3_8_1: ChangelogEntry = {
+  version: "3.8.1",
+  date: "2026-06-23",
+  title: "Bug fixes",
+  description: "Layout, auto-size, and cell interaction bug fixes.",
+  changes: [
+    {
+      type: "bugfix",
+      description: "Export-only columns no longer add empty horizontal scroll.",
+    },
+    {
+      type: "bugfix",
+      description: "Auto-expand no longer leaves space with collapsed groups.",
+    },
+    {
+      type: "bugfix",
+      description: "Clicks on links and buttons inside cells now work.",
+    },
+    {
+      type: "bugfix",
+      description: "Header row now renders when mounting with empty headers.",
+    },
+    {
+      type: "bugfix",
+      description: '"auto" columns now size per page when paginating.',
+    },
+  ],
+};
+
 export const v3_8_0: ChangelogEntry = {
   version: "3.8.0",
   date: "2026-06-22",
@@ -1848,6 +1877,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_8_1,
   v3_8_0,
   v3_7_3,
   v3_7_2,

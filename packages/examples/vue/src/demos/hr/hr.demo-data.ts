@@ -72,7 +72,7 @@ export const hrHeaders: VueHeaderObject[] = [
       { label: "Customer Support", value: "Customer Support" },
     ],
   },
-  { accessor: "email", label: "Email", width: 280, isSortable: true, isEditable: true, align: "left", type: "string" },
+  { accessor: "email", label: "Email", width: "auto", minWidth: 180, isSortable: true, isEditable: true, align: "left", type: "string" },
   {
     accessor: "location", label: "Location", width: 130, isSortable: true, isEditable: true, align: "left", type: "enum",
     enumOptions: LOCATIONS.map((l) => ({ label: l, value: l })),

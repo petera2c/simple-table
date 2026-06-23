@@ -7,7 +7,7 @@ export const columnWidthHeaders: ReactHeaderObject[] = [
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, type: "string" },
   { accessor: "email", label: "Email", width: "1fr", minWidth: 180, type: "string" },
   { accessor: "age", label: "Age", width: 80, type: "number" },
-  { accessor: "department", label: "Department", width: "1fr", minWidth: 100, type: "string" },
+  { accessor: "department", label: "Department", width: "auto", minWidth: 100, type: "string" },
   { accessor: "salary", label: "Salary", width: 120, align: "right", type: "number" },
 ];
 

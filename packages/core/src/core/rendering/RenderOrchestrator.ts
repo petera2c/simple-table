@@ -281,6 +281,7 @@ export class RenderOrchestrator {
         pinnedRightWidth,
         mainBodyRef: context.mainBodyRef ?? { current: null },
         isResizing: context.isResizing ?? false,
+        collapsedHeaders: context.collapsedHeaders,
       });
     }
 

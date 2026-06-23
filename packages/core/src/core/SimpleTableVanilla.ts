@@ -525,6 +525,7 @@ export class SimpleTableVanilla {
           pinnedRightWidth: 0,
           mainBodyRef: refs.mainBodyRef,
           isResizing: this.isResizing,
+          collapsedHeaders: this.collapsedHeaders,
         },
         () => {
           this.render("autoScaleManager");
@@ -1062,6 +1063,14 @@ export class SimpleTableVanilla {
         this.columnEditorOpen = open;
       },
       setCurrentPage: (page: number) => {
+        if (
+          page !== this.currentPage &&
+          this.config.shouldPaginate &&
+          !this.config.serverSidePagination
+        ) {
+          // Re-fit "auto" columns to the new page's rendered rows.
+          this.autoSizeAccessors.forEach((accessor) => this.pendingAutoSize.add(accessor));
+        }
         this.currentPage = page;
       },
     };
@@ -1100,6 +1109,28 @@ export class SimpleTableVanilla {
     const main = this.domManager.getRefs().mainBodyRef?.current;
     if (!main) return null;
     return main.closest(".simple-table-root") ?? main;
+  }
+
+  /**
+   * Rows that content-fit ("auto") measurement should sample. With client-side
+   * pagination only the current page is rendered, so fit columns to the page's
+   * rows rather than the entire dataset — otherwise off-page values inflate
+   * every auto column's width.
+   */
+  private getAutoSizeRows(): Row[] {
+    if (this.config.shouldPaginate && !this.config.serverSidePagination) {
+      const processed = this.renderOrchestrator.getLastProcessedResult();
+      if (processed) {
+        const pageRows = processed.currentTableRows
+          .filter(
+            (tr) =>
+              tr.row && !tr.stateIndicator && !tr.isLoadingSkeleton && !tr.nestedTable,
+          )
+          .map((tr) => tr.row);
+        if (pageRows.length > 0) return pageRows;
+      }
+    }
+    return this.localRows;
   }
 
   /** Immutably write measured pixel widths into the leaf headers. */
@@ -1142,6 +1173,7 @@ export class SimpleTableVanilla {
       const leaves = getAllVisibleLeafHeaders(this.headers, this.collapsedHeaders);
       const leafByAccessor = new Map(leaves.map((leaf) => [leaf.accessor, leaf]));
 
+      const autoSizeRows = this.getAutoSizeRows();
       const widths = new Map<Accessor, number>();
       for (const accessor of this.pendingAutoSize) {
         const leaf = leafByAccessor.get(accessor);
@@ -1149,7 +1181,7 @@ export class SimpleTableVanilla {
         // Sampling/outlier tuning uses internal defaults; per-column control is
         // via the header's `maxWidth` / `minWidth` / `autoSizeMode`.
         const width = calculateHeaderContentWidth(accessor, {
-          rows: this.localRows,
+          rows: autoSizeRows,
           header: leaf,
           styleRoot,
           theme: this.config.theme,
@@ -1303,6 +1335,19 @@ export class SimpleTableVanilla {
       }
       if (this.selectionManager) {
         this.selectionManager.updateConfig({ headers: this.headers });
+      }
+      // Recompute header depth/height for the new columns. Without this, a
+      // table that mounted with an empty `defaultHeaders` keeps the
+      // DimensionManager's maxHeaderDepth/calculatedHeaderHeight at 0, so the
+      // header band renders at 0px (the header row never appears) even though
+      // the columns and body now exist.
+      if (this.dimensionManager) {
+        const effectiveHeaders = this.renderOrchestrator.computeEffectiveHeaders(
+          this.headers,
+          this.config,
+          this.customTheme,
+        );
+        this.dimensionManager.updateConfig({ effectiveHeaders });
       }
     }
 
