@@ -1,0 +1,58 @@
+name: Memory Leak Tests
+
+# Real-browser (Playwright + CDP) memory-leak suite. Kept separate from the
+# blocking `Test` workflow because heap measurements are slower and inherently
+# noisier. Runs:
+#   - on demand (workflow_dispatch)
+#   - nightly (schedule)
+#   - on PRs that carry the `run-memory-tests` label
+# Promote to a required check once thresholds prove stable across runs.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 7 * * *" # 07:00 UTC nightly
+  pull_request:
+    types: [labeled, synchronize, reopened]
+
+jobs:
+  memory:
+    # Skip on PRs unless the `run-memory-tests` label is present.
+    if: >-
+      github.event_name != 'pull_request' ||
+      contains(github.event.pull_request.labels.*.name, 'run-memory-tests')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The harness aliases `simple-table-core` and `@simple-table/react` to
+      # their source, so no package build step is required.
+      - name: Install Playwright Chromium
+        run: pnpm --filter @simple-table/memory-tests exec playwright install --with-deps chromium
+
+      - name: Run memory-leak suite
+        run: pnpm --filter @simple-table/memory-tests run test
+
+      - name: Upload report and diagnostics
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: memory-playwright-report
+          path: |
+            tests/memory/playwright-report
+            tests/memory/test-results
+          retention-days: 14
+          if-no-files-found: ignore

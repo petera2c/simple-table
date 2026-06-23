@@ -159,23 +159,23 @@ export const bundleSizeComparisonPost: BlogPostMetadata = {
 };
 
 export const tanstackVsAgGridPost: BlogPostMetadata = {
-  title: "TanStack Table vs AG Grid: Complete Comparison (2025)",
+  title: "TanStack Table vs AG Grid: Complete Comparison (2026)",
   description:
     "TanStack Table or AG Grid? We break down features, performance, pricing, and developer experience to help you choose the right React data grid for your project.",
   slug: "tanstack-table-vs-ag-grid-comparison",
   tags: ["react", "comparison", "tanstack-table", "ag-grid"],
   createdAt: "2025-11-15",
-  updatedAt: "2025-11-15",
+  updatedAt: "2026-06-22",
 };
 
 export const handsontableAlternativesPost: BlogPostMetadata = {
-  title: "Handsontable Alternatives: Best Free Options for React (2025)",
+  title: "Handsontable Alternatives: Best Free Options for React (2026)",
   description:
     "Looking for Handsontable alternatives? Discover powerful, free React data grids that deliver spreadsheet-like features without the restrictive license or $1,000+ price tag.",
   slug: "handsontable-alternatives-free-react",
   tags: ["react", "alternatives", "comparison", "handsontable"],
   createdAt: "2025-11-15",
-  updatedAt: "2025-11-15",
+  updatedAt: "2026-06-22",
 };
 
 export const agGridPricing2026Post: BlogPostMetadata = {

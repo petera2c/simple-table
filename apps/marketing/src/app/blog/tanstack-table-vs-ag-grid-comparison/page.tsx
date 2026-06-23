@@ -19,14 +19,56 @@ import {
   faClock,
 } from "@fortawesome/free-solid-svg-icons";
 import { Metadata } from "next";
+import Link from "next/link";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
+import {
+  buildBreadcrumbListJsonLd,
+  buildFaqPageJsonLd,
+  buildTechArticleJsonLd,
+} from "@/utils/structuredData";
+import { tanstackVsAgGridPost } from "@/constants/blogPosts";
 import {
   SIMPLE_TABLE_INFO,
   AG_GRID_COMMUNITY_INFO,
   TANSTACK_TABLE_INFO,
 } from "@/constants/packageInfo";
+
+const FAQS: { question: string; answer: string }[] = [
+  {
+    question: "Is TanStack Table free?",
+    answer:
+      "Yes. TanStack Table (formerly React Table v8) is MIT-licensed and completely free, including for commercial use, with no per-developer fees or feature tiers. The cost is development time: it is headless, so you build the table UI and add virtualization yourself.",
+  },
+  {
+    question: "Is AG Grid free?",
+    answer:
+      "Partly. AG Grid Community is free and MIT-licensed, but advanced features such as row grouping, aggregation, pivoting, Excel export, master/detail, and integrated charts require an AG Grid Enterprise license starting at $999 per developer per year.",
+  },
+  {
+    question: "What is the main difference between TanStack Table and AG Grid?",
+    answer:
+      "TanStack Table is headless: it provides table logic (sorting, filtering, pagination) but no UI, so you render everything yourself. AG Grid is batteries-included: it ships a full, styled grid you configure. TanStack maximizes control; AG Grid maximizes speed to a working grid.",
+  },
+  {
+    question: "Which is better for large datasets?",
+    answer:
+      "Both can handle large datasets. AG Grid includes row virtualization out of the box, while TanStack Table needs a separate library such as TanStack Virtual. AG Grid is faster to set up for big grids, but a well-virtualized TanStack table performs comparably.",
+  },
+  {
+    question: "Does AG Grid require a paid license for commercial use?",
+    answer:
+      "Only for Enterprise features. AG Grid Community can be used commercially for free. The moment you use any Enterprise feature in production you need a commercial license, currently from $999 per developer per year.",
+  },
+  {
+    question: "Is there a free alternative that already includes a UI?",
+    answer:
+      "Yes. Simple Table is a source-available React data grid that ships a complete UI plus virtualization, column pinning, row grouping, and inline editing in roughly 42KB, giving you AG Grid-style features without the license fee and without building the UI yourself like with TanStack Table.",
+  },
+];
+
+const CANONICAL_PATH = "/blog/tanstack-table-vs-ag-grid-comparison";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.blogPosts.tanstackVsAgGrid.title,
@@ -52,12 +94,39 @@ export const metadata: Metadata = {
 };
 
 export default function TanStackVsAgGridPage() {
+  const articleLd = buildTechArticleJsonLd({
+    title: tanstackVsAgGridPost.title,
+    description: tanstackVsAgGridPost.description,
+    canonicalPath: CANONICAL_PATH,
+    datePublished: tanstackVsAgGridPost.createdAt,
+    dateModified: tanstackVsAgGridPost.updatedAt,
+  });
+  const faqLd = buildFaqPageJsonLd(FAQS);
+  const breadcrumbsLd = buildBreadcrumbListJsonLd([
+    { name: "Home", url: "/" },
+    { name: "Blog", url: "/blog" },
+    { name: "TanStack Table vs AG Grid", url: CANONICAL_PATH },
+  ]);
+
   return (
-    <BlogLayout>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbsLd) }}
+      />
+      <BlogLayout>
       {/* Hero Section */}
       <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
-          TanStack Table (React Table) vs AG Grid: Complete Comparison (2025)
+          TanStack Table (React Table) vs AG Grid: Complete Comparison (2026)
         </h1>
 
         <div className="flex justify-center mb-4 gap-2 flex-wrap">
@@ -1032,6 +1101,91 @@ export default function TanStackVsAgGridPage() {
             </div>
           </div>
         </section>
+        {/* FAQ */}
+        <section id="faq">
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
+            <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
+              <FontAwesomeIcon icon={faLightbulb} className="text-blue-500" />
+              Frequently Asked Questions
+            </h2>
+
+            <div className="space-y-3">
+              {FAQS.map((faq) => (
+                <details
+                  key={faq.question}
+                  className="group bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+                >
+                  <summary className="p-4 cursor-pointer list-none flex items-start gap-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <span className="flex-1 font-semibold text-gray-900 dark:text-gray-100">
+                      {faq.question}
+                    </span>
+                    <span className="text-gray-400 transform group-open:rotate-90 transition-transform shrink-0">
+                      ›
+                    </span>
+                  </summary>
+                  <div className="px-4 pb-4 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {faq.answer}
+                  </div>
+                </details>
+              ))}
+            </div>
+
+            <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+              Want the full cost picture? See our{" "}
+              <Link
+                href="/blog/ag-grid-pricing-license-breakdown-2026"
+                className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+              >
+                AG Grid pricing &amp; license breakdown
+              </Link>
+              .
+            </p>
+          </div>
+        </section>
+
+        {/* Related guides */}
+        <section id="related-guides">
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm mb-8">
+            <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
+              <FontAwesomeIcon icon={faBalanceScale} className="text-purple-500" />
+              Related Guides
+            </h2>
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <li>
+                <Link
+                  href="/blog/best-react-table-libraries-2026"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  Best React table libraries in 2026 (ranked &amp; compared)
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/blog/tanstack-table-vs-simple-table-headless-batteries-included"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  TanStack Table vs Simple Table: headless vs batteries-included
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/blog/ag-grid-alternatives-free-react-data-grids"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  7 best free AG Grid alternatives for React
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/blog/ag-grid-pricing-license-breakdown-2026"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  AG Grid pricing &amp; license cost (per developer)
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </section>
       </article>
 
       {/* Call to Action */}
@@ -1047,6 +1201,7 @@ export default function TanStackVsAgGridPage() {
           href: "/comparisons/simple-table-vs-ag-grid",
         }}
       />
-    </BlogLayout>
+      </BlogLayout>
+    </>
   );
 }
