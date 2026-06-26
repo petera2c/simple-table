@@ -1,4 +1,10 @@
-import { Fragment, useMemo, forwardRef, useRef, useImperativeHandle } from "react";
+import {
+  Fragment,
+  useMemo,
+  forwardRef,
+  useRef,
+  useImperativeHandle,
+} from "react";
 import TableRow from "./TableRow";
 import TableRowType from "../../types/TableRow";
 import TableRowSeparator from "./TableRowSeparator";
@@ -6,6 +12,7 @@ import { Pinned } from "../../types/Pinned";
 import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
+import { ColumnWindow } from "../../utils/columnVirtualizationUtils";
 import { ScrollSyncPane } from "../scroll-sync/ScrollSyncPane";
 import { canDisplaySection } from "../../utils/generalUtils";
 import { rowIdToString } from "../../utils/rowUtils";
@@ -13,6 +20,8 @@ import { rowIdToString } from "../../utils/rowUtils";
 interface TableSectionProps {
   columnIndexStart?: number; // This is to know how many columns there were before this section to see if the columns are odd or even
   columnIndices: ColumnIndices;
+  /** Visible-column window for this section, or null/undefined to render all columns (pinned sections). */
+  columnWindow?: ColumnWindow | null;
   headers: HeaderObject[];
   pinned?: Pinned;
   regularRows: TableRowType[];
@@ -30,6 +39,7 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
     {
       columnIndexStart,
       columnIndices,
+      columnWindow,
       headers,
       pinned,
       rowHeight,
@@ -47,7 +57,10 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
 
     useImperativeHandle(ref, () => internalRef.current!, []);
 
-    const canDisplay = useMemo(() => canDisplaySection(headers, pinned), [headers, pinned]);
+    const canDisplay = useMemo(
+      () => canDisplaySection(headers, pinned),
+      [headers, pinned],
+    );
     if (!canDisplay) return null;
 
     // Determine scroll sync group based on pinned state
@@ -84,6 +97,7 @@ const TableSection = forwardRef<HTMLDivElement, TableSectionProps>(
                 <TableRow
                   columnIndexStart={columnIndexStart}
                   columnIndices={columnIndices}
+                  columnWindow={columnWindow}
                   gridTemplateColumns={templateColumns}
                   headers={headers}
                   index={index}

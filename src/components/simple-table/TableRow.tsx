@@ -6,6 +6,7 @@ import { Pinned } from "../../types/Pinned";
 import HeaderObject from "../../types/HeaderObject";
 import ColumnIndices from "../../types/ColumnIndices";
 import RowIndices from "../../types/RowIndices";
+import { ColumnWindow } from "../../utils/columnVirtualizationUtils";
 import { useTableContext } from "../../context/TableContext";
 import { rowIdToString } from "../../utils/rowUtils";
 import RowStateIndicator from "./RowStateIndicator";
@@ -16,6 +17,7 @@ import NestedGridRow from "./NestedGridRow";
 interface TableRowProps {
   columnIndexStart?: number;
   columnIndices: ColumnIndices;
+  columnWindow?: ColumnWindow | null;
   gridTemplateColumns: string;
   headers: HeaderObject[];
   index: number;
@@ -33,6 +35,7 @@ interface TableRowProps {
 const TableRow = ({
   columnIndices,
   columnIndexStart,
+  columnWindow,
   gridTemplateColumns,
   headers,
   index,
@@ -58,6 +61,7 @@ const TableRow = ({
     useHoverRowBackground,
     useOddEvenRowBackground,
   } = useTableContext();
+
   const { position, displayPosition, stateIndicator, nestedTable } = tableRow;
 
   // If this is a nested grid row, render it differently
@@ -201,7 +205,12 @@ const TableRow = ({
       }
     : {
         gridTemplateColumns,
-        top: calculateRowTopPosition({ position, rowHeight, heightOffsets, customTheme }),
+        top: calculateRowTopPosition({
+          position,
+          rowHeight,
+          heightOffsets,
+          customTheme,
+        }),
         height: `${rowHeight}px`,
       };
 
@@ -224,6 +233,7 @@ const TableRow = ({
       <RenderCells
         columnIndexStart={columnIndexStart}
         columnIndices={columnIndices}
+        columnWindow={columnWindow}
         displayRowNumber={displayPosition}
         headers={headers}
         key={rowId}
@@ -241,10 +251,24 @@ const TableRow = ({
  * Compares row props to determine if re-render is needed
  * Prevents unnecessary re-renders when scrolling through virtualized list
  */
-const arePropsEqual = (prevProps: TableRowProps, nextProps: TableRowProps): boolean => {
-  // Check index and row position
+const arePropsEqual = (
+  prevProps: TableRowProps,
+  nextProps: TableRowProps,
+): boolean => {
+  // `index` is the row's position WITHIN the current virtualization window, so it
+  // changes on every scroll shift. Regular data rows don't use it for rendering
+  // (they key off `tableRow.position`); only nested-grid / state spacer rows do.
+  // Comparing it unconditionally defeated memoization and forced every visible row
+  // to re-render (all ~60 cells) on each scroll frame.
+  const isSpecialRow = !!(
+    nextProps.tableRow.nestedTable || nextProps.tableRow.stateIndicator
+  );
+  if (isSpecialRow && prevProps.index !== nextProps.index) {
+    return false;
+  }
+
+  // Check row position
   if (
-    prevProps.index !== nextProps.index ||
     prevProps.tableRow.position !== nextProps.tableRow.position ||
     prevProps.tableRow.displayPosition !== nextProps.tableRow.displayPosition
   ) {
@@ -281,14 +305,22 @@ const arePropsEqual = (prevProps: TableRowProps, nextProps: TableRowProps): bool
     return false;
   }
 
-  // Check if column/row indices changed (by reference)
+  // Check if column indices changed (by reference)
   if (prevProps.columnIndices !== nextProps.columnIndices) {
     return false;
   }
 
-  if (prevProps.rowIndices !== nextProps.rowIndices) {
+  // Check if the visible-column window changed (by reference). It is memoized in
+  // TableBody and only changes on horizontal scroll / column changes, so during
+  // vertical scroll this stays equal and the row keeps its memoization.
+  if (prevProps.columnWindow !== nextProps.columnWindow) {
     return false;
   }
+
+  // NOTE: `rowIndices` is intentionally NOT compared. It is a brand-new object on
+  // every scroll frame (rebuilt from the sliced window) but is only forwarded down
+  // the cell tree and never actually read (TableCell doesn't consume it). Comparing
+  // it by reference broke memoization for every visible row on each scroll shift.
 
   // Column index start
   if (prevProps.columnIndexStart !== nextProps.columnIndexStart) {

@@ -40,7 +40,7 @@ export const buildCumulativeHeightMap = (
   rowCount: number,
   rowHeight: number,
   heightOffsets: HeightOffsets | undefined,
-  customTheme: CustomTheme
+  customTheme: CustomTheme,
 ): CumulativeHeightMap => {
   const rowHeightWithSeparator = rowHeight + customTheme.rowSeparatorWidth;
   const rowTopPositions: number[] = new Array(rowCount);
@@ -84,7 +84,7 @@ export const buildCumulativeHeightMap = (
  */
 export const findRowAtScrollPosition = (
   scrollTop: number,
-  heightMap: CumulativeHeightMap
+  heightMap: CumulativeHeightMap,
 ): number => {
   const { rowTopPositions } = heightMap;
 
@@ -118,7 +118,7 @@ export const findRowAtScrollPosition = (
  */
 export const getCumulativeExtraHeight = (
   position: number,
-  heightOffsets?: HeightOffsets
+  heightOffsets?: HeightOffsets,
 ): number => {
   if (!heightOffsets || heightOffsets.length === 0) {
     return 0;
@@ -165,14 +165,16 @@ export const calculateTotalHeight = (
   totalRowCount: number,
   rowHeight: number,
   heightOffsets: HeightOffsets | undefined,
-  customTheme: CustomTheme
+  customTheme: CustomTheme,
 ): number => {
   // Calculate base height assuming all rows are standard height
   const baseHeight =
-    totalRowCount * (rowHeight + customTheme.rowSeparatorWidth) - customTheme.rowSeparatorWidth;
+    totalRowCount * (rowHeight + customTheme.rowSeparatorWidth) -
+    customTheme.rowSeparatorWidth;
 
   // Add all the extra heights from nested grids
-  const extraHeight = heightOffsets?.reduce((sum, [_, extra]) => sum + extra, 0) || 0;
+  const extraHeight =
+    heightOffsets?.reduce((sum, [_, extra]) => sum + extra, 0) || 0;
 
   return baseHeight + extraHeight;
 };
@@ -237,22 +239,28 @@ export const getViewportCalculations = ({
 
     // Asymmetric overscan based on scroll direction
     if (scrollDirection === "down") {
-      topOverscanPixels = Math.max(rowHeightWithSeparator, baseOverscanPixels * 0.1);
+      topOverscanPixels = Math.max(
+        rowHeightWithSeparator,
+        baseOverscanPixels * 0.1,
+      );
       bottomOverscanPixels = baseOverscanPixels * 0.9;
     } else if (scrollDirection === "up") {
       topOverscanPixels = baseOverscanPixels * 0.9;
-      bottomOverscanPixels = Math.max(rowHeightWithSeparator, baseOverscanPixels * 0.1);
+      bottomOverscanPixels = Math.max(
+        rowHeightWithSeparator,
+        baseOverscanPixels * 0.1,
+      );
     }
 
     const renderedStartOffset = Math.max(0, scrollTop - topOverscanPixels);
     const renderedEndOffset = scrollTop + contentHeight + bottomOverscanPixels;
     const renderedStartIndex = Math.max(
       0,
-      Math.floor(renderedStartOffset / rowHeightWithSeparator)
+      Math.floor(renderedStartOffset / rowHeightWithSeparator),
     );
     const renderedEndIndex = Math.min(
       tableRows.length,
-      Math.ceil(renderedEndOffset / rowHeightWithSeparator)
+      Math.ceil(renderedEndOffset / rowHeightWithSeparator),
     );
 
     // 2. FULLY VISIBLE: Rows completely visible in viewport
@@ -260,11 +268,11 @@ export const getViewportCalculations = ({
     const fullyVisibleEndOffset = scrollTop + contentHeight;
     const fullyVisibleStartIndex = Math.max(
       0,
-      Math.ceil(fullyVisibleStartOffset / rowHeightWithSeparator)
+      Math.ceil(fullyVisibleStartOffset / rowHeightWithSeparator),
     );
     const fullyVisibleEndIndex = Math.min(
       tableRows.length,
-      Math.floor(fullyVisibleEndOffset / rowHeightWithSeparator)
+      Math.floor(fullyVisibleEndOffset / rowHeightWithSeparator),
     );
 
     // 3. PARTIALLY VISIBLE: Rows at least partially visible
@@ -272,11 +280,11 @@ export const getViewportCalculations = ({
     const partiallyVisibleEndOffset = scrollTop + contentHeight;
     const partiallyVisibleStartIndex = Math.max(
       0,
-      Math.floor(partiallyVisibleStartOffset / rowHeightWithSeparator)
+      Math.floor(partiallyVisibleStartOffset / rowHeightWithSeparator),
     );
     const partiallyVisibleEndIndex = Math.min(
       tableRows.length,
-      Math.ceil(partiallyVisibleEndOffset / rowHeightWithSeparator)
+      Math.ceil(partiallyVisibleEndOffset / rowHeightWithSeparator),
     );
 
     return {
@@ -293,7 +301,10 @@ export const getViewportCalculations = ({
       partiallyVisible: {
         startIndex: partiallyVisibleStartIndex,
         endIndex: partiallyVisibleEndIndex,
-        rows: tableRows.slice(partiallyVisibleStartIndex, partiallyVisibleEndIndex),
+        rows: tableRows.slice(
+          partiallyVisibleStartIndex,
+          partiallyVisibleEndIndex,
+        ),
       },
     };
   }
@@ -308,19 +319,29 @@ export const getViewportCalculations = ({
 
   // Asymmetric overscan based on scroll direction
   if (scrollDirection === "down") {
-    topOverscanPixels = Math.max(rowHeightWithSeparator, baseOverscanPixels * 0.1);
+    topOverscanPixels = Math.max(
+      rowHeightWithSeparator,
+      baseOverscanPixels * 0.1,
+    );
     bottomOverscanPixels = baseOverscanPixels * 0.9;
   } else if (scrollDirection === "up") {
     topOverscanPixels = baseOverscanPixels * 0.9;
-    bottomOverscanPixels = Math.max(rowHeightWithSeparator, baseOverscanPixels * 0.1);
+    bottomOverscanPixels = Math.max(
+      rowHeightWithSeparator,
+      baseOverscanPixels * 0.1,
+    );
   }
 
   const renderedStartOffset = Math.max(0, scrollTop - topOverscanPixels);
   const renderedEndOffset = scrollTop + contentHeight + bottomOverscanPixels;
 
   // Use binary search to find start/end indices based on actual row positions
-  const renderedStartIndex = findRowAtScrollPosition(renderedStartOffset, heightMap);
-  let renderedEndIndex = findRowAtScrollPosition(renderedEndOffset, heightMap) + 1; // +1 to include the row
+  const renderedStartIndex = findRowAtScrollPosition(
+    renderedStartOffset,
+    heightMap,
+  );
+  let renderedEndIndex =
+    findRowAtScrollPosition(renderedEndOffset, heightMap) + 1; // +1 to include the row
   renderedEndIndex = Math.min(tableRows.length, renderedEndIndex);
 
   // 2. FULLY VISIBLE: Rows completely visible in viewport
@@ -328,14 +349,23 @@ export const getViewportCalculations = ({
   const fullyVisibleEndOffset = scrollTop + contentHeight;
 
   // Find first row that starts at or after viewport top
-  let fullyVisibleStartIndex = findRowAtScrollPosition(fullyVisibleStartOffset, heightMap);
+  let fullyVisibleStartIndex = findRowAtScrollPosition(
+    fullyVisibleStartOffset,
+    heightMap,
+  );
   // If this row starts before viewport, move to next row
   if (rowTopPositions[fullyVisibleStartIndex] < fullyVisibleStartOffset) {
-    fullyVisibleStartIndex = Math.min(fullyVisibleStartIndex + 1, tableRows.length);
+    fullyVisibleStartIndex = Math.min(
+      fullyVisibleStartIndex + 1,
+      tableRows.length,
+    );
   }
 
   // Find last row that ends before viewport bottom
-  let fullyVisibleEndIndex = findRowAtScrollPosition(fullyVisibleEndOffset, heightMap);
+  let fullyVisibleEndIndex = findRowAtScrollPosition(
+    fullyVisibleEndOffset,
+    heightMap,
+  );
   // The row at this position might extend past viewport, so we need to check
   fullyVisibleEndIndex = Math.min(tableRows.length, fullyVisibleEndIndex);
 
@@ -345,10 +375,14 @@ export const getViewportCalculations = ({
 
   const partiallyVisibleStartIndex = findRowAtScrollPosition(
     partiallyVisibleStartOffset,
-    heightMap
+    heightMap,
   );
-  let partiallyVisibleEndIndex = findRowAtScrollPosition(partiallyVisibleEndOffset, heightMap) + 1;
-  partiallyVisibleEndIndex = Math.min(tableRows.length, partiallyVisibleEndIndex);
+  let partiallyVisibleEndIndex =
+    findRowAtScrollPosition(partiallyVisibleEndOffset, heightMap) + 1;
+  partiallyVisibleEndIndex = Math.min(
+    tableRows.length,
+    partiallyVisibleEndIndex,
+  );
 
   return {
     rendered: {
@@ -364,7 +398,10 @@ export const getViewportCalculations = ({
     partiallyVisible: {
       startIndex: partiallyVisibleStartIndex,
       endIndex: partiallyVisibleEndIndex,
-      rows: tableRows.slice(partiallyVisibleStartIndex, partiallyVisibleEndIndex),
+      rows: tableRows.slice(
+        partiallyVisibleStartIndex,
+        partiallyVisibleEndIndex,
+      ),
     },
   };
 };
@@ -417,7 +454,8 @@ export const calculateSeparatorTopPosition = ({
 }) => {
   // Base calculation
   const baseHeight =
-    position * (rowHeight + customTheme.rowSeparatorWidth) - customTheme.rowSeparatorWidth;
+    position * (rowHeight + customTheme.rowSeparatorWidth) -
+    customTheme.rowSeparatorWidth;
 
   // Add extra height from nested grids above this position
   const extraHeight = getCumulativeExtraHeight(position, heightOffsets);
@@ -475,7 +513,7 @@ export const getStickyParents = (
   renderedRows: TableRow[],
   fullyVisibleRows: TableRow[],
   partiallyVisibleRows: TableRow[],
-  rowGrouping: Accessor[]
+  rowGrouping: Accessor[],
 ) => {
   const result = findStickyParents({
     allTableRows,
@@ -522,27 +560,40 @@ const findStickyParents = ({
 
   let addedStickParentTotal = 0;
 
-  if (firstVisibleRow.parentIndices && firstVisibleRow.parentIndices.length > 0) {
+  if (
+    firstVisibleRow.parentIndices &&
+    firstVisibleRow.parentIndices.length > 0
+  ) {
     // Collect parent rows that are not fully visible
     for (const parentIndex of firstVisibleRow.parentIndices) {
       const parentRow = allTableRows[parentIndex];
       if (parentRow) {
         const isParentFullyVisible = fullyVisibleRows.some(
-          (row) => row.position === parentRow.position
+          (row) => row.position === parentRow.position,
         );
 
         // Optimization: stop adding sticky parents if few siblings remain
-        if (firstVisibleRow.rowIndexPath && firstVisibleRow.rowIndexPath.length > 0) {
+        if (
+          firstVisibleRow.rowIndexPath &&
+          firstVisibleRow.rowIndexPath.length > 0
+        ) {
           const parentRowPosition =
-            firstVisibleRow.parentIndices[firstVisibleRow.parentIndices.length - 1];
+            firstVisibleRow.parentIndices[
+              firstVisibleRow.parentIndices.length - 1
+            ];
           const currentParentRow = allTableRows[parentRowPosition];
-          const childrenValue = currentParentRow.row[rowGrouping[currentParentRow.depth]];
-          const parentChildren = Array.isArray(childrenValue) ? childrenValue : [];
+          const childrenValue =
+            currentParentRow.row[rowGrouping[currentParentRow.depth]];
+          const parentChildren = Array.isArray(childrenValue)
+            ? childrenValue
+            : [];
           const totalSiblingsCount = parentChildren.length;
 
           const remainingSiblingsCount =
             totalSiblingsCount -
-            firstVisibleRow.rowIndexPath[firstVisibleRow.rowIndexPath.length - 1];
+            firstVisibleRow.rowIndexPath[
+              firstVisibleRow.rowIndexPath.length - 1
+            ];
 
           // Don't show more sticky parents than remaining siblings (the parents container is absolutely positioned and takes up space and the user can't even see the rows from this parent if there are few left)
           if (remainingSiblingsCount <= stickyParents.length) {
@@ -552,7 +603,10 @@ const findStickyParents = ({
 
         if (
           !isParentFullyVisible &&
-          !stickyParents.some((row) => rowIdToString(row.rowId) === rowIdToString(parentRow.rowId))
+          !stickyParents.some(
+            (row) =>
+              rowIdToString(row.rowId) === rowIdToString(parentRow.rowId),
+          )
         ) {
           stickyParents.push(parentRow);
           addedStickParentTotal++;
@@ -570,7 +624,8 @@ const findStickyParents = ({
 
       // Skip ahead by sticky parent count to find actual first visible row
       partiallyVisibleRowIndex += addedStickParentTotal;
-      const recalculatedFirstVisibleRow = partiallyVisibleRows[partiallyVisibleRowIndex];
+      const recalculatedFirstVisibleRow =
+        partiallyVisibleRows[partiallyVisibleRowIndex];
 
       if (recalculatedFirstVisibleRow) {
         firstVisibleRow = recalculatedFirstVisibleRow;

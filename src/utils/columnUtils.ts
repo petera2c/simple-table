@@ -1,6 +1,12 @@
-import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
+import HeaderObject, {
+  Accessor,
+  DEFAULT_SHOW_WHEN,
+} from "../types/HeaderObject";
 
-const getColumnWidth = (header: HeaderObject, autoExpandColumns?: boolean) => {
+export const getColumnWidth = (
+  header: HeaderObject,
+  autoExpandColumns?: boolean,
+) => {
   let { minWidth, width } = header;
 
   if (typeof width === "number") {
@@ -21,16 +27,21 @@ const getColumnWidth = (header: HeaderObject, autoExpandColumns?: boolean) => {
   return width;
 };
 
-export const createGridTemplateColumns = ({
+/**
+ * Flatten a header tree into the ordered list of leaf (or representative) headers
+ * that map 1:1 to the CSS grid tracks produced by {@link createGridTemplateColumns}.
+ *
+ * This is the single source of truth for column order within a section. Column
+ * virtualization relies on it so that the n-th leaf header always corresponds to the
+ * n-th grid track, keeping windowed cells correctly positioned via `grid-column`.
+ */
+export const flattenColumnsForGrid = ({
   headers,
   collapsedHeaders,
-  autoExpandColumns,
 }: {
   headers: HeaderObject[];
   collapsedHeaders?: Set<Accessor>;
-  autoExpandColumns?: boolean;
-}) => {
-  // We only care about the leaf headers that are actually visible to create the grid template columns
+}): HeaderObject[] => {
   const flattenHeaders = ({
     headers,
     flattenedHeaders,
@@ -81,7 +92,19 @@ export const createGridTemplateColumns = ({
     return flattenedHeaders;
   };
 
-  const flattenedHeaders = flattenHeaders({ headers, flattenedHeaders: [] });
+  return flattenHeaders({ headers, flattenedHeaders: [] });
+};
+
+export const createGridTemplateColumns = ({
+  headers,
+  collapsedHeaders,
+  autoExpandColumns,
+}: {
+  headers: HeaderObject[];
+  collapsedHeaders?: Set<Accessor>;
+  autoExpandColumns?: boolean;
+}) => {
+  const flattenedHeaders = flattenColumnsForGrid({ headers, collapsedHeaders });
 
   return `${flattenedHeaders.map((header) => getColumnWidth(header, autoExpandColumns)).join(" ")}`;
 };

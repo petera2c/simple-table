@@ -1,9 +1,22 @@
-import React, { useRef, useLayoutEffect, ReactNode, MutableRefObject, useMemo } from "react";
+import React, {
+  useRef,
+  useLayoutEffect,
+  ReactNode,
+  MutableRefObject,
+  useMemo,
+} from "react";
 import usePrevious from "../../hooks/usePrevious";
-import { flipElement, ANIMATION_CONFIGS, animateWithCustomCoordinates } from "./animation-utils";
+import {
+  flipElement,
+  ANIMATION_CONFIGS,
+  animateWithCustomCoordinates,
+} from "./animation-utils";
 import TableRow from "../../types/TableRow";
-import { useTableContext } from "../../context/TableContext";
-import { calculateBufferRowCount, ROW_SEPARATOR_WIDTH } from "../../consts/general-consts";
+import { useTableContext, useScrollState } from "../../context/TableContext";
+import {
+  calculateBufferRowCount,
+  ROW_SEPARATOR_WIDTH,
+} from "../../consts/general-consts";
 
 // Animation thresholds
 const COLUMN_REORDER_THRESHOLD = 50; // px - minimum horizontal movement to trigger column reorder animation
@@ -24,19 +37,32 @@ const MIN_DYNAMIC_DISTANCE = 100; // px - minimum distance from viewport edge fo
 const MAX_DYNAMIC_DISTANCE = 900; // px - maximum distance from viewport edge for animations
 const DISTANCE_SCALING_FACTOR = 80; // Factor for logarithmic scaling of dynamic distance
 
-interface AnimateProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "id"> {
+interface AnimateProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "id"
+> {
   children: ReactNode;
   id: string;
   parentRef?: MutableRefObject<HTMLDivElement | null>;
   tableRow?: TableRow;
 }
-export const Animate = ({ children, id, parentRef, tableRow, ...props }: AnimateProps) => {
-  const { allowAnimations, isResizing, isScrolling, rowHeight } = useTableContext();
+export const Animate = ({
+  children,
+  id,
+  parentRef,
+  tableRow,
+  ...props
+}: AnimateProps) => {
+  const { allowAnimations, isResizing, rowHeight } = useTableContext();
+  const { isScrolling } = useScrollState();
   const elementRef = useRef<HTMLDivElement>(null);
   const fromBoundsRef = useRef<DOMRect | null>(null);
   const previousScrollingState = usePrevious(isScrolling);
   const previousResizingState = usePrevious(isResizing);
-  const bufferRowCount = useMemo(() => calculateBufferRowCount(rowHeight), [rowHeight]);
+  const bufferRowCount = useMemo(
+    () => calculateBufferRowCount(rowHeight),
+    [rowHeight],
+  );
   useLayoutEffect(() => {
     // Early exit if animations are disabled - don't do any work at all
     if (!allowAnimations) {
@@ -82,7 +108,10 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
     const positionDelta = Math.abs(deltaX);
 
     // Only animate if position change is significant (indicates column/row reordering)
-    if (positionDelta < COLUMN_REORDER_THRESHOLD && Math.abs(deltaY) <= ROW_REORDER_THRESHOLD) {
+    if (
+      positionDelta < COLUMN_REORDER_THRESHOLD &&
+      Math.abs(deltaY) <= ROW_REORDER_THRESHOLD
+    ) {
       return;
     }
 
@@ -122,14 +151,18 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
         // Calculate buffered viewport to include rows slightly outside the actual viewport
         const bufferHeight = bufferRowCount * (rowHeight + ROW_SEPARATOR_WIDTH);
         const calculatedViewportTop = parentScrollTop - bufferHeight;
-        const calculatedViewportBottom = parentScrollTop + clientHeight + bufferHeight;
+        const calculatedViewportBottom =
+          parentScrollTop + clientHeight + bufferHeight;
 
         const isCurrentlyInViewport =
-          fromBounds.y > calculatedViewportTop && fromBounds.y < calculatedViewportBottom;
+          fromBounds.y > calculatedViewportTop &&
+          fromBounds.y < calculatedViewportBottom;
         const isMovingIntoViewport =
-          toBounds.y > calculatedViewportTop && toBounds.y < calculatedViewportBottom;
+          toBounds.y > calculatedViewportTop &&
+          toBounds.y < calculatedViewportBottom;
         const isMovingAboveViewport = toBounds.y < parentScrollTop;
-        const isMovingBelowViewport = toBounds.y > parentScrollTop + clientHeight;
+        const isMovingBelowViewport =
+          toBounds.y > parentScrollTop + clientHeight;
 
         // Calculate position-based stagger proportional to row height
         // Use position from tableRow if available, otherwise fall back to element position
@@ -156,14 +189,19 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
             Math.max(
               MIN_DYNAMIC_DISTANCE,
               MIN_DYNAMIC_DISTANCE +
-                Math.log10(Math.max(1, distanceFromViewport)) * DISTANCE_SCALING_FACTOR,
+                Math.log10(Math.max(1, distanceFromViewport)) *
+                  DISTANCE_SCALING_FACTOR,
             ),
           );
           return baseDistance;
         };
 
         // Case 1: Element moving from viewport to far below viewport
-        if (isCurrentlyInViewport && !isMovingIntoViewport && isMovingBelowViewport) {
+        if (
+          isCurrentlyInViewport &&
+          !isMovingIntoViewport &&
+          isMovingBelowViewport
+        ) {
           const dynamicDistance = calculateDynamicDistance(
             toBounds.y,
             parentScrollTop,
@@ -171,13 +209,19 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
           );
           // Use larger stagger for leaving elements and add position-based variance
           const leavingStagger =
-            (elementPosition % LEAVING_STAGGER_CYCLE) * baseStagger * LEAVING_STAGGER_MULTIPLIER;
+            (elementPosition % LEAVING_STAGGER_CYCLE) *
+            baseStagger *
+            LEAVING_STAGGER_MULTIPLIER;
           // Add some additional spacing based on element position to prevent clustering
           const positionVariance =
             (elementPosition % POSITION_VARIANCE_CYCLE) *
             (rowHeight * POSITION_VARIANCE_MULTIPLIER);
           const animationEndY =
-            parentScrollTop + clientHeight + dynamicDistance + leavingStagger + positionVariance;
+            parentScrollTop +
+            clientHeight +
+            dynamicDistance +
+            leavingStagger +
+            positionVariance;
 
           animateWithCustomCoordinates({
             element: elementRef.current,
@@ -195,7 +239,11 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
         }
 
         // Case 2: Element moving from viewport to far above viewport
-        if (isCurrentlyInViewport && !isMovingIntoViewport && isMovingAboveViewport) {
+        if (
+          isCurrentlyInViewport &&
+          !isMovingIntoViewport &&
+          isMovingAboveViewport
+        ) {
           const dynamicDistance = calculateDynamicDistance(
             toBounds.y,
             parentScrollTop,
@@ -203,13 +251,18 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
           );
           // Use larger stagger for leaving elements and add position-based variance
           const leavingStagger =
-            (elementPosition % LEAVING_STAGGER_CYCLE) * baseStagger * LEAVING_STAGGER_MULTIPLIER;
+            (elementPosition % LEAVING_STAGGER_CYCLE) *
+            baseStagger *
+            LEAVING_STAGGER_MULTIPLIER;
           // Add some additional spacing based on element position to prevent clustering
           const positionVariance =
             (elementPosition % POSITION_VARIANCE_CYCLE) *
             (rowHeight * POSITION_VARIANCE_MULTIPLIER);
           const animationEndY =
-            parentScrollTop - dynamicDistance - leavingStagger - positionVariance;
+            parentScrollTop -
+            dynamicDistance -
+            leavingStagger -
+            positionVariance;
 
           animateWithCustomCoordinates({
             element: elementRef.current,
@@ -239,7 +292,9 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
           );
           // Use smaller stagger for entering elements
           const enteringStagger =
-            (elementPosition % ENTERING_STAGGER_CYCLE) * baseStagger * ENTERING_STAGGER_MULTIPLIER;
+            (elementPosition % ENTERING_STAGGER_CYCLE) *
+            baseStagger *
+            ENTERING_STAGGER_MULTIPLIER;
           const animationStartY =
             parentScrollTop + clientHeight + dynamicDistance + enteringStagger;
 
@@ -258,7 +313,11 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
         }
 
         // Case 4: Element moving from above viewport into viewport
-        if (!isCurrentlyInViewport && isMovingIntoViewport && fromBounds.y < parentScrollTop) {
+        if (
+          !isCurrentlyInViewport &&
+          isMovingIntoViewport &&
+          fromBounds.y < parentScrollTop
+        ) {
           const dynamicDistance = calculateDynamicDistance(
             fromBounds.y,
             parentScrollTop,
@@ -266,8 +325,11 @@ export const Animate = ({ children, id, parentRef, tableRow, ...props }: Animate
           );
           // Use smaller stagger for entering elements
           const enteringStagger =
-            (elementPosition % ENTERING_STAGGER_CYCLE) * baseStagger * ENTERING_STAGGER_MULTIPLIER;
-          const animationStartY = parentScrollTop - dynamicDistance - enteringStagger;
+            (elementPosition % ENTERING_STAGGER_CYCLE) *
+            baseStagger *
+            ENTERING_STAGGER_MULTIPLIER;
+          const animationStartY =
+            parentScrollTop - dynamicDistance - enteringStagger;
 
           animateWithCustomCoordinates({
             element: elementRef.current,

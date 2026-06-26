@@ -24,7 +24,11 @@ import { calculateHeaderContentWidth } from "../../utils/headerWidthUtils";
 import { useTableContext } from "../../context/TableContext";
 import { HandleResizeStartProps } from "../../types/HandleResizeStartProps";
 import { handleResizeStart } from "../../utils/resizeUtils";
-import { getHeaderIndexPath, getSiblingArray, setSiblingArray } from "../../hooks/useDragHandler";
+import {
+  getHeaderIndexPath,
+  getSiblingArray,
+  setSiblingArray,
+} from "../../hooks/useDragHandler";
 import Dropdown from "../dropdown/Dropdown";
 import FilterDropdown from "../filters/FilterDropdown";
 import { FilterCondition } from "../../types/FilterTypes";
@@ -124,12 +128,13 @@ const TableHeaderCell = ({
   const isCollapsed = collapsedHeaders.has(header.accessor);
 
   // Hook for dropdown positioning
-  const { triggerRef: headerCellRef, position: dropdownPosition } = useDropdownPosition({
-    isOpen: isDropdownOpen,
-    estimatedHeight: 200,
-    estimatedWidth: 250,
-    margin: 4,
-  });
+  const { triggerRef: headerCellRef, position: dropdownPosition } =
+    useDropdownPosition({
+      isOpen: isDropdownOpen,
+      estimatedHeight: 200,
+      estimatedWidth: 250,
+      margin: 4,
+    });
 
   // Determine if this is the last column in its section for column borders
   const isLastColumnInSection = useMemo(() => {
@@ -140,9 +145,15 @@ const TableHeaderCell = ({
     const pinnedRightColumns = headers.filter((h) => h.pinned === "right");
 
     if (header.pinned === "left") {
-      return pinnedLeftColumns[pinnedLeftColumns.length - 1]?.accessor === header.accessor;
+      return (
+        pinnedLeftColumns[pinnedLeftColumns.length - 1]?.accessor ===
+        header.accessor
+      );
     } else if (header.pinned === "right") {
-      return pinnedRightColumns[pinnedRightColumns.length - 1]?.accessor === header.accessor;
+      return (
+        pinnedRightColumns[pinnedRightColumns.length - 1]?.accessor ===
+        header.accessor
+      );
     } else {
       return mainColumns[mainColumns.length - 1]?.accessor === header.accessor;
     }
@@ -153,7 +164,9 @@ const TableHeaderCell = ({
     if (!selectableColumns || isSelectionColumn) return false;
 
     const columnsToSelect = getHeaderLeafIndices(header, colIndex);
-    return columnsToSelect.some((columnIndex) => selectedColumns.has(columnIndex));
+    return columnsToSelect.some((columnIndex) =>
+      selectedColumns.has(columnIndex),
+    );
   }, [selectableColumns, isSelectionColumn, header, colIndex, selectedColumns]);
 
   // Check if this header has any highlighted cells in its column(s)
@@ -165,7 +178,9 @@ const TableHeaderCell = ({
     const columnsToCheck = getHeaderLeafIndices(header, colIndex);
 
     // Check if ANY of those columns have selected cells
-    return columnsToCheck.some((columnIndex) => columnsWithSelectedCells.has(columnIndex));
+    return columnsToCheck.some((columnIndex) =>
+      columnsWithSelectedCells.has(columnIndex),
+    );
   }, [isSelectionColumn, header, colIndex, columnsWithSelectedCells]);
 
   // Check if header has visible children (considering collapsed state)
@@ -188,7 +203,8 @@ const TableHeaderCell = ({
   const isSubHeader = parentHeader?.singleRowChildren;
 
   // Don't apply "parent" class if the parent has singleRowChildren (to remove bottom border)
-  const shouldApplyParentClass = hasVisibleChildren && !header.singleRowChildren;
+  const shouldApplyParentClass =
+    hasVisibleChildren && !header.singleRowChildren;
 
   const className = `st-header-cell ${
     header.accessor === hoveredHeaderRef.current?.accessor ? "st-hovered" : ""
@@ -199,7 +215,9 @@ const TableHeaderCell = ({
   } ${isSubHeader ? "st-sub-header" : ""} ${isLastColumnInSection ? "st-last-column" : ""} ${
     enableHeaderEditing && !isSelectionColumn ? "st-header-editable" : ""
   } ${isHeaderSelected ? "st-header-selected" : ""} ${
-    hasHighlightedCell && !isHeaderSelected ? "st-header-has-highlighted-cell" : ""
+    hasHighlightedCell && !isHeaderSelected
+      ? "st-header-has-highlighted-cell"
+      : ""
   } ${isLastHeader ? "st-no-resize" : ""}`;
 
   // Hooks
@@ -346,7 +364,9 @@ const TableHeaderCell = ({
 
           // Find the nearest column index in the existing selection
           const currentColumnIndex = columnsToSelect[0]; // Use first column as reference
-          const selectedIndices = Array.from(prevSelected).sort((a: number, b: number) => a - b);
+          const selectedIndices = Array.from(prevSelected).sort(
+            (a: number, b: number) => a - b,
+          );
 
           let nearestIndex = selectedIndices[0]; // Default to first selected column
           let minDistance = Math.abs(currentColumnIndex - nearestIndex);
@@ -361,13 +381,19 @@ const TableHeaderCell = ({
           });
 
           // Get all columns in the range between nearest and current
-          const columnsInRange = getColumnRange(nearestIndex, currentColumnIndex);
+          const columnsInRange = getColumnRange(
+            nearestIndex,
+            currentColumnIndex,
+          );
 
           // Add all columns in the selected header
           const allColumnsToSelect = [...columnsInRange, ...columnsToSelect];
 
           // Create a new set with all existing selections plus the new range
-          const newSelection = new Set([...Array.from(prevSelected), ...allColumnsToSelect]);
+          const newSelection = new Set([
+            ...Array.from(prevSelected),
+            ...allColumnsToSelect,
+          ]);
           return newSelection;
         });
       } else if (selectColumns) {
@@ -466,65 +492,67 @@ const TableHeaderCell = ({
     return null;
   }
 
-  const ResizeHandle = columnResizing && !isSelectionColumn && !isLastHeader && (
-    <div
-      className="st-header-resize-handle-container"
-      role="separator"
-      aria-label={`Resize ${header.label} column`}
-      aria-orientation="vertical"
-      onMouseDown={(event: MouseEvent) => {
-        // Get the start width from the DOM element directly if ref is not available
-        const startWidth = document.getElementById(
-          getCellId({ accessor: header.accessor, rowId: "header" }),
-        )?.offsetWidth;
+  const ResizeHandle = columnResizing &&
+    !isSelectionColumn &&
+    !isLastHeader && (
+      <div
+        className="st-header-resize-handle-container"
+        role="separator"
+        aria-label={`Resize ${header.label} column`}
+        aria-orientation="vertical"
+        onMouseDown={(event: MouseEvent) => {
+          // Get the start width from the DOM element directly if ref is not available
+          const startWidth = document.getElementById(
+            getCellId({ accessor: header.accessor, rowId: "header" }),
+          )?.offsetWidth;
 
-        throttle({
-          callback: handleResizeStart,
-          callbackProps: {
-            autoExpandColumns,
-            collapsedHeaders,
-            containerWidth,
-            event: event.nativeEvent,
-            header,
-            headers,
-            onColumnWidthChange,
-            reverse,
-            setHeaders,
-            setIsResizing,
-            startWidth,
-          } as HandleResizeStartProps,
-          limit: 10,
-        });
-      }}
-      onTouchStart={(event: TouchEvent) => {
-        // Get the start width from the DOM element directly if ref is not available
-        const startWidth = document.getElementById(
-          getCellId({ accessor: header.accessor, rowId: "header" }),
-        )?.offsetWidth;
+          throttle({
+            callback: handleResizeStart,
+            callbackProps: {
+              autoExpandColumns,
+              collapsedHeaders,
+              containerWidth,
+              event: event.nativeEvent,
+              header,
+              headers,
+              onColumnWidthChange,
+              reverse,
+              setHeaders,
+              setIsResizing,
+              startWidth,
+            } as HandleResizeStartProps,
+            limit: 10,
+          });
+        }}
+        onTouchStart={(event: TouchEvent) => {
+          // Get the start width from the DOM element directly if ref is not available
+          const startWidth = document.getElementById(
+            getCellId({ accessor: header.accessor, rowId: "header" }),
+          )?.offsetWidth;
 
-        throttle({
-          callback: handleResizeStart,
-          callbackProps: {
-            autoExpandColumns,
-            collapsedHeaders,
-            containerWidth,
-            event,
-            header,
-            headers,
-            onColumnWidthChange,
-            reverse,
-            setHeaders,
-            setIsResizing,
-            startWidth,
-          } as HandleResizeStartProps,
-          limit: 10,
-        });
-      }}
-      onDoubleClick={handleResizeHandleDoubleClick}
-    >
-      <div className="st-header-resize-handle" />
-    </div>
-  );
+          throttle({
+            callback: handleResizeStart,
+            callbackProps: {
+              autoExpandColumns,
+              collapsedHeaders,
+              containerWidth,
+              event,
+              header,
+              headers,
+              onColumnWidthChange,
+              reverse,
+              setHeaders,
+              setIsResizing,
+              startWidth,
+            } as HandleResizeStartProps,
+            limit: 10,
+          });
+        }}
+        onDoubleClick={handleResizeHandleDoubleClick}
+      >
+        <div className="st-header-resize-handle" />
+      </div>
+    );
 
   const SortIcon = sort && sort.key.accessor === header.accessor && (
     <div
@@ -673,6 +701,7 @@ const TableHeaderCell = ({
       role="columnheader"
       aria-sort={getAriaSort()}
       aria-colindex={colIndex + 1}
+      data-col-index={colIndex}
       aria-describedby={headerDescription ? descriptionId : undefined}
       onDragOver={(event) => {
         if (!isSelectionColumn) {
@@ -692,8 +721,12 @@ const TableHeaderCell = ({
       }}
     >
       {reverse && ResizeHandle}
-      {!header.headerRenderer && header.align === "right" && CollapseIconComponent}
-      {!header.headerRenderer && header.align === "right" && FilterIconComponent}
+      {!header.headerRenderer &&
+        header.align === "right" &&
+        CollapseIconComponent}
+      {!header.headerRenderer &&
+        header.align === "right" &&
+        FilterIconComponent}
       {!header.headerRenderer && header.align === "right" && SortIcon}
       <div
         ref={headerCellRef}
@@ -732,8 +765,12 @@ const TableHeaderCell = ({
           : labelContent}
       </div>
       {!header.headerRenderer && header.align !== "right" && SortIcon}
-      {!header.headerRenderer && header.align !== "right" && FilterIconComponent}
-      {!header.headerRenderer && header.align !== "right" && CollapseIconComponent}
+      {!header.headerRenderer &&
+        header.align !== "right" &&
+        FilterIconComponent}
+      {!header.headerRenderer &&
+        header.align !== "right" &&
+        CollapseIconComponent}
 
       {!reverse && ResizeHandle}
 

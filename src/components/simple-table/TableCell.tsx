@@ -1,4 +1,11 @@
-import React, { useEffect, useState, KeyboardEvent, useCallback, useRef, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  KeyboardEvent,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import EditableCell from "./editable-cells/EditableCell";
 import CellValue from "../../types/CellValue";
 import { useThrottle } from "../../utils/performanceUtils";
@@ -98,6 +105,7 @@ const TableCell = ({
   borderClass,
   colIndex,
   displayRowNumber,
+  gridColumnStart,
   header,
   isHighlighted,
   isInitialFocused,
@@ -144,10 +152,19 @@ const TableCell = ({
     useOddColumnBackground,
   } = useTableContext();
 
-  const { depth, row, rowPath, rowIndexPath, absoluteRowIndex, rowId: tableRowId } = tableRow;
+  const {
+    depth,
+    row,
+    rowPath,
+    rowIndexPath,
+    absoluteRowIndex,
+    rowId: tableRowId,
+  } = tableRow;
 
   // Local state
-  const [localContent, setLocalContent] = useState<CellValue>(getNestedValue(row, header.accessor));
+  const [localContent, setLocalContent] = useState<CellValue>(
+    getNestedValue(row, header.accessor),
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -156,7 +173,9 @@ const TableCell = ({
   // Get row ID with path for uniqueness in nested rows
   const rowId = rowIdToString(tableRowId);
   const currentGroupingKey = rowGrouping && rowGrouping[depth];
-  const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
+  const cellHasChildren = currentGroupingKey
+    ? hasNestedRows(row, currentGroupingKey)
+    : false;
   // Check if we can expand further (depth must be less than rowGrouping length)
   const canExpandFurther = rowGrouping && depth < rowGrouping.length;
   // Check if this specific row can be expanded (if canExpandRowGroup is provided)
@@ -164,13 +183,23 @@ const TableCell = ({
   // Check if this header has a nested table configuration
   const hasNestedTableConfig = !!header.nestedTable;
   // Determine if row is expanded based on expandedDepths setting
-  const isRowExpanded = getIsRowExpanded(rowId, depth, expandedDepths, expandedRows, collapsedRows);
+  const isRowExpanded = getIsRowExpanded(
+    rowId,
+    depth,
+    expandedDepths,
+    expandedRows,
+    collapsedRows,
+  );
 
   // Check if this cell is currently flashing from copy operation
   const isCellCopyFlashing = isCopyFlashing({ rowIndex, colIndex, rowId });
 
   // Check if this cell is currently showing warning flash
-  const isCellWarningFlashing = isWarningFlashing({ rowIndex, colIndex, rowId });
+  const isCellWarningFlashing = isWarningFlashing({
+    rowIndex,
+    colIndex,
+    rowId,
+  });
 
   // Determine if this is the last column in its section for column borders
   const isLastColumnInSection = useMemo(() => {
@@ -181,9 +210,15 @@ const TableCell = ({
     const pinnedRightColumns = headers.filter((h) => h.pinned === "right");
 
     if (header.pinned === "left") {
-      return pinnedLeftColumns[pinnedLeftColumns.length - 1]?.accessor === header.accessor;
+      return (
+        pinnedLeftColumns[pinnedLeftColumns.length - 1]?.accessor ===
+        header.accessor
+      );
     } else if (header.pinned === "right") {
-      return pinnedRightColumns[pinnedRightColumns.length - 1]?.accessor === header.accessor;
+      return (
+        pinnedRightColumns[pinnedRightColumns.length - 1]?.accessor ===
+        header.accessor
+      );
     } else {
       return mainColumns[mainColumns.length - 1]?.accessor === header.accessor;
     }
@@ -264,8 +299,11 @@ const TableCell = ({
 
   // Derived state
   const isEditInDropdown =
-    header.type === "boolean" || header.type === "date" || header.type === "enum";
-  const clickable = Boolean(header?.isEditable) || Boolean(onCellClick && !isSelectionColumn);
+    header.type === "boolean" ||
+    header.type === "date" ||
+    header.type === "enum";
+  const clickable =
+    Boolean(header?.isEditable) || Boolean(onCellClick && !isSelectionColumn);
 
   // Check if this cell is selected due to column selection (no borders) vs individual cell selection (with borders)
   const isColumnSelected = selectedColumns.has(colIndex);
@@ -297,9 +335,17 @@ const TableCell = ({
         : "st-cell-column-selected"
       : ""
   } ${clickable ? "clickable" : ""} ${
-    isUpdating ? (isInitialFocused ? "st-cell-updating-first" : "st-cell-updating") : ""
+    isUpdating
+      ? isInitialFocused
+        ? "st-cell-updating-first"
+        : "st-cell-updating"
+      : ""
   } ${
-    isCellCopyFlashing ? (isInitialFocused ? "st-cell-copy-flash-first" : "st-cell-copy-flash") : ""
+    isCellCopyFlashing
+      ? isInitialFocused
+        ? "st-cell-copy-flash-first"
+        : "st-cell-copy-flash"
+      : ""
   } ${
     isCellWarningFlashing
       ? isInitialFocused
@@ -311,6 +357,12 @@ const TableCell = ({
   } ${hasHighlightedCellInRow ? "st-selection-has-highlighted-cell" : ""} ${
     isLastColumnInSection ? "st-last-column" : ""
   } ${isSubCell ? "st-sub-cell" : ""} ${isHovered ? "hovered" : ""}`;
+
+  // When column virtualization is active, off-screen cells aren't mounted, so each
+  // rendered cell must be explicitly placed into its real grid track. Otherwise the
+  // grid auto-places the rendered subset starting at track 1 and columns misalign.
+  const cellStyle =
+    gridColumnStart != null ? { gridColumn: gridColumnStart } : undefined;
 
   const updateContent = useCallback(
     (newValue: CellValue) => {
@@ -505,7 +557,11 @@ const TableCell = ({
     }
 
     // Start editing on F2 or Enter if the cell is editable
-    if ((e.key === "F2" || e.key === "Enter") && header.isEditable && !isEditing) {
+    if (
+      (e.key === "F2" || e.key === "Enter") &&
+      header.isEditable &&
+      !isEditing
+    ) {
       e.preventDefault();
       setIsEditing(true);
     }
@@ -557,10 +613,12 @@ const TableCell = ({
 
   // Render row buttons - only show in selection column when hovered or selected
   const renderRowButtons = () => {
-    if (!rowButtons || !isSelectionColumn || rowButtons.length === 0) return null;
+    if (!rowButtons || !isSelectionColumn || rowButtons.length === 0)
+      return null;
 
     // Only show buttons when hovered or row is selected
-    if (!isHovered && !(isRowSelected && isRowSelected(String(rowId)))) return null;
+    if (!isHovered && !(isRowSelected && isRowSelected(String(rowId))))
+      return null;
 
     const buttonProps: RowButtonProps = {
       row,
@@ -584,7 +642,7 @@ const TableCell = ({
 
   if (isLoading || tableRow.isLoadingSkeleton) {
     return (
-      <div className={cellClassName}>
+      <div className={cellClassName} style={cellStyle}>
         <span
           className={`st-cell-content ${
             header.align === "right"
@@ -606,6 +664,7 @@ const TableCell = ({
       <div
         className="st-cell-editing"
         id={getCellId({ accessor: header.accessor, rowId })}
+        style={cellStyle}
         onMouseDown={(e) => e.stopPropagation()} // Prevent cell selection when clicking in edit mode
         onKeyDown={(e) => e.stopPropagation()} // Prevent table navigation when editing
       >
@@ -632,7 +691,9 @@ const TableCell = ({
       id={cellId}
       key={cellKey}
       onClick={handleCellClick}
-      onDoubleClick={() => header.isEditable && !isSelectionColumn && setIsEditing(true)}
+      onDoubleClick={() =>
+        header.isEditable && !isSelectionColumn && setIsEditing(true)
+      }
       onDragOver={(event) => {
         if (!isSelectionColumn) {
           throttle({
@@ -648,47 +709,58 @@ const TableCell = ({
       onMouseLeave={handleCellMouseLeave}
       onMouseOver={handleCellMouseOver}
       parentRef={tableBodyContainerRef}
+      style={cellStyle}
       tableRow={tableRow}
     >
       {header.expandable && canExpandFurther ? (
         <div
           className={`st-icon-container st-expand-icon-container ${
-            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
+            isRowExpandable &&
+            (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? isRowExpanded
                 ? "expanded"
                 : "collapsed"
               : "placeholder"
           }`}
           onClick={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
+            isRowExpandable &&
+            (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? (event: React.MouseEvent) => handleRowExpansion(event)
               : undefined
           }
           role={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
+            isRowExpandable &&
+            (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? "button"
               : "presentation"
           }
           tabIndex={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
+            isRowExpandable &&
+            (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? 0
               : -1
           }
           aria-label={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
+            isRowExpandable &&
+            (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? `${isRowExpanded ? "Collapse" : "Expand"} row group`
               : undefined
           }
           aria-expanded={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
+            isRowExpandable &&
+            (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? isRowExpanded
               : undefined
           }
           aria-hidden={
-            !(isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig))
+            !(
+              isRowExpandable &&
+              (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
+            )
           }
           onKeyDown={
-            isRowExpandable && (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
+            isRowExpandable &&
+            (cellHasChildren || onRowGroupExpand || hasNestedTableConfig)
               ? (e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
@@ -719,14 +791,19 @@ const TableCell = ({
               <div className="st-selection-cell-content">
                 <div className="st-selection-control">
                   {/* Show checkbox if hovered or selected, otherwise show row number */}
-                  {isHovered || (isRowSelected && isRowSelected(String(rowId))) ? (
+                  {isHovered ||
+                  (isRowSelected && isRowSelected(String(rowId))) ? (
                     <Checkbox
-                      checked={isRowSelected ? isRowSelected(String(rowId)) : false}
+                      checked={
+                        isRowSelected ? isRowSelected(String(rowId)) : false
+                      }
                       onChange={handleRowCheckboxChange}
                       ariaLabel={`Select row ${displayRowNumber + 1}`}
                     />
                   ) : (
-                    <span className="st-row-number">{displayRowNumber + 1}</span>
+                    <span className="st-row-number">
+                      {displayRowNumber + 1}
+                    </span>
                   )}
                 </div>
                 {/* Show row buttons to the right of checkbox/row number */}
@@ -752,7 +829,13 @@ const TableCell = ({
                 });
               })()
             ) : (
-              displayContent({ content: localContent, header, colIndex, row, rowIndex })
+              displayContent({
+                content: localContent,
+                header,
+                colIndex,
+                row,
+                rowIndex,
+              })
             )}
           </>
         )}
@@ -780,7 +863,10 @@ const TableCell = ({
  * Checks if props have actually changed to prevent unnecessary re-renders
  * Only re-renders when essential props that affect display have changed
  */
-const arePropsEqual = (prevProps: TableCellProps, nextProps: TableCellProps): boolean => {
+const arePropsEqual = (
+  prevProps: TableCellProps,
+  nextProps: TableCellProps,
+): boolean => {
   // Quick reference checks for props that change frequently
   if (
     prevProps.rowIndex !== nextProps.rowIndex ||
@@ -833,6 +919,11 @@ const arePropsEqual = (prevProps: TableCellProps, nextProps: TableCellProps): bo
 
   // Nested index check
   if (prevProps.nestedIndex !== nextProps.nestedIndex) {
+    return false;
+  }
+
+  // Grid placement (column virtualization) check
+  if (prevProps.gridColumnStart !== nextProps.gridColumnStart) {
     return false;
   }
 

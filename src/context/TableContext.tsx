@@ -4,6 +4,8 @@ import {
   MutableRefObject,
   createContext,
   useContext,
+  useMemo,
+  useState,
   Dispatch,
   SetStateAction,
 } from "react";
@@ -97,7 +99,6 @@ interface TableContextType {
   isLoading?: boolean;
   isResizing: boolean;
   isRowSelected?: (rowId: string) => boolean;
-  isScrolling: boolean;
   isSelected: (cell: Cell) => boolean;
   isWarningFlashing: (cell: Cell) => boolean;
   mainBodyRef: RefObject<HTMLDivElement | null>;
@@ -133,7 +134,6 @@ interface TableContextType {
   setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
   setInitialFocusedCell: Dispatch<SetStateAction<Cell | null>>;
   setIsResizing: Dispatch<SetStateAction<boolean>>;
-  setIsScrolling: Dispatch<SetStateAction<boolean>>;
   setSelectedCells: Dispatch<SetStateAction<Set<string>>>;
   setSelectedColumns: Dispatch<SetStateAction<Set<number>>>;
   setSelectedRows?: Dispatch<SetStateAction<Set<string>>>;
@@ -153,7 +153,9 @@ interface TableContextType {
   useOddEvenRowBackground: boolean;
 }
 
-export const TableContext = createContext<TableContextType | undefined>(undefined);
+export const TableContext = createContext<TableContextType | undefined>(
+  undefined,
+);
 
 export const TableProvider = ({
   children,
@@ -162,13 +164,55 @@ export const TableProvider = ({
   children: ReactNode;
   value: TableContextType;
 }) => {
-  return <TableContext.Provider value={value}>{children}</TableContext.Provider>;
+  return (
+    <TableContext.Provider value={value}>{children}</TableContext.Provider>
+  );
 };
 
 export const useTableContext = () => {
   const context = useContext(TableContext);
   if (context === undefined) {
     throw new Error("useTableContext must be used within a TableProvider");
+  }
+  return context;
+};
+
+// Scroll state is intentionally kept in its own context, separate from the main
+// TableContext. `isScrolling` toggles on every scroll burst; if it lived in the
+// main context value it would change that value's identity and force every cell
+// consumer to re-render. Isolating it here means only the few components that
+// actually need scroll state (e.g. Animate, the scroll handler) re-render when it
+// changes, leaving the virtualized rows/cells untouched.
+interface ScrollStateContextType {
+  isScrolling: boolean;
+  setIsScrolling: Dispatch<SetStateAction<boolean>>;
+}
+
+const ScrollStateContext = createContext<ScrollStateContextType | undefined>(
+  undefined,
+);
+
+export const ScrollStateProvider = ({ children }: { children: ReactNode }) => {
+  const [isScrolling, setIsScrolling] = useState(false);
+
+  // `setIsScrolling` is stable, so the value identity only changes when
+  // `isScrolling` actually flips, keeping consumers minimal.
+  const value = useMemo<ScrollStateContextType>(
+    () => ({ isScrolling, setIsScrolling }),
+    [isScrolling],
+  );
+
+  return (
+    <ScrollStateContext.Provider value={value}>
+      {children}
+    </ScrollStateContext.Provider>
+  );
+};
+
+export const useScrollState = () => {
+  const context = useContext(ScrollStateContext);
+  if (context === undefined) {
+    throw new Error("useScrollState must be used within a ScrollStateProvider");
   }
   return context;
 };

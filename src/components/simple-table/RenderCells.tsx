@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import HeaderObject from "../../types/HeaderObject";
+import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import { displayCell, getCellId } from "../../utils/cellUtils";
 import TableCell from "./TableCell";
 import type TableRowType from "../../types/TableRow";
@@ -7,11 +7,32 @@ import { Pinned } from "../../types/Pinned";
 import { useTableContext } from "../../context/TableContext";
 import RowIndices from "../../types/RowIndices";
 import ColumnIndices from "../../types/ColumnIndices";
+import { ColumnWindow } from "../../utils/columnVirtualizationUtils";
 import { rowIdToString } from "../../utils/rowUtils";
+
+const hasChildren = (header: HeaderObject): boolean =>
+  Boolean(header.children && header.children.length > 0);
+
+/** Whether a leaf column should render given the current column window (null = render all). */
+const isLeafVisible = (
+  columnWindow: ColumnWindow | null | undefined,
+  accessor: Accessor,
+): boolean => !columnWindow || columnWindow.visibleAccessors.has(accessor);
+
+/** 1-based grid track for a column when virtualization is active, else undefined. */
+const getGridColumnStart = (
+  columnWindow: ColumnWindow | null | undefined,
+  accessor: Accessor,
+): number | undefined => {
+  if (!columnWindow) return undefined;
+  const trackIndex = columnWindow.trackIndexByAccessor.get(accessor);
+  return trackIndex === undefined ? undefined : trackIndex + 1;
+};
 
 interface RenderCellsProps {
   columnIndexStart?: number;
   columnIndices: ColumnIndices;
+  columnWindow?: ColumnWindow | null;
   headers: HeaderObject[];
   pinned?: Pinned;
   rowIndex: number;
@@ -23,6 +44,7 @@ interface RenderCellsProps {
 const RenderCells = ({
   columnIndexStart,
   columnIndices,
+  columnWindow,
   headers,
   pinned,
   rowIndex,
@@ -33,24 +55,46 @@ const RenderCells = ({
   const { collapsedHeaders } = useTableContext();
 
   const filteredHeaders = headers.filter((header) =>
-    displayCell({ header, pinned, headers, collapsedHeaders, rootPinned: header.pinned }),
+    displayCell({
+      header,
+      pinned,
+      headers,
+      collapsedHeaders,
+      rootPinned: header.pinned,
+    }),
   );
 
   return (
     <>
       {filteredHeaders.map((header, index) => {
+        // nestedIndex stays based on the FULL displayed-column index so odd/even column
+        // shading and cell memoization remain stable regardless of which columns are
+        // currently windowed out.
+        const nestedIndex = index + (columnIndexStart ?? 0);
+
+        // Fast path for flat leaf columns: skip mounting cells outside the window.
+        // Parent headers always recurse so their visible descendants can render.
+        if (
+          columnWindow &&
+          !hasChildren(header) &&
+          !isLeafVisible(columnWindow, header.accessor)
+        ) {
+          return null;
+        }
+
         const rowId = rowIdToString(tableRow.rowId);
         const cellKey = getCellId({ accessor: header.accessor, rowId });
 
         return (
           <RecursiveRenderCells
             columnIndices={columnIndices}
+            columnWindow={columnWindow}
             displayRowNumber={displayRowNumber}
             rootPinned={header.pinned}
             header={header}
             headers={headers}
             key={cellKey}
-            nestedIndex={index + (columnIndexStart ?? 0)}
+            nestedIndex={nestedIndex}
             pinned={pinned}
             rowIndex={rowIndex}
             rowIndices={rowIndices}
@@ -64,6 +108,7 @@ const RenderCells = ({
 
 const RecursiveRenderCells = ({
   columnIndices,
+  columnWindow,
   displayRowNumber,
   header,
   headers,
@@ -76,6 +121,7 @@ const RecursiveRenderCells = ({
   tableRow,
 }: {
   columnIndices: ColumnIndices;
+  columnWindow?: ColumnWindow | null;
   displayRowNumber: number;
   header: HeaderObject;
   headers: HeaderObject[];
@@ -91,19 +137,27 @@ const RecursiveRenderCells = ({
   const colIndex = columnIndices[header.accessor];
 
   // Get selection state for this cell
-  const { getBorderClass, isSelected, isInitialFocusedCell, collapsedHeaders } = useTableContext();
+  const { getBorderClass, isSelected, isInitialFocusedCell, collapsedHeaders } =
+    useTableContext();
 
   // Calculate rowId once at the beginning (includes path for nested rows)
   const rowId = rowIdToString(tableRow.rowId);
 
   if (header.children && header.children.length > 0) {
     const filteredChildren = header.children.filter((child) =>
-      displayCell({ header: child, pinned, headers, collapsedHeaders, rootPinned }),
+      displayCell({
+        header: child,
+        pinned,
+        headers,
+        collapsedHeaders,
+        rootPinned,
+      }),
     );
 
     // With singleRowChildren, we render both parent and children as siblings
     if (header.singleRowChildren) {
-      // Render parent cell first
+      // The parent occupies its own grid track; honor the column window for it too.
+      const parentVisible = isLeafVisible(columnWindow, header.accessor);
       const parentCellData = { rowIndex, colIndex, rowId };
       const parentBorderClass = getBorderClass(parentCellData);
       const parentIsHighlighted = isSelected(parentCellData);
@@ -112,24 +166,31 @@ const RecursiveRenderCells = ({
 
       return (
         <Fragment>
-          <TableCell
-            borderClass={parentBorderClass}
-            colIndex={colIndex}
-            displayRowNumber={displayRowNumber}
-            header={header}
-            isHighlighted={parentIsHighlighted}
-            isInitialFocused={parentIsInitialFocused}
-            key={parentCellKey}
-            nestedIndex={nestedIndex}
-            parentHeader={parentHeader}
-            rowIndex={rowIndex}
-            tableRow={tableRow}
-          />
+          {parentVisible && (
+            <TableCell
+              borderClass={parentBorderClass}
+              colIndex={colIndex}
+              displayRowNumber={displayRowNumber}
+              gridColumnStart={getGridColumnStart(
+                columnWindow,
+                header.accessor,
+              )}
+              header={header}
+              isHighlighted={parentIsHighlighted}
+              isInitialFocused={parentIsInitialFocused}
+              key={parentCellKey}
+              nestedIndex={nestedIndex}
+              parentHeader={parentHeader}
+              rowIndex={rowIndex}
+              tableRow={tableRow}
+            />
+          )}
           {filteredChildren.map((child) => {
             const childCellKey = getCellId({ accessor: child.accessor, rowId });
             return (
               <RecursiveRenderCells
                 columnIndices={columnIndices}
+                columnWindow={columnWindow}
                 displayRowNumber={displayRowNumber}
                 rootPinned={rootPinned}
                 header={child}
@@ -156,6 +217,7 @@ const RecursiveRenderCells = ({
           return (
             <RecursiveRenderCells
               columnIndices={columnIndices}
+              columnWindow={columnWindow}
               displayRowNumber={displayRowNumber}
               rootPinned={rootPinned}
               header={child}
@@ -174,6 +236,11 @@ const RecursiveRenderCells = ({
     );
   }
 
+  // Leaf column: skip entirely when outside the current column window.
+  if (!isLeafVisible(columnWindow, header.accessor)) {
+    return null;
+  }
+
   // Calculate selection state for this specific cell
   const cellData = { rowIndex, colIndex, rowId };
   const borderClass = getBorderClass(cellData);
@@ -187,6 +254,7 @@ const RecursiveRenderCells = ({
       borderClass={borderClass}
       colIndex={colIndex}
       displayRowNumber={displayRowNumber}
+      gridColumnStart={getGridColumnStart(columnWindow, header.accessor)}
       header={header}
       isHighlighted={isHighlighted}
       isInitialFocused={isInitialFocused}
@@ -204,7 +272,10 @@ const RecursiveRenderCells = ({
  * Checks if row/column data or indices have changed
  * Prevents re-rendering cells when their underlying data hasn't changed
  */
-const arePropsEqual = (prevProps: RenderCellsProps, nextProps: RenderCellsProps): boolean => {
+const arePropsEqual = (
+  prevProps: RenderCellsProps,
+  nextProps: RenderCellsProps,
+): boolean => {
   // Check row and column indices
   if (
     prevProps.rowIndex !== nextProps.rowIndex ||
@@ -231,14 +302,21 @@ const arePropsEqual = (prevProps: RenderCellsProps, nextProps: RenderCellsProps)
     return false;
   }
 
-  // Check if column/row indices changed (by reference)
+  // Check if column indices changed (by reference)
   if (prevProps.columnIndices !== nextProps.columnIndices) {
     return false;
   }
 
-  if (prevProps.rowIndices !== nextProps.rowIndices) {
+  // Check if the visible-column window changed (by reference). Memoized in TableBody,
+  // so it stays equal during vertical scroll and only changes on horizontal scroll /
+  // column changes, when the rendered set of cells genuinely needs to update.
+  if (prevProps.columnWindow !== nextProps.columnWindow) {
     return false;
   }
+
+  // NOTE: `rowIndices` is intentionally NOT compared. It is recreated every scroll
+  // frame but is only forwarded to children and never consumed, so comparing it by
+  // reference forced needless re-renders of every cell group on each scroll shift.
 
   // All checks passed
   return true;

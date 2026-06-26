@@ -69,7 +69,10 @@ const useTableRowProcessing = ({
 
   // Calculate buffer row count based on actual row height
   // This ensures consistent ~800px overscan regardless of row size
-  const bufferRowCount = useMemo(() => calculateBufferRowCount(rowHeight), [rowHeight]);
+  const bufferRowCount = useMemo(
+    () => calculateBufferRowCount(rowHeight),
+    [rowHeight],
+  );
 
   // Track original positions of all rows (before any sort/filter applied)
   const originalPositionsRef = useRef<Map<string, number>>(new Map());
@@ -99,7 +102,8 @@ const useTableRowProcessing = ({
       // Find the start and end positions in the flattened array
       // startPosition: where the first parent on this page begins (0 for first parent)
       // endPosition: where the last parent on this page ends (including all its children)
-      const startPosition = startParentIndex === 0 ? 0 : parentEndPositions[startParentIndex - 1];
+      const startPosition =
+        startParentIndex === 0 ? 0 : parentEndPositions[startParentIndex - 1];
       const endPosition =
         endParentIndex <= parentEndPositions.length
           ? parentEndPositions[endParentIndex - 1]
@@ -115,8 +119,8 @@ const useTableRowProcessing = ({
         const absoluteRowIndex = tableRow.nestedTable
           ? tableRow.absoluteRowIndex // Keep original position from flattenedRows
           : shouldPaginate && !serverSidePagination
-          ? startPosition + index
-          : index;
+            ? startPosition + index
+            : index;
 
         return {
           ...tableRow,
@@ -126,13 +130,16 @@ const useTableRowProcessing = ({
         };
       });
     },
-    [currentPage, rowsPerPage, serverSidePagination, shouldPaginate]
+    [currentPage, rowsPerPage, serverSidePagination, shouldPaginate],
   );
 
   // Establish original positions from unfiltered/unsorted data
   useMemo(() => {
     // Only set original positions once when component first loads
-    if (originalPositionsRef.current.size === 0 && originalFlattenedRows.length > 0) {
+    if (
+      originalPositionsRef.current.size === 0 &&
+      originalFlattenedRows.length > 0
+    ) {
       const newOriginalPositions = new Map<string, number>();
       originalFlattenedRows.forEach((tableRow, index) => {
         const id = rowIdToString(tableRow.rowId);
@@ -155,7 +162,12 @@ const useTableRowProcessing = ({
   // But heightOffsets references original positions from flattenedRows
   // We need to remap to match the new positions in currentTableRows
   const paginatedHeightOffsets = useMemo(() => {
-    if (!heightOffsets || heightOffsets.length === 0 || !shouldPaginate || serverSidePagination) {
+    if (
+      !heightOffsets ||
+      heightOffsets.length === 0 ||
+      !shouldPaginate ||
+      serverSidePagination
+    ) {
       return heightOffsets;
     }
 
@@ -174,7 +186,7 @@ const useTableRowProcessing = ({
       .filter(([originalPos]) => positionMap.has(originalPos))
       .map(
         ([originalPos, extraHeight]) =>
-          [positionMap.get(originalPos)!, extraHeight] as [number, number]
+          [positionMap.get(originalPos)!, extraHeight] as [number, number],
       );
   }, [heightOffsets, currentTableRows, shouldPaginate, serverSidePagination]);
 
@@ -189,7 +201,7 @@ const useTableRowProcessing = ({
       currentTableRows.length,
       rowHeight,
       paginatedHeightOffsets,
-      customTheme
+      customTheme,
     );
   }, [currentTableRows.length, rowHeight, paginatedHeightOffsets, customTheme]);
 
@@ -227,7 +239,11 @@ const useTableRowProcessing = ({
   const { stickyParents, regularRows, partiallyVisibleRows } = useMemo(() => {
     // Only apply sticky parents if enabled and we have virtualization and viewport calculations
     if (!enableStickyParents || contentHeight === undefined) {
-      return { stickyParents: [], regularRows: targetVisibleRows, partiallyVisibleRows: [] };
+      return {
+        stickyParents: [],
+        regularRows: targetVisibleRows,
+        partiallyVisibleRows: [],
+      };
     }
 
     // Get viewport calculations
@@ -248,9 +264,13 @@ const useTableRowProcessing = ({
           viewportCalcs.rendered.rows,
           viewportCalcs.fullyVisible.rows,
           viewportCalcs.partiallyVisible.rows,
-          rowGrouping
+          rowGrouping,
         )
-      : { stickyParents: [], regularRows: viewportCalcs.rendered.rows, partiallyVisibleRows: [] };
+      : {
+          stickyParents: [],
+          regularRows: viewportCalcs.rendered.rows,
+          partiallyVisibleRows: [],
+        };
 
     return {
       ...stickyResult,
@@ -270,31 +290,38 @@ const useTableRowProcessing = ({
   ]);
 
   // Categorize rows based on ID changes
-  const categorizeRows = useCallback((previousRows: TableRow[], currentRows: TableRow[]) => {
-    const previousIds = new Set(
-      previousRows.filter((tr) => tr && tr.rowId).map((tableRow) => rowIdToString(tableRow.rowId))
-    );
-    const currentIds = new Set(
-      currentRows.filter((tr) => tr && tr.rowId).map((tableRow) => rowIdToString(tableRow.rowId))
-    );
+  const categorizeRows = useCallback(
+    (previousRows: TableRow[], currentRows: TableRow[]) => {
+      const previousIds = new Set(
+        previousRows
+          .filter((tr) => tr && tr.rowId)
+          .map((tableRow) => rowIdToString(tableRow.rowId)),
+      );
+      const currentIds = new Set(
+        currentRows
+          .filter((tr) => tr && tr.rowId)
+          .map((tableRow) => rowIdToString(tableRow.rowId)),
+      );
 
-    const staying = currentRows.filter((tableRow) => {
-      const id = rowIdToString(tableRow.rowId);
-      return previousIds.has(id);
-    });
+      const staying = currentRows.filter((tableRow) => {
+        const id = rowIdToString(tableRow.rowId);
+        return previousIds.has(id);
+      });
 
-    const entering = currentRows.filter((tableRow) => {
-      const id = rowIdToString(tableRow.rowId);
-      return !previousIds.has(id);
-    });
+      const entering = currentRows.filter((tableRow) => {
+        const id = rowIdToString(tableRow.rowId);
+        return !previousIds.has(id);
+      });
 
-    const leaving = previousRows.filter((tableRow) => {
-      const id = rowIdToString(tableRow.rowId);
-      return !currentIds.has(id);
-    });
+      const leaving = previousRows.filter((tableRow) => {
+        const id = rowIdToString(tableRow.rowId);
+        return !currentIds.has(id);
+      });
 
-    return { staying, entering, leaving };
-  }, []);
+      return { staying, entering, leaving };
+    },
+    [],
+  );
 
   // Check if there are actual row changes (comparing all rows, not just visible)
   const hasRowChanges = useMemo(() => {
@@ -423,7 +450,11 @@ const useTableRowProcessing = ({
         // If this row exists in the new sorted state, use its new position
         // Otherwise keep the original position (for leaving rows that are no longer in the sorted data)
         if (newPosition !== undefined && newDisplayPosition !== undefined) {
-          return { ...tableRow, position: newPosition, displayPosition: newDisplayPosition };
+          return {
+            ...tableRow,
+            position: newPosition,
+            displayPosition: newDisplayPosition,
+          };
         }
         return tableRow;
       });
@@ -433,12 +464,19 @@ const useTableRowProcessing = ({
 
     // Default: use normal visible rows (STAGE 3 after animation completes)
     return targetVisibleRows;
-  }, [targetVisibleRows, extendedRows, currentTableRows, allowAnimations, shouldPaginate]);
+  }, [
+    targetVisibleRows,
+    extendedRows,
+    currentTableRows,
+    allowAnimations,
+    shouldPaginate,
+  ]);
 
   // Animation handlers for filter/sort changes
   const prepareForFilterChange = useCallback(
     (filter: FilterCondition) => {
-      if (!allowAnimations || shouldPaginate || contentHeight === undefined) return;
+      if (!allowAnimations || shouldPaginate || contentHeight === undefined)
+        return;
 
       // Calculate what rows would be after filter (already flattened from preview function)
       const newFlattenedRows = computeFilteredRowsPreview(filter);
@@ -458,7 +496,10 @@ const useTableRowProcessing = ({
 
       // CRITICAL: Compare VISIBLE rows (before filter) vs what WILL BE visible (after filter)
       // This identifies rows that are entering the visible area
-      const { entering: visibleEntering } = categorizeRows(targetVisibleRows, newVisibleRows);
+      const { entering: visibleEntering } = categorizeRows(
+        targetVisibleRows,
+        newVisibleRows,
+      );
 
       // Find these entering rows in the CURRENT table state (before filter) to get original positions
       const enteringFromCurrentState = visibleEntering
@@ -466,7 +507,7 @@ const useTableRowProcessing = ({
           const id = String(rowIdToString(enteringRow.rowId));
           // Find this row in the current table state to get its original position
           const currentStateRow = currentTableRows.find(
-            (currentRow) => String(rowIdToString(currentRow.rowId)) === id
+            (currentRow) => String(rowIdToString(currentRow.rowId)) === id,
           );
           return currentStateRow || enteringRow; // Fallback to enteringRow if not found
         })
@@ -490,12 +531,13 @@ const useTableRowProcessing = ({
       targetVisibleRows,
       bufferRowCount,
       heightMap,
-    ]
+    ],
   );
 
   const prepareForSortChange = useCallback(
     (accessor: Accessor) => {
-      if (!allowAnimations || shouldPaginate || contentHeight === undefined) return;
+      if (!allowAnimations || shouldPaginate || contentHeight === undefined)
+        return;
 
       // Calculate what rows would be after sort (already flattened from preview function)
       const newFlattenedRows = computeSortedRowsPreview(accessor);
@@ -515,7 +557,10 @@ const useTableRowProcessing = ({
 
       // CRITICAL: Compare VISIBLE rows (before sort) vs what WILL BE visible (after sort)
       // This identifies rows that are entering the visible area
-      const { entering: visibleEntering } = categorizeRows(targetVisibleRows, newVisibleRows);
+      const { entering: visibleEntering } = categorizeRows(
+        targetVisibleRows,
+        newVisibleRows,
+      );
 
       // Find these entering rows in the CURRENT table state (before sort) to get original positions
       const enteringFromCurrentState = visibleEntering
@@ -523,7 +568,7 @@ const useTableRowProcessing = ({
           const id = String(rowIdToString(enteringRow.rowId));
           // Find this row in the current table state to get its original position
           const currentStateRow = currentTableRows.find(
-            (currentRow) => String(rowIdToString(currentRow.rowId)) === id
+            (currentRow) => String(rowIdToString(currentRow.rowId)) === id,
           );
           return currentStateRow || enteringRow; // Fallback to enteringRow if not found
         })
@@ -547,7 +592,7 @@ const useTableRowProcessing = ({
       targetVisibleRows,
       bufferRowCount,
       heightMap,
-    ]
+    ],
   );
 
   return {

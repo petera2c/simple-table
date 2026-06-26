@@ -1,14 +1,29 @@
-import { useRef, useMemo, useState, useCallback, useEffect } from "react";
+import {
+  useRef,
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+} from "react";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import TableSection from "./TableSection";
 import StickyParentsContainer from "./StickyParentsContainer";
-import { getTotalRowCount, calculateTotalHeight } from "../../utils/infiniteScrollUtils";
-import { useTableContext } from "../../context/TableContext";
+import {
+  getTotalRowCount,
+  calculateTotalHeight,
+} from "../../utils/infiniteScrollUtils";
+import { useTableContext, useScrollState } from "../../context/TableContext";
 import { canDisplaySection } from "../../utils/generalUtils";
 import { calculateColumnIndices } from "../../utils/columnIndicesUtils";
+import { buildColumnWindow } from "../../utils/columnVirtualizationUtils";
 import RowIndices from "../../types/RowIndices";
 import TableBodyProps from "../../types/TableBodyProps";
 import { rowIdToString } from "../../utils/rowUtils";
+
+// Number of extra columns to render on each side of the horizontal viewport so that
+// fast horizontal scrolling doesn't reveal blank columns before the next frame.
+const COLUMN_OVERSCAN_COUNT = 3;
 
 const TableBody = ({
   calculatedHeaderHeight,
@@ -40,12 +55,12 @@ const TableBody = ({
     onLoadMore,
     rowHeight,
     scrollbarWidth,
-    setIsScrolling,
     shouldPaginate,
     tableBodyContainerRef,
     tableEmptyStateRenderer,
     customTheme,
   } = useTableContext();
+  const { setIsScrolling } = useScrollState();
 
   // Local state
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -86,7 +101,10 @@ const TableBody = ({
 
         // Also find sticky rows with this position (they're in .st-sticky-top, a sibling of body container)
         const stickyContainer = bodyContainer.previousElementSibling;
-        if (stickyContainer && stickyContainer.classList.contains("st-sticky-top")) {
+        if (
+          stickyContainer &&
+          stickyContainer.classList.contains("st-sticky-top")
+        ) {
           const stickyRows = stickyContainer.querySelectorAll(selector);
           stickyRows.forEach((row) => {
             const rowElement = row as HTMLElement;
@@ -130,7 +148,13 @@ const TableBody = ({
   // Derived state
   const totalRowCount = getTotalRowCount(tableRows);
   const totalHeight = useMemo(
-    () => calculateTotalHeight(totalRowCount, rowHeight, heightOffsets, customTheme),
+    () =>
+      calculateTotalHeight(
+        totalRowCount,
+        rowHeight,
+        heightOffsets,
+        customTheme,
+      ),
     [totalRowCount, rowHeight, heightOffsets, customTheme],
   );
 
@@ -171,6 +195,98 @@ const TableBody = ({
     return indices;
   }, [rowsToRender]);
 
+  // --- Column virtualization (main section only) ---
+  // Headers that live in the horizontally scrollable main section (pinned excluded).
+  const mainHeaders = useMemo(
+    () => headers.filter((header) => !header.pinned),
+    [headers],
+  );
+
+  // Track the main section's horizontal scroll position + width. This drives which
+  // columns are rendered. Crucially it is independent of vertical scroll, so the
+  // window's identity stays stable while scrolling vertically (rows keep their memo).
+  const [columnViewport, setColumnViewport] = useState<{
+    scrollLeft: number;
+    width: number;
+    direction: "left" | "right" | "none";
+  }>({ scrollLeft: 0, width: 0, direction: "none" });
+  const hScrollRafRef = useRef<number | null>(null);
+  const lastScrollLeftRef = useRef(0);
+
+  // useLayoutEffect so the initial measurement (and therefore the first windowed
+  // render) happens before paint, avoiding a flash of all columns on mount.
+  useLayoutEffect(() => {
+    const element = mainBodyRef.current;
+    if (!element) return;
+
+    const measure = () => {
+      const scrollLeft = element.scrollLeft;
+      const width = element.clientWidth;
+      const previous = lastScrollLeftRef.current;
+      const direction: "left" | "right" | "none" =
+        scrollLeft > previous
+          ? "right"
+          : scrollLeft < previous
+            ? "left"
+            : "none";
+      lastScrollLeftRef.current = scrollLeft;
+      setColumnViewport((current) =>
+        current.scrollLeft === scrollLeft &&
+        current.width === width &&
+        current.direction === direction
+          ? current
+          : { scrollLeft, width, direction },
+      );
+    };
+
+    // Measure synchronously so the first paint already has the correct window.
+    measure();
+
+    const handleHorizontalScroll = () => {
+      if (hScrollRafRef.current !== null) return;
+      hScrollRafRef.current = requestAnimationFrame(() => {
+        hScrollRafRef.current = null;
+        measure();
+      });
+    };
+
+    element.addEventListener("scroll", handleHorizontalScroll, {
+      passive: true,
+    });
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined"
+        ? new ResizeObserver(() => measure())
+        : null;
+    resizeObserver?.observe(element);
+
+    return () => {
+      element.removeEventListener("scroll", handleHorizontalScroll);
+      resizeObserver?.disconnect();
+      if (hScrollRafRef.current !== null) {
+        cancelAnimationFrame(hScrollRafRef.current);
+        hScrollRafRef.current = null;
+      }
+    };
+    // Re-attach when the main section mounts/unmounts (e.g. empty <-> populated).
+  }, [mainBodyRef, shouldShowEmptyState]);
+
+  // Compute the visible-column window for the main section. Stable during vertical
+  // scroll (columnViewport unchanged) so memoized rows are untouched; only horizontal
+  // scroll / column changes recompute it.
+  const mainColumnWindow = useMemo(
+    () =>
+      buildColumnWindow({
+        headers: mainHeaders,
+        collapsedHeaders,
+        scrollLeft: columnViewport.scrollLeft,
+        viewportWidth: columnViewport.width,
+        bufferColumnCount: COLUMN_OVERSCAN_COUNT,
+        scrollDirection: columnViewport.direction,
+        pinned: undefined,
+      }),
+    [mainHeaders, collapsedHeaders, columnViewport],
+  );
+
   // Check if we should load more data
   const checkForLoadMore = useCallback(
     (element: HTMLDivElement, scrollTop: number) => {
@@ -182,7 +298,10 @@ const TableBody = ({
       const distanceFromBottom = scrollHeight - (scrollTop + clientHeight);
 
       // Only trigger if scrolling down and near the bottom
-      if (distanceFromBottom <= scrollThreshold && scrollTop > lastScrollTopRef.current) {
+      if (
+        distanceFromBottom <= scrollThreshold &&
+        scrollTop > lastScrollTopRef.current
+      ) {
         setIsLoadingMore(true);
         onLoadMore();
 
@@ -283,7 +402,9 @@ const TableBody = ({
         style={bodyContainerStyle}
       >
         {shouldShowEmptyState ? (
-          <div className="st-empty-state-wrapper">{tableEmptyStateRenderer}</div>
+          <div className="st-empty-state-wrapper">
+            {tableEmptyStateRenderer}
+          </div>
         ) : (
           <>
             <TableSection
@@ -296,13 +417,16 @@ const TableBody = ({
             <TableSection
               {...commonProps}
               columnIndexStart={pinnedLeftColumns.length}
+              columnWindow={mainColumnWindow}
               ref={mainBodyRef}
               templateColumns={mainTemplateColumns}
               totalHeight={totalHeight}
             />
             <TableSection
               {...commonProps}
-              columnIndexStart={pinnedLeftColumns.length + mainTemplateColumns.length}
+              columnIndexStart={
+                pinnedLeftColumns.length + mainTemplateColumns.length
+              }
               pinned="right"
               templateColumns={pinnedRightTemplateColumns}
               totalHeight={totalHeight}

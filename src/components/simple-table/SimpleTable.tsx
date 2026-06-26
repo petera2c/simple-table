@@ -1,4 +1,11 @@
-import { useState, useRef, useEffect, useReducer, useMemo, useCallback } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useReducer,
+  useMemo,
+  useCallback,
+} from "react";
 import useSelection from "../../hooks/useSelection";
 import HeaderObject, { Accessor } from "../../types/HeaderObject";
 import TableFooter from "./TableFooter";
@@ -15,7 +22,12 @@ import TableHorizontalScrollbar from "./TableHorizontalScrollbar";
 import Row from "../../types/Row";
 import useSortableData from "../../hooks/useSortableData";
 import TableColumnEditor from "./table-column-editor/TableColumnEditor";
-import { TableProvider, CellRegistryEntry, HeaderRegistryEntry } from "../../context/TableContext";
+import {
+  TableProvider,
+  ScrollStateProvider,
+  CellRegistryEntry,
+  HeaderRegistryEntry,
+} from "../../context/TableContext";
 import { ScrollSync } from "../scroll-sync/ScrollSync";
 import useFilterableData from "../../hooks/useFilterableData";
 import useQuickFilter from "../../hooks/useQuickFilter";
@@ -38,7 +50,11 @@ import useAriaAnnouncements from "../../hooks/useAriaAnnouncements";
 import { createSelectionHeader } from "../../utils/rowSelectionUtils";
 import useScrollbarVisibility from "../../hooks/useScrollbarVisibility";
 import RowState from "../../types/RowState";
-import { generateRowId, rowIdToString, flattenRowsWithGrouping } from "../../utils/rowUtils";
+import {
+  generateRowId,
+  rowIdToString,
+  flattenRowsWithGrouping,
+} from "../../utils/rowUtils";
 import useExpandedDepths from "../../hooks/useExpandedDepths";
 import DefaultEmptyState from "../empty-state/DefaultEmptyState";
 import { DEFAULT_CUSTOM_THEME, CustomTheme } from "../../types/CustomTheme";
@@ -165,11 +181,17 @@ const SimpleTableComp = ({
       expand: icons?.expand ?? expandIconDeprecated ?? defaultIcons.expand,
       filter: icons?.filter ?? filterIconDeprecated ?? defaultIcons.filter,
       headerCollapse:
-        icons?.headerCollapse ?? headerCollapseIconDeprecated ?? defaultIcons.headerCollapse,
-      headerExpand: icons?.headerExpand ?? headerExpandIconDeprecated ?? defaultIcons.headerExpand,
+        icons?.headerCollapse ??
+        headerCollapseIconDeprecated ??
+        defaultIcons.headerCollapse,
+      headerExpand:
+        icons?.headerExpand ??
+        headerExpandIconDeprecated ??
+        defaultIcons.headerExpand,
       next: icons?.next ?? nextIconDeprecated ?? defaultIcons.next,
       prev: icons?.prev ?? prevIconDeprecated ?? defaultIcons.prev,
-      sortDown: icons?.sortDown ?? sortDownIconDeprecated ?? defaultIcons.sortDown,
+      sortDown:
+        icons?.sortDown ?? sortDownIconDeprecated ?? defaultIcons.sortDown,
       sortUp: icons?.sortUp ?? sortUpIconDeprecated ?? defaultIcons.sortUp,
       pinnedLeftIcon: icons?.pinnedLeftIcon ?? defaultIcons.pinnedLeftIcon,
       pinnedRightIcon: icons?.pinnedRightIcon ?? defaultIcons.pinnedRightIcon,
@@ -199,13 +221,19 @@ const SimpleTableComp = ({
   // Priority: columnEditorConfig > legacy props > defaults
   const mergedColumnEditorConfig = useMemo(
     () => ({
-      text: columnEditorConfig?.text ?? columnEditorText ?? DEFAULT_COLUMN_EDITOR_CONFIG.text,
+      text:
+        columnEditorConfig?.text ??
+        columnEditorText ??
+        DEFAULT_COLUMN_EDITOR_CONFIG.text,
       searchEnabled:
-        columnEditorConfig?.searchEnabled ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchEnabled,
+        columnEditorConfig?.searchEnabled ??
+        DEFAULT_COLUMN_EDITOR_CONFIG.searchEnabled,
       searchPlaceholder:
-        columnEditorConfig?.searchPlaceholder ?? DEFAULT_COLUMN_EDITOR_CONFIG.searchPlaceholder,
+        columnEditorConfig?.searchPlaceholder ??
+        DEFAULT_COLUMN_EDITOR_CONFIG.searchPlaceholder,
       allowColumnPinning:
-        columnEditorConfig?.allowColumnPinning ?? DEFAULT_COLUMN_EDITOR_CONFIG.allowColumnPinning,
+        columnEditorConfig?.allowColumnPinning ??
+        DEFAULT_COLUMN_EDITOR_CONFIG.allowColumnPinning,
       searchFunction: columnEditorConfig?.searchFunction,
       rowRenderer: columnEditorConfig?.rowRenderer,
       customRenderer: columnEditorConfig?.customRenderer,
@@ -213,7 +241,8 @@ const SimpleTableComp = ({
     [columnEditorConfig, columnEditorText],
   );
 
-  const { rowHeight, headerHeight, footerHeight, selectionColumnWidth } = customTheme;
+  const { rowHeight, headerHeight, footerHeight, selectionColumnWidth } =
+    customTheme;
   if (useOddColumnBackground) useOddEvenRowBackground = false;
   // Disable hover row background when column borders are enabled to prevent visual conflicts
   if (columnBorders) useHoverRowBackground = false;
@@ -232,7 +261,9 @@ const SimpleTableComp = ({
   const [, forceUpdate] = useReducer((x) => x + 1, 0);
 
   // Row state map for managing loading/error/empty states
-  const [rowStateMap, setRowStateMap] = useState<Map<string | number, RowState>>(new Map());
+  const [rowStateMap, setRowStateMap] = useState<
+    Map<string | number, RowState>
+  >(new Map());
 
   // Local state
   // Manage rows internally to allow imperative API mutations to trigger re-renders
@@ -286,7 +317,9 @@ const SimpleTableComp = ({
   }, [isLoading]);
 
   // Apply aggregation to current rows
-  const { scrollbarWidth, setScrollbarWidth } = useScrollbarWidth({ tableBodyContainerRef });
+  const { scrollbarWidth, setScrollbarWidth } = useScrollbarWidth({
+    tableBodyContainerRef,
+  });
 
   // Track vertical scrollbar visibility
   const { isMainSectionScrollable } = useScrollbarVisibility({
@@ -310,16 +343,25 @@ const SimpleTableComp = ({
       return dummyRows;
     }
     return localRows;
-  }, [internalIsLoading, localRows, rowsPerPage, isMainSectionScrollable, shouldPaginate]);
+  }, [
+    internalIsLoading,
+    localRows,
+    rowsPerPage,
+    isMainSectionScrollable,
+    shouldPaginate,
+  ]);
 
   // Clone defaultHeaders immediately - never mutate the consumer's reference
-  const defaultHeadersClone = useMemo(() => deepClone(defaultHeaders), [defaultHeaders]);
+  const defaultHeadersClone = useMemo(
+    () => deepClone(defaultHeaders),
+    [defaultHeaders],
+  );
 
   const [currentPage, setCurrentPage] = useState(1);
   const [headers, setHeadersInternal] = useState(defaultHeadersClone);
   const [isResizing, setIsResizing] = useState(false);
-  const [isScrolling, setIsScrolling] = useState(false);
-  const [activeHeaderDropdown, setActiveHeaderDropdown] = useState<HeaderObject | null>(null);
+  const [activeHeaderDropdown, setActiveHeaderDropdown] =
+    useState<HeaderObject | null>(null);
   const [columnEditorOpen, setColumnEditorOpen] = useState(editColumnsInitOpen);
 
   // Initialize collapsed headers with columns that have collapsedByDefault set
@@ -350,12 +392,16 @@ const SimpleTableComp = ({
 
   // Row selection hook - placeholder, will be defined after flattenedRows
   let selectedRows: Set<string> | undefined;
-  let setSelectedRows: React.Dispatch<React.SetStateAction<Set<string>>> | undefined;
+  let setSelectedRows:
+    | React.Dispatch<React.SetStateAction<Set<string>>>
+    | undefined;
   let isRowSelected: ((rowId: string) => boolean) | undefined;
   let areAllRowsSelected: (() => boolean) | undefined;
   let selectedRowCount: number | undefined;
   let selectedRowsData: any[] | undefined;
-  let handleRowSelect: ((rowId: string, isSelected: boolean) => void) | undefined;
+  let handleRowSelect:
+    | ((rowId: string, isSelected: boolean) => void)
+    | undefined;
   let handleSelectAll: ((isSelected: boolean) => void) | undefined;
   let handleToggleRow: ((rowId: string) => void) | undefined;
   let clearSelection: (() => void) | undefined;
@@ -379,25 +425,35 @@ const SimpleTableComp = ({
   );
 
   const [scrollTop, setScrollTop] = useState<number>(0);
-  const [scrollDirection, setScrollDirection] = useState<"up" | "down" | "none">("none");
+  const [scrollDirection, setScrollDirection] = useState<
+    "up" | "down" | "none"
+  >("none");
 
   // Manage expandedDepths state with automatic cleanup on rowGrouping changes
-  const { expandedDepths, setExpandedDepths } = useExpandedDepths(expandAll, rowGrouping);
+  const { expandedDepths, setExpandedDepths } = useExpandedDepths(
+    expandAll,
+    rowGrouping,
+  );
 
   // Track user's manual row expansion/collapse preferences
-  const [expandedRows, setExpandedRows] = useState<Map<string, number>>(new Map());
-  const [collapsedRows, setCollapsedRows] = useState<Map<string, number>>(new Map());
+  const [expandedRows, setExpandedRows] = useState<Map<string, number>>(
+    new Map(),
+  );
+  const [collapsedRows, setCollapsedRows] = useState<Map<string, number>>(
+    new Map(),
+  );
 
   // Aria-live announcements for screen readers
   const { announcement, announce } = useAriaAnnouncements();
 
   // Calculate table dimensions (container width, header height, and max header depth)
-  const { containerWidth, calculatedHeaderHeight, maxHeaderDepth } = useTableDimensions({
-    effectiveHeaders,
-    headerHeight,
-    rowHeight,
-    tableBodyContainerRef,
-  });
+  const { containerWidth, calculatedHeaderHeight, maxHeaderDepth } =
+    useTableDimensions({
+      effectiveHeaders,
+      headerHeight,
+      rowHeight,
+      tableBodyContainerRef,
+    });
 
   // Calculate the width of the sections
   const {
@@ -407,12 +463,17 @@ const SimpleTableComp = ({
     pinnedLeftContentWidth,
     pinnedRightContentWidth,
   } = useMemo(() => {
-    const { mainWidth, leftWidth, rightWidth, leftContentWidth, rightContentWidth } =
-      recalculateAllSectionWidths({
-        headers: effectiveHeaders,
-        containerWidth,
-        collapsedHeaders,
-      });
+    const {
+      mainWidth,
+      leftWidth,
+      rightWidth,
+      leftContentWidth,
+      rightContentWidth,
+    } = recalculateAllSectionWidths({
+      headers: effectiveHeaders,
+      containerWidth,
+      collapsedHeaders,
+    });
     return {
       mainBodyWidth: mainWidth,
       pinnedLeftWidth: leftWidth,
@@ -463,35 +524,37 @@ const SimpleTableComp = ({
   });
 
   // Use custom hook for sorting (now operates on filtered rows)
-  const { sort, sortedRows, updateSort, computeSortedRowsPreview } = useSortableData({
-    headers,
-    tableRows: filteredRows,
-    externalSortHandling,
-    onSortChange,
-    rowGrouping,
-    initialSortColumn,
-    initialSortDirection,
-    announce,
-  });
+  const { sort, sortedRows, updateSort, computeSortedRowsPreview } =
+    useSortableData({
+      headers,
+      tableRows: filteredRows,
+      externalSortHandling,
+      onSortChange,
+      rowGrouping,
+      initialSortColumn,
+      initialSortDirection,
+      announce,
+    });
 
   // Flatten sorted rows - this converts nested Row[] to flat TableRow[]
   // Done BEFORE pagination so rowsPerPage correctly counts data rows (excluding nested grids)
-  const { flattenedRows, heightOffsets, paginatableRows, parentEndPositions } = useFlattenedRows({
-    rows: sortedRows,
-    rowGrouping,
-    getRowId,
-    expandedRows,
-    collapsedRows,
-    expandedDepths,
-    rowStateMap,
-    hasLoadingRenderer: Boolean(loadingStateRenderer),
-    hasErrorRenderer: Boolean(errorStateRenderer),
-    hasEmptyRenderer: Boolean(emptyStateRenderer),
-    headers: effectiveHeaders,
-    rowHeight,
-    headerHeight,
-    customTheme,
-  });
+  const { flattenedRows, heightOffsets, paginatableRows, parentEndPositions } =
+    useFlattenedRows({
+      rows: sortedRows,
+      rowGrouping,
+      getRowId,
+      expandedRows,
+      collapsedRows,
+      expandedDepths,
+      rowStateMap,
+      hasLoadingRenderer: Boolean(loadingStateRenderer),
+      hasErrorRenderer: Boolean(errorStateRenderer),
+      hasEmptyRenderer: Boolean(emptyStateRenderer),
+      headers: effectiveHeaders,
+      rowHeight,
+      headerHeight,
+      customTheme,
+    });
 
   // Row selection hook - now that flattenedRows is defined
   const rowSelectionHook = useRowSelection({
@@ -814,193 +877,312 @@ const SimpleTableComp = ({
   );
 
   // Check if we should show the empty state (no rows after filtering and not loading)
-  const shouldShowEmptyState = !internalIsLoading && currentTableRows.length === 0;
+  const shouldShowEmptyState =
+    !internalIsLoading && currentTableRows.length === 0;
+
+  // Memoize the context value so its identity stays stable across renders that don't
+  // actually change any of its inputs (most importantly: vertical scroll, where only
+  // scrollTop/scrollDirection change and those are NOT part of this value). Without this
+  // the value was a fresh object literal every render, forcing every cell/row consumer of
+  // useTableContext to re-render on each scroll frame regardless of React.memo. Scroll
+  // state (isScrolling) is deliberately excluded and lives in ScrollStateProvider instead.
+  const tableContextValue = useMemo(
+    () => ({
+      activeHeaderDropdown,
+      allowAnimations,
+      areAllRowsSelected,
+      autoExpandColumns,
+      canExpandRowGroup,
+      cellRegistry: cellRegistryRef.current,
+      cellUpdateFlash,
+      clearSelection,
+      collapsedHeaders,
+      columnBorders,
+      columnEditorConfig: mergedColumnEditorConfig,
+      columnReordering,
+      columnResizing,
+      containerWidth,
+      columnsWithSelectedCells,
+      copyHeadersToClipboard,
+      draggedHeaderRef,
+      editColumns,
+      emptyStateRenderer,
+      essentialAccessors,
+      enableHeaderEditing,
+      enableRowSelection,
+      errorStateRenderer,
+      expandedDepths,
+      filters,
+      icons: resolvedIcons,
+      forceUpdate,
+      getBorderClass,
+      handleApplyFilter,
+      handleClearAllFilters: clearAllFilters,
+      handleClearFilter: clearFilter,
+      handleMouseDown,
+      handleMouseOver,
+      handleRowSelect,
+      handleSelectAll,
+      handleToggleRow,
+      headerContainerRef,
+      headerDropdown,
+      headerHeight,
+      headerRegistry: headerRegistryRef.current,
+      headers: effectiveHeaders,
+      heightOffsets: paginatedHeightOffsets,
+      hoveredHeaderRef,
+      includeHeadersInCSVExport,
+      isAnimating,
+      isCopyFlashing,
+      isInitialFocusedCell,
+      isLoading: internalIsLoading,
+      isResizing,
+      isRowSelected,
+      isSelected,
+      isWarningFlashing,
+      loadingStateRenderer,
+      mainBodyRef,
+      maxHeaderDepth,
+      onCellClick,
+      onCellEdit,
+      onColumnOrderChange,
+      onColumnSelect,
+      onColumnVisibilityChange,
+      onColumnWidthChange,
+      onHeaderEdit,
+      onLoadMore,
+      onRowGroupExpand,
+      onSort,
+      onTableHeaderDragEnd,
+      resetColumns,
+      pinnedLeftRef,
+      pinnedRightRef,
+      rowButtons,
+      rowGrouping,
+      rowHeight,
+      rowStateMap,
+      rows: localRows,
+      rowsWithSelectedCells,
+      scrollbarWidth,
+      selectColumns,
+      selectableColumns,
+      selectedColumns,
+      selectedRowCount,
+      selectedRows,
+      selectedRowsData,
+      setActiveHeaderDropdown,
+      setCollapsedHeaders,
+      setHeaders,
+      setInitialFocusedCell,
+      setIsResizing,
+      setRowStateMap,
+      setSelectedCells,
+      setSelectedColumns,
+      setSelectedRows,
+      setExpandedDepths,
+      setExpandedRows,
+      setCollapsedRows,
+      shouldPaginate,
+      tableBodyContainerRef,
+      tableEmptyStateRenderer,
+      tableRows: currentTableRows,
+      theme,
+      customTheme,
+      expandedRows,
+      collapsedRows,
+      useHoverRowBackground,
+      useOddColumnBackground,
+      useOddEvenRowBackground,
+    }),
+    [
+      activeHeaderDropdown,
+      allowAnimations,
+      areAllRowsSelected,
+      autoExpandColumns,
+      canExpandRowGroup,
+      cellUpdateFlash,
+      clearSelection,
+      collapsedHeaders,
+      columnBorders,
+      mergedColumnEditorConfig,
+      columnReordering,
+      columnResizing,
+      containerWidth,
+      columnsWithSelectedCells,
+      copyHeadersToClipboard,
+      draggedHeaderRef,
+      editColumns,
+      emptyStateRenderer,
+      essentialAccessors,
+      enableHeaderEditing,
+      enableRowSelection,
+      errorStateRenderer,
+      expandedDepths,
+      filters,
+      resolvedIcons,
+      forceUpdate,
+      getBorderClass,
+      handleApplyFilter,
+      clearAllFilters,
+      clearFilter,
+      handleMouseDown,
+      handleMouseOver,
+      handleRowSelect,
+      handleSelectAll,
+      handleToggleRow,
+      headerContainerRef,
+      headerDropdown,
+      headerHeight,
+      effectiveHeaders,
+      paginatedHeightOffsets,
+      hoveredHeaderRef,
+      includeHeadersInCSVExport,
+      isAnimating,
+      isCopyFlashing,
+      isInitialFocusedCell,
+      internalIsLoading,
+      isResizing,
+      isRowSelected,
+      isSelected,
+      isWarningFlashing,
+      loadingStateRenderer,
+      mainBodyRef,
+      maxHeaderDepth,
+      onCellClick,
+      onCellEdit,
+      onColumnOrderChange,
+      onColumnSelect,
+      onColumnVisibilityChange,
+      onColumnWidthChange,
+      onHeaderEdit,
+      onLoadMore,
+      onRowGroupExpand,
+      onSort,
+      onTableHeaderDragEnd,
+      resetColumns,
+      pinnedLeftRef,
+      pinnedRightRef,
+      rowButtons,
+      rowGrouping,
+      rowHeight,
+      rowStateMap,
+      localRows,
+      rowsWithSelectedCells,
+      scrollbarWidth,
+      selectColumns,
+      selectableColumns,
+      selectedColumns,
+      selectedRowCount,
+      selectedRows,
+      selectedRowsData,
+      setActiveHeaderDropdown,
+      setCollapsedHeaders,
+      setHeaders,
+      setInitialFocusedCell,
+      setIsResizing,
+      setRowStateMap,
+      setSelectedCells,
+      setSelectedColumns,
+      setSelectedRows,
+      setExpandedDepths,
+      setExpandedRows,
+      setCollapsedRows,
+      shouldPaginate,
+      tableBodyContainerRef,
+      tableEmptyStateRenderer,
+      currentTableRows,
+      theme,
+      customTheme,
+      expandedRows,
+      collapsedRows,
+      useHoverRowBackground,
+      useOddColumnBackground,
+      useOddEvenRowBackground,
+    ],
+  );
 
   return (
-    <TableProvider
-      value={{
-        activeHeaderDropdown,
-        allowAnimations,
-        areAllRowsSelected,
-        autoExpandColumns,
-        canExpandRowGroup,
-        cellRegistry: cellRegistryRef.current,
-        cellUpdateFlash,
-        clearSelection,
-        collapsedHeaders,
-        columnBorders,
-        columnEditorConfig: mergedColumnEditorConfig,
-        columnReordering,
-        columnResizing,
-        containerWidth,
-        columnsWithSelectedCells,
-        copyHeadersToClipboard,
-        draggedHeaderRef,
-        editColumns,
-        emptyStateRenderer,
-        essentialAccessors,
-        enableHeaderEditing,
-        enableRowSelection,
-        errorStateRenderer,
-        expandedDepths,
-        filters,
-        icons: resolvedIcons,
-        forceUpdate,
-        getBorderClass,
-        handleApplyFilter,
-        handleClearAllFilters: clearAllFilters,
-        handleClearFilter: clearFilter,
-        handleMouseDown,
-        handleMouseOver,
-        handleRowSelect,
-        handleSelectAll,
-        handleToggleRow,
-        headerContainerRef,
-        headerDropdown,
-        headerHeight,
-        headerRegistry: headerRegistryRef.current,
-        headers: effectiveHeaders,
-        heightOffsets: paginatedHeightOffsets,
-        hoveredHeaderRef,
-        includeHeadersInCSVExport,
-        isAnimating,
-        isCopyFlashing,
-        isInitialFocusedCell,
-        isLoading: internalIsLoading,
-        isResizing,
-        isRowSelected,
-        isScrolling,
-        isSelected,
-        isWarningFlashing,
-        loadingStateRenderer,
-        mainBodyRef,
-        maxHeaderDepth,
-        onCellClick,
-        onCellEdit,
-        onColumnOrderChange,
-        onColumnSelect,
-        onColumnVisibilityChange,
-        onColumnWidthChange,
-        onHeaderEdit,
-        onLoadMore,
-        onRowGroupExpand,
-        onSort,
-        onTableHeaderDragEnd,
-        resetColumns,
-        pinnedLeftRef,
-        pinnedRightRef,
-        rowButtons,
-        rowGrouping,
-        rowHeight,
-        rowStateMap,
-        rows: localRows,
-        rowsWithSelectedCells,
-        scrollbarWidth,
-        selectColumns,
-        selectableColumns,
-        selectedColumns,
-        selectedRowCount,
-        selectedRows,
-        selectedRowsData,
-        setActiveHeaderDropdown,
-        setCollapsedHeaders,
-        setHeaders,
-        setInitialFocusedCell,
-        setIsResizing,
-        setIsScrolling,
-        setRowStateMap,
-        setSelectedCells,
-        setSelectedColumns,
-        setSelectedRows,
-        setExpandedDepths,
-        setExpandedRows,
-        setCollapsedRows,
-        shouldPaginate,
-        tableBodyContainerRef,
-        tableEmptyStateRenderer,
-        tableRows: currentTableRows,
-        theme,
-        customTheme,
-        expandedRows,
-        collapsedRows,
-        useHoverRowBackground,
-        useOddColumnBackground,
-        useOddEvenRowBackground,
-      }}
-    >
-      <div
-        className={`simple-table-root st-wrapper theme-${theme} ${className ?? ""} ${
-          columnBorders ? "st-column-borders" : ""
-        }`}
-        role="grid"
-        style={
-          maxHeight
-            ? { maxHeight, height: contentHeight === undefined ? "auto" : maxHeight }
-            : height
-              ? { height }
-              : {}
-        }
-      >
-        <ScrollSync>
-          <div className="st-wrapper-container">
-            <div className="st-content-wrapper">
-              <TableContent
-                calculatedHeaderHeight={calculatedHeaderHeight}
-                hideHeader={hideHeader}
-                pinnedLeftWidth={pinnedLeftWidth}
-                pinnedRightWidth={pinnedRightWidth}
-                setScrollTop={setScrollTop}
-                setScrollDirection={setScrollDirection}
-                shouldShowEmptyState={shouldShowEmptyState}
-                sort={sort}
-                tableRows={currentTableRows}
-                rowsToRender={rowsToRender}
-                stickyParents={stickyParents}
-                regularRows={regularRows}
-                partiallyVisibleRows={partiallyVisibleRows}
-                heightMap={heightMap}
-              />
-              <TableColumnEditor
-                columnEditorConfig={mergedColumnEditorConfig}
-                editColumns={editColumns}
-                headers={headers}
-                open={columnEditorOpen}
-                setOpen={setColumnEditorOpen}
-              />
+    <TableProvider value={tableContextValue}>
+      <ScrollStateProvider>
+        <div
+          className={`simple-table-root st-wrapper theme-${theme} ${className ?? ""} ${
+            columnBorders ? "st-column-borders" : ""
+          }`}
+          role="grid"
+          style={
+            maxHeight
+              ? {
+                  maxHeight,
+                  height: contentHeight === undefined ? "auto" : maxHeight,
+                }
+              : height
+                ? { height }
+                : {}
+          }
+        >
+          <ScrollSync>
+            <div className="st-wrapper-container">
+              <div className="st-content-wrapper">
+                <TableContent
+                  calculatedHeaderHeight={calculatedHeaderHeight}
+                  hideHeader={hideHeader}
+                  pinnedLeftWidth={pinnedLeftWidth}
+                  pinnedRightWidth={pinnedRightWidth}
+                  setScrollTop={setScrollTop}
+                  setScrollDirection={setScrollDirection}
+                  shouldShowEmptyState={shouldShowEmptyState}
+                  sort={sort}
+                  tableRows={currentTableRows}
+                  rowsToRender={rowsToRender}
+                  stickyParents={stickyParents}
+                  regularRows={regularRows}
+                  partiallyVisibleRows={partiallyVisibleRows}
+                  heightMap={heightMap}
+                />
+                <TableColumnEditor
+                  columnEditorConfig={mergedColumnEditorConfig}
+                  editColumns={editColumns}
+                  headers={headers}
+                  open={columnEditorOpen}
+                  setOpen={setColumnEditorOpen}
+                />
+              </div>
+              {!shouldShowEmptyState && (
+                <TableHorizontalScrollbar
+                  mainBodyRef={mainBodyRef}
+                  mainBodyWidth={mainBodyWidth}
+                  pinnedLeftWidth={pinnedLeftWidth}
+                  pinnedRightWidth={pinnedRightWidth}
+                  pinnedLeftContentWidth={pinnedLeftContentWidth}
+                  pinnedRightContentWidth={pinnedRightContentWidth}
+                  tableBodyContainerRef={tableBodyContainerRef}
+                />
+              )}
+              {!shouldShowEmptyState && (
+                <TableFooter
+                  currentPage={currentPage}
+                  footerRenderer={footerRenderer}
+                  hideFooter={hideFooter}
+                  onPageChange={setCurrentPage}
+                  onNextPage={onNextPage}
+                  onUserPageChange={onPageChange}
+                  rowsPerPage={rowsPerPage}
+                  shouldPaginate={shouldPaginate}
+                  totalPages={Math.ceil(
+                    (totalRowCount ?? paginatableRows.length) / rowsPerPage,
+                  )}
+                  totalRows={totalRowCount ?? paginatableRows.length}
+                />
+              )}
             </div>
-            {!shouldShowEmptyState && (
-              <TableHorizontalScrollbar
-                mainBodyRef={mainBodyRef}
-                mainBodyWidth={mainBodyWidth}
-                pinnedLeftWidth={pinnedLeftWidth}
-                pinnedRightWidth={pinnedRightWidth}
-                pinnedLeftContentWidth={pinnedLeftContentWidth}
-                pinnedRightContentWidth={pinnedRightContentWidth}
-                tableBodyContainerRef={tableBodyContainerRef}
-              />
-            )}
-            {!shouldShowEmptyState && (
-              <TableFooter
-                currentPage={currentPage}
-                footerRenderer={footerRenderer}
-                hideFooter={hideFooter}
-                onPageChange={setCurrentPage}
-                onNextPage={onNextPage}
-                onUserPageChange={onPageChange}
-                rowsPerPage={rowsPerPage}
-                shouldPaginate={shouldPaginate}
-                totalPages={Math.ceil((totalRowCount ?? paginatableRows.length) / rowsPerPage)}
-                totalRows={totalRowCount ?? paginatableRows.length}
-              />
-            )}
-          </div>
-        </ScrollSync>
+          </ScrollSync>
 
-        {/* Aria-live region for screen reader announcements */}
-        <div aria-live="polite" aria-atomic="true" className="st-sr-only">
-          {announcement}
+          {/* Aria-live region for screen reader announcements */}
+          <div aria-live="polite" aria-atomic="true" className="st-sr-only">
+            {announcement}
+          </div>
         </div>
-      </div>
+      </ScrollStateProvider>
     </TableProvider>
   );
 };

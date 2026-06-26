@@ -42,11 +42,19 @@ const useSelection = ({
   customTheme,
 }: UseSelectionProps) => {
   const [selectedCells, setSelectedCells] = useState<Set<string>>(new Set());
-  const [selectedColumns, setSelectedColumns] = useState<Set<number>>(new Set());
-  const [lastSelectedColumnIndex, setLastSelectedColumnIndex] = useState<number | null>(null);
-  const [initialFocusedCell, setInitialFocusedCell] = useState<Cell | null>(null);
+  const [selectedColumns, setSelectedColumns] = useState<Set<number>>(
+    new Set(),
+  );
+  const [lastSelectedColumnIndex, setLastSelectedColumnIndex] = useState<
+    number | null
+  >(null);
+  const [initialFocusedCell, setInitialFocusedCell] = useState<Cell | null>(
+    null,
+  );
   const [copyFlashCells, setCopyFlashCells] = useState<Set<string>>(new Set());
-  const [warningFlashCells, setWarningFlashCells] = useState<Set<string>>(new Set());
+  const [warningFlashCells, setWarningFlashCells] = useState<Set<string>>(
+    new Set(),
+  );
   const [isSelectingState, setIsSelectingState] = useState(false);
   const isSelecting = useRef(false);
   const startCell = useRef<Cell | null>(null);
@@ -101,7 +109,9 @@ const useSelection = ({
 
   // Get flattened leaf headers
   const leafHeaders = useMemo(() => {
-    return headers.flatMap((header) => findLeafHeaders(header, collapsedHeaders));
+    return headers.flatMap((header) =>
+      findLeafHeaders(header, collapsedHeaders),
+    );
   }, [headers, collapsedHeaders]);
 
   // Clipboard operations
@@ -194,7 +204,9 @@ const useSelection = ({
             }
             const tableRow = tableRows[row];
             const rowId = rowIdToString(tableRow.rowId);
-            newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
+            newSelectedCells.add(
+              createSetString({ colIndex: col, rowIndex: row, rowId }),
+            );
           }
         }
       }
@@ -215,7 +227,9 @@ const useSelection = ({
   const selectSingleCell = useCallback(
     (cell: Cell) => {
       // Maximum valid colIndex: if selection enabled, it's leafHeaders.length, otherwise leafHeaders.length - 1
-      const maxColIndex = enableRowSelection ? leafHeaders.length : leafHeaders.length - 1;
+      const maxColIndex = enableRowSelection
+        ? leafHeaders.length
+        : leafHeaders.length - 1;
 
       if (
         cell.rowIndex >= 0 &&
@@ -237,25 +251,34 @@ const useSelection = ({
         setTimeout(() => scrollCellIntoView(cell, rowHeight, customTheme), 0);
       }
     },
-    [leafHeaders.length, tableRows.length, rowHeight, enableRowSelection, customTheme],
+    [
+      leafHeaders.length,
+      tableRows.length,
+      rowHeight,
+      enableRowSelection,
+      customTheme,
+    ],
   );
 
-  const selectColumns = useCallback((columnIndices: number[], isShiftKey = false) => {
-    selectedCellsRef.current = new Set();
-    initialFocusedCellRef.current = null;
-    setSelectedCells(new Set());
-    setInitialFocusedCell(null);
+  const selectColumns = useCallback(
+    (columnIndices: number[], isShiftKey = false) => {
+      selectedCellsRef.current = new Set();
+      initialFocusedCellRef.current = null;
+      setSelectedCells(new Set());
+      setInitialFocusedCell(null);
 
-    setSelectedColumns((prev) => {
-      const newSelection = new Set(isShiftKey ? prev : []);
-      columnIndices.forEach((idx) => newSelection.add(idx));
-      return newSelection;
-    });
+      setSelectedColumns((prev) => {
+        const newSelection = new Set(isShiftKey ? prev : []);
+        columnIndices.forEach((idx) => newSelection.add(idx));
+        return newSelection;
+      });
 
-    if (columnIndices.length > 0) {
-      setLastSelectedColumnIndex(columnIndices[columnIndices.length - 1]);
-    }
-  }, []);
+      if (columnIndices.length > 0) {
+        setLastSelectedColumnIndex(columnIndices[columnIndices.length - 1]);
+      }
+    },
+    [],
+  );
 
   // Keyboard navigation
   useKeyboardNavigation({
@@ -291,8 +314,13 @@ const useSelection = ({
       const endRowCurrentIndex = rowIdToIndexMap.get(String(endCell.rowId));
 
       const startRow =
-        startRowCurrentIndex !== undefined ? startRowCurrentIndex : startCell.rowIndex;
-      const endRow = endRowCurrentIndex !== undefined ? endRowCurrentIndex : endCell.rowIndex;
+        startRowCurrentIndex !== undefined
+          ? startRowCurrentIndex
+          : startCell.rowIndex;
+      const endRow =
+        endRowCurrentIndex !== undefined
+          ? endRowCurrentIndex
+          : endCell.rowIndex;
 
       const minRow = Math.min(startRow, endRow);
       const maxRow = Math.max(startRow, endRow);
@@ -308,7 +336,9 @@ const useSelection = ({
             }
             const tableRow = tableRows[row];
             const rowId = rowIdToString(tableRow.rowId);
-            newSelectedCells.add(createSetString({ colIndex: col, rowIndex: row, rowId }));
+            newSelectedCells.add(
+              createSetString({ colIndex: col, rowIndex: row, rowId }),
+            );
           }
         }
       }
@@ -319,54 +349,66 @@ const useSelection = ({
     [tableRows, enableRowSelection],
   );
 
-  const calculateNearestCell = useCallback((clientX: number, clientY: number): Cell | null => {
-    const tableContainer = document.querySelector(".st-body-container");
-    if (!tableContainer) return null;
+  const calculateNearestCell = useCallback(
+    (clientX: number, clientY: number): Cell | null => {
+      const tableContainer = document.querySelector(".st-body-container");
+      if (!tableContainer) return null;
 
-    const rect = tableContainer.getBoundingClientRect();
-    const cells = Array.from(
-      document.querySelectorAll(".st-cell[data-row-index][data-col-index]:not(.st-selection-cell)"),
-    );
-
-    if (cells.length === 0) return null;
-
-    const clampedX = Math.max(rect.left, Math.min(rect.right, clientX));
-    const clampedY = Math.max(rect.top, Math.min(rect.bottom, clientY));
-
-    let closestCell: HTMLElement | null = null;
-    let minDistance = Infinity;
-
-    cells.forEach((cell) => {
-      if (!(cell instanceof HTMLElement)) return;
-      const htmlCell = cell as HTMLElement;
-
-      const cellRect = htmlCell.getBoundingClientRect();
-      const cellCenterX = cellRect.left + cellRect.width / 2;
-      const cellCenterY = cellRect.top + cellRect.height / 2;
-
-      const distance = Math.sqrt(
-        Math.pow(cellCenterX - clampedX, 2) + Math.pow(cellCenterY - clampedY, 2),
+      const rect = tableContainer.getBoundingClientRect();
+      const cells = Array.from(
+        document.querySelectorAll(
+          ".st-cell[data-row-index][data-col-index]:not(.st-selection-cell)",
+        ),
       );
 
-      if (distance < minDistance) {
-        minDistance = distance;
-        closestCell = htmlCell;
+      if (cells.length === 0) return null;
+
+      const clampedX = Math.max(rect.left, Math.min(rect.right, clientX));
+      const clampedY = Math.max(rect.top, Math.min(rect.bottom, clientY));
+
+      let closestCell: HTMLElement | null = null;
+      let minDistance = Infinity;
+
+      cells.forEach((cell) => {
+        if (!(cell instanceof HTMLElement)) return;
+        const htmlCell = cell as HTMLElement;
+
+        const cellRect = htmlCell.getBoundingClientRect();
+        const cellCenterX = cellRect.left + cellRect.width / 2;
+        const cellCenterY = cellRect.top + cellRect.height / 2;
+
+        const distance = Math.sqrt(
+          Math.pow(cellCenterX - clampedX, 2) +
+            Math.pow(cellCenterY - clampedY, 2),
+        );
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestCell = htmlCell;
+        }
+      });
+
+      if (closestCell !== null) {
+        const cellElement: HTMLElement = closestCell;
+        const rowIndex = parseInt(
+          cellElement.getAttribute("data-row-index") || "-1",
+          10,
+        );
+        const colIndex = parseInt(
+          cellElement.getAttribute("data-col-index") || "-1",
+          10,
+        );
+        const rowId = cellElement.getAttribute("data-row-id");
+
+        if (rowIndex >= 0 && colIndex >= 0 && rowId !== null) {
+          return { rowIndex, colIndex, rowId };
+        }
       }
-    });
 
-    if (closestCell !== null) {
-      const cellElement: HTMLElement = closestCell;
-      const rowIndex = parseInt(cellElement.getAttribute("data-row-index") || "-1", 10);
-      const colIndex = parseInt(cellElement.getAttribute("data-col-index") || "-1", 10);
-      const rowId = cellElement.getAttribute("data-row-id");
-
-      if (rowIndex >= 0 && colIndex >= 0 && rowId !== null) {
-        return { rowIndex, colIndex, rowId };
-      }
-    }
-
-    return null;
-  }, []);
+      return null;
+    },
+    [],
+  );
 
   const getCellFromMousePosition = useCallback(
     (clientX: number, clientY: number): Cell | null => {
@@ -376,8 +418,14 @@ const useSelection = ({
       const cellElement = element.closest(".st-cell");
 
       if (cellElement instanceof HTMLElement) {
-        const rowIndex = parseInt(cellElement.getAttribute("data-row-index") || "-1", 10);
-        const colIndex = parseInt(cellElement.getAttribute("data-col-index") || "-1", 10);
+        const rowIndex = parseInt(
+          cellElement.getAttribute("data-row-index") || "-1",
+          10,
+        );
+        const colIndex = parseInt(
+          cellElement.getAttribute("data-col-index") || "-1",
+          10,
+        );
         const rowId = cellElement.getAttribute("data-row-id");
 
         if (rowIndex >= 0 && colIndex >= 0 && rowId !== null) {
@@ -422,89 +470,103 @@ const useSelection = ({
     }
   }, []);
 
-  const handleMouseDown = ({ colIndex, rowIndex, rowId }: Cell) => {
-    if (!selectableCells) return;
-    isSelecting.current = true;
-    setIsSelectingState(true);
-    startCell.current = { rowIndex, colIndex, rowId };
+  const handleMouseDown = useCallback(
+    ({ colIndex, rowIndex, rowId }: Cell) => {
+      if (!selectableCells) return;
+      isSelecting.current = true;
+      setIsSelectingState(true);
+      startCell.current = { rowIndex, colIndex, rowId };
 
-    const cellId = createSetString({ colIndex, rowIndex, rowId });
-    const initialSet = new Set([cellId]);
-    const initialCell = { rowIndex, colIndex, rowId };
-    selectedCellsRef.current = initialSet;
-    initialFocusedCellRef.current = initialCell;
+      const cellId = createSetString({ colIndex, rowIndex, rowId });
+      const initialSet = new Set([cellId]);
+      const initialCell = { rowIndex, colIndex, rowId };
+      selectedCellsRef.current = initialSet;
+      initialFocusedCellRef.current = initialCell;
 
-    setTimeout(() => {
-      setSelectedColumns(new Set());
-      setLastSelectedColumnIndex(null);
-      setSelectedCells(initialSet);
-      setInitialFocusedCell(initialCell);
-    }, 0);
+      setTimeout(() => {
+        setSelectedColumns(new Set());
+        setLastSelectedColumnIndex(null);
+        setSelectedCells(initialSet);
+        setInitialFocusedCell(initialCell);
+      }, 0);
 
-    let currentMouseX: number | null = null;
-    let currentMouseY: number | null = null;
-    let scrollAnimationFrame: number | null = null;
-    let lastSelectionUpdate = 0;
-    const selectionThrottleMs = 16;
+      let currentMouseX: number | null = null;
+      let currentMouseY: number | null = null;
+      let scrollAnimationFrame: number | null = null;
+      let lastSelectionUpdate = 0;
+      const selectionThrottleMs = 16;
 
-    const continuousScroll = () => {
-      if (!isSelecting.current || !startCell.current) {
+      const continuousScroll = () => {
+        if (!isSelecting.current || !startCell.current) {
+          if (scrollAnimationFrame !== null) {
+            cancelAnimationFrame(scrollAnimationFrame);
+            scrollAnimationFrame = null;
+          }
+          return;
+        }
+
+        // Only process if mouse position has been captured
+        if (currentMouseX !== null && currentMouseY !== null) {
+          handleAutoScroll(currentMouseX, currentMouseY);
+
+          const now = Date.now();
+          if (now - lastSelectionUpdate >= selectionThrottleMs) {
+            const cellAtPosition = getCellFromMousePosition(
+              currentMouseX,
+              currentMouseY,
+            );
+            if (cellAtPosition) {
+              updateSelectionRange(startCell.current, cellAtPosition);
+            }
+            lastSelectionUpdate = now;
+          }
+        }
+
+        scrollAnimationFrame = requestAnimationFrame(continuousScroll);
+      };
+
+      const handleGlobalMouseMove = (event: MouseEvent) => {
+        if (!isSelecting.current || !startCell.current) return;
+
+        currentMouseX = event.clientX;
+        currentMouseY = event.clientY;
+      };
+
+      const handleGlobalMouseUp = () => {
+        isSelecting.current = false;
+        setIsSelectingState(false);
+
         if (scrollAnimationFrame !== null) {
           cancelAnimationFrame(scrollAnimationFrame);
           scrollAnimationFrame = null;
         }
-        return;
-      }
 
-      // Only process if mouse position has been captured
-      if (currentMouseX !== null && currentMouseY !== null) {
-        handleAutoScroll(currentMouseX, currentMouseY);
+        document.removeEventListener("mousemove", handleGlobalMouseMove);
+        document.removeEventListener("mouseup", handleGlobalMouseUp);
+      };
 
-        const now = Date.now();
-        if (now - lastSelectionUpdate >= selectionThrottleMs) {
-          const cellAtPosition = getCellFromMousePosition(currentMouseX, currentMouseY);
-          if (cellAtPosition) {
-            updateSelectionRange(startCell.current, cellAtPosition);
-          }
-          lastSelectionUpdate = now;
-        }
-      }
+      document.addEventListener("mousemove", handleGlobalMouseMove);
+      document.addEventListener("mouseup", handleGlobalMouseUp);
 
       scrollAnimationFrame = requestAnimationFrame(continuousScroll);
-    };
+    },
+    [
+      selectableCells,
+      handleAutoScroll,
+      getCellFromMousePosition,
+      updateSelectionRange,
+    ],
+  );
 
-    const handleGlobalMouseMove = (event: MouseEvent) => {
-      if (!isSelecting.current || !startCell.current) return;
-
-      currentMouseX = event.clientX;
-      currentMouseY = event.clientY;
-    };
-
-    const handleGlobalMouseUp = () => {
-      isSelecting.current = false;
-      setIsSelectingState(false);
-
-      if (scrollAnimationFrame !== null) {
-        cancelAnimationFrame(scrollAnimationFrame);
-        scrollAnimationFrame = null;
+  const handleMouseOver = useCallback(
+    ({ colIndex, rowIndex, rowId }: Cell) => {
+      if (!selectableCells) return;
+      if (isSelecting.current && startCell.current) {
+        updateSelectionRange(startCell.current, { colIndex, rowIndex, rowId });
       }
-
-      document.removeEventListener("mousemove", handleGlobalMouseMove);
-      document.removeEventListener("mouseup", handleGlobalMouseUp);
-    };
-
-    document.addEventListener("mousemove", handleGlobalMouseMove);
-    document.addEventListener("mouseup", handleGlobalMouseUp);
-
-    scrollAnimationFrame = requestAnimationFrame(continuousScroll);
-  };
-
-  const handleMouseOver = ({ colIndex, rowIndex, rowId }: Cell) => {
-    if (!selectableCells) return;
-    if (isSelecting.current && startCell.current) {
-      updateSelectionRange(startCell.current, { colIndex, rowIndex, rowId });
-    }
-  };
+    },
+    [selectableCells, updateSelectionRange],
+  );
 
   const isSelected = useCallback(
     ({ colIndex, rowIndex, rowId }: Cell) => {
@@ -530,13 +592,21 @@ const useSelection = ({
       const bottomRowId = bottomRow ? rowIdToString(bottomRow.rowId) : null;
 
       const topCell =
-        topRowId !== null ? { colIndex, rowIndex: rowIndex - 1, rowId: topRowId } : null;
+        topRowId !== null
+          ? { colIndex, rowIndex: rowIndex - 1, rowId: topRowId }
+          : null;
       const bottomCell =
-        bottomRowId !== null ? { colIndex, rowIndex: rowIndex + 1, rowId: bottomRowId } : null;
+        bottomRowId !== null
+          ? { colIndex, rowIndex: rowIndex + 1, rowId: bottomRowId }
+          : null;
       const leftCell = { colIndex: colIndex - 1, rowIndex, rowId };
       const rightCell = { colIndex: colIndex + 1, rowIndex, rowId };
 
-      if (!topCell || !isSelected(topCell) || (selectedColumns.has(colIndex) && rowIndex === 0))
+      if (
+        !topCell ||
+        !isSelected(topCell) ||
+        (selectedColumns.has(colIndex) && rowIndex === 0)
+      )
         classes.push("st-selected-top-border");
       if (
         !bottomCell ||
