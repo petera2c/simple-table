@@ -199,8 +199,8 @@ export class DimensionManager {
     }
 
     if (
-      config.height ||
-      config.maxHeight ||
+      "height" in config ||
+      "maxHeight" in config ||
       config.totalRowCount !== undefined ||
       config.externalViewportHeight !== undefined
     ) {

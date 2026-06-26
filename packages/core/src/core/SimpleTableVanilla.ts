@@ -1402,6 +1402,17 @@ export class SimpleTableVanilla {
       });
     }
 
+    if (config.height !== undefined || config.maxHeight !== undefined) {
+      // The DimensionManager owns `contentHeight`, which drives the root's
+      // fixed-vs-auto height and the internal scroll viewport. Without this, a
+      // changed `height`/`maxHeight` prop (e.g. switching the calc() expression)
+      // left the manager on its stale value, so the scrollbar never updated.
+      this.dimensionManager?.updateConfig({
+        height: this.config.height,
+        maxHeight: this.config.maxHeight,
+      });
+    }
+
     if (
       config.scrollParent !== undefined ||
       config.height !== undefined ||

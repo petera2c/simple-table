@@ -102,4 +102,41 @@ describe("SimpleTable (React adapter) — maxHeight calc() scroll", () => {
     expect(tableRoot!.style.height).not.toBe("auto");
     expect(tableRoot!.style.height).toBe("calc(100vh - 700px)");
   });
+
+  it("recomputes the scroll region when the maxHeight prop changes", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    container = host;
+    root = createRoot(host);
+
+    const renderWith = (maxHeight: string) =>
+      root!.render(
+        createElement(SimpleTable, {
+          defaultHeaders: headers,
+          rows,
+          getRowId: (p) => String((p.row as { id: number }).id),
+          maxHeight,
+          theme: "light",
+        }),
+      );
+
+    // Start tall enough that the content fits: calc resolves to 800 - 100 = 700px,
+    // content (~512px) fits, so no inner scroll region and the root stays `auto`.
+    renderWith("calc(100vh - 100px)");
+    await waitFor(() => host.querySelectorAll(".st-body-container .st-cell").length > 0);
+
+    const tableRoot = host.querySelector<HTMLElement>(".simple-table-root");
+    expect(tableRoot).not.toBeNull();
+    expect(tableRoot!.style.height).toBe("auto");
+
+    // Shrink the cap so the content now overflows: calc resolves to 800 - 700 = 100px.
+    // The DimensionManager must recompute and bound the root so the body can scroll.
+    // Before the fix the new maxHeight never reached the DimensionManager, so the
+    // root stayed `auto` and the scrollbar never appeared.
+    renderWith("calc(100vh - 700px)");
+    await waitFor(() => tableRoot!.style.maxHeight === "calc(100vh - 700px)");
+
+    expect(tableRoot!.style.height).not.toBe("auto");
+    expect(tableRoot!.style.height).toBe("calc(100vh - 700px)");
+  });
 });
