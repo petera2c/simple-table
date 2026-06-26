@@ -557,12 +557,26 @@ export const renderBodyCells = (
 
   const cellsToCreate: Array<{ cell: AbsoluteBodyCell; cellId: string }> = [];
 
+  // Guard against duplicate cell ids within a single render. Two logical cells
+  // collapse to the same id (`${rowId}-${accessor}`) whenever `getRowId`
+  // returns the same value for different rows — e.g. it derives the id from row
+  // data and returns `undefined` for every still-loading skeleton row. Without
+  // this guard, the create pass below would emit a DOM node for each colliding
+  // cell while `renderedCells` (keyed by id) only retains the last one, leaking
+  // the rest as untracked orphans that the removal loop can never reach. We
+  // keep the first occurrence per id and ignore the rest so there is exactly
+  // one tracked DOM cell per id.
+  const seenCellIds = new Set<string>();
+
   // First pass: identify cells to create vs update
   cellsToRender.forEach((cell) => {
     const cellId = getCellId({
       accessor: cell.header.accessor,
       rowId: cell.stableRowKey ?? cell.rowId,
     });
+
+    if (seenCellIds.has(cellId)) return;
+    seenCellIds.add(cellId);
 
     if (!renderedCells.has(cellId)) {
       cellsToCreate.push({ cell, cellId });
