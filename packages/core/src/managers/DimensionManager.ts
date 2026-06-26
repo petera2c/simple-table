@@ -1,4 +1,5 @@
 import HeaderObject from "../types/HeaderObject";
+import { convertHeightToPixels } from "../hooks/contentHeight";
 
 export interface DimensionManagerConfig {
   effectiveHeaders: HeaderObject[];
@@ -78,26 +79,7 @@ export class DimensionManager {
 
   private convertHeightToPixels(heightValue: string | number): number {
     const container = this.config.containerElement || document.querySelector(".simple-table-root");
-
-    if (typeof heightValue === "string") {
-      if (heightValue.endsWith("px")) {
-        return parseInt(heightValue, 10);
-      } else if (heightValue.endsWith("vh")) {
-        const vh = parseInt(heightValue, 10);
-        return (window.innerHeight * vh) / 100;
-      } else if (heightValue.endsWith("%")) {
-        const percentage = parseInt(heightValue, 10);
-        const parentHeight = container?.parentElement?.clientHeight;
-        if (!parentHeight || parentHeight < 50) {
-          return 0;
-        }
-        return (parentHeight * percentage) / 100;
-      } else {
-        return window.innerHeight;
-      }
-    } else {
-      return heightValue as number;
-    }
+    return convertHeightToPixels(heightValue, container);
   }
 
   private calculateContentHeight(): number | undefined {

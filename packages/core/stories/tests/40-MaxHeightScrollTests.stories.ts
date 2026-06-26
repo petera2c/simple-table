@@ -97,3 +97,53 @@ export const MaxHeightNoScrollWhenContentFits = {
     expect(tableRoot.offsetHeight).toBeGreaterThan(0);
   },
 };
+
+// ============================================================================
+// TEST 3: maxHeight using calc() — body must scroll, not clip
+// ============================================================================
+//
+// Repro for the calc() clipping bug. With `maxHeight="calc(100vh - 700px)"`
+// (no height, no scrollParent) CSS caps the root box at the resolved calc value,
+// but the scroll math in `convertHeightToPixels` doesn't understand `calc(...)`
+// and falls back to the full `window.innerHeight`. The JS therefore thinks the
+// content fits, disables the internal scroll region, mounts every row, and the
+// `overflow: hidden` wrapper clips the rows past the cap — no inner scrollbar,
+// rows below the fold unreachable.
+//
+// The default test-runner viewport is 1280x720, so the calc resolves to ~20px
+// while 15 rows of content (~512px) overflow it but stay under the full viewport
+// height — exactly the window where the bug manifests. The body must scroll.
+
+export const MaxHeightCalcScrolls = {
+  tags: ["maxheight-scroll"],
+  render: () => {
+    const data = createRows(15);
+    const { wrapper, h2 } = renderVanillaTable(headers, data, {
+      maxHeight: "calc(100vh - 700px)",
+    });
+    h2.textContent = "maxHeight=calc(100vh - 700px), 15 rows (must scroll, not clip)";
+    return wrapper;
+  },
+  play: async ({ canvasElement }) => {
+    await waitForTable();
+
+    const tableRoot = canvasElement.querySelector(
+      ".simple-table-root",
+    ) as HTMLElement;
+    if (!tableRoot) throw new Error("Table root not found");
+
+    // The calc cap keeps the box small (well under the full content height)...
+    expect(tableRoot.offsetHeight).toBeGreaterThan(0);
+    expect(tableRoot.offsetHeight).toBeLessThan(window.innerHeight);
+
+    const bodyContainer = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLElement;
+    if (!bodyContainer) throw new Error("Body container not found");
+
+    // ...so the body must provide an inner scroll region to reach the rows below
+    // the fold. Under the bug the body grows to full content and is clipped by an
+    // ancestor instead, leaving scrollHeight === clientHeight (no scrollbar).
+    expect(bodyContainer.scrollHeight).toBeGreaterThan(bodyContainer.clientHeight);
+  },
+};

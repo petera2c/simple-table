@@ -11,6 +11,23 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v3_8_2: ChangelogEntry = {
+  version: "3.8.2",
+  date: "2026-06-25",
+  title: "Bug fixes",
+  description: "Stale cell rendering bug fix.",
+  changes: [
+    {
+      type: "bugfix",
+      description: "Stale cells no longer linger.",
+    },
+    {
+      type: "bugfix",
+      description: "calc() maxHeight now scrolls.",
+    },
+  ],
+};
+
 export const v3_8_1: ChangelogEntry = {
   version: "3.8.1",
   date: "2026-06-23",
@@ -1877,6 +1894,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_8_2,
   v3_8_1,
   v3_8_0,
   v3_7_3,
