@@ -30,7 +30,7 @@ export default function MusicExample({
       defaultHeaders={HEADERS}
       height={height ? height : "70dvh"}
       customTheme={{
-        rowHeight: 85,
+        rowHeight: 90,
         headerHeight: 40,
       }}
       rows={data}
