@@ -24,7 +24,10 @@ import { SelectionManager } from "../../managers/SelectionManager";
 import { RowSelectionManager } from "../../managers/RowSelectionManager";
 import type { AnimationCoordinator, CellPosition } from "../../managers/AnimationCoordinator";
 import type { AccordionAxis } from "../../utils/accordionAnimation";
-import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
+import {
+  getMainSectionViewportWidth,
+  recalculateAllSectionWidths,
+} from "../../utils/resizeUtils/sectionWidths";
 import { canDisplaySection } from "../../utils/generalUtils";
 import { flattenHeaders } from "../../utils/headerUtils";
 import type TableRow from "../../types/TableRow";
@@ -195,7 +198,16 @@ export class TableRenderer {
       columnReordering: deps.config.columnReordering ?? false,
       columnResizing: deps.config.columnResizing ?? false,
       containerWidth: dimensionState.containerWidth,
-      mainSectionContainerWidth: mainWidth,
+      // Virtualization viewport = the main section's *visible* width (container
+      // minus pinned sections), NOT `mainWidth` (the full content width = sum of
+      // all main column widths). Passing the content width here made
+      // getVisibleBodyCells/getVisibleCells include every column (no column
+      // virtualization).
+      mainSectionContainerWidth: getMainSectionViewportWidth({
+        containerWidth: dimensionState.containerWidth,
+        leftWidth,
+        rightWidth,
+      }),
       enableHeaderEditing: deps.config.enableHeaderEditing,
       enableRowSelection: deps.config.enableRowSelection,
       selectedRowCount: headerSelectedRowCount,
@@ -471,7 +483,16 @@ export class TableRenderer {
       heightOffsets: processedResult.paginatedHeightOffsets,
       customTheme: deps.customTheme,
       containerWidth: dimensionState.containerWidth,
-      mainSectionContainerWidth: mainWidth,
+      // Virtualization viewport = the main section's *visible* width (container
+      // minus pinned sections), NOT `mainWidth` (the full content width = sum of
+      // all main column widths). Passing the content width here made
+      // getVisibleBodyCells/getVisibleCells include every column (no column
+      // virtualization).
+      mainSectionContainerWidth: getMainSectionViewportWidth({
+        containerWidth: dimensionState.containerWidth,
+        leftWidth,
+        rightWidth,
+      }),
       onCellEdit: deps.config.onCellEdit,
       onCellClick: deps.config.onCellClick,
       onRowGroupExpand: deps.config.onRowGroupExpand,

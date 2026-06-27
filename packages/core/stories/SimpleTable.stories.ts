@@ -151,6 +151,10 @@ import {
   manufacturingExampleDefaults,
 } from "./examples/manufacturing/ManufacturingExample";
 import { renderMusicExample, musicExampleDefaults } from "./examples/music/MusicExample";
+import {
+  renderMusicWindowScrollExample,
+  musicWindowScrollExampleDefaults,
+} from "./examples/music/MusicWindowScrollExample";
 import { renderNestedGridExample, nestedGridExampleDefaults } from "./examples/NestedGridExample";
 import {
   renderPaginationAPIExample,
@@ -482,6 +486,18 @@ export const MusicExample: StoryObj = {
   ...storyArgs(musicExampleDefaults),
   render: (args) => renderMusicExample(args),
   parameters: { docs: { description: { story: "Music/catalog table with albums and artists." } } },
+};
+export const MusicWindowScroll: StoryObj = {
+  ...storyArgs(musicWindowScrollExampleDefaults),
+  render: (args) => renderMusicWindowScrollExample(args),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Wide (~60 column) artist-analytics grid in window/external scroll mode: no height/maxHeight, so the outer container drives row virtualization while the sticky header pins to the viewport. Every data column uses a custom DOM cellRenderer.",
+      },
+    },
+  },
 };
 export const NestedGrid: StoryObj = {
   ...storyArgs(nestedGridExampleDefaults),
