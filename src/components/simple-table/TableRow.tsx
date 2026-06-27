@@ -263,72 +263,28 @@ const arePropsEqual = (
   const isSpecialRow = !!(
     nextProps.tableRow.nestedTable || nextProps.tableRow.stateIndicator
   );
-  if (isSpecialRow && prevProps.index !== nextProps.index) {
-    return false;
-  }
-
-  // Check row position
-  if (
-    prevProps.tableRow.position !== nextProps.tableRow.position ||
-    prevProps.tableRow.displayPosition !== nextProps.tableRow.displayPosition
-  ) {
-    return false;
-  }
-
-  // Check if the actual row data changed
-  if (prevProps.tableRow.row !== nextProps.tableRow.row) {
-    return false;
-  }
-
-  // Check if state indicator changed (for loading/error/empty rows)
-  if (prevProps.tableRow.stateIndicator !== nextProps.tableRow.stateIndicator) {
-    return false;
-  }
-
-  // Check row height
-  if (prevProps.rowHeight !== nextProps.rowHeight) {
-    return false;
-  }
-
-  // Check grid template columns
-  if (prevProps.gridTemplateColumns !== nextProps.gridTemplateColumns) {
-    return false;
-  }
-
-  // Check pinned state
-  if (prevProps.pinned !== nextProps.pinned) {
-    return false;
-  }
-
-  // Check if headers array changed (by reference)
-  if (prevProps.headers !== nextProps.headers) {
-    return false;
-  }
-
-  // Check if column indices changed (by reference)
-  if (prevProps.columnIndices !== nextProps.columnIndices) {
-    return false;
-  }
-
-  // Check if the visible-column window changed (by reference). It is memoized in
-  // TableBody and only changes on horizontal scroll / column changes, so during
-  // vertical scroll this stays equal and the row keeps its memoization.
-  if (prevProps.columnWindow !== nextProps.columnWindow) {
-    return false;
-  }
 
   // NOTE: `rowIndices` is intentionally NOT compared. It is a brand-new object on
   // every scroll frame (rebuilt from the sliced window) but is only forwarded down
   // the cell tree and never actually read (TableCell doesn't consume it). Comparing
   // it by reference broke memoization for every visible row on each scroll shift.
-
-  // Column index start
-  if (prevProps.columnIndexStart !== nextProps.columnIndexStart) {
-    return false;
-  }
-
-  // All checks passed - props are equal
-  return true;
+  // `columnWindow` is memoized in TableBody and only changes on horizontal scroll /
+  // column changes, so during vertical scroll it stays equal and the row keeps its
+  // memoization (skips re-render).
+  return (
+    !(isSpecialRow && prevProps.index !== nextProps.index) &&
+    prevProps.tableRow.position === nextProps.tableRow.position &&
+    prevProps.tableRow.displayPosition === nextProps.tableRow.displayPosition &&
+    prevProps.tableRow.row === nextProps.tableRow.row &&
+    prevProps.tableRow.stateIndicator === nextProps.tableRow.stateIndicator &&
+    prevProps.rowHeight === nextProps.rowHeight &&
+    prevProps.gridTemplateColumns === nextProps.gridTemplateColumns &&
+    prevProps.pinned === nextProps.pinned &&
+    prevProps.headers === nextProps.headers &&
+    prevProps.columnIndices === nextProps.columnIndices &&
+    prevProps.columnWindow === nextProps.columnWindow &&
+    prevProps.columnIndexStart === nextProps.columnIndexStart
+  );
 };
 
 // Export memoized TableRow component with custom comparison

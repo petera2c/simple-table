@@ -32,6 +32,11 @@ interface UseFlattenedRowsProps {
   customTheme: CustomTheme;
 }
 
+// Stable reference for the "no grouping" case so the useMemo below doesn't see a
+// brand-new [] on every render (which would recompute the entire flatten on each
+// scroll frame and churn every downstream consumer).
+const EMPTY_ROW_GROUPING: Accessor[] = [];
+
 interface UseFlattenedRowsResult {
   flattenedRows: TableRow[];
   heightOffsets: HeightOffsets;
@@ -47,7 +52,7 @@ interface UseFlattenedRowsResult {
  */
 const useFlattenedRows = ({
   rows,
-  rowGrouping = [],
+  rowGrouping = EMPTY_ROW_GROUPING,
   getRowId,
   expandedRows,
   collapsedRows,

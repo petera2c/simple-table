@@ -51,11 +51,23 @@ const TableContent = ({
   // Refs
   const centerHeaderRef = useRef<HTMLDivElement>(null);
 
-  // Derived state
-  const currentHeaders = headers.filter((header) => !header.pinned);
+  // Derived state. These are memoized on `headers` so their identity stays stable
+  // across vertical-scroll re-renders. Otherwise the fresh array references would
+  // bust the `columnIndices` useMemo in TableBody, which in turn breaks TableRow
+  // memoization and re-renders every visible row on each scroll frame.
+  const currentHeaders = useMemo(
+    () => headers.filter((header) => !header.pinned),
+    [headers],
+  );
 
-  const pinnedLeftColumns = headers.filter((header) => header.pinned === "left");
-  const pinnedRightColumns = headers.filter((header) => header.pinned === "right");
+  const pinnedLeftColumns = useMemo(
+    () => headers.filter((header) => header.pinned === "left"),
+    [headers],
+  );
+  const pinnedRightColumns = useMemo(
+    () => headers.filter((header) => header.pinned === "right"),
+    [headers],
+  );
 
   const pinnedLeftTemplateColumns = useMemo(() => {
     return createGridTemplateColumns({

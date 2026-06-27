@@ -67,6 +67,12 @@ import { collectEssentialAccessors } from "../../utils/pinnedColumnUtils";
 import { SimpleTableProps } from "../../types/SimpleTableProps";
 import "../../styles/all-themes.css";
 
+// Stable element instance for the default empty state. Using an inline default
+// (`= <DefaultEmptyState />`) created a fresh element on every render, which is a
+// dependency of the table context value and forced all consumers to re-render on
+// each scroll frame. DefaultEmptyState takes no props, so one shared instance is safe.
+const DEFAULT_EMPTY_STATE = <DefaultEmptyState />;
+
 const SimpleTable = (props: SimpleTableProps) => {
   const [isClient, setIsClient] = useState(false);
 
@@ -152,7 +158,7 @@ const SimpleTableComp = ({
   shouldPaginate = false,
   sortDownIcon: sortDownIconDeprecated,
   sortUpIcon: sortUpIconDeprecated,
-  tableEmptyStateRenderer = <DefaultEmptyState />,
+  tableEmptyStateRenderer = DEFAULT_EMPTY_STATE,
   tableRef,
   theme = "modern-light",
   totalRowCount,
@@ -778,17 +784,26 @@ const SimpleTableComp = ({
   });
 
   // Memoize handlers
+  // prepareForSortChange/prepareForFilterChange close over scroll state (scrollTop,
+  // scrollDirection, targetVisibleRows) so they get a new identity every scroll frame.
+  // Read them through refs so onSort/handleApplyFilter stay identity-stable during
+  // scroll (these are only invoked on user actions, never during render).
+  const prepareForSortChangeRef = useRef(prepareForSortChange);
+  prepareForSortChangeRef.current = prepareForSortChange;
+  const prepareForFilterChangeRef = useRef(prepareForFilterChange);
+  prepareForFilterChangeRef.current = prepareForFilterChange;
+
   const onSort = useCallback(
     (accessor: Accessor) => {
       // STAGE 1: Prepare animation by adding entering rows before applying sort
-      prepareForSortChange(accessor);
+      prepareForSortChangeRef.current(accessor);
 
       // STAGE 2: Apply sort after Stage 1 is rendered (next frame)
       setTimeout(() => {
         updateSort({ accessor });
       }, 0);
     },
-    [prepareForSortChange, updateSort],
+    [updateSort],
   );
 
   const onTableHeaderDragEnd = useCallback(
@@ -865,7 +880,7 @@ const SimpleTableComp = ({
   const handleApplyFilter = useCallback(
     (filter: FilterCondition) => {
       // STAGE 1: Prepare animation by adding entering rows before applying filter
-      prepareForFilterChange(filter);
+      prepareForFilterChangeRef.current(filter);
 
       // STAGE 2: Apply filter after Stage 1 is rendered (next frame)
       setTimeout(() => {
@@ -873,7 +888,7 @@ const SimpleTableComp = ({
         updateFilter(filter);
       }, 0);
     },
-    [prepareForFilterChange, updateFilter],
+    [updateFilter],
   );
 
   // Check if we should show the empty state (no rows after filtering and not loading)

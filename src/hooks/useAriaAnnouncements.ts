@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * Custom hook to manage aria-live announcements for screen readers
@@ -33,9 +33,9 @@ const useAriaAnnouncements = () => {
    * Announce a message to screen readers
    * @param message The message to announce
    */
-  const announce = (message: string) => {
+  const announce = useCallback((message: string) => {
     setAnnouncement(message);
-  };
+  }, []);
 
   return {
     announcement,
