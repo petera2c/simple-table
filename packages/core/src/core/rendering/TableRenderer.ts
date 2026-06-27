@@ -840,6 +840,17 @@ export class TableRenderer {
       this.lastCustomFooterRenderer = deps.config.footerRenderer;
       this.lastCustomFooterKey = customFooterKey;
 
+      // When serverSidePagination is enabled, the consumer fetches each page's
+      // data in `config.onPageChange`. The built-in footer wires that callback
+      // (as `onUserPageChange`); custom footers must do the same so changing the
+      // page actually requests new data instead of just updating the highlight.
+      const serverSidePagination = deps.config.serverSidePagination ?? false;
+      const notifyUserPageChange = (page: number): void | Promise<void> => {
+        if (serverSidePagination && deps.config.onPageChange) {
+          return deps.config.onPageChange(page);
+        }
+      };
+
       const renderedContent = deps.config.footerRenderer!({
         currentPage,
         endRow,
@@ -850,11 +861,18 @@ export class TableRenderer {
           if (currentPage < totalPages) {
             onPageChange(currentPage + 1);
             if (deps.config.onNextPage) await deps.config.onNextPage(currentPage + 1);
+            await notifyUserPageChange(currentPage + 1);
           }
         },
-        onPageChange,
+        onPageChange: (page: number) => {
+          onPageChange(page);
+          void notifyUserPageChange(page);
+        },
         onPrevPage: () => {
-          if (currentPage > 1) onPageChange(currentPage - 1);
+          if (currentPage > 1) {
+            onPageChange(currentPage - 1);
+            void notifyUserPageChange(currentPage - 1);
+          }
         },
         prevIcon: deps.resolvedIcons?.prev,
         rowsPerPage,
