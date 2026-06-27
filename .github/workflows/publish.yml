@@ -63,15 +63,17 @@ jobs:
 
       # ─── simple-table-core ───────────────────────────────────────────────────
 
-      - name: "[core] Check version changed"
+      - name: "[core] Check version needs publishing"
         id: core-check
         working-directory: packages/core
         run: |
           CURRENT=$(node -p "require('./package.json').version")
-          git checkout HEAD~1 -- package.json 2>/dev/null || true
-          PREVIOUS=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
-          git checkout HEAD -- package.json
-          if [ "$CURRENT" != "$PREVIOUS" ]; then
+          NAME=$(node -p "require('./package.json').name")
+          # Look up the exact version on npm. Empty result means it is not
+          # published yet, so we publish. This covers both a freshly bumped
+          # version and retrying after a previously failed launch.
+          PUBLISHED=$(npm view "$NAME@$CURRENT" version 2>/dev/null || echo "")
+          if [ "$PUBLISHED" != "$CURRENT" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "version=$CURRENT" >> $GITHUB_OUTPUT
           else
@@ -119,24 +121,33 @@ jobs:
       - name: "[core] Create Git tag"
         if: steps.core-check.outputs.changed == 'true'
         run: |
+          TAG="simple-table-core@${{ steps.core-check.outputs.version }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "simple-table-core@${{ steps.core-check.outputs.version }}" -m "Release simple-table-core@${{ steps.core-check.outputs.version }}"
-          git push origin "simple-table-core@${{ steps.core-check.outputs.version }}"
+          # Idempotent: skip if the tag already exists on origin (e.g. when a
+          # prior run published but failed before/after tagging).
+          if git ls-remote --tags origin "refs/tags/$TAG" | grep -q "refs/tags/$TAG"; then
+            echo "Tag $TAG already exists on origin, skipping."
+          else
+            git tag -a "$TAG" -m "Release $TAG"
+            git push origin "$TAG"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # ─── @simple-table/react ─────────────────────────────────────────────────
 
-      - name: "[react] Check version changed"
+      - name: "[react] Check version needs publishing"
         id: react-check
         working-directory: packages/react
         run: |
           CURRENT=$(node -p "require('./package.json').version")
-          git checkout HEAD~1 -- package.json 2>/dev/null || true
-          PREVIOUS=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
-          git checkout HEAD -- package.json
-          if [ "$CURRENT" != "$PREVIOUS" ]; then
+          NAME=$(node -p "require('./package.json').name")
+          # Look up the exact version on npm. Empty result means it is not
+          # published yet, so we publish. This covers both a freshly bumped
+          # version and retrying after a previously failed launch.
+          PUBLISHED=$(npm view "$NAME@$CURRENT" version 2>/dev/null || echo "")
+          if [ "$PUBLISHED" != "$CURRENT" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "version=$CURRENT" >> $GITHUB_OUTPUT
           else
@@ -164,24 +175,33 @@ jobs:
       - name: "[react] Create Git tag"
         if: steps.react-check.outputs.changed == 'true'
         run: |
+          TAG="@simple-table/react@${{ steps.react-check.outputs.version }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "@simple-table/react@${{ steps.react-check.outputs.version }}" -m "Release @simple-table/react@${{ steps.react-check.outputs.version }}"
-          git push origin "@simple-table/react@${{ steps.react-check.outputs.version }}"
+          # Idempotent: skip if the tag already exists on origin (e.g. when a
+          # prior run published but failed before/after tagging).
+          if git ls-remote --tags origin "refs/tags/$TAG" | grep -q "refs/tags/$TAG"; then
+            echo "Tag $TAG already exists on origin, skipping."
+          else
+            git tag -a "$TAG" -m "Release $TAG"
+            git push origin "$TAG"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # ─── @simple-table/vue ───────────────────────────────────────────────────
 
-      - name: "[vue] Check version changed"
+      - name: "[vue] Check version needs publishing"
         id: vue-check
         working-directory: packages/vue
         run: |
           CURRENT=$(node -p "require('./package.json').version")
-          git checkout HEAD~1 -- package.json 2>/dev/null || true
-          PREVIOUS=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
-          git checkout HEAD -- package.json
-          if [ "$CURRENT" != "$PREVIOUS" ]; then
+          NAME=$(node -p "require('./package.json').name")
+          # Look up the exact version on npm. Empty result means it is not
+          # published yet, so we publish. This covers both a freshly bumped
+          # version and retrying after a previously failed launch.
+          PUBLISHED=$(npm view "$NAME@$CURRENT" version 2>/dev/null || echo "")
+          if [ "$PUBLISHED" != "$CURRENT" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "version=$CURRENT" >> $GITHUB_OUTPUT
           else
@@ -209,24 +229,33 @@ jobs:
       - name: "[vue] Create Git tag"
         if: steps.vue-check.outputs.changed == 'true'
         run: |
+          TAG="@simple-table/vue@${{ steps.vue-check.outputs.version }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "@simple-table/vue@${{ steps.vue-check.outputs.version }}" -m "Release @simple-table/vue@${{ steps.vue-check.outputs.version }}"
-          git push origin "@simple-table/vue@${{ steps.vue-check.outputs.version }}"
+          # Idempotent: skip if the tag already exists on origin (e.g. when a
+          # prior run published but failed before/after tagging).
+          if git ls-remote --tags origin "refs/tags/$TAG" | grep -q "refs/tags/$TAG"; then
+            echo "Tag $TAG already exists on origin, skipping."
+          else
+            git tag -a "$TAG" -m "Release $TAG"
+            git push origin "$TAG"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # ─── @simple-table/svelte ────────────────────────────────────────────────
 
-      - name: "[svelte] Check version changed"
+      - name: "[svelte] Check version needs publishing"
         id: svelte-check
         working-directory: packages/svelte
         run: |
           CURRENT=$(node -p "require('./package.json').version")
-          git checkout HEAD~1 -- package.json 2>/dev/null || true
-          PREVIOUS=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
-          git checkout HEAD -- package.json
-          if [ "$CURRENT" != "$PREVIOUS" ]; then
+          NAME=$(node -p "require('./package.json').name")
+          # Look up the exact version on npm. Empty result means it is not
+          # published yet, so we publish. This covers both a freshly bumped
+          # version and retrying after a previously failed launch.
+          PUBLISHED=$(npm view "$NAME@$CURRENT" version 2>/dev/null || echo "")
+          if [ "$PUBLISHED" != "$CURRENT" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "version=$CURRENT" >> $GITHUB_OUTPUT
           else
@@ -254,24 +283,33 @@ jobs:
       - name: "[svelte] Create Git tag"
         if: steps.svelte-check.outputs.changed == 'true'
         run: |
+          TAG="@simple-table/svelte@${{ steps.svelte-check.outputs.version }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "@simple-table/svelte@${{ steps.svelte-check.outputs.version }}" -m "Release @simple-table/svelte@${{ steps.svelte-check.outputs.version }}"
-          git push origin "@simple-table/svelte@${{ steps.svelte-check.outputs.version }}"
+          # Idempotent: skip if the tag already exists on origin (e.g. when a
+          # prior run published but failed before/after tagging).
+          if git ls-remote --tags origin "refs/tags/$TAG" | grep -q "refs/tags/$TAG"; then
+            echo "Tag $TAG already exists on origin, skipping."
+          else
+            git tag -a "$TAG" -m "Release $TAG"
+            git push origin "$TAG"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # ─── @simple-table/solid ─────────────────────────────────────────────────
 
-      - name: "[solid] Check version changed"
+      - name: "[solid] Check version needs publishing"
         id: solid-check
         working-directory: packages/solid
         run: |
           CURRENT=$(node -p "require('./package.json').version")
-          git checkout HEAD~1 -- package.json 2>/dev/null || true
-          PREVIOUS=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
-          git checkout HEAD -- package.json
-          if [ "$CURRENT" != "$PREVIOUS" ]; then
+          NAME=$(node -p "require('./package.json').name")
+          # Look up the exact version on npm. Empty result means it is not
+          # published yet, so we publish. This covers both a freshly bumped
+          # version and retrying after a previously failed launch.
+          PUBLISHED=$(npm view "$NAME@$CURRENT" version 2>/dev/null || echo "")
+          if [ "$PUBLISHED" != "$CURRENT" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "version=$CURRENT" >> $GITHUB_OUTPUT
           else
@@ -299,24 +337,33 @@ jobs:
       - name: "[solid] Create Git tag"
         if: steps.solid-check.outputs.changed == 'true'
         run: |
+          TAG="@simple-table/solid@${{ steps.solid-check.outputs.version }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "@simple-table/solid@${{ steps.solid-check.outputs.version }}" -m "Release @simple-table/solid@${{ steps.solid-check.outputs.version }}"
-          git push origin "@simple-table/solid@${{ steps.solid-check.outputs.version }}"
+          # Idempotent: skip if the tag already exists on origin (e.g. when a
+          # prior run published but failed before/after tagging).
+          if git ls-remote --tags origin "refs/tags/$TAG" | grep -q "refs/tags/$TAG"; then
+            echo "Tag $TAG already exists on origin, skipping."
+          else
+            git tag -a "$TAG" -m "Release $TAG"
+            git push origin "$TAG"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # ─── @simple-table/angular ───────────────────────────────────────────────
 
-      - name: "[angular] Check version changed"
+      - name: "[angular] Check version needs publishing"
         id: angular-check
         working-directory: packages/angular
         run: |
           CURRENT=$(node -p "require('./package.json').version")
-          git checkout HEAD~1 -- package.json 2>/dev/null || true
-          PREVIOUS=$(node -p "require('./package.json').version" 2>/dev/null || echo "0.0.0")
-          git checkout HEAD -- package.json
-          if [ "$CURRENT" != "$PREVIOUS" ]; then
+          NAME=$(node -p "require('./package.json').name")
+          # Look up the exact version on npm. Empty result means it is not
+          # published yet, so we publish. This covers both a freshly bumped
+          # version and retrying after a previously failed launch.
+          PUBLISHED=$(npm view "$NAME@$CURRENT" version 2>/dev/null || echo "")
+          if [ "$PUBLISHED" != "$CURRENT" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "version=$CURRENT" >> $GITHUB_OUTPUT
           else
@@ -344,10 +391,17 @@ jobs:
       - name: "[angular] Create Git tag"
         if: steps.angular-check.outputs.changed == 'true'
         run: |
+          TAG="@simple-table/angular@${{ steps.angular-check.outputs.version }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "@simple-table/angular@${{ steps.angular-check.outputs.version }}" -m "Release @simple-table/angular@${{ steps.angular-check.outputs.version }}"
-          git push origin "@simple-table/angular@${{ steps.angular-check.outputs.version }}"
+          # Idempotent: skip if the tag already exists on origin (e.g. when a
+          # prior run published but failed before/after tagging).
+          if git ls-remote --tags origin "refs/tags/$TAG" | grep -q "refs/tags/$TAG"; then
+            echo "Tag $TAG already exists on origin, skipping."
+          else
+            git tag -a "$TAG" -m "Release $TAG"
+            git push origin "$TAG"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
