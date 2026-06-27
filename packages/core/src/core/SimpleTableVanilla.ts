@@ -136,6 +136,15 @@ export class SimpleTableVanilla {
   private externalParentResizeObserver: ResizeObserver | null = null;
   /** Cached visible viewport height of the table inside the external parent. Fed into virtualization. */
   private externalViewportHeight: number = 0;
+  /**
+   * rAF handle for retrying resolution of a configured-but-not-yet-resolvable
+   * `scrollParent` (e.g. a getter pointing at a ref attached on a later commit
+   * than this table's mount). Null when no retry is pending.
+   */
+  private externalScrollRetryRaf: number | null = null;
+  /** Number of resolution retries attempted; bounded so we don't spin forever. */
+  private externalScrollRetryCount: number = 0;
+  private static readonly EXTERNAL_SCROLL_MAX_RETRIES = 60;
   /** True iff the body-container scroll listener is currently attached. */
   private bodyScrollListenerAttached: boolean = false;
   /** Bound mouseleave handler on the body container. */
@@ -619,12 +628,21 @@ export class SimpleTableVanilla {
     const elements = this.domManager.getElements();
     if (!elements?.bodyContainer) return;
 
-    const externalActive = isExternalScrollActive(
-      this.config.scrollParent,
-      this.config.height,
-      this.config.maxHeight,
-    );
-    const nextParent: ResolvedScrollParent = externalActive
+    // A consumer "wants" external scroll mode whenever they pass a `scrollParent`
+    // and don't constrain the table with `height`/`maxHeight`. This is computed
+    // independently of whether the parent resolves *right now*: a getter form
+    // (`() => ref.current?.parentElement`) intentionally resolves on a later
+    // commit than this table's mount, so resolution can legitimately be null on
+    // the first pass and become non-null on a subsequent frame.
+    const noHeight =
+      this.config.height === undefined || this.config.height === null || this.config.height === "";
+    const noMaxHeight =
+      this.config.maxHeight === undefined ||
+      this.config.maxHeight === null ||
+      this.config.maxHeight === "";
+    const wantsExternal = this.config.scrollParent != null && noHeight && noMaxHeight;
+
+    const nextParent: ResolvedScrollParent = wantsExternal
       ? resolveScrollParent(this.config.scrollParent)
       : null;
 
@@ -633,16 +651,51 @@ export class SimpleTableVanilla {
     }
 
     if (nextParent) {
+      this.externalScrollRetryCount = 0;
       this.attachExternalScrollWiring(nextParent);
       this.ensureBodyScrollListenerDetached(elements.bodyContainer);
       this.recomputeExternalViewportHeight();
+    } else if (wantsExternal) {
+      // External scroll requested but the parent isn't resolvable yet. Seed a
+      // provisional viewport (the window height) so virtualization stays ON in
+      // the meantime — otherwise `contentHeight` is undefined and EVERY row
+      // renders at once, which can freeze the page for large datasets. Then
+      // retry resolving the real parent on subsequent frames; once it resolves,
+      // `recomputeExternalViewportHeight` replaces this provisional value.
+      this.ensureBodyScrollListenerDetached(elements.bodyContainer);
+      const provisional = typeof window !== "undefined" ? window.innerHeight : 0;
+      if (provisional > 0 && this.externalViewportHeight !== provisional) {
+        this.externalViewportHeight = provisional;
+        this.dimensionManager?.updateConfig({ externalViewportHeight: provisional });
+      }
+      this.scheduleExternalScrollParentRetry();
     } else {
+      this.externalScrollRetryCount = 0;
       this.ensureBodyScrollListenerAttached(elements.bodyContainer);
       this.externalViewportHeight = 0;
       if (this.dimensionManager) {
         this.dimensionManager.updateConfig({ externalViewportHeight: undefined });
       }
     }
+  }
+
+  /**
+   * Retry resolving a configured `scrollParent` on the next animation frame.
+   * Used when the parent (typically a getter pointing at a ref) was not yet
+   * resolvable when external wiring last ran. Bounded by
+   * {@link SimpleTableVanilla.EXTERNAL_SCROLL_MAX_RETRIES} so a permanently
+   * unresolvable parent doesn't spin forever.
+   */
+  private scheduleExternalScrollParentRetry(): void {
+    if (this.externalScrollRetryRaf !== null) return;
+    if (this.externalScrollRetryCount >= SimpleTableVanilla.EXTERNAL_SCROLL_MAX_RETRIES) return;
+    if (typeof requestAnimationFrame === "undefined") return;
+    this.externalScrollRetryRaf = requestAnimationFrame(() => {
+      this.externalScrollRetryRaf = null;
+      if (!this.mounted) return;
+      this.externalScrollRetryCount++;
+      this.syncExternalScrollWiring();
+    });
   }
 
   private ensureBodyScrollListenerAttached(bodyContainer: HTMLElement): void {
@@ -983,10 +1036,16 @@ export class SimpleTableVanilla {
       rowSelectionManager: this.rowSelectionManager,
       rowStateMap: this.rowStateMap,
       positionOnlyBody: this._positionOnlyBody,
+      // Drives the virtualization window (calculateContentHeight) in external
+      // scroll mode. Gate purely on a positive cached viewport — NOT on
+      // `resolvedScrollParent` — so the provisional viewport seeded before a
+      // late-resolving `scrollParent` getter attaches still enables
+      // virtualization. Without this, the first render before the parent
+      // resolves has no content height and renders every row at once.
+      // `externalViewportHeight` is reset to 0 whenever external mode is off,
+      // so `> 0` already excludes the internal-scroll case.
       externalViewportHeight:
-        this.resolvedScrollParent && this.externalViewportHeight > 0
-          ? this.externalViewportHeight
-          : undefined,
+        this.externalViewportHeight > 0 ? this.externalViewportHeight : undefined,
       onRender: () => this.render("resizeHandler-onRender"),
       setIsResizing: (value: boolean) => {
         this.isResizing = value;
@@ -1452,6 +1511,10 @@ export class SimpleTableVanilla {
     if (this.scrollEndTimeoutId !== null) {
       clearTimeout(this.scrollEndTimeoutId);
       this.scrollEndTimeoutId = null;
+    }
+    if (this.externalScrollRetryRaf !== null) {
+      cancelAnimationFrame(this.externalScrollRetryRaf);
+      this.externalScrollRetryRaf = null;
     }
 
     this.detachExternalScrollWiring();
