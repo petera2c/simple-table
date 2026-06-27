@@ -22,11 +22,21 @@ export interface CreateBooleanFilterOptions {
 export const createBooleanFilter = (options: CreateBooleanFilterOptions) => {
   let { header, currentFilter, onApplyFilter, onClearFilter, containerRef, mainBodyRef } = options;
 
-  let selectedOperator: BooleanFilterOperator =
-    (currentFilter?.operator as BooleanFilterOperator) || "equals";
-  let filterValue = currentFilter?.value !== undefined ? String(currentFilter.value) : "true";
+  const availableOperators = getAvailableOperators(
+    "boolean",
+    header.filterOperators
+  ) as BooleanFilterOperator[];
 
-  const availableOperators = getAvailableOperators("boolean") as BooleanFilterOperator[];
+  const defaultOperator: BooleanFilterOperator = availableOperators.includes("equals")
+    ? "equals"
+    : availableOperators[0];
+
+  let selectedOperator: BooleanFilterOperator =
+    (currentFilter?.operator as BooleanFilterOperator) || defaultOperator;
+  if (!availableOperators.includes(selectedOperator)) {
+    selectedOperator = defaultOperator;
+  }
+  let filterValue = currentFilter?.value !== undefined ? String(currentFilter.value) : "true";
 
   const container = document.createElement("div");
   container.className = "st-filter-container";
@@ -128,7 +138,10 @@ export const createBooleanFilter = (options: CreateBooleanFilterOptions) => {
   const update = (newOptions: Partial<CreateBooleanFilterOptions>) => {
     if (newOptions.currentFilter !== undefined) {
       currentFilter = newOptions.currentFilter;
-      selectedOperator = (currentFilter?.operator as BooleanFilterOperator) || "equals";
+      selectedOperator = (currentFilter?.operator as BooleanFilterOperator) || defaultOperator;
+      if (!availableOperators.includes(selectedOperator)) {
+        selectedOperator = defaultOperator;
+      }
       filterValue = currentFilter?.value !== undefined ? String(currentFilter.value) : "true";
       operatorSelect.update({ value: selectedOperator });
       if (valueSelect) {

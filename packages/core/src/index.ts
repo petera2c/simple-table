@@ -32,7 +32,16 @@ import type { TableAPI, SetHeaderRenameProps, ExportToCSVProps } from "./types/T
 import type TableRowProps from "./types/TableRowProps";
 import type Theme from "./types/Theme";
 import type UpdateDataProps from "./types/UpdateCellProps";
-import type { FilterCondition, TableFilterState } from "./types/FilterTypes";
+import type {
+  FilterCondition,
+  TableFilterState,
+  FilterOperator,
+  StringFilterOperator,
+  NumberFilterOperator,
+  BooleanFilterOperator,
+  DateFilterOperator,
+  EnumFilterOperator,
+} from "./types/FilterTypes";
 import type {
   QuickFilterConfig,
   QuickFilterGetter,
@@ -117,6 +126,12 @@ export type {
   ExportValueGetter,
   ExportValueProps,
   FilterCondition,
+  FilterOperator,
+  StringFilterOperator,
+  NumberFilterOperator,
+  BooleanFilterOperator,
+  DateFilterOperator,
+  EnumFilterOperator,
   FooterRendererProps,
   FooterPosition,
   GetRowId,

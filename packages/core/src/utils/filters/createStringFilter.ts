@@ -23,11 +23,21 @@ export interface CreateStringFilterOptions {
 export const createStringFilter = (options: CreateStringFilterOptions) => {
   let { header, currentFilter, onApplyFilter, onClearFilter, containerRef, mainBodyRef } = options;
 
-  let selectedOperator: StringFilterOperator =
-    (currentFilter?.operator as StringFilterOperator) || "contains";
-  let filterValue = String(currentFilter?.value || "");
+  const availableOperators = getAvailableOperators(
+    "string",
+    header.filterOperators
+  ) as StringFilterOperator[];
 
-  const availableOperators = getAvailableOperators("string") as StringFilterOperator[];
+  const defaultOperator: StringFilterOperator = availableOperators.includes("contains")
+    ? "contains"
+    : availableOperators[0];
+
+  let selectedOperator: StringFilterOperator =
+    (currentFilter?.operator as StringFilterOperator) || defaultOperator;
+  if (!availableOperators.includes(selectedOperator)) {
+    selectedOperator = defaultOperator;
+  }
+  let filterValue = String(currentFilter?.value || "");
 
   const container = document.createElement("div");
   container.className = "st-filter-container";
@@ -122,7 +132,10 @@ export const createStringFilter = (options: CreateStringFilterOptions) => {
   const update = (newOptions: Partial<CreateStringFilterOptions>) => {
     if (newOptions.currentFilter !== undefined) {
       currentFilter = newOptions.currentFilter;
-      selectedOperator = (currentFilter?.operator as StringFilterOperator) || "contains";
+      selectedOperator = (currentFilter?.operator as StringFilterOperator) || defaultOperator;
+      if (!availableOperators.includes(selectedOperator)) {
+        selectedOperator = defaultOperator;
+      }
       filterValue = String(currentFilter?.value || "");
       operatorSelect.update({ value: selectedOperator });
       if (filterInput) {

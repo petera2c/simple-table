@@ -73,6 +73,41 @@ const COLUMN_FILTERING_PROPS: PropInfo[] = [
   ]
 }`,
   },
+  {
+    key: "filterOperators",
+    name: "HeaderObject.filterOperators",
+    required: false,
+    description:
+      "Restrict which filter operators appear in a column's filter dropdown. Only operators valid for the column's type are honored, and they appear in the order provided. When omitted, all operators for the column type are shown. Has no effect on enum columns, which use a checkbox value picker instead of an operator dropdown.",
+    type: "FilterOperator[]",
+    example: `// Limit a string column to "Contains" and "Equals"
+{
+  accessor: "name",
+  label: "Full Name",
+  type: "string",
+  filterable: true,
+  filterOperators: ["contains", "equals"]
+}
+
+// Limit a number column to range-based comparisons
+{
+  accessor: "salary",
+  label: "Salary",
+  type: "number",
+  filterable: true,
+  filterOperators: ["greaterThan", "lessThan", "between"]
+}
+
+// If the default operator is excluded, the first
+// allowed operator becomes the default selection
+{
+  accessor: "email",
+  label: "Email",
+  type: "string",
+  filterable: true,
+  filterOperators: ["startsWith", "endsWith"]
+}`,
+  },
 ];
 
 const EXTERNAL_FILTERING_PROPS: PropInfo[] = [
@@ -171,7 +206,63 @@ const ColumnFilteringContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.45 }}
+      >
+        Limiting Filter Operators
+      </motion.h2>
+
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.5 }}
+      >
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+          By default, each filterable column exposes every operator available for its data type. Use
+          the{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+            filterOperators
+          </code>{" "}
+          property to hide or limit the operators shown in a column&apos;s filter dropdown. This is
+          useful when only certain comparisons make sense for a column &mdash; for example,
+          restricting a text column to{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+            contains
+          </code>{" "}
+          and{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+            equals
+          </code>
+          .
+        </p>
+
+        <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 mb-4 space-y-2">
+          <li>
+            Operators appear in the <strong>order you provide</strong> them.
+          </li>
+          <li>
+            Operators that aren&apos;t valid for the column&apos;s{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+              type
+            </code>{" "}
+            are ignored.
+          </li>
+          <li>
+            If the column&apos;s default operator is excluded, the first allowed operator becomes the
+            default selection.
+          </li>
+          <li>
+            Enum columns are unaffected, since they use a checkbox value picker instead of an
+            operator dropdown.
+          </li>
+        </ul>
+      </motion.div>
+
+      <motion.h2
+        className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.55 }}
       >
         External Filtering
       </motion.h2>

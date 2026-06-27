@@ -684,3 +684,113 @@ export const EnumFilterMoreThan10OptionsShowsSearch = {
     expect(searchInput).toBeTruthy();
   },
 };
+
+// ============================================================================
+// TEST 10: LIMIT FILTER OPERATORS VIA filterOperators
+// ============================================================================
+
+export const LimitFilterOperators = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      {
+        accessor: "name",
+        label: "Name",
+        width: 200,
+        type: "string",
+        filterable: true,
+        filterOperators: ["contains", "equals"],
+      },
+      {
+        accessor: "age",
+        label: "Age",
+        width: 120,
+        type: "number",
+        filterable: true,
+        // "contains" is invalid for numbers and is ignored; "between" stays
+        filterOperators: ["greaterThan", "lessThan", "between", "contains"],
+      },
+    ];
+    const { wrapper, h2 } = renderVanillaTable(headers, createFilterableData(), { height: "400px" });
+    h2.textContent = "Limit Filter Operators";
+    addParagraph(wrapper, "Name allows only Contains/Equals; Age allows only range operators");
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    // Open the Name column filter dropdown
+    const nameFilterIcon = canvasElement.querySelector(
+      '.st-header-cell[data-accessor="name"] .st-icon-container',
+    ) as HTMLElement | null;
+    expect(nameFilterIcon).toBeTruthy();
+    nameFilterIcon!.click();
+    await new Promise((r) => setTimeout(r, 300));
+
+    // The operator select trigger should default to "Contains"
+    const operatorTrigger = document.body.querySelector(
+      ".st-custom-select-trigger",
+    ) as HTMLButtonElement | null;
+    expect(operatorTrigger).toBeTruthy();
+    expect(operatorTrigger?.textContent?.trim()).toContain("Contains");
+
+    // Open the operator list and verify only the two allowed operators appear, in order
+    operatorTrigger!.click();
+    await new Promise((r) => setTimeout(r, 200));
+
+    const optionEls = Array.from(
+      document.body.querySelectorAll(".st-custom-select-option"),
+    ) as HTMLElement[];
+    const optionLabels = optionEls.map((el) => el.textContent?.trim());
+    expect(optionLabels).toEqual(["Contains", "Equals"]);
+  },
+};
+
+// ============================================================================
+// TEST 11: filterOperators FALLS BACK WHEN DEFAULT OPERATOR IS EXCLUDED
+// ============================================================================
+
+export const LimitFilterOperatorsFallbackDefault = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      {
+        accessor: "name",
+        label: "Name",
+        width: 200,
+        type: "string",
+        filterable: true,
+        // Default "contains" is excluded -> first allowed operator is used
+        filterOperators: ["startsWith", "endsWith"],
+      },
+    ];
+    const { wrapper, h2 } = renderVanillaTable(headers, createFilterableData(), { height: "400px" });
+    h2.textContent = "Filter Operators Default Fallback";
+    addParagraph(wrapper, "Name defaults to 'Starts with' since 'Contains' is excluded");
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    const nameFilterIcon = canvasElement.querySelector(
+      '.st-header-cell[data-accessor="name"] .st-icon-container',
+    ) as HTMLElement | null;
+    expect(nameFilterIcon).toBeTruthy();
+    nameFilterIcon!.click();
+    await new Promise((r) => setTimeout(r, 300));
+
+    const operatorTrigger = document.body.querySelector(
+      ".st-custom-select-trigger",
+    ) as HTMLButtonElement | null;
+    expect(operatorTrigger).toBeTruthy();
+    expect(operatorTrigger?.textContent?.trim()).toContain("Starts with");
+
+    operatorTrigger!.click();
+    await new Promise((r) => setTimeout(r, 200));
+
+    const optionLabels = Array.from(
+      document.body.querySelectorAll(".st-custom-select-option"),
+    ).map((el) => el.textContent?.trim());
+    expect(optionLabels).toEqual(["Starts with", "Ends with"]);
+  },
+};

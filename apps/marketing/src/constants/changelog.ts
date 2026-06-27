@@ -11,6 +11,39 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v3_8_4: ChangelogEntry = {
+  version: "3.8.4",
+  date: "2026-06-27",
+  title: "Bug fixes",
+  description: "Scroll, virtualization, and render bug fixes.",
+  changes: [
+    {
+      type: "bugfix",
+      description: "maxHeight scrolls with empty server-side rows.",
+    },
+    {
+      type: "bugfix",
+      description: "Custom footers now fetch server-side pages.",
+    },
+    {
+      type: "bugfix",
+      description: "Column virtualization no longer renders every column.",
+    },
+    {
+      type: "bugfix",
+      description: "External scroll resolves late-mounting parents.",
+    },
+    {
+      type: "improvement",
+      description: "Cells skip rebuilds when inputs are unchanged.",
+    },
+    {
+      type: "feature",
+      description: "Limit per-column filter operators.",
+    },
+  ],
+};
+
 export const v3_8_3: ChangelogEntry = {
   version: "3.8.3",
   date: "2026-06-25",
@@ -1894,6 +1927,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_8_4,
   v3_8_3,
   v3_8_1,
   v3_8_0,

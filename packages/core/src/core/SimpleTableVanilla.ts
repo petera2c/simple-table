@@ -479,7 +479,13 @@ export class SimpleTableVanilla {
       rowHeight: this.customTheme.rowHeight,
       height: this.config.height,
       maxHeight: this.config.maxHeight,
-      totalRowCount: this.localRows.length,
+      // For server-side pagination the local rows are just the current page (and
+      // are often empty on the first mount while the page is loading), so the
+      // full data size lives in `totalRowCount`. Mirror RenderOrchestrator's
+      // height math (`config.totalRowCount ?? rows.length`) so the root is
+      // bounded — and the body gets an inner scrollbar — once the data overflows
+      // maxHeight, regardless of how many rows are present locally.
+      totalRowCount: this.config.totalRowCount ?? this.localRows.length,
       footerHeight:
         (this.config.shouldPaginate || this.config.footerRenderer) && !this.config.hideFooter
           ? this.customTheme.footerHeight
@@ -1372,6 +1378,19 @@ export class SimpleTableVanilla {
 
       // Re-fit auto-size columns against the new data (content width may change).
       this.autoSizeAccessors.forEach((accessor) => this.pendingAutoSize.add(accessor));
+    }
+
+    if (config.rows !== undefined || config.totalRowCount !== undefined) {
+      // The DimensionManager owns `contentHeight`, which gates the root between a
+      // fixed height and `height: auto` (and therefore whether the body gets an
+      // inner scrollbar). It must track the same row count as the height math in
+      // RenderOrchestrator. Without this, a serverSidePagination table that
+      // mounts with an empty rows array stays stuck on its initial (0-row) count:
+      // once the first page loads and overflows maxHeight, the root never becomes
+      // bounded, so rows and the footer get clipped instead of scrolling.
+      this.dimensionManager?.updateConfig({
+        totalRowCount: this.config.totalRowCount ?? this.localRows.length,
+      });
     }
 
     if (config.defaultHeaders !== undefined) {

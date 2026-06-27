@@ -7,6 +7,7 @@ import { HeaderRenderer } from "./HeaderRendererProps";
 import CellValue from "./CellValue";
 import { SimpleTableProps } from "./SimpleTableProps";
 import { QuickFilterGetter } from "./QuickFilterTypes";
+import type { FilterOperator } from "./FilterTypes";
 
 // Accessor can be:
 // - A simple key of Row (e.g., "name")
@@ -107,6 +108,19 @@ type HeaderObject = {
   expandable?: boolean; // This is for row grouping
   exportValueGetter?: ExportValueGetter; // Custom function for CSV export values
   filterable?: boolean;
+  /**
+   * Restricts which filter operators are shown in this column's filter dropdown.
+   * Only operators valid for the column's `type` are honored, and they appear in
+   * the order provided here. When omitted, all operators for the column type are
+   * shown. Has no effect on `enum` columns (which use a checkbox value picker
+   * instead of an operator dropdown).
+   *
+   * @example
+   * // String column limited to "contains" and "equals"
+   * { accessor: "name", type: "string", filterable: true,
+   *   filterOperators: ["contains", "equals"] }
+   */
+  filterOperators?: FilterOperator[];
   headerRenderer?: HeaderRenderer;
   hide?: boolean;
   isEditable?: boolean; // This is used to determine if the column is editable

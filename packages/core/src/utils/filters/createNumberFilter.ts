@@ -24,13 +24,23 @@ export interface CreateNumberFilterOptions {
 export const createNumberFilter = (options: CreateNumberFilterOptions) => {
   let { header, currentFilter, onApplyFilter, onClearFilter, containerRef, mainBodyRef } = options;
 
+  const availableOperators = getAvailableOperators(
+    "number",
+    header.filterOperators
+  ) as NumberFilterOperator[];
+
+  const defaultOperator: NumberFilterOperator = availableOperators.includes("equals")
+    ? "equals"
+    : availableOperators[0];
+
   let selectedOperator: NumberFilterOperator =
-    (currentFilter?.operator as NumberFilterOperator) || "equals";
+    (currentFilter?.operator as NumberFilterOperator) || defaultOperator;
+  if (!availableOperators.includes(selectedOperator)) {
+    selectedOperator = defaultOperator;
+  }
   let filterValue = String(currentFilter?.value || "");
   let filterValueFrom = String(currentFilter?.values?.[0] || "");
   let filterValueTo = String(currentFilter?.values?.[1] || "");
-
-  const availableOperators = getAvailableOperators("number") as NumberFilterOperator[];
 
   const container = document.createElement("div");
   container.className = "st-filter-container";
@@ -180,7 +190,10 @@ export const createNumberFilter = (options: CreateNumberFilterOptions) => {
   const update = (newOptions: Partial<CreateNumberFilterOptions>) => {
     if (newOptions.currentFilter !== undefined) {
       currentFilter = newOptions.currentFilter;
-      selectedOperator = (currentFilter?.operator as NumberFilterOperator) || "equals";
+      selectedOperator = (currentFilter?.operator as NumberFilterOperator) || defaultOperator;
+      if (!availableOperators.includes(selectedOperator)) {
+        selectedOperator = defaultOperator;
+      }
       filterValue = String(currentFilter?.value || "");
       filterValueFrom = String(currentFilter?.values?.[0] || "");
       filterValueTo = String(currentFilter?.values?.[1] || "");

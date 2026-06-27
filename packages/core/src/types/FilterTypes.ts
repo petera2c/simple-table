@@ -95,53 +95,69 @@ export const FILTER_OPERATOR_LABELS: Record<FilterOperator, string> = {
   isNotEmpty: "Is not empty",
 };
 
-// Helper function to get available operators for a column type
+// Default operators supported by each column type
+const DEFAULT_OPERATORS_BY_TYPE: Record<
+  "string" | "number" | "boolean" | "date" | "enum",
+  FilterOperator[]
+> = {
+  string: [
+    "equals",
+    "notEquals",
+    "contains",
+    "notContains",
+    "startsWith",
+    "endsWith",
+    "isEmpty",
+    "isNotEmpty",
+  ],
+  number: [
+    "equals",
+    "notEquals",
+    "greaterThan",
+    "lessThan",
+    "greaterThanOrEqual",
+    "lessThanOrEqual",
+    "between",
+    "notBetween",
+    "isEmpty",
+    "isNotEmpty",
+  ],
+  boolean: ["equals", "isEmpty", "isNotEmpty"],
+  date: ["equals", "notEquals", "before", "after", "between", "notBetween", "isEmpty", "isNotEmpty"],
+  enum: ["in", "notIn", "isEmpty", "isNotEmpty"],
+};
+
+const DEFAULT_FALLBACK_OPERATORS: FilterOperator[] = [
+  "equals",
+  "notEquals",
+  "isEmpty",
+  "isNotEmpty",
+];
+
+/**
+ * Returns the list of operators a column should expose in its filter UI.
+ *
+ * When `allowedOperators` is provided, the result is restricted to that list,
+ * preserving the consumer-specified order. Operators that aren't valid for the
+ * given column type are ignored. If the restriction would leave no valid
+ * operators (e.g. a misconfiguration), the full default list for the column
+ * type is returned so the filter UI never renders an empty dropdown.
+ */
 export const getAvailableOperators = (
-  columnType: "string" | "number" | "boolean" | "date" | "enum"
+  columnType: "string" | "number" | "boolean" | "date" | "enum",
+  allowedOperators?: FilterOperator[]
 ): FilterOperator[] => {
-  switch (columnType) {
-    case "string":
-      return [
-        "equals",
-        "notEquals",
-        "contains",
-        "notContains",
-        "startsWith",
-        "endsWith",
-        "isEmpty",
-        "isNotEmpty",
-      ];
-    case "number":
-      return [
-        "equals",
-        "notEquals",
-        "greaterThan",
-        "lessThan",
-        "greaterThanOrEqual",
-        "lessThanOrEqual",
-        "between",
-        "notBetween",
-        "isEmpty",
-        "isNotEmpty",
-      ];
-    case "boolean":
-      return ["equals", "isEmpty", "isNotEmpty"];
-    case "date":
-      return [
-        "equals",
-        "notEquals",
-        "before",
-        "after",
-        "between",
-        "notBetween",
-        "isEmpty",
-        "isNotEmpty",
-      ];
-    case "enum":
-      return ["in", "notIn", "isEmpty", "isNotEmpty"];
-    default:
-      return ["equals", "notEquals", "isEmpty", "isNotEmpty"];
+  const defaults = DEFAULT_OPERATORS_BY_TYPE[columnType] ?? DEFAULT_FALLBACK_OPERATORS;
+
+  if (allowedOperators && allowedOperators.length > 0) {
+    const validForType = new Set(defaults);
+    const restricted = allowedOperators.filter((op) => validForType.has(op));
+    if (restricted.length > 0) {
+      return restricted;
+    }
   }
+
+  return defaults;
 };
 
 // Helper function to check if operator requires single value

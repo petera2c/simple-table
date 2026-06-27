@@ -26,13 +26,23 @@ export interface CreateDateFilterOptions {
 export const createDateFilter = (options: CreateDateFilterOptions) => {
   let { header, currentFilter, onApplyFilter, onClearFilter, containerRef, mainBodyRef } = options;
 
+  const availableOperators = getAvailableOperators(
+    "date",
+    header.filterOperators
+  ) as DateFilterOperator[];
+
+  const defaultOperator: DateFilterOperator = availableOperators.includes("equals")
+    ? "equals"
+    : availableOperators[0];
+
   let selectedOperator: DateFilterOperator =
-    (currentFilter?.operator as DateFilterOperator) || "equals";
+    (currentFilter?.operator as DateFilterOperator) || defaultOperator;
+  if (!availableOperators.includes(selectedOperator)) {
+    selectedOperator = defaultOperator;
+  }
   let filterValue = currentFilter?.value ? String(currentFilter.value) : "";
   let filterValueFrom = currentFilter?.values?.[0] ? String(currentFilter.values[0]) : "";
   let filterValueTo = String(currentFilter?.values?.[1] || "");
-
-  const availableOperators = getAvailableOperators("date") as DateFilterOperator[];
 
   const container = document.createElement("div");
   container.className = "st-filter-container";
@@ -337,7 +347,10 @@ export const createDateFilter = (options: CreateDateFilterOptions) => {
   const update = (newOptions: Partial<CreateDateFilterOptions>) => {
     if (newOptions.currentFilter !== undefined) {
       currentFilter = newOptions.currentFilter;
-      selectedOperator = (currentFilter?.operator as DateFilterOperator) || "equals";
+      selectedOperator = (currentFilter?.operator as DateFilterOperator) || defaultOperator;
+      if (!availableOperators.includes(selectedOperator)) {
+        selectedOperator = defaultOperator;
+      }
       filterValue = currentFilter?.value ? String(currentFilter.value) : "";
       filterValueFrom = currentFilter?.values?.[0] ? String(currentFilter.values[0]) : "";
       filterValueTo = String(currentFilter?.values?.[1] || "");

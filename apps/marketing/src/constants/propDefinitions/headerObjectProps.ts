@@ -157,6 +157,19 @@ sortingOrder: ['desc', null]`,
     example: `filterable: true`,
   },
   {
+    key: "filterOperators",
+    name: "filterOperators",
+    required: false,
+    description:
+      "Restrict which filter operators appear in this column's filter dropdown. Only operators valid for the column's type are honored, and they are shown in the order provided. When omitted, all operators for the column type are shown. Has no effect on enum columns (which use a checkbox value picker instead of an operator dropdown).",
+    type: "FilterOperator[]",
+    example: `// Only allow "contains" and "equals" on a string column
+filterOperators: ['contains', 'equals']
+
+// Limit a number column to range-based comparisons
+filterOperators: ['greaterThan', 'lessThan', 'between']`,
+  },
+  {
     key: "quickFilterable",
     name: "quickFilterable",
     required: false,
