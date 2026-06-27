@@ -35,6 +35,17 @@ export const cellLiveRefMap = new WeakMap<HTMLElement, CellLiveRef>();
 // for a different row across sort/scroll without leaving stale entries behind.
 const cellRegistryKeyMap = new WeakMap<HTMLElement, string>();
 
+// Memoizes the inputs that produced a cell's current content so
+// `updateBodyCellElement` can skip the (potentially expensive) content rebuild
+// — including re-invoking custom cellRenderers — when nothing relevant changed.
+interface CellContentKey {
+  row: unknown;
+  value: unknown;
+  theme: unknown;
+  skeleton: boolean;
+}
+const contentKeyMap = new WeakMap<HTMLElement, CellContentKey>();
+
 // Track current hovered row for cleanup
 let currentHoveredRowId: string | null = null;
 
@@ -284,6 +295,17 @@ export const createBodyCellElement = (
 
   renderCellContent();
 
+  // Seed the content memo key so the first updateBodyCellElement can skip the
+  // rebuild when the cell's inputs haven't changed since creation.
+  if (!cell.header.expandable) {
+    contentKeyMap.set(cellElement, {
+      row: cell.row,
+      value: getNestedValue(row, header.accessor),
+      theme: context.theme,
+      skeleton: Boolean(context.isLoading || cell.tableRow.isLoadingSkeleton),
+    });
+  }
+
   // Mutable row + tableRow ref so handlers (and the cell registry's
   // `updateContent`) always read the latest data even when this DOM cell is
   // reused across renders (sort, scroll). Set before registering so the
@@ -306,6 +328,18 @@ export const createBodyCellElement = (
 
             // Re-render cell content
             renderCellContent();
+
+            // Keep the content memo coherent so the next full render doesn't
+            // treat this freshly-rendered value as stale and rebuild it again.
+            if (!header.expandable) {
+              const liveContext = cellLiveRefMap.get(cellElement)?.context ?? context;
+              contentKeyMap.set(cellElement, {
+                row: liveRef.row,
+                value: getNestedValue(liveRef.row, header.accessor),
+                theme: liveContext.theme,
+                skeleton: Boolean(liveContext.isLoading || liveRef.tableRow.isLoadingSkeleton),
+              });
+            }
 
             // Add update flash animation
             if (context.cellUpdateFlash) {
@@ -570,8 +604,37 @@ export const updateBodyCellElement = (
   if (!cell.header.expandable) {
     const contentSpan = cellElement.querySelector(".st-cell-content") as HTMLElement;
     if (contentSpan) {
-      contentSpan.innerHTML = "";
-      createCellContent(cell, context, contentSpan);
+      // Skip the content rebuild (and re-invocation of potentially expensive
+      // custom cellRenderers) when none of the inputs createCellContent depends
+      // on have changed. We key on the row object reference (any immutable data
+      // change yields a new reference), the resolved cell value, the active
+      // theme, and the loading/skeleton state. This makes layout/dimension/
+      // scroll-end driven re-renders cheap: cells that are merely repositioned
+      // keep their existing DOM instead of being torn down and rebuilt.
+      //
+      // In-place live updates (cellRegistry.updateContent → setNestedValue) take
+      // a separate render path and also change the resolved value, so they are
+      // never incorrectly skipped here.
+      const prevKey = contentKeyMap.get(cellElement);
+      const newValue = getNestedValue(cell.row, cell.header.accessor);
+      const isSkeleton = Boolean(context.isLoading || cell.tableRow.isLoadingSkeleton);
+      const contentUnchanged =
+        prevKey !== undefined &&
+        prevKey.row === cell.row &&
+        prevKey.value === newValue &&
+        prevKey.theme === context.theme &&
+        prevKey.skeleton === isSkeleton;
+
+      if (!contentUnchanged) {
+        contentKeyMap.set(cellElement, {
+          row: cell.row,
+          value: newValue,
+          theme: context.theme,
+          skeleton: isSkeleton,
+        });
+        contentSpan.innerHTML = "";
+        createCellContent(cell, context, contentSpan);
+      }
     }
   }
 };
