@@ -48,7 +48,6 @@ import { RenderOrchestrator, RenderContext, RenderState } from "./rendering/Rend
 import { TableAPIImpl, TableAPIContext } from "./api/TableAPIImpl";
 import {
   getExternalScrollMetrics,
-  isExternalScrollActive,
   resolveScrollParent,
   type ResolvedScrollParent,
 } from "../utils/externalScroll";
