@@ -34,6 +34,10 @@ export const v3_8_4: ChangelogEntry = {
       description: "External scroll resolves late-mounting parents.",
     },
     {
+      type: "bugfix",
+      description: "External scroll fills initial viewport.",
+    },
+    {
       type: "improvement",
       description: "Cells skip rebuilds when inputs are unchanged.",
     },

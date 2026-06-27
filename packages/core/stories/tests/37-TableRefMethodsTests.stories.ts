@@ -204,6 +204,39 @@ export const ToggleColumnEditorApplyColumnVisibility = {
   },
 };
 
+export const ToggleColumnEditorNoArgsRepeated = {
+  render: () => {
+    const result = renderVanillaTable(headers, data(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "300px",
+      editColumns: true,
+    });
+    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const table = getTable(canvasElement);
+    // Grab the API once (mirrors holding a stable tableRef.current) and toggle
+    // with no arguments repeatedly: open -> close -> open.
+    const api = table.getAPI();
+
+    api.toggleColumnEditor();
+    await waitUntil(() => !!canvasElement.querySelector(".st-column-editor-popout"));
+    expect(canvasElement.querySelector(".st-column-editor-popout")).toBeTruthy();
+
+    // Second no-arg call should toggle the editor closed.
+    api.toggleColumnEditor();
+    await waitUntil(() => !canvasElement.querySelector(".st-column-editor-popout"));
+    expect(canvasElement.querySelector(".st-column-editor-popout")).toBeFalsy();
+
+    // Third no-arg call should toggle it back open.
+    api.toggleColumnEditor();
+    await waitUntil(() => !!canvasElement.querySelector(".st-column-editor-popout"));
+    expect(canvasElement.querySelector(".st-column-editor-popout")).toBeTruthy();
+  },
+};
+
 export const ExpandAllCollapseAllGetExpandedDepths = {
   render: () => {
     const groupHeaders: HeaderObject[] = [
