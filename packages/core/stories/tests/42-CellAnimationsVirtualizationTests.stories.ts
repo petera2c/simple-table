@@ -750,7 +750,7 @@ export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
     // whose source is far off-screen (the ones that get *scaled*) simply aren't
     // in the DOM before the reverse, so a DOM read would never see them.
     const cumulativeLefts = (
-      headers: ReadonlyArray<{ accessor?: string; width?: number }>,
+      headers: ReadonlyArray<{ accessor?: string; width?: string | number }>,
     ): Map<string, { left: number; width: number }> => {
       const map = new Map<string, { left: number; width: number }>();
       let x = 0;
