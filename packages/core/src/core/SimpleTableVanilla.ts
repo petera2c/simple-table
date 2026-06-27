@@ -1628,7 +1628,9 @@ export class SimpleTableVanilla {
       rowStateMap: this.rowStateMap,
       headerRegistry: this.headerRegistry,
       cellRegistry: this.cellRegistry,
-      columnEditorOpen: this.columnEditorOpen,
+      get columnEditorOpen() {
+        return thiz.columnEditorOpen;
+      },
       getCachedFlattenResult: () => this.renderOrchestrator.getCachedFlattenResult(),
       getCachedProcessedResult: () => this.renderOrchestrator.getLastProcessedResult(),
       expandedDepthsManager: this.expandedDepthsManager,

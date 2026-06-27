@@ -218,22 +218,24 @@ export const ToggleColumnEditorNoArgsRepeated = {
     await waitForTable();
     const table = getTable(canvasElement);
     // Grab the API once (mirrors holding a stable tableRef.current) and toggle
-    // with no arguments repeatedly: open -> close -> open.
+    // with no arguments repeatedly: open -> close -> open. The popout element
+    // stays mounted; only the "open" class reflects the editor's open state.
     const api = table.getAPI();
+    const isOpen = () => !!canvasElement.querySelector(".st-column-editor-popout.open");
 
     api.toggleColumnEditor();
-    await waitUntil(() => !!canvasElement.querySelector(".st-column-editor-popout"));
-    expect(canvasElement.querySelector(".st-column-editor-popout")).toBeTruthy();
+    await waitUntil(isOpen);
+    expect(isOpen()).toBe(true);
 
     // Second no-arg call should toggle the editor closed.
     api.toggleColumnEditor();
-    await waitUntil(() => !canvasElement.querySelector(".st-column-editor-popout"));
-    expect(canvasElement.querySelector(".st-column-editor-popout")).toBeFalsy();
+    await waitUntil(() => !isOpen());
+    expect(isOpen()).toBe(false);
 
     // Third no-arg call should toggle it back open.
     api.toggleColumnEditor();
-    await waitUntil(() => !!canvasElement.querySelector(".st-column-editor-popout"));
-    expect(canvasElement.querySelector(".st-column-editor-popout")).toBeTruthy();
+    await waitUntil(isOpen);
+    expect(isOpen()).toBe(true);
   },
 };
 
