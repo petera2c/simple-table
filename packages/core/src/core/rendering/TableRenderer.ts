@@ -468,6 +468,7 @@ export class TableRenderer {
       rowsWithSelectedCells: deps.selectionManager?.getRowsWithSelectedCells() ?? new Set(),
       columnBorders: deps.config.columnBorders ?? false,
       enableRowSelection: deps.config.enableRowSelection,
+      rowSelectionConfig: deps.config.rowSelectionConfig,
       selectedRowCount,
       cellUpdateFlash: deps.config.cellUpdateFlash,
       useOddColumnBackground: deps.config.useOddColumnBackground,
@@ -498,6 +499,9 @@ export class TableRenderer {
       onRowGroupExpand: deps.config.onRowGroupExpand,
       handleRowSelect: (rowId: string, checked: boolean) => {
         deps.rowSelectionManager?.handleRowSelect(rowId, checked);
+      },
+      handleRowClick: (rowId: string, rowIndex: number, shiftKey: boolean, ctrlKey: boolean) => {
+        deps.selectionManager?.handleRowClick(rowId, rowIndex, shiftKey, ctrlKey);
       },
       cellRegistry: deps.cellRegistry,
       getCollapsedRows: () => deps.getCollapsedRows(),
@@ -747,6 +751,7 @@ export class TableRenderer {
           collapsedHeaders: deps.collapsedHeaders,
           customTheme: deps.customTheme,
           editColumns: deps.config.editColumns ?? false,
+          hideToggle: deps.config.columnEditorConfig?.hideToggle ?? false,
           headers: deps.effectiveHeaders,
           rowHeight: deps.customTheme.rowHeight,
           heightOffsets: processedResult.paginatedHeightOffsets,
@@ -963,6 +968,7 @@ export class TableRenderer {
         columnEditorConfig: mergedColumnEditorConfig,
         icons: deps.resolvedIcons,
         essentialAccessors: deps.essentialAccessors,
+        hideToggle: mergedColumnEditorConfig.hideToggle,
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
           if (this.columnEditorInstance) {
@@ -989,6 +995,7 @@ export class TableRenderer {
         columnEditorConfig: mergedColumnEditorConfig,
         icons: deps.resolvedIcons,
         essentialAccessors: deps.essentialAccessors,
+        hideToggle: mergedColumnEditorConfig.hideToggle,
         setHeaders: (newHeaders: HeaderObject[]) => {
           deps.setHeaders(newHeaders);
           if (this.columnEditorInstance) {

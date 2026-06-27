@@ -399,6 +399,15 @@ export const COLUMN_EDITOR_CONFIG_PROPS: PropInfo[] = [
     example: `{ allowColumnPinning: false }`,
   },
   {
+    key: "hideToggle",
+    name: "hideToggle",
+    required: false,
+    description:
+      "Hides the column editor side toggle completely. When true, the editor does not occupy 29.5px layout space and must be opened programmatically via `tableRef.current.toggleColumnEditor()`. Defaults to false.",
+    type: "boolean",
+    example: `{ hideToggle: true }`,
+  },
+  {
     key: "rowRenderer",
     name: "rowRenderer",
     required: false,

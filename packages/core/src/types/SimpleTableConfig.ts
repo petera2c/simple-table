@@ -24,6 +24,7 @@ import { VanillaIconsConfig } from "./IconsConfig";
 import { QuickFilterConfig } from "./QuickFilterTypes";
 import { AnimationsConfig } from "./AnimationsConfig";
 import type { FooterPosition } from "./FooterPosition";
+import { RowSelectionConfig } from "./SimpleTableProps";
 
 export interface SimpleTableConfig {
   animations?: AnimationsConfig;
@@ -95,4 +96,5 @@ export interface SimpleTableConfig {
   useHoverRowBackground?: boolean;
   useOddColumnBackground?: boolean;
   useOddEvenRowBackground?: boolean;
+  rowSelectionConfig?: RowSelectionConfig;
 }

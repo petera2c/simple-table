@@ -446,6 +446,22 @@ export const createBodyCellElement = (
     addTrackedEventListener(cellElement, "click", handleClick);
   }
 
+  // Row selection click handler
+  if (context.enableRowSelection && context.rowSelectionConfig?.enableClickSelection && !isEditing && !isSelectionColumn) {
+    const handleRowSelectionClick = (event: Event) => {
+      const mouseEvent = event as MouseEvent;
+      const target = mouseEvent.target as HTMLElement;
+      if (target.closest(".st-expand-icon-container")) return;
+
+      const clickRi = parseInt(cellElement.getAttribute("data-row-index") ?? String(rowIndex), 10);
+      const clickRid = cellElement.getAttribute("data-row-id");
+      if (clickRi < 0 || clickRid === null) return;
+
+      context.handleRowClick?.(clickRid, clickRi, mouseEvent.shiftKey, mouseEvent.ctrlKey || mouseEvent.metaKey);
+    };
+    addTrackedEventListener(cellElement, "click", handleRowSelectionClick);
+  }
+
   // Row hover handlers - use efficient Map-based tracking
   if (context.useHoverRowBackground) {
     const rowIdKey = String(rowId);

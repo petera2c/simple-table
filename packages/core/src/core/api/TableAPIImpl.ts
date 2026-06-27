@@ -24,6 +24,8 @@ import {
 } from "../../utils/pinnedColumnUtils";
 import { PinnedSectionsState } from "../../types/PinnedSectionsState";
 import { deepClone } from "../../utils/generalUtils";
+import { rowIdToString } from "../../utils/rowUtils";
+import { RowSelectionManager } from "../../managers/RowSelectionManager";
 
 export interface TableAPIContext {
   config: SimpleTableConfig;
@@ -46,6 +48,7 @@ export interface TableAPIContext {
   columnEditorOpen: boolean;
   expandedDepthsManager: any;
   selectionManager: SelectionManager | null;
+  rowSelectionManager: RowSelectionManager | null;
   sortManager: SortManager | null;
   filterManager: FilterManager | null;
   getCachedFlattenResult?: () => FlattenRowsResult | null;
@@ -379,6 +382,27 @@ export class TableAPIImpl {
 
       selectCellRange: (startCell: Cell, endCell: Cell) => {
         context.selectionManager?.selectCellRange(startCell, endCell);
+      },
+
+      toggleRowSelection: (rowId: string, isSelected?: boolean) => {
+        if (context.rowSelectionManager) {
+          const targetState = isSelected !== undefined ? isSelected : !context.rowSelectionManager.isRowSelected(rowId);
+          context.rowSelectionManager.handleRowSelect(rowId, targetState);
+        }
+      },
+
+      getSelectedRows: (): string[] => {
+        if (context.rowSelectionManager) {
+          return Array.from(context.rowSelectionManager.getSelectedRows());
+        }
+        return [];
+      },
+
+      getRow: (rowId: string): any | null => {
+        const flatRow = getFlattenResult().flattenedRows.find(
+          (tr) => rowIdToString(tr.rowId) === rowId
+        );
+        return flatRow ? flatRow.row : null;
       },
     };
   }

@@ -14,6 +14,7 @@ import { ColumnManager, ColumnManagerConfig } from "./ColumnManager";
 import { DimensionManager, DimensionManagerConfig } from "./DimensionManager";
 import { ScrollManager, ScrollManagerConfig } from "./ScrollManager";
 import { SelectionManager, SelectionManagerConfig } from "./SelectionManager";
+import { TableInitializer } from "../core/initialization/TableInitializer";
 
 export interface TableManagerConfig {
   headers: HeaderObject[];
@@ -72,6 +73,7 @@ export class TableManager {
   public selectionManager: SelectionManager;
 
   constructor(config: TableManagerConfig) {
+    config = TableInitializer.resolveConfigDefaults(config);
     this.config = config;
     
     this.state = {
@@ -218,7 +220,7 @@ export class TableManager {
   }
 
   updateConfig(config: Partial<TableManagerConfig>): void {
-    this.config = { ...this.config, ...config };
+    this.config = TableInitializer.resolveConfigDefaults({ ...this.config, ...config });
 
     if (config.headers !== undefined) {
       this.sortManager.updateConfig({ headers: config.headers });

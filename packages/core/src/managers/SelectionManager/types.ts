@@ -3,6 +3,8 @@ import type { Accessor } from "../../types/HeaderObject";
 import type TableRowType from "../../types/TableRow";
 import type Cell from "../../types/Cell";
 import type { CustomTheme } from "../../types/CustomTheme";
+import type { RowSelectionConfig } from "../../types/SimpleTableProps";
+import type { RowSelectionManager } from "../RowSelectionManager";
 
 export const createSetString = ({ rowIndex, colIndex, rowId }: Cell) =>
   `${rowIndex}-${colIndex}-${rowId}`;
@@ -28,4 +30,6 @@ export interface SelectionManagerConfig {
   onSelectionDragEnd?: () => void;
   /** Root element of the table; sync scopes cell queries to this so only this table's cells are updated. */
   tableRoot?: HTMLElement;
+  rowSelectionConfig?: RowSelectionConfig;
+  rowSelectionManager?: RowSelectionManager | null;
 }

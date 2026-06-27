@@ -31,6 +31,8 @@ export interface ColumnEditorConfig {
   rowRenderer?: ColumnEditorRowRenderer;
   /** Custom renderer for the entire column editor panel. Receives pre-built sections (search, list, reset) and headers. */
   customRenderer?: ColumnEditorCustomRenderer;
+  /** Hides the column editor side toggle completely. Default: false */
+  hideToggle?: boolean;
 }
 
 export const DEFAULT_COLUMN_EDITOR_CONFIG: Required<
@@ -40,10 +42,11 @@ export const DEFAULT_COLUMN_EDITOR_CONFIG: Required<
   searchEnabled: true,
   searchPlaceholder: "Search columns...",
   allowColumnPinning: true,
+  hideToggle: false,
 };
 
 /** Column editor config with defaults applied (text, searchEnabled, searchPlaceholder are required) */
 export type MergedColumnEditorConfig = Required<
-  Pick<ColumnEditorConfig, "text" | "searchEnabled" | "searchPlaceholder" | "allowColumnPinning">
+  Pick<ColumnEditorConfig, "text" | "searchEnabled" | "searchPlaceholder" | "allowColumnPinning" | "hideToggle">
 > &
   Pick<ColumnEditorConfig, "searchFunction" | "rowRenderer" | "customRenderer">;

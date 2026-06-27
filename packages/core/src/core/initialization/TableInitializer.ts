@@ -1,4 +1,5 @@
 import { SimpleTableConfig } from "../../types/SimpleTableConfig";
+import { RowSelectionConfig } from "../../types/SimpleTableProps";
 import { CustomTheme, DEFAULT_CUSTOM_THEME } from "../../types/CustomTheme";
 import { DEFAULT_COLUMN_EDITOR_CONFIG } from "../../types/ColumnEditorConfig";
 import { ColumnEditorRowRenderer } from "../../types/ColumnEditorRowRendererProps";
@@ -32,6 +33,7 @@ export interface MergedColumnEditorConfig {
   searchEnabled: boolean;
   searchPlaceholder: string;
   allowColumnPinning: boolean;
+  hideToggle: boolean;
   searchFunction?: (header: HeaderObject, searchText: string) => boolean;
   rowRenderer?: ColumnEditorRowRenderer;
   customRenderer?: ColumnEditorCustomRenderer;
@@ -82,6 +84,9 @@ export class TableInitializer {
       allowColumnPinning:
         config.columnEditorConfig?.allowColumnPinning ??
         DEFAULT_COLUMN_EDITOR_CONFIG.allowColumnPinning,
+      hideToggle:
+        config.columnEditorConfig?.hideToggle ??
+        DEFAULT_COLUMN_EDITOR_CONFIG.hideToggle,
       searchFunction: config.columnEditorConfig?.searchFunction,
       rowRenderer: config.columnEditorConfig?.rowRenderer,
       customRenderer: config.columnEditorConfig?.customRenderer,
@@ -110,5 +115,31 @@ export class TableInitializer {
 
   static getInitialExpandedDepths(config: SimpleTableConfig): Set<number> {
     return initializeExpandedDepths(config.expandAll ?? true, config.rowGrouping);
+  }
+
+  static resolveConfigDefaults<T extends {
+    selectableCells?: boolean;
+    selectableColumns?: boolean;
+    enableRowSelection?: boolean;
+    rowSelectionConfig?: RowSelectionConfig;
+  }>(config: T): T {
+    const resolved = { ...config };
+    if (resolved.selectableCells && resolved.selectableColumns === undefined) {
+      resolved.selectableColumns = true;
+    }
+    if (resolved.enableRowSelection) {
+      const originalConfig = resolved.rowSelectionConfig || {};
+      const showCheckboxes = originalConfig.showCheckboxes ?? true;
+      resolved.rowSelectionConfig = {
+        showCheckboxes,
+        enableClickSelection: originalConfig.enableClickSelection ?? (!showCheckboxes ? true : false),
+        enableKeyboardNavigation: originalConfig.enableKeyboardNavigation ?? (!showCheckboxes ? true : false),
+        mode: originalConfig.mode ?? 'multi',
+      };
+      if (!showCheckboxes) {
+        resolved.selectableCells = false;
+      }
+    }
+    return resolved;
   }
 }
