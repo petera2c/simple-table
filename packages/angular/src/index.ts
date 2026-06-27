@@ -25,6 +25,7 @@ export type {
   AngularLoadingStateRenderer,
   AngularErrorStateRenderer,
   AngularEmptyStateRenderer,
+  AngularRowButton,
 } from "./types";
 
 // Re-export vanilla types consumers need when building column definitions,

@@ -24,6 +24,7 @@ export function buildVanillaConfig(
     headerDropdown,
     columnEditorConfig,
     icons,
+    rowButtons,
     onColumnOrderChange,
     onColumnWidthChange,
     onHeaderEdit,
@@ -162,6 +163,10 @@ export function buildVanillaConfig(
 
   if (icons !== undefined) {
     vanillaConfig.icons = transformIcons(icons);
+  }
+
+  if (rowButtons !== undefined) {
+    vanillaConfig.rowButtons = rowButtons.map((button) => wrap(button) as any);
   }
 
   return vanillaConfig;

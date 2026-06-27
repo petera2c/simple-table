@@ -16,6 +16,7 @@ export type {
   SolidHeaderDropdown,
   SolidColumnEditorRowRenderer,
   SolidColumnEditorCustomRenderer,
+  SolidRowButton,
   SolidLoadingStateRenderer,
   SolidErrorStateRenderer,
   SolidEmptyStateRenderer,

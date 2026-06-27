@@ -16,6 +16,7 @@ export type {
   SvelteHeaderDropdown,
   SvelteColumnEditorRowRenderer,
   SvelteColumnEditorCustomRenderer,
+  SvelteRowButton,
   SvelteLoadingStateRenderer,
   SvelteErrorStateRenderer,
   SvelteEmptyStateRenderer,

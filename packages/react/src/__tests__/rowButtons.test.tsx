@@ -84,7 +84,7 @@ describe("SimpleTable (React adapter) — rowButtons", () => {
               { className: "delete-btn", onClick: () => onDelete(row) },
               "Delete",
             ),
-        ] as never,
+        ],
       }),
     );
 

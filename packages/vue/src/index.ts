@@ -16,6 +16,7 @@ export type {
   VueHeaderDropdown,
   VueColumnEditorRowRenderer,
   VueColumnEditorCustomRenderer,
+  VueRowButton,
   VueLoadingStateRenderer,
   VueErrorStateRenderer,
   VueEmptyStateRenderer,

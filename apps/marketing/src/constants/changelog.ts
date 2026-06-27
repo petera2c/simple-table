@@ -45,6 +45,10 @@ export const v3_8_4: ChangelogEntry = {
       type: "feature",
       description: "Limit per-column filter operators.",
     },
+    {
+      type: "bugfix",
+      description: "toggleColumnEditor() now toggles closed.",
+    },
   ],
 };
 

@@ -15,6 +15,7 @@ import type {
   ColumnEditorRowRendererProps as VanillaColumnEditorRowRendererProps,
   ColumnEditorCustomRendererProps as VanillaColumnEditorCustomRendererProps,
   ColumnEditorConfig,
+  RowButtonProps,
 } from "simple-table-core";
 
 // ─── Renderer prop overrides (React slots are nodes, not DOM IconElement) ─────
@@ -119,6 +120,12 @@ export type ReactColumnEditorCustomRenderer =
   | React.ComponentType<ColumnEditorCustomRendererProps>
   | ((props: ColumnEditorCustomRendererProps) => React.ReactNode);
 
+// Row buttons render per-row action controls. React consumers return JSX
+// (a ReactNode) rather than the DOM `HTMLElement` the vanilla core expects.
+export type ReactRowButton =
+  | React.ComponentType<RowButtonProps>
+  | ((props: RowButtonProps) => React.ReactNode);
+
 // State renderers can be a component (receives props) or a plain ReactNode (static markup)
 export type ReactLoadingStateRenderer =
   | React.ComponentType<LoadingStateRendererProps>
@@ -176,6 +183,7 @@ export interface ReactHeaderObject extends Omit<
 //     - headerDropdown         → React.ComponentType<HeaderDropdownProps>
 //     - columnEditorConfig     → ReactColumnEditorConfig
 //     - icons                  → ReactIconsConfig
+//     - rowButtons             → ReactRowButton[]
 export interface SimpleTableReactProps extends Omit<
   SimpleTableProps,
   // Overridden below with React types
@@ -189,6 +197,7 @@ export interface SimpleTableReactProps extends Omit<
   | "columnEditorConfig"
   | "icons"
   | "rows"
+  | "rowButtons"
   | "onColumnOrderChange"
   | "onColumnWidthChange"
   | "onHeaderEdit"
@@ -209,6 +218,8 @@ export interface SimpleTableReactProps extends Omit<
   headerDropdown?: ReactHeaderDropdown;
   columnEditorConfig?: ReactColumnEditorConfig;
   icons?: ReactIconsConfig;
+  /** Per-row action buttons; each entry returns JSX rendered into the row's selection column. */
+  rowButtons?: ReactRowButton[];
 }
 
 // Re-export vanilla prop types that consumers still need directly

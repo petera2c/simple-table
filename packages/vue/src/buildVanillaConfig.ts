@@ -83,6 +83,7 @@ export function buildVanillaConfig(config: SimpleTableVueProps): SimpleTableConf
     headerDropdown,
     columnEditorConfig,
     icons,
+    rowButtons,
     ...rest
   } = config;
 
@@ -149,6 +150,10 @@ export function buildVanillaConfig(config: SimpleTableVueProps): SimpleTableConf
 
   if (icons !== undefined) {
     vanillaConfig.icons = transformIcons(icons);
+  }
+
+  if (rowButtons !== undefined) {
+    vanillaConfig.rowButtons = rowButtons.map((button) => wrapVueRenderer(button) as any);
   }
 
   return vanillaConfig;

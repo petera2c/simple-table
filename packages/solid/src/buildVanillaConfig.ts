@@ -73,6 +73,7 @@ export function buildVanillaConfig(config: SimpleTableSolidProps): SimpleTableCo
     headerDropdown,
     columnEditorConfig,
     icons,
+    rowButtons,
     ref: _ref,
     onColumnOrderChange,
     onColumnWidthChange,
@@ -157,6 +158,10 @@ export function buildVanillaConfig(config: SimpleTableSolidProps): SimpleTableCo
 
   if (icons !== undefined) {
     vanillaConfig.icons = transformIcons(icons);
+  }
+
+  if (rowButtons !== undefined) {
+    vanillaConfig.rowButtons = rowButtons.map((button) => wrapSolidRenderer(button) as any);
   }
 
   return vanillaConfig;

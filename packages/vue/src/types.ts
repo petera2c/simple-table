@@ -15,6 +15,7 @@ import type {
   ColumnEditorRowRendererProps,
   ColumnEditorCustomRendererProps,
   ColumnEditorConfig,
+  RowButtonProps,
 } from "simple-table-core";
 
 // ─── Internal instance contract ───────────────────────────────────────────────
@@ -52,6 +53,8 @@ export type VueFooterRenderer = Component<FooterRendererProps>;
 export type VueHeaderDropdown = Component<HeaderDropdownProps>;
 export type VueColumnEditorRowRenderer = Component<ColumnEditorRowRendererProps>;
 export type VueColumnEditorCustomRenderer = Component<ColumnEditorCustomRendererProps>;
+// Per-row action buttons. Each entry is a Vue component receiving RowButtonProps.
+export type VueRowButton = Component<RowButtonProps>;
 
 // State renderers can be a component (receives props) or a static VNode
 export type VueLoadingStateRenderer = Component<LoadingStateRendererProps> | VNode;
@@ -102,6 +105,7 @@ export interface SimpleTableVueProps
     | "headerDropdown"
     | "columnEditorConfig"
     | "icons"
+    | "rowButtons"
   > {
   defaultHeaders: ReadonlyArray<HeaderObject | VueHeaderObject>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
@@ -114,6 +118,8 @@ export interface SimpleTableVueProps
   headerDropdown?: VueHeaderDropdown;
   columnEditorConfig?: VueColumnEditorConfig;
   icons?: VueIconsConfig;
+  /** Per-row action buttons; each entry is a Vue component rendered into the row's selection column. */
+  rowButtons?: VueRowButton[];
 }
 
 // Re-export vanilla prop types that consumers still need directly

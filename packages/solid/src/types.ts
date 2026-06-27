@@ -15,6 +15,7 @@ import type {
   ColumnEditorRowRendererProps,
   ColumnEditorCustomRendererProps,
   ColumnEditorConfig,
+  RowButtonProps,
 } from "simple-table-core";
 
 // ─── Internal instance contract ───────────────────────────────────────────────
@@ -50,6 +51,8 @@ export type SolidFooterRenderer = Component<FooterRendererProps>;
 export type SolidHeaderDropdown = Component<HeaderDropdownProps>;
 export type SolidColumnEditorRowRenderer = Component<ColumnEditorRowRendererProps>;
 export type SolidColumnEditorCustomRenderer = Component<ColumnEditorCustomRendererProps>;
+// Per-row action buttons. Each entry is a Solid component receiving RowButtonProps.
+export type SolidRowButton = Component<RowButtonProps>;
 
 // State renderers can be a component (receives props) or a plain JSX.Element (static markup)
 export type SolidLoadingStateRenderer = Component<LoadingStateRendererProps> | JSX.Element;
@@ -99,6 +102,7 @@ export interface SimpleTableSolidProps
     | "headerDropdown"
     | "columnEditorConfig"
     | "icons"
+    | "rowButtons"
     | "onColumnOrderChange"
     | "onColumnWidthChange"
     | "onHeaderEdit"
@@ -119,6 +123,8 @@ export interface SimpleTableSolidProps
   headerDropdown?: SolidHeaderDropdown;
   columnEditorConfig?: SolidColumnEditorConfig;
   icons?: SolidIconsConfig;
+  /** Per-row action buttons; each entry is a Solid component rendered into the row's selection column. */
+  rowButtons?: SolidRowButton[];
   /** Callback ref — receives the TableAPI once the table is mounted. */
   ref?: (api: TableAPI) => void;
 }

@@ -15,6 +15,7 @@ import {
   wrapReactFooterRenderer,
   wrapReactColumnEditorRowRenderer,
   wrapReactColumnEditorCustomRenderer,
+  wrapReactRowButton,
   wrapReactNode,
   reactNodeToHtmlString,
   isReactComponent,
@@ -111,6 +112,7 @@ export function buildVanillaConfig(
     headerDropdown,
     columnEditorConfig,
     icons,
+    rowButtons,
     onColumnOrderChange,
     onColumnWidthChange,
     onHeaderEdit,
@@ -201,6 +203,12 @@ export function buildVanillaConfig(
 
   if (icons !== undefined) {
     vanillaConfig.icons = transformIcons(icons);
+  }
+
+  if (rowButtons !== undefined) {
+    vanillaConfig.rowButtons = rowButtons.map((button) =>
+      wrapReactRowButton(bridge, button as ComponentType<any>),
+    );
   }
 
   return vanillaConfig;

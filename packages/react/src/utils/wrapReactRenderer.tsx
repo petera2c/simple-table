@@ -6,6 +6,7 @@ import type {
   HeaderRendererProps as VanillaHeaderRendererProps,
   HeaderDropdownProps as VanillaHeaderDropdownProps,
   FooterRendererProps as VanillaFooterRendererProps,
+  RowButtonProps as VanillaRowButtonProps,
 } from "simple-table-core";
 import type { PortalBridge } from "../PortalBridge";
 import {
@@ -162,6 +163,26 @@ export function wrapReactColumnEditorCustomRenderer(
       resetSection: props.resetSection ? domSlotToReactNode(props.resetSection) : null,
     };
     bridge.register(<Component {...(reactProps as any)} />, container);
+    return container;
+  };
+}
+
+/**
+ * Wraps a React row-button render function into the vanilla `RowButton`
+ * contract `(props) => HTMLElement`. Like {@link wrapReactRendererIntoFragment},
+ * it registers the element with the {@link PortalBridge} so the button renders
+ * inside the host React tree — preserving interactivity (onClick) and context —
+ * and uses `display: contents` so core's `st-row-button` wrapper styles the
+ * actual button rather than an extra box.
+ */
+export function wrapReactRowButton(
+  bridge: PortalBridge,
+  Component: React.ComponentType<VanillaRowButtonProps>,
+): (props: VanillaRowButtonProps) => HTMLElement {
+  return (props: VanillaRowButtonProps): HTMLElement => {
+    const container = document.createElement("div");
+    container.style.display = "contents";
+    bridge.register(<Component {...props} />, container);
     return container;
   };
 }

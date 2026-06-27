@@ -82,6 +82,7 @@ export function buildVanillaConfig(config: SimpleTableSvelteProps): SimpleTableC
     columnEditorConfig,
     icons,
     tableEmptyStateRenderer,
+    rowButtons,
     onColumnOrderChange,
     onColumnWidthChange,
     onHeaderEdit,
@@ -174,6 +175,10 @@ export function buildVanillaConfig(config: SimpleTableSvelteProps): SimpleTableC
 
   if (icons !== undefined) {
     vanillaConfig.icons = transformIcons(icons);
+  }
+
+  if (rowButtons !== undefined) {
+    vanillaConfig.rowButtons = rowButtons.map((button) => wrapSvelteRenderer(button) as any);
   }
 
   return vanillaConfig;

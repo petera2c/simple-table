@@ -15,6 +15,7 @@ import type {
   ColumnEditorRowRendererProps,
   ColumnEditorCustomRendererProps,
   ColumnEditorConfig,
+  RowButtonProps,
 } from "simple-table-core";
 
 // ─── Internal instance contract ───────────────────────────────────────────────
@@ -33,6 +34,8 @@ export type SvelteFooterRenderer = Component<FooterRendererProps>;
 export type SvelteHeaderDropdown = Component<HeaderDropdownProps>;
 export type SvelteColumnEditorRowRenderer = Component<ColumnEditorRowRendererProps>;
 export type SvelteColumnEditorCustomRenderer = Component<ColumnEditorCustomRendererProps>;
+// Per-row action buttons. Each entry is a Svelte component receiving RowButtonProps.
+export type SvelteRowButton = Component<RowButtonProps>;
 
 // State renderers are always components (Svelte has no static "node" concept
 // outside of a component — consumers wanting static markup should use a wrapper
@@ -101,6 +104,7 @@ export interface SimpleTableSvelteProps
     | "headerDropdown"
     | "columnEditorConfig"
     | "icons"
+    | "rowButtons"
     | "onColumnOrderChange"
     | "onColumnWidthChange"
     | "onHeaderEdit"
@@ -122,6 +126,8 @@ export interface SimpleTableSvelteProps
   headerDropdown?: SvelteHeaderDropdown;
   columnEditorConfig?: SvelteColumnEditorConfig;
   icons?: SvelteIconsConfig;
+  /** Per-row action buttons; each entry is a Svelte component rendered into the row's selection column. */
+  rowButtons?: SvelteRowButton[];
 }
 
 // Re-export vanilla prop types that consumers still need directly

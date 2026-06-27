@@ -43,6 +43,9 @@ export type AngularColumnEditorCustomRenderer = Type<unknown>;
 export type AngularLoadingStateRenderer = Type<unknown>;
 export type AngularErrorStateRenderer = Type<unknown>;
 export type AngularEmptyStateRenderer = Type<unknown>;
+// Per-row action buttons. Each entry is an Angular component class; the adapter
+// binds RowButtonProps (`row` / `rowIndex`) via @Input() at render time.
+export type AngularRowButton = Type<unknown>;
 
 /** Per-slot icon: Angular component or vanilla element/string (pass-through). */
 export type AngularIconSlot = Type<unknown> | SVGSVGElement | HTMLElement | string;
@@ -104,6 +107,7 @@ export interface SimpleTableAngularProps
     | "headerDropdown"
     | "columnEditorConfig"
     | "icons"
+    | "rowButtons"
     | "onColumnOrderChange"
     | "onColumnWidthChange"
     | "onHeaderEdit"
@@ -124,6 +128,8 @@ export interface SimpleTableAngularProps
   headerDropdown?: AngularHeaderDropdown;
   columnEditorConfig?: AngularColumnEditorConfig;
   icons?: AngularIconsConfig;
+  /** Per-row action buttons; each entry is an Angular component rendered into the row's selection column. */
+  rowButtons?: AngularRowButton[];
 }
 
 // Re-export vanilla prop types that consumers still need directly
