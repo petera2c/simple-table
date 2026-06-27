@@ -198,12 +198,13 @@ export class TableRenderer {
       columnReordering: deps.config.columnReordering ?? false,
       columnResizing: deps.config.columnResizing ?? false,
       containerWidth: dimensionState.containerWidth,
+      // Content width (sum of all main column widths) — drives section sizing.
+      mainSectionContainerWidth: mainWidth,
       // Virtualization viewport = the main section's *visible* width (container
-      // minus pinned sections), NOT `mainWidth` (the full content width = sum of
-      // all main column widths). Passing the content width here made
-      // getVisibleBodyCells/getVisibleCells include every column (no column
-      // virtualization).
-      mainSectionContainerWidth: getMainSectionViewportWidth({
+      // minus pinned sections), NOT `mainWidth` (the full content width). Passing
+      // the content width to getVisibleCells made every column count as visible
+      // (no column virtualization).
+      mainSectionViewportWidth: getMainSectionViewportWidth({
         containerWidth: dimensionState.containerWidth,
         leftWidth,
         rightWidth,
@@ -483,12 +484,15 @@ export class TableRenderer {
       heightOffsets: processedResult.paginatedHeightOffsets,
       customTheme: deps.customTheme,
       containerWidth: dimensionState.containerWidth,
+      // Content width (sum of all main column widths) — drives the body section /
+      // row-separator width so the body is as wide as its content and scrolls
+      // horizontally.
+      mainSectionContainerWidth: mainWidth,
       // Virtualization viewport = the main section's *visible* width (container
-      // minus pinned sections), NOT `mainWidth` (the full content width = sum of
-      // all main column widths). Passing the content width here made
-      // getVisibleBodyCells/getVisibleCells include every column (no column
-      // virtualization).
-      mainSectionContainerWidth: getMainSectionViewportWidth({
+      // minus pinned sections), NOT `mainWidth` (the full content width). Passing
+      // the content width to getVisibleBodyCells made every column count as
+      // visible (no column virtualization).
+      mainSectionViewportWidth: getMainSectionViewportWidth({
         containerWidth: dimensionState.containerWidth,
         leftWidth,
         rightWidth,

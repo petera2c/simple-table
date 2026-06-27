@@ -49,7 +49,8 @@ export interface HeaderRenderContext {
   icons: IconsConfig;
   lastHeaderIndex: number;
   mainBodyRef: RefObject<HTMLDivElement>;
-  mainSectionContainerWidth?: number; /** Main section viewport width (avoids clientWidth read when set); use for getVisibleCells when !pinned */
+  mainSectionContainerWidth?: number; /** Main section *content* width (sum of all non-pinned column widths). NOT the virtualization viewport. */
+  mainSectionViewportWidth?: number; /** Main section *visible* viewport width (container minus pinned); use for getVisibleCells when !pinned */
   onColumnOrderChange?: (headers: HeaderObject[]) => void;
   onColumnSelect?: (header: HeaderObject) => void;
   onColumnWidthChange?: (headers: HeaderObject[]) => void;

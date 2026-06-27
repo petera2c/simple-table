@@ -505,20 +505,25 @@ export const ExcludeFromRenderDoesNotInflateRowWidth = {
     expect(canvasElement.querySelector('[data-accessor="secretB"]')).toBeFalsy();
     expect(canvasElement.querySelector('[data-accessor="secretC"]')).toBeFalsy();
 
-    // Rendered content width = sum of the four visible main columns (2600px).
-    const renderedWidth = headerMain!.scrollWidth;
+    // Sum of the four *rendered* (non-excluded) main columns; the three excluded
+    // columns add 900px that must NOT leak into the body width.
+    const VISIBLE_SUM = 500 + 600 + 700 + 800; // 2600
+    const EXCLUDED_SUM = 900;
 
-    // The body's row separator carries the body section width inline; with the
-    // bug it equals renderedWidth + 900 (the three 300px excluded columns),
-    // matching the reported symptom (header scrollWidth vs separator width).
+    // The body's row separator carries the body section width inline. With the
+    // bug it equals VISIBLE_SUM + EXCLUDED_SUM (the excluded columns show up as
+    // empty scrollable space past the last visible column). We compare against
+    // the known visible-column sum rather than headerMain.scrollWidth: column
+    // virtualization culls off-screen header cells at scrollLeft 0, so the
+    // header's scrollWidth reflects only the rendered band, not the full content
+    // width — which would make this assertion flaky once virtualization is on.
     const separator = bodyMain!.querySelector(".st-row-separator") as HTMLElement | null;
     expect(separator).toBeTruthy();
     const separatorWidth = parseFloat(separator!.style.width) || bodyMain!.scrollWidth;
 
-    const EXCLUDED_SUM = 900;
-    // Body width must track the rendered cells, not include the excluded columns.
-    expect(separatorWidth).toBeLessThan(renderedWidth + EXCLUDED_SUM / 2);
-    expect(Math.abs(separatorWidth - renderedWidth)).toBeLessThanOrEqual(3);
+    // Body width must track the rendered (non-excluded) columns.
+    expect(separatorWidth).toBeLessThan(VISIBLE_SUM + EXCLUDED_SUM / 2);
+    expect(Math.abs(separatorWidth - VISIBLE_SUM)).toBeLessThanOrEqual(3);
   },
 };
 

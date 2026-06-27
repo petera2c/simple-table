@@ -48,6 +48,7 @@ import { RenderOrchestrator, RenderContext, RenderState } from "./rendering/Rend
 import { TableAPIImpl, TableAPIContext } from "./api/TableAPIImpl";
 import {
   getExternalScrollMetrics,
+  getParentViewportHeight,
   resolveScrollParent,
   type ResolvedScrollParent,
 } from "../utils/externalScroll";
@@ -497,6 +498,17 @@ export class SimpleTableVanilla {
       this.render("dimensionManager");
       if (!this.firstRenderDone) {
         this.firstRenderDone = true;
+        // In external/window scroll mode the mount-time viewport measurement ran
+        // before this first render populated the body, so it fell back to the
+        // parent viewport height (a provisional). Now that the table has its real
+        // laid-out height, re-measure to the precise visible intersection (e.g.
+        // when the table is only partially in view). Deferred to the next frame
+        // so the recompute's state update doesn't re-enter render() synchronously.
+        if (this.resolvedScrollParent && typeof requestAnimationFrame !== "undefined") {
+          requestAnimationFrame(() => {
+            if (this.mounted) this.recomputeExternalViewportHeight();
+          });
+        }
         if (this.config.onGridReady) {
           this.config.onGridReady();
         }
@@ -839,8 +851,18 @@ export class SimpleTableVanilla {
     const tableRoot = elements?.rootElement ?? this.container;
     const metrics = getExternalScrollMetrics(this.resolvedScrollParent, tableRoot);
     if (!metrics) return;
-    const next = metrics.visibleViewportHeight;
-    if (next === this.externalViewportHeight) return;
+    let next = metrics.visibleViewportHeight;
+    // Before the first render the table has no laid-out height, so the
+    // table∩viewport intersection is 0. Feeding 0 disables virtualization
+    // (contentHeight becomes undefined → every row renders at once, a long
+    // blocking paint that looks blank/unfilled on load until a scroll triggers
+    // virtualization). Seed with the parent's own viewport height so the first
+    // paint is already virtualized; the post-first-render / scroll recompute
+    // then refines this to the precise visible intersection.
+    if (next <= 0) {
+      next = getParentViewportHeight(this.resolvedScrollParent);
+    }
+    if (next <= 0 || next === this.externalViewportHeight) return;
     this.externalViewportHeight = next;
     if (this.dimensionManager) {
       this.dimensionManager.updateConfig({ externalViewportHeight: next });

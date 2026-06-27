@@ -171,3 +171,18 @@ export const getExternalScrollMetrics = (
  */
 export const getParentScrollTop = (parent: ResolvedScrollParent): number =>
   getScrollTopFromParent(parent);
+
+/**
+ * Height of the parent's own viewport (window.innerHeight, or the element's
+ * border-box height), independent of where the table sits inside it.
+ *
+ * Used as a provisional virtualization viewport before the table has been laid
+ * out: at that point the table∩viewport intersection is 0, which would disable
+ * virtualization and render every row at once. Seeding with the parent viewport
+ * keeps virtualization active on the first paint; a later precise recompute
+ * refines it. Returns 0 when the parent can't be measured.
+ */
+export const getParentViewportHeight = (parent: ResolvedScrollParent): number => {
+  const rect = getViewportRectFromParent(parent);
+  return rect ? rect.height : 0;
+};

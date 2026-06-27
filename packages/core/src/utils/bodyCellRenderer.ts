@@ -299,10 +299,13 @@ export const renderBodyCells = (
   animationCoordinator?: AnimationCoordinator,
   fullCellLayout?: Map<string, CellPosition>,
 ): void => {
-  // Get viewport width: for main section use mainSectionContainerWidth to avoid clientWidth read
+  // Get viewport width: for main section use the *visible* viewport width
+  // (mainSectionViewportWidth) so column virtualization filters against the
+  // visible band, NOT the full content width. Falls back to a live clientWidth
+  // read when the viewport hasn't been measured yet.
   const viewportWidth = context.pinned
     ? (context.containerWidth ?? container.clientWidth ?? 0)
-    : (context.mainSectionContainerWidth ?? context.containerWidth ?? container.clientWidth ?? 0);
+    : (context.mainSectionViewportWidth ?? context.containerWidth ?? container.clientWidth ?? 0);
 
   // For pinned sections, always render all cells (they don't scroll horizontally)
   // For main section, only render visible cells based on scroll position

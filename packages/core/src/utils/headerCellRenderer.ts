@@ -74,10 +74,12 @@ export const renderHeaderCells = (
   context: HeaderRenderContext,
   scrollLeft: number = 0,
 ): void => {
-  // Get viewport width: for main section use mainSectionContainerWidth to avoid clientWidth read
+  // Get viewport width: for main section use the *visible* viewport width
+  // (mainSectionViewportWidth) so column virtualization filters against the
+  // visible band, NOT the full content width.
   const viewportWidth = context.pinned
     ? context.containerWidth
-    : (context.mainSectionContainerWidth ??
+    : (context.mainSectionViewportWidth ??
       (context.containerWidth ||
         container.parentElement?.clientWidth ||
         container.clientWidth ||

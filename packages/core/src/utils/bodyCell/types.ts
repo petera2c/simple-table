@@ -103,8 +103,20 @@ export interface CellRenderContext {
   heightOffsets?: HeightOffsets;
   customTheme?: CustomTheme;
   containerWidth?: number;
-  /** Main section viewport width (avoids clientWidth read when set); use for getVisibleBodyCells when !pinned */
+  /**
+   * Main section *content* width (sum of all non-pinned column widths). Drives
+   * the body section / row-separator width so the body is as wide as its
+   * content and scrolls horizontally. NOT the virtualization viewport — use
+   * `mainSectionViewportWidth` for getVisibleBodyCells.
+   */
   mainSectionContainerWidth?: number;
+  /**
+   * Main section *visible* viewport width (container minus pinned sections).
+   * Used by getVisibleBodyCells to decide which cells intersect the viewport
+   * (column virtualization). NOT the content width — using the content width
+   * here makes every column count as visible, disabling virtualization.
+   */
+  mainSectionViewportWidth?: number;
 
   // Callbacks
   onCellEdit?: (params: CellEditParams) => void;
