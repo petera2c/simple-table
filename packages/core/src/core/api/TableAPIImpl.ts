@@ -45,6 +45,15 @@ export interface TableAPIContext {
   rowStateMap: Map<string | number, RowState>;
   headerRegistry: Map<string, any>;
   cellRegistry?: Map<string, { updateContent: (value: any) => void }>;
+  /**
+   * Whether a cell (by its `getCellId` key) is currently mid-FLIP-animation.
+   * Live `updateData` content writes are skipped for animating cells so a
+   * data tick doesn't re-render / mutate a cell that is sliding to a new
+   * position (which causes visible jank). The underlying row data is still
+   * updated; only the in-place DOM refresh is deferred to the next tick or
+   * re-render once the animation settles.
+   */
+  isCellAnimating?: (cellId: string) => boolean;
   columnEditorOpen: boolean;
   expandedDepthsManager: any;
   selectionManager: SelectionManager | null;
@@ -84,24 +93,55 @@ export class TableAPIImpl {
     /** Coalesce many `updateData` calls in one turn (e.g. live metrics) into one DOM pass. */
     const pendingUpdateDataByKey = new Map<string, CellValue>();
     let updateDataFlushScheduled = false;
+    let updateDataRetryScheduled = false;
 
     const flushPendingUpdateData = () => {
       updateDataFlushScheduled = false;
       if (pendingUpdateDataByKey.size === 0) return;
 
+      let deferredAnimatingCell = false;
       pendingUpdateDataByKey.forEach((value, key) => {
+        // Don't mutate a cell that's mid-animation: re-rendering its content
+        // while it slides to a new position causes visible jank. Keep the
+        // pending value (don't drop it) and retry shortly so the latest value
+        // still lands once the FLIP settles — otherwise an update that arrives
+        // during the post-sort animation window would be lost until the next
+        // re-render ("live updates stop after spamming sort").
+        if (context.isCellAnimating?.(key)) {
+          deferredAnimatingCell = true;
+          return;
+        }
         const entry = context.cellRegistry?.get(key);
         if (entry) {
           entry.updateContent(value);
         }
+        // Only clear entries we actually applied; deferred ones stay queued.
+        pendingUpdateDataByKey.delete(key);
       });
-      pendingUpdateDataByKey.clear();
+
+      if (deferredAnimatingCell && pendingUpdateDataByKey.size > 0) {
+        scheduleAnimatingUpdateRetry();
+      }
     };
 
     const scheduleUpdateDataFlush = () => {
       if (updateDataFlushScheduled) return;
       updateDataFlushScheduled = true;
       queueMicrotask(flushPendingUpdateData);
+    };
+
+    // Re-attempt deferred (mid-animation) updates after a short delay. The FLIP
+    // typically settles within a few hundred ms; this keeps retrying — without
+    // spinning a tight loop — until every animating cell has settled and its
+    // latest queued value has been applied.
+    const ANIMATING_UPDATE_RETRY_MS = 120;
+    const scheduleAnimatingUpdateRetry = () => {
+      if (updateDataRetryScheduled) return;
+      updateDataRetryScheduled = true;
+      setTimeout(() => {
+        updateDataRetryScheduled = false;
+        if (pendingUpdateDataByKey.size > 0) scheduleUpdateDataFlush();
+      }, ANIMATING_UPDATE_RETRY_MS);
     };
 
     /**

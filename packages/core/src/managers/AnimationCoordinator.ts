@@ -203,6 +203,34 @@ export class AnimationCoordinator {
    */
   private scrollerMetricsCache: WeakMap<HTMLElement, ScrollerMetrics> = new WeakMap();
 
+  /**
+   * Vertical scroller metrics override for external/page-scroll mode. When the
+   * table has no internal vertical overflow (it grows to its natural height and
+   * a parent element / the window scrolls), the body container's own
+   * clientHeight/scrollHeight no longer describe the visible viewport, so
+   * {@link scaleFlipDistance} can't bound the FLIP journey and sort cells slide
+   * the full conceptual distance. The vanilla table pushes the real visible
+   * viewport here (from the same `getExternalScrollMetrics` the virtualizer
+   * uses) so the y-axis FLIP scaling matches the on-screen viewport. `null`
+   * when external scroll is inactive — internal scroller metrics are used as-is.
+   */
+  private externalVerticalScroll: { clientHeight: number; scrollHeight: number; scrollTop: number } | null =
+    null;
+
+  /**
+   * The currently-scheduled (not-yet-started) FLIP frame. play() defers the
+   * transition start by two animation frames so the inverted "First" frame
+   * gets painted before the transition fires. Spam-clicking sort triggers a
+   * full re-render + play() inside that two-frame window: without coalescing,
+   * the stale chain's startTransition zeroes the transforms the newer cycle
+   * just inverted (a frame early), so the final transition animates
+   * identity→identity and nothing visibly moves — and many captured nodes are
+   * detached by the intervening render before they ever transition. Tracking
+   *     the pending frame lets a new play() cancel the prior cycle and reset the
+   * transforms it left behind, so only the latest sort animates.
+   */
+  private scheduledFlip: { rafId: number; pending: Array<{ element: HTMLElement }> } | null = null;
+
   constructor(opts: AnimationCoordinatorOptions = {}) {
     this.duration = opts.duration ?? DEFAULT_DURATION;
     this.easing = opts.easing ?? DEFAULT_EASING;
@@ -273,10 +301,38 @@ export class AnimationCoordinator {
   private getScrollerMetrics(container: HTMLElement): ScrollerMetrics {
     let metrics = this.scrollerMetricsCache.get(container);
     if (!metrics) {
-      metrics = readScrollerMetrics(container);
+      const base = readScrollerMetrics(container);
+      // In external/page-scroll mode the body container has no internal
+      // vertical overflow, so its clientHeight/scrollHeight describe the full
+      // table rather than the visible viewport. Substitute the real visible
+      // viewport (vertical axis only — the body section is still the
+      // horizontal scroller) so scaleFlipDistance can bound the slide.
+      metrics = this.externalVerticalScroll
+        ? {
+            ...base,
+            clientHeight: this.externalVerticalScroll.clientHeight,
+            scrollHeight: this.externalVerticalScroll.scrollHeight,
+            scrollTop: this.externalVerticalScroll.scrollTop,
+          }
+        : base;
       this.scrollerMetricsCache.set(container, metrics);
     }
     return metrics;
+  }
+
+  /**
+   * Supply (or clear) the vertical scroller metrics override used by
+   * {@link scaleFlipDistance} in external/page-scroll mode. Must be set before
+   * `captureSnapshot`/`retainCell`/`play` so the whole FLIP cycle scales
+   * against the real visible viewport. Pass `null` to fall back to the body
+   * container's own metrics (internal scroll).
+   */
+  setExternalVerticalScroll(
+    metrics: { clientHeight: number; scrollHeight: number; scrollTop: number } | null,
+  ): void {
+    this.externalVerticalScroll = metrics;
+    // Drop any cached merge so the next read picks up the new override.
+    this.clearScrollerMetricsCache();
   }
 
   private clearScrollerMetricsCache(): void {
@@ -875,6 +931,24 @@ export class AnimationCoordinator {
       });
     }
 
+    // Coalesce overlapping FLIP cycles. If a previous play() scheduled a
+    // transition start that hasn't run yet (spam-clicking sort fires a new
+    // render + play within the two-frame defer window), cancel it and reset
+    // the inverted transforms it left on its cells. The invert loop below
+    // re-applies the transform for any cell still being animated this cycle;
+    // cells that were only in the stale cycle snap to their current
+    // (already-updated) position instead of being clobbered or stranded with
+    // a leftover transform.
+    if (this.scheduledFlip) {
+      cancelAnimationFrame(this.scheduledFlip.rafId);
+      for (const { element } of this.scheduledFlip.pending) {
+        element.style.transition = "none";
+        element.style.transform = "";
+        element.style.willChange = "";
+      }
+      this.scheduledFlip = null;
+    }
+
     // FLIP "First" frame: apply inverse transforms synchronously so cells
     // appear at their old positions. We then need the browser to actually
     // PAINT this inverted state before we trigger the transition — otherwise
@@ -896,14 +970,20 @@ export class AnimationCoordinator {
     // so by the time `startTransition` runs, the browser's last painted
     // computed transform is `translate3d(dx, dy, 0)` and the new write to
     // `translate3d(0, 0, 0)` triggers a real interpolation.
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
+    const rafOuter = requestAnimationFrame(() => {
+      const rafInner = requestAnimationFrame(() => {
+        this.scheduledFlip = null;
         for (const { cellId, element, isRetained } of pending) {
           if (!element.isConnected) continue;
           this.startTransition(cellId, element, isRetained);
         }
       });
+      // The outer frame has run; the pending transition start is now the
+      // inner frame. Point the coalesce handle at it so a play() that lands
+      // between the two frames cancels the correct callback.
+      if (this.scheduledFlip) this.scheduledFlip.rafId = rafInner;
     });
+    this.scheduledFlip = { rafId: rafOuter, pending };
   }
 
   /**
@@ -915,6 +995,10 @@ export class AnimationCoordinator {
     this.snapshot = null;
     this.incomingOrigins = null;
     this.clearScrollerMetricsCache();
+    if (this.scheduledFlip) {
+      cancelAnimationFrame(this.scheduledFlip.rafId);
+      this.scheduledFlip = null;
+    }
     const entries = Array.from(this.inFlight.entries());
     this.inFlight.clear();
     for (const [cellId, entry] of entries) {

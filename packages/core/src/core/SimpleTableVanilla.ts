@@ -351,9 +351,38 @@ export class SimpleTableVanilla {
     const preLayouts = this.animationCoordinator.isEnabled()
       ? this.renderOrchestrator.getCurrentBodyLayouts()
       : undefined;
+    // In external/page-scroll mode the body container has no internal vertical
+    // overflow, so the FLIP scaler can't read the visible viewport from it.
+    // Feed the real visible viewport (the same metrics that drive
+    // virtualization) so sort slides stay bounded to the on-screen area.
+    this.updateAnimationVerticalScroll();
     this.animationCoordinator.captureSnapshot({
       containers: this.getAnimatableContainers(),
       preLayouts,
+    });
+  }
+
+  /**
+   * Push the visible vertical viewport into the animation coordinator when
+   * external/page scroll is active (or clear it otherwise). Keeps the FLIP
+   * distance-scaling viewport-relative so cells don't slide the full
+   * conceptual distance when the table grows to its natural height.
+   */
+  private updateAnimationVerticalScroll(): void {
+    if (!this.resolvedScrollParent) {
+      this.animationCoordinator.setExternalVerticalScroll(null);
+      return;
+    }
+    const tableRoot = this.domManager.getElements()?.rootElement ?? this.container;
+    const metrics = getExternalScrollMetrics(this.resolvedScrollParent, tableRoot);
+    if (!metrics || metrics.visibleViewportHeight <= 0 || metrics.tableTotalHeight <= 0) {
+      this.animationCoordinator.setExternalVerticalScroll(null);
+      return;
+    }
+    this.animationCoordinator.setExternalVerticalScroll({
+      clientHeight: metrics.visibleViewportHeight,
+      scrollHeight: metrics.tableTotalHeight,
+      scrollTop: metrics.relativeScrollTop,
     });
   }
 
@@ -1745,6 +1774,7 @@ export class SimpleTableVanilla {
       rowStateMap: this.rowStateMap,
       headerRegistry: this.headerRegistry,
       cellRegistry: this.cellRegistry,
+      isCellAnimating: (cellId: string) => this.animationCoordinator.isInFlight(cellId),
       get columnEditorOpen() {
         return thiz.columnEditorOpen;
       },
