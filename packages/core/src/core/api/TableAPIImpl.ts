@@ -16,6 +16,8 @@ import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { flattenRows, FlattenRowsResult } from "../../utils/rowFlattening";
 import { ProcessRowsResult } from "../../utils/rowProcessing";
+import { generateStableRowKey, rowIdToString } from "../../utils/rowUtils";
+import { getCellId } from "../../utils/cellUtils";
 import { exportTableToCSV } from "../../utils/csvExportUtils";
 import {
   getPinnedSectionsState,
@@ -135,31 +137,26 @@ export class TableAPIImpl {
           const row = context.localRows[rowIndex] as any;
           row[accessor] = newValue;
 
-          // Prefer the row's *current* rendered rowId (post sort/filter) so the
-          // cell registry key matches what `styling.ts` registered. Falls back
-          // to the positional rowId for the unsorted/unfiltered case where the
-          // row may not yet be present in `rowsToRender` (e.g. virtualized off
-          // screen — registry lookup will simply miss, which is correct).
+          // Resolve the row's STABLE identity (`stableRowKey ?? positional
+          // rowId`) so the cell registry key matches exactly what `styling.ts`
+          // registered. The registry is keyed by the stable identity (not the
+          // positional rowId), so the lookup hits regardless of sort/filter
+          // order without any re-keying. When the row isn't currently in
+          // `rowsToRender` (e.g. virtualized off screen) we recompute the same
+          // stable key `flattenRows` would produce; if the cell isn't rendered
+          // the lookup simply misses, which is correct.
           const displayedRow = getDisplayedTableRow(row);
-          let rowIdArray: (string | number)[];
-          if (displayedRow) {
-            rowIdArray = displayedRow.rowId;
-          } else {
-            const rowPath = [rowIndex];
-            rowIdArray = context.config.getRowId
-              ? [
-                  rowIndex,
-                  context.config.getRowId({
-                    row,
-                    depth: 0,
-                    index: rowIndex,
-                    rowPath,
-                    rowIndexPath: rowPath,
-                  }),
-                ]
-              : [rowIndex];
-          }
-          const key = `${rowIdArray.join("-")}-${accessor}`;
+          const rowIdentity = displayedRow
+            ? (displayedRow.stableRowKey ?? rowIdToString(displayedRow.rowId))
+            : generateStableRowKey({
+                getRowId: context.config.getRowId,
+                row,
+                depth: 0,
+                index: rowIndex,
+                rowPath: [rowIndex],
+                rowIndexPath: [rowIndex],
+              });
+          const key = getCellId({ accessor, rowId: rowIdentity });
           pendingUpdateDataByKey.set(key, newValue);
           scheduleUpdateDataFlush();
         }

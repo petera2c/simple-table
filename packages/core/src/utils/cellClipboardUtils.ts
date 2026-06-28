@@ -190,9 +190,11 @@ export const pasteClipboardDataToCells = (
       // Update the data
       setNestedValue(targetRow.row, targetHeader.accessor, convertedValue);
 
-      // Use cell registry for direct update if available
+      // Use cell registry for direct update if available. Key by the row's
+      // stable identity so the lookup matches what styling.ts registered
+      // (the registry is keyed by `stableRowKey ?? rowId`, not positional rowId).
       if (cellRegistry) {
-        const key = `${targetRowId}-${targetHeader.accessor}`;
+        const key = `${targetRow.stableRowKey ?? targetRowId}-${targetHeader.accessor}`;
         const cell = cellRegistry.get(key);
         if (cell) {
           cell.updateContent(convertedValue);
@@ -276,9 +278,11 @@ export const deleteSelectedCellsContent = (
     // Update the data
     setNestedValue(targetRow.row, targetHeader.accessor, emptyValue);
 
-    // Use cell registry for direct update if available
+    // Use cell registry for direct update if available. Key by the row's
+    // stable identity so the lookup matches what styling.ts registered
+    // (the registry is keyed by `stableRowKey ?? rowId`, not positional rowId).
     if (cellRegistry) {
-      const key = `${targetRowId}-${targetHeader.accessor}`;
+      const key = `${targetRow.stableRowKey ?? targetRowId}-${targetHeader.accessor}`;
       const cell = cellRegistry.get(key);
       if (cell) {
         cell.updateContent(emptyValue);

@@ -52,8 +52,26 @@ import {
   resolveScrollParent,
   type ResolvedScrollParent,
 } from "../utils/externalScroll";
+import { UNVIRTUALIZED_ROW_WARNING_THRESHOLD } from "../consts/general-consts";
 
 import "../styles/all-themes.css";
+
+/**
+ * True when running outside a production build. Guards dev-only diagnostics so
+ * they're stripped by the consumer's bundler in production and never crash in
+ * raw (non-bundled) browser usage where `process` is undefined.
+ */
+const isDevEnvironment = (): boolean => {
+  try {
+    return (
+      typeof process !== "undefined" &&
+      !!process.env &&
+      process.env.NODE_ENV !== "production"
+    );
+  } catch {
+    return false;
+  }
+};
 
 export class SimpleTableVanilla {
   private container: HTMLElement;
@@ -125,6 +143,11 @@ export class SimpleTableVanilla {
   private scrollEndTimeoutId: number | null = null;
   private lastScrollTop: number = 0;
   private isUpdating: boolean = false;
+
+  /** Set once the dev-only "too many unvirtualized rows" warning has fired, so it never repeats. */
+  private hasWarnedUnvirtualizedRows: boolean = false;
+  /** Pending deferred check for the unvirtualized-rows warning (lets external-scroll seeding settle first). */
+  private unvirtualizedRowsCheckTimeoutId: number | null = null;
 
   /** Currently resolved external scroll parent (HTMLElement or window). Null when external scroll mode is inactive. */
   private resolvedScrollParent: ResolvedScrollParent = null;
@@ -1371,6 +1394,68 @@ export class SimpleTableVanilla {
     if (source !== "scroll-raf") {
       this.animationCoordinator.play({ containers: this.getAnimatableContainers() });
     }
+
+    this.maybeScheduleUnvirtualizedRowsWarning();
+  }
+
+  /**
+   * Dev-only safeguard. Schedules a one-shot, deferred check that warns when the
+   * table is about to render a very large number of rows with no virtualization
+   * active (no `height` / `maxHeight` and no bounded `scrollParent`). The check
+   * is deferred so external-scroll viewport seeding (which can momentarily leave
+   * `contentHeight` undefined on the first paint) has time to settle and we
+   * don't cry wolf for a correctly-configured table. Compiled out of production
+   * via the NODE_ENV guard. Never throws.
+   */
+  private maybeScheduleUnvirtualizedRowsWarning(): void {
+    if (!isDevEnvironment()) return;
+    if (this.hasWarnedUnvirtualizedRows) return;
+    if (this.unvirtualizedRowsCheckTimeoutId !== null) return;
+    if (typeof window === "undefined") return;
+
+    // Cheap synchronous pre-check: only arm the deferred confirmation when this
+    // render already looks unvirtualized with a large dataset. Healthy
+    // (virtualized) tables short-circuit here and never schedule a timer.
+    if (this.dimensionManager?.getContentHeight() !== undefined) return;
+    const renderedRowCount =
+      this.renderOrchestrator.getLastProcessedResult()?.currentTableRows.length ?? 0;
+    if (renderedRowCount < UNVIRTUALIZED_ROW_WARNING_THRESHOLD) return;
+
+    // Defer the actual warning so external-scroll viewport seeding (which can
+    // momentarily leave contentHeight undefined on the first paint) has time to
+    // settle before we decide it's a real misconfiguration.
+    this.unvirtualizedRowsCheckTimeoutId = window.setTimeout(() => {
+      this.unvirtualizedRowsCheckTimeoutId = null;
+      this.evaluateUnvirtualizedRowsWarning();
+    }, 400);
+  }
+
+  private evaluateUnvirtualizedRowsWarning(): void {
+    if (this.hasWarnedUnvirtualizedRows || !this.mounted) return;
+
+    // `contentHeight === undefined` is precisely the signal that virtualization
+    // is OFF and every row is rendered to the DOM. A number means a viewport
+    // (own height, maxHeight, or external scroll parent) is bounding the render.
+    const contentHeight = this.dimensionManager?.getContentHeight();
+    if (contentHeight !== undefined) return;
+
+    const renderedRowCount =
+      this.renderOrchestrator.getLastProcessedResult()?.currentTableRows.length ?? 0;
+    if (renderedRowCount < UNVIRTUALIZED_ROW_WARNING_THRESHOLD) return;
+
+    this.hasWarnedUnvirtualizedRows = true;
+
+    const hasScrollParent = this.config.scrollParent != null;
+    const parentHint = hasScrollParent
+      ? " A `scrollParent` is set but did not produce a bounded viewport — make sure it is an element whose visible height is smaller than its content (e.g. a fixed/max height with `overflow: auto`), or use `\"window\"`."
+      : "";
+
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[simple-table] Rendering ${renderedRowCount} rows without virtualization. ` +
+        `This can cause slow renders and high memory use. To virtualize, set \`height\` ` +
+        `or \`maxHeight\` on the table, or pass a bounded \`scrollParent\`.${parentHint}`,
+    );
   }
 
   update(config: Partial<SimpleTableConfig>): void {
@@ -1561,6 +1646,10 @@ export class SimpleTableVanilla {
     if (this.externalScrollRetryRaf !== null) {
       cancelAnimationFrame(this.externalScrollRetryRaf);
       this.externalScrollRetryRaf = null;
+    }
+    if (this.unvirtualizedRowsCheckTimeoutId !== null) {
+      clearTimeout(this.unvirtualizedRowsCheckTimeoutId);
+      this.unvirtualizedRowsCheckTimeoutId = null;
     }
 
     this.detachExternalScrollWiring();

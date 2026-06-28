@@ -10,6 +10,13 @@ export const DEFAULT_BORDER_WIDTH = 1;
 // Virtualization threshold - below this row count, virtualization is disabled
 export const VIRTUALIZATION_THRESHOLD = 20;
 
+// Dev-only safeguard: when the table would render at least this many rows with
+// no virtualization active (no `height` / `maxHeight` and no bounded
+// `scrollParent`), emit a one-time console warning. Rendering this many DOM rows
+// at once is almost always a misconfiguration that causes slow paints / high
+// memory. Stripped from production builds.
+export const UNVIRTUALIZED_ROW_WARNING_THRESHOLD = 500;
+
 // Overscan configuration for virtualization
 // Target overscan in pixels (above and below viewport)
 export const OVERSCAN_PIXELS = 800;

@@ -107,6 +107,18 @@ const getViewportRectFromParent = (parent: ResolvedScrollParent): ViewportRect |
   };
 };
 
+/**
+ * Height of the browser window's own viewport. Used as an upper bound on how
+ * much of the table can ever be visible at once: regardless of how tall the
+ * scroll parent is, the user can only physically see one window's worth of it.
+ * Returns `+Infinity` when `window` is unavailable (SSR / non-DOM test runs) so
+ * the clamp becomes a no-op there.
+ */
+const getWindowViewportHeight = (): number =>
+  typeof window !== "undefined" && window.innerHeight > 0
+    ? window.innerHeight
+    : Number.POSITIVE_INFINITY;
+
 const getScrollTopFromParent = (parent: ResolvedScrollParent): number => {
   if (!parent) return 0;
   if (typeof Window !== "undefined" && parent instanceof Window) {
@@ -147,7 +159,17 @@ export const getExternalScrollMetrics = (
 
   const intersectionTop = Math.max(viewport.top, tableRect.top);
   const intersectionBottom = Math.min(viewport.bottom, tableRect.bottom);
-  const visibleViewportHeight = Math.max(0, intersectionBottom - intersectionTop);
+  // Clamp to the window's own viewport height. If the resolved scroll parent is
+  // accidentally unbounded (e.g. it grew to the table's full content height
+  // because nothing constrained it), the table∩parent intersection would be the
+  // entire table — disabling virtualization and rendering every row at once.
+  // The user can never see more than one window's worth, so cap the visible band
+  // there. For a window parent (or any parent shorter than the window) this is a
+  // no-op; it only kicks in to prevent a runaway all-rows render.
+  const visibleViewportHeight = Math.min(
+    Math.max(0, intersectionBottom - intersectionTop),
+    getWindowViewportHeight(),
+  );
 
   const rawRelativeScrollTop = viewport.top - tableRect.top;
   const relativeScrollTop = Math.max(
@@ -184,5 +206,9 @@ export const getParentScrollTop = (parent: ResolvedScrollParent): number =>
  */
 export const getParentViewportHeight = (parent: ResolvedScrollParent): number => {
   const rect = getViewportRectFromParent(parent);
-  return rect ? rect.height : 0;
+  if (!rect) return 0;
+  // Same safety cap as getExternalScrollMetrics: never seed a viewport taller
+  // than the window, so an unbounded parent can't make the first paint render
+  // every row.
+  return Math.min(rect.height, getWindowViewportHeight());
 };

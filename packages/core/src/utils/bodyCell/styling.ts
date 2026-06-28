@@ -300,10 +300,14 @@ export const createBodyCellElement = (
   const liveRef: CellLiveRef = { row: row as Row, tableRow: cell.tableRow, context };
   cellLiveRefMap.set(cellElement, liveRef);
 
-  // Register cell in registry for direct updates
+  // Register cell in registry for direct updates. Keyed by the row's STABLE
+  // identity (`stableRowKey ?? positional rowId`) — the same identity used for
+  // this cell's DOM id and for `renderedCells`. Because the stable key follows
+  // the logical row across sort/filter/reorder, the registry key never changes
+  // for a given DOM cell, so no re-keying is needed when rows are reordered.
   const registerCellInRegistry = () => {
     if (context.cellRegistry && !isSelectionColumn) {
-      const key = `${rowId}-${header.accessor}`;
+      const key = getCellId({ accessor: header.accessor, rowId: cell.stableRowKey ?? rowId });
       cellRegistryKeyMap.set(cellElement, key);
       context.cellRegistry.set(key, {
         updateContent: (newValue: CellValue) => {
@@ -562,26 +566,17 @@ export const updateBodyCellElement = (
     cellLiveRefMap.set(cellElement, { row: cell.row as Row, tableRow: cell.tableRow, context });
   }
 
-  // Re-key the cell registry entry when this DOM cell is reused for a
-  // different row. The registry maps `${positionalRowId}-${accessor}` →
-  // updateContent for the cell currently rendering that row, so consumers
-  // (clipboard paste, programmatic API) can address rows by their current
-  // position. Without this swap, sort would leave stale entries pointing
-  // at the wrong rows.
-  if (context.cellRegistry && !cell.header.isSelectionColumn) {
-    const previousKey = cellRegistryKeyMap.get(cellElement);
-    const nextKey = `${cell.rowId}-${cell.header.accessor}`;
-    if (previousKey !== nextKey) {
-      if (previousKey) {
-        const previousEntry = context.cellRegistry.get(previousKey);
-        if (previousEntry) {
-          context.cellRegistry.delete(previousKey);
-          context.cellRegistry.set(nextKey, previousEntry);
-        }
-      }
-      cellRegistryKeyMap.set(cellElement, nextKey);
-    }
-  }
+  // No registry re-keying needed: the cell registry is keyed by the row's
+  // STABLE identity (`stableRowKey ?? rowId`), which is the same identity that
+  // maps this DOM cell in `renderedCells`. That identity follows the logical
+  // row across sort/filter/reorder, so a reused DOM cell keeps the exact same
+  // registry key and the entry stays valid without any delete/set swap.
+  //
+  // (Historically this re-keyed `${positionalRowId}-${accessor}` on every
+  // sort, which corrupted the registry: when rows permuted, one cell's
+  // `set(nextKey)` overwrote another cell's still-needed entry and a later
+  // `delete(previousKey)` dropped the survivor, so `updateData` lookups for
+  // the affected rows silently missed — live updates "stopped" after sorting.)
 
   // Update cell content (important for sorting/filtering where row data changes).
   // Skip full content replace for expandable cells so the expand icon DOM node is preserved;
