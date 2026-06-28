@@ -199,6 +199,18 @@ input {
   top: calc(var(--st-calculated-header-height, 0px) - var(--st-external-scroll-padding-top, 0px));
 }
 
+/* External scroll mode: pin the column editor's vertical label to the top of
+   the scroll viewport so it stays visible as the page scrolls (mirrors the
+   sticky header). The label normally stretches the full bar height
+   (flex-grow), which leaves sticky no travel room — collapse it to its content
+   height and align to the top so it has the full bar height to stick within. */
+.simple-table-root.st-external-scroll .st-column-editor-text {
+  position: sticky;
+  top: calc(-1 * var(--st-external-scroll-padding-top, 0px));
+  align-self: flex-start;
+  flex-grow: 0;
+}
+
 .st-wrapper-container {
   position: relative;
   display: flex;

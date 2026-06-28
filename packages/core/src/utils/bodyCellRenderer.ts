@@ -677,7 +677,11 @@ export const renderBodyCells = (
       // size; play.consider's cross-container check skips the FLIP, so
       // the cell simply appears at its new position. Sibling columns in
       // both sections still FLIP-shift to reflow.
-      !animationCoordinator.hasSnapshotEntry(cellId)
+      !animationCoordinator.hasSnapshotEntry(cellId) &&
+      // ...and not a column that was already renderable before this accordion
+      // toggle and merely re-entered the virtualization band after the
+      // collapse clamped scrollLeft. Those must not animate from width 0.
+      !animationCoordinator.wasRenderableBeforeAccordion(String(cell.header.accessor))
     ) {
       if (accordionAxis === "vertical") {
         cellElement.style.height = "0px";

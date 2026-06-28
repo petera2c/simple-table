@@ -308,7 +308,12 @@ export const renderHeaderCells = (
       // full size, teleporting into place. play.consider's
       // cross-container check then skips the FLIP, while sibling cells
       // in both sections continue to FLIP-shift around the moving column.
-      !context.animationCoordinator.hasSnapshotEntry(cellId)
+      !context.animationCoordinator.hasSnapshotEntry(cellId) &&
+      // ...and skip columns that were already renderable before this accordion
+      // toggle but merely re-entered the virtualization band (the collapsed
+      // group shrank the content width, clamping scrollLeft so previously
+      // off-screen columns are recreated). Those must NOT animate from width 0.
+      !context.animationCoordinator.wasRenderableBeforeAccordion(String(cell.header.accessor))
     ) {
       if (accordionAxis === "vertical") {
         cellElement.style.height = "0px";

@@ -254,7 +254,14 @@ export class TableRenderer {
       },
       setCollapsedHeaders: (value: any) => {
         if (typeof value === "function") {
-          deps.setCollapsedHeaders(value(deps.collapsedHeaders));
+          // Seed the functional update from the LIVE collapsed set, not the
+          // per-render `deps.collapsedHeaders` snapshot. The collapse toggle's
+          // click handler closes over the render context from when the header
+          // cell was first created (cells are reused, not recreated), so that
+          // snapshot is stale — using it as the base drops every other group's
+          // collapsed state, letting only one group be collapsed at a time.
+          const base = deps.getCollapsedHeaders ? deps.getCollapsedHeaders() : deps.collapsedHeaders;
+          deps.setCollapsedHeaders(value(base));
         } else {
           deps.setCollapsedHeaders(value);
         }

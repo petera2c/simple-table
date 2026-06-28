@@ -186,6 +186,21 @@ export class AnimationCoordinator {
    * rather than appearing in place. Cleared at the end of {@link play}.
    */
   private incomingOrigins: Map<string, CellPosition> | null = null;
+  /**
+   * Accessors that were already renderable (visible leaf/group columns) in the
+   * pre-change layout for an in-flight accordion-horizontal toggle. Set once
+   * per collapse/expand render and consumed by the renderers' grow-from-zero
+   * gate so a column that merely re-enters the virtualization band (because the
+   * collapsed group shrank the content width and clamped scrollLeft) is NOT
+   * mistaken for a freshly-expanded column and animated from width 0.
+   *
+   * Header cells have no full pre-change conceptual layout the way body cells do
+   * (see SectionRenderer.getCurrentBodyLayouts), so `hasSnapshotEntry` alone
+   * can't tell "newly visible" apart from "scrolled back into view". This set
+   * supplies the missing pre-change visibility signal. Cleared at the end of
+   * {@link play}.
+   */
+  private accordionPreVisibleAccessors: Set<string> | null = null;
   private inFlight: Map<string, InFlightCell> = new Map();
   /** Outgoing cells the renderer handed off; keyed per container so play() finds them. */
   private retainedCells: Map<HTMLElement, Map<string, HTMLElement>> = new Map();
@@ -289,6 +304,31 @@ export class AnimationCoordinator {
       return;
     }
     this.incomingOrigins = origins && origins.size > 0 ? origins : null;
+  }
+
+  /**
+   * Register the set of accessors that were renderable in the pre-change layout
+   * of an accordion-horizontal toggle. Must be set after `captureSnapshot` and
+   * before the render that creates cells. Consumed and cleared by the next
+   * {@link play}. Pass `null` (e.g. for vertical/row accordions) to disable the
+   * re-entry guard so behavior is unchanged.
+   */
+  setAccordionPreVisibleAccessors(accessors: Set<string> | null): void {
+    if (!this.isEnabled()) {
+      this.accordionPreVisibleAccessors = null;
+      return;
+    }
+    this.accordionPreVisibleAccessors = accessors && accessors.size > 0 ? accessors : null;
+  }
+
+  /**
+   * True when `accessor` was already a renderable column before the current
+   * accordion-horizontal toggle. Renderers use this to skip the grow-from-zero
+   * animation for columns that only re-entered the virtualization band rather
+   * than genuinely becoming visible from an expand.
+   */
+  wasRenderableBeforeAccordion(accessor: string): boolean {
+    return this.accordionPreVisibleAccessors?.has(accessor) ?? false;
   }
 
   /**
@@ -691,6 +731,16 @@ export class AnimationCoordinator {
     const incomingOrigins = this.incomingOrigins;
     this.snapshot = null;
     this.incomingOrigins = null;
+    // NOTE: do NOT clear `accordionPreVisibleAccessors` here. A single
+    // collapse/expand toggle can produce a follow-up micro-render (e.g. the
+    // collapsed group shrinks the content width, clamping scrollLeft, which
+    // re-renders the columns that just scrolled back into view) that runs
+    // AFTER this play() but is still part of the same accordion window. Those
+    // re-entering columns must still see the pre-change visibility set so they
+    // aren't mistaken for freshly-expanded columns. The set is recomputed at
+    // the start of every horizontal toggle and reset to null on vertical
+    // toggles, and it's only consulted while `accordionAxis` is active, so
+    // letting it outlive a single play() is safe.
 
     if (!this.isEnabled() || !snapshot) {
       // Nothing to play. Drop only retained cells that aren't already
@@ -994,6 +1044,7 @@ export class AnimationCoordinator {
   cancel(): void {
     this.snapshot = null;
     this.incomingOrigins = null;
+    this.accordionPreVisibleAccessors = null;
     this.clearScrollerMetricsCache();
     if (this.scheduledFlip) {
       cancelAnimationFrame(this.scheduledFlip.rafId);

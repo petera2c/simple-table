@@ -1,6 +1,6 @@
 import { SimpleTableConfig } from "../types/SimpleTableConfig";
 import { TableAPI } from "../types/TableAPI";
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
 import Row from "../types/Row";
 import { CustomTheme, areCustomThemesEqual } from "../types/CustomTheme";
 import RowState from "../types/RowState";
@@ -399,10 +399,43 @@ export class SimpleTableVanilla {
    * No-op when animations are disabled (which already includes the
    * prefers-reduced-motion check via {@link AnimationCoordinator.isEnabled}).
    */
+  /**
+   * Walk the CURRENT (pre-change) header tree and collect every accessor that
+   * is renderable as a header cell given the current collapsed/hidden state —
+   * group headers plus the leaf columns visible under them (honoring
+   * `showWhen` and the collapsed set). Used by {@link beginAccordionAnimation}
+   * to seed the animation coordinator's re-entry guard.
+   */
+  private collectAccordionRenderableAccessors(): Set<string> {
+    const set = new Set<string>();
+    const visit = (header: HeaderObject): void => {
+      if (header.hide || header.excludeFromRender) return;
+      set.add(String(header.accessor));
+      if (!header.children || header.children.length === 0) return;
+      const isCollapsed = this.collapsedHeaders.has(header.accessor);
+      for (const child of header.children) {
+        const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
+        const childVisible = isCollapsed
+          ? showWhen === "parentCollapsed" || showWhen === "always"
+          : showWhen === "parentExpanded" || showWhen === "always";
+        if (childVisible) visit(child);
+      }
+    };
+    for (const header of this.headers) visit(header);
+    return set;
+  }
+
   private beginAccordionAnimation(axis: AccordionAxis): void {
     if (!this.animationCoordinator.isEnabled()) return;
     if (axis === null) return;
     this.captureAnimationSnapshot();
+    // Record which columns are renderable in the current (pre-change) layout so
+    // the grow-from-zero gate can tell a freshly-expanded column apart from one
+    // that merely re-enters the virtualization band after the collapse clamps
+    // scrollLeft. Only meaningful for the horizontal (column) accordion.
+    this.animationCoordinator.setAccordionPreVisibleAccessors(
+      axis === "horizontal" ? this.collectAccordionRenderableAccessors() : null,
+    );
     this.pendingAccordionAxis = axis;
 
     const duration = this.animationCoordinator.getDuration();
