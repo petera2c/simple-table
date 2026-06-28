@@ -46,7 +46,7 @@ export const metadata: Metadata = {
 
 export default function ExamplesLayout({ children }: { children: React.ReactNode }) {
   return (
-    <PageLayout sidebar={null}>
+    <PageLayout sidebar={null} overflowVisible>
       <Suspense fallback={<div />}>
         <ExamplesProvider>{children}</ExamplesProvider>
       </Suspense>

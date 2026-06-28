@@ -395,20 +395,76 @@ export const getCRMHeaders = (isDark: boolean): ReactHeaderObject[] => {
       cellRenderer: ({ row }: CellRendererProps) => {
         const listName = row.list as string;
 
+        const palette: Record<string, { bg: string; text: string }> = isDark
+          ? {
+              "Hot Leads": { bg: "#991b1b", text: "#fca5a5" },
+              "Warm Leads": { bg: "#9a3412", text: "#fed7aa" },
+              "Cold Leads": { bg: "#1e3a8a", text: "#93c5fd" },
+              Enterprise: { bg: "#581c87", text: "#c4b5fd" },
+              SMB: { bg: "#065f46", text: "#86efac" },
+              default: { bg: "#374151", text: "#e5e7eb" },
+            }
+          : {
+              "Hot Leads": { bg: "#fff1f0", text: "#a8071a" },
+              "Warm Leads": { bg: "#fff7e6", text: "#ad4e00" },
+              "Cold Leads": { bg: "#e6f7ff", text: "#0050b3" },
+              Enterprise: { bg: "#f9f0ff", text: "#391085" },
+              SMB: { bg: "#f6ffed", text: "#2a6a0d" },
+              default: { bg: "#f0f0f0", text: "rgba(0, 0, 0, 0.85)" },
+            };
+
+        const style = palette[listName] || palette.default!;
+
         return (
-          <a
-            href="#"
-            onClick={(e) => e.preventDefault()}
+          <span
             style={{
-              cursor: "pointer",
-              fontSize: "0.875rem",
-              color: colors.link,
-              textDecoration: "none",
-              fontWeight: "600",
+              backgroundColor: style.bg,
+              color: style.text,
+              padding: "2px 10px",
+              fontSize: "0.8125rem",
+              fontWeight: 600,
+              borderRadius: "9999px",
+              display: "inline-block",
             }}
           >
             {listName}
-          </a>
+          </span>
+        );
+      },
+    },
+    {
+      accessor: "_pipeline",
+      label: "PIPELINE",
+      width: "1.2fr",
+      minWidth: 150,
+      align: "center",
+      cellRenderer: ({ row }: CellRendererProps) => {
+        const score = (row.aiScore as number) || 0;
+        const percent = Math.max(0, Math.min(100, Math.round((score / 5) * 100)));
+        const fill = percent >= 80 ? colors.accent : percent >= 40 ? colors.link : colors.textTertiary;
+
+        return (
+          <div style={{ display: "flex", flexDirection: "column", gap: "4px", width: "100%" }}>
+            <div
+              style={{
+                width: "100%",
+                height: "6px",
+                borderRadius: "9999px",
+                backgroundColor: colors.tagBg,
+                overflow: "hidden",
+              }}
+            >
+              <div
+                style={{
+                  width: `${percent}%`,
+                  height: "100%",
+                  borderRadius: "9999px",
+                  backgroundColor: fill,
+                }}
+              />
+            </div>
+            <span style={{ fontSize: "12px", color: colors.textSecondary }}>{percent}% qualified</span>
+          </div>
         );
       },
     },

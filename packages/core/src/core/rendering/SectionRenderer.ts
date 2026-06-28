@@ -564,6 +564,7 @@ export class SectionRenderer {
       errorStateRenderer: context.errorStateRenderer,
       emptyStateRenderer: context.emptyStateRenderer,
       icons: context.icons,
+      createNestedTable: context.createNestedTable,
     };
 
     nestedRows.forEach((tableRow) => {

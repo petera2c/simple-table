@@ -11,6 +11,7 @@ export const HEADERS: ReactHeaderObject[] = [
     minWidth: 180,
     pinned: "left",
     type: "string",
+    tooltip: "Unique server identifier",
     width: "1.2fr",
     cellRenderer: ({ row }: CellRendererProps) => {
       return (
@@ -29,6 +30,7 @@ export const HEADERS: ReactHeaderObject[] = [
     label: "Name",
     minWidth: 200,
     type: "string",
+    tooltip: "Human-readable server name",
     width: "1.5fr",
   },
   {
@@ -57,6 +59,7 @@ export const HEADERS: ReactHeaderObject[] = [
         isEditable: true,
         align: "right",
         type: "number",
+        tooltip: "Current CPU utilization",
         cellRenderer: ({ row, theme }: CellRendererProps) => {
           const cpu = row.cpuUsage as number;
 
@@ -152,6 +155,7 @@ export const HEADERS: ReactHeaderObject[] = [
         isEditable: true,
         align: "right",
         type: "number",
+        tooltip: "Current memory utilization",
         cellRenderer: ({ row, theme }: CellRendererProps) => {
           const memory = row.memoryUsage as number;
 
@@ -247,6 +251,7 @@ export const HEADERS: ReactHeaderObject[] = [
         isEditable: true,
         align: "right",
         type: "number",
+        tooltip: "Current disk utilization",
         cellRenderer: ({ row, theme }: CellRendererProps) => {
           const disk = row.diskUsage as number;
           return `${disk.toFixed(1)}%`;
@@ -261,6 +266,7 @@ export const HEADERS: ReactHeaderObject[] = [
         isEditable: true,
         align: "right",
         type: "number",
+        tooltip: "Average response time in milliseconds",
         cellRenderer: ({ row, theme }: CellRendererProps) => {
           const responseTime = row.responseTime as number;
 
@@ -345,6 +351,7 @@ export const HEADERS: ReactHeaderObject[] = [
     isEditable: false,
     align: "center",
     type: "enum",
+    tooltip: "Current operational status",
     enumOptions: [
       { label: "Online", value: "online" },
       { label: "Warning", value: "warning" },

@@ -12,6 +12,7 @@ import { SelectionManager } from "../../managers/SelectionManager";
 import { RowSelectionManager } from "../../managers/RowSelectionManager";
 import type { AnimationCoordinator, CellPosition } from "../../managers/AnimationCoordinator";
 import type { AccordionAxis } from "../../utils/accordionAnimation";
+import type { NestedTableFactory } from "../../utils/nestedGridRowRenderer";
 import { TableRenderer } from "./TableRenderer";
 import { flattenRows, FlattenRowsResult } from "../../utils/rowFlattening";
 import {
@@ -63,6 +64,8 @@ export interface RenderContext {
   internalIsLoading: boolean;
   isResizing: boolean;
   localRows: Row[];
+  /** Injected factory for nested grid tables (breaks the SimpleTableVanilla import cycle). */
+  createNestedTable?: NestedTableFactory;
   mainBodyRef: { current: HTMLDivElement | null };
   mainHeaderRef: { current: HTMLDivElement | null };
   onRender: () => void;
@@ -820,6 +823,7 @@ export class RenderOrchestrator {
       selectionManager: context.selectionManager,
       rowSelectionManager: context.rowSelectionManager,
       rowStateMap: context.rowStateMap,
+      createNestedTable: context.createNestedTable,
       onRender: context.onRender,
       setIsResizing: context.setIsResizing,
       setHeaders: context.setHeaders,

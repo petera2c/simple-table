@@ -10,6 +10,8 @@ import {
   faServer,
   faMusic,
   faUserTie,
+  faBitcoinSign,
+  faFutbol,
 } from "@fortawesome/free-solid-svg-icons";
 import ThemeSelector from "@/components/ThemeSelector";
 import type { Theme } from "@simple-table/react";
@@ -18,6 +20,18 @@ import { useExamplesContext } from "@/providers/ExamplesProvider";
 import { ReactNode } from "react";
 
 const examples = [
+  {
+    id: "crypto",
+    label: "Crypto",
+    path: "/examples/crypto",
+    icon: faBitcoinSign,
+  },
+  {
+    id: "soccer",
+    label: "Sports",
+    path: "/examples/soccer",
+    icon: faFutbol,
+  },
   {
     id: "crm",
     label: "CRM",

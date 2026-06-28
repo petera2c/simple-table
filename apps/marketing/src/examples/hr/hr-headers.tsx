@@ -248,15 +248,26 @@ const getThemeColors = (theme?: string) => {
   return themes[theme as keyof typeof themes] || themes["modern-light"];
 };
 
+// Deterministic HSL color from a string seed (gives each employee a distinct avatar).
+const colorFromName = (str: string): string => {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return `hsl(${Math.abs(hash) % 360}, 60%, 50%)`;
+};
+
 // Custom Avatar component
 const Avatar = ({
   children,
   size,
   theme,
+  bgColor,
 }: {
   children: React.ReactNode;
   size?: string;
   theme?: string;
+  bgColor?: string;
 }) => {
   const sizePx = size === "small" ? 24 : 32;
   const colors = getThemeColors(theme);
@@ -270,9 +281,10 @@ const Avatar = ({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: colors.avatar.bg,
+        backgroundColor: bgColor ?? colors.avatar.bg,
         color: colors.avatar.text,
         fontSize: size === "small" ? "12px" : "14px",
+        fontWeight: 600,
       }}
     >
       {children}
@@ -408,7 +420,7 @@ export const HEADERS: ReactHeaderObject[] = [
 
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
-          <Avatar size="small" theme={theme}>
+          <Avatar size="small" theme={theme} bgColor={colorFromName(name || initials)}>
             {initials}
           </Avatar>
           <div style={{ marginLeft: "8px" }}>

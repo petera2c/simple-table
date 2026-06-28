@@ -1,35 +1,20 @@
 import CellValue from "../../types/CellValue";
 import type Row from "../../types/Row";
-import type TableRow from "../../types/TableRow";
 import { getCellId } from "../cellUtils";
 import { getNestedValue, setNestedValue } from "../rowUtils";
 import { AbsoluteBodyCell, CellData, CellRegistryEntry, CellRenderContext } from "./types";
 import { addTrackedEventListener } from "./eventTracking";
 import { createEditor } from "./editing";
 import { createCellContent } from "./content";
+import { CellLiveRef, cellLiveRefMap } from "./cellLiveRef";
+
+// Re-exported for backwards compatibility with existing import sites.
+export { cellLiveRefMap };
+export type { CellLiveRef };
 
 // Global map for efficient row hover tracking: stable rowId -> Set<HTMLElement>
 // (Visual rowIndex within the viewport slice can change on scroll; rowId does not.)
 const rowCellsMap = new Map<string, Set<HTMLElement>>();
-
-// WeakMap holding a mutable row + tableRow ref per cell element so click
-// handlers (cell click, chevron expand) always read the latest data even when
-// the cell DOM node is reused across renders. The chevron handler in
-// `createExpandIcon` looks this up via `closest('[data-row-id]')` to avoid
-// stale-closure rowIds after sort/filter/reorder reuses the same DOM cell for
-// a row whose positional rowId has changed.
-export interface CellLiveRef {
-  row: Row;
-  tableRow: TableRow;
-  // Latest render context for this cell. Refreshed every full render so the
-  // cell-registry `updateContent` path (driven by `updateData`, e.g. live
-  // metric ticks) re-renders content with the CURRENT theme/handlers instead
-  // of the context captured when the DOM cell was first created. Without this,
-  // a post-mount theme switch is immediately reverted on the next live update
-  // because the stale closure re-renders custom cell content with the old theme.
-  context: CellRenderContext;
-}
-export const cellLiveRefMap = new WeakMap<HTMLElement, CellLiveRef>();
 
 // Per-element registry key so we can re-key entries when a cell is reused
 // for a different row across sort/scroll without leaving stale entries behind.

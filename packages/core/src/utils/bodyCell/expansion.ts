@@ -1,7 +1,7 @@
 import { AbsoluteBodyCell, CellRenderContext } from "./types";
 import { addTrackedEventListener } from "./eventTracking";
 import { isRowExpanded, expandStateKey } from "../rowUtils";
-import { cellLiveRefMap } from "./styling";
+import { cellLiveRefMap } from "./cellLiveRef";
 
 // Create expand/collapse icon container for row grouping
 // Uses the icon from context.icons.expand (configured by user or default)

@@ -1044,6 +1044,12 @@ export class SimpleTableVanilla {
       expandedDepths: this.expandedDepths,
       isResizing: this.isResizing,
       internalIsLoading: this.internalIsLoading,
+      // Inject the constructor for nested grid tables. Supplying it here (rather
+      // than letting nestedGridRowRenderer import this class) breaks the module
+      // cycle SimpleTableVanilla → RenderOrchestrator → TableRenderer →
+      // SectionRenderer → nestedGridRowRenderer → SimpleTableVanilla.
+      createNestedTable: (container, nestedConfig) =>
+        new SimpleTableVanilla(container, nestedConfig),
       cellRegistry: this.cellRegistry,
       headerRegistry: this.headerRegistry,
       draggedHeaderRef: this.draggedHeaderRef,

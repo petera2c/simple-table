@@ -268,6 +268,23 @@ export const SALES_HEADERS: ReactHeaderObject[] = [
     tooltip: "Name of the sales representative",
   },
   {
+    accessor: "trend",
+    label: "Quota Trend",
+    width: 160,
+    minWidth: 140,
+    isSortable: false,
+    isEditable: false,
+    filterable: false,
+    align: "center",
+    type: "lineAreaChart",
+    tooltip: "Rolling quota attainment over the last 8 periods",
+    chartOptions: {
+      height: 34,
+      strokeWidth: 2,
+      fillOpacity: 0.18,
+    },
+  },
+  {
     accessor: "salesMetrics",
     label: "Sales Metrics",
     width: 600,

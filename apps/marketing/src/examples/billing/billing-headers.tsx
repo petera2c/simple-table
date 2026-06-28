@@ -1,4 +1,10 @@
-import type { ReactHeaderObject, CellRendererProps, ValueFormatterProps } from "@simple-table/react";
+import type {
+  ReactHeaderObject,
+  CellRendererProps,
+  ValueFormatterProps,
+  ValueGetterProps,
+} from "@simple-table/react";
+import { ProgressBar, getThemeColors } from "../_shared";
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -140,6 +146,30 @@ export const HEADERS: ReactHeaderObject[] = [
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })}`;
+    },
+  },
+  {
+    accessor: "recognizedPercent",
+    label: "Recognized %",
+    width: 190,
+    isSortable: true,
+    isEditable: false,
+    align: "left",
+    type: "number",
+    // Derived: share of total amount that has been recognized as revenue.
+    valueGetter: ({ row }: ValueGetterProps) => {
+      const amount = (row.amount as number) || 0;
+      const recognized = (row.recognizedRevenue as number) || 0;
+      return amount > 0 ? Math.round((recognized / amount) * 100) : 0;
+    },
+    cellRenderer: ({ row, theme }: CellRendererProps) => {
+      const amount = (row.amount as number) || 0;
+      const recognized = (row.recognizedRevenue as number) || 0;
+      if (amount <= 0) return <span style={{ color: getThemeColors(theme).muted }}>—</span>;
+      const percent = Math.max(0, Math.min(100, Math.round((recognized / amount) * 100)));
+      const c = getThemeColors(theme);
+      const color = percent >= 90 ? c.success : percent >= 50 ? c.primary : c.warning;
+      return <ProgressBar percent={percent} theme={theme} color={color} caption={`${percent}%`} />;
     },
   },
   ...generateMonthHeaders(), // Add the monthly columns

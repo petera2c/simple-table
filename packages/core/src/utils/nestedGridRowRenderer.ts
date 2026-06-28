@@ -13,7 +13,25 @@ import {
   calculateFinalNestedGridHeight,
 } from "./rowUtils";
 import { calculateRowTopPosition, type HeightOffsets } from "./infiniteScrollUtils";
-import { SimpleTableVanilla } from "../core/SimpleTableVanilla";
+
+/**
+ * Minimal surface of a table instance this renderer drives. Declared
+ * structurally so this module never has to statically import the concrete
+ * `SimpleTableVanilla` class — that import would close a cycle
+ * (SimpleTableVanilla → RenderOrchestrator → TableRenderer → SectionRenderer →
+ * nestedGridRowRenderer → SimpleTableVanilla). The class is injected at render
+ * time via {@link NestedTableFactory} instead.
+ */
+export interface NestedTableInstance {
+  mount: () => void;
+  destroy: () => void;
+}
+
+/** Factory injected by the host table to instantiate a nested table. */
+export type NestedTableFactory = (
+  container: HTMLElement,
+  config: SimpleTableConfig,
+) => NestedTableInstance;
 
 export interface NestedGridRowRenderContext {
   rowHeight: number;
@@ -26,6 +44,8 @@ export interface NestedGridRowRenderContext {
   errorStateRenderer?: SimpleTableConfig["errorStateRenderer"];
   emptyStateRenderer?: SimpleTableConfig["emptyStateRenderer"];
   icons?: SimpleTableConfig["icons"];
+  /** Injected constructor for nested tables (breaks the import cycle). */
+  createNestedTable?: NestedTableFactory;
 }
 
 /**
@@ -128,7 +148,12 @@ export function createNestedGridRow(
     icons,
   };
 
-  const nestedTableInstance = new SimpleTableVanilla(innerContainer, nestedConfig);
+  if (!context.createNestedTable) {
+    throw new Error(
+      "createNestedGridRow: context.createNestedTable factory was not provided",
+    );
+  }
+  const nestedTableInstance = context.createNestedTable(innerContainer, nestedConfig);
   nestedTableInstance.mount();
 
   const cleanup = (): void => {

@@ -1222,6 +1222,20 @@ export const SEO_STRINGS = {
       keywords:
         "simple-table, data-grid, datagrid, data table, sales pipeline, sales dashboard, revenue table, sales metrics, responsive table, javascript data grid",
     },
+    crypto: {
+      title: "Crypto Markets Dashboard with Simple Table",
+      description:
+        "Build a live crypto markets dashboard with Simple Table. A JavaScript data grid with real-time prices, sparkline charts, market cap, and 24h change across thousands of assets, using external/window scroll so the page drives row virtualization.",
+      keywords:
+        "simple-table, data-grid, datagrid, data table, crypto dashboard, cryptocurrency table, live prices, market cap table, sparkline charts, real-time data grid, window scroll, external scroll, responsive table, javascript data grid",
+    },
+    soccer: {
+      title: "Sports Analytics Dashboard with Simple Table",
+      description:
+        "Build a sports player analytics dashboard with Simple Table. A JavaScript data grid for goals, assists, expected goals, ratings, and form across an entire league using a responsive datagrid.",
+      keywords:
+        "simple-table, data-grid, datagrid, data table, sports analytics, player statistics, sports dashboard, league table, stats table, responsive table, javascript data grid",
+    },
   },
   liveUpdates: {
     title: "Live Updates in Simple Table Data Grid",

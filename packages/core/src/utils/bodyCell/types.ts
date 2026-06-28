@@ -14,6 +14,7 @@ import type {
   VanillaErrorStateRenderer,
   VanillaLoadingStateRenderer,
 } from "../../types/RowStateRendererProps";
+import type { NestedTableFactory } from "../nestedGridRowRenderer";
 
 type SetStateAction<T> = T | ((prevState: T) => T);
 type Dispatch<A> = (value: A) => void;
@@ -143,6 +144,13 @@ export interface CellRenderContext {
   loadingStateRenderer?: VanillaLoadingStateRenderer;
   errorStateRenderer?: VanillaErrorStateRenderer;
   emptyStateRenderer?: VanillaEmptyStateRenderer;
+
+  /**
+   * Factory used to instantiate nested grid tables. Injected by the host table
+   * so {@link nestedGridRowRenderer} never has to import the concrete
+   * `SimpleTableVanilla` class (which would create a render-module import cycle).
+   */
+  createNestedTable?: NestedTableFactory;
 
   // Helper functions from context
   getBorderClass: (cell: CellData) => string;

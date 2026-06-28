@@ -31,6 +31,7 @@ import {
 import { canDisplaySection } from "../../utils/generalUtils";
 import { flattenHeaders } from "../../utils/headerUtils";
 import type TableRow from "../../types/TableRow";
+import type { NestedTableFactory } from "../../utils/nestedGridRowRenderer";
 import { rowIdToString } from "../../utils/rowUtils";
 
 export interface TableRendererDeps {
@@ -89,6 +90,8 @@ export interface TableRendererDeps {
   setIsResizing: (value: boolean) => void;
   setRowStateMap: (map: Map<string | number, any>) => void;
   sortManager: SortManager | null;
+  /** Injected factory for nested grid tables (breaks the SimpleTableVanilla import cycle). */
+  createNestedTable?: NestedTableFactory;
 }
 
 export class TableRenderer {
@@ -539,6 +542,7 @@ export class TableRenderer {
       loadingStateRenderer: deps.config.loadingStateRenderer,
       errorStateRenderer: deps.config.errorStateRenderer,
       emptyStateRenderer: deps.config.emptyStateRenderer,
+      createNestedTable: deps.createNestedTable,
       getBorderClass: (cell) => deps.selectionManager?.getBorderClass(cell) || "",
       isSelected: (cell) => deps.selectionManager?.isSelected(cell) || false,
       isInitialFocusedCell: (cell) => deps.selectionManager?.isInitialFocusedCell(cell) || false,

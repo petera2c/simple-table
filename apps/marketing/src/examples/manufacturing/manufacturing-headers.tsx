@@ -273,6 +273,23 @@ export const HEADERS: ReactHeaderObject[] = [
     },
   },
   {
+    accessor: "oee",
+    label: "OEE",
+    width: 140,
+    isSortable: false,
+    isEditable: false,
+    filterable: false,
+    align: "center",
+    type: "barChart",
+    tooltip: "Efficiency, Utilization, Quality",
+    chartOptions: {
+      min: 0,
+      max: 100,
+      height: 34,
+      gap: 3,
+    },
+  },
+  {
     accessor: "outputRate",
     label: "Output (units/shift)",
     width: 200,
