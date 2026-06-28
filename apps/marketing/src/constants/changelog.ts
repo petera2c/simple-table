@@ -21,6 +21,11 @@ export const v3_8_6: ChangelogEntry = {
       type: "improvement",
       description: "Sticky column editor label.",
     },
+    {
+      type: "bugfix",
+      description:
+        "Collapsing a column group no longer animates unrelated columns, and multiple groups can stay collapsed at once.",
+    },
   ],
 };
 
