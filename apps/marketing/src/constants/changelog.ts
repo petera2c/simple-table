@@ -21,6 +21,18 @@ export const v3_8_5: ChangelogEntry = {
       type: "bugfix",
       description: "Fixed external scroll virtualization.",
     },
+    {
+      type: "bugfix",
+      description: "Spam-clicking sort no longer breaks animations.",
+    },
+    {
+      type: "improvement",
+      description: "Smoother sort animations with external scroll.",
+    },
+    {
+      type: "bugfix",
+      description: "Live updates resume after spamming sort.",
+    },
   ],
 };
 
