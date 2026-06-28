@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-import PageLayout from "@/components/PageLayout";
-import { ExamplesProvider } from "@/providers/ExamplesProvider";
-import { Suspense } from "react";
+import ExamplesShell from "./ExamplesShell";
 
 export const metadata: Metadata = {
   title: "Data Grid Examples & Demos | Simple Table",
@@ -45,11 +43,5 @@ export const metadata: Metadata = {
 };
 
 export default function ExamplesLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <PageLayout sidebar={null} overflowVisible>
-      <Suspense fallback={<div />}>
-        <ExamplesProvider>{children}</ExamplesProvider>
-      </Suspense>
-    </PageLayout>
-  );
+  return <ExamplesShell>{children}</ExamplesShell>;
 }
