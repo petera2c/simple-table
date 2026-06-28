@@ -10,7 +10,10 @@ interface PageLayoutProps {
    * When true, the content card uses `overflow-visible` instead of the default
    * `overflow-auto`. This lets `position: sticky` descendants (e.g. an external
    * scroll table header) escape up to the page scroller (`#main-scroll-container`)
-   * rather than being captured by the card.
+   * rather than being captured by the card. It also adds `min-w-0` so the card
+   * still clamps to the available width: unlike an `overflow-auto` flex item, an
+   * `overflow-visible` one keeps `min-width: auto`, which would otherwise resolve
+   * to a wide table's content min-width and balloon the card past the page.
    */
   overflowVisible?: boolean;
 }
@@ -23,7 +26,7 @@ const PageLayout: React.FC<PageLayoutProps> = ({ sidebar, children, overflowVisi
           {sidebar}
 
           <motion.div
-            className={`flex flex-col grow ${overflowVisible ? "overflow-visible" : "overflow-auto"} bg-white dark:bg-gray-900 text-gray-800 dark:text-white 
+            className={`flex flex-col grow ${overflowVisible ? "overflow-visible min-w-0" : "overflow-auto"} bg-white dark:bg-gray-900 text-gray-800 dark:text-white 
               rounded-xl my-2 sm:my-3 md:my-4 p-2 sm:p-3 md:p-4 min-h-[calc(100dvh-84px-1.5rem)] 
               shadow-[4px_0_16px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_16px_rgba(0,0,0,0.3)]`}
             initial={{ opacity: 0, y: 20 }}

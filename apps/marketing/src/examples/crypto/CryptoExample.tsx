@@ -25,6 +25,7 @@ export default function CryptoExample({
   // natural size and the page scroller (`#main-scroll-container`) drives row
   // virtualization. The header auto-pins to the top of that scroller via CSS
   // sticky (the examples card uses overflow-visible so it escapes up to it).
+  // Horizontal overflow is handled by the table's own internal section scroll.
   return (
     <SimpleTable
       columnReordering

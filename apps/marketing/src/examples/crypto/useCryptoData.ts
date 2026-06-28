@@ -117,21 +117,27 @@ export function generateCryptoData(count = 1000): CryptoCoin[] {
     const magnitude = Math.pow(10, 4.5 - (i / count) * 8);
     const price = magnitude * (0.5 + rand());
 
-    const change1h = (rand() - 0.5) * 4;
-    const change24h = (rand() - 0.48) * 18;
-    const change7d = (rand() - 0.45) * 40;
-    const change30d = (rand() - 0.42) * 80;
+    // Bull-market tape: changes skew positive so most coins read as "in the green".
+    const change1h = (rand() - 0.4) * 3;
+    const change24h = (rand() - 0.32) * 12;
+    const change7d = (rand() - 0.28) * 26;
+    const change30d = (rand() - 0.24) * 55;
 
-    const circulatingSupply = Math.floor((1e6 + rand() * 5e10) / (1 + i / 50));
+    // Market cap descends realistically by rank (top ~ $1.3T, tail ~ a few hundred K)
+    // instead of multiplying price by an arbitrarily huge supply.
+    const marketCap = Math.pow(10, 12.1 - (i / count) * 6.6) * (0.6 + rand() * 0.8);
+    // Derive supply from cap and price so the Market Cap / Price / Supply columns reconcile.
+    const circulatingSupply = Math.max(1, Math.floor(marketCap / price));
     const hasMax = rand() > 0.35;
     const maxSupply = hasMax
       ? Math.floor(circulatingSupply * (1 + rand() * 1.5))
       : null;
     const supplyPercent = maxSupply ? (circulatingSupply / maxSupply) * 100 : 100;
 
-    const marketCap = price * circulatingSupply;
     const volume24h = marketCap * (0.01 + rand() * 0.35);
-    const athChangePercent = -(rand() * 85);
+    // "% from ATH" skews positive so most coins read as trading at/near fresh highs,
+    // with a few still recovering from a drawdown.
+    const athChangePercent = 18 - Math.pow(rand(), 1.6) * 60;
     const ath = price / (1 + athChangePercent / 100);
 
     coins.push({
