@@ -233,6 +233,9 @@ export const createBodyCellElement = (
     // For dropdown editors, keep the normal cell content visible
     // For inline editors, replace the cell content
     if (isEditing && !isEditInDropdown) {
+      // Tear down any renderer subtree (React portal, etc.) mounted into the
+      // cell before we wipe it, so the adapter doesn't orphan it.
+      liveContext.onRendererHostDiscard?.(cellElement);
       cellElement.innerHTML = "";
       // Remove tabindex from cell when editing to prevent focus conflicts
       cellElement.setAttribute("tabindex", "-1");
@@ -264,6 +267,7 @@ export const createBodyCellElement = (
       }
     } else {
       // Not editing - create normal content span
+      liveContext.onRendererHostDiscard?.(cellElement);
       cellElement.innerHTML = "";
       const contentSpan = document.createElement("span");
       contentSpan.className = `st-cell-content ${
@@ -612,6 +616,9 @@ export const updateBodyCellElement = (
           theme: context.theme,
           skeleton: isSkeleton,
         });
+        // Discard the previous renderer subtree (React portal, etc.) before
+        // replacing the content span's children.
+        context.onRendererHostDiscard?.(contentSpan);
         contentSpan.innerHTML = "";
         createCellContent(cell, context, contentSpan);
       }

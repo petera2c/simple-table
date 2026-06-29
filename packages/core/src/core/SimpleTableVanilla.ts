@@ -234,6 +234,14 @@ export class SimpleTableVanilla {
     this.animationCoordinator = new AnimationCoordinator();
     this.applyAnimationsConfig(config.animations);
 
+    // Authoritative portal/renderer teardown: core signals the host discard
+    // callback at every permanent host-element removal site so framework
+    // adapters can unmount renderer subtrees (React portals, etc.). The
+    // animation coordinator owns the ghost/FLIP/shrink removal paths; the
+    // render orchestrator owns the full-wipe (invalidateCache "all") path.
+    this.animationCoordinator.setOnHostDiscard(config.onRendererHostDiscard);
+    this.renderOrchestrator.setOnRendererHostDiscard(config.onRendererHostDiscard);
+
     this.rebuildRowIndexMap();
     this.initializeManagers();
   }
@@ -1526,6 +1534,11 @@ export class SimpleTableVanilla {
 
     if (config.animations !== undefined) {
       this.applyAnimationsConfig(config.animations);
+    }
+
+    if (config.onRendererHostDiscard !== undefined) {
+      this.animationCoordinator.setOnHostDiscard(config.onRendererHostDiscard);
+      this.renderOrchestrator.setOnRendererHostDiscard(config.onRendererHostDiscard);
     }
 
     if (config.rows !== undefined) {

@@ -136,3 +136,50 @@ describe("AnimationCoordinator — spam-sort coalescing", () => {
     expect(coordinator.isInFlight("rowX-name")).toBe(false);
   });
 });
+
+describe("AnimationCoordinator — onHostDiscard teardown signal", () => {
+  it("fires the callback before permanently removing a retained ghost", () => {
+    const discarded: HTMLElement[] = [];
+    coordinator.setOnHostDiscard((host) => discarded.push(host));
+
+    const cell = makeCell("rowG-name", 0);
+    // Renderer hands the outgoing cell to the coordinator (it removes it from
+    // the rendered-cell registry first, mirroring the real render path).
+    getRenderedCells(container).delete("rowG-name");
+    coordinator.retainCell({
+      cellId: "rowG-name",
+      element: cell,
+      container,
+      newPosition: { left: 0, top: 1000, width: 100, height: 32 },
+    });
+
+    // cancel() sweeps retained ghosts out of the DOM — each must be announced
+    // so the adapter can unmount its portal subtree.
+    coordinator.cancel();
+
+    expect(discarded).toContain(cell);
+    expect(cell.isConnected).toBe(false);
+  });
+
+  it("does NOT fire the callback when a ghost is reclaimed for reuse", () => {
+    const discarded: HTMLElement[] = [];
+    coordinator.setOnHostDiscard((host) => discarded.push(host));
+
+    const cell = makeCell("rowR-name", 0);
+    getRenderedCells(container).delete("rowR-name");
+    coordinator.retainCell({
+      cellId: "rowR-name",
+      element: cell,
+      container,
+      newPosition: { left: 0, top: 1000, width: 100, height: 32 },
+    });
+
+    // The row scrolled back into view: the renderer reclaims the SAME node and
+    // promotes it back to a live cell. Its content must be preserved — so no
+    // discard signal fires.
+    const reclaimed = coordinator.claimRetainedForReuse("rowR-name", container);
+
+    expect(reclaimed).toBe(cell);
+    expect(discarded).toHaveLength(0);
+  });
+});

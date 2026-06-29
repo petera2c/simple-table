@@ -82,9 +82,6 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
       lastSyncedPropsRef.current = reactProps;
       syncedDefaultHeadersRef.current = reactProps.defaultHeaders;
 
-      // Prune portal entries whose host container core has recycled/detached.
-      const detachObserver = bridge.attach(container);
-
       if (ref) {
         const api = instance.getAPI();
         if (typeof ref === "function") {
@@ -95,7 +92,6 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
       }
 
       return () => {
-        detachObserver();
         instance.destroy();
         instanceRef.current = null;
         syncedDefaultHeadersRef.current = undefined;

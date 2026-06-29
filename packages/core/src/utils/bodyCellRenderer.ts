@@ -446,6 +446,9 @@ export const renderBodyCells = (
       }
 
       unregisterCellFromRegistry(element, context.cellRegistry);
+      // Permanent removal (no animation hand-off): tear down any renderer
+      // subtree mounted into this cell before it leaves the DOM.
+      context.onRendererHostDiscard?.(element);
       element.remove();
       renderedCells.delete(cellId);
     }

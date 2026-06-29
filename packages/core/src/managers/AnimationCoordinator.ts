@@ -246,10 +246,28 @@ export class AnimationCoordinator {
    */
   private scheduledFlip: { rafId: number; pending: Array<{ element: HTMLElement }> } | null = null;
 
+  /**
+   * Invoked immediately BEFORE a retained/ghost element is permanently removed
+   * from the DOM (FLIP/shrink/cancel/destroy teardown). Lets framework adapters
+   * tear down renderer subtrees (React portals, etc.) mounted into the element
+   * before it's discarded. NOT called on reuse/reparent paths
+   * ({@link claimRetainedForReuse} success), so a reclaimed ghost keeps its
+   * content.
+   */
+  private onHostDiscard?: (host: HTMLElement) => void;
+
   constructor(opts: AnimationCoordinatorOptions = {}) {
     this.duration = opts.duration ?? DEFAULT_DURATION;
     this.easing = opts.easing ?? DEFAULT_EASING;
     this.prefersReducedMotion = readPrefersReducedMotion();
+  }
+
+  /**
+   * Register the callback fired before a ghost/retained element is permanently
+   * removed (see {@link onHostDiscard}). Additive: passing `undefined` disables it.
+   */
+  setOnHostDiscard(cb: ((host: HTMLElement) => void) | undefined): void {
+    this.onHostDiscard = cb;
   }
 
   setEnabled(enabled: boolean): void {
@@ -566,6 +584,7 @@ export class AnimationCoordinator {
     const existing = map.get(cellId);
     if (existing && existing !== element) {
       this.cancelInFlight(cellId);
+      this.onHostDiscard?.(existing);
       existing.remove();
     }
 
@@ -618,6 +637,7 @@ export class AnimationCoordinator {
       this.cancelInFlight(cellId);
       map.delete(cellId);
       this.snapshot?.delete(cellId);
+      this.onHostDiscard?.(element);
       element.remove();
       return null;
     }
@@ -668,6 +688,7 @@ export class AnimationCoordinator {
     const existing = map.get(cellId);
     if (existing && existing !== element) {
       this.cancelInFlight(cellId);
+      this.onHostDiscard?.(existing);
       existing.remove();
     }
 
@@ -693,6 +714,7 @@ export class AnimationCoordinator {
       if (m && m.get(cellId) === element) {
         m.delete(cellId);
       }
+      this.onHostDiscard?.(element);
       element.remove();
     }, this.duration + SAFETY_TIMEOUT_SLACK);
 
@@ -718,6 +740,7 @@ export class AnimationCoordinator {
     if (!element) return;
     this.cancelInFlight(cellId);
     map.delete(cellId);
+    this.onHostDiscard?.(element);
     element.remove();
   }
 
@@ -751,6 +774,7 @@ export class AnimationCoordinator {
       this.retainedCells.forEach((map) => {
         map.forEach((element, cellId) => {
           if (!this.inFlight.has(cellId)) {
+            this.onHostDiscard?.(element);
             element.remove();
             map.delete(cellId);
           }
@@ -954,8 +978,18 @@ export class AnimationCoordinator {
       const dy = dyRaw - containerShiftY;
       if (Math.abs(dx) < MIN_DELTA && Math.abs(dy) < MIN_DELTA) {
         // No visual movement — if this was a retained cell with no movement
-        // (a degenerate case), still drop it so we don't leak DOM.
-        if (isRetained) element.remove();
+        // (a degenerate case), still drop it so we don't leak DOM. Mirror every
+        // other teardown site: cancel any in-flight transition AND remove the
+        // entry from `retainedCells`. Skipping the map delete left the now
+        // disposed+detached ghost reachable by a later claimRetainedForReuse,
+        // which promoted it back to a live cell whose portal was already torn
+        // down — surfacing as an empty custom-rendered cell after spam-sorting.
+        if (isRetained) {
+          this.cancelInFlight(cellId);
+          this.retainedCells.get(container)?.delete(cellId);
+          this.onHostDiscard?.(element);
+          element.remove();
+        }
         return;
       }
 
@@ -1060,7 +1094,10 @@ export class AnimationCoordinator {
     // Clean up any retained cells that weren't in flight (e.g. cell was
     // retained but never reached the play step).
     this.retainedCells.forEach((map) => {
-      map.forEach((element) => element.remove());
+      map.forEach((element) => {
+        this.onHostDiscard?.(element);
+        element.remove();
+      });
       map.clear();
     });
     this.retainedCells.clear();
@@ -1186,6 +1223,7 @@ export class AnimationCoordinator {
       this.retainedCells.forEach((map) => {
         if (map.get(cellId) === element) map.delete(cellId);
       });
+      this.onHostDiscard?.(element);
       element.remove();
       return;
     }

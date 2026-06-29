@@ -161,6 +161,10 @@ export class RenderOrchestrator {
     return this.tableRenderer.getCurrentBodyLayouts();
   }
 
+  setOnRendererHostDiscard(cb: ((host: HTMLElement) => void) | undefined): void {
+    this.tableRenderer.setOnRendererHostDiscard(cb);
+  }
+
   invalidateCache(type?: "body" | "header" | "context" | "all"): void {
     this.tableRenderer.invalidateCache(type);
     if (!type || type === "all" || type === "body") {

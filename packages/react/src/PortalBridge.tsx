@@ -12,30 +12,11 @@ interface PortalEntry {
 }
 
 /**
- * Grace window (ms) during which an entry whose container is detached is kept
- * fully mounted. Core legitimately detaches-then-reattaches the SAME cell node
- * during overlapping sort/FLIP animations (cell recycling via the animation
- * coordinator's retain/claim path). Keeping the entry mounted across this short
- * window means React keeps the subtree in the (temporarily detached) container,
- * so content travels with the node and reappears on a quick reconnect WITHOUT
- * any unmount/remount churn.
+ * DOM attribute stamped on every registered container so {@link PortalBridge.disposeHost}
+ * can map a host element (or any descendant) core is discarding back to its
+ * portal id.
  */
-const DETACH_GRACE_MS = 1000;
-
-/**
- * How long (ms) a still-detached entry is retained — unmounted — in the
- * {@link PortalBridge}'s detached pool before it is permanently discarded.
- *
- * Under aggressive interaction (e.g. spam-clicking sort) core can leave a cell
- * node detached for longer than {@link DETACH_GRACE_MS} and then reconnect the
- * exact same node. A purely time-based prune cannot tell that reused node apart
- * from a truly-recycled one, so once past the grace window we unmount the entry
- * but retain it keyed by id; if its exact container reconnects (detected by the
- * same MutationObserver that drives pruning) the entry is restored and React
- * re-mounts the content. Entries that stay detached for this whole TTL are
- * genuinely recycled and are dropped then, preserving the anti-leak behaviour.
- */
-const DETACHED_POOL_TTL_MS = 30000;
+const PORTAL_ID_ATTR = "data-st-portal-id";
 
 /**
  * Bridges simple-table-core's imperative DOM rendering with React so that custom
@@ -48,15 +29,13 @@ const DETACHED_POOL_TTL_MS = 30000;
  * so the consumer's components are children of the host tree and inherit context,
  * Suspense, error boundaries, etc.
  *
- * Cleanup is driven by the DOM: core recycles cells by clearing/replacing their
- * content (`innerHTML = ""`), which detaches the registered container. A
- * `MutationObserver` (see {@link attach}) drives {@link runPrune}, which unmounts
- * the React subtree for containers that stay detached. Because core also
- * legitimately detaches-then-reattaches the SAME node during overlapping
- * sort/FLIP animations, pruning is tolerant of transient detaches (see
- * {@link DETACH_GRACE_MS} and {@link DETACHED_POOL_TTL_MS}) so a reused node's
- * content is preserved/restored rather than being lost to a permanently empty
- * cell.
+ * Cleanup is authoritative, not inferred: core invokes `onRendererHostDiscard(host)`
+ * — wired to {@link disposeHost} — immediately before it permanently discards a
+ * host element (cell rebuild/edit `innerHTML = ""`, plain cell removal, and the
+ * animation coordinator's ghost/FLIP/shrink teardown). `disposeHost` unregisters
+ * the portal(s) tagged with {@link PORTAL_ID_ATTR} inside that host, so React
+ * unmounts exactly those subtrees. Reuse/reparent paths never signal, so a reused
+ * node keeps its portal entry (and its content) with zero churn.
  */
 export class PortalBridge {
   private entries = new Map<string, PortalEntry>();
@@ -69,56 +48,49 @@ export class PortalBridge {
   private snapshotDirty = true;
 
   private emitScheduled = false;
-  private pruneScheduled = false;
-
-  // First time (ms) each currently-disconnected (but still mounted) container
-  // was observed detached, so the pruner can apply DETACH_GRACE_MS before
-  // unmounting it. Cleared as soon as a container reconnects.
-  private disconnectedSince = new Map<string, number>();
-  // Entries unmounted after the grace window but retained so a later reconnect
-  // of the exact same node can re-mount them (keyed by id). GC'd after
-  // DETACHED_POOL_TTL_MS. `since` is when the entry entered the pool.
-  private detached = new Map<string, { entry: PortalEntry; since: number }>();
-  // Trailing timer that re-runs the prune so still-detached entries advance
-  // through the grace window / pool TTL even when no further DOM mutations occur.
-  private pruneRecheckTimer: ReturnType<typeof setTimeout> | null = null;
 
   /**
    * Register a React node to be rendered into `container`. The container is
    * returned to core synchronously (matching the vanilla renderer contract); the
-   * React subtree commits on the host's next render.
+   * React subtree commits on the host's next render. The container is tagged with
+   * {@link PORTAL_ID_ATTR} so {@link disposeHost} can find it when core discards
+   * the host that owns it.
    */
   register(node: ReactNode, container: HTMLElement): { id: string; unregister: () => void } {
     const id = `st-portal-${this.nextId++}`;
+    container.setAttribute(PORTAL_ID_ATTR, id);
     this.entries.set(id, { id, container, node });
     this.scheduleEmit();
     return { id, unregister: () => this.unregister(id) };
   }
 
   private unregister(id: string): void {
-    this.disconnectedSince.delete(id);
-    this.detached.delete(id);
-    if (this.entries.delete(id)) this.scheduleEmit();
+    const existed = this.entries.delete(id);
+    if (existed) this.scheduleEmit();
   }
 
   /**
-   * Observe a root element and prune entries whose container has been detached by
-   * core (cell recycling). Returns a disconnect function.
+   * Tear down the portal(s) owned by a host element core is permanently
+   * discarding. Collects `host` itself plus every descendant tagged with
+   * {@link PORTAL_ID_ATTR} and unregisters each, so React unmounts exactly those
+   * subtrees. Called via the core `onRendererHostDiscard` callback BEFORE the
+   * host's content is cleared/removed, so the tagged nodes are still queryable.
    */
-  attach(root: HTMLElement): () => void {
-    const observer = new MutationObserver(() => this.schedulePrune());
-    observer.observe(root, { childList: true, subtree: true });
-    return () => observer.disconnect();
-  }
+  disposeHost = (host: HTMLElement): void => {
+    if (typeof host.getAttribute !== "function") return;
+    const ids: string[] = [];
+    const selfId = host.getAttribute(PORTAL_ID_ATTR);
+    if (selfId !== null) ids.push(selfId);
+    const tagged = host.querySelectorAll(`[${PORTAL_ID_ATTR}]`);
+    tagged.forEach((el) => {
+      const id = el.getAttribute(PORTAL_ID_ATTR);
+      if (id !== null) ids.push(id);
+    });
+    for (const id of ids) this.unregister(id);
+  };
 
   /** Remove all entries (used on table teardown). */
   clear(): void {
-    this.disconnectedSince.clear();
-    this.detached.clear();
-    if (this.pruneRecheckTimer !== null) {
-      clearTimeout(this.pruneRecheckTimer);
-      this.pruneRecheckTimer = null;
-    }
     if (this.entries.size === 0) return;
     this.entries.clear();
     this.emit();
@@ -153,85 +125,6 @@ export class PortalBridge {
       this.emitScheduled = false;
       this.emit();
     });
-  }
-
-  // Defer pruning to a microtask so a synchronous detach+reattach (core moving a
-  // cell during animations) is not mistaken for a removal.
-  private schedulePrune(): void {
-    if (this.pruneScheduled) return;
-    this.pruneScheduled = true;
-    queueMicrotask(() => {
-      this.pruneScheduled = false;
-      this.runPrune();
-    });
-  }
-
-  // Two-phase prune that tolerates core detaching-then-reattaching the SAME
-  // cell node (cell recycling during overlapping sort/FLIP animations):
-  //   1. A live entry whose container has been detached for the whole
-  //      DETACH_GRACE_MS window is unmounted but moved to the detached pool
-  //      (retained, keyed by id) rather than discarded.
-  //   2. A pooled entry whose exact container has reconnected is restored to
-  //      the live set (React re-mounts its content). Pooled entries that stay
-  //      detached for DETACHED_POOL_TTL_MS are genuinely recycled and dropped.
-  // A trailing timer re-runs this while anything is pending so the grace window
-  // and pool TTL still advance when no further DOM mutations fire the observer.
-  private runPrune(): void {
-    const now = Date.now();
-    let changed = false;
-    let pending = 0;
-
-    // Phase 1: live entries whose container is currently detached.
-    for (const [id, entry] of this.entries) {
-      if (entry.container.isConnected) {
-        this.disconnectedSince.delete(id);
-        continue;
-      }
-
-      const since = this.disconnectedSince.get(id);
-      if (since === undefined) {
-        // First observed detach — start the grace window; keep it mounted so a
-        // quick reconnect doesn't churn the subtree.
-        this.disconnectedSince.set(id, now);
-        pending++;
-        continue;
-      }
-
-      if (now - since < DETACH_GRACE_MS) {
-        pending++;
-        continue;
-      }
-
-      // Detached past the grace window: unmount but retain for a possible
-      // later reconnect of the same node.
-      this.disconnectedSince.delete(id);
-      this.entries.delete(id);
-      this.detached.set(id, { entry, since: now });
-      pending++;
-      changed = true;
-    }
-
-    // Phase 2: pooled (unmounted) entries — restore on reconnect, GC when stale.
-    for (const [id, rec] of this.detached) {
-      if (rec.entry.container.isConnected) {
-        this.detached.delete(id);
-        this.entries.set(id, rec.entry);
-        changed = true;
-      } else if (now - rec.since >= DETACHED_POOL_TTL_MS) {
-        this.detached.delete(id);
-      } else {
-        pending++;
-      }
-    }
-
-    if (pending > 0 && this.pruneRecheckTimer === null) {
-      this.pruneRecheckTimer = setTimeout(() => {
-        this.pruneRecheckTimer = null;
-        this.runPrune();
-      }, DETACH_GRACE_MS);
-    }
-
-    if (changed) this.emit();
   }
 }
 

@@ -178,6 +178,14 @@ export class SectionRenderer {
   private headerSections: Map<string, HTMLElement> = new Map();
   private bodySections: Map<string, HTMLElement> = new Map();
 
+  /**
+   * Callback fired before a body cell host element is permanently removed in
+   * the {@link invalidateCache} "all" path (which wipes every rendered cell).
+   * Threaded down from the table config so framework adapters can tear down
+   * renderer subtrees (React portals, etc.) before the nodes are discarded.
+   */
+  private onRendererHostDiscard?: (host: HTMLElement) => void;
+
   private bodyCellsCache: Map<string, BodyCellsCacheEntry> = new Map();
   private headerCellsCache: Map<string, HeaderCellsCacheEntry> = new Map();
   private contextCache: Map<string, ContextCacheEntry> = new Map();
@@ -1344,6 +1352,10 @@ export class SectionRenderer {
     return newContext;
   }
 
+  setOnRendererHostDiscard(cb: ((host: HTMLElement) => void) | undefined): void {
+    this.onRendererHostDiscard = cb;
+  }
+
   invalidateCache(type?: "body" | "header" | "context" | "all"): void {
     if (!type || type === "all") {
       this.bodyCellsCache.clear();
@@ -1351,7 +1363,7 @@ export class SectionRenderer {
       this.contextCache.clear();
       // Clear rendered cell elements from all body sections
       this.bodySections.forEach((section) => {
-        cleanupBodyCellRendering(section);
+        cleanupBodyCellRendering(section, this.onRendererHostDiscard);
       });
       // Clear rendered cell elements from all header sections
       this.headerSections.forEach((section) => {

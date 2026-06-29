@@ -126,6 +126,14 @@ export interface CellRenderContext {
   handleRowSelect?: (rowId: string, checked: boolean) => void;
   handleMouseDown: (cell: CellData) => void;
   handleMouseOver: (cell: CellData, clientX: number, clientY: number) => void;
+  /**
+   * Called immediately BEFORE the renderer permanently discards a host element
+   * (e.g. `innerHTML = ""` on cell rebuild/edit, or a plain `element.remove()`).
+   * Framework adapters use this to tear down any renderer subtree (React
+   * portal, etc.) mounted into `host` or one of its descendants. Reuse paths
+   * never call it, so a reused node keeps its content.
+   */
+  onRendererHostDiscard?: (host: HTMLElement) => void;
 
   // Refs and state setters
   cellRegistry?: Map<string, CellRegistryEntry>;

@@ -124,6 +124,10 @@ export function buildVanillaConfig(
     ...rest,
     rows: rows as Row[],
     defaultHeaders: defaultHeaders.map((header) => transformHeader(header, bridge)),
+    // Authoritative portal teardown: core calls this before it permanently
+    // discards any host element, so the bridge unmounts exactly the affected
+    // portal subtrees (no DOM-inference / MutationObserver pruning needed).
+    onRendererHostDiscard: bridge.disposeHost,
     ...(onColumnOrderChange
       ? {
           onColumnOrderChange: (headers: HeaderObject[]) =>

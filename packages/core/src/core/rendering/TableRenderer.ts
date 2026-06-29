@@ -132,6 +132,10 @@ export class TableRenderer {
     }
   }
 
+  setOnRendererHostDiscard(cb: ((host: HTMLElement) => void) | undefined): void {
+    this.sectionRenderer.setOnRendererHostDiscard(cb);
+  }
+
   invalidateCache(type?: "body" | "header" | "context" | "all"): void {
     this.sectionRenderer.invalidateCache(type);
   }
@@ -558,6 +562,7 @@ export class TableRenderer {
       handleMouseDown: (cell) => deps.selectionManager?.handleMouseDown(cell),
       handleMouseOver: (cell, clientX: number, clientY: number) =>
         deps.selectionManager?.handleMouseOver(cell, clientX, clientY),
+      onRendererHostDiscard: deps.config.onRendererHostDiscard,
       isRowSelected: (rowId: string) => deps.rowSelectionManager?.isRowSelected(rowId) ?? false,
       canExpandRowGroup: deps.config.canExpandRowGroup,
       isLoading: deps.internalIsLoading,

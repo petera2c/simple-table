@@ -84,54 +84,62 @@ describe("PortalBridge — emit batching", () => {
   });
 });
 
-describe("PortalBridge — attach prunes detached containers", () => {
-  it("removes entries whose container core has detached from the observed root", async () => {
+describe("PortalBridge — register tags the container", () => {
+  it("stamps data-st-portal-id on the container so disposeHost can find it", () => {
     const bridge = new PortalBridge();
+    const container = makeContainer();
+    const { id } = bridge.register("a", container);
+    expect(container.getAttribute("data-st-portal-id")).toBe(id);
+  });
+});
 
-    const root = document.createElement("div");
-    document.body.appendChild(root);
-    const container = document.createElement("div");
-    root.appendChild(container);
-
+describe("PortalBridge — disposeHost authoritative teardown", () => {
+  it("unregisters the entry when the discarded host IS the registered container", async () => {
+    const bridge = new PortalBridge();
+    const container = makeContainer();
     bridge.register("a", container);
     await flush();
     expect(bridge.getSnapshot()).toHaveLength(1);
 
-    const disconnect = bridge.attach(root);
-
-    // Simulate core recycling the cell: detach the container from the tree.
-    root.removeChild(container);
+    // Core signals it is about to permanently discard this cell host.
+    bridge.disposeHost(container);
     await flush();
-
     expect(bridge.getSnapshot()).toHaveLength(0);
-
-    disconnect();
-    root.remove();
   });
 
-  it("keeps entries whose container is detached and synchronously reattached", async () => {
+  it("unregisters nested portal containers inside a discarded host", async () => {
     const bridge = new PortalBridge();
+    // A cell host whose content holds two portal containers (e.g. a renderer
+    // returning a fragment with multiple portalled children).
+    const host = makeContainer();
+    const inner1 = document.createElement("div");
+    const inner2 = document.createElement("div");
+    host.appendChild(inner1);
+    host.appendChild(inner2);
 
-    const root = document.createElement("div");
-    document.body.appendChild(root);
-    const container = document.createElement("div");
-    root.appendChild(container);
+    bridge.register("first", inner1);
+    bridge.register("second", inner2);
+    await flush();
+    expect(bridge.getSnapshot()).toHaveLength(2);
 
+    bridge.disposeHost(host);
+    await flush();
+    expect(bridge.getSnapshot()).toHaveLength(0);
+  });
+
+  it("is a no-op when the discarded host owns no portal (reuse path)", async () => {
+    const bridge = new PortalBridge();
+    const container = makeContainer();
     bridge.register("a", container);
     await flush();
-
-    const disconnect = bridge.attach(root);
-
-    // A synchronous detach+reattach (e.g. core moving a cell during animation)
-    // must not be mistaken for a removal — pruning is deferred to a microtask.
-    root.removeChild(container);
-    root.appendChild(container);
-    await flush();
-
     expect(bridge.getSnapshot()).toHaveLength(1);
 
-    disconnect();
-    root.remove();
+    // A reused/reparented host that was never registered (and holds no tagged
+    // descendants) must not tear down unrelated entries.
+    const unrelated = makeContainer();
+    bridge.disposeHost(unrelated);
+    await flush();
+    expect(bridge.getSnapshot()).toHaveLength(1);
   });
 });
 

@@ -26,6 +26,10 @@ export const v3_8_6: ChangelogEntry = {
       description:
         "Collapsing a column group no longer animates unrelated columns, and multiple groups can stay collapsed at once.",
     },
+    {
+      type: "bugfix",
+      description: "Fixed empty cells after sorting.",
+    },
   ],
 };
 

@@ -77,6 +77,16 @@ export interface SimpleTableConfig {
   onPageChange?: (page: number) => void | Promise<void>;
   onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>;
   onRowSelectionChange?: (props: RowSelectionChangeProps) => void;
+  /**
+   * Called by the renderer immediately BEFORE it permanently discards a host
+   * element that may contain async-framework renderer output (e.g. React
+   * portals): innerHTML clears on cell rebuild/edit, plain cell removal, and
+   * the animation coordinator's ghost/FLIP/shrink teardown paths. Framework
+   * adapters use this to tear down the renderer subtree mounted into `host`
+   * (or any descendant) so it isn't orphaned. Reuse/reparent paths never fire
+   * it, so a reused node keeps its renderer content.
+   */
+  onRendererHostDiscard?: (host: HTMLElement) => void;
   onSortChange?: (sort: SortColumn | null) => void;
   quickFilter?: QuickFilterConfig;
   rowButtons?: RowButton[];
