@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import CSVExportContent from "@/components/pages/docs-pages/CSVExportContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.csvExport.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const CSVExportPage = () => {
-  return <CSVExportContent />;
+  return (
+    <DocsDemoCode slug="csv-export">
+      <CSVExportContent />
+    </DocsDemoCode>
+  );
 };
 
 export default CSVExportPage;

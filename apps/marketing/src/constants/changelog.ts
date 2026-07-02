@@ -11,6 +11,52 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v3_8_7: ChangelogEntry = {
+  version: "3.8.7",
+  date: "2026-07-01",
+  title: "Bug fixes",
+  description: "Assorted bug fixes.",
+  changes: [
+    {
+      type: "bugfix",
+      description: "Expandable column shows loading skeleton.",
+    },
+    {
+      type: "bugfix",
+      description: "resetColumns() restores configured defaults.",
+    },
+    {
+      type: "bugfix",
+      description: "Callback props stay fresh.",
+    },
+    {
+      type: "bugfix",
+      description: '"auto" width measures custom headers.',
+      link: "/docs/column-width#content-fit-auto",
+    },
+    {
+      type: "bugfix",
+      description: '"auto" width reserves sort icon.',
+      link: "/docs/column-width#content-fit-auto",
+    },
+    {
+      type: "bugfix",
+      description: '"auto" width measures truncated renderer content.',
+      link: "/docs/cell-renderer",
+    },
+    {
+      type: "bugfix",
+      description: '"auto" width is consistent across container sizes.',
+      link: "/docs/column-width#content-fit-auto",
+    },
+    {
+      type: "bugfix",
+      description: '"auto" width keeps custom headers readable with no rows.',
+      link: "/docs/header-renderer",
+    },
+  ],
+};
+
 export const v3_8_6: ChangelogEntry = {
   version: "3.8.6",
   date: "2026-06-28",
@@ -1982,6 +2028,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_8_7,
   v3_8_6,
   v3_8_5,
   v3_8_4,

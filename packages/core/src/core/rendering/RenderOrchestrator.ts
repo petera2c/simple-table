@@ -57,6 +57,8 @@ export interface RenderContext {
   getCollapsedHeaders?: () => Set<Accessor>;
   getExpandedRows: () => Map<string, number>;
   getHeaders: () => HeaderObject[];
+  /** Pristine snapshot of the configured column definitions — the reset target for the column editor's reset button. */
+  getPristineDefaultHeaders: () => HeaderObject[];
   getRowStateMap: () => Map<string | number, RowState>;
   headerRegistry: Map<string, any>;
   headers: HeaderObject[];
@@ -839,6 +841,7 @@ export class RenderOrchestrator {
       getCollapsedHeaders: context.getCollapsedHeaders,
       getExpandedRows: context.getExpandedRows,
       getHeaders: context.getHeaders,
+      getPristineDefaultHeaders: context.getPristineDefaultHeaders,
       getRowStateMap: context.getRowStateMap,
       positionOnlyBody: context.positionOnlyBody,
       essentialAccessors: context.essentialAccessors,

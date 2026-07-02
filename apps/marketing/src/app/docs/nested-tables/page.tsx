@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import NestedTablesContent from "@/components/pages/docs-pages/NestedTablesContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.nestedTables.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const NestedTablesPage = () => {
-  return <NestedTablesContent />;
+  return (
+    <DocsDemoCode slug="nested-tables">
+      <NestedTablesContent />
+    </DocsDemoCode>
+  );
 };
 
 export default NestedTablesPage;

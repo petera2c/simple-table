@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import PaginationContent from "@/components/pages/docs-pages/PaginationContent";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.pagination.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const PaginationPage = () => {
-  return <PaginationContent />;
+  return (
+    <DocsDemoCode slug="pagination">
+      <PaginationContent />
+    </DocsDemoCode>
+  );
 };
 
 export default PaginationPage;

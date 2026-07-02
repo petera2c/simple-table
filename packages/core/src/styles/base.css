@@ -61,41 +61,9 @@
   --st-neutral-800: #262626;
   --st-neutral-900: #171717;
 
-  /* Stone colors - used in violet theme */
-  --st-stone-100: #f5f5f4;
-  --st-stone-200: #e7e5e4;
-  --st-stone-300: #d6d3d1;
-  --st-stone-400: #a8a29e;
-  --st-stone-500: #78716c;
-  --st-stone-700: #44403c;
-
   /* Red colors - used for warnings/errors */
   --st-red-300: #fca5a5;
   --st-red-400: #f87171;
-
-  /* Orange colors - used in sky theme warnings */
-  --st-orange-400: #fb923c;
-
-  /* Amber colors - used in violet theme */
-  --st-amber-50: #fffbeb;
-  --st-amber-100: #fef3c7;
-  --st-amber-200: #fde68a;
-
-  /* Emerald colors - used for charts */
-  --st-emerald-400: #34d399;
-  --st-emerald-500: #10b981;
-  --st-emerald-600: #059669;
-
-  /* Teal colors - used for charts */
-  --st-teal-400: #2dd4bf;
-  --st-teal-500: #14b8a6;
-  --st-teal-600: #0d9488;
-
-  /* Sky colors - used in sky theme */
-  --st-sky-100: #e0f2fe;
-  --st-sky-200: #bae6fd;
-  --st-sky-300: #7dd3fc;
-  --st-sky-400: #38bdf8;
 
   /* Blue colors - used across multiple themes */
   --st-blue-50: #eff6ff;
@@ -108,15 +76,6 @@
   --st-blue-800: #1e40af;
   --st-blue-900: #1e3a8a;
   --st-blue-950: #172554;
-
-  /* Violet colors - used in violet theme */
-  --st-violet-50: #f5f3ff;
-  --st-violet-100: #ede9fe;
-  --st-violet-200: #ddd6fe;
-  --st-violet-400: #a78bfa;
-  --st-violet-500: #8b5cf6;
-  --st-violet-600: #7c3aed;
-  --st-violet-800: #5b21b6;
 }
 
 .simple-table-root * {
@@ -124,7 +83,6 @@
   /* Scrollbar thumb color */
   scrollbar-color: var(--st-scrollbar-thumb-color) var(--st-scrollbar-bg-color);
   scrollbar-width: var(--st-scrollbar-width);
-  scrollbar-thumb-border-radius: var(--st-scrollbar-thumb-border-radius);
   font-family: inherit;
 }
 
@@ -364,7 +322,7 @@ input {
   align-items: center;
   justify-content: center;
   padding: 48px 24px;
-  color: var(--st-header-text-color);
+  color: var(--st-header-icon-color);
   opacity: 0.6;
   font-size: 0.9em;
 }
@@ -460,6 +418,7 @@ input {
 
 .st-cell-content {
   display: flex;
+  font-size: 14px;
 }
 
 .st-row.odd .st-cell-content {
@@ -503,7 +462,8 @@ input {
 .st-header-cell {
   top: 0;
   background-color: var(--st-header-background-color);
-  font-weight: var(--st-font-weight-bold);
+  font-weight: 500;
+  font-size: 14px;
 
   display: flex;
   align-items: center;
@@ -973,10 +933,10 @@ input {
   align-items: center;
   min-height: var(--st-footer-height, 49px);
   background-color: var(--st-footer-background-color);
-  padding: var(--st-spacing-medium);
+  padding: 12px 16px;
   border-top: var(--st-border-width) solid var(--st-border-color);
   flex-shrink: 0;
-  gap: var(--st-spacing-medium);
+  gap: 12px;
 }
 
 .simple-table-root.st-footer-position-top .st-footer {
@@ -991,8 +951,8 @@ input {
 }
 
 .st-footer-results-text {
-  color: var(--st-cell-color);
-  font-size: 0.9em;
+  color: var(--st-footer-text-color, var(--st-cell-color));
+  font-size: 14px;
   white-space: nowrap;
 }
 
@@ -1000,13 +960,18 @@ input {
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  gap: 2px;
+  flex-wrap: nowrap;
+  overflow: hidden;
 }
 
 .st-next-prev-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--st-spacing-small);
+  padding: 6px 8px;
+  margin-left: 4px;
+  flex-shrink: 0;
   cursor: pointer;
   background-color: transparent;
   border: none;
@@ -1031,13 +996,16 @@ input {
 }
 
 .st-page-btn {
-  margin-right: var(--st-spacing-small);
-  padding: var(--st-spacing-small);
+  padding: 6px 8px;
+  min-width: 36px;
+  flex-shrink: 0;
   cursor: pointer;
   background-color: transparent;
   color: var(--st-page-btn-color);
   border: none;
   border-radius: var(--st-border-radius);
+  font-size: 13px;
+  font-weight: 500;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
   display: inline-flex;
   align-items: center;
@@ -1055,7 +1023,8 @@ input {
 
 .st-page-btn.active {
   background-color: var(--st-button-active-background-color);
-  color: white;
+  color: var(--st-header-selected-label-color, var(--st-white));
+  font-weight: 600;
 }
 
 /* Set by createTableFooter when page controls exceed MAX_COMPACT_VISIBLE_PAGE_BUTTONS */
@@ -1067,10 +1036,9 @@ input {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--st-spacing-small);
-  margin: 0 var(--st-spacing-small);
-  color: var(--st-cell-color);
-  font-weight: bold;
+  padding: 0 4px;
+  color: var(--st-next-prev-btn-color);
+  font-weight: 400;
 }
 
 .editable-cell-input {
@@ -1078,7 +1046,7 @@ input {
   top: 0;
   left: 0;
   border: var(--st-border-width) solid var(--st-border-color);
-  box-shadow: var(--st-edit-cell-shadow-color);
+  box-shadow: var(--st-edit-cell-shadow);
   z-index: 1;
   outline: none;
   height: 100%;
@@ -1203,7 +1171,7 @@ input {
 }
 
 .st-column-editor-reset-btn:hover {
-  background-color: var(--st-hover-background-color);
+  background-color: var(--st-button-hover-background-color);
 }
 
 .st-column-pin-btn {
@@ -1411,9 +1379,9 @@ input {
   justify-content: center;
   min-width: 16px;
   min-height: 16px;
-  border: var(--st-border-width) solid var(--st-checkbox-border-color);
+  border: 1.5px solid var(--st-checkbox-border-color);
   border-radius: var(--st-border-radius);
-  background-color: white;
+  background-color: var(--st-checkbox-background-color, var(--st-white));
   transition:
     background-color var(--st-transition-duration) var(--st-transition-ease),
     border-color var(--st-transition-duration) var(--st-transition-ease);
@@ -1456,7 +1424,7 @@ input {
   align-items: center;
   border-bottom: var(--st-border-width) solid var(--st-border-color);
   color: var(--st-cell-color);
-  font-weight: var(--st-font-weight-bold);
+  font-weight: 500;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
 }
 
@@ -1480,7 +1448,7 @@ input {
 }
 
 .st-group-name {
-  font-weight: var(--st-font-weight-bold);
+  font-weight: 600;
 }
 
 .st-group-count {
@@ -2193,7 +2161,7 @@ input {
   color: var(--st-tooltip-text-color);
   padding: var(--st-tooltip-padding);
   border-radius: var(--st-tooltip-border-radius);
-  font-size: 0.8em;
+  font-size: var(--st-tooltip-font-size, 12px);
   line-height: 1.4;
   max-width: 300px;
   word-wrap: break-word;
@@ -2244,13 +2212,10 @@ input {
 /* Chart Styles */
 /* ========================================== */
 
-/* Crisp, pixel-perfect chart rendering */
+/* Charts render in pixel space (viewBox matches rendered size), so default
+   anti-aliased rendering stays crisp; avoid crispEdges which jags rounded
+   corners and diagonal lines. */
 .st-line-area-chart,
 .st-bar-chart {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
-
-.st-bar-chart rect {
-  shape-rendering: crispEdges;
+  overflow: visible;
 }

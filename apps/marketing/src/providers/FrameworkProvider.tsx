@@ -10,18 +10,10 @@ import {
   useMemo,
 } from "react";
 import { trackFrameworkSelection } from "@/lib/analytics";
+import { FRAMEWORKS, FRAMEWORK_LABELS, type Framework } from "@/constants/frameworks";
 
-export const FRAMEWORKS = ["react", "vue", "angular", "svelte", "solid", "vanilla"] as const;
-export type Framework = (typeof FRAMEWORKS)[number];
-
-export const FRAMEWORK_LABELS: Record<Framework, string> = {
-  react: "React",
-  vue: "Vue",
-  angular: "Angular",
-  svelte: "Svelte",
-  solid: "Solid",
-  vanilla: "Vanilla",
-};
+export { FRAMEWORKS, FRAMEWORK_LABELS };
+export type { Framework };
 
 type FrameworkContextType = {
   framework: Framework;

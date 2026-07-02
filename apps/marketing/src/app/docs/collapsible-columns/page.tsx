@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import CollapsibleColumnsContent from "@/components/pages/docs-pages/CollapsibleColumnsContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.collapsibleColumns.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const CollapsibleColumnsPage = () => {
-  return <CollapsibleColumnsContent />;
+  return (
+    <DocsDemoCode slug="collapsible-columns">
+      <CollapsibleColumnsContent />
+    </DocsDemoCode>
+  );
 };
 
 export default CollapsibleColumnsPage;

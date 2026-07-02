@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import ColumnWidthContent from "@/components/pages/docs-pages/ColumnWidthContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.columnWidth.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const ColumnWidthPage = () => {
-  return <ColumnWidthContent />;
+  return (
+    <DocsDemoCode slug="column-width">
+      <ColumnWidthContent />
+    </DocsDemoCode>
+  );
 };
 
 export default ColumnWidthPage;

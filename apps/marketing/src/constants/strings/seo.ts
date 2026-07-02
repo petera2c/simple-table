@@ -953,119 +953,119 @@ export const SEO_STRINGS = {
   cellEditing: {
     title: "Cell Editing with Simple Table Data Grid",
     description:
-      "Enable cell editing in your data grid with Simple Table. Add inline editing to your datagrid or data table with TypeScript support.",
+      "Enable cell editing in your data grid with Simple Table. Add inline editing to your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, cell editing, editable table, typescript table, interactive table, javascript data grid",
   },
   cellHighlighting: {
     title: "Cell Highlighting in Simple Table Data Grid",
     description:
-      "Highlight cells in your data grid with Simple Table. Add selection to your datagrid or data table for better data analysis.",
+      "Highlight cells in your data grid with Simple Table. Add selection to your datagrid or data table for better data analysis. Works in React, Vue, Angular, Svelte, Solid, and vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, cell highlighting, table selection, typescript table, data analysis, javascript data grid",
   },
   cellRenderer: {
     title: "Custom Cell Renderers with Simple Table",
     description:
-      "Create custom cell renderers for your data grid with Simple Table. Display rich content in your datagrid or data table with TypeScript support.",
+      "Create custom cell renderers for your data grid with Simple Table. Display rich content in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, cell renderer, custom table cells, typescript table, data visualization, javascript data grid",
   },
   valueFormatter: {
     title: "Value Formatter - Simple Table Data Grid",
     description:
-      "Format cell values for display in your data grid with Simple Table's valueFormatter. Currency, dates, percentages, and more with TypeScript support.",
+      "Format cell values for display in your data grid with Simple Table's valueFormatter. Currency, dates, percentages, and more in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, value formatter, cell formatting, currency formatting, date formatting, percentage formatting, data-grid, datagrid, typescript table, javascript data grid",
   },
   cellClicking: {
     title: "Cell Clicking Events in Simple Table Data Grid",
     description:
-      "Handle cell click events in your data grid with Simple Table. Add interactive cell behavior to your datagrid or data table with TypeScript support.",
+      "Handle cell click events in your data grid with Simple Table. Add interactive cell behavior to your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, cell clicking, cell events, interactive table, cell interactions, typescript table, onclick handlers, javascript data grid",
   },
   headerRenderer: {
     title: "Custom Header Renderers with Simple Table",
     description:
-      "Create custom header renderers for your data grid with Simple Table. Style column headers with custom designs, icons, and interactive elements.",
+      "Create custom header renderers for your data grid with Simple Table. Style column headers with custom designs, icons, and interactive elements. Works in React, Vue, Angular, Svelte, Solid, and vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, header renderer, custom headers, table headers, typescript table, header customization, javascript data grid",
   },
   footerRenderer: {
     title: "Custom Footer Renderers with Simple Table",
     description:
-      "Create custom footer renderers for your data grid with Simple Table. Build custom pagination controls and footer UI for your datagrid or data table with TypeScript support.",
+      "Create custom footer renderers for your data grid with Simple Table. Build custom pagination controls and footer UI for your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, footer renderer, custom footer, table footer, pagination footer, typescript table, footer customization, javascript data grid",
   },
   columnAlignment: {
     title: "Column Alignment in Simple Table Data Grid",
     description:
-      "Align columns in your data grid with Simple Table. Ensure perfect layouts for your datagrid or data table with TypeScript support.",
+      "Align columns in your data grid with Simple Table. Ensure perfect layouts for your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, column alignment, table layout, typescript table, responsive table, javascript data grid",
   },
   columnFiltering: {
     title: "Column Filtering with Simple Table Data Grid",
     description:
-      "Add powerful filtering to your data grid with Simple Table. Smart filters for text, numbers, dates, and dropdowns in your datagrid or data table with TypeScript support.",
+      "Add powerful filtering to your data grid with Simple Table. Smart filters for text, numbers, dates, and dropdowns in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, column filtering, table filtering, data filtering, typescript table, search table, javascript data grid",
   },
   quickFilter: {
     title: "Quick Filter / Global Search for Data Grid - Simple Table",
     description:
-      "Add powerful global search to your data grid with Simple Table. Search across all columns with simple or smart mode featuring multi-word AND logic, phrase search, negation, and column-specific queries with TypeScript support.",
+      "Add powerful global search to your data grid with Simple Table. Search across all columns with simple or smart mode featuring multi-word AND logic, phrase search, negation, and column-specific queries in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, quick filter, global search, table search, search across columns, smart search, advanced search, search operators, typescript table, instant search, filter table, javascript data grid",
   },
   columnPinning: {
     title: "Column Pinning with Simple Table Data Grid",
     description:
-      "Pin columns in your data grid with Simple Table. Keep key data visible in your datagrid or data table while scrolling.",
+      "Pin columns in your data grid with Simple Table. Keep key data visible in your datagrid or data table while scrolling. Works in React, Vue, Angular, Svelte, Solid, and vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, column pinning, sticky columns, typescript table, table navigation, javascript data grid",
   },
   columnResizing: {
     title: "Column Resizing in Simple Table Data Grid",
     description:
-      "Resize columns in your data grid with Simple Table. Enable smooth drag-to-resize in your datagrid or data table with TypeScript support.",
+      "Resize columns in your data grid with Simple Table. Enable smooth drag-to-resize in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, column resizing, table layout, typescript table, responsive table, javascript data grid",
   },
   columnWidth: {
     title: "Column Width & Auto-Expand in Simple Table Data Grid",
     description:
-      "Control column widths in your data grid with Simple Table. Use fixed widths, '1fr' for auto-sizing, or autoExpandColumns to proportionally fill the container. Perfect for responsive datagrids with TypeScript support.",
+      "Control column widths in your data grid with Simple Table. Use fixed widths, '1fr' for auto-sizing, or autoExpandColumns to proportionally fill the container. Perfect for responsive datagrids in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, column width, auto-sizing, flexible columns, responsive width, 1fr, autoExpandColumns, proportional scaling, column layout, typescript table, responsive table, adaptive columns, fill container, javascript data grid",
   },
   columnSorting: {
     title: "Column Sorting with Simple Table Data Grid",
     description:
-      "Sort columns in your data grid with Simple Table. Add powerful sorting to your datagrid or data table with TypeScript support.",
+      "Sort columns in your data grid with Simple Table. Add powerful sorting to your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, column sorting, table sorting, typescript table, data management, javascript data grid",
   },
   animations: {
     title: "Animations in Simple Table Data Grid",
     description:
-      "Smooth animations on sort, column reorder, and column visibility changes, on by default in Simple Table. GPU-accelerated, virtualization-aware, and respects prefers-reduced-motion. Customize duration and easing or disable entirely.",
+      "Smooth animations on sort, column reorder, and column visibility changes, on by default in Simple Table. GPU-accelerated, virtualization-aware, and respects prefers-reduced-motion. Customize duration and easing or disable entirely. Works in React, Vue, Angular, Svelte, Solid, and vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, animations, table animations, sort animations, column reorder animations, prefers-reduced-motion, typescript table, javascript data grid",
   },
   columnVisibility: {
     title: "Column Visibility in Simple Table Data Grid",
     description:
-      "Control column visibility in your data grid with Simple Table. Show or hide columns in your datagrid or data table with TypeScript support.",
+      "Control column visibility in your data grid with Simple Table. Show or hide columns in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, column visibility, table customization, typescript table, data focus, javascript data grid",
   },
   pagination: {
     title: "Pagination with Simple Table Data Grid",
     description:
-      "Add pagination to your data grid with Simple Table. Manage large datasets in your datagrid or data table with TypeScript support.",
+      "Add pagination to your data grid with Simple Table. Manage large datasets in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, pagination, large datasets, typescript table, data navigation, javascript data grid",
   },
@@ -1078,14 +1078,14 @@ export const SEO_STRINGS = {
   customIcons: {
     title: "Custom Icons in Simple Table Data Grid",
     description:
-      "Add custom icons to your data grid with Simple Table. Personalize your datagrid or data table with TypeScript support and responsive design.",
+      "Add custom icons to your data grid with Simple Table. Personalize your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, custom icons, table customization, typescript table, ui design, javascript data grid",
   },
   customTheme: {
     title: "Custom Themes for Simple Table Data Grid",
     description:
-      "Create custom themes for your data grid with Simple Table. Style your datagrid or data table with TypeScript support and responsive design.",
+      "Create custom themes for your data grid with Simple Table. Style your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, custom theme, table styling, typescript table, responsive design, javascript data grid",
   },
@@ -1099,7 +1099,7 @@ export const SEO_STRINGS = {
   nestedHeaders: {
     title: "Nested Headers in Simple Table Data Grid",
     description:
-      "Add nested headers to your data grid with Simple Table. Organize complex data in your datagrid or data table with TypeScript support.",
+      "Add nested headers to your data grid with Simple Table. Organize complex data in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, nested headers, table structure, typescript table, data hierarchy, javascript data grid",
   },
@@ -1119,56 +1119,56 @@ export const SEO_STRINGS = {
   aggregateFunctions: {
     title: "Aggregate Functions in Simple Table Data Grid",
     description:
-      "Add aggregate functions to your data grid with Simple Table. Sum, count, average, and more in your datagrid or data table with TypeScript support.",
+      "Add aggregate functions to your data grid with Simple Table. Sum, count, average, and more in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, aggregate functions, table aggregation, typescript table, data summary, javascript data grid",
   },
   rowGrouping: {
     title: "Row Grouping in Simple Table Data Grid",
     description:
-      "Group rows in your data grid with Simple Table. Organize hierarchical data in your datagrid or data table with TypeScript support.",
+      "Group rows in your data grid with Simple Table. Organize hierarchical data in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, row grouping, hierarchical data, typescript table, data organization, javascript data grid",
   },
   nestedTables: {
     title: "Nested Tables in Simple Table Data Grid",
     description:
-      "Create nested tables with independent column structures at each level in your data grid with Simple Table. Display hierarchical data with different columns for parent and child rows with TypeScript support.",
+      "Create nested tables with independent column structures at each level in your data grid with Simple Table. Display hierarchical data with different columns for parent and child rows in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, nested tables, nested grids, hierarchical data, multi-level tables, independent columns, typescript table, data organization, javascript data grid",
   },
   rowSelection: {
     title: "Row Selection in Simple Table Data Grid",
     description:
-      "Add row selection to your data grid with Simple Table. Enable bulk operations and multi-row interactions in your datagrid or data table with TypeScript support.",
+      "Add row selection to your data grid with Simple Table. Enable bulk operations and multi-row interactions in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, row selection, multi-select, bulk operations, checkbox selection, typescript table, interactive table, javascript data grid",
   },
   rowHeight: {
     title: "Row Height in Simple Table Data Grid",
     description:
-      "Adjust row height in your data grid with Simple Table. Customize your datagrid or data table with TypeScript support and responsive design.",
+      "Adjust row height in your data grid with Simple Table. Customize your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, row height, table layout, typescript table, responsive table, javascript data grid",
   },
   tableHeight: {
     title: "Table Height in Simple Table Data Grid",
     description:
-      "Control table height and scrolling behavior in your data grid with Simple Table. Learn when to specify height for internal scroll handling vs letting the table overflow its parent container.",
+      "Control table height and scrolling behavior in your data grid with Simple Table. Learn when to specify height for internal scroll handling vs letting the table overflow its parent container. Works in React, Vue, Angular, Svelte, Solid, and vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, table height, scroll container, overflow, typescript table, responsive table, fixed height table, javascript data grid",
   },
   themes: {
     title: "Themes for Simple Table Data Grid",
     description:
-      "Explore themes for your data grid with Simple Table. Style your datagrid or data table with light, dark, or custom themes using TypeScript.",
+      "Explore themes for your data grid with Simple Table. Style your datagrid or data table with light, dark, or custom themes in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, table themes, table styling, typescript table, responsive design, javascript data grid",
   },
   columnReordering: {
     title: "Column Reordering in Simple Table Data Grid",
     description:
-      "Reorder columns in your data grid with Simple Table. Enable drag-and-drop in your datagrid or data table with TypeScript support.",
+      "Reorder columns in your data grid with Simple Table. Enable drag-and-drop in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, column reordering, table customization, typescript table, user personalization, javascript data grid",
   },
@@ -1240,42 +1240,42 @@ export const SEO_STRINGS = {
   liveUpdates: {
     title: "Live Updates in Simple Table Data Grid",
     description:
-      "Add live updates to your data grid with Simple Table. Use a React ref to TableAPI for real-time datagrids and data tables with responsive design.",
+      "Add live updates to your data grid with Simple Table. Use the TableAPI to build real-time datagrids and data tables in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, live updates, real-time table, typescript table, responsive table, javascript data grid",
   },
   infiniteScroll: {
     title: "Infinite Scroll with Simple Table Data Grid",
     description:
-      "Add infinite scroll to your data grid with Simple Table. Load more data on scroll in your datagrid or data table with TypeScript support.",
+      "Add infinite scroll to your data grid with Simple Table. Load more data on scroll in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, infinite scroll, load more data, lazy loading, typescript table, large datasets, javascript data grid",
   },
   loadingState: {
     title: "Data Grid Loading State: Skeleton Loaders & Spinners Tutorial",
     description:
-      "Add loading skeleton states to your data grid with Simple Table. Display skeleton loaders while fetching data in your datagrid or data table with TypeScript support. Improve UX with loading indicators.",
+      "Add loading skeleton states to your data grid with Simple Table. Display skeleton loaders while fetching data in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript. Improve UX with loading indicators.",
     keywords:
       "data grid loading state, table loading state, simple-table, data-grid, datagrid, data table, loading state, skeleton loader, loading spinner, data fetching, async loading, typescript table, user feedback, javascript data grid",
   },
   emptyState: {
     title: "Empty State with Simple Table Data Grid",
     description:
-      "Customize the empty state display in your data grid with Simple Table. Show helpful messages when no data is available or filters return no results.",
+      "Customize the empty state display in your data grid with Simple Table. Show helpful messages when no data is available or filters return no results. Works in React, Vue, Angular, Svelte, Solid, and vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, empty state, no data, no results, empty table, typescript table, user feedback, javascript data grid",
   },
   csvExport: {
     title: "CSV Export with Simple Table Data Grid",
     description:
-      "Export your data grid data to CSV with Simple Table. One-click CSV download from your datagrid or data table with TypeScript support.",
+      "Export your data grid data to CSV with Simple Table. One-click CSV download from your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, csv export, export to csv, download csv, table export, typescript table, data export, javascript data grid",
   },
   columnSelection: {
     title: "Column Selection in Simple Table Data Grid",
     description:
-      "Enable column selection in your data grid with Simple Table. Click to select columns in your datagrid or data table with TypeScript support.",
+      "Enable column selection in your data grid with Simple Table. Click to select columns in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, column selection, selectable columns, interactive table, typescript table, column interaction, javascript data grid",
   },
@@ -1286,17 +1286,31 @@ export const SEO_STRINGS = {
     keywords:
       "simple-table, data-grid, datagrid, data table, column editing, editable headers, dynamic columns, typescript table, table customization, javascript data grid",
   },
+  chartColumns: {
+    title: "Chart Columns in Simple Table Data Grid",
+    description:
+      "Visualize array data inline with chart columns in Simple Table. Add bar charts and line/area charts directly in your data grid cells in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
+    keywords:
+      "simple-table, data-grid, datagrid, data table, chart columns, inline charts, sparklines, data visualization, bar chart, line chart, typescript table, javascript data grid",
+  },
+  programmaticControl: {
+    title: "Programmatic Control API in Simple Table Data Grid",
+    description:
+      "Complete guide to programmatic control of Simple Table. Manage sorting, filtering, and data access via the TableAPI in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
+    keywords:
+      "simple-table, data-grid, datagrid, data table, programmatic control, table api, tableRef, sort api, filter api, data access, table state management, typescript table, javascript data grid",
+  },
   collapsibleColumns: {
     title: "Collapsible Columns in Simple Table Data Grid",
     description:
-      "Create collapsible column groups in your application with Simple Table. Organize complex data with expandable/collapsible headers in your datagrid or data table with TypeScript support.",
+      "Create collapsible column groups in your application with Simple Table. Organize complex data with expandable/collapsible headers in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, collapsible columns, column groups, expandable headers, nested columns, typescript table, space optimization, javascript data grid",
   },
   tooltips: {
     title: "Tooltips in Simple Table Data Grid",
     description:
-      "Add helpful tooltips to your data grid with Simple Table. Provide context and guidance for column headers in your datagrid or data table with TypeScript support.",
+      "Add helpful tooltips to your data grid with Simple Table. Provide context and guidance for column headers in your datagrid or data table in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
     keywords:
       "simple-table, data-grid, datagrid, data table, tooltips, column tooltips, table help, user guidance, typescript table, accessibility, javascript data grid",
   },

@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import AnimationsContent from "@/components/pages/docs-pages/AnimationsContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.animations.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const AnimationsPage = () => {
-  return <AnimationsContent />;
+  return (
+    <DocsDemoCode slug="animations">
+      <AnimationsContent />
+    </DocsDemoCode>
+  );
 };
 
 export default AnimationsPage;

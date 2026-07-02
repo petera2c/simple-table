@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import LiveUpdateContent from "@/components/pages/docs-pages/LiveUpdateContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.liveUpdates.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const LiveUpdatesPage = () => {
-  return <LiveUpdateContent />;
+  return (
+    <DocsDemoCode slug="live-updates">
+      <LiveUpdateContent />
+    </DocsDemoCode>
+  );
 };
 
 export default LiveUpdatesPage;

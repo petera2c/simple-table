@@ -1,6 +1,7 @@
 import RowHeightContent from "@/components/pages/docs-pages/RowHeightContent";
 import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.rowHeight.title,
@@ -26,5 +27,9 @@ export const metadata: Metadata = {
 };
 
 export default function RowHeightPage() {
-  return <RowHeightContent />;
+  return (
+    <DocsDemoCode slug="row-height">
+      <RowHeightContent />
+    </DocsDemoCode>
+  );
 }

@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import ColumnResizingContent from "@/components/pages/docs-pages/ColumnResizingContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.columnResizing.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const ColumnResizingPage = () => {
-  return <ColumnResizingContent />;
+  return (
+    <DocsDemoCode slug="column-resizing">
+      <ColumnResizingContent />
+    </DocsDemoCode>
+  );
 };
 
 export default ColumnResizingPage;

@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import CellEditingContent from "@/components/pages/docs-pages/CellEditingContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.cellEditing.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const CellEditingPage = () => {
-  return <CellEditingContent />;
+  return (
+    <DocsDemoCode slug="cell-editing">
+      <CellEditingContent />
+    </DocsDemoCode>
+  );
 };
 
 export default CellEditingPage;

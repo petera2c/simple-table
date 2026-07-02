@@ -1,6 +1,7 @@
 import ThemesContent from "@/components/pages/docs-pages/ThemesContent";
 import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.themes.title,
@@ -26,5 +27,9 @@ export const metadata: Metadata = {
 };
 
 export default function ThemesPage() {
-  return <ThemesContent />;
+  return (
+    <DocsDemoCode slug="themes">
+      <ThemesContent />
+    </DocsDemoCode>
+  );
 }

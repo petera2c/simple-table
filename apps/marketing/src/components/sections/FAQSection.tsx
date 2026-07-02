@@ -18,7 +18,7 @@ import {
   faShieldAlt,
   faHeadset,
   faBook,
-  faArrowRightArrowLeft,
+  faChevronDown,
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -55,7 +55,7 @@ export default function FAQSection() {
               {
                 icon: faTable,
                 question: "What is Simple Table?",
-                answer: `Simple Table is a lightweight JavaScript data grid library (only ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}) with adapters for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript. It provides 30+ features including cell editing, column management, sorting, filtering, row grouping, and full TypeScript support. Perfect for dashboards, admin panels, and data-heavy applications in any framework.`,
+                answer: `Simple Table is a lightweight JavaScript data grid library (only ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}) with adapters for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript. It provides cell editing, column management, sorting, filtering, row grouping, and full TypeScript support. Perfect for dashboards, admin panels, and data-heavy applications in any framework.`,
               },
               {
                 icon: faDownload,
@@ -106,8 +106,8 @@ export default function FAQSection() {
                     {faq.question}
                   </span>
                   <FontAwesomeIcon
-                    icon={faArrowRightArrowLeft}
-                    className="text-gray-400 transform group-open:rotate-90 transition-transform shrink-0"
+                    icon={faChevronDown}
+                    className="text-gray-400 transform group-open:rotate-180 transition-transform shrink-0"
                   />
                 </summary>
                 <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -121,7 +121,7 @@ export default function FAQSection() {
         {/* Features & Capabilities */}
         <div className="mb-8">
           <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
-            <FontAwesomeIcon icon={faPalette} className="text-purple-600 dark:text-purple-400" />
+            <FontAwesomeIcon icon={faPalette} className="text-blue-600 dark:text-blue-400" />
             Features & Capabilities
           </h3>
           <div className="space-y-3">
@@ -138,7 +138,7 @@ export default function FAQSection() {
                     built-in themes, and full customization via CSS variables. Check our{" "}
                     <Link
                       href="/docs/installation"
-                      className="text-purple-600 dark:text-purple-400 hover:underline cursor-pointer font-medium"
+                      className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium"
                       onClick={(e) => e.stopPropagation()}
                     >
                       documentation
@@ -167,7 +167,7 @@ export default function FAQSection() {
             ].map((faq, index) => (
               <motion.details
                 key={index}
-                className="group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-purple-300 dark:hover:border-purple-700 transition-colors"
+                className="group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
@@ -176,14 +176,14 @@ export default function FAQSection() {
                 <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <FontAwesomeIcon
                     icon={faq.icon}
-                    className="text-purple-600 dark:text-purple-400 mt-1 shrink-0"
+                    className="text-blue-600 dark:text-blue-400 mt-1 shrink-0"
                   />
                   <span className="flex-1 font-semibold text-gray-800 dark:text-white">
                     {faq.question}
                   </span>
                   <FontAwesomeIcon
-                    icon={faArrowRightArrowLeft}
-                    className="text-gray-400 transform group-open:rotate-90 transition-transform shrink-0"
+                    icon={faChevronDown}
+                    className="text-gray-400 transform group-open:rotate-180 transition-transform shrink-0"
                   />
                 </summary>
                 <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -197,7 +197,7 @@ export default function FAQSection() {
         {/* Comparisons & Alternatives */}
         <div className="mb-8">
           <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
-            <FontAwesomeIcon icon={faCheck} className="text-green-600 dark:text-green-400" />
+            <FontAwesomeIcon icon={faCheck} className="text-blue-600 dark:text-blue-400" />
             Comparisons & Migration
           </h3>
           <div className="space-y-3">
@@ -227,7 +227,7 @@ export default function FAQSection() {
             ].map((faq, index) => (
               <motion.details
                 key={index}
-                className="group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-green-300 dark:hover:border-green-700 transition-colors"
+                className="group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
@@ -236,14 +236,14 @@ export default function FAQSection() {
                 <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <FontAwesomeIcon
                     icon={faq.icon}
-                    className="text-green-600 dark:text-green-400 mt-1 shrink-0"
+                    className="text-blue-600 dark:text-blue-400 mt-1 shrink-0"
                   />
                   <span className="flex-1 font-semibold text-gray-800 dark:text-white">
                     {faq.question}
                   </span>
                   <FontAwesomeIcon
-                    icon={faArrowRightArrowLeft}
-                    className="text-gray-400 transform group-open:rotate-90 transition-transform shrink-0"
+                    icon={faChevronDown}
+                    className="text-gray-400 transform group-open:rotate-180 transition-transform shrink-0"
                   />
                 </summary>
                 <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -257,7 +257,7 @@ export default function FAQSection() {
         {/* Pricing & Support */}
         <div>
           <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
-            <FontAwesomeIcon icon={faHeadset} className="text-orange-600 dark:text-orange-400" />
+            <FontAwesomeIcon icon={faHeadset} className="text-blue-600 dark:text-blue-400" />
             Pricing & Support
           </h3>
           <div className="space-y-3">
@@ -288,7 +288,7 @@ export default function FAQSection() {
                     Our{" "}
                     <Link
                       href="/docs/installation"
-                      className="text-orange-600 dark:text-orange-400 hover:underline cursor-pointer font-medium"
+                      className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium"
                       onClick={(e) => e.stopPropagation()}
                     >
                       documentation
@@ -297,7 +297,7 @@ export default function FAQSection() {
                     in your browser, real-world{" "}
                     <ExampleLink
                       href={DEFAULT_EXAMPLE_PATH}
-                      className="text-orange-600 dark:text-orange-400 hover:underline cursor-pointer font-medium"
+                      className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium"
                       onClick={(e) => e.stopPropagation()}
                     >
                       examples
@@ -306,7 +306,7 @@ export default function FAQSection() {
                     copy-paste, and a complete{" "}
                     <Link
                       href="/docs/api-reference"
-                      className="text-orange-600 dark:text-orange-400 hover:underline cursor-pointer font-medium"
+                      className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium"
                       onClick={(e) => e.stopPropagation()}
                     >
                       API reference
@@ -318,7 +318,7 @@ export default function FAQSection() {
             ].map((faq, index) => (
               <motion.details
                 key={index}
-                className="group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-orange-300 dark:hover:border-orange-700 transition-colors"
+                className="group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
@@ -327,14 +327,14 @@ export default function FAQSection() {
                 <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                   <FontAwesomeIcon
                     icon={faq.icon}
-                    className="text-orange-600 dark:text-orange-400 mt-1 shrink-0"
+                    className="text-blue-600 dark:text-blue-400 mt-1 shrink-0"
                   />
                   <span className="flex-1 font-semibold text-gray-800 dark:text-white">
                     {faq.question}
                   </span>
                   <FontAwesomeIcon
-                    icon={faArrowRightArrowLeft}
-                    className="text-gray-400 transform group-open:rotate-90 transition-transform shrink-0"
+                    icon={faChevronDown}
+                    className="text-gray-400 transform group-open:rotate-180 transition-transform shrink-0"
                   />
                 </summary>
                 <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-gray-600 dark:text-gray-300 leading-relaxed">

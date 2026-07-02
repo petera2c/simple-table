@@ -45,7 +45,12 @@ export type TableAPI = {
   getGroupingDepth: (property: Accessor) => number;
   toggleColumnEditor: (open?: boolean) => void;
   applyColumnVisibility: (visibility: { [accessor: string]: boolean }) => Promise<void>;
-  /** Reset columns to default order and visibility (restores defaultHeaders state). */
+  /**
+   * Reset columns to the configured definitions: default order, widths, and
+   * visibility. All columns become visible again except those explicitly
+   * defined with `hide: true` in `defaultHeaders`, regardless of any runtime
+   * visibility changes made since mount.
+   */
   resetColumns: () => void;
   setQuickFilter: (text: string) => void;
   getSelectedCells: () => Set<string>;

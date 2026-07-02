@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import AggregateFunctionsContent from "@/components/pages/docs-pages/AggregateFunctionsContent";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.aggregateFunctions.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const AggregateFunctionsPage = () => {
-  return <AggregateFunctionsContent />;
+  return (
+    <DocsDemoCode slug="aggregate-functions">
+      <AggregateFunctionsContent />
+    </DocsDemoCode>
+  );
 };
 
 export default AggregateFunctionsPage;

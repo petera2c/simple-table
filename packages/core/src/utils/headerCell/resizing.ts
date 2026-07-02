@@ -80,6 +80,7 @@ export const createResizeHandle = (
     // double-click) are folded in for accurate custom-renderer widths.
     styleRoot: getStyleRoot(context),
     autoSizeMode: leafHeader.autoSizeMode,
+    sortIcon: context.icons.sortUp,
   });
 
   /** Auto-expand: mutate canonical storage + DOM-synced widths. Otherwise: effective tree (matches main). */

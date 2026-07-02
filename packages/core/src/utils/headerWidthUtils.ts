@@ -441,6 +441,169 @@ export const convertPixelWidthsToFr = (
   return headers.map(processHeader);
 };
 
+/** Resolve the hidden-measurement host element for a table's style root. */
+const getMeasurementHost = (domQueryRoot: ParentNode): HTMLElement =>
+  domQueryRoot instanceof HTMLElement ? domQueryRoot : document.body;
+
+/**
+ * Escape a value for use inside a double-quoted CSS attribute selector.
+ * (`CSS.escape` is not available in jsdom, so quoted-string escaping is used.)
+ */
+const escapeAttrValue = (value: string): string => value.replace(/["\\]/g, "\\$&");
+
+/**
+ * Measure a text string off-screen using the font metrics (and padding) of a
+ * reference element. Used for the default header label pass and as the
+ * fallback when a custom header's markup cannot be measured yet (e.g. a React
+ * portal target that has not mounted).
+ */
+const measureTextWithFont = (text: string, fontSource: HTMLElement): number => {
+  const tempSpan = document.createElement("span");
+  tempSpan.style.visibility = "hidden";
+  tempSpan.style.position = "absolute";
+  tempSpan.style.whiteSpace = "nowrap";
+  tempSpan.style.width = "auto";
+
+  const sourceStyle = window.getComputedStyle(fontSource);
+  tempSpan.style.font = sourceStyle.font;
+  tempSpan.style.fontSize = sourceStyle.fontSize;
+  tempSpan.style.fontWeight = sourceStyle.fontWeight;
+  tempSpan.style.fontFamily = sourceStyle.fontFamily;
+  tempSpan.style.letterSpacing = sourceStyle.letterSpacing;
+  tempSpan.style.padding = sourceStyle.padding;
+
+  tempSpan.textContent = text;
+
+  document.body.appendChild(tempSpan);
+  const width = tempSpan.offsetWidth;
+  document.body.removeChild(tempSpan);
+  return width;
+};
+
+/**
+ * Measure a rendered cell content element's NATURAL (unconstrained) width by
+ * cloning it into a hidden max-content holder. This is how custom-renderer
+ * output that mounts asynchronously (React portals) is measured: the clone is
+ * freed from the live cell's box constraints, so content that truncates itself
+ * internally (min-width:0 / overflow:hidden / text-overflow:ellipsis) still
+ * reports its full content width — and the result does not depend on the
+ * current (provisional) column width.
+ */
+const measureCellContentClone = (
+  contentElement: HTMLElement,
+  domQueryRoot: ParentNode,
+): number => {
+  const holder = document.createElement("div");
+  holder.style.visibility = "hidden";
+  holder.style.position = "absolute";
+  holder.style.top = "-99999px";
+  holder.style.left = "-99999px";
+  holder.style.whiteSpace = "nowrap";
+  holder.style.width = "max-content";
+
+  const clone = contentElement.cloneNode(true) as HTMLElement;
+  // Neutralize the live cell's fill/clip styles so the clone sizes to content.
+  // Padding is zeroed because the caller adds the sampled cell padding itself.
+  clone.style.flex = "none";
+  clone.style.width = "max-content";
+  clone.style.minWidth = "0";
+  clone.style.maxWidth = "none";
+  clone.style.overflow = "visible";
+  clone.style.padding = "0";
+
+  // The clone is not inside a .st-cell, so copy the content's inherited font
+  // to keep text metrics accurate.
+  const contentStyle = window.getComputedStyle(contentElement);
+  clone.style.font = contentStyle.font;
+  clone.style.fontSize = contentStyle.fontSize;
+  clone.style.fontFamily = contentStyle.fontFamily;
+  clone.style.letterSpacing = contentStyle.letterSpacing;
+
+  holder.appendChild(clone);
+  const host = getMeasurementHost(domQueryRoot);
+  host.appendChild(holder);
+  const width = holder.offsetWidth;
+  host.removeChild(holder);
+  return width;
+};
+
+/**
+ * Measure a header label's full content width by cloning it into a hidden,
+ * max-content-sized holder. Used for custom `headerRenderer` markup, which can
+ * contain arbitrary elements (badges, icons, custom fonts) that the plain
+ * text-span measurement cannot see — the label is measured generically, the
+ * same way a cell with a custom renderer is. The holder is appended inside the
+ * table root so scoped theme CSS still applies to the clone.
+ */
+const measureHeaderLabelContent = (
+  labelElement: HTMLElement,
+  domQueryRoot: ParentNode,
+): number => {
+  const holder = document.createElement("div");
+  holder.style.visibility = "hidden";
+  holder.style.position = "absolute";
+  holder.style.top = "-99999px";
+  holder.style.left = "-99999px";
+  holder.style.whiteSpace = "nowrap";
+  holder.style.width = "max-content";
+
+  const clone = labelElement.cloneNode(true) as HTMLElement;
+  // Neutralize the live label's fill/clip styles so the clone sizes to content.
+  clone.style.flex = "none";
+  clone.style.width = "max-content";
+  clone.style.minWidth = "0";
+  clone.style.maxWidth = "none";
+  clone.style.overflow = "visible";
+  clone.style.height = "auto";
+
+  // The clone is not inside a .st-header-cell, so copy the label's inherited
+  // font (e.g. the header's bold weight) to keep text metrics accurate.
+  const labelStyle = window.getComputedStyle(labelElement);
+  clone.style.font = labelStyle.font;
+  clone.style.fontSize = labelStyle.fontSize;
+  clone.style.fontWeight = labelStyle.fontWeight;
+  clone.style.fontFamily = labelStyle.fontFamily;
+  clone.style.letterSpacing = labelStyle.letterSpacing;
+
+  holder.appendChild(clone);
+  const host = getMeasurementHost(domQueryRoot);
+  host.appendChild(holder);
+  const width = holder.offsetWidth;
+  host.removeChild(holder);
+  return width;
+};
+
+/**
+ * Measure the rendered width (incl. margins) a sort icon will occupy in a
+ * header cell. Rendered off-screen inside the table root with the real
+ * `.st-icon-container` class so theme CSS (margins, em-based sizing) applies.
+ */
+const measureSortIconWidth = (
+  icon: string | HTMLElement | SVGSVGElement,
+  domQueryRoot: ParentNode,
+): number => {
+  const container = document.createElement("div");
+  container.className = "st-icon-container";
+  container.style.visibility = "hidden";
+  container.style.position = "absolute";
+  container.style.top = "-99999px";
+  container.style.left = "-99999px";
+  if (typeof icon === "string") {
+    container.innerHTML = icon;
+  } else {
+    container.appendChild(icon.cloneNode(true) as HTMLElement);
+  }
+  const host = getMeasurementHost(domQueryRoot);
+  host.appendChild(container);
+  const style = window.getComputedStyle(container);
+  const width =
+    container.offsetWidth +
+    (parseFloat(style.marginLeft) || 0) +
+    (parseFloat(style.marginRight) || 0);
+  host.removeChild(container);
+  return width;
+};
+
 /**
  * Calculate the optimal width for a column by measuring both header and cell content
  * This is used for auto-sizing columns to fit their content (like Excel/Google Sheets)
@@ -471,6 +634,12 @@ export const calculateHeaderContentWidth = (
     theme?: any;
     /** Scope `.st-cell-content` font/padding sampling to this table instance */
     styleRoot?: ParentNode | null;
+    /**
+     * The table's resolved sort icon. Used to reserve space on sortable columns
+     * that are not currently sorted (the icon only exists on the active sort
+     * column), so sorting later does not push the label into ellipsis.
+     */
+    sortIcon?: string | HTMLElement | SVGSVGElement;
   },
 ): number => {
   const {
@@ -485,20 +654,38 @@ export const calculateHeaderContentWidth = (
     autoSizeMode = header?.autoSizeMode ?? "content",
     theme,
     styleRoot,
+    sortIcon,
   } = options || {};
   const headSize = headSampleSize ?? sampleSize ?? AUTO_SIZE_HEAD_SAMPLE_SIZE;
   const stridedSize =
     stridedSampleSize ?? (sampleSize != null ? 0 : AUTO_SIZE_STRIDED_SAMPLE_SIZE);
   const domQueryRoot: ParentNode = styleRoot ?? document;
-  // Get the header cell element from the DOM
-  const headerCellElement = document.getElementById(getCellId({ accessor, rowId: "header" }));
+  // Get the header cell element from the DOM. Scope the lookup to the table's
+  // style root when available so multiple tables with the same accessors on
+  // one page never measure each other's cells.
+  const cellId = getCellId({ accessor, rowId: "header" });
+  const headerCellElement =
+    domQueryRoot instanceof HTMLElement
+      ? (domQueryRoot.querySelector(
+          `[id="${escapeAttrValue(cellId)}"]`,
+        ) as HTMLElement | null)
+      : document.getElementById(cellId);
 
-  if (!headerCellElement) {
+  // When this column's header cell is not rendered (virtualized out of the
+  // horizontal band), borrow style metrics (padding/gap/font) from any
+  // rendered header cell instead of bailing to the default width — the
+  // computed width must depend on the column's CONTENT, not on whether the
+  // column happens to be inside the current viewport.
+  const styleProxyCell =
+    headerCellElement ??
+    (domQueryRoot.querySelector(".st-header-cell") as HTMLElement | null);
+
+  if (!styleProxyCell) {
     return TABLE_HEADER_CELL_WIDTH_DEFAULT;
   }
 
   // Get the computed styles to access padding and gap
-  const computedStyle = window.getComputedStyle(headerCellElement);
+  const computedStyle = window.getComputedStyle(styleProxyCell);
   const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
   const paddingRight = parseFloat(computedStyle.paddingRight) || 0;
   const gap = parseFloat(computedStyle.gap) || 0;
@@ -507,38 +694,50 @@ export const calculateHeaderContentWidth = (
   let totalWidth = paddingLeft + paddingRight;
 
   // Measure the actual text content width
-  const headerLabelElement = headerCellElement.querySelector(".st-header-label") as HTMLElement;
+  const headerLabelElement = headerCellElement?.querySelector(
+    ".st-header-label",
+  ) as HTMLElement | null;
+  // Whether a sort icon is already part of the measured header (either inside a
+  // custom label or as a direct icon child); used for the reservation below.
+  let sortIconMeasured = false;
   if (headerLabelElement) {
     const textSpan = headerLabelElement.querySelector(".st-header-label-text") as HTMLElement;
-    if (textSpan) {
-      // Create a temporary element to measure the actual text width
-      const tempSpan = document.createElement("span");
-      tempSpan.style.visibility = "hidden";
-      tempSpan.style.position = "absolute";
-      tempSpan.style.whiteSpace = "nowrap";
-      tempSpan.style.width = "auto";
-
-      // Copy all computed styles from the original span
-      const textStyle = window.getComputedStyle(textSpan);
-      tempSpan.style.font = textStyle.font;
-      tempSpan.style.fontSize = textStyle.fontSize;
-      tempSpan.style.fontWeight = textStyle.fontWeight;
-      tempSpan.style.fontFamily = textStyle.fontFamily;
-      tempSpan.style.letterSpacing = textStyle.letterSpacing;
-      tempSpan.style.padding = textStyle.padding;
-
-      tempSpan.textContent = textSpan.textContent;
-
-      document.body.appendChild(tempSpan);
-      const actualTextWidth = tempSpan.offsetWidth;
-      document.body.removeChild(tempSpan);
-
-      totalWidth += actualTextWidth;
+    if (header?.headerRenderer || !textSpan) {
+      // Custom headerRenderer markup (or a header without the default text
+      // span): the label can contain arbitrary elements the text-span pass
+      // cannot see, so measure the whole label generically — the header is
+      // treated like a cell with a custom renderer.
+      const customLabelWidth = measureHeaderLabelContent(headerLabelElement, domQueryRoot);
+      if (customLabelWidth >= 1) {
+        totalWidth += customLabelWidth;
+        sortIconMeasured = Boolean(
+          headerLabelElement.querySelector('.st-icon-container[aria-label^="Sort"]'),
+        );
+      } else if (header?.label) {
+        // The custom markup measures as empty — typically an async-mounted
+        // renderer (React portal target not filled yet). Fall back to the
+        // plain label text so the column doesn't collapse to the minimum
+        // (most visible with no rows, where the header is all there is).
+        const fontSource =
+          (domQueryRoot.querySelector(".st-header-label-text") as HTMLElement | null) ??
+          headerLabelElement;
+        totalWidth += measureTextWithFont(String(header.label), fontSource);
+      }
+    } else {
+      totalWidth += measureTextWithFont(textSpan.textContent ?? "", textSpan);
     }
+  } else if (header?.label) {
+    // No rendered header cell for this column: measure the label text using
+    // another header's font so the result matches a rendered measurement.
+    const fontSource =
+      (domQueryRoot.querySelector(".st-header-label-text") as HTMLElement | null) ??
+      styleProxyCell;
+    totalWidth += measureTextWithFont(String(header.label), fontSource);
   }
 
-  // Loop through all direct children to measure icons
-  const children = Array.from(headerCellElement.children);
+  // Loop through all direct children to measure icons (only possible when the
+  // header cell is actually rendered)
+  const children = headerCellElement ? Array.from(headerCellElement.children) : [];
   let visibleItemCount = 1; // Start with 1 for the text we already measured
 
   for (let i = 0; i < children.length; i++) {
@@ -574,6 +773,19 @@ export const calculateHeaderContentWidth = (
 
     // Add child width and margins to total
     totalWidth += childWidth + marginLeft + marginRight;
+    visibleItemCount++;
+
+    if (child.getAttribute("aria-label")?.startsWith("Sort")) {
+      sortIconMeasured = true;
+    }
+  }
+
+  // Reserve space for the sort icon on sortable columns that are not currently
+  // sorted. The icon only exists on the actively sorted column and sorting does
+  // not re-fit auto columns (widths must stay stable across sorts), so without
+  // this reservation the label would be pushed into ellipsis on first sort.
+  if (header?.isSortable && !sortIconMeasured && sortIcon) {
+    totalWidth += measureSortIconWidth(sortIcon, domQueryRoot);
     visibleItemCount++;
   }
 
@@ -694,24 +906,33 @@ export const calculateHeaderContentWidth = (
 
     document.body.removeChild(tempDiv);
 
-    // Also fold in any already-rendered (visible) cells for this column, but only
-    // when their content actually OVERFLOWS the current (provisional) column box.
-    // `.st-cell-content` is a block that fills the cell, so `scrollWidth` equals
-    // the column width whenever the content fits — folding that in unconditionally
-    // would pin every column to its provisional width and prevent shrinking. We
-    // only trust a rendered cell when `scrollWidth > clientWidth` (content is
-    // clipped and genuinely wider than the column), which is exactly the case the
-    // fold-in is for: wide custom-renderer / React-portal output the off-screen
-    // text pass can't measure.
-    const renderedCells = domQueryRoot.querySelectorAll(
-      `[id$="-${accessor}"] .st-cell-content`,
-    );
-    renderedCells.forEach((node) => {
-      const el = node as HTMLElement;
-      if (el.scrollWidth > el.clientWidth + 1) {
-        sampleWidths.push(el.scrollWidth + cellPaddingLeft + cellPaddingRight);
-      }
-    });
+    // Also fold in already-rendered (visible) cells — but ONLY for columns with
+    // a custom cellRenderer. Renderer output that mounts asynchronously (React
+    // portals) measures as empty in the off-screen pass above, so the rendered
+    // cells are the only place its real width exists. Each rendered content
+    // element is cloned into a hidden max-content holder, which measures the
+    // content's NATURAL width: content that truncates itself internally
+    // (min-width:0 / overflow:hidden / text-overflow:ellipsis) still reports
+    // its full width, and the result does not depend on the current
+    // (provisional) column width. Plain columns are fully covered by the
+    // deterministic off-screen pass; folding in DOM-dependent samples for them
+    // would make the width vary with which rows happen to be rendered
+    // (i.e. with the container size).
+    if (header?.cellRenderer) {
+      const renderedCells = domQueryRoot.querySelectorAll(
+        `.st-cell[data-accessor="${escapeAttrValue(String(accessor))}"] .st-cell-content`,
+      );
+      renderedCells.forEach((node) => {
+        const el = node as HTMLElement;
+        // Skip loading skeletons — their width is a placeholder, not content.
+        if (el.querySelector(".st-loading-skeleton")) return;
+        const naturalWidth = measureCellContentClone(el, domQueryRoot);
+        // Empty (not-yet-mounted portal) content measures 0 — nothing to learn.
+        if (naturalWidth > 0) {
+          sampleWidths.push(naturalWidth + cellPaddingLeft + cellPaddingRight);
+        }
+      });
+    }
 
     cellContentWidth = selectContentWidthWithOutlierClip(sampleWidths, {
       percentile: outlierPercentile,

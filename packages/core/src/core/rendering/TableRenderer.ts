@@ -28,7 +28,7 @@ import {
   getMainSectionViewportWidth,
   recalculateAllSectionWidths,
 } from "../../utils/resizeUtils/sectionWidths";
-import { canDisplaySection } from "../../utils/generalUtils";
+import { canDisplaySection, deepClone } from "../../utils/generalUtils";
 import { flattenHeaders } from "../../utils/headerUtils";
 import type TableRow from "../../types/TableRow";
 import type { NestedTableFactory } from "../../utils/nestedGridRowRenderer";
@@ -63,6 +63,8 @@ export interface TableRendererDeps {
   getCollapsedRows: () => Map<string, number>;
   getExpandedRows: () => Map<string, number>;
   getHeaders: () => HeaderObject[];
+  /** Pristine snapshot of the configured column definitions — the reset target for the column editor's reset button. */
+  getPristineDefaultHeaders: () => HeaderObject[];
   getRowStateMap: () => Map<string | number, any>;
   headerRegistry: Map<string, any>;
   headers: HeaderObject[];
@@ -963,10 +965,12 @@ export class TableRenderer {
     }
 
     const resetColumns = () => {
-      const defaultHeaders = deps.config.defaultHeaders;
-      if (defaultHeaders) {
-        const cloned = defaultHeaders.map((h: HeaderObject) => ({ ...h }));
-        deps.setHeaders(cloned);
+      // Restore the pristine column definitions — NOT config.defaultHeaders,
+      // whose header objects are mutated in place by runtime visibility
+      // changes (column editor) and so drift away from the configured state.
+      const pristineHeaders = deps.getPristineDefaultHeaders();
+      if (pristineHeaders) {
+        deps.setHeaders(deepClone(pristineHeaders));
         deps.onRender();
       }
     };

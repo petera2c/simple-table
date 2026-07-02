@@ -6,7 +6,7 @@ import "simple-table-core/styles.css";
 
 export function renderColumnPinningDemo(
   container: HTMLElement,
-  options?: { height?: string | number; theme?: Theme }
+  options?: { height?: string | number; theme?: Theme },
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
     defaultHeaders: columnPinningConfig.headers,

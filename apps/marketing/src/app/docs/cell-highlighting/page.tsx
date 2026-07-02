@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import CellHighlightingContent from "@/components/pages/docs-pages/CellHighlightingContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.cellHighlighting.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const CellHighlightingPage = () => {
-  return <CellHighlightingContent />;
+  return (
+    <DocsDemoCode slug="cell-highlighting">
+      <CellHighlightingContent />
+    </DocsDemoCode>
+  );
 };
 
 export default CellHighlightingPage;

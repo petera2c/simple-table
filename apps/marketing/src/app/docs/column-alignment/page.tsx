@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import ColumnAlignmentContent from "@/components/pages/docs-pages/ColumnAlignmentContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.columnAlignment.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const ColumnAlignmentPage = () => {
-  return <ColumnAlignmentContent />;
+  return (
+    <DocsDemoCode slug="column-alignment">
+      <ColumnAlignmentContent />
+    </DocsDemoCode>
+  );
 };
 
 export default ColumnAlignmentPage;

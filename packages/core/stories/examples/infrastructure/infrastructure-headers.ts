@@ -43,18 +43,6 @@ function getThresholdColors(
       moderate: { color: "#3b82f6", backgroundColor: "#dbeafe" },
       good: { color: "#16a34a", backgroundColor: "#dcfce7" },
     },
-    sky: {
-      critical: { color: "#dc2626", backgroundColor: "#fef2f2" },
-      warning: { color: "#d97706", backgroundColor: "#fffbeb" },
-      moderate: { color: "#0284c7", backgroundColor: "#e0f2fe" },
-      good: { color: "#059669", backgroundColor: "#ecfdf5" },
-    },
-    violet: {
-      critical: { color: "#db2777", backgroundColor: "#fdf2f8" },
-      warning: { color: "#d97706", backgroundColor: "#fffbeb" },
-      moderate: { color: "#7c3aed", backgroundColor: "#ede9fe" },
-      good: { color: "#0891b2", backgroundColor: "#ecfeff" },
-    },
     neutral: {
       critical: { color: "#57534e", backgroundColor: "#f5f5f4" },
       warning: { color: "#78716c", backgroundColor: "#fafaf9" },
@@ -95,18 +83,6 @@ function getResponseTimeColors(value: number, theme: Theme): ColorStyles {
       warning: { color: "#d97706" },
       moderate: { color: "#3b82f6" },
       good: { color: "#16a34a" },
-    },
-    sky: {
-      critical: { color: "#dc2626" },
-      warning: { color: "#d97706" },
-      moderate: { color: "#0284c7" },
-      good: { color: "#059669" },
-    },
-    violet: {
-      critical: { color: "#db2777" },
-      warning: { color: "#d97706" },
-      moderate: { color: "#7c3aed" },
-      good: { color: "#0891b2" },
     },
     neutral: {
       critical: { color: "#57534e" },
@@ -178,22 +154,6 @@ function getStatusColors(status: string, theme: Theme): ColorStyles {
       maintenance: { color: "#3b82f6", backgroundColor: "#dbeafe", fontWeight: "600" },
       offline: { color: "#6b7280", backgroundColor: "#f3f4f6", fontWeight: "600" },
       unknown: { color: "#6b7280", backgroundColor: "#f3f4f6", fontWeight: "600" },
-    },
-    sky: {
-      online: { color: "#059669", backgroundColor: "#ecfdf5", fontWeight: "600" },
-      warning: { color: "#d97706", backgroundColor: "#fffbeb", fontWeight: "600" },
-      critical: { color: "#dc2626", backgroundColor: "#fef2f2", fontWeight: "600" },
-      maintenance: { color: "#0284c7", backgroundColor: "#e0f2fe", fontWeight: "600" },
-      offline: { color: "#475569", backgroundColor: "#f8fafc", fontWeight: "600" },
-      unknown: { color: "#475569", backgroundColor: "#f8fafc", fontWeight: "600" },
-    },
-    violet: {
-      online: { color: "#0891b2", backgroundColor: "#ecfeff", fontWeight: "600" },
-      warning: { color: "#d97706", backgroundColor: "#fffbeb", fontWeight: "600" },
-      critical: { color: "#db2777", backgroundColor: "#fdf2f8", fontWeight: "600" },
-      maintenance: { color: "#7c3aed", backgroundColor: "#ede9fe", fontWeight: "600" },
-      offline: { color: "#9333ea", backgroundColor: "#faf5ff", fontWeight: "600" },
-      unknown: { color: "#9333ea", backgroundColor: "#faf5ff", fontWeight: "600" },
     },
     neutral: {
       online: { color: "#57534e", backgroundColor: "#f5f5f4", fontWeight: "600" },

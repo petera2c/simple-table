@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import QuickStartContent from "@/components/pages/docs-pages/QuickStartContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.quickStart.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const QuickStartPage = () => {
-  return <QuickStartContent />;
+  return (
+    <DocsDemoCode slug="quick-start">
+      <QuickStartContent />
+    </DocsDemoCode>
+  );
 };
 
 export default QuickStartPage;

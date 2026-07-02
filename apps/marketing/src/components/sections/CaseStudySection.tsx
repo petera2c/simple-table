@@ -4,20 +4,47 @@ import { motion } from "framer-motion";
 import { Button } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight, faQuoteLeft } from "@fortawesome/free-solid-svg-icons";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function CaseStudySection() {
   const router = useRouter();
 
   return (
     <motion.section
-      className="mb-8"
+      className="mb-16"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
       viewport={{ once: true }}
     >
-      <div className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-8 md:p-12 border border-blue-100 dark:border-blue-800 shadow-lg">
+      {/* Trusted by */}
+      <div className="text-center mb-4">
+        <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          Trusted by teams at
+        </h3>
+      </div>
+      <div className="flex justify-center mb-8">
+        <div className="relative h-12 w-32 md:h-14 md:w-40">
+          <Image
+            src="/images/trusted-by/chart-metric.svg"
+            alt="ChartMetric logo"
+            fill
+            className="object-contain dark:hidden"
+            sizes="(max-width: 768px) 128px, 160px"
+          />
+          <Image
+            src="/images/trusted-by/chart-metric-dark.svg"
+            alt="ChartMetric logo"
+            fill
+            className="object-contain hidden dark:block"
+            sizes="(max-width: 768px) 128px, 160px"
+          />
+        </div>
+      </div>
+
+      <div className="bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-xl p-8 md:p-12 border border-blue-100 dark:border-blue-800 shadow-lg">
         <div className="max-w-4xl mx-auto">
           {/* Quote Icon */}
           <div className="flex justify-center mb-6">
@@ -55,10 +82,12 @@ export default function CaseStudySection() {
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400 mb-1">
-                Highly Responsive
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                &lt;24h
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Support & bug fixes</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Response time for support & bug fixes
+              </div>
             </div>
           </div>
 
@@ -75,6 +104,21 @@ export default function CaseStudySection() {
             </Button>
           </div>
         </div>
+      </div>
+
+      {/* Featured on */}
+      <div className="flex justify-center mt-6">
+        <a
+          href="https://github.com/brillout/awesome-react-components"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+        >
+          <FontAwesomeIcon icon={faGithub} />
+          <span>
+            Featured on <span className="font-semibold">Awesome React Components</span>
+          </span>
+        </a>
       </div>
     </motion.section>
   );

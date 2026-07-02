@@ -12,18 +12,20 @@
   --st-scrollbar-bg-color: var(--st-neutral-100);
   --st-scrollbar-thumb-color: var(--st-neutral-400);
   --st-scrollbar-width: thin;
-  --st-scrollbar-thumb-border-radius: 4px;
 
   /* Base/Structural colors */
   --st-border-color: var(--st-neutral-300);
+  --st-body-background-color: var(--st-neutral-50);
   --st-footer-background-color: var(--st-neutral-50);
+  --st-footer-text-color: var(--st-neutral-600);
   --st-last-group-row-separator-border-color: var(--st-neutral-400);
 
   /* Row colors */
   --st-odd-row-background-color: var(--st-neutral-50);
   --st-even-row-background-color: var(--st-neutral-100);
   --st-hover-row-background-color: var(--st-neutral-200);
-  --st-selected-row-background-color: var(--st-neutral-200);
+  /* One step darker than hover so a selected row stays visible while hovering */
+  --st-selected-row-background-color: var(--st-neutral-300);
 
   /* Column colors */
   --st-odd-column-background-color: var(--st-neutral-50);
@@ -94,8 +96,8 @@
   --st-tooltip-background-color: var(--st-neutral-800);
   --st-tooltip-text-color: var(--st-white);
   --st-tooltip-border-radius: 6px;
-  --st-tooltip-padding: 8px 12px;
-  --st-tooltip-font-size: 13px;
+  --st-tooltip-padding: 6px 10px;
+  --st-tooltip-font-size: 12px;
   --st-tooltip-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
   /* Header selection colors */

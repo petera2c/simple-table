@@ -1,6 +1,7 @@
 import CustomThemeContent from "@/components/pages/docs-pages/CustomThemeContent";
 import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.customTheme.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const CustomThemePage = () => {
-  return <CustomThemeContent />;
+  return (
+    <DocsDemoCode slug="custom-theme">
+      <CustomThemeContent />
+    </DocsDemoCode>
+  );
 };
 
 export default CustomThemePage;

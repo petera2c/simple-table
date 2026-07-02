@@ -1,6 +1,7 @@
 import ColumnFilteringContent from "@/components/pages/docs-pages/ColumnFilteringContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import { Metadata } from "next";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.columnFiltering.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const ColumnFilteringPage = () => {
-  return <ColumnFilteringContent />;
+  return (
+    <DocsDemoCode slug="column-filtering">
+      <ColumnFilteringContent />
+    </DocsDemoCode>
+  );
 };
 
 export default ColumnFilteringPage;

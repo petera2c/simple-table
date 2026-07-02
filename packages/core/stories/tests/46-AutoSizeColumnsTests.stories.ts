@@ -79,6 +79,11 @@ const longText =
 // Module-level handles so play() can drive update()/sort on the mounted table.
 let refitTable: SimpleTableVanilla | null = null;
 let sortTable: SimpleTableVanilla | null = null;
+let sortReserveTable: SimpleTableVanilla | null = null;
+let truncationTable: SimpleTableVanilla | null = null;
+let truncationFill: (() => void) | null = null;
+let emptyHeaderTable: SimpleTableVanilla | null = null;
+let emptyHeaderFill: (() => void) | null = null;
 
 // ============================================================================
 // CORRECTNESS — shrink / grow / cap / floor / mode
@@ -235,6 +240,88 @@ export const AutoSizeMeasuresCustomRenderer = {
     await waitForTable();
     const statusWidth = widthOf(canvasElement, "Status");
     expect(statusWidth).toBeGreaterThan(220);
+  },
+};
+
+export const AutoSizeMeasuresCustomHeaderRenderer = {
+  parameters: { tags: ["auto-size-custom-header-renderer"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      {
+        accessor: "state",
+        label: "State",
+        width: "auto",
+        type: "string",
+        // Custom header markup wider than both the label text and the cells;
+        // the generic label measurement must pick it up.
+        headerRenderer: () => {
+          const el = document.createElement("div");
+          el.style.display = "inline-block";
+          el.style.width = "260px";
+          el.style.whiteSpace = "nowrap";
+          el.textContent = "Custom header";
+          return el;
+        },
+      },
+    ];
+    const data = makeRows(30, (i) => ({ id: i + 1, state: "ok" }));
+    const { wrapper } = renderVanillaTable(headers, data, {
+      getRowId: (params: any) => String(params.row.id),
+      height: "300px",
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    // Custom headers have no .st-header-label-text span; find the cell by id.
+    const cell = canvasElement.querySelector('[id="header-state"]');
+    expect(cell).toBeTruthy();
+    const stateWidth = cell!.getBoundingClientRect().width;
+    // Must fit the 260px custom markup (cells are "ok" -> tiny).
+    expect(stateWidth).toBeGreaterThan(250);
+  },
+};
+
+export const AutoSizeSortIconDoesNotTruncateLabel = {
+  parameters: { tags: ["auto-size-sort-icon-reserve"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      {
+        accessor: "name",
+        label: "Employee Full Name",
+        width: "auto",
+        type: "string",
+        isSortable: true,
+      },
+    ];
+    // Short cells so the header label (plus reserved sort icon space) defines
+    // the column width.
+    const data = makeRows(30, (i) => ({ id: i + 1, name: `n${i}` }));
+    const { wrapper, table } = renderVanillaTable(headers, data, {
+      getRowId: (params: any) => String(params.row.id),
+      height: "300px",
+    });
+    sortReserveTable = table;
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const before = widthOf(canvasElement, "Employee Full Name");
+    expect(before).toBeGreaterThan(0);
+
+    // Sorting makes the sort icon appear; the fit already reserved space for
+    // it, so the width stays stable AND the label is not pushed into ellipsis.
+    await sortReserveTable!.getAPI().applySortState({ accessor: "name", direction: "asc" });
+    await wait(200);
+
+    const after = widthOf(canvasElement, "Employee Full Name");
+    expect(Math.abs(after - before)).toBeLessThan(2);
+
+    const cell = findHeaderCellByLabel(canvasElement, "Employee Full Name");
+    const textSpan = cell!.querySelector(".st-header-label-text") as HTMLElement;
+    expect(textSpan.scrollWidth).toBeLessThanOrEqual(textSpan.clientWidth + 1);
   },
 };
 
@@ -429,7 +516,9 @@ export const AutoSize50kUniformShort = {
     const idWidth = widthOf(canvasElement, "ID");
     const elapsed = performance.now() - start;
     // eslint-disable-next-line no-console
-    console.info(`[auto-size] 50k uniform: width=${idWidth.toFixed(1)} settled in ${elapsed.toFixed(0)}ms`);
+    console.info(
+      `[auto-size] 50k uniform: width=${idWidth.toFixed(1)} settled in ${elapsed.toFixed(0)}ms`,
+    );
     // Numeric ids (up to 50000) stay compact even with 50k rows.
     expect(idWidth).toBeGreaterThan(0);
     expect(idWidth).toBeLessThan(140);
@@ -486,7 +575,9 @@ export const AutoSize50kWidespreadLongGrows = {
     const blurbWidth = widthOf(canvasElement, "Blurb");
     const elapsed = performance.now() - start;
     // eslint-disable-next-line no-console
-    console.info(`[auto-size] 50k long: width=${blurbWidth.toFixed(1)} settled in ${elapsed.toFixed(0)}ms`);
+    console.info(
+      `[auto-size] 50k long: width=${blurbWidth.toFixed(1)} settled in ${elapsed.toFixed(0)}ms`,
+    );
     // Widespread long content -> grows toward the cap (360).
     expect(blurbWidth).toBeGreaterThan(250);
     expect(blurbWidth).toBeLessThanOrEqual(370);
@@ -693,6 +784,295 @@ export const AutoSizeNoFlicker = {
 };
 
 // ============================================================================
+// ASYNC RENDERERS / TRUNCATION — measurement must not depend on live-cell CSS
+// ============================================================================
+
+/**
+ * Simulates the React adapter's portal flow at the core level: the renderer
+ * returns an (initially empty) container that is filled asynchronously, after
+ * which the host calls `refitAutoSizeColumns()` — exactly what the React
+ * SimpleTable wrapper does once portals mount.
+ */
+const makeAsyncRenderer = (
+  buildContent: (value: string) => HTMLElement,
+): {
+  cellRenderer: (props: { value: unknown }) => HTMLElement;
+  fill: () => void;
+} => {
+  const pending: Array<{ el: HTMLElement; value: string }> = [];
+  return {
+    cellRenderer: ({ value }) => {
+      const container = document.createElement("div");
+      container.style.display = "contents";
+      pending.push({ el: container, value: String(value) });
+      return container;
+    },
+    fill: () => {
+      for (const { el, value } of pending) {
+        if (el.childNodes.length === 0) {
+          el.appendChild(buildContent(value));
+        }
+      }
+    },
+  };
+};
+
+export const AutoSizeAsyncRendererInternalTruncation = {
+  parameters: { tags: ["auto-size-async-renderer-truncation"] },
+  render: () => {
+    // The mounted content uses the common "truncate" pattern: a fixed-width
+    // part that never shrinks plus a min-width:0 / overflow:hidden text span.
+    // The content therefore NEVER overflows its cell (it truncates itself), so
+    // a scrollWidth>clientWidth check can never see its true content width —
+    // the width must come from measuring the content unconstrained.
+    const buildContent = (value: string): HTMLElement => {
+      const row = document.createElement("div");
+      row.style.display = "flex";
+      row.style.alignItems = "center";
+      // The row is itself a flex item of .st-cell-content; min-width:0 is
+      // required at EVERY flex nesting level for truncation to engage
+      // (otherwise the row keeps its natural width and gets hard-clipped).
+      row.style.minWidth = "0";
+
+      const badge = document.createElement("span");
+      badge.className = "fixed-badge";
+      badge.style.flex = "0 0 140px";
+      badge.style.height = "10px";
+      badge.style.background = "#cbd5e1";
+
+      const text = document.createElement("span");
+      text.className = "trunc-text";
+      text.style.minWidth = "0";
+      text.style.overflow = "hidden";
+      text.style.textOverflow = "ellipsis";
+      text.style.whiteSpace = "nowrap";
+      text.textContent = value;
+
+      row.appendChild(badge);
+      row.appendChild(text);
+      return row;
+    };
+
+    const { cellRenderer, fill } = makeAsyncRenderer(buildContent);
+    truncationFill = fill;
+
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      {
+        accessor: "status",
+        label: "Status",
+        width: "auto",
+        type: "string",
+        cellRenderer: cellRenderer,
+      },
+      {
+        // Same renderer but capped: the column stops at maxWidth, so the
+        // renderer's internal truncation kicks in (visible ellipsis) while the
+        // uncapped column above still fits its content exactly. This is the
+        // "minimize clipping, truncate past maxWidth" combination.
+        accessor: "note",
+        label: "Capped",
+        width: "auto",
+        maxWidth: 220,
+        type: "string",
+        cellRenderer: cellRenderer,
+      },
+    ];
+    const data = makeRows(30, (i) => ({
+      id: i + 1,
+      status: "Very long status text value",
+      note: "This note is far too long to ever fit inside the capped column",
+    }));
+    const { wrapper, table } = renderVanillaTable(headers, data, {
+      getRowId: (params: any) => String(params.row.id),
+      height: "300px",
+    });
+    truncationTable = table;
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    // Async content mounts (like React portals), then the host re-fits.
+    truncationFill!();
+    truncationTable!.refitAutoSizeColumns();
+    await wait(250);
+
+    // The uncapped column must fit the REAL renderer output (140px badge +
+    // full text), not just the formatted text fallback — even though the live
+    // cells truncate internally and never overflow. Nothing should be
+    // truncated here: the whole point of width:"auto" is minimizing clipping.
+    const statusWidth = widthOf(canvasElement, "Status");
+    expect(statusWidth).toBeGreaterThan(250);
+    expect(statusWidth).toBeLessThan(450);
+
+    // The badge must actually be visible in the rendered cells (content is
+    // mounted, not just measured).
+    expect(canvasElement.querySelectorAll(".fixed-badge").length).toBeGreaterThan(0);
+
+    // The capped column stops at its maxWidth (220 + small buffer)…
+    const cappedWidth = widthOf(canvasElement, "Capped");
+    expect(cappedWidth).toBeGreaterThan(180);
+    expect(cappedWidth).toBeLessThanOrEqual(232);
+
+    // …and its content visibly truncates: the text span is clipped (ellipsis)
+    // because the content is wider than the capped column.
+    const cappedText = canvasElement.querySelector(
+      '.st-cell[data-accessor="note"] .trunc-text',
+    ) as HTMLElement;
+    expect(cappedText).toBeTruthy();
+    expect(cappedText.scrollWidth).toBeGreaterThan(cappedText.clientWidth + 1);
+  },
+};
+
+// ============================================================================
+// CONTAINER INDEPENDENCE — same data => same auto width in any container
+// ============================================================================
+
+export const AutoSizeConsistentAcrossContainerWidths = {
+  parameters: { tags: ["auto-size-container-independent"] },
+  render: () => {
+    // Two tables with identical data/columns but very different container
+    // widths. In the narrow container the trailing auto column starts outside
+    // the column-virtualization band (600px of fixed columns before it), so a
+    // DOM-dependent measurement would fall back to the 150px default there.
+    const outer = document.createElement("div");
+
+    const build = (suffix: string, containerWidth: string) => {
+      const headers: HeaderObject[] = [
+        { accessor: `id${suffix}`, label: "ID", width: "auto", type: "number" },
+        { accessor: `name${suffix}`, label: "Name", width: 200, type: "string" },
+        { accessor: `city${suffix}`, label: "City", width: 200, type: "string" },
+        { accessor: `country${suffix}`, label: "Country", width: 200, type: "string" },
+        { accessor: `notes${suffix}`, label: "Notes", width: "auto", type: "string" },
+      ];
+      const data = makeRows(30, (i) => ({
+        [`id${suffix}`]: i + 1,
+        [`name${suffix}`]: `Name ${i}`,
+        [`city${suffix}`]: `City ${i}`,
+        [`country${suffix}`]: `Country ${i}`,
+        [`notes${suffix}`]: `Content-based width sample row number ${i % 10}`,
+      }));
+      const { wrapper, tableContainer } = renderVanillaTable(headers, data, {
+        getRowId: (params: any) => String(params.row[`id${suffix}`]),
+        height: "300px",
+      });
+      tableContainer.style.width = containerWidth;
+      wrapper.classList.add(`container-${suffix}`);
+      outer.appendChild(wrapper);
+      return wrapper;
+    };
+
+    build("A", "1200px");
+    build("B", "360px");
+    return outer;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await wait(200);
+
+    const scopedWidthOf = (scope: Element, label: string): number => {
+      const headers = Array.from(scope.querySelectorAll(".st-header-cell"));
+      for (const header of headers) {
+        const labelElement = header.querySelector(".st-header-label-text");
+        if (labelElement?.textContent?.trim() === label) {
+          return header.getBoundingClientRect().width;
+        }
+      }
+      return 0;
+    };
+
+    const wide = canvasElement.querySelector(".container-A")!;
+    const narrow = canvasElement.querySelector(".container-B")!;
+
+    const wideNotes = scopedWidthOf(wide, "Notes");
+    expect(wideNotes).toBeGreaterThan(200);
+
+    // Bring the narrow table's Notes column into view so its header renders.
+    const narrowBody = narrow.querySelector(".st-body-main") as HTMLElement;
+    narrowBody.scrollLeft = narrowBody.scrollWidth;
+    narrowBody.dispatchEvent(new Event("scroll", { bubbles: true }));
+    await wait(300);
+
+    const narrowNotes = scopedWidthOf(narrow, "Notes");
+    expect(narrowNotes).toBeGreaterThan(200);
+
+    // Same content => same computed width, regardless of container width.
+    expect(Math.abs(wideNotes - narrowNotes)).toBeLessThan(3);
+  },
+};
+
+// ============================================================================
+// EMPTY STATE + ASYNC CUSTOM HEADER — must fall back to the label width
+// ============================================================================
+
+export const AutoSizeEmptyStateAsyncHeaderRenderer = {
+  parameters: { tags: ["auto-size-empty-custom-header"] },
+  render: () => {
+    // Simulates a React headerRenderer: the label element receives an empty
+    // portal container at render time; the real markup mounts asynchronously.
+    // With no rows to measure, a naive measurement of the empty container
+    // collapses the column to the minimum width.
+    const pending: HTMLElement[] = [];
+    emptyHeaderFill = () => {
+      for (const el of pending) {
+        if (el.childNodes.length === 0) {
+          const span = document.createElement("span");
+          span.style.whiteSpace = "nowrap";
+          span.textContent = "Description Column";
+          el.appendChild(span);
+        }
+      }
+    };
+
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      {
+        accessor: "description",
+        label: "Description Column",
+        width: "auto",
+        type: "string",
+        headerRenderer: () => {
+          const container = document.createElement("div");
+          pending.push(container);
+          return container;
+        },
+      },
+    ];
+    const { wrapper, table } = renderVanillaTable(headers, [], {
+      getRowId: (params: any) => String(params.row.id),
+      height: "300px",
+    });
+    emptyHeaderTable = table;
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    // Custom headers have no .st-header-label-text span; find the cell by id.
+    const cell = canvasElement.querySelector('[id="header-description"]');
+    expect(cell).toBeTruthy();
+
+    // Even before the async header content mounts, the column must fit the
+    // header LABEL (the fallback), not collapse to the 40px minimum.
+    const initialWidth = cell!.getBoundingClientRect().width;
+    expect(initialWidth).toBeGreaterThan(120);
+    expect(initialWidth).toBeLessThan(320);
+
+    // Async header content mounts, host re-fits (React adapter flow): the
+    // column must stay readable.
+    emptyHeaderFill!();
+    emptyHeaderTable!.refitAutoSizeColumns();
+    await wait(250);
+
+    const cellAfter = canvasElement.querySelector('[id="header-description"]');
+    const afterWidth = cellAfter!.getBoundingClientRect().width;
+    expect(afterWidth).toBeGreaterThan(120);
+    expect(afterWidth).toBeLessThan(320);
+  },
+};
+
+// ============================================================================
 // DETERMINISTIC HELPER UNIT BLOCK (layout-independent)
 // ============================================================================
 
@@ -745,31 +1125,47 @@ export const SamplingAndOutlierHelpers = {
 
     // Uniform bulk + single huge outlier -> clipped near the bulk.
     const single = [...makeRows(50, () => 50), 2000];
-    expect(selectContentWidthWithOutlierClip(single, { percentile: 95, threshold: 0.5 })).toBeLessThan(100);
+    expect(
+      selectContentWidthWithOutlierClip(single, { percentile: 95, threshold: 0.5 }),
+    ).toBeLessThan(100);
 
     // Legitimate wide minority (>5%) -> NOT clipped (returns max).
     const minority = [...makeRows(80, () => 50), ...makeRows(20, () => 300)];
-    expect(selectContentWidthWithOutlierClip(minority, { percentile: 95, threshold: 0.5 })).toBe(300);
+    expect(selectContentWidthWithOutlierClip(minority, { percentile: 95, threshold: 0.5 })).toBe(
+      300,
+    );
 
     // Below the min-sample guard (20) -> never clip (raw max).
     expect(selectContentWidthWithOutlierClip([10, 10, 2000])).toBe(2000);
 
     // Threshold boundary: bulk of 100s, single extra value.
     const justUnder = [...makeRows(50, () => 100), 149]; // 149 <= 100 * 1.5 -> keep max
-    expect(selectContentWidthWithOutlierClip(justUnder, { percentile: 95, threshold: 0.5 })).toBe(149);
+    expect(selectContentWidthWithOutlierClip(justUnder, { percentile: 95, threshold: 0.5 })).toBe(
+      149,
+    );
     const justOver = [...makeRows(50, () => 100), 200]; // 200 > 100 * 1.5 -> clip to ~100
-    expect(selectContentWidthWithOutlierClip(justOver, { percentile: 95, threshold: 0.5 })).toBeLessThan(120);
+    expect(
+      selectContentWidthWithOutlierClip(justOver, { percentile: 95, threshold: 0.5 }),
+    ).toBeLessThan(120);
 
     // Percentile choice changes the outcome (7% long tail sits between p90 and p95).
     const tailData = [...makeRows(93, () => 50), ...makeRows(7, () => 500)];
-    expect(selectContentWidthWithOutlierClip(tailData, { percentile: 95, threshold: 0.5 })).toBe(500); // p95 in tail -> keep
-    expect(selectContentWidthWithOutlierClip(tailData, { percentile: 90, threshold: 0.5 })).toBeLessThan(100); // p90 in bulk -> clip
+    expect(selectContentWidthWithOutlierClip(tailData, { percentile: 95, threshold: 0.5 })).toBe(
+      500,
+    ); // p95 in tail -> keep
+    expect(
+      selectContentWidthWithOutlierClip(tailData, { percentile: 90, threshold: 0.5 }),
+    ).toBeLessThan(100); // p90 in bulk -> clip
 
     // Threshold choice: a very large threshold disables clipping.
-    expect(selectContentWidthWithOutlierClip(single, { percentile: 95, threshold: 100 })).toBe(2000);
+    expect(selectContentWidthWithOutlierClip(single, { percentile: 95, threshold: 100 })).toBe(
+      2000,
+    );
 
     // Large array performance/correctness sanity.
     const huge = [...makeRows(10_000, () => 60), 5000];
-    expect(selectContentWidthWithOutlierClip(huge, { percentile: 95, threshold: 0.5 })).toBeLessThan(120);
+    expect(
+      selectContentWidthWithOutlierClip(huge, { percentile: 95, threshold: 0.5 }),
+    ).toBeLessThan(120);
   },
 };

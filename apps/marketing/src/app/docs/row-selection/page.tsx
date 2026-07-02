@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import RowSelectionContent from "@/components/pages/docs-pages/RowSelectionContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.rowSelection.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const RowSelectionPage = () => {
-  return <RowSelectionContent />;
+  return (
+    <DocsDemoCode slug="row-selection">
+      <RowSelectionContent />
+    </DocsDemoCode>
+  );
 };
 
 export default RowSelectionPage;

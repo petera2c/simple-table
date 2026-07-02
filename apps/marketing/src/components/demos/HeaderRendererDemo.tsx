@@ -131,18 +131,6 @@ const HeaderRendererDemo = ({
           hoverColor: "#111827",
           sortActiveColor: "#3b82f6",
         };
-      case "violet":
-        return {
-          baseColor: "#6b7280",
-          hoverColor: "#8b5cf6",
-          sortActiveColor: "#a855f7",
-        };
-      case "sky":
-        return {
-          baseColor: "#6b7280",
-          hoverColor: "#0ea5e9",
-          sortActiveColor: "#0284c7",
-        };
       case "neutral":
         return {
           baseColor: "#525252",

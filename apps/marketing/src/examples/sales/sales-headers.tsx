@@ -67,38 +67,6 @@ const getThemeColors = (theme?: string) => {
         low: "#FBBF24",
       },
     },
-    sky: {
-      gray: "#334155",
-      grayMuted: "#94a3b8",
-      success: {
-        high: { color: "#0369a1", fontWeight: "bold" },
-        medium: "#0284c7",
-        low: "#0ea5e9",
-      },
-      info: "#06b6d4",
-      warning: "#f59e0b",
-      progressColors: {
-        high: "#0EA5E9",
-        medium: "#06B6D4",
-        low: "#F59E0B",
-      },
-    },
-    violet: {
-      gray: "#374151",
-      grayMuted: "#9ca3af",
-      success: {
-        high: { color: "#059669", fontWeight: "bold" },
-        medium: "#65a30d",
-        low: "#22c55e",
-      },
-      info: "#8b5cf6",
-      warning: "#f97316",
-      progressColors: {
-        high: "#10B981",
-        medium: "#8B5CF6",
-        low: "#F97316",
-      },
-    },
     neutral: {
       gray: "#1f2937",
       grayMuted: "#9ca3af",

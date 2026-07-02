@@ -2,7 +2,12 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
-import type { CellRendererProps, ReactHeaderObject, SimpleTableReactProps } from "../index";
+import type {
+  CellRendererProps,
+  HeaderRendererProps,
+  ReactHeaderObject,
+  SimpleTableReactProps,
+} from "../index";
 
 // NOTE: jsdom has no layout engine, so element widths are all 0 here. Width /
 // flicker assertions for auto-sizing live in the browser-based core story
@@ -135,6 +140,41 @@ describe("SimpleTable (React adapter) — auto-size columns", () => {
     await waitForText(host, "status:active");
     expect(host.textContent).toContain("Alpha");
     expect(host.querySelectorAll(".status-badge").length).toBeGreaterThan(0);
+  });
+
+  it("renders a width:'auto' column that uses a React headerRenderer", async () => {
+    // Custom React header markup is measured generically (whole-label clone);
+    // this guards that the measurement + post-mount re-fit path doesn't throw.
+    const CustomHeader = ({ header }: HeaderRendererProps) =>
+      createElement("span", { className: "custom-head" }, `head:${header.label}`);
+
+    const customHeaders: ReactHeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      {
+        accessor: "status",
+        label: "Status",
+        width: "auto",
+        type: "string",
+        headerRenderer: CustomHeader,
+      },
+    ];
+
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    container = host;
+    root = createRoot(host);
+    root.render(
+      createElement(SimpleTable, {
+        defaultHeaders: customHeaders,
+        rows,
+        getRowId: (p) => String((p.row as { id?: number })?.id),
+        height: "250px",
+        theme: "light",
+      }),
+    );
+
+    await waitForText(host, "head:Status");
+    expect(host.querySelectorAll(".custom-head").length).toBeGreaterThan(0);
   });
 
   it("mounts a 1k-row dataset with an auto column", async () => {

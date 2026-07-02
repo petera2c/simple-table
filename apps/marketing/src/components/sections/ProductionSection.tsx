@@ -54,10 +54,10 @@ export default function ProductionSection() {
           transition={{ delay: 0.2 }}
           viewport={{ once: true }}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
             <FontAwesomeIcon
               icon={faShieldAlt}
-              className="text-green-600 dark:text-green-400 text-2xl"
+              className="text-blue-600 dark:text-blue-400 text-2xl"
             />
           </div>
           <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">Production-Ready</h3>
@@ -74,10 +74,10 @@ export default function ProductionSection() {
           transition={{ delay: 0.3 }}
           viewport={{ once: true }}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-100 dark:bg-purple-900 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
             <FontAwesomeIcon
               icon={faCodeBranch}
-              className="text-purple-600 dark:text-purple-400 text-2xl"
+              className="text-blue-600 dark:text-blue-400 text-2xl"
             />
           </div>
           <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">
@@ -95,11 +95,8 @@ export default function ProductionSection() {
           transition={{ delay: 0.4 }}
           viewport={{ once: true }}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-100 dark:bg-indigo-900 mb-4">
-            <FontAwesomeIcon
-              icon={faBook}
-              className="text-indigo-600 dark:text-indigo-400 text-2xl"
-            />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
+            <FontAwesomeIcon icon={faBook} className="text-blue-600 dark:text-blue-400 text-2xl" />
           </div>
           <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">
             Developer Friendly Docs
@@ -117,10 +114,10 @@ export default function ProductionSection() {
           transition={{ delay: 0.5 }}
           viewport={{ once: true }}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-100 dark:bg-orange-900 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
             <FontAwesomeIcon
               icon={faRocket}
-              className="text-orange-600 dark:text-orange-400 text-2xl"
+              className="text-blue-600 dark:text-blue-400 text-2xl"
             />
           </div>
           <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">
@@ -139,8 +136,11 @@ export default function ProductionSection() {
           transition={{ delay: 0.6 }}
           viewport={{ once: true }}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 dark:bg-red-900 mb-4">
-            <FontAwesomeIcon icon={faHeadset} className="text-red-600 dark:text-red-400 text-2xl" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
+            <FontAwesomeIcon
+              icon={faHeadset}
+              className="text-blue-600 dark:text-blue-400 text-2xl"
+            />
           </div>
           <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">
             Dedicated Support

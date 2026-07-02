@@ -1,6 +1,7 @@
 import NestedHeadersContent from "@/components/pages/docs-pages/NestedHeadersContent";
 import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.nestedHeaders.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const NestedHeadersPage = () => {
-  return <NestedHeadersContent />;
+  return (
+    <DocsDemoCode slug="nested-headers">
+      <NestedHeadersContent />
+    </DocsDemoCode>
+  );
 };
 
 export default NestedHeadersPage;

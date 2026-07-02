@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import EmptyStateContent from "@/components/pages/docs-pages/EmptyStateContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.emptyState.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const EmptyStatePage = () => {
-  return <EmptyStateContent />;
+  return (
+    <DocsDemoCode slug="empty-state">
+      <EmptyStateContent />
+    </DocsDemoCode>
+  );
 };
 
 export default EmptyStatePage;

@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import ColumnVisibilityContent from "@/components/pages/docs-pages/ColumnVisibilityContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.columnVisibility.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const ColumnVisibilityPage = () => {
-  return <ColumnVisibilityContent />;
+  return (
+    <DocsDemoCode slug="column-visibility">
+      <ColumnVisibilityContent />
+    </DocsDemoCode>
+  );
 };
 
 export default ColumnVisibilityPage;

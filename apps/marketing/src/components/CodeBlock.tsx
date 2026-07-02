@@ -5,27 +5,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy, faCheck, faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
 import { Highlight, themes } from "prism-react-renderer";
 import { useDemoCode } from "@/hooks/useDemoCode";
-import { useFramework, type Framework } from "@/providers/FrameworkProvider";
+import { useFramework } from "@/providers/FrameworkProvider";
+import { useDemoCodeMap } from "@/providers/DemoCodeProvider";
+import {
+  FRAMEWORKS,
+  FRAMEWORK_LABELS,
+  FRAMEWORK_LANGUAGE,
+  FRAMEWORK_LANGUAGE_LABEL,
+  type Framework,
+} from "@/constants/frameworks";
+import FrameworkIcon from "./FrameworkIcon";
 
 type ThemeType = "dark" | "light";
-
-const FRAMEWORK_LANGUAGE: Record<Framework, string> = {
-  react: "tsx",
-  vue: "markup",
-  angular: "typescript",
-  svelte: "markup",
-  solid: "tsx",
-  vanilla: "typescript",
-};
-
-const FRAMEWORK_LANGUAGE_LABEL: Record<Framework, string> = {
-  react: "React TSX",
-  vue: "Vue SFC",
-  angular: "Angular",
-  svelte: "Svelte",
-  solid: "Solid TSX",
-  vanilla: "TypeScript",
-};
 
 interface CodeBlockProps {
   className?: string;
@@ -37,23 +28,51 @@ interface CodeBlockProps {
   showThemeToggle?: boolean;
 }
 
-const CodeBlock = ({
-  className = "",
-  code = "",
-  demoId,
-  initialTheme = "dark",
-  language,
-  showLineNumbers = true,
-  showThemeToggle = true,
-}: CodeBlockProps) => {
-  const demoCode = useDemoCode(demoId);
-  const { framework } = useFramework();
-  code = demoCode ? demoCode.toString() : code.toString();
-  if (!language) {
-    language = demoId ? FRAMEWORK_LANGUAGE[framework] : "tsx";
+// Filename extraction from first comment line (e.g. "// SomeFile.tsx")
+const extractFilename = (code: string): string | null => {
+  if (!code) return null;
+
+  const firstLine = code.trim().split("\n")[0];
+  if (firstLine.startsWith("// ") || firstLine.startsWith("/* ")) {
+    const potentialFilename = firstLine.replace(/^\/\/\s*|^\/\*\s*/, "").trim();
+    if (potentialFilename.includes(".")) {
+      return potentialFilename;
+    }
   }
+  return null;
+};
+
+const LANGUAGE_DISPLAY_NAMES: Record<string, string> = {
+  jsx: "React JSX",
+  tsx: "React TSX",
+  javascript: "JavaScript",
+  typescript: "TypeScript",
+  css: "CSS",
+  html: "HTML",
+  bash: "Shell",
+  json: "JSON",
+  markup: "HTML",
+};
+
+/** Header bar + syntax-highlighted body for one code snippet. */
+const CodePane = ({
+  code,
+  language,
+  languageLabel,
+  showLineNumbers,
+  showThemeToggle,
+  theme,
+  onToggleTheme,
+}: {
+  code: string;
+  language: string;
+  languageLabel: string;
+  showLineNumbers: boolean;
+  showThemeToggle: boolean;
+  theme: ThemeType;
+  onToggleTheme: () => void;
+}) => {
   const [copied, setCopied] = useState(false);
-  const [theme, setTheme] = useState<ThemeType>(initialTheme);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code).then(() => {
@@ -62,49 +81,14 @@ const CodeBlock = ({
     });
   };
 
-  const toggleTheme = () => {
-    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
-  };
-
   const selectedTheme = theme === "dark" ? themes.nightOwl : themes.nightOwlLight;
-
-  const getLanguageDisplayName = () => {
-    if (demoId) return FRAMEWORK_LANGUAGE_LABEL[framework];
-    const displayNames: Record<string, string> = {
-      jsx: "React JSX",
-      tsx: "React TSX",
-      javascript: "JavaScript",
-      typescript: "TypeScript",
-      css: "CSS",
-      html: "HTML",
-      bash: "Shell",
-      json: "JSON",
-      markup: "HTML",
-    };
-    return displayNames[language!] || language!.toUpperCase();
-  };
-
-  // Filename extraction from first comment line (e.g. "// SomeFile.tsx")
-  const extractFilename = (): string | null => {
-    if (!code) return null;
-
-    const firstLine = code.trim().split("\n")[0];
-    if (firstLine.startsWith("// ") || firstLine.startsWith("/* ")) {
-      const potentialFilename = firstLine.replace(/^\/\/\s*|^\/\*\s*/, "").trim();
-      if (potentialFilename.includes(".")) {
-        return potentialFilename;
-      }
-    }
-    return null;
-  };
-
-  const filename = extractFilename();
+  const filename = extractFilename(code);
 
   return (
-    <div className={`flex flex-col rounded-md overflow-hidden shadow-lg relative ${className}`}>
+    <div className="flex flex-col rounded-md overflow-hidden shadow-lg relative h-full">
       <div className="flex items-center justify-between px-4 py-2 bg-gray-900 text-gray-400 text-xs">
         <div className="flex items-center gap-2">
-          <span>{getLanguageDisplayName()}</span>
+          <span>{languageLabel}</span>
           {filename && (
             <span className="text-gray-500 ml-2 border-l border-gray-700 pl-2">{filename}</span>
           )}
@@ -113,7 +97,7 @@ const CodeBlock = ({
           {showThemeToggle && (
             <button
               className="flex items-center gap-1 bg-gray-800 hover:bg-gray-700 text-gray-300 hover:text-white px-2 py-1 rounded cursor-pointer transition-colors"
-              onClick={toggleTheme}
+              onClick={onToggleTheme}
               title={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
             >
               <FontAwesomeIcon icon={theme === "dark" ? faSun : faMoon} className="text-xs" />
@@ -179,6 +163,102 @@ const CodeBlock = ({
           </pre>
         )}
       </Highlight>
+    </div>
+  );
+};
+
+const CodeBlock = ({
+  className = "",
+  code = "",
+  demoId,
+  initialTheme = "dark",
+  language,
+  showLineNumbers = true,
+  showThemeToggle = true,
+}: CodeBlockProps) => {
+  const { framework, setFramework } = useFramework();
+  const [theme, setTheme] = useState<ThemeType>(initialTheme);
+
+  // Server-preloaded per-framework code (docs pages). Falls back to client fetch when absent.
+  const codeMap = useDemoCodeMap(demoId);
+  const fetchedCode = useDemoCode(codeMap ? undefined : demoId);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+  };
+
+  // All framework variants are rendered into the HTML (SEO/LLM crawlers see every
+  // snippet); only the active framework's pane is visible.
+  if (codeMap) {
+    const available = FRAMEWORKS.filter((fw) => codeMap[fw]);
+    if (available.length > 0) {
+      const activeFramework: Framework = codeMap[framework]
+        ? framework
+        : available[0];
+
+      return (
+        <div className={`flex flex-col ${className}`}>
+          <div
+            className="flex flex-wrap gap-1.5 mb-2"
+            role="tablist"
+            aria-label="Framework code examples"
+          >
+            {available.map((fw) => (
+              <button
+                key={fw}
+                role="tab"
+                aria-selected={fw === activeFramework}
+                onClick={() => setFramework(fw)}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-sm transition-colors ${
+                  fw === activeFramework
+                    ? "bg-blue-600 text-white font-medium"
+                    : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                }`}
+              >
+                <FrameworkIcon framework={fw} size={14} />
+                {FRAMEWORK_LABELS[fw]}
+              </button>
+            ))}
+          </div>
+          {available.map((fw) => (
+            <div
+              key={fw}
+              role="tabpanel"
+              className={`grow min-h-0 ${fw === activeFramework ? "" : "hidden"}`}
+            >
+              <CodePane
+                code={codeMap[fw] as string}
+                language={FRAMEWORK_LANGUAGE[fw]}
+                languageLabel={FRAMEWORK_LANGUAGE_LABEL[fw]}
+                showLineNumbers={showLineNumbers}
+                showThemeToggle={showThemeToggle}
+                theme={theme}
+                onToggleTheme={toggleTheme}
+              />
+            </div>
+          ))}
+        </div>
+      );
+    }
+  }
+
+  const resolvedCode = fetchedCode ? fetchedCode.toString() : code.toString();
+  const resolvedLanguage = language || (demoId ? FRAMEWORK_LANGUAGE[framework] : "tsx");
+  const languageLabel = demoId
+    ? FRAMEWORK_LANGUAGE_LABEL[framework]
+    : LANGUAGE_DISPLAY_NAMES[resolvedLanguage] || resolvedLanguage.toUpperCase();
+
+  return (
+    <div className={className}>
+      <CodePane
+        code={resolvedCode}
+        language={resolvedLanguage}
+        languageLabel={languageLabel}
+        showLineNumbers={showLineNumbers}
+        showThemeToggle={showThemeToggle}
+        theme={theme}
+        onToggleTheme={toggleTheme}
+      />
     </div>
   );
 };

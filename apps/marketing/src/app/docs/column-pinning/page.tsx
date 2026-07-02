@@ -1,6 +1,7 @@
 import ColumnPinningContent from "@/components/pages/docs-pages/ColumnPinningContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import { Metadata } from "next";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.columnPinning.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const ColumnPinningPage = () => {
-  return <ColumnPinningContent />;
+  return (
+    <DocsDemoCode slug="column-pinning">
+      <ColumnPinningContent />
+    </DocsDemoCode>
+  );
 };
 
 export default ColumnPinningPage;

@@ -23,7 +23,7 @@ const THEME_PROPS: PropInfo[] = [
       "Built-in theme option for styling the table. Choose from predefined themes to quickly customize your table's appearance.",
     type: "Theme",
     link: "/docs/api-reference#union-types",
-    enumValues: ["light", "dark", "sky", "violet", "neutral", "modern-light", "modern-dark"],
+    enumValues: ["light", "dark", "neutral", "modern-light", "modern-dark", "custom"],
     example: `<SimpleTable
   theme="modern-dark"
   // ... other props
@@ -108,7 +108,7 @@ export default function ThemesContent() {
         transition={{ duration: 0.5, delay: 0.2 }}
       >
         Simple Table includes several beautiful built-in themes to match your application's visual
-        design. Choose from Modern Light, Modern Dark, Light, Dark, Sky, Violet, or Neutral themes.
+        design. Choose from Modern Light, Modern Dark, Light, Dark, or Neutral themes.
         Learn more about{" "}
         <Link
           href="/blog/customizing-react-table-look-simple-table-themes"

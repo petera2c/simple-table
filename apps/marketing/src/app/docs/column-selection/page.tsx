@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import ColumnSelectionContent from "@/components/pages/docs-pages/ColumnSelectionContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.columnSelection.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const ColumnSelectionPage = () => {
-  return <ColumnSelectionContent />;
+  return (
+    <DocsDemoCode slug="column-selection">
+      <ColumnSelectionContent />
+    </DocsDemoCode>
+  );
 };
 
 export default ColumnSelectionPage;

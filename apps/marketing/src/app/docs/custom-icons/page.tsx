@@ -1,6 +1,7 @@
 import CustomIconsContent from "@/components/pages/docs-pages/CustomIconsContent";
 import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.customIcons.title,
@@ -25,7 +26,11 @@ export const metadata: Metadata = {
   },
 };
 const CustomIconsPage = () => {
-  return <CustomIconsContent />;
+  return (
+    <DocsDemoCode slug="custom-icons">
+      <CustomIconsContent />
+    </DocsDemoCode>
+  );
 };
 
 export default CustomIconsPage;

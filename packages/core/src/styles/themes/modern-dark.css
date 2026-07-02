@@ -11,6 +11,9 @@
  * - Lightweight visual hierarchy
  * 
  * Inspired by: GitHub dark mode, VS Code, and modern dark UIs
+ *
+ * All structural rules (footer, pagination, typography) live in base.css and
+ * are driven by these tokens, so this theme is a pure token set.
  */
 .theme-modern-dark {
   /* Layout/Structure variables - Tighter, more compact */
@@ -29,12 +32,12 @@
   /* Base/Structural colors - Subtle dark borders */
   --st-border-color: #374151;
   --st-footer-background-color: #1f2937;
+  --st-footer-text-color: #d1d5db;
   --st-last-group-row-separator-border-color: #4b5563;
 
-  /* Row colors - Dark background; when useOddEvenRowBackground is on, even
-   * rows lift slightly to keep the table readable on a dark canvas. */
+  /* Row colors - Dark background, hover instead of stripes */
   --st-odd-row-background-color: #1f2937;
-  --st-even-row-background-color: #232f3f;
+  --st-even-row-background-color: #1f2937;
   --st-hover-row-background-color: #374151;
   --st-selected-row-background-color: #1e3a5f;
 
@@ -83,6 +86,7 @@
   --st-page-btn-hover-background-color: #374151;
 
   /* Checkbox colors */
+  --st-checkbox-background-color: #1f2937;
   --st-checkbox-checked-background-color: #3b82f6;
   --st-checkbox-checked-border-color: #3b82f6;
   --st-checkbox-border-color: #4b5563;
@@ -128,147 +132,4 @@
 
   /* Body background for state rows */
   --st-body-background-color: #1f2937;
-}
-
-/* Modern Dark theme specific overrides for even cleaner look */
-.theme-modern-dark .st-wrapper {
-  border: 1px solid #374151;
-}
-
-/* Subtle header border */
-.theme-modern-dark .st-header-pinned-left,
-.theme-modern-dark .st-header-main,
-.theme-modern-dark .st-header-pinned-right {
-  border-bottom: 1px solid #374151;
-}
-
-/* Remove heavy borders on pinned sections */
-.theme-modern-dark .st-header-pinned-left,
-.theme-modern-dark .st-body-pinned-left {
-  border-right: 1px solid #374151;
-}
-
-.theme-modern-dark .st-header-pinned-right,
-.theme-modern-dark .st-body-pinned-right {
-  border-left: 1px solid #374151;
-}
-
-/* Cleaner row separators */
-.theme-modern-dark .st-row-separator {
-  background-color: #374151;
-}
-
-/* Lighter header cell styling */
-.theme-modern-dark .st-header-cell {
-  font-weight: 500;
-  font-size: 14px;
-  color: #d1d5db;
-}
-
-/* Cleaner cell text */
-.theme-modern-dark .st-cell-content {
-  font-size: 14px;
-  color: #f3f4f6;
-}
-
-/* Subtle hover effect */
-.theme-modern-dark .st-row.hovered {
-  transition: background-color 0.15s ease;
-}
-
-/* Modern footer styling */
-.theme-modern-dark .st-footer {
-  border-top: 1px solid #374151;
-  background-color: #1f2937;
-  padding: 12px 16px;
-  gap: 12px;
-}
-
-/* Footer text color */
-.theme-modern-dark .st-footer-results-text {
-  color: #d1d5db;
-  font-size: 14px;
-}
-
-/* Footer pagination container - hide extra buttons on smaller screens */
-.theme-modern-dark .st-footer-pagination {
-  gap: 2px;
-  flex-wrap: nowrap;
-  overflow: hidden;
-}
-
-/* Pagination ellipsis */
-.theme-modern-dark .st-page-ellipsis {
-  color: #9ca3af;
-  font-weight: 400;
-  padding: 0 4px;
-}
-
-/* Cleaner pagination buttons - more compact */
-.theme-modern-dark .st-page-btn {
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #d1d5db;
-  padding: 6px 8px;
-  min-width: 36px;
-  transition: all 0.15s ease;
-  margin-right: 0;
-  flex-shrink: 0;
-}
-
-.theme-modern-dark .st-page-btn:hover {
-  background-color: #374151;
-}
-
-.theme-modern-dark .st-page-btn.active {
-  background-color: #3b82f6;
-  color: white;
-  font-weight: 600;
-}
-
-/* Next/Prev buttons */
-.theme-modern-dark .st-next-prev-btn {
-  padding: 6px 8px;
-  border-radius: 4px;
-  transition: all 0.15s ease;
-  margin-left: 4px;
-  flex-shrink: 0;
-}
-
-.theme-modern-dark .st-next-prev-btn:not(.disabled):hover {
-  background-color: #374151;
-}
-
-.theme-modern-dark .st-next-prev-btn.disabled > * {
-  fill: #4b5563;
-}
-
-/* Modern scrollbar */
-.theme-modern-dark .st-horizontal-scrollbar-container {
-  border-top: 1px solid #374151;
-  background-color: #111827;
-}
-
-/* Cleaner group headers */
-.theme-modern-dark .st-group-header {
-  border-bottom: 1px solid #374151;
-  font-weight: 500;
-}
-
-/* Modern checkbox styling */
-.theme-modern-dark .st-checkbox-custom {
-  border-radius: 4px;
-  border: 1.5px solid #4b5563;
-  background-color: #1f2937;
-}
-
-.theme-modern-dark .st-checkbox-custom.st-checked {
-  background-color: #3b82f6;
-  border-color: #3b82f6;
-}
-
-/* Empty state styling */
-.theme-modern-dark .st-empty-state {
-  color: #9ca3af;
 }

@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import ColumnSortingContent from "@/components/pages/docs-pages/ColumnSortingContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.columnSorting.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const ColumnSortingPage = () => {
-  return <ColumnSortingContent />;
+  return (
+    <DocsDemoCode slug="column-sorting">
+      <ColumnSortingContent />
+    </DocsDemoCode>
+  );
 };
 
 export default ColumnSortingPage;

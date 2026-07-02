@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import InfiniteScrollContent from "@/components/pages/docs-pages/InfiniteScrollContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.infiniteScroll.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const InfiniteScrollPage = () => {
-  return <InfiniteScrollContent />;
+  return (
+    <DocsDemoCode slug="infinite-scroll">
+      <InfiniteScrollContent />
+    </DocsDemoCode>
+  );
 };
 
 export default InfiniteScrollPage;

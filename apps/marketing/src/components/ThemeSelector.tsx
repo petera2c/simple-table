@@ -2,23 +2,13 @@ import { Select } from "antd";
 import type { Theme } from "@simple-table/react";
 import { useThemeContext } from "@/providers/ThemeProvider";
 
-const THEME_OPTIONS: Theme[] = [
-  "modern-light",
-  "modern-dark",
-  "light",
-  "dark",
-  "sky",
-  "violet",
-  "neutral",
-];
+const THEME_OPTIONS: Theme[] = ["modern-light", "modern-dark", "light", "dark", "neutral"];
 
 const DEFAULT_THEME_LABELS: Record<string, string> = {
   "modern-light": "Modern Light",
   "modern-dark": "Modern Dark",
   light: "Light",
   dark: "Dark",
-  sky: "Sky",
-  violet: "Violet",
   neutral: "Neutral",
 };
 

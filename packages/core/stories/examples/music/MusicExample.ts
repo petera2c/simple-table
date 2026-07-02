@@ -1,6 +1,6 @@
 /**
  * MusicExample – vanilla port of React music/MusicExample.
- * Uses same music headers and data, with theme "frost" and customTheme.
+ * Uses same music headers and data, with theme "modern-light" and customTheme.
  */
 import type { Row } from "../../../src/index";
 import { renderVanillaTable } from "../../utils";
@@ -12,7 +12,7 @@ export const musicExampleDefaults = {
   columnReordering: true,
   columnResizing: true,
   selectableCells: true,
-  theme: "frost" as const,
+  theme: "modern-light" as const,
   customTheme: { rowHeight: 85, headerHeight: 40 },
   height: "70dvh",
 };

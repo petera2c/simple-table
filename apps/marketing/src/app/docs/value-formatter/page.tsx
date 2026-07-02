@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import ValueFormatterContent from "@/components/pages/docs-pages/ValueFormatterContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.valueFormatter.title,
@@ -26,5 +27,9 @@ export const metadata: Metadata = {
 };
 
 export default function ValueFormatterPage() {
-  return <ValueFormatterContent />;
+  return (
+    <DocsDemoCode slug="value-formatter">
+      <ValueFormatterContent />
+    </DocsDemoCode>
+  );
 }

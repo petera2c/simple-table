@@ -24,7 +24,6 @@ import { calculateScrollbarWidth } from "../hooks/scrollbarWidth";
 import { generateRowId, rowIdToString } from "../utils/rowUtils";
 import { untrackCellByRow } from "../utils/bodyCell/styling";
 import { deepClone } from "../utils/generalUtils";
-import { getCellId } from "../utils/cellUtils";
 import {
   calculateHeaderContentWidth,
   getAllVisibleLeafHeaders,
@@ -92,6 +91,17 @@ export class SimpleTableVanilla {
 
   private localRows: Row[] = [];
   private headers: HeaderObject[] = [];
+  /**
+   * Pristine deep-cloned snapshot of the column definitions as configured
+   * (constructor / update with `defaultHeaders`). `this.headers` shares object
+   * references with `config.defaultHeaders` at mount, and the column editor
+   * mutates header objects in place (e.g. `header.hide = true`) — so
+   * `config.defaultHeaders` drifts with runtime state and cannot serve as the
+   * reset target. `resetColumns()` restores from this snapshot instead, giving
+   * a well-defined default: every column visible except those explicitly
+   * configured with `hide: true` in the definitions.
+   */
+  private pristineDefaultHeaders: HeaderObject[] = [];
   private essentialAccessors: Set<string> = new Set();
   /** Accessors of leaf columns that should size to content (width:"auto" or autoSizeColumns). */
   private autoSizeAccessors: Set<Accessor> = new Set();
@@ -218,6 +228,7 @@ export class SimpleTableVanilla {
 
     this.localRows = [...config.rows];
     this.headers = [...config.defaultHeaders];
+    this.pristineDefaultHeaders = deepClone(config.defaultHeaders);
     this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
     this.columnEditorOpen = config.editColumnsInitOpen ?? false;
     this.internalIsLoading = config.isLoading ?? false;
@@ -493,7 +504,9 @@ export class SimpleTableVanilla {
       headers: this.headers,
       tableRows: this.localRows,
       externalSortHandling: this.config.externalSortHandling || false,
-      onSortChange: this.config.onSortChange,
+      // Read from live config at invocation time so callback props updated via
+      // update() (e.g. a React re-render with a fresh closure) aren't stale.
+      onSortChange: (sort) => this.config.onSortChange?.(sort),
       rowGrouping: this.config.rowGrouping,
       initialSortColumn: this.config.initialSortColumn,
       initialSortDirection: this.config.initialSortDirection,
@@ -509,7 +522,7 @@ export class SimpleTableVanilla {
       rows: this.localRows,
       headers: this.headers,
       externalFilterHandling: this.config.externalFilterHandling || false,
-      onFilterChange: this.config.onFilterChange,
+      onFilterChange: (filters) => this.config.onFilterChange?.(filters),
       announce,
     });
 
@@ -526,7 +539,7 @@ export class SimpleTableVanilla {
       selectableColumns: this.config.selectableColumns ?? false,
       headers: this.headers,
       tableRows: [],
-      onCellEdit: this.config.onCellEdit,
+      onCellEdit: (props) => this.config.onCellEdit?.(props),
       cellRegistry: this.cellRegistry,
       collapsedHeaders: this.collapsedHeaders,
       rowHeight: this.customTheme.rowHeight,
@@ -1243,6 +1256,7 @@ export class SimpleTableVanilla {
       getCollapsedHeaders: () => this.collapsedHeaders,
       getExpandedRows: () => this.expandedRows,
       getHeaders: () => this.headers,
+      getPristineDefaultHeaders: () => this.pristineDefaultHeaders,
       getRowStateMap: () => this.rowStateMap,
       setColumnEditorOpen: (open: boolean) => {
         this.columnEditorOpen = open;
@@ -1346,15 +1360,19 @@ export class SimpleTableVanilla {
       return;
     }
 
-    // Need the rendered DOM (header cell + sample cell) to measure against.
-    const ready = [...this.pendingAutoSize].some((accessor) =>
-      document.getElementById(getCellId({ accessor, rowId: "header" })),
+    // Need some rendered header DOM to borrow style metrics (padding/font)
+    // from. The measurement itself no longer requires each pending column's
+    // own header cell — columns virtualized out of the horizontal band are
+    // measured from their data so their width matches what they'd get when
+    // rendered (container-size independent).
+    const styleRoot = this.getAutoSizeStyleRoot();
+    const ready = Boolean(
+      styleRoot instanceof HTMLElement && styleRoot.querySelector(".st-header-cell"),
     );
     if (!ready) return;
 
     this.isAutoSizing = true;
     try {
-      const styleRoot = this.getAutoSizeStyleRoot();
       const leaves = getAllVisibleLeafHeaders(this.headers, this.collapsedHeaders);
       const leafByAccessor = new Map(leaves.map((leaf) => [leaf.accessor, leaf]));
 
@@ -1371,6 +1389,7 @@ export class SimpleTableVanilla {
           styleRoot,
           theme: this.config.theme,
           autoSizeMode: leaf.autoSizeMode,
+          sortIcon: this.resolvedIcons.sortUp,
         });
         widths.set(accessor, width);
       }
@@ -1588,6 +1607,7 @@ export class SimpleTableVanilla {
       // or via an in-flight header drag.
       this.captureAnimationSnapshot();
       this.headers = [...config.defaultHeaders];
+      this.pristineDefaultHeaders = deepClone(config.defaultHeaders);
       this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
       this.autoSizeAccessors = this.computeAutoSizeAccessors();
       this.pendingAutoSize = new Set(this.autoSizeAccessors);
@@ -1798,6 +1818,7 @@ export class SimpleTableVanilla {
       get headers() {
         return thiz.headers;
       },
+      getPristineDefaultHeaders: () => thiz.pristineDefaultHeaders,
       essentialAccessors: this.essentialAccessors,
       customTheme: this.customTheme,
       currentPage: this.currentPage,

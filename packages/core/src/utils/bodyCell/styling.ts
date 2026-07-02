@@ -585,7 +585,24 @@ export const updateBodyCellElement = (
   // Update cell content (important for sorting/filtering where row data changes).
   // Skip full content replace for expandable cells so the expand icon DOM node is preserved;
   // then updateExpandIconState can toggle its class and the CSS transition will run.
-  if (!cell.header.expandable) {
+  if (cell.header.expandable) {
+    // Expandable cells normally keep their content DOM untouched, but the
+    // loading skeleton is rendered inside the content span, so a change in
+    // skeleton state still requires a rebuild: entering the loading state
+    // swaps the expand icon + value for a skeleton, and leaving it restores
+    // them. Without this, flipping `isLoading` to true leaves the expandable
+    // column showing stale content while every other column shows a skeleton.
+    const contentSpan = cellElement.querySelector(".st-cell-content") as HTMLElement;
+    if (contentSpan) {
+      const isSkeleton = Boolean(context.isLoading || cell.tableRow.isLoadingSkeleton);
+      const hasSkeleton = contentSpan.querySelector(".st-loading-skeleton") !== null;
+      if (isSkeleton !== hasSkeleton) {
+        context.onRendererHostDiscard?.(contentSpan);
+        contentSpan.innerHTML = "";
+        createCellContent(cell, context, contentSpan);
+      }
+    }
+  } else {
     const contentSpan = cellElement.querySelector(".st-cell-content") as HTMLElement;
     if (contentSpan) {
       // Skip the content rebuild (and re-invocation of potentially expensive

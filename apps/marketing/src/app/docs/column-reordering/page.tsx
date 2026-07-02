@@ -1,6 +1,7 @@
 import ColumnReorderingContent from "@/components/pages/docs-pages/ColumnReorderingContent";
 import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.columnReordering.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const ColumnReorderingPage = () => {
-  return <ColumnReorderingContent />;
+  return (
+    <DocsDemoCode slug="column-reordering">
+      <ColumnReorderingContent />
+    </DocsDemoCode>
+  );
 };
 
 export default ColumnReorderingPage;

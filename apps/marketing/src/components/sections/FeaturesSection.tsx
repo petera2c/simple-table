@@ -9,6 +9,8 @@ import {
   faArrowRightArrowLeft,
   faEye,
   faThumbtack,
+  faCalculator,
+  faFileCsv,
   faLayerGroup,
   faCheckSquare,
   faPager,
@@ -74,13 +76,9 @@ export default function FeaturesSection() {
               link: "/docs/column-sorting",
             },
             { icon: faEdit, text: "In-line Cell Editing", link: "/docs/cell-editing" },
-            {
-              icon: faArrowRightArrowLeft,
-              text: "Column Reordering",
-              link: "/docs/column-reordering",
-            },
-            { icon: faEye, text: "Column Visibility Toggle", link: "/docs/column-visibility" },
-            { icon: faThumbtack, text: "Column Pinning", link: "/docs/column-pinning" },
+            { icon: faBolt, text: "Live Data Updates", link: "/docs/live-updates" },
+            { icon: faCalculator, text: "Aggregate Functions", link: "/docs/aggregate-functions" },
+            { icon: faFileCsv, text: "CSV Export", link: "/docs/csv-export" },
             { icon: faLayerGroup, text: "Row Grouping", link: "/docs/row-grouping" },
             { icon: faCheckSquare, text: "Row Selection", link: "/docs/row-selection" },
             { icon: faPager, text: "Pagination", link: "/docs/pagination" },
@@ -164,7 +162,7 @@ export default function FeaturesSection() {
           ].map((item, index) => (
             <Link key={index} href={item.link}>
               <motion.div
-                className="p-4 bg-white dark:bg-gray-800 rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+                className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow cursor-pointer"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ delay: index * 0.1 }}
@@ -190,17 +188,14 @@ export default function FeaturesSection() {
 
       {/* Customization & Theming */}
       <motion.div
-        className="mb-16 bg-linear-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-purple-100 dark:border-purple-800"
+        className="mb-16 bg-gray-50 dark:bg-gray-800/50 p-4 sm:p-6 lg:p-8 rounded-xl border border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
       >
         <div className="flex items-center gap-3 mb-4">
-          <FontAwesomeIcon
-            icon={faPalette}
-            className="text-purple-600 dark:text-purple-400 text-2xl"
-          />
+          <FontAwesomeIcon icon={faPalette} className="text-blue-600 dark:text-blue-400 text-2xl" />
           <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
             Customizable Style & Theming
           </h3>
@@ -256,7 +251,7 @@ export default function FeaturesSection() {
           ].map((item, index) => (
             <Link key={index} href={item.link}>
               <motion.div
-                className="p-4 bg-white dark:bg-gray-800 rounded-lg hover:shadow-md transition-shadow cursor-pointer"
+                className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow cursor-pointer"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ delay: index * 0.1 }}
@@ -265,7 +260,7 @@ export default function FeaturesSection() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={item.icon}
-                    className="text-purple-600 dark:text-purple-400 text-xl mt-1"
+                    className="text-blue-600 dark:text-blue-400 text-xl mt-1"
                   />
                   <div>
                     <h4 className="font-semibold text-gray-800 dark:text-white mb-1">
@@ -282,14 +277,14 @@ export default function FeaturesSection() {
 
       {/* Performance */}
       <motion.div
-        className="mb-16 bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-green-100 dark:border-green-800"
+        className="mb-16 bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-blue-100 dark:border-blue-800"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
       >
         <div className="flex items-center gap-3 mb-4">
-          <FontAwesomeIcon icon={faBolt} className="text-green-600 dark:text-green-400 text-2xl" />
+          <FontAwesomeIcon icon={faBolt} className="text-blue-600 dark:text-blue-400 text-2xl" />
           <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
             High Performance Data Grid
           </h3>
@@ -322,7 +317,7 @@ export default function FeaturesSection() {
             >
               <FontAwesomeIcon
                 icon={item.icon}
-                className="text-green-600 dark:text-green-400 text-3xl mb-3"
+                className="text-blue-600 dark:text-blue-400 text-3xl mb-3"
               />
               <h4 className="font-semibold text-gray-800 dark:text-white mb-2">{item.title}</h4>
               <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
@@ -333,7 +328,7 @@ export default function FeaturesSection() {
 
       {/* Responsive & Mobile */}
       <motion.div
-        className="bg-linear-to-br from-orange-50 to-amber-50 dark:from-orange-950 dark:to-amber-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-orange-100 dark:border-orange-800"
+        className="bg-gray-50 dark:bg-gray-800/50 p-4 sm:p-6 lg:p-8 rounded-xl border border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -342,7 +337,7 @@ export default function FeaturesSection() {
         <div className="flex items-center gap-3 mb-4">
           <FontAwesomeIcon
             icon={faMobileAlt}
-            className="text-orange-600 dark:text-orange-400 text-2xl"
+            className="text-blue-600 dark:text-blue-400 text-2xl"
           />
           <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
             Responsive & Mobile-Optimized
@@ -359,11 +354,11 @@ export default function FeaturesSection() {
           ].map((item, index) => (
             <div
               key={index}
-              className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg"
+              className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
             >
               <FontAwesomeIcon
                 icon={item.icon}
-                className="text-orange-600 dark:text-orange-400 text-lg"
+                className="text-blue-600 dark:text-blue-400 text-lg"
               />
               <span className="text-gray-700 dark:text-gray-300">{item.text}</span>
             </div>

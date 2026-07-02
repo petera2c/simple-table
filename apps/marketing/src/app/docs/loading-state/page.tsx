@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import LoadingStateContent from "@/components/pages/docs-pages/LoadingStateContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.loadingState.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const LoadingStatePage = () => {
-  return <LoadingStateContent />;
+  return (
+    <DocsDemoCode slug="loading-state">
+      <LoadingStateContent />
+    </DocsDemoCode>
+  );
 };
 
 export default LoadingStatePage;

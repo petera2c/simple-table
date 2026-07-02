@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import HeaderRendererContent from "@/components/pages/docs-pages/HeaderRendererContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.headerRenderer.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const HeaderRendererPage = () => {
-  return <HeaderRendererContent />;
+  return (
+    <DocsDemoCode slug="header-renderer">
+      <HeaderRendererContent />
+    </DocsDemoCode>
+  );
 };
 
 export default HeaderRendererPage;

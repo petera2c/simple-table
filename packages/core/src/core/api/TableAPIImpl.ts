@@ -32,6 +32,8 @@ export interface TableAPIContext {
   localRows: Row[];
   effectiveHeaders: HeaderObject[];
   headers: HeaderObject[];
+  /** Pristine snapshot of the configured column definitions (see SimpleTableVanilla.pristineDefaultHeaders). */
+  getPristineDefaultHeaders: () => HeaderObject[];
   essentialAccessors: Set<string>;
   customTheme: CustomTheme;
   currentPage: number;
@@ -259,7 +261,10 @@ export class TableAPIImpl {
       },
 
       resetColumns: () => {
-        context.setHeaders(deepClone(context.config.defaultHeaders));
+        // Restore the pristine column definitions — NOT config.defaultHeaders,
+        // whose header objects are mutated in place by runtime visibility
+        // changes (column editor) and so drift away from the configured state.
+        context.setHeaders(deepClone(context.getPristineDefaultHeaders()));
         context.onRender();
       },
 

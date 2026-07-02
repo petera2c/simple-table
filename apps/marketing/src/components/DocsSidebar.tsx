@@ -13,19 +13,20 @@ import DocsSearch from "./DocsSearch";
 // Get icons mapping from shared config
 const subsectionIcons = getSubsectionIconMap();
 
+// All sections expanded. Used as the initial state so every docs link is present in the
+// server-rendered HTML (crawlers without JS rely on these internal links).
+const allSectionsExpanded = (): Record<string, boolean> =>
+  Object.fromEntries(docSections.map((section) => [section.id, true]));
+
 export default function DocsSidebar() {
   const pathname = usePathname();
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+  const [expandedSections, setExpandedSections] =
+    useState<Record<string, boolean>>(allSectionsExpanded);
 
-  // Initialize expanded sections
+  // Re-expand all sections on navigation (preserves the pre-existing behavior where
+  // collapsing a section only lasts until the next page).
   useEffect(() => {
-    const initialExpandedState: Record<string, boolean> = {};
-
-    docSections.forEach((section) => {
-      initialExpandedState[section.id] = true;
-    });
-
-    setExpandedSections(initialExpandedState);
+    setExpandedSections(allSectionsExpanded());
   }, [pathname]);
 
   const toggleSection = (sectionId: string) => {

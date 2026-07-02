@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRulerHorizontal } from "@fortawesome/free-solid-svg-icons";
 import ColumnWidthDemo from "@/components/demos/ColumnWidthDemo";
+import CodeBlock from "@/components/CodeBlock";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
 import PageWrapper from "@/components/PageWrapper";
 import LivePreview from "@/components/LivePreview";
@@ -76,7 +77,7 @@ const COLUMN_WIDTH_PROPS: PropInfo[] = [
     name: "HeaderObject.maxWidth",
     required: false,
     description:
-      "Sets the maximum width constraint for columns. Note: When autoExpandColumns is enabled, maxWidth is NOT enforced - it is completely ignored during proportional scaling.",
+      "Sets the maximum width constraint for columns. With width: 'auto', the column grows to fit its content but stops at maxWidth — content past the cap truncates. Note: When autoExpandColumns is enabled, maxWidth is NOT enforced - it is completely ignored during proportional scaling.",
     type: "number",
     example: `// Column with maximum width
 { 
@@ -84,6 +85,14 @@ const COLUMN_WIDTH_PROPS: PropInfo[] = [
   label: "Description", 
   width: "1fr",
   maxWidth: 400  // Won't grow beyond 400px
+}
+
+// Cap a content-fit column
+{ 
+  accessor: "note", 
+  label: "Note", 
+  width: "auto",
+  maxWidth: 220  // Fits content up to 220px, then truncates
 }`,
   },
 ];
@@ -222,22 +231,155 @@ const ColumnWidthContent = () => {
         </p>
 
         <PropTable props={COLUMN_WIDTH_PROPS} title="Column Width Properties" />
+      </motion.div>
 
-        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 p-4 rounded-lg mt-4">
-          <h3 className="font-semibold text-gray-800 dark:text-white mb-2">
-            Content-fit with "auto"
-          </h3>
+      <motion.h2
+        id="content-fit-auto"
+        className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700 scroll-mt-24"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.65 }}
+      >
+        Content-Fit Sizing ("auto")
+      </motion.h2>
+
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.7 }}
+      >
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+          Set{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
+            width: "auto"
+          </code>{" "}
+          to size a column to fit its content. The width is measured from the header plus a sample
+          of rows, clamped by{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">minWidth</code>{" "}
+          /{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">maxWidth</code>
+          , with rare outliers clipped so one giant value can&apos;t blow out the column.
+        </p>
+
+        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 p-4 rounded-lg mb-6">
+          <h3 className="font-semibold text-gray-800 dark:text-white mb-2">What Gets Measured</h3>
+          <ul className="list-disc list-inside text-gray-700 dark:text-gray-300 space-y-2">
+            <li>
+              <strong>Header:</strong> the label text plus any icons (sort, filter). Custom{" "}
+              <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
+                headerRenderer
+              </code>{" "}
+              output is measured from its rendered markup.
+            </li>
+            <li>
+              <strong>Cells:</strong> formatted values are measured off-screen. Custom{" "}
+              <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
+                cellRenderer
+              </code>{" "}
+              output is measured at its <em>natural</em> (unconstrained) width — so content that
+              truncates itself with{" "}
+              <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
+                min-width: 0
+              </code>{" "}
+              /{" "}
+              <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
+                overflow: hidden
+              </code>{" "}
+              still sizes the column correctly.
+            </li>
+          </ul>
+        </div>
+
+        <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+          Truncation with maxWidth
+        </h3>
+
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
+            width: "auto"
+          </code>{" "}
+          minimizes clipped content: without a cap, the column grows to fit its widest content.
+          When you do want a limit, add{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">maxWidth</code>{" "}
+          — the column stops at the cap and content past it truncates (add{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
+            text-overflow: ellipsis
+          </code>{" "}
+          styles in a custom renderer for a visible ellipsis). Truncation styles inside the
+          renderer don&apos;t break the measurement:
+        </p>
+
+        <CodeBlock
+          className="mb-6"
+          language="tsx"
+          code={`// Fits its widest content exactly — nothing is clipped
+{
+  accessor: "status",
+  label: "Status",
+  width: "auto",
+  cellRenderer: ({ row }) => <StatusBadge status={row.status} />,
+}
+
+// Grows to fit content, but never past 220px — longer content truncates
+{
+  accessor: "note",
+  label: "Note",
+  width: "auto",
+  maxWidth: 220,
+  cellRenderer: ({ row }) => (
+    <span
+      style={{
+        minWidth: 0,
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {row.note}
+    </span>
+  ),
+}`}
+        />
+
+        <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+          Consistent Widths in Any Container
+        </h3>
+
+        <p className="text-gray-700 dark:text-gray-300 mb-6">
+          Auto widths are computed from the column&apos;s content, not from the table&apos;s
+          container. The same headers and data produce the same column widths whether the table is
+          rendered in a narrow sidebar or a full-width layout — including columns that start
+          horizontally scrolled out of view. When the columns don&apos;t fit, the table scrolls
+          horizontally instead of squeezing them.
+        </p>
+
+        <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+          Empty Tables and Custom Headers
+        </h3>
+
+        <p className="text-gray-700 dark:text-gray-300 mb-4">
+          When there are no rows, an auto column sizes to its header. This also applies with a
+          custom{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
+            headerRenderer
+          </code>
+          : if the custom markup can&apos;t be measured yet (for example, it mounts
+          asynchronously), the column falls back to the plain{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">label</code>{" "}
+          text so headers stay readable instead of collapsing to the minimum width.
+        </p>
+
+        <div className="bg-green-50 dark:bg-green-900/30 border-l-4 border-green-400 dark:border-green-700 p-4 rounded-lg">
+          <h3 className="font-bold text-gray-800 dark:text-white mb-2">Pro Tip</h3>
           <p className="text-gray-700 dark:text-gray-300">
-            Set{" "}
+            Always give auto columns a meaningful{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">label</code>{" "}
+            even when using a custom{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
-              width: "auto"
+              headerRenderer
             </code>{" "}
-            to size a column to fit its content. The width is measured from the header plus a sample
-            of rows, clamped by{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">minWidth</code>{" "}
-            /{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">maxWidth</code>
-            , with rare outliers clipped so one giant value can&apos;t blow out the column.
+            — it doubles as the measurement fallback for empty tables.
           </p>
         </div>
       </motion.div>

@@ -11,8 +11,14 @@
  * - Lightweight visual hierarchy
  * 
  * Inspired by: Tailwind UI, Shadcn UI, and modern SaaS dashboards
+ *
+ * `.theme-custom` shares these tokens: it is the baseline for the theme
+ * builder (`theme="custom"`), which overrides individual tokens inline.
+ * All structural rules (footer, pagination, typography) live in base.css
+ * and are driven by these tokens, so themes are pure token sets.
  */
-.theme-modern-light {
+.theme-modern-light,
+.theme-custom {
   /* Layout/Structure variables - Tighter, more compact */
   --st-border-radius: 4px;
   --st-cell-padding: 12px;
@@ -29,12 +35,12 @@
   /* Base/Structural colors - Visible but still light (gray-200) */
   --st-border-color: #e5e7eb;
   --st-footer-background-color: var(--st-white);
+  --st-footer-text-color: #6b7280;
   --st-last-group-row-separator-border-color: #e5e7eb;
 
-  /* Row colors - Clean white background; when useOddEvenRowBackground is on,
-   * even rows pick up a very subtle off-white band for readable striping. */
+  /* Row colors - Clean white background, hover instead of stripes */
   --st-odd-row-background-color: var(--st-white);
-  --st-even-row-background-color: #fafafa;
+  --st-even-row-background-color: var(--st-white);
   --st-hover-row-background-color: #f3f4f6;
   --st-selected-row-background-color: #eff6ff;
 
@@ -79,7 +85,7 @@
   --st-button-active-background-color: #3b82f6;
   --st-next-prev-btn-color: #6b7280;
   --st-next-prev-btn-disabled-color: #d1d5db;
-  --st-page-btn-color: #6b7280;
+  --st-page-btn-color: #374151;
   --st-page-btn-hover-background-color: #f3f4f6;
 
   /* Checkbox colors */
@@ -128,137 +134,4 @@
 
   /* Body background for state rows */
   --st-body-background-color: var(--st-white);
-}
-
-/* Modern Light theme specific overrides for even cleaner look */
-.theme-modern-light .st-wrapper {
-  border: 1px solid var(--st-border-color);
-}
-
-/* Subtle header border */
-.theme-modern-light .st-header-pinned-left,
-.theme-modern-light .st-header-main,
-.theme-modern-light .st-header-pinned-right {
-  border-bottom: 1px solid var(--st-border-color);
-}
-
-/* Remove heavy borders on pinned sections */
-.theme-modern-light .st-header-pinned-left,
-.theme-modern-light .st-body-pinned-left {
-  border-right: 1px solid var(--st-border-color);
-}
-
-.theme-modern-light .st-header-pinned-right,
-.theme-modern-light .st-body-pinned-right {
-  border-left: 1px solid var(--st-border-color);
-}
-
-/* Row separators — match grid lines for readable horizontal breaks */
-.theme-modern-light .st-row-separator {
-  background-color: var(--st-border-color);
-}
-
-/* Lighter header cell styling */
-.theme-modern-light .st-header-cell {
-  font-weight: 500;
-  font-size: 14px;
-  color: #6b7280;
-}
-
-/* Cleaner cell text */
-.theme-modern-light .st-cell-content {
-  font-size: 14px;
-  color: #111827;
-}
-
-/* Subtle hover effect */
-.theme-modern-light .st-row.hovered {
-  transition: background-color 0.15s ease;
-}
-
-/* Modern footer styling */
-.theme-modern-light .st-footer {
-  border-top: 1px solid var(--st-border-color);
-  background-color: var(--st-white);
-  padding: 12px 16px;
-  gap: 12px;
-}
-
-/* Footer text styling */
-.theme-modern-light .st-footer-results-text {
-  color: #6b7280;
-  font-size: 14px;
-}
-
-/* Footer pagination container - hide extra buttons on smaller screens */
-.theme-modern-light .st-footer-pagination {
-  gap: 2px;
-  flex-wrap: nowrap;
-  overflow: hidden;
-}
-
-/* Pagination ellipsis */
-.theme-modern-light .st-page-ellipsis {
-  color: #9ca3af;
-  font-weight: 400;
-  padding: 0 4px;
-}
-
-/* Cleaner pagination buttons - more compact */
-.theme-modern-light .st-page-btn {
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #374151;
-  padding: 6px 8px;
-  min-width: 36px;
-  transition: all 0.15s ease;
-  margin-right: 0;
-  flex-shrink: 0;
-}
-
-.theme-modern-light .st-page-btn:hover {
-  background-color: #f3f4f6;
-}
-
-.theme-modern-light .st-page-btn.active {
-  background-color: #3b82f6;
-  color: white;
-  font-weight: 600;
-}
-
-/* Next/Prev buttons */
-.theme-modern-light .st-next-prev-btn {
-  padding: 6px 8px;
-  border-radius: 4px;
-  transition: all 0.15s ease;
-  margin-left: 4px;
-  flex-shrink: 0;
-}
-
-.theme-modern-light .st-next-prev-btn:not(.disabled):hover {
-  background-color: #f3f4f6;
-}
-
-/* Modern scrollbar */
-.theme-modern-light .st-horizontal-scrollbar-container {
-  border-top: 1px solid var(--st-border-color);
-  background-color: #fafafa;
-}
-
-/* Cleaner group headers */
-.theme-modern-light .st-group-header {
-  border-bottom: 1px solid var(--st-border-color);
-  font-weight: 500;
-}
-
-/* Modern checkbox styling */
-.theme-modern-light .st-checkbox-custom {
-  border-radius: 4px;
-  border: 1.5px solid #d1d5db;
-}
-
-.theme-modern-light .st-checkbox-custom.st-checked {
-  background-color: #3b82f6;
-  border-color: #3b82f6;
 }

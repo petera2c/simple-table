@@ -75,12 +75,15 @@ const LivePreview = ({
       <div className="flex flex-col gap-2 w-full grow">
         {titleRenderer && titleRenderer({ codeButton, sandboxButton })}
 
+        {/* Both views stay mounted: the code block is server-rendered for SEO/LLM crawlers
+            and the demo keeps its state when toggling. */}
         <div style={{ height }}>
-          {isCodeVisible ? (
-            <CodeBlock className="h-full" demoId={demoId} />
-          ) : (
+          <div className={`h-full ${isCodeVisible ? "hidden" : ""}`}>
             <PreviewHost render={Preview} height={demoHeight || height} theme={currentTheme} />
-          )}
+          </div>
+          <div className={`h-full ${isCodeVisible ? "" : "hidden"}`}>
+            <CodeBlock className="h-full" demoId={demoId} />
+          </div>
         </div>
 
         {!titleRenderer && (

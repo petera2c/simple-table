@@ -1,7 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faReact, faVuejs, faAngular, faJs } from "@fortawesome/free-brands-svg-icons";
-import type { Framework } from "@/providers/FrameworkProvider";
+import type { Framework } from "@/constants/frameworks";
 
 interface FrameworkIconProps {
   framework: Framework;

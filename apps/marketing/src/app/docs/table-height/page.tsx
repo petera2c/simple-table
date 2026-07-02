@@ -1,6 +1,7 @@
 import TableHeightContent from "@/components/pages/docs-pages/TableHeightContent";
 import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.tableHeight.title,
@@ -26,5 +27,9 @@ export const metadata: Metadata = {
 };
 
 export default function TableHeightPage() {
-  return <TableHeightContent />;
+  return (
+    <DocsDemoCode slug="table-height">
+      <TableHeightContent />
+    </DocsDemoCode>
+  );
 }

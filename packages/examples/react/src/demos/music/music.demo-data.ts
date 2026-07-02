@@ -252,9 +252,6 @@ const THEME_COLORS: Record<string, { text: string; muted: string }> = {
   light: { text: "#1f2937", muted: "#6b7280" },
   "modern-light": { text: "#1f2937", muted: "#6b7280" },
   neutral: { text: "#1f2937", muted: "#6b7280" },
-  sky: { text: "#0f172a", muted: "#64748b" },
-  frost: { text: "#1e293b", muted: "#64748b" },
-  violet: { text: "#2e1065", muted: "#7c6f9b" },
   dark: { text: "#f3f4f6", muted: "#9ca3af" },
   "modern-dark": { text: "#f3f4f6", muted: "#9ca3af" },
 };

@@ -216,6 +216,31 @@ const HeaderRendererContent = () => {
             column settings.
           </p>
         </div>
+
+        <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-400 dark:border-blue-700 p-4 rounded-lg shadow-sm mb-6">
+          <h3 className="font-bold text-gray-800 dark:text-white mb-2">
+            Works with <code className="text-sm">width: "auto"</code>
+          </h3>
+          <p className="text-gray-700 dark:text-gray-300">
+            Content-fit columns (
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+              width: "auto"
+            </code>
+            ) measure custom header markup from its rendered output. If the table has no rows and
+            the custom markup can&apos;t be measured yet, the column falls back to the plain{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+              label
+            </code>{" "}
+            text, so headers stay readable instead of collapsing — always provide a label. See{" "}
+            <a
+              href="/docs/column-width#content-fit-auto"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Content-Fit Sizing
+            </a>{" "}
+            for details.
+          </p>
+        </div>
       </motion.div>
 
       {/* Components Control Section */}

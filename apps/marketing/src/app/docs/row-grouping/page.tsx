@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import RowGroupingContent from "@/components/pages/docs-pages/RowGroupingContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.rowGrouping.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const RowGroupingPage = () => {
-  return <RowGroupingContent />;
+  return (
+    <DocsDemoCode slug="row-grouping">
+      <RowGroupingContent />
+    </DocsDemoCode>
+  );
 };
 
 export default RowGroupingPage;

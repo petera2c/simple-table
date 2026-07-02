@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import TooltipContent from "@/components/pages/docs-pages/TooltipContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.tooltips.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const TooltipsPage = () => {
-  return <TooltipContent />;
+  return (
+    <DocsDemoCode slug="tooltips">
+      <TooltipContent />
+    </DocsDemoCode>
+  );
 };
 
 export default TooltipsPage;

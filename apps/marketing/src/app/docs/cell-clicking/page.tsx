@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import CellClickingContent from "@/components/pages/docs-pages/CellClickingContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.cellClicking.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const CellClickingPage = () => {
-  return <CellClickingContent />;
+  return (
+    <DocsDemoCode slug="cell-clicking">
+      <CellClickingContent />
+    </DocsDemoCode>
+  );
 };
 
 export default CellClickingPage;

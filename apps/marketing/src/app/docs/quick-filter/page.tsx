@@ -1,6 +1,7 @@
 import QuickFilterContent from "@/components/pages/docs-pages/QuickFilterContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import { Metadata } from "next";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.quickFilter.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const QuickFilterPage = () => {
-  return <QuickFilterContent />;
+  return (
+    <DocsDemoCode slug="quick-filter">
+      <QuickFilterContent />
+    </DocsDemoCode>
+  );
 };
 
 export default QuickFilterPage;

@@ -15,7 +15,9 @@
 
   /* Base/Structural colors */
   --st-border-color: var(--st-slate-300);
+  --st-body-background-color: var(--st-white);
   --st-footer-background-color: var(--st-slate-50);
+  --st-footer-text-color: var(--st-slate-600);
   --st-last-group-row-separator-border-color: var(--st-slate-400);
 
   /* Row colors */
@@ -93,8 +95,8 @@
   --st-tooltip-background-color: var(--st-slate-900);
   --st-tooltip-text-color: var(--st-white);
   --st-tooltip-border-radius: 6px;
-  --st-tooltip-padding: 8px 12px;
-  --st-tooltip-font-size: 13px;
+  --st-tooltip-padding: 6px 10px;
+  --st-tooltip-font-size: 12px;
   --st-tooltip-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
   /* Header selection colors */

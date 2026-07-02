@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import CellRendererContent from "@/components/pages/docs-pages/CellRendererContent";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import DocsDemoCode from "@/components/DocsDemoCode";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.cellRenderer.title,
@@ -26,7 +27,11 @@ export const metadata: Metadata = {
 };
 
 const CellRendererPage = () => {
-  return <CellRendererContent />;
+  return (
+    <DocsDemoCode slug="cell-renderer">
+      <CellRendererContent />
+    </DocsDemoCode>
+  );
 };
 
 export default CellRendererPage;

@@ -1,6 +1,6 @@
 /**
  * THEMES TESTS
- * Tests for SimpleTable theme prop (light, dark, sky, violet, etc.).
+ * Tests for SimpleTable theme prop (light, dark, neutral, modern-light, modern-dark).
  */
 
 import type { Meta } from "@storybook/html";
@@ -73,40 +73,6 @@ export const ThemeDark = {
     const root = canvasElement.querySelector(".simple-table-root");
     expect(root).toBeTruthy();
     expect(root?.classList.contains("theme-dark")).toBe(true);
-  },
-};
-
-export const ThemeSky = {
-  render: () => {
-    const { wrapper } = renderVanillaTable(headers, data(), {
-      getRowId: (p) => String((p.row as { id?: number })?.id),
-      height: "250px",
-      theme: "sky",
-    });
-    return wrapper;
-  },
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    await waitForTable();
-    const root = canvasElement.querySelector(".simple-table-root");
-    expect(root).toBeTruthy();
-    expect(root?.classList.contains("theme-sky")).toBe(true);
-  },
-};
-
-export const ThemeViolet = {
-  render: () => {
-    const { wrapper } = renderVanillaTable(headers, data(), {
-      getRowId: (p) => String((p.row as { id?: number })?.id),
-      height: "250px",
-      theme: "violet",
-    });
-    return wrapper;
-  },
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    await waitForTable();
-    const root = canvasElement.querySelector(".simple-table-root");
-    expect(root).toBeTruthy();
-    expect(root?.classList.contains("theme-violet")).toBe(true);
   },
 };
 
