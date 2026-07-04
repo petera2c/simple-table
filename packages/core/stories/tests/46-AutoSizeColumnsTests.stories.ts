@@ -800,18 +800,30 @@ const makeAsyncRenderer = (
   fill: () => void;
 } => {
   const pending: Array<{ el: HTMLElement; value: string }> = [];
+  let mounted = false;
+  const fillContainer = (el: HTMLElement, value: string) => {
+    if (el.childNodes.length === 0) {
+      el.appendChild(buildContent(value));
+    }
+  };
   return {
     cellRenderer: ({ value }) => {
       const container = document.createElement("div");
       container.style.display = "contents";
-      pending.push({ el: container, value: String(value) });
+      if (mounted) {
+        // After the simulated portal mount, React fills any newly registered
+        // container on its next commit (e.g. cells recreated when rows scroll
+        // back into the virtualization band). Emulate that async commit.
+        queueMicrotask(() => fillContainer(container, String(value)));
+      } else {
+        pending.push({ el: container, value: String(value) });
+      }
       return container;
     },
     fill: () => {
+      mounted = true;
       for (const { el, value } of pending) {
-        if (el.childNodes.length === 0) {
-          el.appendChild(buildContent(value));
-        }
+        fillContainer(el, value);
       }
     },
   };

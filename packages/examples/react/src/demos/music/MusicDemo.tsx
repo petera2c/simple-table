@@ -304,7 +304,10 @@ const SegmentedBar = ({ segments }: { segments: { color: string; value: number }
     }}
   >
     {segments.map((s, i) => (
-      <div key={i} style={{ width: `${s.value}%`, backgroundColor: s.color, borderRadius: "3px" }} />
+      <div
+        key={i}
+        style={{ width: `${s.value}%`, backgroundColor: s.color, borderRadius: "3px" }}
+      />
     ))}
   </div>
 );
@@ -319,7 +322,9 @@ const AudienceAgeCell = ({ row, theme }: CellRendererProps): ReactNode => {
       <div style={{ fontSize: "12px", color: colors.muted }}>
         Aged 13-34: <span style={{ color: colors.text, fontWeight: 600 }}>{youngShare}%</span>
       </div>
-      <SegmentedBar segments={AGE_SEGMENTS.map((s) => ({ color: s.color, value: age[s.key] ?? 0 }))} />
+      <SegmentedBar
+        segments={AGE_SEGMENTS.map((s) => ({ color: s.color, value: age[s.key] ?? 0 }))}
+      />
     </div>
   );
 };
@@ -369,7 +374,7 @@ const PopularityCell = ({ row, theme }: CellRendererProps): ReactNode => {
 const stat = (
   accessor: string,
   label: string,
-  options: StatOptions & { width?: number } = {}
+  options: StatOptions & { width?: number } = {},
 ): ReactHeaderObject => ({
   accessor,
   label,
@@ -557,7 +562,9 @@ function getMusicHeaders(): ReactHeaderObject[] {
       isEditable: false,
       align: "right",
       type: "number",
-      cellRenderer: makeRateCell("tiktokEngagementRate", { changeKey: "tiktokEngagementRateChange" }),
+      cellRenderer: makeRateCell("tiktokEngagementRate", {
+        changeKey: "tiktokEngagementRateChange",
+      }),
     },
     stat("lineMusicLikes", "LINE Music Likes (Songs)", { width: 220 }),
     stat("lineMusicMvPlays", "LINE MV Plays", { width: 200 }),
