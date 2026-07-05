@@ -82,15 +82,17 @@ export const createResizeHandle = (
     sortIcon: context.icons.sortUp,
   });
 
-  /** Auto-expand: mutate canonical storage + DOM-synced widths. Otherwise: effective tree (matches main). */
-  const resolveResizeHeaders = (): { headers: HeaderObject[]; header: HeaderObject } => {
-    if (context.autoExpandColumns) {
-      const storage = context.getHeaders();
-      syncVisibleLeafWidthsFromDom(storage, context.collapsedHeaders);
-      const storageHeader = findHeaderInTree(storage, header.accessor) ?? header;
-      return { headers: storage, header: storageHeader };
-    }
-    return { headers: context.headers, header };
+  /** Live header tree with visible leaf widths aligned to painted layout. */
+  const resolveResizeHeaders = (): {
+    headers: HeaderObject[];
+    header: HeaderObject;
+    collapsedHeaders: Set<Accessor>;
+  } => {
+    const collapsedHeaders = context.getCollapsedHeaders?.() ?? context.collapsedHeaders;
+    const storage = context.getHeaders();
+    syncVisibleLeafWidthsFromDom(storage, collapsedHeaders);
+    const storageHeader = findHeaderInTree(storage, header.accessor) ?? header;
+    return { headers: storage, header: storageHeader, collapsedHeaders };
   };
 
   const performAutoFit = () => {
@@ -99,11 +101,12 @@ export const createResizeHandle = (
     );
 
     if (context.autoExpandColumns) {
-      const { headers: resizeHeaders, header: resizeHeader } = resolveResizeHeaders();
+      const { headers: resizeHeaders, header: resizeHeader, collapsedHeaders } =
+        resolveResizeHeaders();
       applyColumnAutoFitWithAutoExpand({
         header: resizeHeader,
         headers: resizeHeaders,
-        collapsedHeaders: context.collapsedHeaders,
+        collapsedHeaders,
         containerWidth: context.containerWidth,
         mainBodyRef: context.mainBodyRef,
         reverse: context.reverse,
@@ -121,19 +124,24 @@ export const createResizeHandle = (
       return;
     }
 
-    const contentWidth = calculateHeaderContentWidth(header.accessor, measureOptions(header));
+    const { headers: resizeHeaders, header: resizeHeader, collapsedHeaders } =
+      resolveResizeHeaders();
+    const contentWidth = calculateHeaderContentWidth(
+      resizeHeader.accessor,
+      measureOptions(resizeHeader),
+    );
 
-    const path = getHeaderIndexPath(context.headers, header.accessor);
+    const path = getHeaderIndexPath(resizeHeaders, resizeHeader.accessor);
     if (!path) return;
 
-    const siblings = getSiblingArray(context.headers, path);
+    const siblings = getSiblingArray(resizeHeaders, path);
     const headerIndex = path[path.length - 1];
 
     const updatedSiblings = siblings.map((h, i) =>
       i === headerIndex ? { ...h, width: contentWidth } : h,
     );
 
-    const updatedHeaders = setSiblingArray(context.headers, path, updatedSiblings);
+    const updatedHeaders = setSiblingArray(resizeHeaders, path, updatedSiblings);
 
     updatedHeaders.forEach((h) => removeAllFractionalWidths(h));
 
@@ -143,7 +151,7 @@ export const createResizeHandle = (
       override.set(String(pathLeaf.accessor), pathLeaf.width);
     }
 
-    updateColumnWidthsInDOM(updatedHeaders, context.collapsedHeaders as Set<string>, override);
+    updateColumnWidthsInDOM(updatedHeaders, collapsedHeaders as Set<string>, override);
 
     context.setHeaders(updatedHeaders);
 
@@ -171,10 +179,11 @@ export const createResizeHandle = (
     )?.offsetWidth;
 
     throttle(() => {
-      const { headers: resizeHeaders, header: resizeHeader } = resolveResizeHeaders();
+      const { headers: resizeHeaders, header: resizeHeader, collapsedHeaders } =
+        resolveResizeHeaders();
       handleResizeStart({
         autoExpandColumns: context.autoExpandColumns,
-        collapsedHeaders: context.collapsedHeaders,
+        collapsedHeaders,
         containerWidth: context.containerWidth,
         event: event,
         forceUpdate: context.forceUpdate,
@@ -203,10 +212,11 @@ export const createResizeHandle = (
     )?.offsetWidth;
 
     throttle(() => {
-      const { headers: resizeHeaders, header: resizeHeader } = resolveResizeHeaders();
+      const { headers: resizeHeaders, header: resizeHeader, collapsedHeaders } =
+        resolveResizeHeaders();
       handleResizeStart({
         autoExpandColumns: context.autoExpandColumns,
-        collapsedHeaders: context.collapsedHeaders,
+        collapsedHeaders,
         containerWidth: context.containerWidth,
         event: touchEvent as any,
         forceUpdate: context.forceUpdate,
