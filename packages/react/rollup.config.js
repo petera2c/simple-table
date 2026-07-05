@@ -93,7 +93,7 @@ export default {
     resolve(),
 
     typescript({
-      exclude: ["node_modules/**"],
+      exclude: ["node_modules/**", "src/**/__tests__/**"],
       clean: true,
       check: isDev,
       useTsconfigDeclarationDir: !isDev,

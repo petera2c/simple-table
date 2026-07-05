@@ -43,6 +43,7 @@
     "@next/bundle-analyzer": "^16.0.0",
     "@next/mdx": "^16.1.6",
     "@simple-table/react": "workspace:*",
+    "simple-table-core": "workspace:*",
     "@tanstack/react-query": "^5.72.2",
     "@types/cheerio": "^0.22.35",
     "@types/mdx": "^2.0.13",

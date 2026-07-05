@@ -533,6 +533,127 @@ export class AnimationCoordinator {
   }
 
   /**
+   * Whether a vertical position transition should be animated. Rows that live
+   * only in the virtualization padding band (above/below the visible viewport)
+   * should teleport rather than FLIP — otherwise a mid-scroll sort animates
+   * hundreds of off-screen rows through the viewport at once.
+   */
+  shouldAnimateVerticalTransition(args: {
+    beforeTop: number;
+    afterTop: number;
+    cellHeight: number;
+    container: HTMLElement;
+  }): boolean {
+    const metrics = this.getScrollerMetrics(args.container);
+    const wasVisible = isRowTopInVerticalViewport(args.beforeTop, args.cellHeight, metrics);
+    const willBeVisible = isRowTopInVerticalViewport(args.afterTop, args.cellHeight, metrics);
+    return wasVisible || willBeVisible;
+  }
+
+  /**
+   * Whether a horizontal position transition should be animated. Same viewport
+   * gate as {@link shouldAnimateVerticalTransition} but for column slides.
+   */
+  shouldAnimateHorizontalTransition(args: {
+    beforeLeft: number;
+    afterLeft: number;
+    cellWidth: number;
+    container: HTMLElement;
+  }): boolean {
+    const metrics = this.getScrollerMetrics(args.container);
+    const wasVisible = isColumnLeftInHorizontalViewport(args.beforeLeft, args.cellWidth, metrics);
+    const willBeVisible = isColumnLeftInHorizontalViewport(args.afterLeft, args.cellWidth, metrics);
+    return wasVisible || willBeVisible;
+  }
+
+  /**
+   * Whether a cell's position change should participate in FLIP animation.
+   * Only axes that actually moved are checked against the viewport gate —
+   * a vertical sort must not inherit "visible" from an unchanged horizontal
+   * position (which would retain/mount every column in every padding-band row).
+   */
+  shouldAnimateTransition(args: {
+    beforeTop: number;
+    afterTop: number;
+    beforeLeft: number;
+    afterLeft: number;
+    cellHeight: number;
+    cellWidth: number;
+    container: HTMLElement;
+  }): boolean {
+    const vertMoved = Math.abs(args.beforeTop - args.afterTop) >= MIN_DELTA;
+    const horizMoved = Math.abs(args.beforeLeft - args.afterLeft) >= MIN_DELTA;
+    if (
+      vertMoved &&
+      this.shouldAnimateVerticalTransition({
+        beforeTop: args.beforeTop,
+        afterTop: args.afterTop,
+        cellHeight: args.cellHeight,
+        container: args.container,
+      })
+    ) {
+      return true;
+    }
+    if (
+      horizMoved &&
+      this.shouldAnimateHorizontalTransition({
+        beforeLeft: args.beforeLeft,
+        afterLeft: args.afterLeft,
+        cellWidth: args.cellWidth,
+        container: args.container,
+      })
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Whether an incoming cell (in the snapshot but not previously in the DOM)
+   * should be mounted for this sort/reorder render. Padding-band rows that
+   * never intersect the visible viewport are deferred to the next scroll
+   * render so they do not pop into existence at animation start.
+   */
+  shouldMountIncomingCell(args: {
+    cellId: string;
+    afterTop: number;
+    afterLeft: number;
+    cellHeight: number;
+    cellWidth: number;
+    container: HTMLElement;
+  }): boolean {
+    const entry = this.snapshot?.get(args.cellId);
+    if (!entry) return true;
+    const metrics = this.getScrollerMetrics(args.container);
+    // Mount when the destination or pre-change position intersects the
+    // visible viewport. Unlike {@link shouldAnimateTransition}, movement
+    // between the two is NOT required — a row can enter the band at the
+    // same absolute `top` after a sort (stable/equal keys) and still needs
+    // its DOM cell; skipping mount left the first visible slot empty.
+    const wasVisibleY = isRowTopInVerticalViewport(
+      entry.styleTop,
+      args.cellHeight,
+      metrics,
+    );
+    const willBeVisibleY = isRowTopInVerticalViewport(
+      args.afterTop,
+      args.cellHeight,
+      metrics,
+    );
+    const wasVisibleX = isColumnLeftInHorizontalViewport(
+      entry.styleLeft,
+      args.cellWidth,
+      metrics,
+    );
+    const willBeVisibleX = isColumnLeftInHorizontalViewport(
+      args.afterLeft,
+      args.cellWidth,
+      metrics,
+    );
+    return wasVisibleY || willBeVisibleY || wasVisibleX || willBeVisibleX;
+  }
+
+  /**
    * Hand a cell that the renderer would otherwise remove to the coordinator.
    * The coordinator updates its absolute positioning to the post-change layout
    * and will animate it from the snapshotted pre-change visual position to
@@ -925,6 +1046,26 @@ export class AnimationCoordinator {
           ? before.left
           : scaleFlipDistance(before.left, currentLeft, cellWidth, playMetrics, "x");
 
+      // Incoming cells: clamp the FLIP start to just outside the viewport so
+      // scaleFlipDistance cannot park the inverted transform inside the
+      // visible band on frame 0 (which reads as a row that shouldn't exist
+      // yet, then slides away).
+      const vpMetricsForClamp = playMetrics ?? this.getScrollerMetrics(container);
+      const vpCellHeightForClamp =
+        parsePx(element.style.height) || element.offsetHeight || cellHeight || 0;
+      let beforeTopForFlip = beforeTopClipped;
+      if (
+        !isRetained &&
+        vpMetricsForClamp &&
+        !isRowTopInVerticalViewport(beforeTopClipped, vpCellHeightForClamp, vpMetricsForClamp) &&
+        isRowTopInVerticalViewport(currentTop, vpCellHeightForClamp, vpMetricsForClamp)
+      ) {
+        const vpTop = vpMetricsForClamp.scrollTop;
+        const vpBottom = vpMetricsForClamp.scrollTop + vpMetricsForClamp.clientHeight;
+        beforeTopForFlip =
+          currentTop >= beforeTopClipped ? vpTop - vpCellHeightForClamp : vpBottom;
+      }
+
       // Container-shift correction. The FLIP delta above is computed in
       // container-local style coordinates, but the inverse transform is
       // applied in page coordinates. When the container itself moved on
@@ -973,9 +1114,33 @@ export class AnimationCoordinator {
       }
 
       const dxRaw = beforeLeftClipped - currentLeft;
-      const dyRaw = beforeTopClipped - currentTop;
-      const dx = dxRaw - containerShiftX;
-      const dy = dyRaw - containerShiftY;
+      const dyRaw = beforeTopForFlip - currentTop;
+      let dx = dxRaw - containerShiftX;
+      let dy = dyRaw - containerShiftY;
+
+      // Skip FLIP along an axis when neither endpoint intersects the visible
+      // viewport on that axis. Padding-band rows/columns otherwise traverse
+      // the viewport during a mid-scroll sort/reorder even though the user
+      // never sees them at rest — producing a wall of extra animating rows.
+      const vpMetrics = playMetrics ?? this.getScrollerMetrics(container);
+      const vpCellHeight =
+        parsePx(element.style.height) || element.offsetHeight || cellHeight || 0;
+      const vpCellWidth = parsePx(element.style.width) || element.offsetWidth || cellWidth || 0;
+      if (
+        Math.abs(dyRaw) >= MIN_DELTA &&
+        !isRowTopInVerticalViewport(beforeTopForFlip, vpCellHeight, vpMetrics) &&
+        !isRowTopInVerticalViewport(currentTop, vpCellHeight, vpMetrics)
+      ) {
+        dy = 0;
+      }
+      if (
+        Math.abs(dxRaw) >= MIN_DELTA &&
+        !isColumnLeftInHorizontalViewport(beforeLeftClipped, vpCellWidth, vpMetrics) &&
+        !isColumnLeftInHorizontalViewport(currentLeft, vpCellWidth, vpMetrics)
+      ) {
+        dx = 0;
+      }
+
       if (Math.abs(dx) < MIN_DELTA && Math.abs(dy) < MIN_DELTA) {
         // No visual movement — if this was a retained cell with no movement
         // (a degenerate case), still drop it so we don't leak DOM. Mirror every
@@ -1305,6 +1470,38 @@ const readScrollerMetrics = (container: HTMLElement): ScrollerMetrics => {
     scrollWidth: container.scrollWidth,
     scrollLeft: container.scrollLeft,
   };
+};
+
+/** True when the row/column's leading edge (top/left) falls inside the visible viewport. */
+const isRowTopInVerticalViewport = (
+  top: number,
+  _cellHeight: number,
+  metrics: ScrollerMetrics,
+): boolean => {
+  const clientSize = metrics.clientHeight;
+  const scrollSize = metrics.scrollHeight;
+  if (clientSize <= 0 || scrollSize <= clientSize) return true;
+  const vpTop = metrics.scrollTop;
+  const vpBottom = metrics.scrollTop + clientSize;
+  // Require the row's top edge to sit within the viewport. Rows in the
+  // virtualization padding whose bottom peeks into view (top < scrollTop but
+  // top + height > scrollTop) must not count as visible — that was letting
+  // ~30 padding-band rows animate during a mid-scroll sort.
+  return top >= vpTop && top < vpBottom;
+};
+
+/** True when the column's leading edge falls inside the visible viewport. */
+const isColumnLeftInHorizontalViewport = (
+  left: number,
+  _cellWidth: number,
+  metrics: ScrollerMetrics,
+): boolean => {
+  const clientSize = metrics.clientWidth;
+  const scrollSize = metrics.scrollWidth;
+  if (clientSize <= 0 || scrollSize <= clientSize) return true;
+  const vpLeft = metrics.scrollLeft;
+  const vpRight = metrics.scrollLeft + clientSize;
+  return left >= vpLeft && left < vpRight;
 };
 
 const scaleFlipDistance = (

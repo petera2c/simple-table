@@ -395,17 +395,34 @@ export const renderBodyCells = (
 
       const newPos = newCellLayout?.get(cellId);
       if (animationCoordinator && animationCoordinator.shouldRetain(cellId) && newPos) {
-        // Slide the cell to its new conceptual position (which may be
-        // off-screen — the body's overflow clip handles the visual cutoff)
-        // and remove it once the slide completes.
-        animationCoordinator.retainCell({
-          cellId,
-          element,
+        const oldTop = parseFloat(element.style.top || "0");
+        const oldLeft = parseFloat(element.style.left || "0");
+        const cellHeight = newPos.height || parseFloat(element.style.height || "0");
+        const cellWidth = newPos.width || parseFloat(element.style.width || "0");
+        const shouldAnimate = animationCoordinator.shouldAnimateTransition({
+          beforeTop: oldTop,
+          afterTop: newPos.top,
+          beforeLeft: oldLeft,
+          afterLeft: newPos.left,
+          cellHeight,
+          cellWidth,
           container,
-          newPosition: newPos,
         });
-        renderedCells.delete(cellId);
-        return;
+        if (shouldAnimate) {
+          // Slide the cell to its new conceptual position (which may be
+          // off-screen — the body's overflow clip handles the visual cutoff)
+          // and remove it once the slide completes.
+          animationCoordinator.retainCell({
+            cellId,
+            element,
+            container,
+            newPosition: newPos,
+          });
+          renderedCells.delete(cellId);
+          return;
+        }
+        // Off-viewport padding-band cell: remove immediately instead of
+        // retaining a ghost that would traverse the viewport mid-animation.
       }
 
       // Accordion-horizontal shrink-out: the column truly disappeared from
@@ -585,6 +602,20 @@ export const renderBodyCells = (
     seenCellIds.add(cellId);
 
     if (!renderedCells.has(cellId)) {
+      if (
+        animationCoordinator &&
+        animationCoordinator.hasSnapshotEntry(cellId) &&
+        !animationCoordinator.shouldMountIncomingCell({
+          cellId,
+          afterTop: cell.top,
+          afterLeft: cell.left,
+          cellHeight: cell.height,
+          cellWidth: cell.width,
+          container,
+        })
+      ) {
+        return;
+      }
       cellsToCreate.push({ cell, cellId });
     } else {
       const cellElement = renderedCells.get(cellId)!;

@@ -60,7 +60,7 @@ function render(rows: RowData[], isLoading: boolean): void {
       rows,
       isLoading,
       // The classic trigger: id is undefined while loading, real once resolved.
-      getRowId: (p) => String((p.row as RowData).id),
+      getRowId: (p) => String(p.row.id),
       height: "400px",
       theme: "light",
     }),

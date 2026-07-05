@@ -130,6 +130,9 @@ importers:
       resend:
         specifier: ^6.9.1
         version: 6.10.0
+      simple-table-core:
+        specifier: workspace:*
+        version: link:../../packages/core
       source-map-explorer:
         specifier: ^2.5.3
         version: 2.5.3
