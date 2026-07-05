@@ -11,6 +11,21 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v3_8_9: ChangelogEntry = {
+  version: "3.8.9",
+  date: "2026-07-04",
+  title: "Columns no longer get squeezed",
+  description: "autoExpandColumns keeps columns readable when space runs out.",
+  changes: [
+    {
+      type: "improvement",
+      description:
+        "With autoExpandColumns, columns still stretch to fill extra space, but when there isn't enough room they keep their size and the table scrolls sideways instead of squishing them.",
+      link: "/docs/column-width",
+    },
+  ],
+};
+
 export const v3_8_7: ChangelogEntry = {
   version: "3.8.7",
   date: "2026-07-01",
@@ -2037,6 +2052,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_8_9,
   v3_8_7,
   v3_8_6,
   v3_8_5,
