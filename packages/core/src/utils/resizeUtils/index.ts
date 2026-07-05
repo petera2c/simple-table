@@ -8,11 +8,60 @@ import {
   getHeaderMinWidth,
   getAllVisibleLeafHeaders,
 } from "../headerWidthUtils";
+import { MIN_COLUMN_WIDTH } from "../../consts/column-constraints";
 import { getRootPinned, updateColumnWidthsInDOM } from "./domUpdates";
 import { recalculateAllSectionWidths } from "./sectionWidths";
 import { calculateMaxHeaderWidth } from "./maxWidth";
 import { handleParentHeaderResize } from "./parentHeaderResize";
 import { handleResizeWithAutoExpand } from "./autoExpandResize";
+
+/**
+ * Rescale the main section after a pinned boundary column resize changed the
+ * main viewport. Growing distributes proportionally (last column takes the
+ * rounding remainder). Shrinking respects each column's natural shrink floor:
+ * columns give up only expanded surplus, and once every column is at its
+ * floor the main section overflows into horizontal scroll instead of being
+ * squeezed further.
+ */
+const rescaleMainSectionForBoundaryResize = ({
+  mainLeafHeaders,
+  mainInitialWidths,
+  newMainAvailable,
+  shrinkFloors,
+}: {
+  mainLeafHeaders: HeaderObject[];
+  mainInitialWidths: Map<string, number>;
+  newMainAvailable: number;
+  shrinkFloors?: Map<string, number>;
+}): void => {
+  const initialMainTotal = Array.from(mainInitialWidths.values()).reduce((a, b) => a + b, 0);
+  if (newMainAvailable <= 0 || initialMainTotal <= 0) return;
+
+  const scale = newMainAvailable / initialMainTotal;
+
+  if (scale >= 1) {
+    let acc = 0;
+    mainLeafHeaders.forEach((h, i) => {
+      const initW = mainInitialWidths.get(h.accessor as string) || 100;
+      if (i === mainLeafHeaders.length - 1) {
+        h.width = newMainAvailable - acc;
+      } else {
+        h.width = Math.round(initW * scale);
+        acc += h.width as number;
+      }
+    });
+    return;
+  }
+
+  mainLeafHeaders.forEach((h) => {
+    const initW = mainInitialWidths.get(h.accessor as string) || 100;
+    const floor = Math.min(
+      Math.max(shrinkFloors?.get(h.accessor as string) ?? MIN_COLUMN_WIDTH, MIN_COLUMN_WIDTH),
+      initW,
+    );
+    h.width = Math.max(Math.round(initW * scale), floor);
+  });
+};
 
 /**
  * Header resize handlers may capture an old `containerWidth` (e.g. 0) from when the
@@ -46,9 +95,11 @@ export const handleResizeStart = ({
   headers,
   mainBodyRef,
   onColumnWidthChange,
+  onAutoExpandNaturalWidths,
   reverse = false,
   setHeaders,
   setIsResizing,
+  shrinkFloors,
   startWidth,
 }: HandleResizeStartProps): void => {
   event.preventDefault();
@@ -210,11 +261,14 @@ export const handleResizeStart = ({
         rootPinned,
         sectionHeaders,
         sectionWidth,
+        sectionViewportWidth: rootPinned ? sectionWidth : initialMainAvailable,
+        shrinkFloors,
         startWidth,
       });
 
       // When a boundary column of a pinned section is resized, the main section
-      // must scale proportionally so all sections together fill the container.
+      // must rescale so all sections together fill the container — but main
+      // columns are never squeezed below their natural shrink floors.
       if (isBoundaryResize && mainLeafHeaders.length > 0) {
         const childDelta = childrenToResize.reduce((sum, h) => {
           const initW = initialWidthsMap.get(h.accessor as string) || 0;
@@ -222,25 +276,12 @@ export const handleResizeStart = ({
           return sum + (newW - initW);
         }, 0);
 
-        const newMainAvailable = Math.max(0, initialMainAvailable - childDelta);
-        const initialMainTotal = Array.from(mainInitialWidths.values()).reduce(
-          (a, b) => a + b,
-          0,
-        );
-
-        if (newMainAvailable > 0 && initialMainTotal > 0) {
-          const scale = newMainAvailable / initialMainTotal;
-          let acc = 0;
-          mainLeafHeaders.forEach((h, i) => {
-            const initW = mainInitialWidths.get(h.accessor as string) || 100;
-            if (i === mainLeafHeaders.length - 1) {
-              h.width = newMainAvailable - acc;
-            } else {
-              h.width = Math.round(initW * scale);
-              acc += h.width as number;
-            }
-          });
-        }
+        rescaleMainSectionForBoundaryResize({
+          mainLeafHeaders,
+          mainInitialWidths,
+          newMainAvailable: Math.max(0, initialMainAvailable - childDelta),
+          shrinkFloors,
+        });
       }
     } else {
       // Normal resize mode
@@ -277,6 +318,15 @@ export const handleResizeStart = ({
     }
 
     if (finalUpdate) {
+      // The user explicitly chose these widths: record them as the columns'
+      // new natural widths (their shrink floors for subsequent resizes).
+      if (autoExpandColumns && onAutoExpandNaturalWidths) {
+        const naturals = new Map<string, number>();
+        childrenToResize.forEach((h) => {
+          if (typeof h.width === "number") naturals.set(h.accessor as string, h.width);
+        });
+        if (naturals.size > 0) onAutoExpandNaturalWidths(naturals);
+      }
       // Final update: sync React state and ensure DOM is updated (e.g. when mouseup
       // runs before the mousemove RAF, as in tests that fire events in one tick)
       const newHeaders = [...headers];
@@ -388,7 +438,11 @@ export type ApplyColumnAutoFitWithAutoExpandParams = {
   headerCellElement: HTMLElement | null;
   headers: HeaderObject[];
   mainBodyRef: HandleResizeStartProps["mainBodyRef"];
+  /** Persist the auto-fitted column(s)' widths as their natural widths. */
+  onAutoExpandNaturalWidths?: (widths: Map<string, number>) => void;
   reverse: boolean;
+  /** Natural-width shrink floors (accessor -> px) for compensating neighbors. */
+  shrinkFloors?: Map<string, number>;
 };
 
 /**
@@ -404,6 +458,8 @@ export const applyColumnAutoFitWithAutoExpand = ({
   reverse,
   headerCellElement,
   getTargetLeafWidth,
+  onAutoExpandNaturalWidths,
+  shrinkFloors,
 }: ApplyColumnAutoFitWithAutoExpandParams): void => {
   if (!header || header.hide) return;
 
@@ -539,6 +595,8 @@ export const applyColumnAutoFitWithAutoExpand = ({
     rootPinned,
     sectionHeaders,
     sectionWidth,
+    sectionViewportWidth: rootPinned ? sectionWidth : initialMainAvailable,
+    shrinkFloors,
     startWidth,
   });
 
@@ -549,25 +607,22 @@ export const applyColumnAutoFitWithAutoExpand = ({
       return sum + (newW - initW);
     }, 0);
 
-    const newMainAvailable = Math.max(0, initialMainAvailable - childDelta);
-    const initialMainTotal = Array.from(mainInitialWidths.values()).reduce(
-      (a, b) => a + b,
-      0,
-    );
+    rescaleMainSectionForBoundaryResize({
+      mainLeafHeaders,
+      mainInitialWidths,
+      newMainAvailable: Math.max(0, initialMainAvailable - childDelta),
+      shrinkFloors,
+    });
+  }
 
-    if (newMainAvailable > 0 && initialMainTotal > 0) {
-      const scale = newMainAvailable / initialMainTotal;
-      let acc = 0;
-      mainLeafHeaders.forEach((h, i) => {
-        const initW = mainInitialWidths.get(h.accessor as string) || 100;
-        if (i === mainLeafHeaders.length - 1) {
-          h.width = newMainAvailable - acc;
-        } else {
-          h.width = Math.round(initW * scale);
-          acc += h.width as number;
-        }
-      });
-    }
+  // The auto-fitted widths are content-derived: record them as the columns'
+  // natural widths (shrink floors for subsequent resizes).
+  if (onAutoExpandNaturalWidths) {
+    const naturals = new Map<string, number>();
+    childrenToResize.forEach((h) => {
+      if (typeof h.width === "number") naturals.set(h.accessor as string, h.width);
+    });
+    if (naturals.size > 0) onAutoExpandNaturalWidths(naturals);
   }
 
   const overrideWidths = new Map<string, number>();

@@ -5,8 +5,15 @@ import { MIN_COLUMN_WIDTH, getMaxPinnedSectionWidth } from "../../consts/column-
 import { distributeCompensationProportionally } from "./compensation";
 
 /**
- * Handle resize with autoExpandColumns enabled
- * Columns to the right (or left for right-pinned) shrink proportionally
+ * Handle resize with autoExpandColumns enabled.
+ *
+ * Neighbors compensate a growing column only down to their shrink floor (their
+ * natural width — declared, content-measured, or user-set). Once all
+ * neighbors are at their floor, the main section keeps growing past the
+ * container width and overflows into horizontal scroll instead of blocking
+ * the drag. Pinned sections cannot scroll their own content, so their growth
+ * stays capped by the neighbors' available surplus (plus the pinned-width
+ * policy cap).
  */
 export const handleResizeWithAutoExpand = ({
   childrenToResize = [],
@@ -21,6 +28,8 @@ export const handleResizeWithAutoExpand = ({
   rootPinned,
   sectionHeaders,
   sectionWidth,
+  sectionViewportWidth = 0,
+  shrinkFloors,
   startWidth,
 }: {
   childrenToResize?: HeaderObject[];
@@ -35,11 +44,35 @@ export const handleResizeWithAutoExpand = ({
   rootPinned: Pinned | undefined;
   sectionHeaders: HeaderObject[];
   sectionWidth: number;
+  /** Visible viewport width of the section (main: container minus pinned). 0 when unknown. */
+  sectionViewportWidth?: number;
+  /** Accessor -> natural width; the shrink floor for compensating neighbors. */
+  shrinkFloors?: Map<string, number>;
   startWidth: number;
 }): void => {
   /** Sum of leaf widths in this section at drag start (initialWidthsMap is section-scoped). */
   const pinnedSectionWidthSum = (): number =>
     Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
+
+  /**
+   * A compensating neighbor's shrink floor: its natural width (never squeezed
+   * below content/declared width), clamped to its current width so a floor
+   * above the painted width simply means "no surplus to give".
+   */
+  const floorFor = (col: HeaderObject): number => {
+    const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
+    const floor = Math.max(
+      shrinkFloors?.get(col.accessor as string) ?? MIN_COLUMN_WIDTH,
+      MIN_COLUMN_WIDTH,
+    );
+    return Math.min(floor, initialWidth);
+  };
+
+  const maxShrinkageOf = (cols: HeaderObject[]): number =>
+    cols.reduce((total, col) => {
+      const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
+      return total + Math.max(0, initialWidth - floorFor(col));
+    }, 0);
 
   /**
    * Cap positive delta only when it would grow the pinned section's *total* width past policy max.
@@ -107,37 +140,40 @@ export const handleResizeWithAutoExpand = ({
 
     const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
 
-    const effectiveSectionWidth =
-      sectionWidth > 0
-        ? Math.max(sectionWidth, currentTotalWidth)
-        : currentTotalWidth + Math.abs(delta) + 1;
+    // The width at which the section is exactly "full". For the main section
+    // prefer the real viewport so overflow (scroll) is detected; pinned
+    // sections fall back to their display width.
+    const fillWidth =
+      !rootPinned && sectionViewportWidth > 0
+        ? sectionViewportWidth
+        : sectionWidth > 0
+          ? Math.max(sectionWidth, currentTotalWidth)
+          : currentTotalWidth + Math.abs(delta) + 1;
 
     if (delta > 0) {
-      // GROWING parent: Check if we need to shrink other columns
-      let actualDelta = delta;
-      let needsCompensation = false;
+      // GROWING parent: grow into free room first, then reclaim neighbors'
+      // surplus above their natural floors. Main section may then overflow
+      // into scroll; pinned sections stay capped.
+      const roomToGrow = Math.max(0, fillWidth - currentTotalWidth);
+      const beyondRoom = Math.max(0, delta - roomToGrow);
+      const maxPossibleShrinkage =
+        columnsToShrink.length > 0 ? maxShrinkageOf(columnsToShrink) : 0;
+      const compensation = Math.min(beyondRoom, maxPossibleShrinkage);
 
-      // If at section boundary (columnsToShrink is empty), allow unlimited growth
-      if (columnsToShrink.length > 0) {
-        const newTotalWidthIfNoCompensation = currentTotalWidth + delta;
-
-        if (newTotalWidthIfNoCompensation > effectiveSectionWidth) {
-          // We would exceed effective section width
-          needsCompensation = true;
-
-          // Calculate max possible shrinkage
-          const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
-            const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
-            const canShrink = Math.max(0, initialWidth - MIN_COLUMN_WIDTH);
-            return total + canShrink;
-          }, 0);
-
-          actualDelta = Math.min(delta, maxPossibleShrinkage);
-        }
-      }
-
-      if (delta > 0 && !needsCompensation) {
-        actualDelta = clampPinnedPositiveDeltaIfNetSectionGrows(actualDelta);
+      let actualDelta: number;
+      if (!rootPinned) {
+        // Main section: full delta always applies; growth beyond room +
+        // compensation overflows into horizontal scroll.
+        actualDelta = delta;
+      } else if (columnsToShrink.length === 0) {
+        // Pinned boundary: grow the section itself, policy-clamped.
+        actualDelta = clampPinnedPositiveDeltaIfNetSectionGrows(delta);
+      } else {
+        // Pinned non-boundary: cannot overflow the pinned strip.
+        actualDelta = Math.min(
+          delta,
+          clampPinnedPositiveDeltaIfNetSectionGrows(roomToGrow) + compensation,
+        );
       }
 
       // Resize all children proportionally
@@ -150,18 +186,16 @@ export const handleResizeWithAutoExpand = ({
 
       childrenToResize.forEach((child) => {
         const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
-        // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
-        const minWidth = MIN_COLUMN_WIDTH;
-        const newWidth = Math.max(originalWidth * scaleFactor, minWidth);
+        const newWidth = Math.max(originalWidth * scaleFactor, MIN_COLUMN_WIDTH);
         child.width = newWidth;
       });
 
-      // Compensate other columns only if needed
-      if (needsCompensation && actualDelta > 0 && columnsToShrink.length > 0) {
+      if (compensation > 0 && columnsToShrink.length > 0) {
         distributeCompensationProportionally({
           columnsToShrink,
-          totalCompensation: actualDelta,
+          totalCompensation: compensation,
           initialWidthsMap,
+          shrinkFloors,
         });
       }
     } else {
@@ -178,17 +212,19 @@ export const handleResizeWithAutoExpand = ({
 
       childrenToResize.forEach((child) => {
         const originalWidth = initialWidthsMap.get(child.accessor as string) || 100;
-        // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
-        const minWidth = MIN_COLUMN_WIDTH;
-        child.width = Math.max(originalWidth * scaleFactor, minWidth);
+        child.width = Math.max(originalWidth * scaleFactor, MIN_COLUMN_WIDTH);
       });
 
-      // Distribute freed space
+      // Distribute freed space to neighbors — but only the portion that isn't
+      // simply reducing an existing overflow (the section must shrink back to
+      // its fill width before neighbors start growing again).
       const actualShrinkage = startWidth - newTotalWidth;
-      if (actualShrinkage > 0 && columnsToShrink.length > 0) {
+      const overflowAmount = Math.max(0, currentTotalWidth - fillWidth);
+      const growCompensation = Math.max(0, actualShrinkage - overflowAmount);
+      if (growCompensation > 0 && columnsToShrink.length > 0) {
         distributeCompensationProportionally({
           columnsToShrink,
-          totalCompensation: -actualShrinkage, // Negative to grow others
+          totalCompensation: -growCompensation, // Negative to grow others
           initialWidthsMap,
         });
       }
@@ -235,68 +271,78 @@ export const handleResizeWithAutoExpand = ({
   if (columnsToShrink.length === 0) {
     // No columns to compensate - this happens when resizing a boundary column of a pinned section
     // In this case, just resize normally to grow/shrink the pinned section itself
-    // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
-    const minWidth = MIN_COLUMN_WIDTH;
     const appliedBoundaryDelta =
       delta > 0 ? clampPinnedPositiveDeltaIfNetSectionGrows(delta) : delta;
-    resizedHeader.width = Math.max(startWidth + appliedBoundaryDelta, minWidth);
+    resizedHeader.width = Math.max(startWidth + appliedBoundaryDelta, MIN_COLUMN_WIDTH);
     return;
   }
-
-  // In autoExpandColumns mode, ignore header minWidth to prevent horizontal overflow
-  const minWidth = MIN_COLUMN_WIDTH;
 
   // Calculate current total width and what it would be after resize
   const currentTotalWidth = Array.from(initialWidthsMap.values()).reduce((a, b) => a + b, 0);
 
-  // Use effective section width: never compress below current total; when unknown (0) allow growth without shrinking others
-  const effectiveSectionWidth =
-    sectionWidth > 0
-      ? Math.max(sectionWidth, currentTotalWidth)
-      : currentTotalWidth + Math.abs(delta) + 1;
+  // The width at which the section is exactly "full". For the main section
+  // prefer the real viewport so free room (e.g. after maxWidth caps) and
+  // overflow are both measured against what the user actually sees.
+  const fillWidth =
+    !rootPinned && sectionViewportWidth > 0
+      ? sectionViewportWidth
+      : sectionWidth > 0
+        ? Math.max(sectionWidth, currentTotalWidth)
+        : currentTotalWidth + Math.abs(delta) + 1;
 
   if (delta > 0) {
-    // GROWING: Check if we need to shrink other columns
-    const newTotalWidthIfNoCompensation = currentTotalWidth + delta;
+    // GROWING: grow into free room first (no compensation needed there).
+    const roomToGrow = Math.max(0, fillWidth - currentTotalWidth);
 
-    if (newTotalWidthIfNoCompensation <= effectiveSectionWidth) {
-      // We have room to grow without shrinking others
-      const appliedRoomDelta = delta > 0 ? clampPinnedPositiveDeltaIfNetSectionGrows(delta) : delta;
+    if (delta <= roomToGrow) {
+      const appliedRoomDelta = clampPinnedPositiveDeltaIfNetSectionGrows(delta);
       resizedHeader.width = startWidth + appliedRoomDelta;
       return;
     }
 
-    // We would exceed effective section width, so we need to shrink others
-    // Limit growth to what keeps total at or below effectiveSectionWidth
-    // Calculate how much others can shrink
-    const maxPossibleShrinkage = columnsToShrink.reduce((total, col) => {
-      const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
-      const canShrink = Math.max(0, initialWidth - MIN_COLUMN_WIDTH);
-      return total + canShrink;
-    }, 0);
+    // Beyond free room: reclaim neighbors' surplus above their natural floors.
+    const beyondRoom = delta - roomToGrow;
+    const maxPossibleShrinkage = maxShrinkageOf(columnsToShrink);
+    const compensation = Math.min(beyondRoom, maxPossibleShrinkage);
 
-    const actualGrowth = Math.min(delta, maxPossibleShrinkage);
-    resizedHeader.width = startWidth + actualGrowth;
-    // Shrink other columns by the amount needed
-    if (actualGrowth > 0) {
+    if (!rootPinned) {
+      // Main section: the full delta always applies. Whatever the neighbors
+      // can't absorb becomes horizontal overflow (scrollbar) instead of
+      // blocking the drag.
+      resizedHeader.width = startWidth + delta;
+    } else {
+      // Pinned sections can't scroll their own content: growth is capped at
+      // free room + what neighbors can give up.
+      const actualGrowth =
+        clampPinnedPositiveDeltaIfNetSectionGrows(roomToGrow) + compensation;
+      resizedHeader.width = startWidth + actualGrowth;
+    }
+
+    if (compensation > 0) {
       distributeCompensationProportionally({
         columnsToShrink,
-        totalCompensation: actualGrowth,
+        totalCompensation: compensation,
         initialWidthsMap,
+        shrinkFloors,
       });
     }
   } else {
-    // SHRINKING: Distribute the freed space to other columns
-    const newWidth = Math.max(startWidth + delta, minWidth);
+    // SHRINKING: the dragged column may go down to the hard minimum (the user
+    // is explicitly overriding its width).
+    const newWidth = Math.max(startWidth + delta, MIN_COLUMN_WIDTH);
 
     const actualShrinkage = startWidth - newWidth;
 
     resizedHeader.width = newWidth;
-    // Distribute the freed space (negative compensation = grow others)
-    if (actualShrinkage > 0) {
+
+    // Freed space first reduces any existing overflow (scroll shrinks back);
+    // only the remainder grows the neighbors to keep the section filled.
+    const overflowAmount = Math.max(0, currentTotalWidth - fillWidth);
+    const growCompensation = Math.max(0, actualShrinkage - overflowAmount);
+    if (growCompensation > 0) {
       distributeCompensationProportionally({
         columnsToShrink,
-        totalCompensation: -actualShrinkage, // Negative to grow others
+        totalCompensation: -growCompensation, // Negative to grow others
         initialWidthsMap,
       });
     }

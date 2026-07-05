@@ -295,6 +295,60 @@ function assertColumnWidthsSane(
   });
 }
 
+/**
+ * Assert columns fill the container OR overflow it (never a right-side gap),
+ * with sane per-column widths. Use for resize sequences where growth past the
+ * neighbors' natural-width floors legitimately overflows into horizontal
+ * scroll (expand-only model).
+ */
+function assertColumnWidthsFillOrOverflow(
+  canvasElement: HTMLElement,
+  containerWidthFallback: number,
+  tolerance: number,
+): void {
+  const container = canvasElement.querySelector(".st-body-container") as HTMLElement | null;
+  const cw = container?.clientWidth ?? containerWidthFallback;
+  const headerCells = getHeaderCells(canvasElement);
+  const totalW = headerCells.reduce(
+    (s, c) => s + parsePixelWidth(getColumnWidth(c)),
+    0,
+  );
+  expect(
+    totalW,
+    `Total header width ${totalW} should be >= container ${cw} - ${tolerance} (fill or overflow, never a gap)`,
+  ).toBeGreaterThanOrEqual(cw - tolerance);
+  headerCells.forEach((c, i) => {
+    const w = parsePixelWidth(getColumnWidth(c));
+    expect(
+      w,
+      `Column ${i} width ${w} should be >= ${MIN_COLUMN_WIDTH - 2}`,
+    ).toBeGreaterThanOrEqual(MIN_COLUMN_WIDTH - 2);
+    expect(Number.isNaN(w), `Column ${i} width should not be NaN`).toBe(false);
+  });
+}
+
+/** Wait until total header width fills (or overflows) the container. */
+async function waitForFillOrOverflowSettle(
+  canvasElement: HTMLElement,
+  tolerance: number,
+  containerWidthFallback: number,
+  maxMs = 600,
+): Promise<void> {
+  const start = Date.now();
+  while (Date.now() - start < maxMs) {
+    await new Promise((r) => requestAnimationFrame(r));
+    const container = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLElement | null;
+    const cw = container?.clientWidth ?? containerWidthFallback;
+    const totalW = getHeaderCells(canvasElement).reduce(
+      (s, c) => s + parsePixelWidth(getColumnWidth(c)),
+      0,
+    );
+    if (totalW >= cw - tolerance) return;
+  }
+}
+
 /** Assert body-main takes up full width so the last column does not get unnecessary ellipsis. */
 function assertBodyMainTakesFullWidth(
   canvasElement: HTMLElement,
@@ -1584,7 +1638,6 @@ export const AutoExpandResizeMultipleColumnsStress = {
     ) as HTMLElement;
     const containerWidth = container?.clientWidth ?? 700;
 
-    // Only resize columns that have a handle (not the last column: Sq Ft)
     // Phase 1: Make every column as small as possible (big negative drags)
     // Phase 2: Make one column as wide as possible (big positive)
     // Phase 3: Resize others – mix of extreme movements
@@ -1621,13 +1674,16 @@ export const AutoExpandResizeMultipleColumnsStress = {
       expect(header, `Step ${i + 1}: header "${label}" not found`).toBeTruthy();
       await resizeColumnSlow(header!, delta, 8, 35);
       await new Promise((r) => setTimeout(r, 120));
-      await waitForResizeSettle(
+      await waitForFillOrOverflowSettle(
         canvasElement,
         WIDTH_TOLERANCE_AFTER_RESIZE,
         containerWidth,
         800,
       );
-      assertColumnWidthsSane(
+      // Growth past the neighbors' natural-width floors overflows into
+      // horizontal scroll, so the total may exceed the container — but it
+      // must never fall short of it (no right-side gap).
+      assertColumnWidthsFillOrOverflow(
         canvasElement,
         containerWidth,
         WIDTH_TOLERANCE_AFTER_RESIZE,
@@ -2234,10 +2290,11 @@ export const AutoExpandShrinkColumnToMinWidth = {
   },
 };
 
-/** Grow a column until all siblings hit minWidth.
- *  Growth should be clamped once there is no more shrinkable headroom. */
-export const AutoExpandGrowUntilSiblingsAtMin = {
-  parameters: { tags: ["auto-expand-grow-until-siblings-at-min"] },
+/** Grow a column far past what siblings can absorb. Siblings shrink only down
+ *  to their natural (declared) widths — never below — and the extra growth
+ *  overflows the container into horizontal scroll. */
+export const AutoExpandGrowPastSiblingFloorsOverflows = {
+  parameters: { tags: ["auto-expand-grow-past-sibling-floors-overflows"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 70, type: "number" },
@@ -2264,35 +2321,52 @@ export const AutoExpandGrowUntilSiblingsAtMin = {
     ) as HTMLElement;
     const containerWidth = container?.clientWidth ?? 700;
 
-    // Grow ID column by a huge amount to force all 5 siblings to minWidth
+    // Grow ID by far more than the siblings' expanded surplus can absorb
     const idHeader = findHeaderCellByLabel(canvasElement, "ID");
     expect(idHeader).toBeTruthy();
+    const idWidthBefore = idHeader!.getBoundingClientRect().width;
     await resizeColumnSlow(idHeader!, 600, 10, 30);
-    await waitForResizeSettle(
-      canvasElement,
-      WIDTH_TOLERANCE_AFTER_RESIZE,
-      containerWidth,
-      800,
-    );
+    await new Promise((r) => setTimeout(r, 250));
 
-    // All sibling columns should be at minWidth (or very close)
-    const headerCells = getHeaderCells(canvasElement);
-    expect(headerCells.length).toBe(6);
-    headerCells.forEach((c) => {
-      const w = parsePixelWidth(getColumnWidth(c));
-      expect(w).toBeGreaterThanOrEqual(MIN_COLUMN_WIDTH - 2);
-      expect(Number.isNaN(w)).toBe(false);
-    });
+    // The dragged column got its full requested growth
+    const idAfter = findHeaderCellByLabel(canvasElement, "ID");
+    expect(idAfter).toBeTruthy();
+    const idWidthAfter = parsePixelWidth(getColumnWidth(idAfter!));
+    expect(idWidthAfter).toBeGreaterThanOrEqual(idWidthBefore + 600 - 15);
 
-    // Total should still fill container
-    const totalW = headerCells.reduce(
-      (s, c) => s + parsePixelWidth(getColumnWidth(c)),
-      0,
-    );
-    expect(Math.abs(totalW - containerWidth)).toBeLessThanOrEqual(
-      WIDTH_TOLERANCE_AFTER_RESIZE,
-    );
+    // The excess growth overflows into horizontal scroll
+    const bodyMain = canvasElement.querySelector(".st-body-main") as HTMLElement;
+    expect(bodyMain).toBeTruthy();
+    expect(bodyMain.scrollWidth).toBeGreaterThan(bodyMain.clientWidth + 300);
+    expect(bodyMain.scrollWidth).toBeGreaterThan(containerWidth + 300);
     assertBodyMainTakesFullWidth(canvasElement);
+
+    // Scroll the (virtualized) siblings into view: they shrank only down to
+    // their natural (declared) widths — not to MIN_COLUMN_WIDTH
+    bodyMain.scrollLeft = bodyMain.scrollWidth;
+    bodyMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 200));
+
+    const declaredWidths: Record<string, number> = {
+      "Store Name": 120,
+      City: 100,
+      "Sq Ft": 90,
+      Opening: 100,
+      Rating: 80,
+    };
+    Object.entries(declaredWidths).forEach(([label, declared]) => {
+      const cell = findHeaderCellByLabel(canvasElement, label);
+      expect(cell, `header "${label}" should exist`).toBeTruthy();
+      const w = parsePixelWidth(getColumnWidth(cell!));
+      expect(
+        w,
+        `"${label}" should not be squeezed below its natural width ${declared}`,
+      ).toBeGreaterThanOrEqual(declared - 2);
+      expect(
+        w,
+        `"${label}" should have given up its expanded surplus (close to natural ${declared})`,
+      ).toBeLessThanOrEqual(declared + 15);
+    });
   },
 };
 
@@ -2350,9 +2424,11 @@ export const AutoExpandResizePinnedPastMaxSectionWidth = {
     );
     expect(leftWidth).toBeLessThanOrEqual(maxPinnedWidth + WIDTH_TOLERANCE);
 
-    // Main section columns should still have valid widths
+    // Main section columns keep valid widths. Main columns are never squeezed
+    // below their natural widths, so the shrunken main viewport overflows into
+    // scroll and some of the 5 main columns may be virtualized out of view.
     const mainCells = getHeaderCellsInSection(sections.main);
-    expect(mainCells.length).toBe(5);
+    expect(mainCells.length).toBeGreaterThanOrEqual(2);
     mainCells.forEach((c) => {
       const w = parsePixelWidth(getColumnWidth(c));
       expect(w).toBeGreaterThan(0);
@@ -2511,9 +2587,11 @@ export const AutoExpandDoubleClickResizePinned = {
   },
 };
 
-/** Last main column under autoExpand: no resize handle; prior column still has a handle. */
-export const AutoExpandLastMainColumnNoResizeHandle = {
-  parameters: { tags: ["auto-expand-last-main-no-handle"] },
+/** The last main column keeps its resize handle under autoExpandColumns
+ *  (growth past the container is now possible via horizontal overflow).
+ *  Dragging it reclaims the left neighbor's expanded surplus first. */
+export const AutoExpandLastMainColumnHasResizeHandle = {
+  parameters: { tags: ["auto-expand-last-main-has-handle"] },
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "title", label: "Title", width: 520, type: "string" },
@@ -2545,11 +2623,37 @@ export const AutoExpandLastMainColumnNoResizeHandle = {
     await waitForTable();
     const notesHeader = findHeaderCellByLabel(canvasElement, "Notes");
     expect(notesHeader).toBeTruthy();
-    expect(notesHeader!.querySelector(".st-header-resize-handle-container")).toBeFalsy();
-    expect(notesHeader!.className).toContain("st-no-resize");
+    // The last main column has a resize handle and no special no-resize class
+    expect(notesHeader!.querySelector(".st-header-resize-handle-container")).toBeTruthy();
+    expect(notesHeader!.className).not.toContain("st-no-resize");
     const titleHeader = findHeaderCellByLabel(canvasElement, "Title");
     expect(titleHeader).toBeTruthy();
     expect(titleHeader!.querySelector(".st-header-resize-handle-container")).toBeTruthy();
+
+    // Dragging the last column's handle works: it grows by reclaiming the
+    // left neighbor's expanded surplus (Title sits well above its natural 520)
+    const container = canvasElement.querySelector(
+      ".st-body-container",
+    ) as HTMLElement;
+    const containerWidth = container?.clientWidth ?? 920;
+    const notesBefore = notesHeader!.getBoundingClientRect().width;
+    await resizeColumnSlow(notesHeader!, 100, 5, 30);
+    await new Promise((r) => setTimeout(r, 200));
+
+    const notesAfter = parsePixelWidth(
+      getColumnWidth(findHeaderCellByLabel(canvasElement, "Notes")!),
+    );
+    expect(notesAfter).toBeGreaterThanOrEqual(notesBefore + 100 - 10);
+    const titleAfter = parsePixelWidth(
+      getColumnWidth(findHeaderCellByLabel(canvasElement, "Title")!),
+    );
+    // Title gave up surplus but stays at or above its natural width
+    expect(titleAfter).toBeGreaterThanOrEqual(520 - 2);
+    // Section stays filled with no overflow (surplus fully absorbed the growth)
+    const totalW = notesAfter + titleAfter;
+    expect(Math.abs(totalW - containerWidth)).toBeLessThanOrEqual(
+      WIDTH_TOLERANCE_AFTER_RESIZE,
+    );
   },
 };
 
@@ -2611,7 +2715,7 @@ export const AutoExpandResizePinnedAndMainStress = {
       { label: "Name", delta: -40 },
       // Grow main "Email"
       { label: "Email", delta: 50 },
-      // Shrink main "Email" back (Department is the last main column and has no resize handle in auto-expand mode)
+      // Shrink main "Email" back
       { label: "Email", delta: -30 },
       // Grow right-pinned "Salary"
       { label: "Salary", delta: 40 },

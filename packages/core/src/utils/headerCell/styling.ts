@@ -19,7 +19,6 @@ import { addTrackedEventListener } from "./eventTracking";
 export const calculateHeaderCellClasses = (
   cell: AbsoluteCell,
   context: HeaderRenderContext,
-  isLastMainAutoExpandColumn: boolean,
 ): string => {
   const { header, colIndex, parentHeader } = cell;
   const {
@@ -90,7 +89,6 @@ export const calculateHeaderCellClasses = (
     enableHeaderEditing && !isSelectionColumn ? "st-header-editable" : "",
     isHeaderSelected ? "st-header-selected" : "",
     hasHighlightedCell && !isHeaderSelected ? "st-header-has-highlighted-cell" : "",
-    isLastMainAutoExpandColumn ? "st-no-resize" : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -146,7 +144,6 @@ const renderHeaderRendererContent = (
 export const createHeaderCellElement = (
   cell: AbsoluteCell,
   context: HeaderRenderContext,
-  isLastMainAutoExpandColumn: boolean,
 ): HTMLElement => {
   const { header, colIndex } = cell;
   const { reverse } = context;
@@ -154,11 +151,7 @@ export const createHeaderCellElement = (
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
 
   // Get class names
-  const classNames = calculateHeaderCellClasses(
-    cell,
-    context,
-    isLastMainAutoExpandColumn,
-  );
+  const classNames = calculateHeaderCellClasses(cell, context);
 
   const cellElement = document.createElement("div");
   cellElement.className = classNames;
@@ -218,11 +211,7 @@ export const createHeaderCellElement = (
   const placeResizeHandleAtStart = reverse !== (context.pinned === "right");
 
   if (placeResizeHandleAtStart) {
-    const resizeHandle = createResizeHandle(
-      header,
-      context,
-      isLastMainAutoExpandColumn,
-    );
+    const resizeHandle = createResizeHandle(header, context);
     if (resizeHandle) {
       cellElement.appendChild(resizeHandle);
     }
@@ -275,11 +264,7 @@ export const createHeaderCellElement = (
   }
 
   if (!placeResizeHandleAtStart) {
-    const resizeHandle = createResizeHandle(
-      header,
-      context,
-      isLastMainAutoExpandColumn,
-    );
+    const resizeHandle = createResizeHandle(header, context);
     if (resizeHandle) {
       cellElement.appendChild(resizeHandle);
     }
@@ -386,15 +371,10 @@ export const updateHeaderCellElement = (
   cellElement: HTMLElement,
   cell: AbsoluteCell,
   context: HeaderRenderContext,
-  isLastMainAutoExpandColumn: boolean,
 ): void => {
   const { header, colIndex } = cell;
 
-  cellElement.className = calculateHeaderCellClasses(
-    cell,
-    context,
-    isLastMainAutoExpandColumn,
-  );
+  cellElement.className = calculateHeaderCellClasses(cell, context);
 
   cellElement.style.left = `${cell.left}px`;
   cellElement.style.top = `${cell.top}px`;

@@ -27,6 +27,13 @@ import type { FooterPosition } from "./FooterPosition";
 
 export interface SimpleTableConfig {
   animations?: AnimationsConfig;
+  /**
+   * Expand-only fill: when the columns' natural widths (declared px, or
+   * content-measured for `width: "auto"`) leave surplus container space,
+   * columns stretch proportionally to fill it (respecting `maxWidth`).
+   * Columns are never squeezed below their natural width — when they don't
+   * fit, the table scrolls horizontally instead.
+   */
   autoExpandColumns?: boolean;
   canExpandRowGroup?: (row: Row) => boolean;
   cellUpdateFlash?: boolean;

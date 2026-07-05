@@ -176,13 +176,15 @@ export const AutoExpandColumnsBasic = {
   },
 };
 
-export const AutoExpandColumnsIgnoresMinWidth = {
+/** Expand-only: when declared widths exceed the container, columns keep their
+ *  declared (natural) widths and the table scrolls horizontally — no squeeze. */
+export const AutoExpandColumnsNeverSqueezesBelowDeclaredWidth = {
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
-      { accessor: "name", label: "Name", width: 100, minWidth: 300, type: "string" },
-      { accessor: "department", label: "Department", width: 100, minWidth: 300, type: "string" },
-      { accessor: "salary", label: "Salary", width: 100, minWidth: 300, type: "number" },
+      { accessor: "name", label: "Name", width: 300, type: "string" },
+      { accessor: "department", label: "Department", width: 300, type: "string" },
+      { accessor: "salary", label: "Salary", width: 300, type: "number" },
     ];
     return renderWithWidth(headers, createEmployeeData(), { autoExpandColumns: true }, "600px");
   },
@@ -190,24 +192,31 @@ export const AutoExpandColumnsIgnoresMinWidth = {
     await waitForTable();
     const headerCells = getHeaderCells(canvasElement);
     expect(headerCells.length).toBe(4);
+    const idWidth = parsePixelWidth(getColumnWidth(headerCells[0]));
     const nameWidth = parsePixelWidth(getColumnWidth(headerCells[1]));
     const deptWidth = parsePixelWidth(getColumnWidth(headerCells[2]));
     const salaryWidth = parsePixelWidth(getColumnWidth(headerCells[3]));
-    expect(nameWidth).toBeLessThan(300);
-    expect(deptWidth).toBeLessThan(300);
-    expect(salaryWidth).toBeLessThan(300);
-    const avgWidth = (nameWidth + deptWidth + salaryWidth) / 3;
-    expect(nameWidth).toBeGreaterThan(avgWidth * 0.9);
-    expect(nameWidth).toBeLessThan(avgWidth * 1.1);
+    // Natural widths are preserved (no proportional squeeze to fit 600px)
+    expect(idWidth).toBeGreaterThanOrEqual(55);
+    expect(idWidth).toBeLessThanOrEqual(65);
+    expect(nameWidth).toBeGreaterThanOrEqual(295);
+    expect(deptWidth).toBeGreaterThanOrEqual(295);
+    expect(salaryWidth).toBeGreaterThanOrEqual(295);
+    // Content overflows into horizontal scroll
+    const bodyMain = canvasElement.querySelector(".st-body-main") as HTMLElement | null;
+    expect(bodyMain).toBeTruthy();
+    expect(bodyMain!.scrollWidth).toBeGreaterThan(bodyMain!.clientWidth);
   },
 };
 
-export const AutoExpandColumnsIgnoresMaxWidth = {
+/** Expansion respects maxWidth: capped columns stop at their cap and the
+ *  remaining surplus is redistributed to uncapped columns. */
+export const AutoExpandColumnsRespectsMaxWidthOnExpand = {
   render: () => {
     const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 200, maxWidth: 100, type: "number" },
-      { accessor: "name", label: "Name", width: 200, maxWidth: 100, type: "string" },
-      { accessor: "department", label: "Department", width: 200, maxWidth: 100, type: "string" },
+      { accessor: "id", label: "ID", width: 100, maxWidth: 120, type: "number" },
+      { accessor: "name", label: "Name", width: 200, type: "string" },
+      { accessor: "department", label: "Department", width: 200, maxWidth: 220, type: "string" },
     ];
     return renderWithWidth(headers, createEmployeeData(), { autoExpandColumns: true }, "1200px");
   },
@@ -218,12 +227,17 @@ export const AutoExpandColumnsIgnoresMaxWidth = {
     const idWidth = parsePixelWidth(getColumnWidth(headerCells[0]));
     const nameWidth = parsePixelWidth(getColumnWidth(headerCells[1]));
     const deptWidth = parsePixelWidth(getColumnWidth(headerCells[2]));
-    expect(idWidth).toBeGreaterThan(100);
-    expect(nameWidth).toBeGreaterThan(100);
-    expect(deptWidth).toBeGreaterThan(100);
-    const avgWidth = (idWidth + nameWidth + deptWidth) / 3;
-    expect(idWidth).toBeGreaterThan(avgWidth * 0.9);
-    expect(idWidth).toBeLessThan(avgWidth * 1.1);
+    // Capped columns are pinned at their maxWidth
+    expect(idWidth).toBeGreaterThanOrEqual(115);
+    expect(idWidth).toBeLessThanOrEqual(125);
+    expect(deptWidth).toBeGreaterThanOrEqual(215);
+    expect(deptWidth).toBeLessThanOrEqual(225);
+    // The uncapped column absorbs the redistributed surplus and fills the rest
+    const container = canvasElement.querySelector(".st-body-container") as HTMLElement | null;
+    const containerWidth = container?.clientWidth ?? 1200;
+    expect(nameWidth).toBeGreaterThan(containerWidth - idWidth - deptWidth - 20);
+    const totalWidth = idWidth + nameWidth + deptWidth;
+    expect(Math.abs(totalWidth - containerWidth)).toBeLessThanOrEqual(20);
   },
 };
 

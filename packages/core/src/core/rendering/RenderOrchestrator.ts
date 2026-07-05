@@ -71,6 +71,10 @@ export interface RenderContext {
   mainBodyRef: { current: HTMLDivElement | null };
   mainHeaderRef: { current: HTMLDivElement | null };
   onRender: () => void;
+  /** Natural-width shrink floors (accessor -> px) for auto-expand column resize. */
+  getShrinkFloors?: () => Map<string, number>;
+  /** Persist user-set widths (drag / double-click auto-fit) as natural widths. */
+  onAutoExpandNaturalWidths?: (widths: Map<string, number>) => void;
   pinnedLeftHeaderRef: { current: HTMLDivElement | null };
   pinnedLeftRef: { current: HTMLDivElement | null };
   pinnedRightHeaderRef: { current: HTMLDivElement | null };
@@ -831,6 +835,8 @@ export class RenderOrchestrator {
       rowStateMap: context.rowStateMap,
       createNestedTable: context.createNestedTable,
       onRender: context.onRender,
+      getShrinkFloors: context.getShrinkFloors,
+      onAutoExpandNaturalWidths: context.onAutoExpandNaturalWidths,
       setIsResizing: context.setIsResizing,
       setHeaders: context.setHeaders,
       setCollapsedHeaders: context.setCollapsedHeaders,

@@ -410,37 +410,6 @@ export const getAllVisibleLeafHeaders = (
   return leafHeaders;
 };
 
-/**
- * Convert pixel-based widths to proportional fr units
- * This is used when autoExpandColumns is enabled
- */
-export const convertPixelWidthsToFr = (
-  headers: HeaderObject[],
-  collapsedHeaders?: Set<Accessor>,
-): HeaderObject[] => {
-  const processHeader = (header: HeaderObject): HeaderObject => {
-    // Process children recursively first
-    const processedChildren = header.children?.map(processHeader);
-
-    const pixelWidth = getHeaderWidthInPixels(header);
-    const minWidth = header.minWidth || pixelWidth;
-
-    // Convert px to fr (divide by 10 to get reasonable fr values)
-    // e.g., 100px -> 10fr, 150px -> 15fr
-    const frValue = pixelWidth / 10;
-
-    return {
-      ...header,
-      width: `${frValue}fr`,
-      minWidth: typeof minWidth === "number" ? minWidth : parseFloat(minWidth),
-      children: processedChildren,
-      __originalPixelWidth: pixelWidth, // Store original for reference
-    } as HeaderObject & { __originalPixelWidth?: number };
-  };
-
-  return headers.map(processHeader);
-};
-
 /** Resolve the hidden-measurement host element for a table's style root. */
 const getMeasurementHost = (domQueryRoot: ParentNode): HTMLElement =>
   domQueryRoot instanceof HTMLElement ? domQueryRoot : document.body;

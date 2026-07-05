@@ -156,7 +156,11 @@ type HeaderObject = {
   showWhen?: ShowWhen; // Controls when child column is visible based on parent's collapsed state
   /**
    * Column width. A number or px/fr/% string sets a fixed/proportional width.
-   * The special value `"auto"` sizes the column to fit its content (see `autoSizeMode`).
+   * The special value `"auto"` sizes the column to fit its content (see
+   * `autoSizeMode`). With `autoExpandColumns`, the fixed/measured width acts
+   * as the column's natural width: it can stretch to help fill surplus
+   * container space but is never squeezed narrower (the table scrolls
+   * horizontally instead).
    */
   width: number | string;
   maxWidth?: number | string; // Upper bound for width, including auto-sizing

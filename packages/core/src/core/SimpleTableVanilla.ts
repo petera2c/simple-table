@@ -27,6 +27,7 @@ import { deepClone } from "../utils/generalUtils";
 import {
   calculateHeaderContentWidth,
   getAllVisibleLeafHeaders,
+  getHeaderMinWidth,
   isAutoWidth,
 } from "../utils/headerWidthUtils";
 import {
@@ -107,6 +108,16 @@ export class SimpleTableVanilla {
   private autoSizeAccessors: Set<Accessor> = new Set();
   /** Accessors awaiting a content-fit measurement on the next render. */
   private pendingAutoSize: Set<Accessor> = new Set();
+  /**
+   * Natural (unexpanded) pixel width per leaf column, overriding the declared
+   * width: the measured content width for `width: "auto"` columns and the
+   * width the user explicitly set via drag-resize / double-click auto-fit.
+   * With autoExpandColumns these feed the shrink floors used during column
+   * resize — neighbors give up surplus (expanded) space but are never
+   * squeezed below their natural width; past that point the section
+   * overflows into horizontal scroll.
+   */
+  private naturalWidths: Map<string, number> = new Map();
   /** Guard against re-entrancy while the auto-size pass re-renders. */
   private isAutoSizing: boolean = false;
   private currentPage: number = 1;
@@ -1186,6 +1197,9 @@ export class SimpleTableVanilla {
       externalViewportHeight:
         this.externalViewportHeight > 0 ? this.externalViewportHeight : undefined,
       onRender: () => this.render("resizeHandler-onRender"),
+      getShrinkFloors: () => this.getShrinkFloors(),
+      onAutoExpandNaturalWidths: (widths: Map<string, number>) =>
+        this.recordNaturalWidths(widths),
       setIsResizing: (value: boolean) => {
         this.isResizing = value;
         if (this.autoScaleManager && value === false) {
@@ -1294,9 +1308,6 @@ export class SimpleTableVanilla {
 
   private computeAutoSizeAccessors(): Set<Accessor> {
     const set = new Set<Accessor>();
-    // Auto-size and autoExpandColumns are mutually exclusive (one hugs content,
-    // the other fills the container), so disable auto-size when expanding.
-    if (this.config.autoExpandColumns) return set;
     const leaves = getAllVisibleLeafHeaders(this.headers, this.collapsedHeaders);
     for (const leaf of leaves) {
       if (this.isAutoSizeLeaf(leaf)) set.add(leaf.accessor);
@@ -1332,6 +1343,44 @@ export class SimpleTableVanilla {
     return this.localRows;
   }
 
+  /**
+   * Shrink floors for auto-expand column resize, keyed by accessor. Each
+   * visible leaf's floor is its natural width — a user-set / content-measured
+   * override when present, else the pixel width declared in the column
+   * definitions — raised to at least its `minWidth` (or the global minimum).
+   * Flexible declarations (fr / % / unmeasured "auto") have no pixel natural,
+   * so they floor at `minWidth` alone.
+   */
+  private getShrinkFloors(): Map<string, number> {
+    const declared = new Map<string, number>();
+    const visitDeclared = (h: HeaderObject): void => {
+      if (h.children && h.children.length > 0) {
+        h.children.forEach(visitDeclared);
+      }
+      if (typeof h.width === "number") {
+        declared.set(String(h.accessor), h.width);
+      } else if (typeof h.width === "string" && h.width.trim().endsWith("px")) {
+        const px = parseFloat(h.width);
+        if (Number.isFinite(px)) declared.set(String(h.accessor), px);
+      }
+    };
+    this.pristineDefaultHeaders.forEach(visitDeclared);
+
+    const floors = new Map<string, number>();
+    const leaves = getAllVisibleLeafHeaders(this.headers, this.collapsedHeaders);
+    for (const leaf of leaves) {
+      const key = String(leaf.accessor);
+      const natural = this.naturalWidths.get(key) ?? declared.get(key);
+      floors.set(key, Math.max(natural ?? 0, getHeaderMinWidth(leaf)));
+    }
+    return floors;
+  }
+
+  /** Record user-set / measured widths as the columns' new natural widths. */
+  private recordNaturalWidths(widths: Map<string, number>): void {
+    widths.forEach((width, accessor) => this.naturalWidths.set(accessor, width));
+  }
+
   /** Immutably write measured pixel widths into the leaf headers. */
   private applyMeasuredWidths(widths: Map<Accessor, number>): void {
     const apply = (h: HeaderObject): HeaderObject => {
@@ -1344,6 +1393,9 @@ export class SimpleTableVanilla {
       return next;
     };
     this.headers = this.headers.map(apply);
+    // Measured content widths are the columns' natural widths (the shrink
+    // floors for auto-expand resize).
+    widths.forEach((width, accessor) => this.naturalWidths.set(String(accessor), width));
   }
 
   /**
@@ -1352,13 +1404,14 @@ export class SimpleTableVanilla {
    * measurement reads the just-rendered (provisional-width) DOM and the
    * corrective render happens in the same synchronous task, so there is no
    * visible width snap.
+   *
+   * With autoExpandColumns, the measured width becomes the column's natural
+   * width: the expand-only auto-scale pass in the corrective render stretches
+   * columns to fill surplus container space, or leaves them at natural width
+   * (horizontal scroll) when they don't fit.
    */
   private maybeAutoSizeColumns(): void {
     if (this.isAutoSizing || this.pendingAutoSize.size === 0) return;
-    if (this.config.autoExpandColumns) {
-      this.pendingAutoSize.clear();
-      return;
-    }
 
     // Need some rendered header DOM to borrow style metrics (padding/font)
     // from. The measurement itself no longer requires each pending column's
@@ -1611,6 +1664,8 @@ export class SimpleTableVanilla {
       this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
       this.autoSizeAccessors = this.computeAutoSizeAccessors();
       this.pendingAutoSize = new Set(this.autoSizeAccessors);
+      // New column definitions supersede measured / user-set natural widths.
+      this.naturalWidths.clear();
 
       if (this.filterManager) {
         this.filterManager.updateConfig({ headers: this.headers });

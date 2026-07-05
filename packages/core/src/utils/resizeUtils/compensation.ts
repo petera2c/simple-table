@@ -5,15 +5,22 @@ import { MIN_COLUMN_WIDTH } from "../../consts/column-constraints";
  * Distribute compensation among columns proportionally based on available headroom
  * Used in autoExpandColumns mode
  * Positive compensation = shrink columns, Negative compensation = grow columns
+ *
+ * `shrinkFloors` (accessor -> px) sets each column's shrink floor — its natural
+ * width (declared, content-measured, or user-set). Columns give up only their
+ * surplus (expanded) space and are never squeezed below their natural width.
+ * Falls back to MIN_COLUMN_WIDTH when a column has no known floor.
  */
 export const distributeCompensationProportionally = ({
   columnsToShrink,
   totalCompensation,
   initialWidthsMap,
+  shrinkFloors,
 }: {
   columnsToShrink: HeaderObject[];
   totalCompensation: number;
   initialWidthsMap: Map<string, number>;
+  shrinkFloors?: Map<string, number>;
 }): void => {
   // Handle growing columns (negative compensation)
   if (totalCompensation < 0) {
@@ -57,9 +64,14 @@ export const distributeCompensationProportionally = ({
     // 0.5px threshold to avoid floating point issues
     // Use initial width from the map (captured at drag start) so each handleMove
     // call resets from the initial state rather than compounding across RAF frames
-    const minWidth = MIN_COLUMN_WIDTH;
     const headrooms = columnsToShrink.map((col) => {
       const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
+      const floor = Math.max(
+        shrinkFloors?.get(col.accessor as string) ?? MIN_COLUMN_WIDTH,
+        MIN_COLUMN_WIDTH,
+      );
+      // A floor above the column's current width means it has no surplus to give.
+      const minWidth = Math.min(floor, initialWidth);
       return {
         column: col,
         headroom: Math.max(0, initialWidth - minWidth),

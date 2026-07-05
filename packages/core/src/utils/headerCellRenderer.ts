@@ -175,18 +175,14 @@ export const renderHeaderCells = (
   const cellsToCreate: Array<{
     cell: AbsoluteCell;
     cellId: string;
-    isLastMainAutoExpandColumn: boolean;
   }> = [];
 
   // First pass: identify cells to create vs update
   cellsToRender.forEach((cell) => {
     const cellId = getCellId({ accessor: cell.header.accessor, rowId: "header" });
-    const isLastMainAutoExpandColumn = Boolean(
-      context.autoExpandColumns && !context.pinned && cell.colIndex === lastHeaderIndex,
-    );
 
     if (!renderedCells.has(cellId)) {
-      cellsToCreate.push({ cell, cellId, isLastMainAutoExpandColumn });
+      cellsToCreate.push({ cell, cellId });
     } else {
       // Use cached position to detect change (avoid DOM reads / layout thrash)
       const cellElement = renderedCells.get(cellId)!;
@@ -243,7 +239,7 @@ export const renderHeaderCells = (
       }
 
       // Update classes when context changes (e.g. column selection → st-header-selected)
-      const newClassNames = calculateHeaderCellClasses(cell, context, isLastMainAutoExpandColumn);
+      const newClassNames = calculateHeaderCellClasses(cell, context);
       if (cellElement.className !== newClassNames) {
         cellElement.className = newClassNames;
       }
@@ -285,8 +281,8 @@ export const renderHeaderCells = (
   const accordionGrowFromZero: Array<{ element: HTMLElement; cell: AbsoluteCell }> = [];
 
   // Second pass: batch create new cells (seed position cache so next update doesn't read DOM)
-  cellsToCreate.forEach(({ cell, cellId, isLastMainAutoExpandColumn }) => {
-    const cellElement = createHeaderCellElement(cell, context, isLastMainAutoExpandColumn);
+  cellsToCreate.forEach(({ cell, cellId }) => {
+    const cellElement = createHeaderCellElement(cell, context);
     // Seed icon-state dataset so the existing-cell branch doesn't refresh icons
     // unnecessarily on the next render (icons are already current on freshly created cells).
     const sortStateForCell =

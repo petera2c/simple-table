@@ -75,6 +75,10 @@ export interface TableRendererDeps {
   mainBodyRef: { current: HTMLDivElement | null };
   mainHeaderRef: { current: HTMLDivElement | null };
   onRender: () => void;
+  /** Natural-width shrink floors (accessor -> px) for auto-expand column resize. */
+  getShrinkFloors?: () => Map<string, number>;
+  /** Persist user-set widths (drag / double-click auto-fit) as natural widths. */
+  onAutoExpandNaturalWidths?: (widths: Map<string, number>) => void;
   pinnedLeftHeaderRef: { current: HTMLDivElement | null };
   pinnedLeftRef: { current: HTMLDivElement | null };
   pinnedRightHeaderRef: { current: HTMLDivElement | null };
@@ -233,6 +237,8 @@ export class TableRenderer {
           : new Set<number>(),
       sort: sortState?.sort ?? null,
       autoExpandColumns: deps.config.autoExpandColumns ?? false,
+      getShrinkFloors: deps.getShrinkFloors,
+      onAutoExpandNaturalWidths: deps.onAutoExpandNaturalWidths,
       essentialAccessors: deps.essentialAccessors,
       selectableColumns: deps.config.selectableColumns,
       headers: deps.effectiveHeaders,

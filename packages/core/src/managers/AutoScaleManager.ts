@@ -1,6 +1,6 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import { Pinned } from "../types/Pinned";
-import { getAllVisibleLeafHeaders, getHeaderMinWidth } from "../utils/headerWidthUtils";
+import { getAllVisibleLeafHeaders } from "../utils/headerWidthUtils";
 import { PreviousValueTracker } from "../hooks/previousValue";
 
 interface AutoScaleConfig {
@@ -21,60 +21,111 @@ interface AutoScaleConfig {
 
 type HeaderUpdateCallback = (headers: HeaderObject[]) => void;
 
-const canAutoExpandSection = (
-  leafHeaders: HeaderObject[],
-  availableSectionWidth: number,
-): boolean => {
-  const totalMinWidth = leafHeaders.reduce((total, header) => {
-    return total + getHeaderMinWidth(header);
-  }, 0);
+/** Numeric pixel width of a leaf header (post-normalization all widths are px). */
+const getLeafPixelWidth = (header: HeaderObject): number =>
+  typeof header.width === "number"
+    ? header.width
+    : typeof header.width === "string" && header.width.endsWith("px")
+      ? parseFloat(header.width)
+      : 150;
 
-  return totalMinWidth <= availableSectionWidth;
-};
-
+/**
+ * Scale a section's columns up from their natural widths to fill the available
+ * section width.
+ *
+ * Expand-only: when the natural widths already overflow the section
+ * (scaleFactor < 1), an empty map is returned so the columns keep their
+ * natural widths and the section scrolls horizontally — columns are never
+ * squeezed below their natural (declared or content-measured) width.
+ *
+ * `maxWidth` caps growth during expansion: columns that would exceed their
+ * maxWidth are pinned there and their surplus share is redistributed to the
+ * remaining columns. A maxWidth below the natural width never shrinks the
+ * column (growth-only cap).
+ */
 const scaleSection = (
   leafHeaders: HeaderObject[],
   availableSectionWidth: number,
 ): Map<string, number> => {
   const scaledWidths = new Map<string, number>();
 
-  const totalCurrentWidth = leafHeaders.reduce((total, header) => {
-    const width =
-      typeof header.width === "number"
-        ? header.width
-        : typeof header.width === "string" && header.width.endsWith("px")
-          ? parseFloat(header.width)
-          : 150;
-    return total + width;
-  }, 0);
+  const naturalWidths = leafHeaders.map(getLeafPixelWidth);
+  const totalNaturalWidth = naturalWidths.reduce((a, b) => a + b, 0);
 
-  if (totalCurrentWidth === 0) return scaledWidths;
+  if (totalNaturalWidth === 0) return scaledWidths;
 
-  const scaleFactor = availableSectionWidth / totalCurrentWidth;
+  const scaleFactor = availableSectionWidth / totalNaturalWidth;
 
-  if (scaleFactor >= 1 && scaleFactor - 1 < 0.01) {
+  // Expand-only: deficit (< 1) keeps natural widths; near-1 surplus is skipped
+  // to avoid sub-percent jitter on container resize.
+  if (scaleFactor - 1 < 0.01) {
     return scaledWidths;
   }
 
-  let accumulatedWidth = 0;
+  const maxWidths = leafHeaders.map((header, i) => {
+    const raw =
+      typeof header.maxWidth === "number"
+        ? header.maxWidth
+        : typeof header.maxWidth === "string"
+          ? parseFloat(header.maxWidth)
+          : NaN;
+    return Number.isFinite(raw) && raw > 0 ? Math.max(raw, naturalWidths[i]) : Infinity;
+  });
 
-  leafHeaders.forEach((header, index) => {
-    const currentWidth =
-      typeof header.width === "number"
-        ? header.width
-        : typeof header.width === "string" && header.width.endsWith("px")
-          ? parseFloat(header.width)
-          : 150;
+  // Iteratively pin columns that hit their maxWidth and redistribute the
+  // reclaimed surplus among the remaining flexible columns.
+  const cappedWidths = new Map<number, number>();
+  let factor = scaleFactor;
+  for (;;) {
+    const uncappedIndices = naturalWidths
+      .map((_, i) => i)
+      .filter((i) => !cappedWidths.has(i));
+    if (uncappedIndices.length === 0) break;
 
-    let newWidth: number;
-    if (index === leafHeaders.length - 1) {
-      newWidth = availableSectionWidth - accumulatedWidth;
-    } else {
-      newWidth = Math.round(currentWidth * scaleFactor);
-      accumulatedWidth += newWidth;
+    const cappedTotal = Array.from(cappedWidths.values()).reduce((a, b) => a + b, 0);
+    const uncappedNaturalTotal = uncappedIndices.reduce(
+      (sum, i) => sum + naturalWidths[i],
+      0,
+    );
+    factor = Math.max(1, (availableSectionWidth - cappedTotal) / uncappedNaturalTotal);
+
+    const newlyCapped = uncappedIndices.filter(
+      (i) => naturalWidths[i] * factor > maxWidths[i],
+    );
+    if (newlyCapped.length === 0) break;
+    newlyCapped.forEach((i) => cappedWidths.set(i, maxWidths[i]));
+  }
+
+  const rounded = leafHeaders.map((_, i) => {
+    const cappedAt = cappedWidths.get(i);
+    return Math.round(cappedAt !== undefined ? cappedAt : naturalWidths[i] * factor);
+  });
+
+  // Hand the rounding remainder to the last flexible column so the section
+  // fills exactly (still respecting its cap and never dipping below natural).
+  let lastUncappedIndex = -1;
+  for (let i = leafHeaders.length - 1; i >= 0; i--) {
+    if (!cappedWidths.has(i)) {
+      lastUncappedIndex = i;
+      break;
     }
+  }
+  if (lastUncappedIndex >= 0) {
+    const otherSum = rounded.reduce(
+      (sum, w, i) => (i === lastUncappedIndex ? sum : sum + w),
+      0,
+    );
+    const remainder = availableSectionWidth - otherSum;
+    rounded[lastUncappedIndex] = Math.round(
+      Math.min(
+        Math.max(remainder, naturalWidths[lastUncappedIndex]),
+        maxWidths[lastUncappedIndex],
+      ),
+    );
+  }
 
-    scaledWidths.set(header.accessor as string, newWidth);
+  leafHeaders.forEach((header, i) => {
+    scaledWidths.set(header.accessor as string, rounded[i]);
   });
 
   return scaledWidths;
@@ -114,28 +165,22 @@ export const applyAutoScaleToHeaders = (
   const rightLeafHeaders = getAllVisibleLeafHeaders(rightSectionHeaders, collapsedHeaders);
   const mainLeafHeaders = getAllVisibleLeafHeaders(mainSectionHeaders, collapsedHeaders);
 
-  const canExpandLeft =
-    leftLeafHeaders.length > 0 && canAutoExpandSection(leftLeafHeaders, pinnedLeftWidth);
-  const canExpandRight =
-    rightLeafHeaders.length > 0 && canAutoExpandSection(rightLeafHeaders, pinnedRightWidth);
-  const canExpandMain =
-    mainLeafHeaders.length > 0 &&
-    availableMainSectionWidth > 0 &&
-    canAutoExpandSection(mainLeafHeaders, availableMainSectionWidth);
-
+  // scaleSection is expand-only: it returns widths only when the section's
+  // natural widths leave surplus space. Sections in deficit keep their natural
+  // widths and overflow into horizontal scroll.
   const scaledWidths = new Map<string, number>();
 
-  if (canExpandLeft) {
+  if (leftLeafHeaders.length > 0) {
     const leftScaledWidths = scaleSection(leftLeafHeaders, pinnedLeftWidth);
     leftScaledWidths.forEach((width, accessor) => scaledWidths.set(accessor, width));
   }
 
-  if (canExpandRight) {
+  if (rightLeafHeaders.length > 0) {
     const rightScaledWidths = scaleSection(rightLeafHeaders, pinnedRightWidth);
     rightScaledWidths.forEach((width, accessor) => scaledWidths.set(accessor, width));
   }
 
-  if (canExpandMain) {
+  if (mainLeafHeaders.length > 0 && availableMainSectionWidth > 0) {
     const mainScaledWidths = scaleSection(mainLeafHeaders, availableMainSectionWidth);
     mainScaledWidths.forEach((width, accessor) => scaledWidths.set(accessor, width));
   }

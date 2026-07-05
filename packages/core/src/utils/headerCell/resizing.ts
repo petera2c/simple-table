@@ -53,12 +53,11 @@ const syncVisibleLeafWidthsFromDom = (
 export const createResizeHandle = (
   header: HeaderObject,
   context: HeaderRenderContext,
-  isLastMainAutoExpandColumn: boolean,
 ): HTMLElement | null => {
   const { columnResizing } = context;
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
 
-  if (!columnResizing || isSelectionColumn || isLastMainAutoExpandColumn) {
+  if (!columnResizing || isSelectionColumn) {
     return null;
   }
 
@@ -111,6 +110,8 @@ export const createResizeHandle = (
         headerCellElement: headerCell,
         getTargetLeafWidth: (leafHeader) =>
           calculateHeaderContentWidth(leafHeader.accessor, measureOptions(leafHeader)),
+        onAutoExpandNaturalWidths: context.onAutoExpandNaturalWidths,
+        shrinkFloors: context.getShrinkFloors?.(),
       });
       const next = [...resizeHeaders];
       context.setHeaders(next);
@@ -181,11 +182,13 @@ export const createResizeHandle = (
         headers: resizeHeaders,
         mainBodyRef: context.mainBodyRef,
         onColumnWidthChange: context.onColumnWidthChange,
+        onAutoExpandNaturalWidths: context.onAutoExpandNaturalWidths,
         pinnedLeftRef: context.pinnedLeftRef,
         pinnedRightRef: context.pinnedRightRef,
         reverse: context.reverse,
         setHeaders: context.setHeaders,
         setIsResizing: context.setIsResizing,
+        shrinkFloors: context.getShrinkFloors?.(),
         startWidth: startWidth ?? TABLE_HEADER_CELL_WIDTH_DEFAULT,
       });
     }, 10);
@@ -211,11 +214,13 @@ export const createResizeHandle = (
         headers: resizeHeaders,
         mainBodyRef: context.mainBodyRef,
         onColumnWidthChange: context.onColumnWidthChange,
+        onAutoExpandNaturalWidths: context.onAutoExpandNaturalWidths,
         pinnedLeftRef: context.pinnedLeftRef,
         pinnedRightRef: context.pinnedRightRef,
         reverse: context.reverse,
         setHeaders: context.setHeaders,
         setIsResizing: context.setIsResizing,
+        shrinkFloors: context.getShrinkFloors?.(),
         startWidth: startWidth ?? TABLE_HEADER_CELL_WIDTH_DEFAULT,
       });
     }, 10);

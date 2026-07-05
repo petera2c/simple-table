@@ -37,6 +37,10 @@ export interface HeaderRenderContext {
   filters: TableFilterState;
   forceUpdate: () => void;
   getCollapsedHeaders?: () => Set<Accessor>; /** Get current collapsed headers (avoids stale closure in toggle handler). */
+  /** Natural-width shrink floors (accessor -> px) for auto-expand column resize. */
+  getShrinkFloors?: () => Map<string, number>;
+  /** Persist user-set widths (drag / double-click auto-fit) as natural widths. */
+  onAutoExpandNaturalWidths?: (widths: Map<string, number>) => void;
   handleApplyFilter: (filter: FilterCondition) => void;
   handleClearFilter: (accessor: Accessor) => void;
   handleSelectAll?: (checked: boolean) => void;
