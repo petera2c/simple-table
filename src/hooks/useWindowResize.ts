@@ -1,4 +1,5 @@
-import { RefObject, useLayoutEffect } from "react";
+import { RefObject, useLayoutEffect, useRef } from "react";
+import { CONTAINER_RESIZE_SETTLE_MS } from "./resizeCoalescing";
 
 const useWindowResize = ({
   forceUpdate,
@@ -9,23 +10,33 @@ const useWindowResize = ({
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;
   setScrollbarWidth: (width: number) => void;
 }) => {
-  // On window risize completely re-render the table
+  const settleTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useLayoutEffect(() => {
     const handleResize = () => {
-      // Force a re-render of the table
-      forceUpdate();
-      // Re-calculate the width of the scrollbar and table content
-      if (!tableBodyContainerRef.current) return;
+      if (settleTimeoutRef.current !== null) {
+        clearTimeout(settleTimeoutRef.current);
+      }
+      settleTimeoutRef.current = setTimeout(() => {
+        settleTimeoutRef.current = null;
+        forceUpdate();
+        if (!tableBodyContainerRef.current) return;
 
-      const newScrollbarWidth =
-        tableBodyContainerRef.current.offsetWidth - tableBodyContainerRef.current.clientWidth;
+        const newScrollbarWidth =
+          tableBodyContainerRef.current.offsetWidth -
+          tableBodyContainerRef.current.clientWidth;
 
-      setScrollbarWidth(newScrollbarWidth);
+        setScrollbarWidth(newScrollbarWidth);
+      }, CONTAINER_RESIZE_SETTLE_MS);
     };
 
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
+      if (settleTimeoutRef.current !== null) {
+        clearTimeout(settleTimeoutRef.current);
+        settleTimeoutRef.current = null;
+      }
     };
   }, [forceUpdate, tableBodyContainerRef, setScrollbarWidth]);
 };

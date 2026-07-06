@@ -280,12 +280,16 @@ export const useAutoScaleMainSection = ({
     prevIsResizingRef.current = isResizing;
   }, [isResizing, autoExpandColumns, setHeaders]);
 
-  // Also trigger re-scale when container width changes significantly
+  // Re-scale once when the settled container width changes (useTableDimensions
+  // coalesces continuous resize so this does not fire every animation frame).
   const prevContainerWidthRef = useRef(containerWidth);
   useEffect(() => {
-    const widthChange = Math.abs(containerWidth - prevContainerWidthRef.current);
-
-    if (widthChange > 10 && !isResizing && autoExpandColumns) {
+    if (
+      containerWidth > 0 &&
+      containerWidth !== prevContainerWidthRef.current &&
+      !isResizing &&
+      autoExpandColumns
+    ) {
       setHeaders((prevHeaders) => applyAutoScaleToHeaders(prevHeaders, optionsRef.current));
     }
 

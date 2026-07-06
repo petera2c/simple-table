@@ -20,6 +20,7 @@ import { buildColumnWindow } from "../../utils/columnVirtualizationUtils";
 import RowIndices from "../../types/RowIndices";
 import TableBodyProps from "../../types/TableBodyProps";
 import { rowIdToString } from "../../utils/rowUtils";
+import { CONTAINER_RESIZE_SETTLE_MS } from "../../hooks/resizeCoalescing";
 
 // Number of extra columns to render on each side of the horizontal viewport so that
 // fast horizontal scrolling doesn't reveal blank columns before the next frame.
@@ -211,6 +212,7 @@ const TableBody = ({
     direction: "left" | "right" | "none";
   }>({ scrollLeft: 0, width: 0, direction: "none" });
   const hScrollRafRef = useRef<number | null>(null);
+  const columnWidthSettleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastScrollLeftRef = useRef(0);
 
   // useLayoutEffect so the initial measurement (and therefore the first windowed
@@ -219,7 +221,7 @@ const TableBody = ({
     const element = mainBodyRef.current;
     if (!element) return;
 
-    const measure = () => {
+    const measure = (includeWidth: boolean) => {
       const scrollLeft = element.scrollLeft;
       const width = element.clientWidth;
       const previous = lastScrollLeftRef.current;
@@ -230,23 +232,37 @@ const TableBody = ({
             ? "left"
             : "none";
       lastScrollLeftRef.current = scrollLeft;
-      setColumnViewport((current) =>
-        current.scrollLeft === scrollLeft &&
-        current.width === width &&
-        current.direction === direction
-          ? current
-          : { scrollLeft, width, direction },
-      );
+      setColumnViewport((current) => {
+        const nextWidth = includeWidth ? width : current.width;
+        if (
+          current.scrollLeft === scrollLeft &&
+          current.width === nextWidth &&
+          current.direction === direction
+        ) {
+          return current;
+        }
+        return { scrollLeft, width: nextWidth, direction };
+      });
+    };
+
+    const scheduleWidthSettle = () => {
+      if (columnWidthSettleRef.current !== null) {
+        clearTimeout(columnWidthSettleRef.current);
+      }
+      columnWidthSettleRef.current = setTimeout(() => {
+        columnWidthSettleRef.current = null;
+        measure(true);
+      }, CONTAINER_RESIZE_SETTLE_MS);
     };
 
     // Measure synchronously so the first paint already has the correct window.
-    measure();
+    measure(true);
 
     const handleHorizontalScroll = () => {
       if (hScrollRafRef.current !== null) return;
       hScrollRafRef.current = requestAnimationFrame(() => {
         hScrollRafRef.current = null;
-        measure();
+        measure(true);
       });
     };
 
@@ -255,7 +271,16 @@ const TableBody = ({
     });
     const resizeObserver =
       typeof ResizeObserver !== "undefined"
-        ? new ResizeObserver(() => measure())
+        ? new ResizeObserver(() => {
+            if (hScrollRafRef.current !== null) return;
+            hScrollRafRef.current = requestAnimationFrame(() => {
+              hScrollRafRef.current = null;
+              // Track scroll position immediately; defer width so column
+              // virtualization does not recompute every nav-animation frame.
+              measure(false);
+              scheduleWidthSettle();
+            });
+          })
         : null;
     resizeObserver?.observe(element);
 
@@ -265,6 +290,10 @@ const TableBody = ({
       if (hScrollRafRef.current !== null) {
         cancelAnimationFrame(hScrollRafRef.current);
         hScrollRafRef.current = null;
+      }
+      if (columnWidthSettleRef.current !== null) {
+        clearTimeout(columnWidthSettleRef.current);
+        columnWidthSettleRef.current = null;
       }
     };
     // Re-attach when the main section mounts/unmounts (e.g. empty <-> populated).

@@ -44,15 +44,27 @@ const useScrollbarVisibility = ({
     // Check on initial render
     checkScrollability();
 
-    // Set up a ResizeObserver to check when the content size changes
+    // Defer scrollability checks triggered by ResizeObserver to the next frame,
+    // preventing synchronous layout work inside the observer callback.
+    let rafId: number | null = null;
     const resizeObserver = new ResizeObserver(() => {
-      checkScrollability();
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        checkScrollability();
+      });
     });
 
     resizeObserver.observe(mainSection);
 
     // Clean up
     return () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
       if (mainSection) {
         resizeObserver.unobserve(mainSection);
       }

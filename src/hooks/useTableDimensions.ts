@@ -1,6 +1,10 @@
 import { useState, useLayoutEffect, useMemo, useCallback, RefObject } from "react";
 import HeaderObject from "../types/HeaderObject";
 import { CSS_VAR_BORDER_WIDTH, DEFAULT_BORDER_WIDTH } from "../consts/general-consts";
+import {
+  createSettledResizePublisher,
+  recordContainerWidthStateUpdate,
+} from "./resizeCoalescing";
 
 interface UseTableDimensionsProps {
   effectiveHeaders: HeaderObject[];
@@ -60,27 +64,39 @@ export const useTableDimensions = ({
     return maxHeaderDepth * (headerHeight ?? rowHeight) + borderWidth;
   }, [maxHeaderDepth, headerHeight, rowHeight]);
 
-  // Update container width when the table container changes
+  // Publish container width only after resize activity settles so a continuous
+  // layout animation (e.g. collapsible nav) triggers one React update, not one
+  // per animation frame.
   useLayoutEffect(() => {
-    const updateContainerWidth = () => {
-      if (tableBodyContainerRef.current) {
-        setContainerWidth(tableBodyContainerRef.current.clientWidth);
-      }
+    const publishWidth = (nextWidth: number) => {
+      setContainerWidth((prev) => {
+        if (prev === nextWidth) return prev;
+        recordContainerWidthStateUpdate();
+        return nextWidth;
+      });
     };
 
-    updateContainerWidth();
+    const publisher = createSettledResizePublisher(publishWidth);
 
-    // Set up a ResizeObserver to watch for container size changes
+    const readWidth = () => tableBodyContainerRef.current?.clientWidth ?? 0;
+
+    const initialWidth = readWidth();
+    if (initialWidth > 0) {
+      publisher.publishImmediately(initialWidth);
+    }
+
     let resizeObserver: ResizeObserver | null = null;
-    if (tableBodyContainerRef.current) {
-      resizeObserver = new ResizeObserver(updateContainerWidth);
-      resizeObserver.observe(tableBodyContainerRef.current);
+    const element = tableBodyContainerRef.current;
+    if (element && typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(() => {
+        publisher.notifyFromObserver(readWidth);
+      });
+      resizeObserver.observe(element);
     }
 
     return () => {
-      if (resizeObserver) {
-        resizeObserver.disconnect();
-      }
+      resizeObserver?.disconnect();
+      publisher.destroy();
     };
   }, [tableBodyContainerRef]);
 
