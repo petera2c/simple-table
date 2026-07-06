@@ -43,17 +43,23 @@ export const createExpandIcon = (
     // derive the expand-state key with `expandStateKey` so toggles match
     // `flattenRows` / `isRowExpanded` after reorder.
     //
-    // We deliberately keep the closure's `row`, `rowIndexPath`, and `rowPath`
-    // for the consumer callback below: `rowIndexPath` is documented across
-    // every framework demo as the index into the consumer's source-data array
+    // We deliberately keep the closure's `rowIndexPath` and `rowPath` for the
+    // consumer callback below: `rowIndexPath` is documented across every
+    // framework demo as the index into the consumer's source-data array
     // (e.g. `rows[rowIndexPath[0]] = { ...rows[rowIndexPath[0]], children }`),
     // and the consumer's array is not reordered by sort. Using the live
     // post-sort positional index here would silently write nested data into
     // the wrong row. The closure still carries the source index because the
     // cell DOM was created during the pre-sort initial render.
+    //
+    // `row` itself must come from the live ref: it is refreshed on every render
+    // in `updateBodyCellElement` with the current row object (including
+    // lazy-loaded children). The closure's `cell.row` is frozen from the
+    // render that first created the chevron DOM node.
     const cellElement = outerContainer.closest<HTMLElement>("[data-row-id]");
     const liveRef = cellElement ? cellLiveRefMap.get(cellElement) : undefined;
     const liveTableRow = liveRef?.tableRow ?? cell.tableRow;
+    const liveRow = liveRef?.row ?? cell.row;
     const expandRowKey = expandStateKey(liveTableRow);
     const depth = liveTableRow.depth;
 
@@ -103,7 +109,7 @@ export const createExpandIcon = (
     }
 
     // Call onRowGroupExpand callback if provided (for both expand and collapse)
-    if (context.onRowGroupExpand && cell.tableRow.rowIndexPath && context.rowGrouping) {
+    if (context.onRowGroupExpand && liveTableRow.rowIndexPath && context.rowGrouping) {
       const triggerSection = cell.header.pinned;
 
       const setLoading = (loading: boolean) => {
@@ -141,13 +147,13 @@ export const createExpandIcon = (
       } as any;
 
       context.onRowGroupExpand({
-        row: cell.row,
+        row: liveRow,
         depth,
         event: syntheticEvent,
         groupingKey: context.rowGrouping[depth],
         isExpanded: willBeExpanded,
-        rowIndexPath: cell.tableRow.rowIndexPath,
-        rowIdPath: cell.tableRow.rowPath,
+        rowIndexPath: liveTableRow.rowIndexPath,
+        rowIdPath: liveTableRow.rowPath,
         groupingKeys: context.rowGrouping,
         setLoading,
         setError,

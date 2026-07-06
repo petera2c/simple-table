@@ -458,6 +458,7 @@ export class SimpleTableVanilla {
   private beginAccordionAnimation(axis: AccordionAxis): void {
     if (!this.animationCoordinator.isEnabled()) return;
     if (axis === null) return;
+    if (axis === "vertical" && (this.config.rowGrouping?.length ?? 0) > 0) return;
     this.captureAnimationSnapshot();
     // Record which columns are renderable in the current (pre-change) layout so
     // the grow-from-zero gate can tell a freshly-expanded column apart from one

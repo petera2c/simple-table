@@ -11,6 +11,25 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v3_9_1: ChangelogEntry = {
+  version: "3.9.1",
+  date: "2026-07-06",
+  title: "Smoother layout during nav resize",
+  description: "Tables no longer relayout on every frame while the container animates.",
+  changes: [
+    {
+      type: "improvement",
+      description:
+        "Container resize during animated layout shifts (e.g. a collapsing sidebar) is coalesced so the table relayouts once after the transition instead of on every frame.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Fixed onRowGroupExpand passing a stale row snapshot when re-expanding a lazy-loaded group, which caused unnecessary refetches, loading states, and sibling row animation glitches on the second expand.",
+    },
+  ],
+};
+
 export const v3_9_0: ChangelogEntry = {
   version: "3.9.0",
   date: "2026-07-05",
@@ -19,8 +38,7 @@ export const v3_9_0: ChangelogEntry = {
   changes: [
     {
       type: "bugfix",
-      description:
-        "Sorting mid-scroll no longer animates padding-band rows through the viewport.",
+      description: "Sorting mid-scroll no longer animates padding-band rows through the viewport.",
     },
     {
       type: "bugfix",
@@ -2074,6 +2092,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_9_1,
   v3_9_0,
   v3_8_9,
   v3_8_7,

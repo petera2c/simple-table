@@ -26,12 +26,21 @@ export interface DimensionManagerState {
 
 type StateChangeCallback = (state: DimensionManagerState) => void;
 
+/**
+ * Wait this long after the last container-width ResizeObserver tick before
+ * notifying subscribers. Coalesces CSS-transition / animated layout shifts
+ * (e.g. a collapsible nav) into a single trailing update instead of one full
+ * table render per animation frame.
+ */
+export const CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS = 50;
+
 export class DimensionManager {
   private config: DimensionManagerConfig;
   private state: DimensionManagerState;
   private subscribers: Set<StateChangeCallback> = new Set();
   private resizeObserver: ResizeObserver | null = null;
   private rafId: number | null = null;
+  private resizeNotifyDebounceId: ReturnType<typeof setTimeout> | null = null;
   /** Set when applyContainerWidthSync updates state before any subscriber exists. */
   private initialNotifyPending = false;
 
@@ -129,6 +138,22 @@ export class DimensionManager {
     return Math.max(0, totalHeightPx - rowHeight);
   }
 
+  private cancelPendingResizeNotify(): void {
+    if (this.resizeNotifyDebounceId !== null) {
+      clearTimeout(this.resizeNotifyDebounceId);
+      this.resizeNotifyDebounceId = null;
+    }
+  }
+
+  /** Trailing debounce for animated / continuous container resizes. */
+  private scheduleResizeNotify(): void {
+    this.cancelPendingResizeNotify();
+    this.resizeNotifyDebounceId = setTimeout(() => {
+      this.resizeNotifyDebounceId = null;
+      this.notifySubscribers();
+    }, CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS);
+  }
+
   private observeContainer(containerElement: HTMLElement): void {
     const updateContainerWidth = () => {
       // Defer notification to the next animation frame to prevent ResizeObserver
@@ -148,9 +173,12 @@ export class DimensionManager {
             containerWidth: newWidth,
           };
         }
-        if (widthChanged || this.initialNotifyPending) {
+        if (this.initialNotifyPending) {
           this.initialNotifyPending = false;
+          this.cancelPendingResizeNotify();
           this.notifySubscribers();
+        } else if (widthChanged) {
+          this.scheduleResizeNotify();
         }
       });
     };
@@ -277,6 +305,7 @@ export class DimensionManager {
       cancelAnimationFrame(this.rafId);
       this.rafId = null;
     }
+    this.cancelPendingResizeNotify();
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;

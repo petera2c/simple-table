@@ -189,7 +189,7 @@ export const ColumnExpand_IncomingCellsStartAtZeroWidth = {
 };
 
 // ============================================================================
-// ROW GROUP COLLAPSE / EXPAND ANIMATIONS
+// ROW GROUP COLLAPSE / EXPAND — NO ANIMATION
 // ============================================================================
 
 const GROUPED_DATA: Row[] = [
@@ -219,7 +219,7 @@ const ROW_GROUPING_HEADERS: HeaderObject[] = [
   { accessor: "salary", label: "Salary", width: 140, type: "number" },
 ];
 
-export const RowExpand_AddsAccordionClass = {
+export const RowExpand_NoAccordionClass = {
   tags: ["row", "expand", "css-window"],
   render: () => {
     const { wrapper, h2 } = renderVanillaTable(ROW_GROUPING_HEADERS, GROUPED_DATA, {
@@ -229,10 +229,10 @@ export const RowExpand_AddsAccordionClass = {
       expandAll: false,
       animations: { enabled: true, duration: 200 },
     });
-    h2.textContent = "Row group expand: accordion class active during animation";
+    h2.textContent = "Row group expand: no accordion class when rowGrouping is set";
     addParagraph(
       wrapper,
-      "Click chevron on a department row. The `.st-accordion-animating` class should appear and then be removed after the duration.",
+      "Click chevron on a department row. With row grouping configured, expand/collapse should not add `.st-accordion-animating` even when animations are enabled.",
     );
     return wrapper;
   },
@@ -245,13 +245,13 @@ export const RowExpand_AddsAccordionClass = {
     expect(expandIcon).toBeTruthy();
     expandIcon!.click();
 
-    expect(root!.classList.contains(ACCORDION_CLASS)).toBe(true);
+    expect(root!.classList.contains(ACCORDION_CLASS)).toBe(false);
     await sleep(380);
     expect(root!.classList.contains(ACCORDION_CLASS)).toBe(false);
   },
 };
 
-export const RowExpand_IncomingCellsStartAtZeroHeight = {
+export const RowExpand_NoAccordionGrow = {
   tags: ["row", "expand", "size-grow"],
   render: () => {
     const { wrapper, h2 } = renderVanillaTable(ROW_GROUPING_HEADERS, GROUPED_DATA, {
@@ -259,13 +259,12 @@ export const RowExpand_IncomingCellsStartAtZeroHeight = {
       height: "320px",
       rowGrouping: ["members"],
       expandAll: false,
-      // Long duration so the test can sample mid-animation.
       animations: { enabled: true, duration: 600 },
     });
-    h2.textContent = "Row expand: incoming row cells start at height 0";
+    h2.textContent = "Row expand: incoming cells render at full height immediately";
     addParagraph(
       wrapper,
-      "Mid-animation, the just-revealed member cells should still have a partial height inline.",
+      "Newly revealed member cells should not carry the accordion-grow marker or start at height 0.",
     );
     return wrapper;
   },
@@ -280,32 +279,18 @@ export const RowExpand_IncomingCellsStartAtZeroHeight = {
       Array.from(cellsBefore).map((c) => c.getAttribute("data-row-index")),
     ).size;
 
-    // Toggle expansion on the first department.
     const expandIcon = findFirstBodyExpandIcon(canvasElement, 0);
     expect(expandIcon).toBeTruthy();
     expandIcon!.click();
 
-    // Sample synchronously: new cells exist with 0 height and the
-    // accordion-grow marker, before any rAF has run to write the final size.
-    const cellsMid = bodyContainer!.querySelectorAll(".st-cell[data-row-index]");
-    const rowCountMid = new Set(Array.from(cellsMid).map((c) => c.getAttribute("data-row-index")))
-      .size;
-    expect(rowCountMid).toBeGreaterThan(rowCountBefore);
+    const cellsAfter = bodyContainer!.querySelectorAll(".st-cell[data-row-index]");
+    const rowCountAfter = new Set(
+      Array.from(cellsAfter).map((c) => c.getAttribute("data-row-index")),
+    ).size;
+    expect(rowCountAfter).toBeGreaterThan(rowCountBefore);
 
-    const growingCells = Array.from(
-      bodyContainer!.querySelectorAll<HTMLElement>('.st-cell[data-st-accordion-grow="vertical"]'),
-    );
-    expect(growingCells.length).toBeGreaterThan(0);
-    for (const c of growingCells) {
-      expect(c.style.height).toBe("0px");
-    }
-
-    // After the duration, the marker should be cleared and heights non-zero.
-    await sleep(900);
-    for (const c of growingCells) {
-      expect(c.dataset.stAccordionGrow).toBeUndefined();
-      expect(parseFloat(c.style.height || "0")).toBeGreaterThan(0);
-    }
+    const growingCells = bodyContainer!.querySelectorAll('.st-cell[data-st-accordion-grow="vertical"]');
+    expect(growingCells.length).toBe(0);
   },
 };
 

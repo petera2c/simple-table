@@ -3,6 +3,8 @@
  *
  * The animation coordinator runs FLIP-style transitions when cells move between
  * positions. All fields are optional; omit the prop entirely to use defaults.
+ *
+ * Row group expand/collapse never animates when `rowGrouping` is configured.
  */
 export interface AnimationsConfig {
   /** Master toggle. Defaults to `true`. When `false`, no other field has effect. */
