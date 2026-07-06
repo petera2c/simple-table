@@ -654,6 +654,61 @@ export class AnimationCoordinator {
   }
 
   /**
+   * Whether the cell currently paints inside the body scrollers' clip rects.
+   * Outgoing retain decisions use this as a fallback when {@link shouldAnimateTransition}
+   * rejects a cell based on `style.top`/`style.left` alone: virtualization padding
+   * rows can sit with their leading edge outside the scroll band while still being
+   * partially visible on screen (common at the bottom when scrolled to the end).
+   */
+  isCellRenderedInScrollerViewport(element: HTMLElement, container: HTMLElement): boolean {
+    const cellRect = element.getBoundingClientRect();
+    if (cellRect.width === 0 && cellRect.height === 0) return false;
+
+    const hScrollerRect = container.getBoundingClientRect();
+    const horizontalVisible =
+      cellRect.right > hScrollerRect.left && cellRect.left < hScrollerRect.right;
+
+    const vScroller = this.externalVerticalScroll
+      ? null // external mode: vertical clip follows the page viewport below
+      : container.parentElement;
+    if (!vScroller) {
+      // Fall back to the horizontal section clip only.
+      return horizontalVisible;
+    }
+    const vScrollerRect = vScroller.getBoundingClientRect();
+    const verticalVisible =
+      cellRect.bottom > vScrollerRect.top && cellRect.top < vScrollerRect.bottom;
+
+    return horizontalVisible && verticalVisible;
+  }
+
+  /**
+   * Whether an outgoing DOM cell at a vertical scroll extreme (top or bottom of
+   * the dataset) should be retained even when {@link shouldAnimateTransition}
+   * rejects it on leading-edge grounds. Virtualization keeps a few overscan
+   * rows mounted above/below the strict viewport at max scroll; those rows
+   * must still slide out as ghosts when a sort evicts them.
+   */
+  shouldRetainDomCellAtScrollExtrema(cellId: string, container: HTMLElement): boolean {
+    const entry = this.snapshot?.get(cellId);
+    // Live DOM cells always have a source container; preLayout-only entries do not.
+    if (!entry || entry.sourceContainer === null) return false;
+
+    const metrics = this.getScrollerMetrics(container);
+    if (metrics.scrollHeight <= metrics.clientHeight) return false;
+
+    const atBottom =
+      metrics.scrollTop + metrics.clientHeight >= metrics.scrollHeight - 1;
+    const atTop = metrics.scrollTop <= 1;
+    if (!atBottom && !atTop) return false;
+
+    const slack = metrics.clientHeight;
+    if (atBottom && entry.styleTop >= metrics.scrollTop - slack) return true;
+    if (atTop && entry.styleTop <= metrics.scrollTop + slack) return true;
+    return false;
+  }
+
+  /**
    * Hand a cell that the renderer would otherwise remove to the coordinator.
    * The coordinator updates its absolute positioning to the post-change layout
    * and will animate it from the snapshotted pre-change visual position to
@@ -1054,16 +1109,44 @@ export class AnimationCoordinator {
       const vpCellHeightForClamp =
         parsePx(element.style.height) || element.offsetHeight || cellHeight || 0;
       let beforeTopForFlip = beforeTopClipped;
-      if (
-        !isRetained &&
-        vpMetricsForClamp &&
-        !isRowTopInVerticalViewport(beforeTopClipped, vpCellHeightForClamp, vpMetricsForClamp) &&
-        isRowTopInVerticalViewport(currentTop, vpCellHeightForClamp, vpMetricsForClamp)
-      ) {
+      const willBeVisibleYForClamp = vpMetricsForClamp
+        ? isRowTopInVerticalViewport(
+            currentTop,
+            vpCellHeightForClamp,
+            vpMetricsForClamp,
+          )
+        : false;
+      // PreLayout snapshot entries (sourceContainer === null) describe conceptual
+      // positions for rows that were NOT in the DOM — even when that position
+      // falls inside the viewport band. Treat them as incoming slide-ins.
+      const isPreLayoutIncoming =
+        !isRetained && before.sourceContainer === null && !before.fromDom;
+      if (!isRetained && vpMetricsForClamp && willBeVisibleYForClamp) {
         const vpTop = vpMetricsForClamp.scrollTop;
         const vpBottom = vpMetricsForClamp.scrollTop + vpMetricsForClamp.clientHeight;
-        beforeTopForFlip =
-          currentTop >= beforeTopClipped ? vpTop - vpCellHeightForClamp : vpBottom;
+        if (
+          isPreLayoutIncoming &&
+          (Math.abs(beforeTopClipped - currentTop) < MIN_DELTA ||
+            isRowTopInVerticalViewport(
+              beforeTopClipped,
+              vpCellHeightForClamp,
+              vpMetricsForClamp,
+            ))
+        ) {
+          // Band entry without a real prior DOM position — slide from the
+          // nearest viewport edge so the first visible row animates like peers.
+          beforeTopForFlip =
+            currentTop >= beforeTopClipped ? vpTop - vpCellHeightForClamp : vpBottom;
+        } else if (
+          !isRowTopInVerticalViewport(
+            beforeTopClipped,
+            vpCellHeightForClamp,
+            vpMetricsForClamp,
+          )
+        ) {
+          beforeTopForFlip =
+            currentTop >= beforeTopClipped ? vpTop - vpCellHeightForClamp : vpBottom;
+        }
       }
 
       // Container-shift correction. The FLIP delta above is computed in
@@ -1117,29 +1200,6 @@ export class AnimationCoordinator {
       const dyRaw = beforeTopForFlip - currentTop;
       let dx = dxRaw - containerShiftX;
       let dy = dyRaw - containerShiftY;
-
-      // Skip FLIP along an axis when neither endpoint intersects the visible
-      // viewport on that axis. Padding-band rows/columns otherwise traverse
-      // the viewport during a mid-scroll sort/reorder even though the user
-      // never sees them at rest — producing a wall of extra animating rows.
-      const vpMetrics = playMetrics ?? this.getScrollerMetrics(container);
-      const vpCellHeight =
-        parsePx(element.style.height) || element.offsetHeight || cellHeight || 0;
-      const vpCellWidth = parsePx(element.style.width) || element.offsetWidth || cellWidth || 0;
-      if (
-        Math.abs(dyRaw) >= MIN_DELTA &&
-        !isRowTopInVerticalViewport(beforeTopForFlip, vpCellHeight, vpMetrics) &&
-        !isRowTopInVerticalViewport(currentTop, vpCellHeight, vpMetrics)
-      ) {
-        dy = 0;
-      }
-      if (
-        Math.abs(dxRaw) >= MIN_DELTA &&
-        !isColumnLeftInHorizontalViewport(beforeLeftClipped, vpCellWidth, vpMetrics) &&
-        !isColumnLeftInHorizontalViewport(currentLeft, vpCellWidth, vpMetrics)
-      ) {
-        dx = 0;
-      }
 
       if (Math.abs(dx) < MIN_DELTA && Math.abs(dy) < MIN_DELTA) {
         // No visual movement — if this was a retained cell with no movement

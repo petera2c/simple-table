@@ -399,15 +399,18 @@ export const renderBodyCells = (
         const oldLeft = parseFloat(element.style.left || "0");
         const cellHeight = newPos.height || parseFloat(element.style.height || "0");
         const cellWidth = newPos.width || parseFloat(element.style.width || "0");
-        const shouldAnimate = animationCoordinator.shouldAnimateTransition({
-          beforeTop: oldTop,
-          afterTop: newPos.top,
-          beforeLeft: oldLeft,
-          afterLeft: newPos.left,
-          cellHeight,
-          cellWidth,
-          container,
-        });
+        const shouldAnimate =
+          animationCoordinator.shouldAnimateTransition({
+            beforeTop: oldTop,
+            afterTop: newPos.top,
+            beforeLeft: oldLeft,
+            afterLeft: newPos.left,
+            cellHeight,
+            cellWidth,
+            container,
+          }) ||
+          animationCoordinator.isCellRenderedInScrollerViewport(element, container) ||
+          animationCoordinator.shouldRetainDomCellAtScrollExtrema(cellId, container);
         if (shouldAnimate) {
           // Slide the cell to its new conceptual position (which may be
           // off-screen — the body's overflow clip handles the visual cutoff)

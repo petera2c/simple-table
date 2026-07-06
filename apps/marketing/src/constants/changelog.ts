@@ -11,6 +11,28 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v3_9_0: ChangelogEntry = {
+  version: "3.9.0",
+  date: "2026-07-05",
+  title: "Mid-scroll sort animation fixes",
+  description: "Sort animations while scrolled are cleaner and more complete.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Sorting mid-scroll no longer animates padding-band rows through the viewport.",
+    },
+    {
+      type: "bugfix",
+      description: "Fixed empty pinned cells after sorting while scrolled.",
+    },
+    {
+      type: "bugfix",
+      description: "The first visible row now animates on sort like other rows.",
+    },
+  ],
+};
+
 export const v3_8_9: ChangelogEntry = {
   version: "3.8.9",
   date: "2026-07-04",
@@ -2052,6 +2074,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_9_0,
   v3_8_9,
   v3_8_7,
   v3_8_6,
