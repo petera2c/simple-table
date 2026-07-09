@@ -20,7 +20,7 @@ import { buildColumnWindow } from "../../utils/columnVirtualizationUtils";
 import RowIndices from "../../types/RowIndices";
 import TableBodyProps from "../../types/TableBodyProps";
 import { rowIdToString } from "../../utils/rowUtils";
-import { CONTAINER_RESIZE_SETTLE_MS } from "../../hooks/resizeCoalescing";
+import { COLUMN_VIEWPORT_WIDTH_SETTLE_MS } from "../../utils/columnViewportWidth";
 
 // Number of extra columns to render on each side of the horizontal viewport so that
 // fast horizontal scrolling doesn't reveal blank columns before the next frame.
@@ -252,7 +252,7 @@ const TableBody = ({
       columnWidthSettleRef.current = setTimeout(() => {
         columnWidthSettleRef.current = null;
         measure(true);
-      }, CONTAINER_RESIZE_SETTLE_MS);
+      }, COLUMN_VIEWPORT_WIDTH_SETTLE_MS);
     };
 
     // Measure synchronously so the first paint already has the correct window.
@@ -272,13 +272,17 @@ const TableBody = ({
     const resizeObserver =
       typeof ResizeObserver !== "undefined"
         ? new ResizeObserver(() => {
+            // Always arm the settled-width timeout first. Previously we
+            // returned early when a horizontal-scroll rAF was pending and
+            // skipped scheduleWidthSettle entirely — columnViewport.width
+            // stayed stale after resize, so rows recycled on vertical
+            // scroll-back rendered blank until another resize remounted them.
+            scheduleWidthSettle();
             if (hScrollRafRef.current !== null) return;
             hScrollRafRef.current = requestAnimationFrame(() => {
               hScrollRafRef.current = null;
-              // Track scroll position immediately; defer width so column
-              // virtualization does not recompute every nav-animation frame.
+              // Track scroll position immediately; width still waits for settle.
               measure(false);
-              scheduleWidthSettle();
             });
           })
         : null;
