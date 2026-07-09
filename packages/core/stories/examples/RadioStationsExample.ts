@@ -270,6 +270,7 @@ function createClientFooter(props: FooterRendererProps): HTMLElement {
 export const radioStationsExampleDefaults: Partial<UniversalVanillaArgs> = {
   columnReordering: true,
   columnResizing: true,
+  autoExpandColumns: true,
   editColumns: true,
   theme: "custom",
   customTheme: {
@@ -312,6 +313,7 @@ export function renderRadioStationsExample(args?: Partial<UniversalVanillaArgs>)
     customTheme: options.customTheme,
     columnReordering: options.columnReordering,
     columnResizing: options.columnResizing,
+    autoExpandColumns: options.autoExpandColumns,
     editColumns: options.editColumns,
     editColumnsInitOpen: options.editColumnsInitOpen,
     columnEditorConfig: {

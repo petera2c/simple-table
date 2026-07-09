@@ -275,6 +275,7 @@ const RadioStationsDemo = ({
         customTheme={{ rowHeight: ROW_HEIGHT, headerHeight: HEADER_HEIGHT }}
         columnReordering
         columnResizing
+        autoExpandColumns
         editColumns
         columnEditorConfig={{
           text: "All Columns",
