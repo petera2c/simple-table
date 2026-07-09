@@ -1,6 +1,6 @@
 {
   "name": "@simple-table/svelte",
-  "version": "3.9.2",
+  "version": "3.9.3",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/types/index.d.ts",
@@ -53,7 +53,7 @@
     "typescript": "^5.0.0",
     "vitest": "^2.1.9"
   },
-  "description": "Svelte adapter for simple-table-core — use the Simple Table data grid with full Svelte component support for renderers.",
+  "description": "Svelte adapter for simple-table-core \u2014 use the Simple Table data grid with full Svelte component support for renderers.",
   "repository": {
     "type": "git",
     "url": "https://github.com/petera2c/simple-table.git"

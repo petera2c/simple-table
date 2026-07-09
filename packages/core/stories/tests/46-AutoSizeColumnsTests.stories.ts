@@ -379,10 +379,11 @@ export const AutoSizeMultilineFormattedValueUsesLongestLine = {
       },
     ];
     const data = makeRows(20, (i) => ({ id: i + 1, address: "raw" }));
+    // Four wrapped lines (~14px font) need ~96px so nothing is clipped.
     const { wrapper } = renderVanillaTable(headers, data, {
       getRowId: (params: any) => String(params.row.id),
-      height: "320px",
-      rowHeight: 72,
+      height: "420px",
+      customTheme: { rowHeight: 96 },
     });
 
     // Match the consumer setup where formatted newlines are allowed to wrap.
@@ -391,6 +392,8 @@ export const AutoSizeMultilineFormattedValueUsesLongestLine = {
       .simple-table-root .st-cell-content {
         white-space: pre-line;
         text-overflow: clip;
+        align-items: flex-start;
+        line-height: 1.35;
       }
     `;
     wrapper.appendChild(style);
@@ -1438,6 +1441,75 @@ export const HorizontalScrollbarShowsWhenHeaderOverflowsEmptyState = {
       scrollbar,
       "horizontal scrollbar should show when header content overflows, even with no rows",
     ).toBeTruthy();
+  },
+};
+
+/**
+ * Empty tables still need a real body scrollport: wheel/trackpad over the
+ * "No rows to display" area (and the horizontal scrollbar) must scroll the
+ * headers. Replacing the body with a non-scrolling empty wrapper breaks that.
+ */
+export const EmptyStateBodyScrollSyncsWithHeader = {
+  parameters: { tags: ["empty-state-body-scroll-sync"] },
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 120, type: "number" },
+      { accessor: "name", label: "Full Legal Name", width: 220, type: "string" },
+      { accessor: "email", label: "Work Email Address", width: 260, type: "string" },
+      { accessor: "dept", label: "Department Name", width: 200, type: "string" },
+      { accessor: "role", label: "Job Role Title", width: 200, type: "string" },
+    ];
+    const wrapper = document.createElement("div") as HTMLDivElement & {
+      _table?: SimpleTableVanilla;
+    };
+    wrapper.style.padding = "2rem";
+    const tableContainer = document.createElement("div");
+    tableContainer.style.width = "360px";
+    wrapper.appendChild(tableContainer);
+    const table = new SimpleTableVanilla(tableContainer, {
+      defaultHeaders: headers,
+      rows: [],
+      getRowId: (params: any) => String(params.row.id),
+      height: "280px",
+    });
+    table.mount();
+    wrapper._table = table;
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await wait(50);
+
+    const emptyWrapper = canvasElement.querySelector(".st-empty-state-wrapper");
+    expect(emptyWrapper, "empty state should still render").toBeTruthy();
+
+    const bodyMain = canvasElement.querySelector(".st-body-main") as HTMLElement | null;
+    expect(
+      bodyMain,
+      "empty tables must keep a .st-body-main scrollport so body/scrollbar can scroll",
+    ).toBeTruthy();
+    expect(bodyMain!.scrollWidth).toBeGreaterThan(bodyMain!.clientWidth + 1);
+
+    const headerMain = canvasElement.querySelector(".st-header-main") as HTMLElement;
+    expect(headerMain).toBeTruthy();
+
+    // Scroll the body (as a wheel/trackpad over the empty area would) and
+    // expect the header to follow via SectionScrollController.
+    bodyMain!.scrollLeft = 120;
+    bodyMain!.dispatchEvent(new Event("scroll", { bubbles: true }));
+    await wait(40);
+    expect(headerMain.scrollLeft).toBe(120);
+
+    // Scrollbar thumb must drive the same sync.
+    const scrollbarMiddle = canvasElement.querySelector(
+      ".st-horizontal-scrollbar-middle",
+    ) as HTMLElement | null;
+    expect(scrollbarMiddle, "horizontal scrollbar middle pane should exist").toBeTruthy();
+    scrollbarMiddle!.scrollLeft = 200;
+    scrollbarMiddle!.dispatchEvent(new Event("scroll", { bubbles: true }));
+    await wait(40);
+    expect(headerMain.scrollLeft).toBe(200);
+    expect(bodyMain!.scrollLeft).toBe(200);
   },
 };
 

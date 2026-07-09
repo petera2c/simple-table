@@ -2,10 +2,24 @@
  * Shared helpers for vanilla stories (examples and tests).
  */
 import { SimpleTableVanilla } from "../src/index";
-import type { HeaderObject, Row } from "../src/index";
+import type { HeaderObject, Row, SimpleTableConfig } from "../src/index";
 
 /** Instance type of the table (class is a value; use InstanceType<typeof C> for the type of instances). */
 type TableInstance = InstanceType<typeof SimpleTableVanilla>;
+
+/**
+ * Config passed through to {@link SimpleTableVanilla}, minus `defaultHeaders` /
+ * `rows` which are supplied as the first two arguments of
+ * {@link renderVanillaTable}.
+ *
+ * Keys are constrained to {@link SimpleTableConfig} so typos and misplaced
+ * props (e.g. top-level `rowHeight` instead of `customTheme.rowHeight`) fail
+ * at compile time. Values stay loose (`unknown`) so story callbacks that are
+ * slightly narrower than the public types still typecheck.
+ */
+export type RenderVanillaTableOptions = {
+  [K in keyof Omit<SimpleTableConfig, "defaultHeaders" | "rows">]?: unknown;
+};
 
 export interface RenderVanillaTableResult {
   wrapper: HTMLDivElement & { _table?: TableInstance };
@@ -17,7 +31,7 @@ export interface RenderVanillaTableResult {
 export function renderVanillaTable(
   headers: HeaderObject[],
   data: Row[],
-  options: Record<string, unknown> = {}
+  options: RenderVanillaTableOptions = {},
 ): RenderVanillaTableResult {
   const wrapper = document.createElement("div") as HTMLDivElement & {
     _table?: TableInstance;
@@ -31,11 +45,13 @@ export function renderVanillaTable(
   const tableContainer = document.createElement("div");
   wrapper.appendChild(tableContainer);
 
+  // Keys are already constrained by RenderVanillaTableOptions; cast values
+  // through to the constructor (stories often use slightly narrower callbacks).
   const table = new SimpleTableVanilla(tableContainer, {
     defaultHeaders: headers,
     rows: data,
     ...options,
-  });
+  } as SimpleTableConfig);
   table.mount();
   wrapper._table = table;
 

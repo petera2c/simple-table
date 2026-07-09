@@ -11,6 +11,20 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v3_9_3: ChangelogEntry = {
+  version: "3.9.3",
+  date: "2026-07-08",
+  title: "Empty table horizontal scroll",
+  description: "Empty tables can scroll horizontally again from the body and scrollbar.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Empty tables keep a body scrollport so wheel/trackpad over the empty area and the horizontal scrollbar sync with the headers.",
+    },
+  ],
+};
+
 export const v3_9_2: ChangelogEntry = {
   version: "3.9.2",
   date: "2026-07-08",
@@ -2121,6 +2135,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_9_3,
   v3_9_2,
   v3_9_1,
   v3_9_0,
