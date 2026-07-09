@@ -4,6 +4,7 @@ import {
   EnvironmentInjector,
   type Type,
 } from "@angular/core";
+import type { MountRegistry } from "../MountRegistry";
 
 /**
  * Wraps an Angular standalone component into a function that returns an
@@ -15,13 +16,19 @@ import {
  * to the change detection tree and trigger a synchronous flush before
  * returning the element to the vanilla rendering pipeline.
  *
+ * Pass an optional {@link MountRegistry} so core's `onRendererHostDiscard` can
+ * destroy the ComponentRef (including any CDK Overlay / floating UI) when the
+ * host is discarded. The table adapter always supplies a registry; the public
+ * helper used for one-shot static slots (e.g. `tableEmptyStateRenderer`) may omit it.
+ *
  * These are injected automatically when the consumer uses
  * `provideSimpleTable()` in their application providers.
  */
 export function wrapAngularRenderer<P extends object>(
   component: Type<P>,
   appRef: ApplicationRef,
-  injector: EnvironmentInjector
+  injector: EnvironmentInjector,
+  registry?: MountRegistry,
 ): (props: Partial<P>) => HTMLElement {
   return (props: Partial<P>): HTMLElement => {
     const el = document.createElement("div");
@@ -40,6 +47,11 @@ export function wrapAngularRenderer<P extends object>(
     // Synchronous change detection flush — ensures the rendered output is
     // in the DOM before we return the element to the vanilla pipeline.
     componentRef.changeDetectorRef.detectChanges();
+
+    registry?.register(el, () => {
+      appRef.detachView(componentRef.hostView);
+      componentRef.destroy();
+    });
 
     return el;
   };

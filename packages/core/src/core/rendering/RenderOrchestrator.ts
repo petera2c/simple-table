@@ -752,7 +752,14 @@ export class RenderOrchestrator {
     effectiveHeaders: HeaderObject[],
     context: RenderContext,
   ): void {
-    if (!context.mainBodyRef.current || !tableBodyContainer) return;
+    // Body may be absent in empty state; TableRenderer falls back to the header
+    // scrollport so overflow still shows a horizontal scrollbar.
+    if (
+      (!context.mainBodyRef.current && !context.mainHeaderRef.current) ||
+      !tableBodyContainer
+    ) {
+      return;
+    }
 
     const deps = this.buildRendererDeps(effectiveHeaders, context);
     this.tableRenderer.renderHorizontalScrollbar(

@@ -98,7 +98,10 @@ export const removeFloatingHeaderTooltips = (fromElement: HTMLElement) => {
   root?.querySelectorAll(".st-tooltip").forEach((el) => el.remove());
 };
 
-export const cleanupHeaderCellRendering = (container?: HTMLElement) => {
+export const cleanupHeaderCellRendering = (
+  container?: HTMLElement,
+  onHostDiscard?: (host: HTMLElement) => void,
+) => {
   // No longer need to clean up all listeners globally
   // Event listeners are now tracked per element via WeakMap
   // and will be garbage collected when elements are removed
@@ -109,6 +112,9 @@ export const cleanupHeaderCellRendering = (container?: HTMLElement) => {
     const renderedCells = getRenderedCells(container);
     // Remove all rendered cell elements from the DOM
     renderedCells.forEach((element) => {
+      // Tear down any renderer subtree (React portal, etc.) mounted into the
+      // header before it's permanently removed, so the adapter doesn't orphan it.
+      onHostDiscard?.(element);
       element.remove();
     });
     renderedCells.clear();

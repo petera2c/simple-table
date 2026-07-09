@@ -2,6 +2,7 @@ import { defineComponent, onMounted, onUnmounted, onUpdated, ref, h, camelize } 
 import { SimpleTableVanilla } from "simple-table-core";
 import type { TableAPI } from "simple-table-core";
 import { buildVanillaConfig } from "./buildVanillaConfig";
+import { MountRegistry } from "./MountRegistry";
 import type { SimpleTableVueProps, TableInstance } from "./types";
 
 /**
@@ -53,24 +54,28 @@ const SimpleTable = defineComponent({
   setup(_props, { attrs, expose }) {
     const containerRef = ref<HTMLDivElement | null>(null);
     let instance: TableInstance | null = null;
+    const registry = new MountRegistry();
 
     onMounted(() => {
       if (!containerRef.value) return;
 
       instance = new SimpleTableVanilla(
         containerRef.value,
-        buildVanillaConfig(camelizeAttrs(attrs) as unknown as SimpleTableVueProps)
+        buildVanillaConfig(camelizeAttrs(attrs) as unknown as SimpleTableVueProps, registry),
       ) as unknown as TableInstance;
       instance.mount();
     });
 
     onUpdated(() => {
-      instance?.update(buildVanillaConfig(camelizeAttrs(attrs) as unknown as SimpleTableVueProps));
+      instance?.update(
+        buildVanillaConfig(camelizeAttrs(attrs) as unknown as SimpleTableVueProps, registry),
+      );
     });
 
     onUnmounted(() => {
       instance?.destroy();
       instance = null;
+      registry.clear();
     });
 
     // Expose TableAPI methods via template ref so consumers can call

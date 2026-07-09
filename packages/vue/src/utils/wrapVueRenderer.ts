@@ -1,4 +1,5 @@
 import { render, h, type Component, type VNode } from "vue";
+import type { MountRegistry } from "../MountRegistry";
 
 /**
  * Wraps a Vue 3 component into a function that returns an HTMLElement, matching
@@ -6,13 +7,17 @@ import { render, h, type Component, type VNode } from "vue";
  *
  * Uses Vue 3's low-level render() + h() which is synchronous, so the element
  * is fully populated before it is returned to the vanilla rendering pipeline.
+ * The mount is registered so core's `onRendererHostDiscard` can unmount it
+ * (including any `<Teleport>` / floating UI) when the host is discarded.
  */
 export function wrapVueRenderer<P extends object>(
-  component: Component
+  registry: MountRegistry,
+  component: Component,
 ): (props: P) => HTMLElement {
   return (props: P): HTMLElement => {
     const el = document.createElement("div");
     render(h(component, props as any), el);
+    registry.register(el, () => render(null, el));
     return el;
   };
 }
@@ -21,9 +26,10 @@ export function wrapVueRenderer<P extends object>(
  * Renders a static VNode into an HTMLElement.
  * Used for props like tableEmptyStateRenderer that are not called with arguments.
  */
-export function wrapVueNode(node: VNode): HTMLElement {
+export function wrapVueNode(registry: MountRegistry, node: VNode): HTMLElement {
   const el = document.createElement("div");
   render(node, el);
+  registry.register(el, () => render(null, el));
   return el;
 }
 

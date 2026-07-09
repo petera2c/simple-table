@@ -9,11 +9,13 @@ import {
   AUTO_SIZE_OUTLIER_THRESHOLD,
   AUTO_SIZE_MIN_SAMPLE_FOR_CLIP,
   AUTO_SIZE_WIDTH_BUFFER,
+  AUTO_SIZE_HEADER_ICON_PADDING,
 } from "../consts/general-consts";
 import { MIN_COLUMN_WIDTH } from "../consts/column-constraints";
 import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
 import { getCellId } from "./cellUtils";
 import { getNestedValue } from "./rowUtils";
+import { hasCollapsibleChildren } from "./collapseUtils";
 
 /**
  * Build the set of row indices to sample for auto-size measurement.
@@ -199,8 +201,10 @@ function parseWidthSpec(header: HeaderObject): WidthSpec | null {
 }
 
 /**
- * Recursively collect leaf headers (no children) in expanded state.
- * Used for width normalization when collapsed state is not yet relevant.
+ * Recursively collect leaf headers for width normalization (expanded state).
+ * Mirrors `findLeafHeaders` for `singleRowChildren`: the parent is itself a
+ * leaf column and must be included in the width map, otherwise `width: "auto"`
+ * / fr / % on that parent never resolve to pixels.
  */
 function getLeafHeadersForNormalization(headers: HeaderObject[]): HeaderObject[] {
   const leaves: HeaderObject[] = [];
@@ -209,6 +213,9 @@ function getLeafHeadersForNormalization(headers: HeaderObject[]): HeaderObject[]
     if (!h.children || h.children.length === 0) {
       leaves.push(h);
       return;
+    }
+    if (h.singleRowChildren) {
+      leaves.push(h);
     }
     h.children.forEach(visit);
   };
@@ -332,12 +339,13 @@ export function normalizeHeaderWidths(
 
   function process(h: HeaderObject): HeaderObject {
     const next = { ...h };
-    if (h.children && h.children.length > 0) {
-      next.children = h.children.map(process);
-      return next;
-    }
+    // Apply before recursing so `singleRowChildren` parents (visible leaves
+    // that still have children) receive their normalized pixel width.
     const px = widthMap.get(h.accessor as string);
     if (px != null) next.width = px;
+    if (h.children && h.children.length > 0) {
+      next.children = h.children.map(process);
+    }
     return next;
   }
   return headers.map(process);
@@ -421,10 +429,25 @@ const getMeasurementHost = (domQueryRoot: ParentNode): HTMLElement =>
 const escapeAttrValue = (value: string): string => value.replace(/["\\]/g, "\\$&");
 
 /**
+ * Split text into display lines for width measurement. Explicit newlines
+ * (common in multi-line `valueFormatter` output) define the lines that wrap
+ * under `white-space: pre-line` / `pre-wrap`; measuring the full string with
+ * `white-space: nowrap` collapses those newlines to spaces and over-allocates.
+ */
+const splitTextLinesForWidth = (text: string): string[] => {
+  if (!text.includes("\n") && !text.includes("\r")) return [text];
+  return text.split(/\r\n|\r|\n/);
+};
+
+/**
  * Measure a text string off-screen using the font metrics (and padding) of a
  * reference element. Used for the default header label pass and as the
  * fallback when a custom header's markup cannot be measured yet (e.g. a React
  * portal target that has not mounted).
+ *
+ * When `text` contains newlines, returns the width of the longest line so
+ * multi-line formatted content does not inflate the column to the collapsed
+ * single-line width.
  */
 const measureTextWithFont = (text: string, fontSource: HTMLElement): number => {
   const tempSpan = document.createElement("span");
@@ -441,10 +464,14 @@ const measureTextWithFont = (text: string, fontSource: HTMLElement): number => {
   tempSpan.style.letterSpacing = sourceStyle.letterSpacing;
   tempSpan.style.padding = sourceStyle.padding;
 
-  tempSpan.textContent = text;
-
   document.body.appendChild(tempSpan);
-  const width = tempSpan.offsetWidth;
+
+  let width = 0;
+  for (const line of splitTextLinesForWidth(text)) {
+    tempSpan.textContent = line;
+    width = Math.max(width, tempSpan.offsetWidth);
+  }
+
   document.body.removeChild(tempSpan);
   return width;
 };
@@ -543,16 +570,17 @@ const measureHeaderLabelContent = (
 };
 
 /**
- * Measure the rendered width (incl. margins) a sort icon will occupy in a
- * header cell. Rendered off-screen inside the table root with the real
- * `.st-icon-container` class so theme CSS (margins, em-based sizing) applies.
+ * Measure the rendered width (incl. margins + a small padding buffer) a header
+ * icon will occupy. Rendered off-screen inside the table root with the real
+ * icon-container class(es) so theme CSS (margins, em-based sizing) applies.
  */
-const measureSortIconWidth = (
+const measureHeaderIconWidth = (
   icon: string | HTMLElement | SVGSVGElement,
   domQueryRoot: ParentNode,
+  className = "st-icon-container",
 ): number => {
   const container = document.createElement("div");
-  container.className = "st-icon-container";
+  container.className = className;
   container.style.visibility = "hidden";
   container.style.position = "absolute";
   container.style.top = "-99999px";
@@ -570,7 +598,7 @@ const measureSortIconWidth = (
     (parseFloat(style.marginLeft) || 0) +
     (parseFloat(style.marginRight) || 0);
   host.removeChild(container);
-  return width;
+  return width + AUTO_SIZE_HEADER_ICON_PADDING;
 };
 
 /**
@@ -609,6 +637,12 @@ export const calculateHeaderContentWidth = (
      * column), so sorting later does not push the label into ellipsis.
      */
     sortIcon?: string | HTMLElement | SVGSVGElement;
+    /**
+     * The table's resolved expand/collapse icon. Used to reserve space on
+     * collapsible headers when the header cell is virtualized out of the
+     * horizontal band (so the icon is not in the DOM to measure directly).
+     */
+    expandIcon?: string | HTMLElement | SVGSVGElement;
   },
 ): number => {
   const {
@@ -624,6 +658,7 @@ export const calculateHeaderContentWidth = (
     theme,
     styleRoot,
     sortIcon,
+    expandIcon,
   } = options || {};
   const headSize = headSampleSize ?? sampleSize ?? AUTO_SIZE_HEAD_SAMPLE_SIZE;
   const stridedSize =
@@ -666,9 +701,11 @@ export const calculateHeaderContentWidth = (
   const headerLabelElement = headerCellElement?.querySelector(
     ".st-header-label",
   ) as HTMLElement | null;
-  // Whether a sort icon is already part of the measured header (either inside a
-  // custom label or as a direct icon child); used for the reservation below.
+  // Whether a sort / collapse icon is already part of the measured header
+  // (either inside a custom label or as a direct icon child); used for the
+  // reservations below.
   let sortIconMeasured = false;
+  let collapseIconMeasured = false;
   if (headerLabelElement) {
     const textSpan = headerLabelElement.querySelector(".st-header-label-text") as HTMLElement;
     if (header?.headerRenderer || !textSpan) {
@@ -681,6 +718,9 @@ export const calculateHeaderContentWidth = (
         totalWidth += customLabelWidth;
         sortIconMeasured = Boolean(
           headerLabelElement.querySelector('.st-icon-container[aria-label^="Sort"]'),
+        );
+        collapseIconMeasured = Boolean(
+          headerLabelElement.querySelector(".st-collapsible-header-icon"),
         );
       } else if (header?.label) {
         // The custom markup measures as empty — typically an async-mounted
@@ -747,6 +787,9 @@ export const calculateHeaderContentWidth = (
     if (child.getAttribute("aria-label")?.startsWith("Sort")) {
       sortIconMeasured = true;
     }
+    if (child.classList.contains("st-collapsible-header-icon")) {
+      collapseIconMeasured = true;
+    }
   }
 
   // Reserve space for the sort icon on sortable columns that are not currently
@@ -754,7 +797,19 @@ export const calculateHeaderContentWidth = (
   // not re-fit auto columns (widths must stay stable across sorts), so without
   // this reservation the label would be pushed into ellipsis on first sort.
   if (header?.isSortable && !sortIconMeasured && sortIcon) {
-    totalWidth += measureSortIconWidth(sortIcon, domQueryRoot);
+    totalWidth += measureHeaderIconWidth(sortIcon, domQueryRoot);
+    visibleItemCount++;
+  }
+
+  // Reserve space for the collapse/expand icon on collapsible headers when the
+  // icon was not already measured (header virtualized out, or not yet painted).
+  // Without this, long labels truncate once the column scrolls into view.
+  if (header && hasCollapsibleChildren(header) && !collapseIconMeasured && expandIcon) {
+    totalWidth += measureHeaderIconWidth(
+      expandIcon,
+      domQueryRoot,
+      "st-icon-container st-collapsible-header-icon st-expand-icon-container expanded",
+    );
     visibleItemCount++;
   }
 
@@ -802,9 +857,17 @@ export const calculateHeaderContentWidth = (
 
     const sampleWidths: number[] = [];
 
+    // Measure each explicit line separately. `white-space: nowrap` on the
+    // measurement node collapses `\n` to spaces, so a multi-line
+    // valueFormatter string would otherwise report the full concatenated
+    // width even when the rendered cell wraps to the longest line.
     const measureText = (text: string): number => {
-      tempDiv.textContent = text;
-      return tempDiv.offsetWidth + cellPaddingLeft + cellPaddingRight;
+      let contentWidth = 0;
+      for (const line of splitTextLinesForWidth(text)) {
+        tempDiv.textContent = line;
+        contentWidth = Math.max(contentWidth, tempDiv.offsetWidth);
+      }
+      return contentWidth + cellPaddingLeft + cellPaddingRight;
     };
 
     const sampleIndices = buildHybridSampleIndices(rows.length, headSize, stridedSize);

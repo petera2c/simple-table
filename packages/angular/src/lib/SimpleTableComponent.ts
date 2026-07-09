@@ -14,6 +14,7 @@ import {
 import { SimpleTableVanilla } from "simple-table-core";
 import type { TableAPI } from "simple-table-core";
 import { buildVanillaConfig } from "../buildVanillaConfig";
+import { MountRegistry } from "../MountRegistry";
 import type { SimpleTableAngularProps, TableInstance } from "../types";
 
 /**
@@ -98,6 +99,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Output() tableReady = new EventEmitter<TableAPI>();
 
   private instance: TableInstance | null = null;
+  private registry = new MountRegistry();
   private hostEl = inject(ElementRef<HTMLElement>);
   private appRef = inject(ApplicationRef);
   private envInjector = inject(EnvironmentInjector);
@@ -108,7 +110,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
 
     this.instance = new SimpleTableVanilla(
       container,
-      buildVanillaConfig(this.getProps(), this.appRef, this.envInjector),
+      buildVanillaConfig(this.getProps(), this.registry, this.appRef, this.envInjector),
     ) as unknown as TableInstance;
     this.instance.mount();
 
@@ -116,12 +118,15 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(): void {
-    this.instance?.update(buildVanillaConfig(this.getProps(), this.appRef, this.envInjector));
+    this.instance?.update(
+      buildVanillaConfig(this.getProps(), this.registry, this.appRef, this.envInjector),
+    );
   }
 
   ngOnDestroy(): void {
     this.instance?.destroy();
     this.instance = null;
+    this.registry.clear();
   }
 
   /** Returns the full imperative TableAPI. Use via @ViewChild or (tableReady) output. */

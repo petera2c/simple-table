@@ -6,6 +6,7 @@ import type {
   VueColumnEditorConfig,
   VueIconsConfig,
 } from "./types";
+import type { MountRegistry } from "./MountRegistry";
 import {
   wrapVueRenderer,
   wrapVueNode,
@@ -29,23 +30,29 @@ function transformIcons(icons: VueIconsConfig): NonNullable<SimpleTableConfig["i
   return result;
 }
 
-function transformColumnEditorConfig(config: VueColumnEditorConfig): ColumnEditorConfig {
+function transformColumnEditorConfig(
+  config: VueColumnEditorConfig,
+  registry: MountRegistry,
+): ColumnEditorConfig {
   const { rowRenderer, customRenderer, ...rest } = config;
   return {
     ...rest,
-    ...(rowRenderer ? { rowRenderer: wrapVueRenderer(rowRenderer) as any } : {}),
-    ...(customRenderer ? { customRenderer: wrapVueRenderer(customRenderer) as any } : {}),
+    ...(rowRenderer ? { rowRenderer: wrapVueRenderer(registry, rowRenderer) as any } : {}),
+    ...(customRenderer ? { customRenderer: wrapVueRenderer(registry, customRenderer) as any } : {}),
   };
 }
 
-function transformHeader(header: HeaderObject | VueHeaderObject): HeaderObject {
+function transformHeader(
+  header: HeaderObject | VueHeaderObject,
+  registry: MountRegistry,
+): HeaderObject {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
 
   const transformed: HeaderObject = { ...(rest as any) };
 
   if (cellRenderer) {
     if (typeof cellRenderer === "object") {
-      transformed.cellRenderer = wrapVueRenderer(cellRenderer) as any;
+      transformed.cellRenderer = wrapVueRenderer(registry, cellRenderer) as any;
     } else {
       transformed.cellRenderer = cellRenderer as any;
     }
@@ -53,25 +60,28 @@ function transformHeader(header: HeaderObject | VueHeaderObject): HeaderObject {
 
   if (headerRenderer) {
     if (typeof headerRenderer === "object") {
-      transformed.headerRenderer = wrapVueRenderer(headerRenderer) as any;
+      transformed.headerRenderer = wrapVueRenderer(registry, headerRenderer) as any;
     } else {
       transformed.headerRenderer = headerRenderer as any;
     }
   }
 
   if (children) {
-    transformed.children = children.map(transformHeader);
+    transformed.children = children.map((child) => transformHeader(child, registry));
   }
 
   if (nestedTable) {
     const nestedConfig = { ...nestedTable, rows: [] } as unknown as SimpleTableVueProps;
-    transformed.nestedTable = buildVanillaConfig(nestedConfig) as any;
+    transformed.nestedTable = buildVanillaConfig(nestedConfig, registry) as any;
   }
 
   return transformed;
 }
 
-export function buildVanillaConfig(config: SimpleTableVueProps): SimpleTableConfig {
+export function buildVanillaConfig(
+  config: SimpleTableVueProps,
+  registry: MountRegistry,
+): SimpleTableConfig {
   const {
     defaultHeaders,
     rows,
@@ -90,12 +100,16 @@ export function buildVanillaConfig(config: SimpleTableVueProps): SimpleTableConf
   const vanillaConfig: SimpleTableConfig = {
     ...rest,
     rows: rows as Row[],
-    defaultHeaders: defaultHeaders.map(transformHeader),
+    defaultHeaders: defaultHeaders.map((header) => transformHeader(header, registry)),
+    // Authoritative mount teardown: core calls this before it permanently
+    // discards any host element, so the registry unmounts exactly the affected
+    // Vue apps (including Teleport / floating UI).
+    onRendererHostDiscard: registry.disposeHost,
   };
 
   if (footerRenderer !== undefined) {
     if (typeof footerRenderer === "object") {
-      vanillaConfig.footerRenderer = wrapVueRenderer(footerRenderer) as any;
+      vanillaConfig.footerRenderer = wrapVueRenderer(registry, footerRenderer) as any;
     } else {
       vanillaConfig.footerRenderer = footerRenderer as any;
     }
@@ -103,28 +117,28 @@ export function buildVanillaConfig(config: SimpleTableVueProps): SimpleTableConf
 
   if (emptyStateRenderer !== undefined) {
     if (isVueComponent(emptyStateRenderer)) {
-      vanillaConfig.emptyStateRenderer = wrapVueRenderer(emptyStateRenderer) as any;
+      vanillaConfig.emptyStateRenderer = wrapVueRenderer(registry, emptyStateRenderer) as any;
     } else {
       const node = emptyStateRenderer as VNode;
-      vanillaConfig.emptyStateRenderer = () => wrapVueNode(node);
+      vanillaConfig.emptyStateRenderer = () => wrapVueNode(registry, node);
     }
   }
 
   if (errorStateRenderer !== undefined) {
     if (isVueComponent(errorStateRenderer)) {
-      vanillaConfig.errorStateRenderer = wrapVueRenderer(errorStateRenderer) as any;
+      vanillaConfig.errorStateRenderer = wrapVueRenderer(registry, errorStateRenderer) as any;
     } else {
       const node = errorStateRenderer as VNode;
-      vanillaConfig.errorStateRenderer = () => wrapVueNode(node);
+      vanillaConfig.errorStateRenderer = () => wrapVueNode(registry, node);
     }
   }
 
   if (loadingStateRenderer !== undefined) {
     if (isVueComponent(loadingStateRenderer)) {
-      vanillaConfig.loadingStateRenderer = wrapVueRenderer(loadingStateRenderer) as any;
+      vanillaConfig.loadingStateRenderer = wrapVueRenderer(registry, loadingStateRenderer) as any;
     } else {
       const node = loadingStateRenderer as VNode;
-      vanillaConfig.loadingStateRenderer = () => wrapVueNode(node);
+      vanillaConfig.loadingStateRenderer = () => wrapVueNode(registry, node);
     }
   }
 
@@ -136,16 +150,16 @@ export function buildVanillaConfig(config: SimpleTableVueProps): SimpleTableConf
     } else if (typeof tableEmptyStateRenderer === "string") {
       vanillaConfig.tableEmptyStateRenderer = tableEmptyStateRenderer;
     } else {
-      vanillaConfig.tableEmptyStateRenderer = wrapVueNode(tableEmptyStateRenderer);
+      vanillaConfig.tableEmptyStateRenderer = wrapVueNode(registry, tableEmptyStateRenderer);
     }
   }
 
   if (headerDropdown !== undefined) {
-    vanillaConfig.headerDropdown = wrapVueRenderer(headerDropdown) as any;
+    vanillaConfig.headerDropdown = wrapVueRenderer(registry, headerDropdown) as any;
   }
 
   if (columnEditorConfig !== undefined) {
-    vanillaConfig.columnEditorConfig = transformColumnEditorConfig(columnEditorConfig);
+    vanillaConfig.columnEditorConfig = transformColumnEditorConfig(columnEditorConfig, registry);
   }
 
   if (icons !== undefined) {
@@ -153,7 +167,9 @@ export function buildVanillaConfig(config: SimpleTableVueProps): SimpleTableConf
   }
 
   if (rowButtons !== undefined) {
-    vanillaConfig.rowButtons = rowButtons.map((button) => wrapVueRenderer(button) as any);
+    vanillaConfig.rowButtons = rowButtons.map(
+      (button) => wrapVueRenderer(registry, button) as any,
+    );
   }
 
   return vanillaConfig;

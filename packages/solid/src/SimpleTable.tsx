@@ -2,6 +2,7 @@ import { createEffect, onCleanup, onMount } from "solid-js";
 import { SimpleTableVanilla } from "simple-table-core";
 import type { TableAPI } from "simple-table-core";
 import { buildVanillaConfig } from "./buildVanillaConfig";
+import { MountRegistry } from "./MountRegistry";
 import type { SimpleTableSolidProps, TableInstance } from "./types";
 
 /**
@@ -24,11 +25,12 @@ import type { SimpleTableSolidProps, TableInstance } from "./types";
 export function SimpleTable(props: SimpleTableSolidProps) {
   let containerEl!: HTMLDivElement;
   let instance: TableInstance | null = null;
+  const registry = new MountRegistry();
 
   onMount(() => {
     instance = new SimpleTableVanilla(
       containerEl,
-      buildVanillaConfig(props)
+      buildVanillaConfig(props, registry),
     ) as unknown as TableInstance;
     instance.mount();
 
@@ -41,13 +43,14 @@ export function SimpleTable(props: SimpleTableSolidProps) {
   // so this re-runs whenever any reactive prop changes.
   createEffect(() => {
     if (instance) {
-      instance.update(buildVanillaConfig(props));
+      instance.update(buildVanillaConfig(props, registry));
     }
   });
 
   onCleanup(() => {
     instance?.destroy();
     instance = null;
+    registry.clear();
   });
 
   return <div ref={containerEl} />;

@@ -338,6 +338,7 @@ export class TableRenderer {
       pinnedRightRef: deps.pinnedRightRef,
       accordionAxis: deps.accordionAxis,
       animationCoordinator: deps.animationCoordinator,
+      onRendererHostDiscard: deps.config.onRendererHostDiscard,
     };
 
     const pinnedLeftHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "left");
@@ -446,6 +447,12 @@ export class TableRenderer {
 
     if (shouldShowEmptyState) {
       container.innerHTML = "";
+      // Body sections are gone; clear refs so horizontal-scrollbar visibility
+      // falls back to the header scrollport (headers still overflow).
+      deps.mainBodyRef.current = null;
+      deps.pinnedLeftRef.current = null;
+      deps.pinnedRightRef.current = null;
+
       const emptyWrapper = document.createElement("div");
       emptyWrapper.className = "st-empty-state-wrapper";
 
@@ -1048,15 +1055,35 @@ export class TableRenderer {
     tableBodyContainerRef: HTMLDivElement,
     deps: TableRendererDeps,
   ): void {
-    if (!wrapperContainer || !deps.mainBodyRef.current || !tableBodyContainerRef) {
+    if (!wrapperContainer || !tableBodyContainerRef) {
       return;
     }
 
-    // Check if horizontal scrolling is needed
-    const clientWidth = deps.mainBodyRef.current.clientWidth;
-    const scrollWidth = deps.mainBodyRef.current.scrollWidth;
+    // Prefer the body scrollport when present; fall back to the header when the
+    // table is empty (empty-state clears body sections, so mainBodyRef is null
+    // even though the header remains horizontally scrollable).
+    const scrollport =
+      deps.mainBodyRef.current ?? deps.mainHeaderRef.current;
+    if (!scrollport) {
+      return;
+    }
+
+    // Viewport = visible main-section width. Prefer the live body clientWidth;
+    // when empty, derive it from the body container minus pinned sections.
+    // Do NOT use the header's clientWidth alone: header sections are often
+    // sized to content width, so clientWidth ≈ scrollWidth even when the
+    // table overflows the container.
+    const viewportWidth =
+      deps.mainBodyRef.current?.clientWidth ??
+      Math.max(0, tableBodyContainerRef.clientWidth - pinnedLeftWidth - pinnedRightWidth);
+
+    // Content width is the sum of column widths (`mainBodyWidth`), which stays
+    // correct even when virtualization culls off-screen cells. Also accept DOM
+    // overflow on the active scrollport when it reports a larger scrollWidth.
     const threshold = 1;
-    const isScrollable = scrollWidth - clientWidth > threshold;
+    const contentOverflow = mainBodyWidth - viewportWidth > threshold;
+    const domOverflow = scrollport.scrollWidth - scrollport.clientWidth > threshold;
+    const isScrollable = contentOverflow || domOverflow;
 
     // If not scrollable, remove existing scrollbar if present
     if (!isScrollable) {
@@ -1080,7 +1107,7 @@ export class TableRenderer {
     ) {
       const sb = this.horizontalScrollbarRef.current;
       syncHorizontalScrollbarLayout(sb, {
-        mainBodyRef: deps.mainBodyRef.current,
+        mainBodyRef: scrollport,
         mainBodyWidth,
         pinnedLeftWidth,
         pinnedRightWidth,
@@ -1101,7 +1128,12 @@ export class TableRenderer {
 
     // Create scrollbar only if it doesn't exist
     this.scrollbarTimeoutId = window.setTimeout(() => {
-      if (!deps.mainBodyRef.current || !tableBodyContainerRef || !wrapperContainer) {
+      if (!tableBodyContainerRef || !wrapperContainer) {
+        return;
+      }
+      const liveScrollport =
+        deps.mainBodyRef.current ?? deps.mainHeaderRef.current;
+      if (!liveScrollport) {
         return;
       }
 
@@ -1112,7 +1144,7 @@ export class TableRenderer {
       ) {
         const existing = this.horizontalScrollbarRef.current;
         syncHorizontalScrollbarLayout(existing, {
-          mainBodyRef: deps.mainBodyRef.current,
+          mainBodyRef: liveScrollport,
           mainBodyWidth,
           pinnedLeftWidth,
           pinnedRightWidth,
@@ -1128,7 +1160,7 @@ export class TableRenderer {
 
       this.sectionScrollController = deps.sectionScrollController ?? null;
       const scrollbar = createHorizontalScrollbar({
-        mainBodyRef: deps.mainBodyRef.current,
+        mainBodyRef: liveScrollport,
         mainBodyWidth,
         pinnedLeftWidth,
         pinnedRightWidth,
@@ -1137,6 +1169,9 @@ export class TableRenderer {
         tableBodyContainerRef,
         editColumns: deps.config.editColumns ?? false,
         sectionScrollController: this.sectionScrollController,
+        // Force-create when content width already proved overflow (empty-state
+        // header scrollports can report scrollWidth === clientWidth).
+        forceScrollable: true,
       });
 
       if (scrollbar) {

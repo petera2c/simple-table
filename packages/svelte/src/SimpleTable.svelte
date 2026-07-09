@@ -3,6 +3,7 @@
   import { SimpleTableVanilla } from "simple-table-core";
   import type { TableAPI } from "simple-table-core";
   import { buildVanillaConfig } from "./buildVanillaConfig";
+  import { MountRegistry } from "./MountRegistry";
   import type { SimpleTableSvelteProps, TableInstance } from "./types";
 
   // SimpleTable — Svelte adapter for simple-table-core.
@@ -17,11 +18,15 @@
   // All remaining optional props — spread via $$restProps
   let container: HTMLDivElement;
   let instance: TableInstance | null = null;
+  const registry = new MountRegistry();
 
   onMount(() => {
     instance = new SimpleTableVanilla(
       container,
-      buildVanillaConfig({ rows, defaultHeaders, ...$$restProps } as SimpleTableSvelteProps)
+      buildVanillaConfig(
+        { rows, defaultHeaders, ...$$restProps } as SimpleTableSvelteProps,
+        registry,
+      ),
     ) as unknown as TableInstance;
     instance.mount();
   });
@@ -29,12 +34,16 @@
   onDestroy(() => {
     instance?.destroy();
     instance = null;
+    registry.clear();
   });
 
   // Reactive update: re-run whenever any prop changes.
   $: if (instance) {
     instance.update(
-      buildVanillaConfig({ rows, defaultHeaders, ...$$restProps } as SimpleTableSvelteProps)
+      buildVanillaConfig(
+        { rows, defaultHeaders, ...$$restProps } as SimpleTableSvelteProps,
+        registry,
+      ),
     );
   }
 

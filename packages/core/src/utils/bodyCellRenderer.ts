@@ -10,6 +10,7 @@ import {
   updateBodyCellPosition,
   untrackCellByRow,
   unregisterCellFromRegistry,
+  invalidateBodyCellContentMemo,
 } from "./bodyCell/styling";
 import { updateExpandIconState } from "./bodyCell/expansion";
 import { updateCheckboxElement } from "./columnEditor/createCheckbox";
@@ -686,6 +687,10 @@ export const renderBodyCells = (
     // teleports in" effect when a sort fires during another sort's animation.
     const claimed = animationCoordinator?.claimRetainedForReuse(cellId, container);
     if (claimed) {
+      // Portal/content may have been discarded while this node was a ghost
+      // (onHostDiscard during a prior play cleanup). Force content rebuild
+      // instead of trusting a stale contentKeyMap entry from before discard.
+      invalidateBodyCellContentMemo(claimed);
       updateBodyCellElement(claimed, cell, context);
       // The claimed ghost shares this cellId, so it already lives in the
       // matching (stable-keyed) row element; just refresh that row's index.

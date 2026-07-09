@@ -189,4 +189,48 @@ describe("custom cellRenderer memoization in updateBodyCellElement", () => {
 
     expect(cellRenderer).toHaveBeenCalledTimes(2);
   });
+
+  it("re-invokes the cellRenderer when content was discarded but memo inputs are unchanged", () => {
+    // Mirrors the blank-row failure mode: onRendererHostDiscard + innerHTML wipe
+    // (animation ghost teardown, portal dispose, etc.) empties the content span
+    // while contentKeyMap still records the previous inputs. A later full render
+    // (sort, column visibility, scroll-end) must rebuild — not skip — or the
+    // cell stays blank until a full DOM recreate (e.g. invalidateCache "all").
+    const row: Row = { id: 1, name: "Alice" } as unknown as Row;
+    const ctx = buildContext();
+    const el = createBodyCellElement(buildCell(row, header), ctx);
+    expect(cellRenderer).toHaveBeenCalledTimes(1);
+    expect(el.querySelector(".custom-content")?.textContent).toBe("Alice");
+
+    const contentSpan = el.querySelector(".st-cell-content") as HTMLElement;
+    expect(contentSpan).not.toBeNull();
+    contentSpan.innerHTML = "";
+
+    updateBodyCellElement(el, buildCell(row, header), ctx);
+
+    expect(cellRenderer).toHaveBeenCalledTimes(2);
+    expect(el.querySelector(".custom-content")?.textContent).toBe("Alice");
+  });
+
+  it("re-invokes the cellRenderer when a disposed React portal host is left empty", () => {
+    // disposeHost unregisters the portal and React unmounts into the host, but
+    // the host node itself often remains under .st-cell-content. Memo inputs
+    // are unchanged, yet the cell is blank until we detect the empty host.
+    const row: Row = { id: 1, name: "Alice" } as unknown as Row;
+    const ctx = buildContext();
+    const el = createBodyCellElement(buildCell(row, header), ctx);
+    expect(cellRenderer).toHaveBeenCalledTimes(1);
+
+    const contentSpan = el.querySelector(".st-cell-content") as HTMLElement;
+    contentSpan.innerHTML = "";
+    const portalHost = document.createElement("div");
+    portalHost.setAttribute("data-st-portal-id", "st-portal-0");
+    portalHost.style.display = "contents";
+    contentSpan.appendChild(portalHost);
+
+    updateBodyCellElement(el, buildCell(row, header), ctx);
+
+    expect(cellRenderer).toHaveBeenCalledTimes(2);
+    expect(el.querySelector(".custom-content")?.textContent).toBe("Alice");
+  });
 });

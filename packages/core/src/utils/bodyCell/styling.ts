@@ -31,6 +31,11 @@ interface CellContentKey {
 }
 const contentKeyMap = new WeakMap<HTMLElement, CellContentKey>();
 
+/** Drop the content memo so the next `updateBodyCellElement` rebuilds. */
+export const invalidateBodyCellContentMemo = (cellElement: HTMLElement): void => {
+  contentKeyMap.delete(cellElement);
+};
+
 // Track current hovered row for cleanup
 let currentHoveredRowId: string | null = null;
 
@@ -619,7 +624,21 @@ export const updateBodyCellElement = (
       const prevKey = contentKeyMap.get(cellElement);
       const newValue = getNestedValue(cell.row, cell.header.accessor);
       const isSkeleton = Boolean(context.isLoading || cell.tableRow.isLoadingSkeleton);
+      // Also rebuild when content was emptied out-of-band:
+      // - childNodes wiped (innerHTML = "") without going through this path
+      // - React portal host still present but disposeHost already unmounted its
+      //   subtree (common when a retained animation ghost is claimed back after
+      //   onHostDiscard ran on it). contentKeyMap would otherwise still match
+      //   and skip forever — blank cells that survive sort/visibility until a
+      //   full DOM recreate (invalidateCache "all" / remounting resize).
+      const portalHost = contentSpan.querySelector("[data-st-portal-id]") as HTMLElement | null;
+      const portalDisposedEmpty =
+        portalHost !== null &&
+        (portalHost.textContent ?? "").trim() === "" &&
+        portalHost.childNodes.length === 0;
+      const contentMissing = contentSpan.childNodes.length === 0 || portalDisposedEmpty;
       const contentUnchanged =
+        !contentMissing &&
         prevKey !== undefined &&
         prevKey.row === cell.row &&
         prevKey.value === newValue &&

@@ -31,11 +31,12 @@ const PORTAL_ID_ATTR = "data-st-portal-id";
  *
  * Cleanup is authoritative, not inferred: core invokes `onRendererHostDiscard(host)`
  * — wired to {@link disposeHost} — immediately before it permanently discards a
- * host element (cell rebuild/edit `innerHTML = ""`, plain cell removal, and the
- * animation coordinator's ghost/FLIP/shrink teardown). `disposeHost` unregisters
- * the portal(s) tagged with {@link PORTAL_ID_ATTR} inside that host, so React
- * unmounts exactly those subtrees. Reuse/reparent paths never signal, so a reused
- * node keeps its portal entry (and its content) with zero churn.
+ * host element (cell rebuild/edit `innerHTML = ""`, header renderer refresh on
+ * sort/filter, plain cell/header removal, and the animation coordinator's
+ * ghost/FLIP/shrink teardown). `disposeHost` unregisters the portal(s) tagged
+ * with {@link PORTAL_ID_ATTR} inside that host, so React unmounts exactly those
+ * subtrees. Reuse/reparent paths never signal, so a reused node keeps its portal
+ * entry (and its content) with zero churn.
  */
 export class PortalBridge {
   private entries = new Map<string, PortalEntry>();

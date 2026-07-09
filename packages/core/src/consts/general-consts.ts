@@ -42,3 +42,5 @@ export const AUTO_SIZE_OUTLIER_PERCENTILE = 95; // percentile used to clip outli
 export const AUTO_SIZE_OUTLIER_THRESHOLD = 0.5; // clip only when max exceeds the percentile by this fraction
 export const AUTO_SIZE_MIN_SAMPLE_FOR_CLIP = 20; // below this many samples, never clip (use raw max)
 export const AUTO_SIZE_WIDTH_BUFFER = 2; // px buffer added to measured content width
+/** Extra padding reserved around header icons (sort / collapse) during auto-size. */
+export const AUTO_SIZE_HEADER_ICON_PADDING = 4;

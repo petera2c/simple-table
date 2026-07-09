@@ -1317,9 +1317,16 @@ export class SimpleTableVanilla {
   }
 
   private getAutoSizeStyleRoot(): ParentNode | null {
-    const main = this.domManager.getRefs().mainBodyRef?.current;
-    if (!main) return null;
-    return main.closest(".simple-table-root") ?? main;
+    // Prefer body, but empty tables clear body sections — fall back to the
+    // header so auto-size can still borrow font/padding metrics.
+    const refs = this.domManager.getRefs();
+    const anchor =
+      refs.mainBodyRef?.current ??
+      refs.mainHeaderRef?.current ??
+      refs.pinnedLeftHeaderRef?.current ??
+      refs.pinnedRightHeaderRef?.current;
+    if (!anchor) return null;
+    return anchor.closest(".simple-table-root") ?? anchor;
   }
 
   /**
@@ -1386,10 +1393,14 @@ export class SimpleTableVanilla {
   private applyMeasuredWidths(widths: Map<Accessor, number>): void {
     const apply = (h: HeaderObject): HeaderObject => {
       const next = { ...h };
+      // Apply before recursing: `singleRowChildren` / collapsed parents are
+      // visible leaves that still carry children, and must receive their
+      // measured width (same set that `computeAutoSizeAccessors` collected).
+      if (widths.has(h.accessor)) {
+        next.width = widths.get(h.accessor) as number;
+      }
       if (h.children && h.children.length > 0) {
         next.children = h.children.map(apply);
-      } else if (widths.has(h.accessor)) {
-        next.width = widths.get(h.accessor) as number;
       }
       return next;
     };
@@ -1444,6 +1455,7 @@ export class SimpleTableVanilla {
           theme: this.config.theme,
           autoSizeMode: leaf.autoSizeMode,
           sortIcon: this.resolvedIcons.sortUp,
+          expandIcon: this.resolvedIcons.expand,
         });
         widths.set(accessor, width);
       }

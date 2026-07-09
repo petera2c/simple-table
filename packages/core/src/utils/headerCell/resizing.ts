@@ -80,6 +80,7 @@ export const createResizeHandle = (
     styleRoot: getStyleRoot(context),
     autoSizeMode: leafHeader.autoSizeMode,
     sortIcon: context.icons.sortUp,
+    expandIcon: context.icons.expand,
   });
 
   /** Live header tree with visible leaf widths aligned to painted layout. */

@@ -1059,6 +1059,14 @@ export class SectionRenderer {
       "useOddEvenRowBackground",
       "rowHeight",
       "containerWidth",
+      // Column virtualization viewport + content width. `containerWidth` alone is
+      // not enough: pinning / pinned-column resize / auto-expand can change
+      // leftWidth+rightWidth (and thus mainSectionViewportWidth) while the
+      // outer container width stays the same. Reusing a stale viewport here
+      // makes getVisibleBodyCells cull every column for rows that scroll back
+      // into view — blank rows that only recover after a later resize.
+      "mainSectionViewportWidth",
+      "mainSectionContainerWidth",
     ];
     let hash = keys.map((k) => `${k}:${context[k]}`).join("|");
 
@@ -1367,7 +1375,7 @@ export class SectionRenderer {
       });
       // Clear rendered cell elements from all header sections
       this.headerSections.forEach((section) => {
-        cleanupHeaderCellRendering(section);
+        cleanupHeaderCellRendering(section, this.onRendererHostDiscard);
       });
     } else if (type === "body") {
       // Only clear the calculated cells cache so we recompute the cell list (e.g. after expand/collapse).

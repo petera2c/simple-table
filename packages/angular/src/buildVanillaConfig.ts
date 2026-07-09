@@ -6,12 +6,14 @@ import type {
   AngularColumnEditorConfig,
   AngularIconsConfig,
 } from "./types";
+import type { MountRegistry } from "./MountRegistry";
 import { wrapAngularRenderer } from "./utils/wrapAngularRenderer";
 
 export function buildVanillaConfig(
   config: SimpleTableAngularProps,
+  registry: MountRegistry,
   appRef: ApplicationRef,
-  injector: EnvironmentInjector
+  injector: EnvironmentInjector,
 ): SimpleTableConfig {
   const {
     defaultHeaders,
@@ -33,13 +35,17 @@ export function buildVanillaConfig(
   } = config;
 
   const wrap = <P extends object>(component: any) =>
-    wrapAngularRenderer<P>(component, appRef, injector);
+    wrapAngularRenderer<P>(component, appRef, injector, registry);
 
   function transformIcons(icons: AngularIconsConfig): NonNullable<SimpleTableConfig["icons"]> {
     const result: NonNullable<SimpleTableConfig["icons"]> = {};
     for (const [key, value] of Object.entries(icons)) {
       if (value == null) continue;
-      if (typeof value === "string" || value instanceof HTMLElement || value instanceof SVGSVGElement) {
+      if (
+        typeof value === "string" ||
+        value instanceof HTMLElement ||
+        value instanceof SVGSVGElement
+      ) {
         (result as any)[key] = value;
       } else if ((value as any).ɵcmp) {
         (result as any)[key] = wrap(value as any)({});
@@ -81,7 +87,12 @@ export function buildVanillaConfig(
 
     if (nestedTable) {
       const nestedFull = { ...nestedTable, rows: [] } as unknown as SimpleTableAngularProps;
-      transformed.nestedTable = buildVanillaConfig(nestedFull, appRef, injector) as any;
+      transformed.nestedTable = buildVanillaConfig(
+        nestedFull,
+        registry,
+        appRef,
+        injector,
+      ) as any;
     }
 
     return transformed;
@@ -91,6 +102,10 @@ export function buildVanillaConfig(
     ...rest,
     rows: rows as Row[],
     defaultHeaders: defaultHeaders.map(transformHeader),
+    // Authoritative mount teardown: core calls this before it permanently
+    // discards any host element, so the registry destroys exactly the affected
+    // Angular ComponentRefs (including CDK Overlay / floating UI).
+    onRendererHostDiscard: registry.disposeHost,
     ...(onColumnOrderChange
       ? {
           onColumnOrderChange: (headers: HeaderObject[]) =>

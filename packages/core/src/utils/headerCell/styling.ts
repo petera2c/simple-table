@@ -13,7 +13,7 @@ import {
   handleColumnHeaderDoubleClick,
   attachDragHandlers,
 } from "./dragging";
-import { addTrackedEventListener } from "./eventTracking";
+import { addTrackedEventListener, removeFloatingHeaderTooltips } from "./eventTracking";
 
 // Calculate header cell class names based on current state
 export const calculateHeaderCellClasses = (
@@ -117,6 +117,14 @@ const renderHeaderRendererContent = (
 ): void => {
   const labelContent = createLabelContent(header, context);
 
+  // Discard the previous renderer subtree (React portal, etc.) before replacing
+  // the label's children. Without this, in-place icon refresh on sort/filter
+  // orphans the prior portal host — floating UI portaled to document.body
+  // (tooltips/popovers) stays mounted under a detached anchor.
+  context.onRendererHostDiscard?.(labelElement);
+  removeFloatingHeaderTooltips(labelElement);
+  labelElement.innerHTML = "";
+
   const renderedContent = header.headerRenderer!({
     accessor: header.accessor,
     colIndex,
@@ -128,8 +136,6 @@ const renderHeaderRendererContent = (
       labelContent,
     },
   });
-
-  labelElement.innerHTML = "";
 
   // The headerRenderer should return a DOM element (HTMLElement). The React
   // adapter wraps React-based headerRenderers to convert them to DOM elements.

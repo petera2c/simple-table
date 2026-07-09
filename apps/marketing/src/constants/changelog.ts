@@ -11,6 +11,35 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v3_9_2: ChangelogEntry = {
+  version: "3.9.2",
+  date: "2026-07-08",
+  title: "Header portal cleanup on sort",
+  description: "Open tooltips and popovers in custom headers no longer stick around after sort.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Fixed portal-based floating UI in header renderers (e.g. Radix tooltips/popovers) remaining open and unclosable after the header re-renders on sort.",
+    },
+    {
+      type: "bugfix",
+      description:
+        '"auto" width now sizes collapsible headers correctly, reserves collapse-icon space, and shows the horizontal scrollbar when headers overflow an empty table.',
+    },
+    {
+      type: "bugfix",
+      description:
+        '"auto" width no longer over-allocates for multi-line valueFormatter output.',
+    },
+    {
+      type: "bugfix",
+      description:
+        "Fixed blank rows after resize and scrolling back up.",
+    },
+  ],
+};
+
 export const v3_9_1: ChangelogEntry = {
   version: "3.9.1",
   date: "2026-07-06",
@@ -2092,6 +2121,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_9_2,
   v3_9_1,
   v3_9_0,
   v3_8_9,

@@ -5,6 +5,7 @@ import type {
   SolidColumnEditorConfig,
   SolidIconsConfig,
 } from "./types";
+import type { MountRegistry } from "./MountRegistry";
 import {
   wrapSolidRenderer,
   wrapSolidNode,
@@ -27,41 +28,52 @@ function transformIcons(icons: SolidIconsConfig): NonNullable<SimpleTableConfig[
   return result;
 }
 
-function transformColumnEditorConfig(config: SolidColumnEditorConfig): ColumnEditorConfig {
+function transformColumnEditorConfig(
+  config: SolidColumnEditorConfig,
+  registry: MountRegistry,
+): ColumnEditorConfig {
   const { rowRenderer, customRenderer, ...rest } = config;
   return {
     ...rest,
-    ...(rowRenderer ? { rowRenderer: wrapSolidRenderer(rowRenderer) as any } : {}),
-    ...(customRenderer ? { customRenderer: wrapSolidRenderer(customRenderer) as any } : {}),
+    ...(rowRenderer ? { rowRenderer: wrapSolidRenderer(registry, rowRenderer) as any } : {}),
+    ...(customRenderer
+      ? { customRenderer: wrapSolidRenderer(registry, customRenderer) as any }
+      : {}),
   };
 }
 
-function transformHeader(header: HeaderObject | SolidHeaderObject): HeaderObject {
+function transformHeader(
+  header: HeaderObject | SolidHeaderObject,
+  registry: MountRegistry,
+): HeaderObject {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
 
   const transformed: HeaderObject = { ...(rest as any) };
 
   if (cellRenderer) {
-    transformed.cellRenderer = wrapSolidRenderer(cellRenderer) as any;
+    transformed.cellRenderer = wrapSolidRenderer(registry, cellRenderer) as any;
   }
 
   if (headerRenderer) {
-    transformed.headerRenderer = wrapSolidRenderer(headerRenderer) as any;
+    transformed.headerRenderer = wrapSolidRenderer(registry, headerRenderer) as any;
   }
 
   if (children) {
-    transformed.children = children.map(transformHeader);
+    transformed.children = children.map((child) => transformHeader(child, registry));
   }
 
   if (nestedTable) {
     const nestedConfig = { ...nestedTable, rows: [] } as unknown as SimpleTableSolidProps;
-    transformed.nestedTable = buildVanillaConfig(nestedConfig) as any;
+    transformed.nestedTable = buildVanillaConfig(nestedConfig, registry) as any;
   }
 
   return transformed;
 }
 
-export function buildVanillaConfig(config: SimpleTableSolidProps): SimpleTableConfig {
+export function buildVanillaConfig(
+  config: SimpleTableSolidProps,
+  registry: MountRegistry,
+): SimpleTableConfig {
   const {
     defaultHeaders,
     rows,
@@ -85,7 +97,11 @@ export function buildVanillaConfig(config: SimpleTableSolidProps): SimpleTableCo
   const vanillaConfig: SimpleTableConfig = {
     ...rest,
     rows: rows as Row[],
-    defaultHeaders: defaultHeaders.map(transformHeader),
+    defaultHeaders: defaultHeaders.map((header) => transformHeader(header, registry)),
+    // Authoritative mount teardown: core calls this before it permanently
+    // discards any host element, so the registry disposes exactly the affected
+    // Solid trees (including portals / floating UI).
+    onRendererHostDiscard: registry.disposeHost,
     ...(onColumnOrderChange
       ? {
           onColumnOrderChange: (headers: HeaderObject[]) =>
@@ -113,47 +129,47 @@ export function buildVanillaConfig(config: SimpleTableSolidProps): SimpleTableCo
   };
 
   if (footerRenderer !== undefined) {
-    vanillaConfig.footerRenderer = wrapSolidRenderer(footerRenderer) as any;
+    vanillaConfig.footerRenderer = wrapSolidRenderer(registry, footerRenderer) as any;
   }
 
   if (emptyStateRenderer !== undefined) {
     if (isSolidComponent(emptyStateRenderer)) {
-      vanillaConfig.emptyStateRenderer = wrapSolidRenderer(emptyStateRenderer) as any;
+      vanillaConfig.emptyStateRenderer = wrapSolidRenderer(registry, emptyStateRenderer) as any;
     } else {
       const node = emptyStateRenderer;
-      vanillaConfig.emptyStateRenderer = () => wrapSolidNode(node);
+      vanillaConfig.emptyStateRenderer = () => wrapSolidNode(registry, node);
     }
   }
 
   if (errorStateRenderer !== undefined) {
     if (isSolidComponent(errorStateRenderer)) {
-      vanillaConfig.errorStateRenderer = wrapSolidRenderer(errorStateRenderer) as any;
+      vanillaConfig.errorStateRenderer = wrapSolidRenderer(registry, errorStateRenderer) as any;
     } else {
       const node = errorStateRenderer;
-      vanillaConfig.errorStateRenderer = () => wrapSolidNode(node);
+      vanillaConfig.errorStateRenderer = () => wrapSolidNode(registry, node);
     }
   }
 
   if (loadingStateRenderer !== undefined) {
     if (isSolidComponent(loadingStateRenderer)) {
-      vanillaConfig.loadingStateRenderer = wrapSolidRenderer(loadingStateRenderer) as any;
+      vanillaConfig.loadingStateRenderer = wrapSolidRenderer(registry, loadingStateRenderer) as any;
     } else {
       const node = loadingStateRenderer;
-      vanillaConfig.loadingStateRenderer = () => wrapSolidNode(node);
+      vanillaConfig.loadingStateRenderer = () => wrapSolidNode(registry, node);
     }
   }
 
   if (tableEmptyStateRenderer !== undefined) {
     vanillaConfig.tableEmptyStateRenderer =
-      tableEmptyStateRenderer === null ? null : wrapSolidNode(tableEmptyStateRenderer);
+      tableEmptyStateRenderer === null ? null : wrapSolidNode(registry, tableEmptyStateRenderer);
   }
 
   if (headerDropdown !== undefined) {
-    vanillaConfig.headerDropdown = wrapSolidRenderer(headerDropdown) as any;
+    vanillaConfig.headerDropdown = wrapSolidRenderer(registry, headerDropdown) as any;
   }
 
   if (columnEditorConfig !== undefined) {
-    vanillaConfig.columnEditorConfig = transformColumnEditorConfig(columnEditorConfig);
+    vanillaConfig.columnEditorConfig = transformColumnEditorConfig(columnEditorConfig, registry);
   }
 
   if (icons !== undefined) {
@@ -161,7 +177,9 @@ export function buildVanillaConfig(config: SimpleTableSolidProps): SimpleTableCo
   }
 
   if (rowButtons !== undefined) {
-    vanillaConfig.rowButtons = rowButtons.map((button) => wrapSolidRenderer(button) as any);
+    vanillaConfig.rowButtons = rowButtons.map(
+      (button) => wrapSolidRenderer(registry, button) as any,
+    );
   }
 
   return vanillaConfig;

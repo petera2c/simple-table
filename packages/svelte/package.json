@@ -1,12 +1,13 @@
 {
   "name": "@simple-table/svelte",
-  "version": "3.9.1",
+  "version": "3.9.2",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
     "build": "rollup -c",
     "preview": "rollup -c -w",
+    "test": "vitest run",
     "version:patch": "npm version patch && git push && git push --tags",
     "version:minor": "npm version minor && git push && git push --tags",
     "version:major": "npm version major && git push && git push --tags"
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@rollup/plugin-alias": "4.0.0",
     "@rollup/plugin-node-resolve": "^15.3.0",
+    "jsdom": "^24.1.3",
     "rollup": "^2.79.2",
     "rollup-plugin-delete": "^2.1.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
@@ -48,7 +50,8 @@
     "rollup-plugin-typescript2": "^0.37.0",
     "svelte": "^5.0.0",
     "svelte-preprocess": "^6.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^2.1.9"
   },
   "description": "Svelte adapter for simple-table-core — use the Simple Table data grid with full Svelte component support for renderers.",
   "repository": {

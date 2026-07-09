@@ -4,7 +4,7 @@
  * Comprehensive coverage for content-fit columns (`width: "auto"`):
  * - shrink / grow, per-column `maxWidth` cap and `minWidth` floor
  * - `autoSizeMode: "header"`
- * - custom (vanilla) renderers, valueFormatter, valueGetter, chart columns
+ * - custom (vanilla) renderers, valueFormatter (incl. multi-line), valueGetter, chart columns
  * - outliers (single giant value clipped) vs. a legitimate wide minority (kept)
  * - very large datasets (50k rows) with bounded sampling
  * - re-fit on data change, sort stability, empty data, mixed/pinned layouts
@@ -351,6 +351,85 @@ export const AutoSizeMeasuresFormattedValue = {
     // "$9,000,029.00" is ~13 chars; must fit the formatted text, not the raw number.
     const amtWidth = widthOf(canvasElement, "Amt");
     expect(amtWidth).toBeGreaterThan(95);
+  },
+};
+
+/**
+ * valueFormatter may return explicit multi-line text (e.g. an address). When the
+ * cell is allowed to wrap (`white-space: pre-line`), auto-size must fit the
+ * longest line — not the full string measured as one nowrap run (newlines
+ * collapse to spaces under `white-space: nowrap` measurement).
+ */
+export const AutoSizeMultilineFormattedValueUsesLongestLine = {
+  parameters: { tags: ["auto-size-formatter-multiline"] },
+  render: () => {
+    const shortLine = "HQ";
+    const longestLine = "Building 12";
+    // Concatenated single-line width is much larger than the longest line alone.
+    const multiline = [shortLine, longestLine, "Floor 3", "Suite 400"].join("\n");
+
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 60, type: "number" },
+      {
+        accessor: "address",
+        label: "Addr",
+        width: "auto",
+        type: "string",
+        valueFormatter: () => multiline,
+      },
+    ];
+    const data = makeRows(20, (i) => ({ id: i + 1, address: "raw" }));
+    const { wrapper } = renderVanillaTable(headers, data, {
+      getRowId: (params: any) => String(params.row.id),
+      height: "320px",
+      rowHeight: 72,
+    });
+
+    // Match the consumer setup where formatted newlines are allowed to wrap.
+    const style = document.createElement("style");
+    style.textContent = `
+      .simple-table-root .st-cell-content {
+        white-space: pre-line;
+        text-overflow: clip;
+      }
+    `;
+    wrapper.appendChild(style);
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await wait(50);
+
+    const addrWidth = widthOf(canvasElement, "Addr");
+    expect(addrWidth).toBeGreaterThan(0);
+
+    // Reference widths: longest line alone vs. the full string as one nowrap run.
+    const measure = (text: string, whiteSpace: string): number => {
+      const el = document.createElement("div");
+      el.style.visibility = "hidden";
+      el.style.position = "absolute";
+      el.style.whiteSpace = whiteSpace as any;
+      el.style.display = "inline-block";
+      el.style.font = "14px Nunito, sans-serif";
+      el.textContent = text;
+      document.body.appendChild(el);
+      const w = el.offsetWidth;
+      document.body.removeChild(el);
+      return w;
+    };
+
+    const multiline = ["HQ", "Building 12", "Floor 3", "Suite 400"].join("\n");
+    const longestLineWidth = measure("Building 12", "nowrap");
+    const fullNowrapWidth = measure(multiline, "nowrap");
+
+    // Sanity: the buggy nowrap-of-full-string path is meaningfully wider.
+    expect(fullNowrapWidth).toBeGreaterThan(longestLineWidth + 40);
+
+    // Column must track the longest line (plus cell padding / buffer), not the
+    // collapsed full-string width. Allow generous padding slack for theme fonts.
+    expect(addrWidth).toBeLessThan(longestLineWidth + 80);
+    expect(addrWidth).toBeLessThan(fullNowrapWidth - 20);
+    expect(addrWidth).toBeGreaterThan(longestLineWidth - 5);
   },
 };
 
@@ -1081,6 +1160,284 @@ export const AutoSizeEmptyStateAsyncHeaderRenderer = {
     const afterWidth = cellAfter!.getBoundingClientRect().width;
     expect(afterWidth).toBeGreaterThan(120);
     expect(afterWidth).toBeLessThan(320);
+  },
+};
+
+// ============================================================================
+// COLLAPSE ICON — reserve space like the sort icon so labels don't ellipsize
+// ============================================================================
+
+export const AutoSizeCollapsibleHeaderReservesIconWidth = {
+  parameters: { tags: ["auto-size-collapse-icon-reserve"] },
+  render: () => {
+    // Push the collapsible auto column past the initial virtualization band so
+    // its header cell (and collapse icon) are not in the DOM during the first
+    // measure. Sort icons are reserved without a rendered cell; collapse icons
+    // must be too, or the label truncates once the column scrolls into view.
+    const headers: HeaderObject[] = [
+      { accessor: "pad1", label: "Pad One", width: 200, type: "string" },
+      { accessor: "pad2", label: "Pad Two", width: 200, type: "string" },
+      { accessor: "pad3", label: "Pad Three", width: 200, type: "string" },
+      {
+        accessor: "metrics",
+        label: "Quarterly Performance Metrics",
+        width: "auto",
+        autoSizeMode: "header",
+        type: "string",
+        collapsible: true,
+        singleRowChildren: true,
+        children: [
+          { accessor: "q1", label: "Q1", width: 60, type: "number", showWhen: "parentExpanded" },
+          { accessor: "q2", label: "Q2", width: 60, type: "number", showWhen: "parentExpanded" },
+        ],
+      },
+    ];
+    const data = makeRows(20, (i) => ({
+      pad1: `p1-${i}`,
+      pad2: `p2-${i}`,
+      pad3: `p3-${i}`,
+      metrics: `m${i}`,
+      q1: i,
+      q2: i * 2,
+    }));
+    const { wrapper, tableContainer } = renderVanillaTable(headers, data, {
+      getRowId: (params: any) => String(params.row.pad1),
+      height: "300px",
+    });
+    tableContainer.style.width = "360px";
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await wait(100);
+
+    const bodyMain = canvasElement.querySelector(".st-body-main") as HTMLElement;
+    bodyMain.scrollLeft = bodyMain.scrollWidth;
+    bodyMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+    await wait(300);
+
+    const cell = canvasElement.querySelector(
+      '.st-header-cell[data-accessor="metrics"]',
+    ) as HTMLElement | null;
+    expect(cell, "metrics header should render after scroll").toBeTruthy();
+
+    const collapseIcon = cell!.querySelector(".st-collapsible-header-icon") as HTMLElement | null;
+    expect(collapseIcon, "collapse/expand icon should be present").toBeTruthy();
+
+    const textSpan = cell!.querySelector(".st-header-label-text") as HTMLElement;
+    expect(textSpan).toBeTruthy();
+    // Label must not be pushed into ellipsis by the collapse icon — even though
+    // the icon was absent from the DOM when the column was first measured.
+    expect(textSpan.scrollWidth).toBeLessThanOrEqual(textSpan.clientWidth + 1);
+
+    expect(cell!.getBoundingClientRect().width).toBeGreaterThan(180);
+  },
+};
+
+export const AutoSizeLongHeaderConsistentAcrossContainerWidths = {
+  parameters: { tags: ["auto-size-long-header-container-independent"] },
+  render: () => {
+    // Long header labels with short cells. Both containers need horizontal
+    // scroll (total natural width > container). Widths must still match —
+    // auto-size must not under-measure when columns start virtualized out.
+    const outer = document.createElement("div");
+    const longLabel = "Employee Department Assignment Code";
+
+    const build = (suffix: string, containerWidth: string) => {
+      const headers: HeaderObject[] = [
+        {
+          accessor: `a${suffix}`,
+          label: "Alpha Column One",
+          width: "auto",
+          autoSizeMode: "header",
+          type: "string",
+        },
+        {
+          accessor: `b${suffix}`,
+          label: "Beta Column Two Name",
+          width: "auto",
+          autoSizeMode: "header",
+          type: "string",
+        },
+        {
+          accessor: `c${suffix}`,
+          label: "Gamma Column Three Title",
+          width: "auto",
+          autoSizeMode: "header",
+          type: "string",
+        },
+        {
+          accessor: `d${suffix}`,
+          label: longLabel,
+          width: "auto",
+          autoSizeMode: "header",
+          type: "string",
+          isSortable: true,
+          collapsible: true,
+          singleRowChildren: true,
+          children: [
+            {
+              accessor: `dChild${suffix}`,
+              label: "Sub",
+              width: 50,
+              type: "string",
+              showWhen: "parentExpanded",
+            },
+          ],
+        },
+        {
+          accessor: `e${suffix}`,
+          label: "Epsilon Column Five Label",
+          width: "auto",
+          autoSizeMode: "header",
+          type: "string",
+        },
+        {
+          accessor: `f${suffix}`,
+          label: "Zeta Column Six Heading",
+          width: "auto",
+          autoSizeMode: "header",
+          type: "string",
+        },
+      ];
+      const data = makeRows(25, (i) => ({
+        [`a${suffix}`]: `a${i}`,
+        [`b${suffix}`]: `b${i}`,
+        [`c${suffix}`]: `c${i}`,
+        [`d${suffix}`]: `d${i}`,
+        [`dChild${suffix}`]: `x${i}`,
+        [`e${suffix}`]: `e${i}`,
+        [`f${suffix}`]: `f${i}`,
+      }));
+      const { wrapper, tableContainer } = renderVanillaTable(headers, data, {
+        getRowId: (params: any) => String(params.row[`a${suffix}`]),
+        height: "280px",
+      });
+      tableContainer.style.width = containerWidth;
+      wrapper.classList.add(`long-header-${suffix}`);
+      outer.appendChild(wrapper);
+      return wrapper;
+    };
+
+    build("W", "900px");
+    build("N", "420px");
+    return outer;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await wait(250);
+
+    const scopedWidthOf = (scope: Element, label: string): number => {
+      const headers = Array.from(scope.querySelectorAll(".st-header-cell"));
+      for (const header of headers) {
+        const labelElement = header.querySelector(".st-header-label-text");
+        if (labelElement?.textContent?.trim() === label) {
+          return header.getBoundingClientRect().width;
+        }
+      }
+      return 0;
+    };
+
+    const wide = canvasElement.querySelector(".long-header-W")!;
+    const narrow = canvasElement.querySelector(".long-header-N")!;
+    const label = "Employee Department Assignment Code";
+
+    const wideWidth = scopedWidthOf(wide, label);
+    expect(wideWidth).toBeGreaterThan(160);
+
+    // Scroll the narrow table so the target column paints, then compare.
+    const narrowBody = narrow.querySelector(".st-body-main") as HTMLElement;
+    narrowBody.scrollLeft = narrowBody.scrollWidth;
+    narrowBody.dispatchEvent(new Event("scroll", { bubbles: true }));
+    await wait(300);
+
+    const narrowWidth = scopedWidthOf(narrow, label);
+    expect(narrowWidth).toBeGreaterThan(160);
+
+    // Same header content => same width regardless of container (both still
+    // overflow and require horizontal scroll).
+    expect(Math.abs(wideWidth - narrowWidth)).toBeLessThan(3);
+
+    // And the painted label must not be truncated in either container.
+    for (const scope of [wide, narrow]) {
+      const headers = Array.from(scope.querySelectorAll(".st-header-cell"));
+      for (const header of headers) {
+        const text = header.querySelector(".st-header-label-text") as HTMLElement | null;
+        if (text?.textContent?.trim() === label) {
+          expect(text.scrollWidth).toBeLessThanOrEqual(text.clientWidth + 1);
+        }
+      }
+    }
+  },
+};
+
+// ============================================================================
+// HORIZONTAL SCROLLBAR — must account for header/content width, not body alone
+// ============================================================================
+
+export const HorizontalScrollbarShowsWhenHeaderOverflowsEmptyState = {
+  parameters: { tags: ["horizontal-scrollbar-empty-header"] },
+  render: () => {
+    // Empty table: body has no .st-body-main / row separators, but headers are
+    // still wider than the container and remain horizontally scrollable. The
+    // scrollbar visibility check must not rely on body scrollWidth alone.
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 120, type: "number" },
+      { accessor: "name", label: "Full Legal Name", width: 220, type: "string" },
+      { accessor: "email", label: "Work Email Address", width: 260, type: "string" },
+      { accessor: "dept", label: "Department Name", width: 200, type: "string" },
+      { accessor: "role", label: "Job Role Title", width: 200, type: "string" },
+    ];
+    // Constrain the container BEFORE mount so DimensionManager measures the
+    // narrow viewport on first paint (setting width after mount races the
+    // initial scrollbar visibility check).
+    const wrapper = document.createElement("div") as HTMLDivElement & {
+      _table?: SimpleTableVanilla;
+    };
+    wrapper.style.padding = "2rem";
+    const tableContainer = document.createElement("div");
+    tableContainer.style.width = "360px";
+    wrapper.appendChild(tableContainer);
+    const table = new SimpleTableVanilla(tableContainer, {
+      defaultHeaders: headers,
+      rows: [],
+      getRowId: (params: any) => String(params.row.id),
+      height: "280px",
+    });
+    table.mount();
+    wrapper._table = table;
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    // Scrollbar creation is deferred by 1ms in TableRenderer.
+    await wait(50);
+
+    const headerMain = canvasElement.querySelector(".st-header-main") as HTMLElement;
+    expect(headerMain).toBeTruthy();
+
+    // Header content overflows the narrow container (sum of column widths =
+    // 1000px > 360px viewport). Prefer content-width assertion over
+    // scrollWidth/clientWidth: the header section may be sized to content.
+    const headerCells = Array.from(headerMain.querySelectorAll(".st-header-cell"));
+    const totalHeaderWidth = headerCells.reduce(
+      (sum, cell) => sum + cell.getBoundingClientRect().width,
+      0,
+    );
+    expect(totalHeaderWidth).toBeGreaterThan(500);
+
+    // Header remains scrollable (wheel/trackpad over the header works).
+    headerMain.scrollLeft = 80;
+    headerMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+    await wait(30);
+    expect(headerMain.scrollLeft).toBeGreaterThan(0);
+
+    // The visible horizontal scrollbar must appear for the same overflow.
+    const scrollbar = canvasElement.querySelector(".st-horizontal-scrollbar-container");
+    expect(
+      scrollbar,
+      "horizontal scrollbar should show when header content overflows, even with no rows",
+    ).toBeTruthy();
   },
 };
 

@@ -14,6 +14,13 @@ export interface HorizontalScrollbarProps {
   tableBodyContainerRef: HTMLDivElement;
   editColumns: boolean;
   sectionScrollController?: SectionScrollController | null;
+  /**
+   * When true, skip the DOM scrollWidth check and always build the scrollbar.
+   * Used after the caller has already verified content overflow (e.g. empty
+   * tables where the header scrollport is sized to content and reports no
+   * DOM overflow even though columns exceed the viewport).
+   */
+  forceScrollable?: boolean;
 }
 
 export const createHorizontalScrollbar = (
@@ -29,16 +36,20 @@ export const createHorizontalScrollbar = (
     tableBodyContainerRef,
     editColumns,
     sectionScrollController,
+    forceScrollable = false,
   } = props;
 
-  // Check if horizontal scrolling is needed
-  const clientWidth = mainBodyRef.clientWidth;
-  const scrollWidth = mainBodyRef.scrollWidth;
-  const threshold = 1;
-  const isScrollable = scrollWidth - clientWidth > threshold;
-
-  if (!isScrollable) {
-    return null;
+  // Visibility uses the larger of DOM scrollWidth and the known content width
+  // (`mainBodyWidth`). Body scrollWidth alone can under-report when column
+  // virtualization culls off-screen cells, and empty tables have no body
+  // scrollport at all (callers pass the header section as `mainBodyRef`).
+  if (!forceScrollable) {
+    const clientWidth = mainBodyRef.clientWidth;
+    const scrollWidth = Math.max(mainBodyRef.scrollWidth, mainBodyWidth);
+    const threshold = 1;
+    if (scrollWidth - clientWidth <= threshold) {
+      return null;
+    }
   }
 
   // Calculate widths

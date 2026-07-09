@@ -95,4 +95,11 @@ export interface HeaderRenderContext {
    * driving the unfold animation.
    */
   animationCoordinator?: AnimationCoordinator;
+
+  /**
+   * Called immediately before a header host (or its label content) is permanently
+   * discarded so adapters can tear down renderer subtrees (e.g. React portals).
+   * Mirrors {@link CellRenderContext.onRendererHostDiscard}.
+   */
+  onRendererHostDiscard?: (host: HTMLElement) => void;
 }

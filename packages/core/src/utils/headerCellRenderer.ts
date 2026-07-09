@@ -162,6 +162,9 @@ export const renderHeaderCells = (
           axis: removalAccordionAxis,
         });
       } else {
+        // Permanent removal (no animation hand-off): tear down any renderer
+        // subtree mounted into this header before it leaves the DOM.
+        context.onRendererHostDiscard?.(element);
         element.remove();
       }
       renderedCells.delete(cellId);
