@@ -48,6 +48,7 @@ export const DEMO_LIST = [
   { id: "crm", label: "CRM" },
   { id: "infrastructure", label: "Infrastructure" },
   { id: "music", label: "Music" },
+  { id: "radio-stations", label: "Radio Stations" },
   { id: "billing", label: "Billing" },
   { id: "manufacturing", label: "Manufacturing" },
   { id: "hr", label: "HR" },

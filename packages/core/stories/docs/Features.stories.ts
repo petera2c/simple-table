@@ -1,192 +1,157 @@
 /**
- * Docs & Examples – vanilla ports of React Storybook examples.
- * Each story uses SimpleTableVanilla; example logic lives in stories/examples/.
+ * Docs & Examples / Features – capability demos, listed alphabetically.
  */
 import type { Meta, StoryObj } from "@storybook/html";
 import {
-  defaultVanillaArgs,
-  vanillaArgTypes,
-  type UniversalVanillaArgs,
-} from "./vanillaStoryConfig";
-import { renderBasicExample, basicExampleDefaults } from "./examples/BasicExample";
-import { renderAlignmentExample, alignmentExampleDefaults } from "./examples/AlignmentExample";
-import {
-  renderNestedAccessorExample,
-  nestedAccessorExampleDefaults,
-} from "./examples/NestedAccessorExample";
-import { renderThemingExample, themingExampleDefaults } from "./examples/Theming";
-import {
-  renderSelectableCellsExample,
-  selectableCellsExampleDefaults,
-} from "./examples/SelectableCells";
-import {
-  renderHiddenColumnsExample,
-  hiddenColumnsExampleDefaults,
-} from "./examples/HiddenColumnsExample";
-import { renderRowHeightExample, rowHeightExampleDefaults } from "./examples/RowHeightExample";
-import { renderLoadingStateExample } from "./examples/LoadingStateExample";
-import { renderPaginationExample, paginationExampleDefaults } from "./examples/Pagination";
-import { renderServerSidePaginationExample } from "./examples/ServerSidePaginationExample";
-import {
-  renderRowSelectionExample,
-  rowSelectionExampleDefaults,
-} from "./examples/RowSelectionExample";
-import { renderRowButtonsExample, rowButtonsExampleDefaults } from "./examples/RowButtonsExample";
-import { renderCellRendererExample, cellRendererExampleDefaults } from "./examples/CellRenderer";
-import { renderTooltipExample, tooltipExampleDefaults } from "./examples/TooltipExample";
-import {
-  renderBasicRowGroupingExample,
-  basicRowGroupingExampleDefaults,
-} from "./examples/BasicRowGrouping";
-import {
-  renderPinnedColumnsExample,
-  pinnedColumnsExampleDefaults,
-} from "./examples/pinned-columns/PinnedColumns";
-import {
-  renderRowGroupingExample,
-  rowGroupingExampleDefaults,
-} from "./examples/row-grouping/RowGrouping";
-import {
   renderAdvancedSortingExample,
   advancedSortingExampleDefaults,
-} from "./examples/AdvancedSortingExample";
-import { renderAggregateExample, aggregateExampleDefaults } from "./examples/AggregateExample";
+} from "../examples/AdvancedSortingExample";
+import { renderAggregateExample, aggregateExampleDefaults } from "../examples/AggregateExample";
+import { renderAlignmentExample, alignmentExampleDefaults } from "../examples/AlignmentExample";
 import {
   renderAutoExpandColumnsExample,
   autoExpandColumnsExampleDefaults,
-} from "./examples/AutoExpandColumnsExample";
+} from "../examples/AutoExpandColumnsExample";
 import {
-  renderBillingExample,
-  billingExampleDefaults,
-} from "./examples/billing-example/BillingExample";
+  renderBasicRowGroupingExample,
+  basicRowGroupingExampleDefaults,
+} from "../examples/BasicRowGrouping";
 import {
   renderCellHighlightingExample,
   cellHighlightingExampleDefaults,
-} from "./examples/CellHighlighting";
-import { renderChartsExample, chartsExampleDefaults } from "./examples/ChartsExample";
-import { renderClayExample, clayExampleDefaults } from "./examples/ClayExample";
+} from "../examples/CellHighlighting";
+import { renderCellRendererExample, cellRendererExampleDefaults } from "../examples/CellRenderer";
+import { renderChartsExample, chartsExampleDefaults } from "../examples/ChartsExample";
 import {
   renderClipboardFormattingExample,
   clipboardFormattingExampleDefaults,
-} from "./examples/ClipboardFormattingExample";
+} from "../examples/ClipboardFormattingExample";
 import {
   renderCollapsibleColumnsExample,
   collapsibleColumnsExampleDefaults,
-} from "./examples/CollapsibleColumnsExample";
-import {
-  renderColumnWidthChangeExample,
-  columnWidthChangeExampleDefaults,
-} from "./examples/ColumnWidthChangeExample";
+} from "../examples/CollapsibleColumnsExample";
 import {
   renderColumnVisibilityAPIExample,
   columnVisibilityAPIExampleDefaults,
-} from "./examples/ColumnVisibilityAPIExample";
+} from "../examples/ColumnVisibilityAPIExample";
+import {
+  renderColumnWidthChangeExample,
+  columnWidthChangeExampleDefaults,
+} from "../examples/ColumnWidthChangeExample";
 import {
   renderCSVExportFormattingExample,
   csvExportFormattingExampleDefaults,
-} from "./examples/CSVExportFormattingExample";
+} from "../examples/CSVExportFormattingExample";
 import {
   renderCSVExportSingleRowChildrenExample,
   csvExportSingleRowChildrenExampleDefaults,
-} from "./examples/CSVExportSingleRowChildrenExample";
-import { renderCustomHeaderRenderingExample } from "./examples/CustomHeaderRenderingExample";
-import { renderCustomThemeExample } from "./examples/custom-theme/CustomThemeDemo";
+} from "../examples/CSVExportSingleRowChildrenExample";
+import { renderCustomHeaderRenderingExample } from "../examples/CustomHeaderRenderingExample";
+import { renderCustomThemeExample } from "../examples/custom-theme/CustomThemeDemo";
 import {
   renderDynamicHeadersExample,
   dynamicHeadersExampleDefaults,
-} from "./examples/DynamicHeadersExample";
-import {
-  renderDynamicRowLoadingExample,
-  dynamicRowLoadingExampleDefaults,
-} from "./examples/DynamicRowLoadingExample";
-import {
-  renderDynamicRowLoadingWithExternalSortExample,
-  dynamicRowLoadingWithExternalSortExampleDefaults,
-} from "./examples/DynamicRowLoadingWithExternalSortExample";
+} from "../examples/DynamicHeadersExample";
 import {
   renderDynamicNestedTableExample,
   dynamicNestedTableExampleDefaults,
-} from "./examples/DynamicNestedTableExample";
-import { renderEditableCellsExample, editableCellsExampleDefaults } from "./examples/EditableCells";
+} from "../examples/DynamicNestedTableExample";
+import {
+  renderDynamicRowLoadingExample,
+  dynamicRowLoadingExampleDefaults,
+} from "../examples/DynamicRowLoadingExample";
+import {
+  renderDynamicRowLoadingWithExternalSortExample,
+  dynamicRowLoadingWithExternalSortExampleDefaults,
+} from "../examples/DynamicRowLoadingWithExternalSortExample";
+import { renderEditableCellsExample, editableCellsExampleDefaults } from "../examples/EditableCells";
 import {
   renderExpansionControlExample,
   expansionControlExampleDefaults,
-} from "./examples/ExpansionControlExample";
+} from "../examples/ExpansionControlExample";
 import {
   renderExternalFilterExample,
   externalFilterExampleDefaults,
-} from "./examples/ExternalFilterExample";
+} from "../examples/ExternalFilterExample";
 import {
   renderExternalSortExample,
   externalSortExampleDefaults,
-} from "./examples/ExternalSortExample";
+} from "../examples/ExternalSortExample";
 import {
   renderFilterExample,
   filterExampleDefaults,
-} from "./examples/filter-example/FilterExample";
-import {
-  renderFinanceExample,
-  financeExampleDefaults,
-} from "./examples/finance-example/FinancialExample";
+} from "../examples/filter-example/FilterExample";
 import {
   renderHeaderInclusionExample,
   headerInclusionExampleDefaults,
-} from "./examples/HeaderInclusionExample";
+} from "../examples/HeaderInclusionExample";
+import {
+  renderHiddenColumnsExample,
+  hiddenColumnsExampleDefaults,
+} from "../examples/HiddenColumnsExample";
 import {
   renderInfiniteScrollExample,
   infiniteScrollExampleDefaults,
-} from "./examples/InfiniteScroll";
+} from "../examples/InfiniteScroll";
+import { renderLiveUpdatesExample, liveUpdatesExampleDefaults } from "../examples/LiveUpdates";
+import { renderLoadingStateExample } from "../examples/LoadingStateExample";
 import {
-  renderWindowInfiniteScrollExample,
-  windowInfiniteScrollExampleDefaults,
-} from "./examples/WindowInfiniteScroll";
-import {
-  renderInfrastructureExample,
-  infrastructureExampleDefaults,
-} from "./examples/infrastructure/InfrastructureExample";
-import { renderLeadsExample, leadsExampleDefaults } from "./examples/leads/LeadsExample";
-import { renderLiveUpdatesExample, liveUpdatesExampleDefaults } from "./examples/LiveUpdates";
-import {
-  renderManufacturingExample,
-  manufacturingExampleDefaults,
-} from "./examples/manufacturing/ManufacturingExample";
-import { renderMusicExample, musicExampleDefaults } from "./examples/music/MusicExample";
-import {
-  renderMusicWindowScrollExample,
-  musicWindowScrollExampleDefaults,
-} from "./examples/music/MusicWindowScrollExample";
-import { renderNestedGridExample, nestedGridExampleDefaults } from "./examples/NestedGridExample";
+  renderNestedAccessorExample,
+  nestedAccessorExampleDefaults,
+} from "../examples/NestedAccessorExample";
+import { renderNestedGridExample, nestedGridExampleDefaults } from "../examples/NestedGridExample";
+import { renderPaginationExample, paginationExampleDefaults } from "../examples/Pagination";
 import {
   renderPaginationAPIExample,
   paginationAPIExampleDefaults,
-} from "./examples/PaginationAPIExample";
+} from "../examples/PaginationAPIExample";
+import {
+  renderPinnedColumnsExample,
+  pinnedColumnsExampleDefaults,
+} from "../examples/pinned-columns/PinnedColumns";
 import {
   renderProgrammaticFilterExample,
   programmaticFilterExampleDefaults,
-} from "./examples/ProgrammaticFilterExample";
+} from "../examples/ProgrammaticFilterExample";
 import {
   renderProgrammaticSortExample,
   programmaticSortExampleDefaults,
-} from "./examples/ProgrammaticSortExample";
+} from "../examples/ProgrammaticSortExample";
 import {
   renderQuickFilterExample,
   quickFilterExampleDefaults,
-} from "./examples/QuickFilterExample";
-import { renderSalesExample, salesExampleDefaults } from "./examples/sales-example/SalesExample";
+} from "../examples/QuickFilterExample";
+import { renderRowButtonsExample, rowButtonsExampleDefaults } from "../examples/RowButtonsExample";
+import {
+  renderRowGroupingExample,
+  rowGroupingExampleDefaults,
+} from "../examples/row-grouping/RowGrouping";
+import { renderRowHeightExample, rowHeightExampleDefaults } from "../examples/RowHeightExample";
+import {
+  renderRowSelectionExample,
+  rowSelectionExampleDefaults,
+} from "../examples/RowSelectionExample";
+import {
+  renderSelectableCellsExample,
+  selectableCellsExampleDefaults,
+} from "../examples/SelectableCells";
+import { renderServerSidePaginationExample } from "../examples/ServerSidePaginationExample";
+import { renderThemingExample, themingExampleDefaults } from "../examples/Theming";
+import { renderTooltipExample, tooltipExampleDefaults } from "../examples/TooltipExample";
+import {
+  renderWindowInfiniteScrollExample,
+  windowInfiniteScrollExampleDefaults,
+} from "../examples/WindowInfiniteScroll";
+import { storyArgs } from "./storyArgs";
 
 const meta: Meta = {
-  title: "Docs & Examples",
+  title: "Docs & Examples/Features",
   parameters: {
     layout: "fullscreen",
   },
 };
 
 export default meta;
-
-const storyArgs = (exampleDefaults: Partial<UniversalVanillaArgs> = {}) => ({
-  args: { ...defaultVanillaArgs, ...exampleDefaults },
-  argTypes: vanillaArgTypes,
-});
 
 export const AdvancedSorting: StoryObj = {
   ...storyArgs(advancedSortingExampleDefaults),
@@ -199,7 +164,8 @@ export const AdvancedSorting: StoryObj = {
     },
   },
 };
-export const AggregateExample: StoryObj = {
+
+export const Aggregate: StoryObj = {
   ...storyArgs(aggregateExampleDefaults),
   render: (args) => renderAggregateExample(args),
   parameters: {
@@ -208,6 +174,7 @@ export const AggregateExample: StoryObj = {
     },
   },
 };
+
 export const Alignment: StoryObj = {
   ...storyArgs(alignmentExampleDefaults),
   render: (args) => renderAlignmentExample(args),
@@ -219,23 +186,13 @@ export const Alignment: StoryObj = {
     },
   },
 };
+
 export const AutoExpandColumns: StoryObj = {
   ...storyArgs(autoExpandColumnsExampleDefaults),
   render: (args) => renderAutoExpandColumnsExample(args),
   parameters: { docs: { description: { story: "Columns auto-expand to fill available width." } } },
 };
-export const BasicExample: StoryObj = {
-  ...storyArgs(basicExampleDefaults),
-  render: (args) => renderBasicExample(args),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Quick start demo: sortable, filterable columns with column resizing, reordering, and cell selection.",
-      },
-    },
-  },
-};
+
 export const BasicRowGrouping: StoryObj = {
   ...storyArgs(basicRowGroupingExampleDefaults),
   render: (args) => renderBasicRowGroupingExample(args),
@@ -243,13 +200,7 @@ export const BasicRowGrouping: StoryObj = {
     docs: { description: { story: "Basic row grouping with expandable group rows." } },
   },
 };
-export const BillingExample: StoryObj = {
-  ...storyArgs(billingExampleDefaults),
-  render: (args) => renderBillingExample(args),
-  parameters: {
-    docs: { description: { story: "Billing/invoice table with formatted amounts and status." } },
-  },
-};
+
 export const CSVExportFormatting: StoryObj = {
   ...storyArgs(csvExportFormattingExampleDefaults),
   render: (args) => renderCSVExportFormattingExample(args),
@@ -259,6 +210,7 @@ export const CSVExportFormatting: StoryObj = {
     },
   },
 };
+
 export const CSVExportSingleRowChildren: StoryObj = {
   ...storyArgs(csvExportSingleRowChildrenExampleDefaults),
   render: (args) => renderCSVExportSingleRowChildrenExample(args),
@@ -266,6 +218,7 @@ export const CSVExportSingleRowChildren: StoryObj = {
     docs: { description: { story: "CSV export with single row children and nested data." } },
   },
 };
+
 export const CellHighlighting: StoryObj = {
   ...storyArgs(cellHighlightingExampleDefaults),
   render: (args) => renderCellHighlightingExample(args),
@@ -273,11 +226,13 @@ export const CellHighlighting: StoryObj = {
     docs: { description: { story: "Highlight cells by value or condition (e.g. thresholds)." } },
   },
 };
+
 export const CellRenderer: StoryObj = {
   ...storyArgs(cellRendererExampleDefaults),
   render: (args) => renderCellRendererExample(args),
   parameters: { docs: { description: { story: "Custom cell renderers for rich cell content." } } },
 };
+
 export const Charts: StoryObj = {
   ...storyArgs(chartsExampleDefaults),
   render: (args) => renderChartsExample(args),
@@ -285,13 +240,7 @@ export const Charts: StoryObj = {
     docs: { description: { story: "Table with chart or sparkline content in cells." } },
   },
 };
-export const ClayExample: StoryObj = {
-  ...storyArgs(clayExampleDefaults),
-  render: (args) => renderClayExample(args),
-  parameters: {
-    docs: { description: { story: "Clay design system styling example for the table." } },
-  },
-};
+
 export const ClipboardFormatting: StoryObj = {
   ...storyArgs(clipboardFormattingExampleDefaults),
   render: (args) => renderClipboardFormattingExample(args),
@@ -301,6 +250,7 @@ export const ClipboardFormatting: StoryObj = {
     },
   },
 };
+
 export const CollapsibleColumns: StoryObj = {
   ...storyArgs(collapsibleColumnsExampleDefaults),
   render: (args) => renderCollapsibleColumnsExample(args),
@@ -308,6 +258,7 @@ export const CollapsibleColumns: StoryObj = {
     docs: { description: { story: "Collapsible column groups with expand/collapse." } },
   },
 };
+
 export const ColumnVisibilityAPI: StoryObj = {
   ...storyArgs(columnVisibilityAPIExampleDefaults),
   render: (args) => renderColumnVisibilityAPIExample(args),
@@ -315,6 +266,7 @@ export const ColumnVisibilityAPI: StoryObj = {
     docs: { description: { story: "Show/hide columns via API and column visibility controls." } },
   },
 };
+
 export const ColumnWidthChange: StoryObj = {
   ...storyArgs(columnWidthChangeExampleDefaults),
   render: (args) => renderColumnWidthChangeExample(args),
@@ -322,11 +274,13 @@ export const ColumnWidthChange: StoryObj = {
     docs: { description: { story: "Programmatic column width changes and resize behavior." } },
   },
 };
+
 export const CustomHeaderRendering: StoryObj = {
   ...storyArgs(),
   render: (args) => renderCustomHeaderRenderingExample(args),
   parameters: { docs: { description: { story: "Custom header cell rendering and layout." } } },
 };
+
 export const CustomTheme: StoryObj = {
   ...storyArgs(),
   render: (args) => renderCustomThemeExample(args),
@@ -334,6 +288,7 @@ export const CustomTheme: StoryObj = {
     docs: { description: { story: "Custom theme colors and styling via customTheme prop." } },
   },
 };
+
 export const DynamicHeaders: StoryObj = {
   ...storyArgs(dynamicHeadersExampleDefaults),
   render: (args) => renderDynamicHeadersExample(args),
@@ -341,6 +296,7 @@ export const DynamicHeaders: StoryObj = {
     docs: { description: { story: "Headers that change dynamically (add/remove columns)." } },
   },
 };
+
 export const DynamicNestedTableLoading: StoryObj = {
   ...storyArgs(dynamicNestedTableExampleDefaults),
   render: (args) => renderDynamicNestedTableExample(args),
@@ -348,6 +304,7 @@ export const DynamicNestedTableLoading: StoryObj = {
     docs: { description: { story: "Nested tables with dynamically loaded child data." } },
   },
 };
+
 export const DynamicRowLoading: StoryObj = {
   ...storyArgs(dynamicRowLoadingExampleDefaults),
   render: (args) => renderDynamicRowLoadingExample(args),
@@ -355,6 +312,7 @@ export const DynamicRowLoading: StoryObj = {
     docs: { description: { story: "Rows loaded dynamically (e.g. on expand or scroll)." } },
   },
 };
+
 export const DynamicRowLoadingWithExternalSort: StoryObj = {
   ...storyArgs(dynamicRowLoadingWithExternalSortExampleDefaults),
   render: (args) => renderDynamicRowLoadingWithExternalSortExample(args),
@@ -362,11 +320,13 @@ export const DynamicRowLoadingWithExternalSort: StoryObj = {
     docs: { description: { story: "Dynamic row loading combined with external sort handling." } },
   },
 };
+
 export const EditableCells: StoryObj = {
   ...storyArgs(editableCellsExampleDefaults),
   render: (args) => renderEditableCellsExample(args),
   parameters: { docs: { description: { story: "Inline cell editing with validation and save." } } },
 };
+
 export const ExpansionControl: StoryObj = {
   ...storyArgs(expansionControlExampleDefaults),
   render: (args) => renderExpansionControlExample(args),
@@ -378,6 +338,7 @@ export const ExpansionControl: StoryObj = {
     },
   },
 };
+
 export const ExternalFilter: StoryObj = {
   ...storyArgs(externalFilterExampleDefaults),
   render: (args) => renderExternalFilterExample(args),
@@ -387,6 +348,7 @@ export const ExternalFilter: StoryObj = {
     },
   },
 };
+
 export const ExternalSort: StoryObj = {
   ...storyArgs(externalSortExampleDefaults),
   render: (args) => renderExternalSortExample(args),
@@ -396,20 +358,15 @@ export const ExternalSort: StoryObj = {
     },
   },
 };
-export const FilterExample: StoryObj = {
+
+export const Filter: StoryObj = {
   ...storyArgs(filterExampleDefaults),
   render: (args) => renderFilterExample(args),
   parameters: {
     docs: { description: { story: "Column filters and filter UI with multiple filter types." } },
   },
 };
-export const FinanceExample: StoryObj = {
-  ...storyArgs(financeExampleDefaults),
-  render: (args) => renderFinanceExample(args),
-  parameters: {
-    docs: { description: { story: "Financial data table with currency and number formatting." } },
-  },
-};
+
 export const HeaderInclusion: StoryObj = {
   ...storyArgs(headerInclusionExampleDefaults),
   render: (args) => renderHeaderInclusionExample(args),
@@ -419,6 +376,7 @@ export const HeaderInclusion: StoryObj = {
     },
   },
 };
+
 export const HiddenColumns: StoryObj = {
   ...storyArgs(hiddenColumnsExampleDefaults),
   render: (args) => renderHiddenColumnsExample(args),
@@ -428,6 +386,7 @@ export const HiddenColumns: StoryObj = {
     },
   },
 };
+
 export const InfiniteScroll: StoryObj = {
   ...storyArgs(infiniteScrollExampleDefaults),
   render: (args) => renderInfiniteScrollExample(args),
@@ -435,32 +394,7 @@ export const InfiniteScroll: StoryObj = {
     docs: { description: { story: "Infinite scroll or load-more for large datasets." } },
   },
 };
-export const WindowInfiniteScroll: StoryObj = {
-  ...storyArgs(windowInfiniteScrollExampleDefaults),
-  render: (args) => renderWindowInfiniteScrollExample(args),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Window-style infinite scroll: the table has no height/maxHeight and uses the outer page (`scrollParent`) to drive virtualization and onLoadMore.",
-      },
-    },
-  },
-};
-export const InfrastructureExample: StoryObj = {
-  ...storyArgs(infrastructureExampleDefaults),
-  render: (args) => renderInfrastructureExample(args),
-  parameters: {
-    docs: { description: { story: "Infrastructure/assets table with status and metrics." } },
-  },
-};
-export const LeadsExample: StoryObj = {
-  ...storyArgs(leadsExampleDefaults),
-  render: (args) => renderLeadsExample(args),
-  parameters: {
-    docs: { description: { story: "Leads/CRM table with contact and pipeline data." } },
-  },
-};
+
 export const LiveUpdates: StoryObj = {
   ...storyArgs(liveUpdatesExampleDefaults),
   render: (args) => renderLiveUpdatesExample(args),
@@ -468,6 +402,7 @@ export const LiveUpdates: StoryObj = {
     docs: { description: { story: "Live data updates (add/remove/update rows or cells)." } },
   },
 };
+
 export const LoadingState: StoryObj = {
   ...storyArgs(),
   render: (args) => renderLoadingStateExample(args),
@@ -475,35 +410,7 @@ export const LoadingState: StoryObj = {
     docs: { description: { story: "Loading state and skeleton while data is fetched." } },
   },
 };
-export const ManufacturingExample: StoryObj = {
-  ...storyArgs(manufacturingExampleDefaults),
-  render: (args) => renderManufacturingExample(args),
-  parameters: {
-    docs: { description: { story: "Manufacturing/inventory table with production metrics." } },
-  },
-};
-export const MusicExample: StoryObj = {
-  ...storyArgs(musicExampleDefaults),
-  render: (args) => renderMusicExample(args),
-  parameters: { docs: { description: { story: "Music/catalog table with albums and artists." } } },
-};
-export const MusicWindowScroll: StoryObj = {
-  ...storyArgs(musicWindowScrollExampleDefaults),
-  render: (args) => renderMusicWindowScrollExample(args),
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "Wide (~60 column) artist-analytics grid in window/external scroll mode: no height/maxHeight, so the outer container drives row virtualization while the sticky header pins to the viewport. Every data column uses a custom DOM cellRenderer.",
-      },
-    },
-  },
-};
-export const NestedGrid: StoryObj = {
-  ...storyArgs(nestedGridExampleDefaults),
-  render: (args) => renderNestedGridExample(args),
-  parameters: { docs: { description: { story: "Nested grid or table-in-table layout." } } },
-};
+
 export const NestedAccessor: StoryObj = {
   ...storyArgs(nestedAccessorExampleDefaults),
   render: (args) => renderNestedAccessorExample(args),
@@ -516,6 +423,13 @@ export const NestedAccessor: StoryObj = {
     },
   },
 };
+
+export const NestedGrid: StoryObj = {
+  ...storyArgs(nestedGridExampleDefaults),
+  render: (args) => renderNestedGridExample(args),
+  parameters: { docs: { description: { story: "Nested grid or table-in-table layout." } } },
+};
+
 export const Pagination: StoryObj = {
   ...storyArgs(paginationExampleDefaults),
   render: (args) => renderPaginationExample(args),
@@ -523,6 +437,7 @@ export const Pagination: StoryObj = {
     docs: { description: { story: "Client-side pagination with page size and navigation." } },
   },
 };
+
 export const PaginationAPI: StoryObj = {
   ...storyArgs(paginationAPIExampleDefaults),
   render: (args) => renderPaginationAPIExample(args),
@@ -534,6 +449,7 @@ export const PaginationAPI: StoryObj = {
     },
   },
 };
+
 export const PinnedColumns: StoryObj = {
   ...storyArgs(pinnedColumnsExampleDefaults),
   render: (args) => renderPinnedColumnsExample(args),
@@ -541,6 +457,7 @@ export const PinnedColumns: StoryObj = {
     docs: { description: { story: "Left- or right-pinned columns that stay visible on scroll." } },
   },
 };
+
 export const ProgrammaticFilter: StoryObj = {
   ...storyArgs(programmaticFilterExampleDefaults),
   render: (args) => renderProgrammaticFilterExample(args),
@@ -548,21 +465,25 @@ export const ProgrammaticFilter: StoryObj = {
     docs: { description: { story: "Set or clear filters programmatically via API." } },
   },
 };
+
 export const ProgrammaticSort: StoryObj = {
   ...storyArgs(programmaticSortExampleDefaults),
   render: (args) => renderProgrammaticSortExample(args),
   parameters: { docs: { description: { story: "Set sort state programmatically via API." } } },
 };
+
 export const QuickFilter: StoryObj = {
   ...storyArgs(quickFilterExampleDefaults),
   render: (args) => renderQuickFilterExample(args),
   parameters: { docs: { description: { story: "Global quick filter (search across columns)." } } },
 };
+
 export const RowButtons: StoryObj = {
   ...storyArgs(rowButtonsExampleDefaults),
   render: (args) => renderRowButtonsExample(args),
   parameters: { docs: { description: { story: "Action buttons per row (e.g. edit, delete)." } } },
 };
+
 export const RowGrouping: StoryObj = {
   ...storyArgs(rowGroupingExampleDefaults),
   render: (args) => renderRowGroupingExample(args),
@@ -570,6 +491,7 @@ export const RowGrouping: StoryObj = {
     docs: { description: { story: "Row grouping with hierarchical data and expand/collapse." } },
   },
 };
+
 export const RowHeight: StoryObj = {
   ...storyArgs(rowHeightExampleDefaults),
   render: (args) => renderRowHeightExample(args),
@@ -577,6 +499,7 @@ export const RowHeight: StoryObj = {
     docs: { description: { story: "Custom row height and dense/comfortable variants." } },
   },
 };
+
 export const RowSelection: StoryObj = {
   ...storyArgs(rowSelectionExampleDefaults),
   render: (args) => renderRowSelectionExample(args),
@@ -588,18 +511,13 @@ export const RowSelection: StoryObj = {
     },
   },
 };
-export const SalesExample: StoryObj = {
-  ...storyArgs(salesExampleDefaults),
-  render: (args) => renderSalesExample(args),
-  parameters: {
-    docs: { description: { story: "Sales/orders table with revenue and product data." } },
-  },
-};
+
 export const SelectableCells: StoryObj = {
   ...storyArgs(selectableCellsExampleDefaults),
   render: (args) => renderSelectableCellsExample(args),
   parameters: { docs: { description: { story: "Selectable cells for copy or range selection." } } },
 };
+
 export const ServerSidePagination: StoryObj = {
   ...storyArgs(),
   render: (args) => renderServerSidePaginationExample(args),
@@ -607,6 +525,7 @@ export const ServerSidePagination: StoryObj = {
     docs: { description: { story: "Server-side pagination with page/fetch from API." } },
   },
 };
+
 export const Theming: StoryObj = {
   ...storyArgs(themingExampleDefaults),
   render: (args) => renderThemingExample(args),
@@ -614,8 +533,22 @@ export const Theming: StoryObj = {
     docs: { description: { story: "Theme switching (e.g. light/dark) and built-in themes." } },
   },
 };
+
 export const Tooltip: StoryObj = {
   ...storyArgs(tooltipExampleDefaults),
   render: (args) => renderTooltipExample(args),
   parameters: { docs: { description: { story: "Cell tooltips on hover or focus." } } },
+};
+
+export const WindowInfiniteScroll: StoryObj = {
+  ...storyArgs(windowInfiniteScrollExampleDefaults),
+  render: (args) => renderWindowInfiniteScrollExample(args),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Window-style infinite scroll: the table has no height/maxHeight and uses the outer page (`scrollParent`) to drive virtualization and onLoadMore.",
+      },
+    },
+  },
 };

@@ -1064,6 +1064,7 @@ input {
   align-self: stretch;
   height: auto;
   min-height: 0;
+  cursor: pointer;
 }
 
 .st-column-editor-text {
@@ -1072,6 +1073,13 @@ input {
   z-index: 2;
   cursor: pointer;
   flex-grow: 1;
+  /* Stay inside the editor content box. Intrinsic vertical-rl sizing can
+     exceed the border-box content width by ~1px and paint over the table
+     root's right border (visible as a thinned segment along the label). */
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .st-column-editor.open,
@@ -1082,13 +1090,18 @@ input {
 .st-column-editor-popout {
   position: absolute;
   top: 0;
-  right: calc(100% + 1px);
+  /* `right` % is relative to the padding box. With border-box + border-left,
+     `100% + 1px` only clears to the outer left edge (0 gap), so the open
+     popout abuts the divider and subpixel AA thins it. Add 2× border-width
+     to clear the border and keep a 1px hairline gap. */
+  right: calc(100% + (2 * var(--st-border-width)));
   z-index: 10;
   height: 100%;
   background-color: var(--st-column-editor-popout-background-color);
   transition: width var(--st-transition-duration) var(--st-transition-ease);
   overflow: hidden;
   width: 0;
+  cursor: default;
 }
 .st-column-editor-popout-content {
   display: flex;

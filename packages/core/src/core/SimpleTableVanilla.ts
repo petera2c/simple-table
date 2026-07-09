@@ -63,11 +63,7 @@ import "../styles/all-themes.css";
  */
 const isDevEnvironment = (): boolean => {
   try {
-    return (
-      typeof process !== "undefined" &&
-      !!process.env &&
-      process.env.NODE_ENV !== "production"
-    );
+    return typeof process !== "undefined" && !!process.env && process.env.NODE_ENV !== "production";
   } catch {
     return false;
   }
@@ -1199,8 +1195,7 @@ export class SimpleTableVanilla {
         this.externalViewportHeight > 0 ? this.externalViewportHeight : undefined,
       onRender: () => this.render("resizeHandler-onRender"),
       getShrinkFloors: () => this.getShrinkFloors(),
-      onAutoExpandNaturalWidths: (widths: Map<string, number>) =>
-        this.recordNaturalWidths(widths),
+      onAutoExpandNaturalWidths: (widths: Map<string, number>) => this.recordNaturalWidths(widths),
       setIsResizing: (value: boolean) => {
         this.isResizing = value;
         if (this.autoScaleManager && value === false) {
@@ -1340,10 +1335,7 @@ export class SimpleTableVanilla {
       const processed = this.renderOrchestrator.getLastProcessedResult();
       if (processed) {
         const pageRows = processed.currentTableRows
-          .filter(
-            (tr) =>
-              tr.row && !tr.stateIndicator && !tr.isLoadingSkeleton && !tr.nestedTable,
-          )
+          .filter((tr) => tr.row && !tr.stateIndicator && !tr.isLoadingSkeleton && !tr.nestedTable)
           .map((tr) => tr.row);
         if (pageRows.length > 0) return pageRows;
       }
@@ -1456,6 +1448,7 @@ export class SimpleTableVanilla {
           autoSizeMode: leaf.autoSizeMode,
           sortIcon: this.resolvedIcons.sortUp,
           expandIcon: this.resolvedIcons.expand,
+          onRendererHostDiscard: this.config.onRendererHostDiscard,
         });
         widths.set(accessor, width);
       }
@@ -1602,7 +1595,7 @@ export class SimpleTableVanilla {
 
     const hasScrollParent = this.config.scrollParent != null;
     const parentHint = hasScrollParent
-      ? " A `scrollParent` is set but did not produce a bounded viewport — make sure it is an element whose visible height is smaller than its content (e.g. a fixed/max height with `overflow: auto`), or use `\"window\"`."
+      ? ' A `scrollParent` is set but did not produce a bounded viewport — make sure it is an element whose visible height is smaller than its content (e.g. a fixed/max height with `overflow: auto`), or use `"window"`.'
       : "";
 
     // eslint-disable-next-line no-console

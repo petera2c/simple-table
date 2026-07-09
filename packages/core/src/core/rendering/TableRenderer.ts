@@ -446,6 +446,12 @@ export class TableRenderer {
     }
 
     if (shouldShowEmptyState) {
+      // Drop SectionRenderer-owned body sections before we rebuild empty-state
+      // scrollports. Otherwise clearing the live section leaves cell registries
+      // pointing at detached nodes and rows never remount when data returns
+      // (e.g. typing a smart-filter negation through a brief 0-row intermediate).
+      this.sectionRenderer.releaseBodySections();
+
       // Keep real body section scrollports (sized to content width) so
       // wheel/trackpad over the empty area and the horizontal scrollbar can
       // still scroll headers. A non-scrolling empty wrapper alone cannot.

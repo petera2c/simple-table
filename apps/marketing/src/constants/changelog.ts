@@ -22,6 +22,21 @@ export const v3_9_3: ChangelogEntry = {
       description:
         "Empty tables keep a body scrollport so wheel/trackpad over the empty area and the horizontal scrollbar sync with the headers.",
     },
+    {
+      type: "bugfix",
+      description:
+        "Fixed body rows failing to remount after a filter briefly matched zero rows (e.g. typing a smart-filter negation).",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Column editor strip uses a pointer cursor across the full bar, and opening the popout no longer thins the table's right border along the sticky label.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Double-click column autofit no longer freezes React tables with custom cell renderers (measure-time portal hosts are disposed, and already-wrapped renderers are not nested on controlled header updates).",
+    },
   ],
 };
 

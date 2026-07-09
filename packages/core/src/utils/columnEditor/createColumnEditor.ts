@@ -55,7 +55,7 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
   container.className = `st-column-editor ${open ? "open" : ""}`;
   container.style.width = `${COLUMN_EDIT_WIDTH}px`;
 
-  const handleClick = (e: MouseEvent) => {
+  const handleClick = () => {
     setOpen(!open);
   };
 

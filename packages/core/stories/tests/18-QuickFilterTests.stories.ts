@@ -418,6 +418,7 @@ export const SmartModeQuotedPhrase = {
 // ============================================================================
 
 export const SmartModeNegation = {
+  parameters: { tags: ["quick-filter-smart-negation"] },
   render: () => {
     const data = createTestData();
     const headers: HeaderObject[] = [
@@ -448,6 +449,9 @@ export const SmartModeNegation = {
     const input = canvasElement.querySelector('input[data-testid="negation-input"]') as HTMLInputElement;
     if (!input) throw new Error("Input not found");
 
+    // Type character-by-character: intermediate queries like "-E" match every
+    // row (all contain "e"), briefly hitting the empty state. Rows must remount
+    // when the final "-Engineering" filter restores non-empty results.
     await user.clear(input);
     await user.type(input, "-Engineering");
     await new Promise((r) => setTimeout(r, 500));
@@ -457,6 +461,60 @@ export const SmartModeNegation = {
     expect(countAfterNegation).toBeGreaterThan(0);
     const deptData = getColumnData(canvasElement, "department");
     deptData.forEach((d) => expect(d).not.toBe("Engineering"));
+  },
+};
+
+/**
+ * Filtering through a brief empty state (0 matching rows) and back must remount
+ * body cells. Regression for empty-state scrollport takeover that left
+ * SectionRenderer holding detached body sections.
+ */
+export const QuickFilterRecoversAfterEmptyState = {
+  parameters: { tags: ["quick-filter-recover-after-empty"] },
+  render: () => {
+    const data = createTestData();
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 180 },
+      { accessor: "department", label: "Department", width: 140 },
+    ];
+    const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
+      height: "400px",
+      quickFilter: { text: "", mode: "simple" },
+    });
+    quickFilterTableInstance = table;
+    const input = document.createElement("input");
+    input.type = "text";
+    input.setAttribute("data-testid", "recover-empty-input");
+    input.style.width = "100%";
+    input.style.padding = "8px";
+    input.style.marginBottom = "1rem";
+    input.addEventListener("input", () => {
+      quickFilterTableInstance?.update({ quickFilter: { text: input.value, mode: "simple" } });
+    });
+    wrapper.insertBefore(input, tableContainer);
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const user = userEvent.setup();
+    expect(getVisibleRowCount(canvasElement)).toBe(8);
+    const input = canvasElement.querySelector(
+      'input[data-testid="recover-empty-input"]',
+    ) as HTMLInputElement;
+    if (!input) throw new Error("Input not found");
+
+    // Force the empty state.
+    await user.clear(input);
+    await user.type(input, "zzzz-no-match");
+    await new Promise((r) => setTimeout(r, 300));
+    expect(getVisibleRowCount(canvasElement)).toBe(0);
+    expect(canvasElement.querySelector(".st-empty-state-wrapper")).toBeTruthy();
+
+    // Clear the filter — rows must remount (not stay blank).
+    await user.clear(input);
+    await new Promise((r) => setTimeout(r, 300));
+    expect(canvasElement.querySelector(".st-empty-state-wrapper")).toBeFalsy();
+    expect(getVisibleRowCount(canvasElement)).toBe(8);
   },
 };
 

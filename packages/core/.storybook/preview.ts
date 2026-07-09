@@ -4,6 +4,16 @@ import type { Preview } from "@storybook/html";
 const preview: Preview = {
   parameters: {
     layout: "centered",
+    options: {
+      storySort: {
+        order: [
+          "Docs & Examples",
+          ["Getting Started", "Features", "Examples"],
+          "Tests",
+          "*",
+        ],
+      },
+    },
   },
   decorators: [
     (Story) => {

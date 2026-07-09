@@ -13,6 +13,7 @@ import {
   wrapReactNode,
   reactNodeToHtmlString,
   isReactComponent,
+  isWrappedRenderer,
 } from "../utils/wrapReactRenderer";
 
 let host: HTMLDivElement | null = null;
@@ -213,5 +214,17 @@ describe("static helpers", () => {
     expect(isReactComponent("text")).toBe(false);
     expect(isReactComponent(createElement("div"))).toBe(false);
     expect(isReactComponent(null)).toBe(false);
+  });
+
+  it("does not nest wraps when a wrapped renderer is passed back through wrap helpers", () => {
+    const bridge = new PortalBridge();
+    function Comp({ value }: { value: string }) {
+      return createElement("span", null, value);
+    }
+    const once = wrapReactRendererIntoFragment(bridge, Comp);
+    const twice = wrapReactRendererIntoFragment(bridge, once as unknown as React.ComponentType<object>);
+    expect(twice).toBe(once);
+    expect(isWrappedRenderer(once)).toBe(true);
+    expect(isWrappedRenderer(Comp)).toBe(false);
   });
 });

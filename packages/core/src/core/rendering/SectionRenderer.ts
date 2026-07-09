@@ -1476,13 +1476,43 @@ export class SectionRenderer {
     });
   }
 
-  cleanup(): void {
-    this.headerSections.clear();
+  /**
+   * Tear down all body sections and forget them so a subsequent
+   * `renderBodySection` creates fresh nodes. Used when the empty-state path
+   * takes over the body container: clearing `innerHTML` alone leaves
+   * `renderedCells` pointing at detached nodes, so rows never remount when
+   * data returns (e.g. typing `-E` mid-filter briefly matches every row).
+   */
+  releaseBodySections(): void {
+    this.bodySections.forEach((section) => {
+      cleanupBodyCellRendering(section, this.onRendererHostDiscard);
+      section.remove();
+    });
     this.bodySections.clear();
     this.bodyCellsCache.clear();
+    this.bodySectionSnapshots.clear();
+    this.nestedGridRowsMap.forEach((map) => {
+      map.forEach((entry) => {
+        entry.cleanup?.();
+        entry.element.remove();
+      });
+      map.clear();
+    });
+    this.nestedGridRowsMap.clear();
+    this.stateRowsMap.forEach((map) => {
+      map.forEach((entry) => {
+        entry.element.remove();
+      });
+      map.clear();
+    });
+    this.stateRowsMap.clear();
+  }
+
+  cleanup(): void {
+    this.releaseBodySections();
+    this.headerSections.clear();
     this.headerCellsCache.clear();
     this.contextCache.clear();
-    this.bodySectionSnapshots.clear();
     this.nextColIndexMap.clear();
   }
 }

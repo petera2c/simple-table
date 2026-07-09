@@ -34,22 +34,47 @@ function unwrapStaticMarkupHost(container: HTMLDivElement): HTMLElement {
 }
 
 /**
+ * Marks a function produced by the wrap helpers below. Controlled-header flows
+ * often push core's already-wrapped renderers back through React state into
+ * {@link buildVanillaConfig}; without this marker those functions would be
+ * wrapped again (a portal-registering wrapper around another portal-registering
+ * wrapper), which can freeze the page after autofit / width sync.
+ */
+export const ST_WRAPPED_RENDERER = Symbol.for("simple-table.wrappedRenderer");
+
+/** True when `fn` was produced by one of the wrap helpers in this module. */
+export function isWrappedRenderer(fn: unknown): boolean {
+  return typeof fn === "function" && Boolean((fn as any)[ST_WRAPPED_RENDERER]);
+}
+
+function markWrapped<T extends (...args: any[]) => any>(fn: T): T {
+  (fn as any)[ST_WRAPPED_RENDERER] = true;
+  return fn;
+}
+
+/**
  * Wraps a React component into a function that returns an HTMLElement, matching
  * the vanilla renderer contract expected by simple-table-core.
  *
  * The component is registered with the {@link PortalBridge} rather than mounted
  * in its own `createRoot`, so it renders as part of the host React tree and
  * inherits context. The returned container is filled on the host's next render.
+ *
+ * Idempotent: if `Component` is already a wrapped vanilla renderer, it is
+ * returned unchanged so controlled `defaultHeaders` updates cannot nest wraps.
  */
 export function wrapReactRenderer<P extends object>(
   bridge: PortalBridge,
   Component: React.ComponentType<P>,
 ): (props: P) => HTMLElement {
-  return (props: P): HTMLElement => {
+  if (isWrappedRenderer(Component)) {
+    return Component as unknown as (props: P) => HTMLElement;
+  }
+  return markWrapped((props: P): HTMLElement => {
     const container = document.createElement("div");
     bridge.register(<Component {...(props as any)} />, container);
     return container;
-  };
+  });
 }
 
 /**
@@ -61,12 +86,15 @@ export function wrapReactRendererIntoFragment<P extends object>(
   bridge: PortalBridge,
   Component: React.ComponentType<P>,
 ): (props: P) => HTMLElement {
-  return (props: P): HTMLElement => {
+  if (isWrappedRenderer(Component)) {
+    return Component as unknown as (props: P) => HTMLElement;
+  }
+  return markWrapped((props: P): HTMLElement => {
     const container = document.createElement("div");
     container.style.display = "contents";
     bridge.register(<Component {...(props as any)} />, container);
     return container;
-  };
+  });
 }
 
 /**
@@ -78,7 +106,10 @@ export function wrapReactHeaderRenderer(
   bridge: PortalBridge,
   Component: React.ComponentType<VanillaHeaderRendererProps>,
 ): (props: VanillaHeaderRendererProps) => HTMLElement {
-  return (props: VanillaHeaderRendererProps): HTMLElement => {
+  if (isWrappedRenderer(Component)) {
+    return Component as unknown as (props: VanillaHeaderRendererProps) => HTMLElement;
+  }
+  return markWrapped((props: VanillaHeaderRendererProps): HTMLElement => {
     const container = document.createElement("div");
     const reactProps = {
       ...props,
@@ -86,7 +117,7 @@ export function wrapReactHeaderRenderer(
     };
     bridge.register(<Component {...(reactProps as any)} />, container);
     return container;
-  };
+  });
 }
 
 /**
@@ -97,7 +128,10 @@ export function wrapReactHeaderDropdown(
   bridge: PortalBridge,
   Component: React.ComponentType<VanillaHeaderDropdownProps>,
 ): (props: VanillaHeaderDropdownProps) => HTMLElement {
-  return (props: VanillaHeaderDropdownProps): HTMLElement => {
+  if (isWrappedRenderer(Component)) {
+    return Component as unknown as (props: VanillaHeaderDropdownProps) => HTMLElement;
+  }
+  return markWrapped((props: VanillaHeaderDropdownProps): HTMLElement => {
     const container = document.createElement("div");
     const reactProps = {
       ...props,
@@ -105,7 +139,7 @@ export function wrapReactHeaderDropdown(
     };
     bridge.register(<Component {...(reactProps as any)} />, container);
     return container;
-  };
+  });
 }
 
 /**
@@ -116,7 +150,10 @@ export function wrapReactFooterRenderer(
   bridge: PortalBridge,
   Component: React.ComponentType<VanillaFooterRendererProps>,
 ): (props: VanillaFooterRendererProps) => HTMLElement {
-  return (props: VanillaFooterRendererProps): HTMLElement => {
+  if (isWrappedRenderer(Component)) {
+    return Component as unknown as (props: VanillaFooterRendererProps) => HTMLElement;
+  }
+  return markWrapped((props: VanillaFooterRendererProps): HTMLElement => {
     const container = document.createElement("div");
     const reactProps = {
       ...props,
@@ -124,7 +161,7 @@ export function wrapReactFooterRenderer(
     };
     bridge.register(<Component {...(reactProps as any)} />, container);
     return container;
-  };
+  });
 }
 
 /**
@@ -135,7 +172,10 @@ export function wrapReactColumnEditorRowRenderer(
   bridge: PortalBridge,
   Component: React.ComponentType<object>,
 ): (props: VanillaColumnEditorRowRendererProps) => HTMLElement {
-  return (props: VanillaColumnEditorRowRendererProps): HTMLElement => {
+  if (isWrappedRenderer(Component)) {
+    return Component as unknown as (props: VanillaColumnEditorRowRendererProps) => HTMLElement;
+  }
+  return markWrapped((props: VanillaColumnEditorRowRendererProps): HTMLElement => {
     const container = document.createElement("div");
     const reactProps = {
       ...props,
@@ -143,7 +183,7 @@ export function wrapReactColumnEditorRowRenderer(
     };
     bridge.register(<Component {...(reactProps as any)} />, container);
     return container;
-  };
+  });
 }
 
 /**
@@ -154,7 +194,10 @@ export function wrapReactColumnEditorCustomRenderer(
   bridge: PortalBridge,
   Component: React.ComponentType<object>,
 ): (props: VanillaColumnEditorCustomRendererProps) => HTMLElement {
-  return (props: VanillaColumnEditorCustomRendererProps): HTMLElement => {
+  if (isWrappedRenderer(Component)) {
+    return Component as unknown as (props: VanillaColumnEditorCustomRendererProps) => HTMLElement;
+  }
+  return markWrapped((props: VanillaColumnEditorCustomRendererProps): HTMLElement => {
     const container = document.createElement("div");
     const reactProps = {
       ...props,
@@ -164,7 +207,7 @@ export function wrapReactColumnEditorCustomRenderer(
     };
     bridge.register(<Component {...(reactProps as any)} />, container);
     return container;
-  };
+  });
 }
 
 /**
@@ -179,12 +222,15 @@ export function wrapReactRowButton(
   bridge: PortalBridge,
   Component: React.ComponentType<VanillaRowButtonProps>,
 ): (props: VanillaRowButtonProps) => HTMLElement {
-  return (props: VanillaRowButtonProps): HTMLElement => {
+  if (isWrappedRenderer(Component)) {
+    return Component as unknown as (props: VanillaRowButtonProps) => HTMLElement;
+  }
+  return markWrapped((props: VanillaRowButtonProps): HTMLElement => {
     const container = document.createElement("div");
     container.style.display = "contents";
     bridge.register(<Component {...props} />, container);
     return container;
-  };
+  });
 }
 
 /**

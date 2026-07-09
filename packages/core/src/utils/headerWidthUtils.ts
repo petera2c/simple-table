@@ -643,6 +643,12 @@ export const calculateHeaderContentWidth = (
      * horizontal band (so the icon is not in the DOM to measure directly).
      */
     expandIcon?: string | HTMLElement | SVGSVGElement;
+    /**
+     * Called before a temporary measure host from `cellRenderer` is discarded.
+     * Framework adapters (React portals, Vue/Solid mounts) register on render;
+     * without this, autofit sampling leaks those registrations.
+     */
+    onRendererHostDiscard?: (host: HTMLElement) => void;
   },
 ): number => {
   const {
@@ -659,6 +665,7 @@ export const calculateHeaderContentWidth = (
     styleRoot,
     sortIcon,
     expandIcon,
+    onRendererHostDiscard,
   } = options || {};
   const headSize = headSampleSize ?? sampleSize ?? AUTO_SIZE_HEAD_SAMPLE_SIZE;
   const stridedSize =
@@ -871,6 +878,10 @@ export const calculateHeaderContentWidth = (
     };
 
     const sampleIndices = buildHybridSampleIndices(rows.length, headSize, stridedSize);
+    // Once a framework adapter returns an async portal/mount host, further
+    // cellRenderer calls only thrash the bridge (content is never measurable
+    // off-screen). Skip them and use formatted text + painted cells instead.
+    let skipAsyncCellRenderer = false;
 
     for (const i of sampleIndices) {
       const row = rows[i];
@@ -902,7 +913,7 @@ export const calculateHeaderContentWidth = (
       // directly. React renderers return a fragment whose portal mounts
       // asynchronously and measures as ~0 here; in that case we fall back to the
       // formatted-text path below (and the rendered visible cells captured later).
-      if (header?.cellRenderer) {
+      if (header?.cellRenderer && !skipAsyncCellRenderer) {
         try {
           const rendered = header.cellRenderer({
             accessor,
@@ -917,11 +928,32 @@ export const calculateHeaderContentWidth = (
           if (typeof rendered === "string" || typeof rendered === "number") {
             measured = measureText(String(rendered));
           } else if (rendered instanceof Node) {
-            tempDiv.textContent = "";
-            tempDiv.appendChild(rendered);
-            const w = tempDiv.offsetWidth + cellPaddingLeft + cellPaddingRight;
-            tempDiv.textContent = "";
-            measured = w > cellPaddingLeft + cellPaddingRight ? w : -1;
+            const isAsyncRendererHost =
+              rendered instanceof HTMLElement &&
+              (rendered.hasAttribute("data-st-portal-id") ||
+                rendered.hasAttribute("data-st-mount-id") ||
+                !!rendered.querySelector?.("[data-st-portal-id], [data-st-mount-id]"));
+
+            // Framework adapters register portals/mounts synchronously but fill
+            // content asynchronously — off-screen measure is ~0. Dispose the
+            // registration immediately so autofit sampling cannot leak entries
+            // into the host bridge, then fall back to formatted text + painted cells.
+            if (isAsyncRendererHost) {
+              if (rendered instanceof HTMLElement) {
+                onRendererHostDiscard?.(rendered);
+              }
+              skipAsyncCellRenderer = true;
+              measured = -1;
+            } else {
+              tempDiv.textContent = "";
+              tempDiv.appendChild(rendered);
+              const w = tempDiv.offsetWidth + cellPaddingLeft + cellPaddingRight;
+              if (rendered instanceof HTMLElement) {
+                onRendererHostDiscard?.(rendered);
+              }
+              tempDiv.textContent = "";
+              measured = w > cellPaddingLeft + cellPaddingRight ? w : -1;
+            }
           }
         } catch {
           measured = -1;
