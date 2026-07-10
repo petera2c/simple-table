@@ -446,123 +446,31 @@ export class TableRenderer {
     }
 
     if (shouldShowEmptyState) {
-      // Drop SectionRenderer-owned body sections before we rebuild empty-state
-      // scrollports. Otherwise clearing the live section leaves cell registries
-      // pointing at detached nodes and rows never remount when data returns
-      // (e.g. typing a smart-filter negation through a brief 0-row intermediate).
+      // Drop SectionRenderer-owned body sections before replacing the body with
+      // a full-width empty message. Otherwise cell registries keep pointing at
+      // detached nodes and rows never remount when data returns (e.g. typing a
+      // smart-filter negation through a brief 0-row intermediate).
       this.sectionRenderer.releaseBodySections();
 
-      // Keep real body section scrollports (sized to content width) so
-      // wheel/trackpad over the empty area and the horizontal scrollbar can
-      // still scroll headers. A non-scrolling empty wrapper alone cannot.
-      const dimensionState = deps.dimensionManager?.getState() ?? {
-        containerWidth: 0,
-        calculatedHeaderHeight: deps.customTheme.headerHeight,
-        maxHeaderDepth: 1,
-      };
-      const { mainWidth, leftWidth, rightWidth } = recalculateAllSectionWidths({
-        headers: deps.effectiveHeaders,
-        containerWidth: dimensionState.containerWidth,
-        collapsedHeaders: deps.collapsedHeaders,
-      });
+      container.innerHTML = "";
+      // No body scrollport in empty state — horizontal scrolling is via the
+      // header / scrollbar (visibility uses content width + header fallback).
+      deps.mainBodyRef.current = null;
+      deps.pinnedLeftRef.current = null;
+      deps.pinnedRightRef.current = null;
 
-      const emptyMinHeight = Math.max(200, container.clientHeight || 200);
-      const mainViewportWidth = Math.max(
-        0,
-        (dimensionState.containerWidth || container.clientWidth || 0) - leftWidth - rightWidth,
-      );
+      const emptyWrapper = document.createElement("div");
+      emptyWrapper.className = "st-empty-state-wrapper";
 
-      const ensureEmptyBodySection = (
-        className: string,
-        contentWidth: number,
-        grow: boolean,
-      ): HTMLDivElement => {
-        let section = container.querySelector(`.${className}`) as HTMLDivElement | null;
-        if (!section) {
-          section = document.createElement("div");
-          section.className = className;
-          container.appendChild(section);
-        }
-        // Match populated body sections: content-width + flex-grow so the
-        // section is the scrollport (flex-shrink to viewport) while children
-        // define scrollWidth.
-        section.style.cssText = `
-          position: relative;
-          width: ${contentWidth}px;
-          ${grow ? "flex-grow: 1;" : ""}
-          height: ${emptyMinHeight}px;
-          min-height: ${emptyMinHeight}px;
-        `;
-        section.innerHTML = "";
-
-        // Force scrollWidth to the column-content width (same role as row
-        // separators in a populated body).
-        const sentinel = document.createElement("div");
-        sentinel.setAttribute("aria-hidden", "true");
-        sentinel.style.width = `${Math.max(contentWidth, 1)}px`;
-        sentinel.style.height = "1px";
-        sentinel.style.pointerEvents = "none";
-        section.appendChild(sentinel);
-
-        return section;
-      };
-
-      const sectionsToKeep: HTMLElement[] = [];
-      const pinnedLeftHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "left");
-      const mainHeaders = deps.effectiveHeaders.filter((h) => !h.pinned);
-      const pinnedRightHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "right");
-
-      if (pinnedLeftHeaders.length > 0) {
-        const leftSection = ensureEmptyBodySection("st-body-pinned-left", leftWidth, false);
-        deps.pinnedLeftRef.current = leftSection;
-        sectionsToKeep.push(leftSection);
+      if (typeof deps.config.tableEmptyStateRenderer === "string") {
+        emptyWrapper.textContent = deps.config.tableEmptyStateRenderer;
+      } else if (deps.config.tableEmptyStateRenderer instanceof HTMLElement) {
+        emptyWrapper.appendChild(deps.config.tableEmptyStateRenderer.cloneNode(true));
       } else {
-        deps.pinnedLeftRef.current = null;
+        emptyWrapper.innerHTML = "<div class='st-empty-state'>No rows to display</div>";
       }
 
-      if (mainHeaders.length > 0) {
-        const mainSection = ensureEmptyBodySection("st-body-main", mainWidth, true);
-
-        const emptyWrapper = document.createElement("div");
-        emptyWrapper.className = "st-empty-state-wrapper";
-        emptyWrapper.style.minHeight = `${emptyMinHeight}px`;
-        // Stick the message to the visible viewport so it stays centered while
-        // the section scrolls horizontally with the headers.
-        emptyWrapper.style.position = "sticky";
-        emptyWrapper.style.left = "0";
-        emptyWrapper.style.top = "0";
-        emptyWrapper.style.width = `${mainViewportWidth || mainWidth}px`;
-        emptyWrapper.style.boxSizing = "border-box";
-        emptyWrapper.style.flex = "none";
-
-        if (typeof deps.config.tableEmptyStateRenderer === "string") {
-          emptyWrapper.textContent = deps.config.tableEmptyStateRenderer;
-        } else if (deps.config.tableEmptyStateRenderer instanceof HTMLElement) {
-          emptyWrapper.appendChild(deps.config.tableEmptyStateRenderer.cloneNode(true));
-        } else {
-          emptyWrapper.innerHTML = "<div class='st-empty-state'>No rows to display</div>";
-        }
-        mainSection.appendChild(emptyWrapper);
-
-        deps.mainBodyRef.current = mainSection;
-        sectionsToKeep.push(mainSection);
-      } else {
-        deps.mainBodyRef.current = null;
-      }
-
-      if (pinnedRightHeaders.length > 0) {
-        const rightSection = ensureEmptyBodySection("st-body-pinned-right", rightWidth, false);
-        deps.pinnedRightRef.current = rightSection;
-        sectionsToKeep.push(rightSection);
-      } else {
-        deps.pinnedRightRef.current = null;
-      }
-
-      Array.from(container.children).forEach((child) => {
-        if (!sectionsToKeep.includes(child as HTMLElement)) {
-          child.remove();
-        }
-      });
+      container.appendChild(emptyWrapper);
       return;
     }
 

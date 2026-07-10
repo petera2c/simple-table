@@ -22,7 +22,7 @@ import {
   selectContentWidthWithOutlierClip,
 } from "../../src/utils/headerWidthUtils";
 import { expect } from "@storybook/test";
-import { waitForTable } from "./testUtils";
+import { waitForTable, waitUntil } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 import type { Meta } from "@storybook/html";
 
@@ -84,6 +84,8 @@ let truncationTable: SimpleTableVanilla | null = null;
 let truncationFill: (() => void) | null = null;
 let emptyHeaderTable: SimpleTableVanilla | null = null;
 let emptyHeaderFill: (() => void) | null = null;
+let loadingIdentityTable: SimpleTableVanilla | null = null;
+let loadingIdentityFill: (() => void) | null = null;
 
 // ============================================================================
 // CORRECTNESS — shrink / grow / cap / floor / mode
@@ -703,6 +705,141 @@ export const AutoSizeRefitsOnDataChange = {
     await wait(250);
     const shrunk = widthOf(canvasElement, "Text");
     expect(shrunk).toBeLessThan(grown - 80);
+  },
+};
+
+/**
+ * Repro: Identity-style column with a long one-line valueFormatter and a
+ * multi-line cellRenderer, sized while `isLoading` is true.
+ *
+ * Framework adapters (React portals) return an empty host during off-screen
+ * measure, so auto-size falls back to the formatter string. While loading,
+ * painted cells are skeletons and are skipped — so the column locks to the
+ * wide one-line formatter width. After `isLoading` flips false and the real
+ * multi-line renderer mounts, the column must re-fit to the narrower stacked
+ * content (not stay stuck on the formatter measurement).
+ */
+export const AutoSizeRefitsAfterLoadingWithMultilineRenderer = {
+  parameters: { tags: ["auto-size-loading-multiline-formatter"] },
+  render: () => {
+    const artistName = "Taylor Swift";
+    const artistType = "Solo";
+    const pronouns = "she/her";
+    const recordLabel = "Republic Records / Universal Music Group International";
+    // One-line formatter is much wider than any single line of the stacked cell.
+    const oneLineFormatter = `${artistName} · ${artistType} · ${pronouns} · ${recordLabel}`;
+
+    const buildIdentity = (): HTMLElement => {
+      const root = document.createElement("div");
+      root.className = "identity-cell";
+      root.style.display = "flex";
+      root.style.flexDirection = "column";
+      root.style.gap = "2px";
+      root.style.lineHeight = "1.25";
+
+      const name = document.createElement("span");
+      name.style.fontWeight = "600";
+      name.style.whiteSpace = "nowrap";
+      name.textContent = artistName;
+
+      const meta = document.createElement("span");
+      meta.style.fontSize = "12px";
+      meta.style.whiteSpace = "nowrap";
+      meta.textContent = `${artistType} · ${pronouns}`;
+
+      const label = document.createElement("span");
+      label.style.fontSize = "12px";
+      label.style.whiteSpace = "nowrap";
+      label.textContent = recordLabel;
+
+      root.appendChild(name);
+      root.appendChild(meta);
+      root.appendChild(label);
+      return root;
+    };
+
+    // Simulate React: empty portal host during measure / first paint; content
+    // mounts asynchronously after loading completes.
+    const { cellRenderer, fill } = makeAsyncRenderer(() => buildIdentity());
+    loadingIdentityFill = fill;
+
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 60, type: "number" },
+      {
+        accessor: "identity",
+        label: "Identity",
+        width: "auto",
+        type: "string",
+        valueFormatter: () => oneLineFormatter,
+        cellRenderer,
+      },
+    ];
+    const data = makeRows(20, (i) => ({
+      id: i + 1,
+      identity: artistName,
+    }));
+
+    // Mount while loading so the first auto-size pass sees skeletons in the
+    // DOM and falls back to the long one-line valueFormatter.
+    const { wrapper, table } = renderVanillaTable(headers, data, {
+      getRowId: (params: any) => String(params.row.id),
+      height: "420px",
+      isLoading: true,
+      customTheme: { rowHeight: 72 },
+    });
+    loadingIdentityTable = table;
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await waitUntil(() => canvasElement.querySelectorAll(".st-loading-skeleton").length > 0);
+
+    // Loading auto-size should have already locked onto the wide formatter.
+    const loadingWidth = widthOf(canvasElement, "Identity");
+    expect(loadingWidth).toBeGreaterThan(0);
+
+    // Data finishes loading — rows unchanged, only isLoading flips. Real
+    // multi-line cell content mounts (async portal fill) without an explicit
+    // refitAutoSizeColumns() call from the host.
+    loadingIdentityTable!.update({ isLoading: false });
+    await waitUntil(() => canvasElement.querySelectorAll(".st-loading-skeleton").length === 0);
+    loadingIdentityFill!();
+    await waitUntil(() => canvasElement.querySelectorAll(".identity-cell").length > 0);
+    await wait(250);
+
+    const identityWidth = widthOf(canvasElement, "Identity");
+
+    const measure = (text: string): number => {
+      const el = document.createElement("div");
+      el.style.visibility = "hidden";
+      el.style.position = "absolute";
+      el.style.whiteSpace = "nowrap";
+      el.style.display = "inline-block";
+      el.style.font = "14px Nunito, sans-serif";
+      el.textContent = text;
+      document.body.appendChild(el);
+      const w = el.offsetWidth;
+      document.body.removeChild(el);
+      return w;
+    };
+
+    const oneLineFormatter =
+      "Taylor Swift · Solo · she/her · Republic Records / Universal Music Group International";
+    const longestLine = "Republic Records / Universal Music Group International";
+    const formatterWidth = measure(oneLineFormatter);
+    const longestLineWidth = measure(longestLine);
+
+    // Sanity: the buggy path (fit the one-line formatter) is meaningfully wider
+    // than fitting the stacked cell's longest line.
+    expect(formatterWidth).toBeGreaterThan(longestLineWidth + 80);
+    expect(loadingWidth).toBeGreaterThan(longestLineWidth + 40);
+
+    // After loading completes and the multi-line renderer is painted, the
+    // column must re-fit to the stacked content — not remain stuck on the
+    // one-line valueFormatter measurement from the loading pass.
+    expect(identityWidth).toBeLessThan(formatterWidth - 40);
+    expect(identityWidth).toBeLessThan(loadingWidth - 20);
+    expect(identityWidth).toBeGreaterThan(longestLineWidth - 10);
   },
 };
 
@@ -1381,9 +1518,9 @@ export const AutoSizeLongHeaderConsistentAcrossContainerWidths = {
 export const HorizontalScrollbarShowsWhenHeaderOverflowsEmptyState = {
   parameters: { tags: ["horizontal-scrollbar-empty-header"] },
   render: () => {
-    // Empty table: body has no .st-body-main / row separators, but headers are
-    // still wider than the container and remain horizontally scrollable. The
-    // scrollbar visibility check must not rely on body scrollWidth alone.
+    // Empty table: body is a full-width non-scrolling empty message, but
+    // headers are still wider than the container. Scrollbar visibility must
+    // use content/header width, not body scrollWidth.
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 120, type: "number" },
       { accessor: "name", label: "Full Legal Name", width: 220, type: "string" },
@@ -1416,12 +1553,20 @@ export const HorizontalScrollbarShowsWhenHeaderOverflowsEmptyState = {
     // Scrollbar creation is deferred by 1ms in TableRenderer.
     await wait(50);
 
+    const emptyWrapper = canvasElement.querySelector(
+      ".st-empty-state-wrapper",
+    ) as HTMLElement | null;
+    expect(emptyWrapper, "empty state should render").toBeTruthy();
+    // Full-width message — not a content-width body scrollport.
+    expect(canvasElement.querySelector(".st-body-main")).toBeFalsy();
+    const bodyContainer = canvasElement.querySelector(".st-body-container") as HTMLElement;
+    expect(emptyWrapper!.getBoundingClientRect().width).toBeGreaterThan(
+      bodyContainer.clientWidth * 0.9,
+    );
+
     const headerMain = canvasElement.querySelector(".st-header-main") as HTMLElement;
     expect(headerMain).toBeTruthy();
 
-    // Header content overflows the narrow container (sum of column widths =
-    // 1000px > 360px viewport). Prefer content-width assertion over
-    // scrollWidth/clientWidth: the header section may be sized to content.
     const headerCells = Array.from(headerMain.querySelectorAll(".st-header-cell"));
     const totalHeaderWidth = headerCells.reduce(
       (sum, cell) => sum + cell.getBoundingClientRect().width,
@@ -1429,87 +1574,27 @@ export const HorizontalScrollbarShowsWhenHeaderOverflowsEmptyState = {
     );
     expect(totalHeaderWidth).toBeGreaterThan(500);
 
-    // Header remains scrollable (wheel/trackpad over the header works).
+    // Header remains scrollable; scrollbar must appear for the same overflow.
     headerMain.scrollLeft = 80;
     headerMain.dispatchEvent(new Event("scroll", { bubbles: true }));
     await wait(30);
     expect(headerMain.scrollLeft).toBeGreaterThan(0);
 
-    // The visible horizontal scrollbar must appear for the same overflow.
     const scrollbar = canvasElement.querySelector(".st-horizontal-scrollbar-container");
     expect(
       scrollbar,
       "horizontal scrollbar should show when header content overflows, even with no rows",
     ).toBeTruthy();
-  },
-};
 
-/**
- * Empty tables still need a real body scrollport: wheel/trackpad over the
- * "No rows to display" area (and the horizontal scrollbar) must scroll the
- * headers. Replacing the body with a non-scrolling empty wrapper breaks that.
- */
-export const EmptyStateBodyScrollSyncsWithHeader = {
-  parameters: { tags: ["empty-state-body-scroll-sync"] },
-  render: () => {
-    const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 120, type: "number" },
-      { accessor: "name", label: "Full Legal Name", width: 220, type: "string" },
-      { accessor: "email", label: "Work Email Address", width: 260, type: "string" },
-      { accessor: "dept", label: "Department Name", width: 200, type: "string" },
-      { accessor: "role", label: "Job Role Title", width: 200, type: "string" },
-    ];
-    const wrapper = document.createElement("div") as HTMLDivElement & {
-      _table?: SimpleTableVanilla;
-    };
-    wrapper.style.padding = "2rem";
-    const tableContainer = document.createElement("div");
-    tableContainer.style.width = "360px";
-    wrapper.appendChild(tableContainer);
-    const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
-      rows: [],
-      getRowId: (params: any) => String(params.row.id),
-      height: "280px",
-    });
-    table.mount();
-    wrapper._table = table;
-    return wrapper;
-  },
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    await waitForTable();
-    await wait(50);
-
-    const emptyWrapper = canvasElement.querySelector(".st-empty-state-wrapper");
-    expect(emptyWrapper, "empty state should still render").toBeTruthy();
-
-    const bodyMain = canvasElement.querySelector(".st-body-main") as HTMLElement | null;
-    expect(
-      bodyMain,
-      "empty tables must keep a .st-body-main scrollport so body/scrollbar can scroll",
-    ).toBeTruthy();
-    expect(bodyMain!.scrollWidth).toBeGreaterThan(bodyMain!.clientWidth + 1);
-
-    const headerMain = canvasElement.querySelector(".st-header-main") as HTMLElement;
-    expect(headerMain).toBeTruthy();
-
-    // Scroll the body (as a wheel/trackpad over the empty area would) and
-    // expect the header to follow via SectionScrollController.
-    bodyMain!.scrollLeft = 120;
-    bodyMain!.dispatchEvent(new Event("scroll", { bubbles: true }));
-    await wait(40);
-    expect(headerMain.scrollLeft).toBe(120);
-
-    // Scrollbar thumb must drive the same sync.
+    // Scrollbar still syncs the header (body is not a scrollport).
     const scrollbarMiddle = canvasElement.querySelector(
       ".st-horizontal-scrollbar-middle",
     ) as HTMLElement | null;
-    expect(scrollbarMiddle, "horizontal scrollbar middle pane should exist").toBeTruthy();
+    expect(scrollbarMiddle).toBeTruthy();
     scrollbarMiddle!.scrollLeft = 200;
     scrollbarMiddle!.dispatchEvent(new Event("scroll", { bubbles: true }));
     await wait(40);
     expect(headerMain.scrollLeft).toBe(200);
-    expect(bodyMain!.scrollLeft).toBe(200);
   },
 };
 

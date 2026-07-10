@@ -11,16 +11,30 @@ export interface ChangelogEntry {
   }[];
 }
 
-export const v3_9_3: ChangelogEntry = {
-  version: "3.9.3",
-  date: "2026-07-08",
-  title: "Empty table horizontal scroll",
-  description: "Empty tables can scroll horizontally again from the body and scrollbar.",
+export const v3_9_5: ChangelogEntry = {
+  version: "3.9.5",
+  date: "2026-07-10",
+  title: "Full-width empty state",
+  description: "The empty-table message fills the table width again.",
   changes: [
     {
       type: "bugfix",
       description:
-        "Empty tables keep a body scrollport so wheel/trackpad over the empty area and the horizontal scrollbar sync with the headers.",
+        "Empty tables use a full-width non-scrolling empty message again; the horizontal scrollbar still appears when headers overflow.",
+    },
+  ],
+};
+
+export const v3_9_3: ChangelogEntry = {
+  version: "3.9.3",
+  date: "2026-07-08",
+  title: "Empty table horizontal scroll",
+  description: "Empty tables show a horizontal scrollbar when headers overflow.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Empty tables show the horizontal scrollbar when headers overflow, while the empty message stays full-width.",
     },
     {
       type: "bugfix",
@@ -2150,6 +2164,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_9_5,
   v3_9_3,
   v3_9_2,
   v3_9_1,
