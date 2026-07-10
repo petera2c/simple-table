@@ -20,12 +20,17 @@ export const v3_9_5: ChangelogEntry = {
     {
       type: "bugfix",
       description:
-        "Empty tables use a full-width non-scrolling empty message again; the horizontal scrollbar still appears when headers overflow.",
+        "Empty tables show a full-width empty message again, and still scroll horizontally when headers are too wide.",
     },
     {
       type: "bugfix",
       description:
-        "React headerRenderer state (pins, popovers, local UI) is preserved when sort or filter icons refresh, instead of remounting the header subtree.",
+        "Custom header UI (pins, popovers, and similar) no longer resets when you sort or filter.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Auto-sized columns with custom cell layouts no longer stay too wide after data finishes loading.",
     },
   ],
 };

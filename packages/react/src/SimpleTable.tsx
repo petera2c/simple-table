@@ -132,21 +132,32 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
     }, [reactProps]);
 
     const portals = useTablePortals(bridge);
+    const hasPortals = Array.isArray(portals) && portals.length > 0;
 
-    // Once custom-renderer portals have mounted, re-fit any auto-size columns so
-    // React renderer output (icons, badges, custom fonts) is measured from the
-    // real DOM. Runs in a layout effect (pre-paint) and only once, so there is
-    // no visible width snap. No-op when there are no auto-size columns.
+    // Re-fit auto columns from real portal DOM once — not on every portals
+    // array identity change (that re-enters measure/render and loops easily).
+    // A second pass runs only when leaving `isLoading`, when skeleton cells
+    // are replaced by real renderer output.
     const didInitialAutoSizeRef = useRef(false);
+    const wasLoadingRef = useRef(Boolean(reactProps.isLoading));
     useLayoutEffect(() => {
-      if (didInitialAutoSizeRef.current) return;
       const instance = instanceRef.current;
       if (!instance) return;
-      if (Array.isArray(portals) && portals.length > 0) {
+
+      const isLoading = Boolean(reactProps.isLoading);
+      const leftLoading = wasLoadingRef.current && !isLoading;
+      wasLoadingRef.current = isLoading;
+
+      if (leftLoading) {
+        instance.refitAutoSizeColumns?.();
+        return;
+      }
+
+      if (!didInitialAutoSizeRef.current && hasPortals) {
         didInitialAutoSizeRef.current = true;
         instance.refitAutoSizeColumns?.();
       }
-    }, [portals]);
+    }, [hasPortals, reactProps.isLoading]);
 
     return (
       <>

@@ -607,7 +607,14 @@ const measureHeaderIconWidth = (
  *
  * @param accessor - The accessor of the header to measure
  * @param options - Configuration options
- * @returns The optimal width in pixels
+ * @returns Measured width plus whether the result is final (`settled`). When a
+ *   custom `cellRenderer` / `headerRenderer` exists but its real DOM is not
+ *   measurable yet (async portal / loading skeleton), `settled` is false and
+ *   the width is provisional (header / minWidth only — never `valueFormatter`
+ *   or plain `label` as a stand-in for renderer output). Callers should apply
+ *   that provisional width once and re-measure later via an explicit refit
+ *   (rows / isLoading / `refitAutoSizeColumns`) — not by leaving the column
+ *   pending across every render.
  */
 export const calculateHeaderContentWidth = (
   accessor: Accessor,
@@ -650,7 +657,7 @@ export const calculateHeaderContentWidth = (
      */
     onRendererHostDiscard?: (host: HTMLElement) => void;
   },
-): number => {
+): { width: number; settled: boolean } => {
   const {
     rows,
     header,
@@ -692,7 +699,7 @@ export const calculateHeaderContentWidth = (
     (domQueryRoot.querySelector(".st-header-cell") as HTMLElement | null);
 
   if (!styleProxyCell) {
-    return TABLE_HEADER_CELL_WIDTH_DEFAULT;
+    return { width: TABLE_HEADER_CELL_WIDTH_DEFAULT, settled: true };
   }
 
   // Get the computed styles to access padding and gap
@@ -703,6 +710,9 @@ export const calculateHeaderContentWidth = (
 
   // Initialize total width with padding
   let totalWidth = paddingLeft + paddingRight;
+  // Custom headerRenderer output is only "settled" once we measured real markup
+  // (or the header cell is virtualized and we fall back to the plain label).
+  let headerRendererSettled = !header?.headerRenderer;
 
   // Measure the actual text content width
   const headerLabelElement = headerCellElement?.querySelector(
@@ -723,17 +733,19 @@ export const calculateHeaderContentWidth = (
       const customLabelWidth = measureHeaderLabelContent(headerLabelElement, domQueryRoot);
       if (customLabelWidth >= 1) {
         totalWidth += customLabelWidth;
+        headerRendererSettled = true;
         sortIconMeasured = Boolean(
           headerLabelElement.querySelector('.st-icon-container[aria-label^="Sort"]'),
         );
         collapseIconMeasured = Boolean(
           headerLabelElement.querySelector(".st-collapsible-header-icon"),
         );
+      } else if (header?.headerRenderer) {
+        // Async portal / empty host: do NOT use plain `label` as a stand-in for
+        // custom headerRenderer output (it may be wider or narrower). Keep the
+        // column pending until real markup is measurable.
+        headerRendererSettled = false;
       } else if (header?.label) {
-        // The custom markup measures as empty — typically an async-mounted
-        // renderer (React portal target not filled yet). Fall back to the
-        // plain label text so the column doesn't collapse to the minimum
-        // (most visible with no rows, where the header is all there is).
         const fontSource =
           (domQueryRoot.querySelector(".st-header-label-text") as HTMLElement | null) ??
           headerLabelElement;
@@ -745,10 +757,13 @@ export const calculateHeaderContentWidth = (
   } else if (header?.label) {
     // No rendered header cell for this column: measure the label text using
     // another header's font so the result matches a rendered measurement.
+    // Even with headerRenderer, off-band columns can only use the label until
+    // the cell scrolls into view — treat that as settled for viewport stability.
     const fontSource =
       (domQueryRoot.querySelector(".st-header-label-text") as HTMLElement | null) ??
       styleProxyCell;
     totalWidth += measureTextWithFont(String(header.label), fontSource);
+    headerRendererSettled = true;
   }
 
   // Loop through all direct children to measure icons (only possible when the
@@ -828,6 +843,10 @@ export const calculateHeaderContentWidth = (
 
   // Now measure cell content widths from row data
   let cellContentWidth = 0;
+  // True once we measured real cellRenderer output (sync Node or painted DOM).
+  // When a cellRenderer exists but only async/empty hosts are available, we must
+  // NOT fall back to valueFormatter — keep the column unsettled instead.
+  let cellRendererSettled = !header?.cellRenderer || autoSizeMode === "header";
 
   // For chart columns, skip cell content measurement and use a minimum width
   const isChartColumn = header && header.type && CHART_COLUMN_TYPES.includes(header.type as any);
@@ -880,8 +899,9 @@ export const calculateHeaderContentWidth = (
     const sampleIndices = buildHybridSampleIndices(rows.length, headSize, stridedSize);
     // Once a framework adapter returns an async portal/mount host, further
     // cellRenderer calls only thrash the bridge (content is never measurable
-    // off-screen). Skip them and use formatted text + painted cells instead.
+    // off-screen). Skip them and use painted cells instead.
     let skipAsyncCellRenderer = false;
+    let sawMeasurableRendererContent = false;
 
     for (const i of sampleIndices) {
       const row = rows[i];
@@ -911,8 +931,9 @@ export const calculateHeaderContentWidth = (
       // Custom renderer: measure the REAL rendered output (icons, badges, custom
       // fonts). Vanilla renderers return a string/number/Node we can measure
       // directly. React renderers return a fragment whose portal mounts
-      // asynchronously and measures as ~0 here; in that case we fall back to the
-      // formatted-text path below (and the rendered visible cells captured later).
+      // asynchronously and measures as ~0 here; in that case we do NOT fall
+      // back to valueFormatter (unreliable vs multi-line / custom layout) —
+      // painted cells below are the source of truth once they exist.
       if (header?.cellRenderer && !skipAsyncCellRenderer) {
         try {
           const rendered = header.cellRenderer({
@@ -927,6 +948,7 @@ export const calculateHeaderContentWidth = (
 
           if (typeof rendered === "string" || typeof rendered === "number") {
             measured = measureText(String(rendered));
+            if (measured > 0) sawMeasurableRendererContent = true;
           } else if (rendered instanceof Node) {
             const isAsyncRendererHost =
               rendered instanceof HTMLElement &&
@@ -937,7 +959,7 @@ export const calculateHeaderContentWidth = (
             // Framework adapters register portals/mounts synchronously but fill
             // content asynchronously — off-screen measure is ~0. Dispose the
             // registration immediately so autofit sampling cannot leak entries
-            // into the host bridge, then fall back to formatted text + painted cells.
+            // into the host bridge, then wait for painted cells.
             if (isAsyncRendererHost) {
               if (rendered instanceof HTMLElement) {
                 onRendererHostDiscard?.(rendered);
@@ -953,6 +975,8 @@ export const calculateHeaderContentWidth = (
               }
               tempDiv.textContent = "";
               measured = w > cellPaddingLeft + cellPaddingRight ? w : -1;
+              // Sync renderer returned a real Node — settled even if empty.
+              sawMeasurableRendererContent = true;
             }
           }
         } catch {
@@ -961,11 +985,17 @@ export const calculateHeaderContentWidth = (
       }
 
       if (measured < 0) {
-        const textContent = formattedValue != null ? String(formattedValue) : "";
-        measured = measureText(textContent);
+        // Only use valueFormatter / raw text when there is no cellRenderer.
+        // Custom renderers own the visual width; formatter text must not lock it.
+        if (!header?.cellRenderer) {
+          const textContent = formattedValue != null ? String(formattedValue) : "";
+          measured = measureText(textContent);
+        }
       }
 
-      sampleWidths.push(measured);
+      if (measured >= 0) {
+        sampleWidths.push(measured);
+      }
     }
 
     document.body.removeChild(tempDiv);
@@ -994,8 +1024,10 @@ export const calculateHeaderContentWidth = (
         // Empty (not-yet-mounted portal) content measures 0 — nothing to learn.
         if (naturalWidth > 0) {
           sampleWidths.push(naturalWidth + cellPaddingLeft + cellPaddingRight);
+          sawMeasurableRendererContent = true;
         }
       });
+      cellRendererSettled = sawMeasurableRendererContent;
     }
 
     cellContentWidth = selectContentWidthWithOutlierClip(sampleWidths, {
@@ -1032,5 +1064,9 @@ export const calculateHeaderContentWidth = (
         ? parseFloat(String(header.minWidth)) || MIN_COLUMN_WIDTH
         : MIN_COLUMN_WIDTH;
 
-  return Math.max(optimalWidth + AUTO_SIZE_WIDTH_BUFFER, headerMinWidth, MIN_COLUMN_WIDTH);
+  const width = Math.max(optimalWidth + AUTO_SIZE_WIDTH_BUFFER, headerMinWidth, MIN_COLUMN_WIDTH);
+  return {
+    width,
+    settled: headerRendererSettled && cellRendererSettled,
+  };
 };

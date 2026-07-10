@@ -114,7 +114,7 @@ export const createResizeHandle = (
         reverse: context.reverse,
         headerCellElement: headerCell,
         getTargetLeafWidth: (leafHeader) =>
-          calculateHeaderContentWidth(leafHeader.accessor, measureOptions(leafHeader)),
+          calculateHeaderContentWidth(leafHeader.accessor, measureOptions(leafHeader)).width,
         onAutoExpandNaturalWidths: context.onAutoExpandNaturalWidths,
         shrinkFloors: context.getShrinkFloors?.(),
       });
@@ -131,7 +131,7 @@ export const createResizeHandle = (
     const contentWidth = calculateHeaderContentWidth(
       resizeHeader.accessor,
       measureOptions(resizeHeader),
-    );
+    ).width;
 
     const path = getHeaderIndexPath(resizeHeaders, resizeHeader.accessor);
     if (!path) return;
