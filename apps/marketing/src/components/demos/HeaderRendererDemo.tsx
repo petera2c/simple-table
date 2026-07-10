@@ -149,11 +149,13 @@ const HeaderRendererDemo = ({
 
   // Custom header layout + styling. Each renderer is mounted as its own React component
   // (the adapter renders `<Component {...props} />`), so hooks like `useState` are safe.
-  // We use that to drive a hover state and apply the theme accent colors below.
+  // Local pin state + hover should survive sort/filter icon refreshes; if the header
+  // remounts on sort, the pin snaps back off (visible flicker / lost state).
   const createHeaderRenderer = (key: string, label: string, icon: string, sublabel: string) => {
-    const HeaderCell = (_props: HeaderRendererProps) => {
+    const HeaderCell = ({ components }: HeaderRendererProps) => {
       const colors = getThemeColors(theme);
       const [hovered, setHovered] = useState(false);
+      const [pinned, setPinned] = useState(false);
 
       return (
         <div
@@ -162,11 +164,12 @@ const HeaderRendererDemo = ({
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 10,
+            gap: 8,
             width: "100%",
             cursor: "pointer",
             userSelect: "none",
             paddingLeft: 12,
+            paddingRight: 4,
           }}
         >
           <span
@@ -186,7 +189,7 @@ const HeaderRendererDemo = ({
           >
             {icon}
           </span>
-          <span style={{ display: "flex", flexDirection: "column", lineHeight: 1.2, minWidth: 0 }}>
+          <span style={{ display: "flex", flexDirection: "column", lineHeight: 1.2, minWidth: 0, flex: 1 }}>
             <span
               style={{
                 fontWeight: 600,
@@ -214,6 +217,37 @@ const HeaderRendererDemo = ({
               {sublabel}
             </span>
           </span>
+          <button
+            type="button"
+            aria-label={pinned ? `Unpin ${label}` : `Pin ${label}`}
+            aria-pressed={pinned}
+            title="Pin stays on until remount — click, then sort this column"
+            onClick={(event) => {
+              event.stopPropagation();
+              setPinned((value) => !value);
+            }}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+              width: 22,
+              height: 22,
+              padding: 0,
+              border: "none",
+              borderRadius: 6,
+              background: pinned ? `${colors.sortActiveColor}22` : "transparent",
+              color: pinned ? colors.sortActiveColor : colors.baseColor,
+              opacity: pinned ? 1 : 0.45,
+              cursor: "pointer",
+              fontSize: 13,
+              lineHeight: 1,
+            }}
+          >
+            {pinned ? "★" : "☆"}
+          </button>
+          {components?.filterIcon}
+          {components?.sortIcon}
         </div>
       );
     };

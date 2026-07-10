@@ -93,6 +93,38 @@ describe("PortalBridge — register tags the container", () => {
   });
 });
 
+describe("PortalBridge — update in place", () => {
+  it("replaces the node for a registered container without changing id or count", async () => {
+    const bridge = new PortalBridge();
+    const container = makeContainer();
+    const { id } = bridge.register("a", container);
+    await flush();
+
+    expect(bridge.update(container, "b")).toBe(true);
+    await flush();
+
+    const snapshot = bridge.getSnapshot();
+    expect(snapshot).toHaveLength(1);
+    expect(snapshot[0].id).toBe(id);
+    expect(snapshot[0].container).toBe(container);
+    expect(snapshot[0].node).toBe("b");
+    expect(container.getAttribute("data-st-portal-id")).toBe(id);
+  });
+
+  it("returns false after disposeHost so callers can re-register", async () => {
+    const bridge = new PortalBridge();
+    const container = makeContainer();
+    bridge.register("a", container);
+    await flush();
+
+    bridge.disposeHost(container);
+    await flush();
+
+    expect(bridge.update(container, "b")).toBe(false);
+    expect(bridge.getSnapshot()).toHaveLength(0);
+  });
+});
+
 describe("PortalBridge — disposeHost authoritative teardown", () => {
   it("unregisters the entry when the discarded host IS the registered container", async () => {
     const bridge = new PortalBridge();

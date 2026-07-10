@@ -101,6 +101,10 @@ export function wrapReactRendererIntoFragment<P extends object>(
  * Like {@link wrapReactRenderer} for header renderers: core passes `components.*`
  * (sortIcon / filterIcon / collapseIcon / labelContent) as live DOM nodes; this
  * bridges them to React nodes so consumers can use them directly in JSX.
+ *
+ * Reuses a single portal host per wrapped column so sort/filter icon refreshes
+ * update props in place (via {@link PortalBridge.update}) instead of remounting
+ * the React subtree and wiping local state.
  */
 export function wrapReactHeaderRenderer(
   bridge: PortalBridge,
@@ -109,14 +113,21 @@ export function wrapReactHeaderRenderer(
   if (isWrappedRenderer(Component)) {
     return Component as unknown as (props: VanillaHeaderRendererProps) => HTMLElement;
   }
+  // One host per column wrapper. transformHeader wraps each column separately,
+  // so this closure is not shared across accessors.
+  let host: HTMLElement | null = null;
   return markWrapped((props: VanillaHeaderRendererProps): HTMLElement => {
-    const container = document.createElement("div");
     const reactProps = {
       ...props,
       components: mapHeaderRendererComponentsForReact(props.components),
     };
-    bridge.register(<Component {...(reactProps as any)} />, container);
-    return container;
+    const node = <Component {...(reactProps as any)} />;
+    if (host && bridge.update(host, node)) {
+      return host;
+    }
+    host = document.createElement("div");
+    bridge.register(node, host);
+    return host;
   });
 }
 

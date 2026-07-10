@@ -22,6 +22,11 @@ export const v3_9_5: ChangelogEntry = {
       description:
         "Empty tables use a full-width non-scrolling empty message again; the horizontal scrollbar still appears when headers overflow.",
     },
+    {
+      type: "bugfix",
+      description:
+        "React headerRenderer state (pins, popovers, local UI) is preserved when sort or filter icons refresh, instead of remounting the header subtree.",
+    },
   ],
 };
 
