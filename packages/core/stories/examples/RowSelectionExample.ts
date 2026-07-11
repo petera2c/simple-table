@@ -44,9 +44,10 @@ const HEADERS: HeaderObject[] = [
 export const rowSelectionExampleDefaults = {
   columnResizing: true,
   editColumns: true,
-  selectableCells: true,
+  selectableCells: false,
   columnReordering: true,
   enableRowSelection: true,
+  selectRowOnClick: true,
   height: "400px",
 };
 

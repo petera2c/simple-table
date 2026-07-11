@@ -1,6 +1,7 @@
 import UpdateDataProps from "./UpdateCellProps";
 import HeaderObject, { Accessor } from "./HeaderObject";
 import TableRow from "./TableRow";
+import Row from "./Row";
 import SortColumn, { SortDirection } from "./SortColumn";
 import { TableFilterState, FilterCondition } from "./FilterTypes";
 import Cell from "./Cell";
@@ -57,4 +58,15 @@ export type TableAPI = {
   clearSelection: () => void;
   selectCell: (cell: Cell) => void;
   selectCellRange: (startCell: Cell, endCell: Cell) => void;
+  /** Selected row IDs when row selection is enabled. */
+  getSelectedRows: () => Set<string>;
+  /** Row data objects for currently selected rows (resolved from visible/current table rows). */
+  getSelectedRowsData: () => Row[];
+  /** Look up a row by its string row id in the current table rows. */
+  getRow: (rowId: string) => Row | undefined;
+  selectRow: (rowId: string) => void;
+  deselectRow: (rowId: string) => void;
+  toggleRowSelection: (rowId: string) => void;
+  /** Clears row selection only (does not clear cell selection). */
+  clearRowSelection: () => void;
 };

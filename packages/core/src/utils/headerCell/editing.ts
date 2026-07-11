@@ -83,8 +83,11 @@ export const createLabelContent = (
   }`;
 
   if (isSelectionColumn) {
-    const checkbox = createSelectionCheckbox(context);
-    labelTextSpan.appendChild(checkbox);
+    // Single-select mode has no select-all control
+    if (context.rowSelectionMode !== "single") {
+      const checkbox = createSelectionCheckbox(context);
+      labelTextSpan.appendChild(checkbox);
+    }
   } else {
     labelTextSpan.textContent = displayLabel;
   }

@@ -153,6 +153,46 @@ export const UseHoverRowBackground = {
   },
 };
 
+export const UseHoverRowBackgroundIsolatedAcrossTables = {
+  render: () => {
+    const container = document.createElement("div");
+    container.style.display = "flex";
+    container.style.flexDirection = "column";
+    container.style.gap = "16px";
+
+    const tableA = renderVanillaTable(headers, data(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "200px",
+      useHoverRowBackground: true,
+    });
+    const tableB = renderVanillaTable(headers, data(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "200px",
+      useHoverRowBackground: true,
+    });
+    tableA.wrapper.dataset.table = "a";
+    tableB.wrapper.dataset.table = "b";
+    container.appendChild(tableA.wrapper);
+    container.appendChild(tableB.wrapper);
+    return container;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const tableA = canvasElement.querySelector<HTMLElement>('[data-table="a"]');
+    const tableB = canvasElement.querySelector<HTMLElement>('[data-table="b"]');
+    expect(tableA).toBeTruthy();
+    expect(tableB).toBeTruthy();
+
+    const cellA = tableA!.querySelector<HTMLElement>('.st-cell[data-row-id="1"]');
+    expect(cellA).toBeTruthy();
+    cellA!.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(tableA!.querySelectorAll(".st-cell.st-row-hovered").length).toBeGreaterThan(0);
+    expect(tableB!.querySelectorAll(".st-cell.st-row-hovered").length).toBe(0);
+  },
+};
+
 export const UseOddEvenRowBackground = {
   tags: ["odd-even-row-background"],
   render: () => {

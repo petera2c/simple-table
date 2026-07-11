@@ -652,9 +652,35 @@ useEffect(() => {
     key: "enableRowSelection",
     name: "enableRowSelection",
     required: false,
-    description: "Enable row selection functionality with checkboxes.",
+    description:
+      "Enable row selection. Use with rowSelectionMode, selectRowOnClick, and showRowSelectionColumn for click/keyboard/API selection.",
     type: "boolean",
     example: `enableRowSelection={true}`,
+  },
+  {
+    key: "rowSelectionMode",
+    name: "rowSelectionMode",
+    required: false,
+    description: 'Row selection mode: "single" or "multiple" (default).',
+    type: '"single" | "multiple"',
+    example: `rowSelectionMode="single"`,
+  },
+  {
+    key: "selectRowOnClick",
+    name: "selectRowOnClick",
+    required: false,
+    description: "When true, clicking a data cell selects the row.",
+    type: "boolean",
+    example: `selectRowOnClick={true}`,
+  },
+  {
+    key: "showRowSelectionColumn",
+    name: "showRowSelectionColumn",
+    required: false,
+    description:
+      "When false, hide the checkbox column (selection via click/keyboard/API still works). Default true.",
+    type: "boolean",
+    example: `showRowSelectionColumn={false}`,
   },
   {
     key: "onRowSelectionChange",

@@ -5,15 +5,16 @@ import { SimpleTable } from "../index";
 import type { ReactHeaderObject } from "../index";
 
 // Repro: with dynamic row grouping enabled (rowGrouping + onRowGroupExpand),
-// setting `isLoading: true` should render a loading skeleton in EVERY column,
-// including the expandable column (the one carrying the row-group expand
-// chevron).
+// toggling `isLoading` should keep the expandable column in sync with every
+// other column:
+//
+//   - entering loading: every column (including expandable) shows a skeleton
+//   - leaving loading: expandable cells created as skeletons restore expand
+//     icon + value instead of staying stuck on the skeleton
 //
 // The bug: `updateBodyCellElement` skips the content rebuild for expandable
-// cells (to preserve the expand-icon DOM node for CSS transitions), so when
-// `isLoading` flips to true on already-rendered rows, every column rebuilds
-// into a skeleton except the expandable one, which keeps its stale content and
-// never shows a skeleton.
+// cells (to preserve the expand-icon DOM node for CSS transitions), so
+// loading-skeleton swaps are skipped for that column.
 
 let container: HTMLDivElement | null = null;
 let root: Root | null = null;
@@ -145,5 +146,33 @@ describe("SimpleTable (React adapter) — loading skeletons with dynamic row gro
     await wait(60);
 
     expectAllCellsShowSkeleton(host);
+  });
+
+  it("clears expandable-column skeletons when isLoading flips from true to false", async () => {
+    const host = mount();
+
+    // Mount already loading so expandable cells are created as skeletons.
+    // (The loaded→loading→loaded path never puts a skeleton in the expandable
+    // column under the bug, so it cannot catch the stuck-skeleton exit path.)
+    render(host, data, true);
+    await waitForElement(host, ".st-body-container .st-cell");
+    await wait(80);
+    expectAllCellsShowSkeleton(host);
+
+    render(host, data, false);
+    await wait(150);
+
+    const nameCells = host.querySelectorAll<HTMLElement>('.st-cell[data-accessor="name"]');
+    expect(host.querySelectorAll(".st-loading-skeleton").length).toBe(0);
+    expect(nameCells.length).toBe(2);
+    const texts = Array.from(nameCells).map((c) => c.textContent);
+    expect(texts).toContain("Alice");
+    expect(texts).toContain("Bob");
+    nameCells.forEach((cell) => {
+      expect(
+        cell.querySelector(".st-expand-icon-container"),
+        "expand chevron should be restored after leaving loading",
+      ).not.toBeNull();
+    });
   });
 });

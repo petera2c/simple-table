@@ -29,6 +29,7 @@ export interface ResolvedIcons {
 
 export interface MergedColumnEditorConfig {
   text: string;
+  showToggle: boolean;
   searchEnabled: boolean;
   searchPlaceholder: string;
   allowColumnPinning: boolean;

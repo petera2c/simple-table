@@ -1053,12 +1053,20 @@ export class SectionRenderer {
     const keys = [
       "columnBorders",
       "enableRowSelection",
+      "selectRowOnClick",
+      "rowSelectionMode",
+      "activeRowId",
       "cellUpdateFlash",
       "useOddColumnBackground",
       "useHoverRowBackground",
       "useOddEvenRowBackground",
       "rowHeight",
       "containerWidth",
+      // Loading skeleton state. Without this, `update({ isLoading })` alone
+      // reuses a cached body context with the previous `isLoading` value, so
+      // cells (especially expandable ones that only rebuild on skeleton
+      // mismatch) never swap between skeletons and real content.
+      "isLoading",
       // Column virtualization viewport + content width. `containerWidth` alone is
       // not enough: pinning / pinned-column resize / auto-expand can change
       // leftWidth+rightWidth (and thus mainSectionViewportWidth) while the

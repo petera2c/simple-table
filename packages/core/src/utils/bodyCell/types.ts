@@ -84,11 +84,21 @@ export interface CellRenderContext {
   // Configuration
   columnBorders: boolean;
   enableRowSelection?: boolean;
+  /** When true, clicking a data cell selects/toggles the row. */
+  selectRowOnClick?: boolean;
+  rowSelectionMode?: "single" | "multiple";
   /** Used for context cache invalidation when row selection changes */
   selectedRowCount?: number;
+  /** Keyboard active row id for focus styling */
+  activeRowId?: string | null;
   cellUpdateFlash?: boolean;
   useOddColumnBackground?: boolean;
   useHoverRowBackground?: boolean;
+  /**
+   * Unique id for this table instance. Scopes the module-level row-hover cell
+   * map so multiple tables on one page with overlapping rowIds don't cross-hover.
+   */
+  hoverScopeId: string;
   useOddEvenRowBackground?: boolean;
   rowGrouping?: string[];
   headers: HeaderObject[];
@@ -124,6 +134,8 @@ export interface CellRenderContext {
   onCellClick?: (params: CellClickParams) => void;
   onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>;
   handleRowSelect?: (rowId: string, checked: boolean) => void;
+  /** Click-to-select / keyboard toggle entry point (mode-aware). */
+  handleToggleRow?: (rowId: string) => void;
   handleMouseDown: (cell: CellData) => void;
   handleMouseOver: (cell: CellData, clientX: number, clientY: number) => void;
   /**

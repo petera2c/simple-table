@@ -69,6 +69,8 @@ export interface TableRendererDeps {
   getRowStateMap: () => Map<string | number, any>;
   headerRegistry: Map<string, any>;
   headers: HeaderObject[];
+  /** Unique id for this table instance — scopes row-hover cell tracking. */
+  hoverScopeId: string;
   hoveredHeaderRef: { current: HeaderObject | null };
   internalIsLoading: boolean;
   isResizing: boolean;
@@ -178,11 +180,11 @@ export class TableRenderer {
     if (gridElement) {
       gridElement.setAttribute("aria-rowcount", String(1 + deps.localRows.length));
       gridElement.setAttribute("aria-colcount", String(deps.effectiveHeaders.length));
-      // Row selection uses checkboxes (multiple rows can be selected), so the
-      // grid advertises multi-select; AT then announces selection state read
-      // from each row/cell's `aria-selected`.
+      // Row selection: advertise multi-select only in multiple mode so AT
+      // announces selection state from each row/cell's `aria-selected`.
       if (deps.config.enableRowSelection) {
-        gridElement.setAttribute("aria-multiselectable", "true");
+        const multi = (deps.config.rowSelectionMode ?? "multiple") === "multiple";
+        gridElement.setAttribute("aria-multiselectable", multi ? "true" : "false");
       } else {
         gridElement.removeAttribute("aria-multiselectable");
       }
@@ -225,6 +227,7 @@ export class TableRenderer {
       }),
       enableHeaderEditing: deps.config.enableHeaderEditing,
       enableRowSelection: deps.config.enableRowSelection,
+      rowSelectionMode: deps.config.rowSelectionMode ?? "multiple",
       selectedRowCount: headerSelectedRowCount,
       filters: filterState?.filters ?? {},
       icons: deps.resolvedIcons,
@@ -505,12 +508,16 @@ export class TableRenderer {
       rowsWithSelectedCells: deps.selectionManager?.getRowsWithSelectedCells() ?? new Set(),
       columnBorders: deps.config.columnBorders ?? false,
       enableRowSelection: deps.config.enableRowSelection,
+      selectRowOnClick: deps.config.selectRowOnClick ?? false,
+      rowSelectionMode: deps.config.rowSelectionMode ?? "multiple",
       selectedRowCount,
+      activeRowId: deps.rowSelectionManager?.getActiveRowId() ?? null,
       cellUpdateFlash: deps.config.cellUpdateFlash,
       useOddColumnBackground: deps.config.useOddColumnBackground,
       // Defaults to true (documented default) so row hover works out of the box
       // when consumers don't explicitly pass the flag. Explicit `false` is honored.
       useHoverRowBackground: deps.config.useHoverRowBackground ?? true,
+      hoverScopeId: deps.hoverScopeId,
       useOddEvenRowBackground: deps.config.useOddEvenRowBackground,
       rowGrouping: deps.config.rowGrouping,
       headers: deps.effectiveHeaders,
@@ -538,6 +545,9 @@ export class TableRenderer {
       onRowGroupExpand: deps.config.onRowGroupExpand,
       handleRowSelect: (rowId: string, checked: boolean) => {
         deps.rowSelectionManager?.handleRowSelect(rowId, checked);
+      },
+      handleToggleRow: (rowId: string) => {
+        deps.rowSelectionManager?.handleToggleRow(rowId);
       },
       cellRegistry: deps.cellRegistry,
       getCollapsedRows: () => deps.getCollapsedRows(),

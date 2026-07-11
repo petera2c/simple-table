@@ -24,7 +24,10 @@ import {
 import { calculateContentHeight } from "../../hooks/contentHeight";
 import { filterRowsWithQuickFilter } from "../../hooks/useQuickFilter";
 import { calculateAggregatedRows } from "../../hooks/useAggregatedRows";
-import { createSelectionHeader } from "../../utils/rowSelectionUtils";
+import {
+  createSelectionHeader,
+  shouldShowRowSelectionColumn,
+} from "../../utils/rowSelectionUtils";
 import { normalizeHeaderWidths } from "../../utils/headerWidthUtils";
 import { applyAutoScaleToHeaders } from "../../managers/AutoScaleManager";
 import { getColumnEditorStripWidth } from "../../consts/general-consts";
@@ -62,6 +65,11 @@ export interface RenderContext {
   getRowStateMap: () => Map<string | number, RowState>;
   headerRegistry: Map<string, any>;
   headers: HeaderObject[];
+  /**
+   * Unique id for this table instance. Scopes row-hover cell tracking so
+   * multiple tables on one page with overlapping rowIds don't cross-hover.
+   */
+  hoverScopeId: string;
   hoveredHeaderRef: { current: HeaderObject | null };
   internalIsLoading: boolean;
   isResizing: boolean;
@@ -197,7 +205,7 @@ export class RenderOrchestrator {
   ): HeaderObject[] {
     let processedHeaders = [...headers];
 
-    if (config.enableRowSelection && !headers?.[0]?.isSelectionColumn) {
+    if (shouldShowRowSelectionColumn(config) && !headers?.[0]?.isSelectionColumn) {
       const selectionHeader = createSelectionHeader(customTheme.selectionColumnWidth);
       processedHeaders = [selectionHeader, ...processedHeaders];
     }
@@ -825,6 +833,7 @@ export class RenderOrchestrator {
       internalIsLoading: context.internalIsLoading,
       cellRegistry: context.cellRegistry,
       headerRegistry: context.headerRegistry,
+      hoverScopeId: context.hoverScopeId,
       draggedHeaderRef: context.draggedHeaderRef,
       hoveredHeaderRef: context.hoveredHeaderRef,
       mainBodyRef: context.mainBodyRef,

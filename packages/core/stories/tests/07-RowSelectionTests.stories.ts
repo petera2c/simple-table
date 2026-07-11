@@ -510,3 +510,263 @@ export const SelectionPersistsThroughFilter = {
     expect(uniqueRows.size).toBe(5);
   },
 };
+
+const countSelectedRowsViaClass = (canvasElement: HTMLElement): number => {
+  const bodyContainer = canvasElement.querySelector(".st-body-container");
+  if (!bodyContainer) return 0;
+  const selected = bodyContainer.querySelectorAll(".st-cell.st-cell-selected-row[data-row-index]");
+  const ids = new Set(
+    Array.from(selected)
+      .map((c) => c.getAttribute("data-row-index"))
+      .filter((idx): idx is string => idx != null),
+  );
+  return ids.size;
+};
+
+// ============================================================================
+// SINGLE SELECTION MODE
+// ============================================================================
+
+export const SingleSelectionMode = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80 },
+      { accessor: "name", label: "Name", width: 200 },
+      { accessor: "department", label: "Department", width: 150 },
+    ];
+    const { wrapper, h2 } = renderVanillaTable(headers, createEmployeeData(), {
+      height: "400px",
+      enableRowSelection: true,
+      rowSelectionMode: "single",
+      getRowId: (p: { row?: { id?: number } }) => String(p.row?.id),
+    });
+    h2.textContent = "Single Selection Mode";
+    addParagraph(wrapper, "Selecting a second row should replace the first; no select-all checkbox");
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const user = userEvent.setup();
+
+    expect(getHeaderCheckbox(canvasElement)).toBeNull();
+
+    const grid = canvasElement.querySelector(".st-content");
+    expect(grid?.getAttribute("aria-multiselectable")).toBe("false");
+
+    const firstSelectionCell = getSelectionCell(canvasElement, 0);
+    const secondSelectionCell = getSelectionCell(canvasElement, 1);
+    if (!firstSelectionCell || !secondSelectionCell) throw new Error("Selection cells not found");
+
+    await user.hover(firstSelectionCell);
+    await new Promise((r) => setTimeout(r, 100));
+    const firstCheckbox = getRowCheckbox(canvasElement, 0);
+    if (!firstCheckbox) throw new Error("First checkbox not found");
+    fireEvent.click(firstCheckbox);
+    await new Promise((r) => setTimeout(r, 200));
+    expect(countSelectedRowsViaClass(canvasElement)).toBe(1);
+
+    await user.hover(secondSelectionCell);
+    await new Promise((r) => setTimeout(r, 100));
+    const secondCheckbox = getRowCheckbox(canvasElement, 1);
+    if (!secondCheckbox) throw new Error("Second checkbox not found");
+    fireEvent.click(secondCheckbox);
+    await new Promise((r) => setTimeout(r, 200));
+    expect(countSelectedRowsViaClass(canvasElement)).toBe(1);
+    expect(getRowCheckbox(canvasElement, 0)?.checked).toBe(false);
+    expect(getRowCheckbox(canvasElement, 1)?.checked).toBe(true);
+  },
+};
+
+// ============================================================================
+// CLICK TO SELECT / HIDDEN CHECKBOX COLUMN
+// ============================================================================
+
+export const ClickToSelectWithoutCheckboxColumn = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80 },
+      { accessor: "name", label: "Name", width: 200 },
+      { accessor: "department", label: "Department", width: 150 },
+    ];
+    const { wrapper, h2 } = renderVanillaTable(headers, createEmployeeData(), {
+      height: "400px",
+      enableRowSelection: true,
+      selectRowOnClick: true,
+      showRowSelectionColumn: false,
+      selectableCells: false,
+      getRowId: (p: { row?: { id?: number } }) => String(p.row?.id),
+    });
+    h2.textContent = "Click to Select (No Checkbox Column)";
+    addParagraph(wrapper, "Click a data cell to select the row; no checkbox column should appear");
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const user = userEvent.setup();
+
+    expect(getHeaderCheckbox(canvasElement)).toBeNull();
+    expect(getSelectionCell(canvasElement, 0)).toBeNull();
+
+    const nameCell = canvasElement.querySelector<HTMLElement>(
+      '.st-body-container .st-cell[data-row-index="0"][data-accessor="name"]',
+    );
+    if (!nameCell) throw new Error("Name cell not found");
+    await user.click(nameCell);
+    await new Promise((r) => setTimeout(r, 200));
+    expect(countSelectedRowsViaClass(canvasElement)).toBe(1);
+
+    const secondName = canvasElement.querySelector<HTMLElement>(
+      '.st-body-container .st-cell[data-row-index="1"][data-accessor="name"]',
+    );
+    if (!secondName) throw new Error("Second name cell not found");
+    await user.click(secondName);
+    await new Promise((r) => setTimeout(r, 200));
+    // Multiple mode toggles — both selected
+    expect(countSelectedRowsViaClass(canvasElement)).toBe(2);
+  },
+};
+
+// ============================================================================
+// KEYBOARD ROW SELECTION
+// ============================================================================
+
+export const KeyboardRowSelection = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80 },
+      { accessor: "name", label: "Name", width: 200 },
+      { accessor: "department", label: "Department", width: 150 },
+    ];
+    const { wrapper, h2, table } = renderVanillaTable(headers, createEmployeeData(), {
+      height: "400px",
+      enableRowSelection: true,
+      selectRowOnClick: true,
+      showRowSelectionColumn: false,
+      selectableCells: false,
+      rowSelectionMode: "single",
+      getRowId: (p: { row?: { id?: number } }) => String(p.row?.id),
+    });
+    h2.textContent = "Keyboard Row Selection";
+    addParagraph(wrapper, "ArrowDown moves single selection; Space toggles in multiple (here single replaces)");
+    void table;
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const user = userEvent.setup();
+
+    const body = canvasElement.querySelector<HTMLElement>(".st-body-container");
+    if (!body) throw new Error("Body container not found");
+    body.focus();
+
+    const firstCell = canvasElement.querySelector<HTMLElement>(
+      '.st-body-container .st-cell[data-row-index="0"][data-accessor="name"]',
+    );
+    if (!firstCell) throw new Error("First cell not found");
+    await user.click(firstCell);
+    await new Promise((r) => setTimeout(r, 150));
+    expect(countSelectedRowsViaClass(canvasElement)).toBe(1);
+
+    await user.keyboard("{ArrowDown}");
+    await new Promise((r) => setTimeout(r, 150));
+    expect(countSelectedRowsViaClass(canvasElement)).toBe(1);
+    // Active/selected should have moved to row 1
+    const row1Selected = canvasElement.querySelector(
+      '.st-body-container .st-cell.st-cell-selected-row[data-row-index="1"]',
+    );
+    expect(row1Selected).not.toBeNull();
+  },
+};
+
+// ============================================================================
+// TABLE API ROW SELECTION
+// ============================================================================
+
+export const TableAPIRowSelection = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80 },
+      { accessor: "name", label: "Name", width: 200 },
+      { accessor: "department", label: "Department", width: 150 },
+    ];
+    const { wrapper, h2, table } = renderVanillaTable(headers, createEmployeeData(), {
+      height: "400px",
+      enableRowSelection: true,
+      getRowId: (p: { row?: { id?: number } }) => String(p.row?.id),
+    });
+    h2.textContent = "TableAPI Row Selection";
+    addParagraph(wrapper, "Programmatic selectRow / getSelectedRows / clearRowSelection");
+
+    const panel = document.createElement("div");
+    panel.style.marginBottom = "1rem";
+    const selectBtn = document.createElement("button");
+    selectBtn.textContent = "Select first row";
+    selectBtn.setAttribute("data-testid", "api-select");
+    selectBtn.onclick = () => {
+      const first = table.getAPI().getVisibleRows()[0];
+      if (first) table.getAPI().selectRow(String(Array.isArray(first.rowId) ? first.rowId.join("-") : first.rowId));
+    };
+    const toggleBtn = document.createElement("button");
+    toggleBtn.textContent = "Toggle second row";
+    toggleBtn.setAttribute("data-testid", "api-toggle");
+    toggleBtn.style.marginLeft = "0.5rem";
+    toggleBtn.onclick = () => {
+      const second = table.getAPI().getVisibleRows()[1];
+      if (second) {
+        const id = String(Array.isArray(second.rowId) ? second.rowId.join("-") : second.rowId);
+        table.getAPI().toggleRowSelection(id);
+      }
+    };
+    const clearBtn = document.createElement("button");
+    clearBtn.textContent = "Clear";
+    clearBtn.setAttribute("data-testid", "api-clear");
+    clearBtn.style.marginLeft = "0.5rem";
+    clearBtn.onclick = () => table.getAPI().clearRowSelection();
+    const status = document.createElement("span");
+    status.setAttribute("data-testid", "api-status");
+    status.style.marginLeft = "1rem";
+    const refreshStatus = () => {
+      const api = table.getAPI();
+      const first = api.getVisibleRows()[0];
+      const firstId = first
+        ? String(Array.isArray(first.rowId) ? first.rowId.join("-") : first.rowId)
+        : "";
+      status.textContent = `selected=${api.getSelectedRows().size};row=${api.getRow(firstId) ? "yes" : "no"}`;
+    };
+    selectBtn.addEventListener("click", () => setTimeout(refreshStatus, 50));
+    toggleBtn.addEventListener("click", () => setTimeout(refreshStatus, 50));
+    clearBtn.addEventListener("click", () => setTimeout(refreshStatus, 50));
+    panel.appendChild(selectBtn);
+    panel.appendChild(toggleBtn);
+    panel.appendChild(clearBtn);
+    panel.appendChild(status);
+    wrapper.insertBefore(panel, wrapper.querySelector("div:last-child"));
+    refreshStatus();
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const user = userEvent.setup();
+
+    const selectBtn = canvasElement.querySelector<HTMLButtonElement>('[data-testid="api-select"]');
+    const toggleBtn = canvasElement.querySelector<HTMLButtonElement>('[data-testid="api-toggle"]');
+    const clearBtn = canvasElement.querySelector<HTMLButtonElement>('[data-testid="api-clear"]');
+    const status = canvasElement.querySelector<HTMLElement>('[data-testid="api-status"]');
+    if (!selectBtn || !toggleBtn || !clearBtn || !status) throw new Error("API controls missing");
+
+    await user.click(selectBtn);
+    await new Promise((r) => setTimeout(r, 150));
+    expect(status.textContent).toContain("selected=1");
+    expect(status.textContent).toContain("row=yes");
+    expect(countSelectedRowsViaClass(canvasElement)).toBe(1);
+
+    await user.click(toggleBtn);
+    await new Promise((r) => setTimeout(r, 150));
+    expect(status.textContent).toContain("selected=2");
+
+    await user.click(clearBtn);
+    await new Promise((r) => setTimeout(r, 150));
+    expect(status.textContent).toContain("selected=0");
+    expect(countSelectedRowsViaClass(canvasElement)).toBe(0);
+  },
+};
