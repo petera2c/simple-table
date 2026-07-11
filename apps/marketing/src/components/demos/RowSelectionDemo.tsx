@@ -205,7 +205,7 @@ const LIBRARY_BOOKS: LibraryBook[] = [
 ];
 
 const RowSelectionDemo = ({
-  height = "320px",
+  height = "348px",
   theme,
 }: {
   height?: string | number;

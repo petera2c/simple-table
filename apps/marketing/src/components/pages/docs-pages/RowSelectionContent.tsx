@@ -122,7 +122,12 @@ const RowSelectionContent = () => {
           The default experience: a pinned checkbox column with select-all in the header. Ideal for
           bulk actions.
         </p>
-        <LivePreview demoId="row-selection" height="420px" demoHeight="320px" Preview={RowSelectionDemo} />
+        <LivePreview
+          demoId="row-selection"
+          height="520px"
+          demoHeight="348px"
+          Preview={RowSelectionDemo}
+        />
       </motion.div>
 
       <motion.div

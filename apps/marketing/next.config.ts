@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 import fs from "node:fs";
 import path from "path";
+import bundleAnalyzer from "@next/bundle-analyzer";
 
 /**
  * Turbopack only resolves inside `turbopack.root`. Workspace packages live under
@@ -19,7 +20,7 @@ function turbopackFilesystemRoot(): string {
   return __dirname;
 }
 
-const withBundleAnalyzer = require("@next/bundle-analyzer")({
+const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 

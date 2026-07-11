@@ -15,9 +15,8 @@ import {
 import type { CryptoCoin } from "./useCryptoData";
 
 /** Right-aligned, color-coded percentage change. */
-const ChangeCell =
-  (accessor: keyof CryptoCoin) =>
-  ({ row, theme }: CellRendererProps) => {
+const ChangeCell = (accessor: keyof CryptoCoin) => {
+  function ChangeCellRenderer({ row, theme }: CellRendererProps) {
     const value = row[accessor] as number;
     const c = getThemeColors(theme);
     const isPositive = value >= 0;
@@ -36,7 +35,10 @@ const ChangeCell =
         {isPositive ? "\u25B2" : "\u25BC"} {formatSignedPercent(Math.abs(value))}
       </span>
     );
-  };
+  }
+  ChangeCellRenderer.displayName = `ChangeCell(${String(accessor)})`;
+  return ChangeCellRenderer;
+};
 
 export const HEADERS: ReactHeaderObject[] = [
   {

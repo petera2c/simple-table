@@ -7,9 +7,8 @@ import { Avatar, Pill, ProgressBar, getThemeColors } from "../_shared";
 import type { SoccerPlayer } from "./useSoccerData";
 
 /** Centered numeric stat; emphasizes non-zero values. */
-const StatCell =
-  (accessor: keyof SoccerPlayer, digits?: number) =>
-  ({ row, theme }: CellRendererProps) => {
+const StatCell = (accessor: keyof SoccerPlayer, digits?: number) => {
+  function StatCellRenderer({ row, theme }: CellRendererProps) {
     const c = getThemeColors(theme);
     const raw = row[accessor] as number;
     const value = digits !== undefined ? raw.toFixed(digits) : raw;
@@ -24,7 +23,10 @@ const StatCell =
         {value}
       </span>
     );
-  };
+  }
+  StatCellRenderer.displayName = `StatCell(${String(accessor)})`;
+  return StatCellRenderer;
+};
 
 function ratingColor(rating: number, theme?: string) {
   const c = getThemeColors(theme);

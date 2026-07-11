@@ -1,7 +1,7 @@
 import { createElement, useEffect } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS } from "../../../core/src/managers/DimensionManager";
+import { CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS, CONTAINER_RESIZE_BURST_END_MS } from "../../../core/src/managers/DimensionManager";
 import { SimpleTable } from "../index";
 import type { CellRendererProps, ReactHeaderObject } from "../index";
 
@@ -96,7 +96,10 @@ async function flushRaf(rounds = 2): Promise<void> {
 
 async function flushResizeSettle(): Promise<void> {
   await new Promise<void>((resolve) =>
-    setTimeout(resolve, CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS + 20),
+    setTimeout(
+      resolve,
+      CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS + CONTAINER_RESIZE_BURST_END_MS + 20,
+    ),
   );
   await flushRaf();
 }
@@ -148,7 +151,9 @@ afterEach(() => {
 });
 
 describe("SimpleTable — blank rows after resize + scroll back", () => {
-  it("keeps row content after repeated container resizes and scrolling back to top", async () => {
+  it(
+    "keeps row content after repeated container resizes and scrolling back to top",
+    async () => {
     const host = document.createElement("div");
     document.body.appendChild(host);
     container = host;
@@ -251,5 +256,7 @@ describe("SimpleTable — blank rows after resize + scroll back", () => {
 
     expect(countBlankNameCells(host)).toBe(0);
     expect(nameTextForVisibleRows(host).every((t) => t.length > 0)).toBe(true);
-  });
+  },
+  15_000,
+);
 });

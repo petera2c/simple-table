@@ -28,6 +28,15 @@ afterEach(() => {
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+async function waitFor(predicate: () => boolean, timeoutMs = 2000): Promise<void> {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    if (predicate()) return;
+    await wait(10);
+  }
+  throw new Error("Timed out waiting for condition");
+}
+
 /** Renders the bridge's portals into a host React tree (optionally under `wrapper`). */
 function mountBridge(bridge: PortalBridge, wrapper?: (node: React.ReactNode) => React.ReactElement) {
   function Harness() {
@@ -52,7 +61,7 @@ describe("wrapReactRenderer / wrapReactRendererIntoFragment", () => {
     const container = renderToDom({ value: "hello" });
 
     expect(container.tagName).toBe("DIV");
-    await wait(0);
+    await waitFor(() => container.querySelector(".wrapped")?.textContent === "hello");
     expect(container.querySelector(".wrapped")?.textContent).toBe("hello");
   });
 
@@ -66,7 +75,7 @@ describe("wrapReactRenderer / wrapReactRendererIntoFragment", () => {
     const container = wrapReactRendererIntoFragment(bridge, Comp)({});
 
     expect(container.style.display).toBe("contents");
-    await wait(0);
+    await waitFor(() => container.querySelector(".frag") !== null);
     expect(container.querySelector(".frag")).not.toBeNull();
   });
 
@@ -80,7 +89,7 @@ describe("wrapReactRenderer / wrapReactRendererIntoFragment", () => {
     }
     const container = wrapReactRenderer(bridge, Comp)({});
 
-    await wait(0);
+    await waitFor(() => container.querySelector(".ctx")?.textContent === "FROM_HOST");
     expect(container.querySelector(".ctx")?.textContent).toBe("FROM_HOST");
   });
 });
@@ -103,7 +112,7 @@ describe("wrapReact*Renderer slot mapping (DOM node -> React node)", () => {
       components: { sortIcon },
     } as any);
 
-    await wait(0);
+    await waitFor(() => container.querySelector(".head #sort-node") !== null);
     expect(container.querySelector(".head #sort-node")).not.toBeNull();
   });
 
@@ -121,7 +130,7 @@ describe("wrapReact*Renderer slot mapping (DOM node -> React node)", () => {
       components: { filterIcon },
     } as any);
 
-    await wait(0);
+    await waitFor(() => container.querySelector(".dd #filter-node") !== null);
     expect(container.querySelector(".dd #filter-node")).not.toBeNull();
   });
 
@@ -145,7 +154,7 @@ describe("wrapReact*Renderer slot mapping (DOM node -> React node)", () => {
       prevIcon: "<i class='prev-markup'></i>",
     } as any);
 
-    await wait(0);
+    await waitFor(() => container.querySelector(".foot #next-node") !== null);
     expect(container.querySelector(".foot #next-node")).not.toBeNull();
     expect(container.querySelector(".foot i.prev-markup")).not.toBeNull();
   });
@@ -164,7 +173,7 @@ describe("wrapReact*Renderer slot mapping (DOM node -> React node)", () => {
       components: { dragIcon },
     } as any);
 
-    await wait(0);
+    await waitFor(() => container.querySelector(".row #drag-node") !== null);
     expect(container.querySelector(".row #drag-node")).not.toBeNull();
   });
 
@@ -182,7 +191,7 @@ describe("wrapReact*Renderer slot mapping (DOM node -> React node)", () => {
       listSection,
     } as any);
 
-    await wait(0);
+    await waitFor(() => container.querySelector(".editor #list-node") !== null);
     expect(container.querySelector(".editor #list-node")).not.toBeNull();
   });
 });

@@ -31,8 +31,18 @@ type StateChangeCallback = (state: DimensionManagerState) => void;
  * notifying subscribers. Coalesces CSS-transition / animated layout shifts
  * (e.g. a collapsible nav) into a single trailing update instead of one full
  * table render per animation frame.
+ *
+ * Kept above typical frame-budget jank (~50–80ms) so a hitch mid-transition
+ * does not look like "animation ended" and fire an extra full relayout.
  */
-export const CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS = 50;
+export const CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS = 100;
+
+/**
+ * After a trailing notify, keep the burst open this long. A jank-sized quiet
+ * gap mid-animation must not start a fresh burst (which would allow another
+ * pair of notifies and thrash subscribers).
+ */
+export const CONTAINER_RESIZE_BURST_END_MS = 150;
 
 export class DimensionManager {
   private config: DimensionManagerConfig;
@@ -41,6 +51,11 @@ export class DimensionManager {
   private resizeObserver: ResizeObserver | null = null;
   private rafId: number | null = null;
   private resizeNotifyDebounceId: ReturnType<typeof setTimeout> | null = null;
+  private resizeBurstEndId: ReturnType<typeof setTimeout> | null = null;
+  /** Notifies emitted in the current continuous resize burst (capped at 2). */
+  private resizeBurstNotifyCount = 0;
+  /** True when a 3rd+ trailing tick was suppressed; flush latest width on burst end. */
+  private resizeBurstNeedsFinalFlush = false;
   /** Set when applyContainerWidthSync updates state before any subscriber exists. */
   private initialNotifyPending = false;
 
@@ -145,12 +160,48 @@ export class DimensionManager {
     }
   }
 
-  /** Trailing debounce for animated / continuous container resizes. */
+  private cancelResizeBurstEnd(): void {
+    if (this.resizeBurstEndId !== null) {
+      clearTimeout(this.resizeBurstEndId);
+      this.resizeBurstEndId = null;
+    }
+  }
+
+  private scheduleResizeBurstEnd(): void {
+    this.cancelResizeBurstEnd();
+    this.resizeBurstEndId = setTimeout(() => {
+      this.resizeBurstEndId = null;
+      // Second notify only when more resize ticks arrived after the interim.
+      if (this.resizeBurstNeedsFinalFlush) {
+        this.resizeBurstNeedsFinalFlush = false;
+        this.notifySubscribers();
+      }
+      this.resizeBurstNotifyCount = 0;
+    }, CONTAINER_RESIZE_BURST_END_MS);
+  }
+
+  /**
+   * Trailing debounce for animated / continuous container resizes.
+   *
+   * Per burst (continuous RO ticks separated by less than {@link CONTAINER_RESIZE_BURST_END_MS}):
+   * - 1st quiet gap → notify immediately (sole update, or mid-animation pass)
+   * - later quiet gaps → defer to burst-end so subscribers always see the final
+   *   width without a 3rd+ notify when frame timing is janky
+   */
   private scheduleResizeNotify(): void {
     this.cancelPendingResizeNotify();
+    this.cancelResizeBurstEnd();
     this.resizeNotifyDebounceId = setTimeout(() => {
       this.resizeNotifyDebounceId = null;
-      this.notifySubscribers();
+      if (this.resizeBurstNotifyCount === 0) {
+        this.resizeBurstNotifyCount = 1;
+        this.resizeBurstNeedsFinalFlush = false;
+        this.notifySubscribers();
+      } else {
+        // Already did the interim/sole notify; push final width once when quiet.
+        this.resizeBurstNeedsFinalFlush = true;
+      }
+      this.scheduleResizeBurstEnd();
     }, CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS);
   }
 
@@ -306,6 +357,9 @@ export class DimensionManager {
       this.rafId = null;
     }
     this.cancelPendingResizeNotify();
+    this.cancelResizeBurstEnd();
+    this.resizeBurstNotifyCount = 0;
+    this.resizeBurstNeedsFinalFlush = false;
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
       this.resizeObserver = null;

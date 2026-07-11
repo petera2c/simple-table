@@ -1,8 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { DimensionManager, CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS } from "../../../core/src/managers/DimensionManager";
+import {
+  DimensionManager,
+  CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS,
+  CONTAINER_RESIZE_BURST_END_MS,
+} from "../../../core/src/managers/DimensionManager";
 import { RenderOrchestrator } from "../../../core/src/core/rendering/RenderOrchestrator";
 import { SimpleTableVanilla } from "simple-table-core";
-import type { HeaderObject } from "simple-table-core";
+import type { HeaderObject, Row } from "simple-table-core";
 
 /**
  * Container-resize performance during animated layout shifts (e.g. a collapsible
@@ -15,7 +19,10 @@ import type { HeaderObject } from "simple-table-core";
 
 async function flushResizeSettle(): Promise<void> {
   await new Promise<void>((resolve) =>
-    setTimeout(resolve, CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS + 10),
+    setTimeout(
+      resolve,
+      CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS + CONTAINER_RESIZE_BURST_END_MS + 20,
+    ),
   );
 }
 
@@ -87,9 +94,9 @@ const createPlatformHeaders = (): HeaderObject[] => [
   })),
 ];
 
-const createPlatformRows = (count: number) =>
+const createPlatformRows = (count: number): Row[] =>
   Array.from({ length: count }, (_, index) => {
-    const row: Record<string, unknown> = {
+    const row: Row = {
       id: index + 1,
       platform: ["Spotify", "Apple Music", "YouTube"][index % 3],
       territory: ["US", "UK", "DE"][index % 3],
@@ -130,24 +137,28 @@ describe("DimensionManager — animated container resize", () => {
 
     manager.subscribe((state) => notifications.push(state.containerWidth));
 
-    await flushRaf();
-    const baselineCount = notifications.length;
-
-    // 240px nav collapse spread across ~12 animation frames.
-    const steps = [1180, 1160, 1140, 1120, 1100, 1080, 1060, 1040, 1020, 1000, 980, 960];
-    for (const nextWidth of steps) {
-      width = nextWidth;
-      ControllableResizeObserver.instances.forEach((observer) => observer.trigger());
+    try {
       await flushRaf();
+      const baselineCount = notifications.length;
+
+      // 240px nav collapse spread across ~12 animation frames.
+      const steps = [1180, 1160, 1140, 1120, 1100, 1080, 1060, 1040, 1020, 1000, 980, 960];
+      for (const nextWidth of steps) {
+        width = nextWidth;
+        ControllableResizeObserver.instances.forEach((observer) => observer.trigger());
+        await flushRaf();
+      }
+
+      await flushResizeSettle();
+
+      const resizeNotifications = notifications.length - baselineCount;
+
+      // Coalesced: one notification at settle (two max if a mid-animation pass is kept).
+      expect(resizeNotifications).toBeLessThanOrEqual(2);
+      expect(notifications.at(-1)).toBe(960);
+    } finally {
+      manager.destroy();
     }
-
-    await flushResizeSettle();
-
-    const resizeNotifications = notifications.length - baselineCount;
-
-    // Coalesced: one notification at settle (two max if a mid-animation pass is kept).
-    expect(resizeNotifications).toBeLessThanOrEqual(2);
-    expect(notifications.at(-1)).toBe(960);
   });
 });
 

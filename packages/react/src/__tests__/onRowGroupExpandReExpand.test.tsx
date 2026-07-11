@@ -160,7 +160,7 @@ function mountLazyReExpandTable(): { host: HTMLDivElement; probe: ReExpandProbe 
       theme: "light",
       rowGrouping: ["teams"],
       expandAll: false,
-      getRowId: (p) => String((p.row as DeptRow).id),
+      getRowId: (p) => String((p.row as unknown as DeptRow).id),
       onRowGroupExpand: async ({
         row,
         groupingKey,

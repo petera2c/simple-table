@@ -183,7 +183,8 @@ export const UseHoverRowBackgroundIsolatedAcrossTables = {
     expect(tableA).toBeTruthy();
     expect(tableB).toBeTruthy();
 
-    const cellA = tableA!.querySelector<HTMLElement>('.st-cell[data-row-id="1"]');
+    // data-row-id is path-based: [index, getRowId] → "0-1" for the first row
+    const cellA = tableA!.querySelector<HTMLElement>('.st-cell[data-row-id="0-1"]');
     expect(cellA).toBeTruthy();
     cellA!.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
     await new Promise((r) => setTimeout(r, 50));
