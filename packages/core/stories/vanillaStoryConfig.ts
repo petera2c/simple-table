@@ -19,7 +19,6 @@ export interface UniversalVanillaArgs {
   hideFooter?: boolean;
   rowsPerPage?: number;
   selectableCells?: boolean;
-  selectableColumns?: boolean;
   shouldPaginate?: boolean;
   theme?: Theme;
   useHoverRowBackground?: boolean;
@@ -41,7 +40,6 @@ export const defaultVanillaArgs: UniversalVanillaArgs = {
   hideFooter: false,
   rowsPerPage: 10,
   selectableCells: false,
-  selectableColumns: false,
   shouldPaginate: false,
   theme: "modern-light" as Theme,
   useHoverRowBackground: true,
@@ -106,11 +104,7 @@ export const vanillaArgTypes = {
   },
   selectableCells: {
     control: { type: "boolean" as const },
-    description: "Enable cell selection",
-  },
-  selectableColumns: {
-    control: { type: "boolean" as const },
-    description: "Enable column header selection",
+    description: "Enable cell and column selection",
   },
   shouldPaginate: {
     control: { type: "boolean" as const },

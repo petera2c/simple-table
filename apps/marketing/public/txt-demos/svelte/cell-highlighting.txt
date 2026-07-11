@@ -12,5 +12,4 @@
   {height}
   {theme}
   selectableCells={cellHighlightingConfig.tableProps.selectableCells}
-  selectableColumns={cellHighlightingConfig.tableProps.selectableColumns}
 />

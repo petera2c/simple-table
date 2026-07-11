@@ -11,5 +11,5 @@
   rows={columnSelectionConfig.rows}
   {height}
   {theme}
-  selectableColumns={columnSelectionConfig.tableProps.selectableColumns}
+  selectableCells={columnSelectionConfig.tableProps.selectableCells}
 />

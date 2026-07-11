@@ -35,6 +35,21 @@ export const v3_9_5: ChangelogEntry = {
   ],
 };
 
+export const v3_9_6: ChangelogEntry = {
+  version: "3.9.6",
+  date: "2026-07-10",
+  title: "Selection API cleanup",
+  description: "selectableCells now controls both cell and column selection.",
+  changes: [
+    {
+      type: "breaking",
+      description:
+        "Removed selectableColumns. Use selectableCells to enable cell and column selection.",
+      link: "/docs/cell-highlighting",
+    },
+  ],
+};
+
 export const v3_9_3: ChangelogEntry = {
   version: "3.9.3",
   date: "2026-07-08",
@@ -2174,6 +2189,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_9_6,
   v3_9_5,
   v3_9_3,
   v3_9_2,

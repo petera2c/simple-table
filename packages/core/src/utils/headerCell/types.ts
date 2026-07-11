@@ -69,7 +69,7 @@ export interface HeaderRenderContext {
   reverse: boolean;
   rows: Row[];
   selectColumns?: (columnIndices: number[]) => void;
-  selectableColumns?: boolean;
+  selectableCells?: boolean;
   selectedColumns: Set<number>;
   selectedRowCount?: number; /** Used for context cache invalidation when row selection changes */
   setCollapsedHeaders: Dispatch<SetStateAction<Set<Accessor>>>;

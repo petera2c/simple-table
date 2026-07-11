@@ -28,7 +28,7 @@ import "@simple-table/angular/styles.css";
         [height]="height"
         [theme]="theme"
         [enableHeaderEditing]="true"
-        [selectableColumns]="true"
+        [selectableCells]="true"
         [onHeaderEdit]="handleHeaderEdit"
       ></simple-table>
     </div>

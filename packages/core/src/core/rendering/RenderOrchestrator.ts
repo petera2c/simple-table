@@ -27,7 +27,7 @@ import { calculateAggregatedRows } from "../../hooks/useAggregatedRows";
 import { createSelectionHeader } from "../../utils/rowSelectionUtils";
 import { normalizeHeaderWidths } from "../../utils/headerWidthUtils";
 import { applyAutoScaleToHeaders } from "../../managers/AutoScaleManager";
-import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
+import { getColumnEditorStripWidth } from "../../consts/general-consts";
 import { MergedColumnEditorConfig, ResolvedIcons } from "../initialization/TableInitializer";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
 
@@ -595,10 +595,11 @@ export class RenderOrchestrator {
       const { customTheme } = context;
       rootStyle.setProperty("--st-main-section-width", `${mainSectionContainerWidth}px`);
       rootStyle.setProperty("--st-scrollbar-width", `${state.scrollbarWidth}px`);
-      rootStyle.setProperty(
-        "--st-editor-width",
-        `${context.config.editColumns ? COLUMN_EDIT_WIDTH : 0}px`,
+      const editorStripWidth = getColumnEditorStripWidth(
+        context.config.editColumns,
+        mergedColumnEditorConfig.showToggle,
       );
+      rootStyle.setProperty("--st-editor-width", `${editorStripWidth}px`);
       rootStyle.setProperty("--st-border-width", `${customTheme.borderWidth}px`);
       rootStyle.setProperty("--st-footer-height", `${customTheme.footerHeight}px`);
       // Published so the sticky-parents overlay in external scroll mode can
@@ -610,9 +611,8 @@ export class RenderOrchestrator {
 
       const columnResizing = context.config.columnResizing ?? false;
       elements.content.className = `st-content ${columnResizing ? "st-resizeable" : "st-not-resizeable"}`;
-      elements.content.style.width = context.config.editColumns
-        ? `calc(100% - ${COLUMN_EDIT_WIDTH}px)`
-        : "100%";
+      elements.content.style.width =
+        editorStripWidth > 0 ? `calc(100% - ${editorStripWidth}px)` : "100%";
 
       this.renderHeader(
         elements.headerContainer,

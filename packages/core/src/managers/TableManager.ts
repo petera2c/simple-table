@@ -27,7 +27,6 @@ export interface TableManagerConfig {
   rowGrouping?: Accessor[];
   getRowId?: GetRowId;
   selectableCells?: boolean;
-  selectableColumns?: boolean;
   enableRowSelection?: boolean;
   copyHeadersToClipboard?: boolean;
   
@@ -143,7 +142,6 @@ export class TableManager {
 
     const selectionConfig: SelectionManagerConfig = {
       selectableCells: config.selectableCells || false,
-      selectableColumns: config.selectableColumns ?? false,
       headers: config.headers,
       tableRows: [],
       onCellEdit: config.onCellEdit,
@@ -255,9 +253,8 @@ export class TableManager {
       this.selectionManager.updateConfig({ collapsedHeaders: config.collapsedHeaders });
     }
 
-    if (config.selectableColumns !== undefined || config.selectableCells !== undefined) {
+    if (config.selectableCells !== undefined) {
       this.selectionManager.updateConfig({
-        selectableColumns: this.config.selectableColumns ?? false,
         selectableCells: this.config.selectableCells ?? false,
       });
     }

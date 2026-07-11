@@ -11,7 +11,6 @@ export const themingExampleDefaults = {
   columnReordering: true,
   editColumns: true,
   selectableCells: true,
-  selectableColumns: true,
   shouldPaginate: true,
   rowsPerPage: 10,
   height: "400px",

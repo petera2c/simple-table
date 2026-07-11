@@ -5,7 +5,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { HeaderObject, SimpleTableVanilla } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -607,5 +607,55 @@ export const ColumnEditorRowRenderer = {
     } else {
       expect(canvasElement.querySelector(".simple-table-root")).toBeTruthy();
     }
+  },
+};
+
+type TableInstance = InstanceType<typeof SimpleTableVanilla>;
+const TABLE_REF_KEY = "__column_visibility_table_ref";
+
+export const ColumnEditorConfigShowToggleFalse = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+      { accessor: "role", label: "Role", width: 120, type: "string" },
+    ];
+    const result = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      editColumns: true,
+      columnEditorConfig: { showToggle: false },
+    });
+    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    const editor = canvasElement.querySelector(".st-column-editor");
+    expect(editor).toBeTruthy();
+    expect(editor?.classList.contains("st-column-editor--no-toggle")).toBe(true);
+    expect(canvasElement.querySelector(".st-column-editor-text")).toBeNull();
+
+    const content = canvasElement.querySelector(".st-content") as HTMLElement | null;
+    expect(content).toBeTruthy();
+    expect(content!.style.width).toBe("100%");
+
+    const root = canvasElement.querySelector(".simple-table-root") as HTMLElement | null;
+    expect(root).toBeTruthy();
+    expect(getComputedStyle(root!).getPropertyValue("--st-editor-width").trim()).toBe("0px");
+
+    const table = (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY];
+    const api = table.getAPI();
+    api.toggleColumnEditor(true);
+    await new Promise((r) => setTimeout(r, 100));
+
+    const popout = canvasElement.querySelector(".st-column-editor-popout.open");
+    expect(popout).toBeTruthy();
+    expect(popout?.querySelectorAll(".st-header-checkbox-item").length).toBe(3);
+
+    api.toggleColumnEditor(false);
+    await new Promise((r) => setTimeout(r, 100));
+    expect(canvasElement.querySelector(".st-column-editor-popout.open")).toBeNull();
   },
 };

@@ -544,7 +544,6 @@ export class SimpleTableVanilla {
     // Initialize SelectionManager with empty tableRows (will be updated during render)
     this.selectionManager = new SelectionManager({
       selectableCells: this.config.selectableCells ?? false,
-      selectableColumns: this.config.selectableColumns ?? false,
       headers: this.headers,
       tableRows: [],
       onCellEdit: (props) => this.config.onCellEdit?.(props),
@@ -638,7 +637,7 @@ export class SimpleTableVanilla {
       const header = this.domManager.getRefs().mainHeaderRef.current;
       const sel = this.selectionManager;
       const liveSelection =
-        sel && (this.config.selectableCells || this.config.selectableColumns)
+        sel && this.config.selectableCells
           ? {
               columnsWithSelectedCells: sel.getColumnsWithSelectedCells(),
               selectedColumns: sel.getSelectedColumns(),
@@ -712,7 +711,7 @@ export class SimpleTableVanilla {
 
     if (this.selectionManager) {
       this.handleOutsideClickManager = new HandleOutsideClickManager({
-        selectableColumns: this.config.selectableColumns ?? false,
+        selectableCells: this.config.selectableCells ?? false,
         selectedCells: new Set(),
         selectedColumns: new Set(),
         setSelectedCells: (cells) => this.selectionManager!.setSelectedCells(cells),
@@ -1769,12 +1768,8 @@ export class SimpleTableVanilla {
       }
     }
 
-    if (
-      (config.selectableColumns !== undefined || config.selectableCells !== undefined) &&
-      this.selectionManager
-    ) {
+    if (config.selectableCells !== undefined && this.selectionManager) {
       this.selectionManager.updateConfig({
-        selectableColumns: this.config.selectableColumns ?? false,
         selectableCells: this.config.selectableCells ?? false,
       });
     }

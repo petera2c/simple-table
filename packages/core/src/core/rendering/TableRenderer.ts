@@ -30,6 +30,7 @@ import {
 } from "../../utils/resizeUtils/sectionWidths";
 import { canDisplaySection, deepClone } from "../../utils/generalUtils";
 import { flattenHeaders } from "../../utils/headerUtils";
+import { isColumnEditorStripVisible } from "../../consts/general-consts";
 import type TableRow from "../../types/TableRow";
 import type { NestedTableFactory } from "../../utils/nestedGridRowRenderer";
 import { rowIdToString } from "../../utils/rowUtils";
@@ -228,11 +229,11 @@ export class TableRenderer {
       filters: filterState?.filters ?? {},
       icons: deps.resolvedIcons,
       selectedColumns:
-        deps.config.selectableColumns && deps.selectionManager
+        deps.config.selectableCells && deps.selectionManager
           ? deps.selectionManager.getSelectedColumns()
           : new Set<number>(),
       columnsWithSelectedCells:
-        deps.selectionManager && (deps.config.selectableCells || deps.config.selectableColumns)
+        deps.selectionManager && deps.config.selectableCells
           ? deps.selectionManager.getColumnsWithSelectedCells()
           : new Set<number>(),
       sort: sortState?.sort ?? null,
@@ -240,7 +241,7 @@ export class TableRenderer {
       getShrinkFloors: deps.getShrinkFloors,
       onAutoExpandNaturalWidths: deps.onAutoExpandNaturalWidths,
       essentialAccessors: deps.essentialAccessors,
-      selectableColumns: deps.config.selectableColumns,
+      selectableCells: deps.config.selectableCells,
       headers: deps.effectiveHeaders,
       rows: deps.localRows,
       headerHeight: deps.customTheme.headerHeight,
@@ -299,14 +300,14 @@ export class TableRenderer {
       onHeaderEdit: deps.config.onHeaderEdit,
       onColumnSelect: deps.config.onColumnSelect,
       selectColumns:
-        deps.selectionManager && deps.config.selectableColumns
+        deps.selectionManager && deps.config.selectableCells
           ? (columnIndices: number[], isShiftKey?: boolean) => {
               deps.selectionManager!.selectColumns(columnIndices, isShiftKey);
               deps.onRender();
             }
           : (columnIndices: number[]) => {},
       setSelectedColumns:
-        deps.selectionManager && deps.config.selectableColumns
+        deps.selectionManager && deps.config.selectableCells
           ? (value: Set<number> | ((prev: Set<number>) => Set<number>)) => {
               const prev = deps.selectionManager!.getSelectedColumns();
               const next = typeof value === "function" ? value(prev) : value;
@@ -439,7 +440,7 @@ export class TableRenderer {
           tableRows: processedResult.currentTableRows,
           headers: deps.effectiveHeaders,
           collapsedHeaders: deps.collapsedHeaders,
-          selectableColumns: deps.config.selectableColumns ?? false,
+          selectableCells: deps.config.selectableCells ?? false,
         },
         { positionOnlyBody: deps.positionOnlyBody },
       );
@@ -787,7 +788,10 @@ export class TableRenderer {
         {
           collapsedHeaders: deps.collapsedHeaders,
           customTheme: deps.customTheme,
-          editColumns: deps.config.editColumns ?? false,
+          editColumns: isColumnEditorStripVisible(
+            deps.config.editColumns,
+            deps.config.columnEditorConfig?.showToggle,
+          ),
           headers: deps.effectiveHeaders,
           rowHeight: deps.customTheme.rowHeight,
           heightOffsets: processedResult.paginatedHeightOffsets,
@@ -1120,7 +1124,10 @@ export class TableRenderer {
         pinnedLeftContentWidth,
         pinnedRightContentWidth,
         tableBodyContainerRef,
-        editColumns: deps.config.editColumns ?? false,
+        editColumns: isColumnEditorStripVisible(
+          deps.config.editColumns,
+          deps.config.columnEditorConfig?.showToggle,
+        ),
         sectionScrollController: deps.sectionScrollController ?? undefined,
       });
       return;
@@ -1157,7 +1164,10 @@ export class TableRenderer {
           pinnedLeftContentWidth,
           pinnedRightContentWidth,
           tableBodyContainerRef,
-          editColumns: deps.config.editColumns ?? false,
+          editColumns: isColumnEditorStripVisible(
+            deps.config.editColumns,
+            deps.config.columnEditorConfig?.showToggle,
+          ),
           sectionScrollController: deps.sectionScrollController ?? undefined,
         });
         this.scrollbarTimeoutId = null;
@@ -1173,7 +1183,10 @@ export class TableRenderer {
         pinnedLeftContentWidth,
         pinnedRightContentWidth,
         tableBodyContainerRef,
-        editColumns: deps.config.editColumns ?? false,
+        editColumns: isColumnEditorStripVisible(
+          deps.config.editColumns,
+          deps.config.columnEditorConfig?.showToggle,
+        ),
         sectionScrollController: this.sectionScrollController,
         // Force-create when content width already proved overflow (empty-state
         // header scrollports can report scrollWidth === clientWidth).

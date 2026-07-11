@@ -16,6 +16,13 @@ export type ColumnEditorSearchFunction = (header: HeaderObject, searchTerm: stri
 export interface ColumnEditorConfig {
   /** Text displayed on the column editor button (default: "Columns") */
   text?: string;
+  /**
+   * When false, hides the built-in vertical "Columns" toggle strip while keeping
+   * the column editor popout and `toggleColumnEditor()` API available.
+   * Use this when opening the editor from an external toolbar button.
+   * Default: true.
+   */
+  showToggle?: boolean;
   /** Enable search functionality in the column editor (default: true) */
   searchEnabled?: boolean;
   /** Placeholder text for the search input (default: "Search columns...") */
@@ -37,6 +44,7 @@ export const DEFAULT_COLUMN_EDITOR_CONFIG: Required<
   Omit<ColumnEditorConfig, "searchFunction" | "rowRenderer" | "customRenderer">
 > = {
   text: "Columns",
+  showToggle: true,
   searchEnabled: true,
   searchPlaceholder: "Search columns...",
   allowColumnPinning: true,
@@ -44,6 +52,9 @@ export const DEFAULT_COLUMN_EDITOR_CONFIG: Required<
 
 /** Column editor config with defaults applied (text, searchEnabled, searchPlaceholder are required) */
 export type MergedColumnEditorConfig = Required<
-  Pick<ColumnEditorConfig, "text" | "searchEnabled" | "searchPlaceholder" | "allowColumnPinning">
+  Pick<
+    ColumnEditorConfig,
+    "text" | "showToggle" | "searchEnabled" | "searchPlaceholder" | "allowColumnPinning"
+  >
 > &
   Pick<ColumnEditorConfig, "searchFunction" | "rowRenderer" | "customRenderer">;

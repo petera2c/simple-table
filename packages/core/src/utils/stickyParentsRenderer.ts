@@ -47,6 +47,7 @@ export interface StickyParentsContainerProps {
 export interface StickyParentsRenderContext {
   collapsedHeaders: Set<string>;
   customTheme: CustomTheme;
+  /** True when the column-editor toggle strip is visible and reserves horizontal space. */
   editColumns: boolean;
   headers: HeaderObject[];
   rowHeight: number;

@@ -571,7 +571,7 @@ if (targetDepth !== -1) {
     name: "toggleColumnEditor",
     required: false,
     description:
-      "Opens, closes, or toggles the column editor menu programmatically. When called without arguments, it toggles the current state (open if closed, close if open). Pass true to explicitly open the menu, or false to explicitly close it. This gives you full control over when the column editor UI is displayed, enabling custom column visibility workflows and user experiences.",
+      "Opens, closes, or toggles the column editor menu programmatically. When called without arguments, it toggles the current state (open if closed, close if open). Pass true to explicitly open the menu, or false to explicitly close it. Requires editColumns. Pair with columnEditorConfig.showToggle: false to hide the built-in Columns strip and drive the editor from your own toolbar button.",
     type: "(open?: boolean) => void",
     example: `// Toggle the column editor (open if closed, close if open)
 tableRef.current?.toggleColumnEditor();

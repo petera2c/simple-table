@@ -12,7 +12,6 @@ export const alignmentExampleDefaults = {
   columnResizing: true,
   columnReordering: true,
   selectableCells: true,
-  selectableColumns: true,
   editColumns: true,
   height: "calc(100dvh - 112px)",
 };

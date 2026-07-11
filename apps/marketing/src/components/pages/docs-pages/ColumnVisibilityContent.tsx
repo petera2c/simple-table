@@ -58,6 +58,23 @@ const COLUMN_VISIBILITY_PROPS: PropInfo[] = [
 />`,
   },
   {
+    key: "showToggle",
+    name: "columnEditorConfig.showToggle",
+    required: false,
+    description:
+      "When false, hides the built-in vertical Columns strip while keeping the editor. Open it from your own UI with tableRef.current.toggleColumnEditor(). Default: true.",
+    type: "boolean",
+    example: `<SimpleTable
+  ref={tableRef}
+  editColumns
+  columnEditorConfig={{ showToggle: false }}
+/>
+
+<button onClick={() => tableRef.current?.toggleColumnEditor()}>
+  Columns
+</button>`,
+  },
+  {
     key: "onColumnVisibilityChange",
     name: "onColumnVisibilityChange",
     required: false,

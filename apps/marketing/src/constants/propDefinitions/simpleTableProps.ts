@@ -568,7 +568,7 @@ canExpandRowGroup={(row) => {
     key: "selectableCells",
     name: "selectableCells",
     required: false,
-    description: "Enable cell selection functionality.",
+    description: "Enable cell and column selection functionality. When true, users can select individual cells and click column headers to select entire columns.",
     type: "boolean",
     example: `selectableCells={true}`,
   },
@@ -580,14 +580,6 @@ canExpandRowGroup={(row) => {
       "When true, includes column headers as the first row when copying selected cells to clipboard. Defaults to false.",
     type: "boolean",
     example: `copyHeadersToClipboard={true}`,
-  },
-  {
-    key: "selectableColumns",
-    name: "selectableColumns",
-    required: false,
-    description: "Flag for selectable column headers.",
-    type: "boolean",
-    example: `selectableColumns={true}`,
   },
   {
     key: "shouldPaginate",
@@ -892,10 +884,11 @@ useEffect(() => {
     name: "columnEditorConfig",
     required: false,
     description:
-      "Column editor UI: text, search, allowColumnPinning, customRenderer, rowRenderer, etc. See ColumnEditorConfig in API Reference.",
+      "Column editor UI: text, showToggle, search, allowColumnPinning, customRenderer, rowRenderer, etc. See ColumnEditorConfig in API Reference.",
     type: "ColumnEditorConfig",
     example: `columnEditorConfig={{
   text: "Columns",                      // Button text (default: "Columns")
+  showToggle: true,                     // Hide strip with false; use toggleColumnEditor()
   searchEnabled: true,                  // Enable search (default: true)
   searchPlaceholder: "Search columns...", // Search placeholder
   searchFunction: (header, searchTerm) => { // Optional: custom search logic

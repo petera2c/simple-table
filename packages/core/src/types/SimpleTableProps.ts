@@ -85,8 +85,7 @@ export interface SimpleTableProps {
   rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
   scrollParent?: HTMLElement | "window" | (() => HTMLElement | null); // External scroll container that drives virtualization and onLoadMore when neither height nor maxHeight is set. Accepts an element, the string "window", or a getter (useful for refs that resolve after first render).
-  selectableCells?: boolean; // Flag if can select cells
-  selectableColumns?: boolean; // Flag for selectable column headers
+  selectableCells?: boolean; // Enable cell and column selection
   serverSidePagination?: boolean; // Flag to disable internal pagination slicing (for server-side pagination)
   shouldPaginate?: boolean; // Flag for pagination
   tableEmptyStateRenderer?: HTMLElement | string | null; // Custom empty state component when table has no rows

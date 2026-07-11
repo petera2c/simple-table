@@ -51,19 +51,26 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
     };
   }
 
+  const showToggle = columnEditorConfig.showToggle !== false;
+
   const container = document.createElement("div");
-  container.className = `st-column-editor ${open ? "open" : ""}`;
-  container.style.width = `${COLUMN_EDIT_WIDTH}px`;
+  container.className = `st-column-editor${showToggle ? "" : " st-column-editor--no-toggle"}${
+    open ? " open" : ""
+  }`;
+  container.style.width = showToggle ? `${COLUMN_EDIT_WIDTH}px` : "0px";
 
   const handleClick = () => {
     setOpen(!open);
   };
 
-  const textDiv = document.createElement("div");
-  textDiv.className = "st-column-editor-text";
-  textDiv.textContent = columnEditorText;
-  container.addEventListener("click", handleClick);
-  container.appendChild(textDiv);
+  let textDiv: HTMLDivElement | null = null;
+  if (showToggle) {
+    textDiv = document.createElement("div");
+    textDiv.className = "st-column-editor-text";
+    textDiv.textContent = columnEditorText;
+    container.addEventListener("click", handleClick);
+    container.appendChild(textDiv);
+  }
 
   const popout = createColumnEditorPopout({
     headers,
@@ -97,7 +104,7 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
         setOpen = newOptions.setOpen;
       }
 
-      if (newOptions.columnEditorText !== undefined) {
+      if (newOptions.columnEditorText !== undefined && textDiv) {
         textDiv.textContent = newOptions.columnEditorText;
       }
 
@@ -126,7 +133,9 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
       });
     },
     destroy: () => {
-      container.removeEventListener("click", handleClick);
+      if (showToggle) {
+        container.removeEventListener("click", handleClick);
+      }
       popout.destroy();
       container.remove();
     },

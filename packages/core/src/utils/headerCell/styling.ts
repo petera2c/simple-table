@@ -64,7 +64,7 @@ export const calculateHeaderCellClasses = (
   })();
 
   const isHeaderSelected = (() => {
-    if (!context.selectableColumns || isSelectionColumn) return false;
+    if (!context.selectableCells || isSelectionColumn) return false;
 
     const columnsToSelect = getHeaderLeafIndices(header, colIndex);
     return columnsToSelect.some((columnIndex) => selectedColumns.has(columnIndex));

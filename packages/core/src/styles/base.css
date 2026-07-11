@@ -1067,6 +1067,22 @@ input {
   cursor: pointer;
 }
 
+/* Hidden toggle strip: keep a zero-width anchor for the popout (opened via API). */
+.st-column-editor.st-column-editor--no-toggle {
+  width: 0;
+  border-left: none;
+  background: transparent;
+  overflow: visible;
+  pointer-events: none;
+  cursor: default;
+}
+
+.st-column-editor.st-column-editor--no-toggle .st-column-editor-popout {
+  pointer-events: auto;
+  /* Zero-width anchor sits on the content edge; align popout to that edge. */
+  right: 100%;
+}
+
 .st-column-editor-text {
   padding: var(--st-spacing-medium) var(--st-spacing-small);
   writing-mode: vertical-rl;

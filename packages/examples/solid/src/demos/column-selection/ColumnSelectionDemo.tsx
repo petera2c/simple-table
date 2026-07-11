@@ -9,7 +9,7 @@ export default function ColumnSelectionDemo(props: { height?: string | number; t
       rows={columnSelectionConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}
-      selectableColumns={columnSelectionConfig.tableProps.selectableColumns}
+      selectableCells={columnSelectionConfig.tableProps.selectableCells}
     />
   );
 }

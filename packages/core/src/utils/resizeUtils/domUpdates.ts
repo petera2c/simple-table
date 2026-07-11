@@ -188,7 +188,9 @@ export const updateColumnWidthsInDOM = (
     ".st-horizontal-scrollbar-container",
   ) as HTMLElement | null;
   const mainBody = root?.querySelector(".st-body-main") as HTMLDivElement | null;
-  const editColumns = Boolean(root?.querySelector(".st-column-editor"));
+  const editColumns = Boolean(
+    root?.querySelector(".st-column-editor:not(.st-column-editor--no-toggle)"),
+  );
   if (
     hScroll &&
     mainBody &&

@@ -1457,7 +1457,6 @@ function SalesExample({
       shouldPaginate
       theme="custom"
       useOddEvenRowBackground
-      selectableColumns
       height={containerHeight2 ? `${containerHeight2}px` : "60dvh"}
     />
   );
