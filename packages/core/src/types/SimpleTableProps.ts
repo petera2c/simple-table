@@ -16,6 +16,7 @@ import { TableFilterState } from "./FilterTypes";
 import OnNextPage from "./OnNextPage";
 import OnRowGroupExpandProps from "./OnRowGroupExpandProps";
 import RowSelectionChangeProps from "./RowSelectionChangeProps";
+import type { RowSelectionMode } from "./RowSelectionMode";
 import { RowButton } from "./RowButton";
 import Theme from "./Theme";
 import { CustomThemeProps } from "./CustomTheme";
@@ -43,7 +44,24 @@ export interface SimpleTableProps {
   editColumnsInitOpen?: boolean; // Flag for opening the column editor when the table is loaded
   emptyStateRenderer?: EmptyStateRenderer; // Custom renderer for empty states (for nested row states)
   enableHeaderEditing?: boolean; // Flag for enabling header label editing when clicking already active headers
-  enableRowSelection?: boolean; // Flag for enabling row selection with checkboxes
+  enableRowSelection?: boolean; // Flag for enabling row selection
+  /**
+   * Row selection mode when `enableRowSelection` is true.
+   * - `"multiple"` (default): select any number of rows
+   * - `"single"`: selecting a row replaces the previous selection
+   */
+  rowSelectionMode?: RowSelectionMode;
+  /**
+   * When true, clicking a data cell selects the row (toggles in multiple mode,
+   * replaces selection in single mode). Default false.
+   */
+  selectRowOnClick?: boolean;
+  /**
+   * When false, the checkbox selection column is not shown; selection still works
+   * via click, keyboard, or TableAPI. Default true. The column is still shown when
+   * `rowButtons` is set (buttons need a home).
+   */
+  showRowSelectionColumn?: boolean;
   enableStickyParents?: boolean; // Flag for enabling sticky parent rows during scrolling in grouped tables (default: false)
   errorStateRenderer?: ErrorStateRenderer; // Custom renderer for error states
   expandAll?: boolean; // Flag for expanding all rows by default
@@ -85,8 +103,7 @@ export interface SimpleTableProps {
   rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
   scrollParent?: HTMLElement | "window" | (() => HTMLElement | null); // External scroll container that drives virtualization and onLoadMore when neither height nor maxHeight is set. Accepts an element, the string "window", or a getter (useful for refs that resolve after first render).
-  selectableCells?: boolean; // Flag if can select cells
-  selectableColumns?: boolean; // Flag for selectable column headers
+  selectableCells?: boolean; // Enable cell and column selection
   serverSidePagination?: boolean; // Flag to disable internal pagination slicing (for server-side pagination)
   shouldPaginate?: boolean; // Flag for pagination
   tableEmptyStateRenderer?: HTMLElement | string | null; // Custom empty state component when table has no rows

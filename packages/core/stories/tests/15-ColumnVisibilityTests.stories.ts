@@ -609,3 +609,37 @@ export const ColumnEditorRowRenderer = {
     }
   },
 };
+
+export const ColumnEditorConfigShowToggleFalse = {
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 150, type: "string" },
+      { accessor: "role", label: "Role", width: 120, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      editColumns: true,
+      columnEditorConfig: { showToggle: false },
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    const editor = canvasElement.querySelector(".st-column-editor");
+    expect(editor).toBeTruthy();
+    expect(editor?.classList.contains("st-column-editor--no-toggle")).toBe(true);
+    expect(canvasElement.querySelector(".st-column-editor-text")).toBeNull();
+    expect(canvasElement.querySelector(".st-column-editor-popout.open")).toBeNull();
+
+    const content = canvasElement.querySelector(".st-content") as HTMLElement | null;
+    expect(content).toBeTruthy();
+    expect(content!.style.width).toBe("100%");
+
+    const root = canvasElement.querySelector(".simple-table-root") as HTMLElement | null;
+    expect(root).toBeTruthy();
+    expect(getComputedStyle(root!).getPropertyValue("--st-editor-width").trim()).toBe("0px");
+  },
+};

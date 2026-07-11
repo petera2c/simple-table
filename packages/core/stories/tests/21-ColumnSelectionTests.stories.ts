@@ -1,6 +1,6 @@
 /**
  * COLUMN SELECTION TESTS
- * Tests for selectableColumns and onColumnSelect callback.
+ * Tests for selectableCells (column selection mode) and onColumnSelect callback.
  */
 
 import type { Meta } from "@storybook/html";
@@ -16,7 +16,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Tests for column selection: selectableColumns prop and onColumnSelect callback.",
+          "Tests for column selection: selectableCells prop and onColumnSelect callback.",
       },
     },
   },
@@ -51,7 +51,7 @@ export const OnColumnSelectCallback = {
     const { wrapper } = renderVanillaTable(headers, createData(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
-      selectableColumns: true,
+      selectableCells: true,
       onColumnSelect: (header: HeaderObject) => {
         captured.push({ accessor: header.accessor });
       },
@@ -86,7 +86,7 @@ export const OnColumnSelectDifferentColumns = {
     const { wrapper } = renderVanillaTable(headers, createData(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
-      selectableColumns: true,
+      selectableCells: true,
       onColumnSelect: (header: HeaderObject) => {
         captured.push(header.accessor as string);
       },
@@ -124,7 +124,7 @@ export const SelectableColumnsWithoutCallback = {
     const { wrapper } = renderVanillaTable(headers, createData(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
-      selectableColumns: true,
+      selectableCells: true,
     });
     return wrapper;
   },

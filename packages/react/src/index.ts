@@ -86,6 +86,7 @@ export type {
   RowButtonProps,
   RowId,
   RowSelectionChangeProps,
+  RowSelectionMode,
   RowState,
   SetHeaderRenameProps,
   SharedTableProps,

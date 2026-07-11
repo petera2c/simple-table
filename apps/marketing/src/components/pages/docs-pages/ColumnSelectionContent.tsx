@@ -11,14 +11,14 @@ import PropTable, { type PropInfo } from "@/components/PropTable";
 
 const COLUMN_SELECTION_PROPS: PropInfo[] = [
   {
-    key: "selectableColumns",
-    name: "selectableColumns",
+    key: "selectableCells",
+    name: "selectableCells",
     required: false,
     description:
-      "Enables column selection functionality. When true, users can click on column headers to select them.",
+      "Enables both cell and column selection. When true, users can click on cells to select them and click on column headers to select entire columns.",
     type: "boolean",
     example: `<SimpleTable
-  selectableColumns={true}
+  selectableCells={true}
   onColumnSelect={handleColumnSelect}
   // ... other props
 />`,
@@ -105,7 +105,7 @@ const ColumnSelectionContent = () => {
           <li>
             Set the{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-              selectableColumns
+              selectableCells
             </code>{" "}
             prop to{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">

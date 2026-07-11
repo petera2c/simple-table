@@ -41,7 +41,7 @@ const DOCS_DEMO_IDS: Record<string, string[]> = {
   "quick-start": ["quick-start"],
   "row-grouping": ["row-grouping", "dynamic-row-loading"],
   "row-height": ["row-height"],
-  "row-selection": ["row-selection"],
+  "row-selection": ["row-selection", "row-selection-single", "row-selection-click", "row-selection-api"],
   "table-height": ["table-height"],
   themes: ["themes"],
   tooltips: ["tooltip"],

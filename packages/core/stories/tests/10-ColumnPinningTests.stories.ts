@@ -325,7 +325,7 @@ export const IsEssentialColumnLockedInEditor = {
       rows: createEmployeeData() as Row[],
       height: "400px",
       editColumns: true,
-      selectableColumns: true,
+      selectableCells: true,
     });
     table.mount();
     const wrapper = document.createElement("div");

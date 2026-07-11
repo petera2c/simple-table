@@ -9,7 +9,6 @@ import { RETAIL_SALES_HEADERS } from "../data/retail-data";
 export const selectableCellsExampleDefaults = {
   rowGrouping: ["stores"] as const,
   selectableCells: true,
-  selectableColumns: true,
   columnResizing: true,
   columnReordering: true,
   height: "80vh",

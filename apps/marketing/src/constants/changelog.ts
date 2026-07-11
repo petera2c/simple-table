@@ -35,6 +35,61 @@ export const v3_9_5: ChangelogEntry = {
   ],
 };
 
+export const v3_9_6: ChangelogEntry = {
+  version: "3.9.6",
+  date: "2026-07-10",
+  title: "Selection API cleanup",
+  description:
+    "selectableCells now controls both cell and column selection, plus richer row selection modes and APIs.",
+  changes: [
+    {
+      type: "breaking",
+      description:
+        "Removed selectableColumns. Use selectableCells to enable cell and column selection.",
+      link: "/docs/cell-highlighting",
+    },
+    {
+      type: "bugfix",
+      description: "Shift+Arrow now contracts cell ranges.",
+    },
+    {
+      type: "feature",
+      description:
+        "Added rowSelectionMode (single | multiple), selectRowOnClick, and showRowSelectionColumn for flexible row selection UX.",
+      link: "/docs/row-selection",
+    },
+    {
+      type: "feature",
+      description:
+        "Keyboard support for row selection: Space toggles; Arrow/Home/End move focus (and selection in single mode); Shift expands ranges in multiple mode when selectableCells is off.",
+      link: "/docs/row-selection",
+    },
+    {
+      type: "feature",
+      description:
+        "TableAPI: getSelectedRows, getSelectedRowsData, getRow, selectRow, deselectRow, toggleRowSelection, clearRowSelection.",
+      link: "/docs/row-selection",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Row expand chevrons no longer flip out of sync when collapseAll() and expandDepth() run back-to-back (e.g. Only Divisions).",
+      link: "/docs/row-grouping",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Hovering a row no longer highlights the same rowId in other tables on the same page.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Expandable columns in row-grouped tables now show and clear loading skeletons when isLoading toggles, instead of staying stuck on stale content or skeletons.",
+      link: "/docs/row-grouping",
+    },
+  ],
+};
+
 export const v3_9_3: ChangelogEntry = {
   version: "3.9.3",
   date: "2026-07-08",
@@ -2174,6 +2229,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_9_6,
   v3_9_5,
   v3_9_3,
   v3_9_2,

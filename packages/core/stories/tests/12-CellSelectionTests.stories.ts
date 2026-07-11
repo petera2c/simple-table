@@ -322,7 +322,6 @@ export const ColumnHeaderSelection = {
       getRowId: (params) => String(params.row.id),
       height: "400px",
       selectableCells: true,
-      selectableColumns: true,
     });
     return wrapper;
   },
@@ -399,7 +398,6 @@ export const MultipleColumnHeaderSelections = {
       getRowId: (params) => String(params.row.id),
       height: "400px",
       selectableCells: true,
-      selectableColumns: true,
     });
     return wrapper;
   },
@@ -446,7 +444,7 @@ export const OutsideClickClearsSelection = {
 };
 
 /**
- * Edge case: when selectableColumns is true, clicking a column header should clear
+ * Edge case: when selectableCells is true, clicking a column header should clear
  * any existing cell selection (and initial focused cell) so that column selection takes over.
  */
 export const ColumnHeaderClickClearsCellSelection = {
@@ -461,7 +459,6 @@ export const ColumnHeaderClickClearsCellSelection = {
       getRowId: (params) => String(params.row.id),
       height: "400px",
       selectableCells: true,
-      selectableColumns: true,
     });
     return wrapper;
   },
@@ -841,6 +838,140 @@ export const ShiftArrowExtendsSelection = {
       ".st-cell.st-cell-selected, .st-cell[data-selected='true']",
     );
     expect(selectedCells.length).toBeGreaterThanOrEqual(1);
+  },
+};
+
+/**
+ * Spreadsheet-style Shift+Arrow: expand a range, then contract it back toward the
+ * anchor. Shift+ArrowUp after expanding downward must shrink the selection (not
+ * jump/expand the opposite edge).
+ */
+export const ShiftArrowContractsSelection = {
+  tags: ["shift-arrow-range"],
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 120, type: "string" },
+      { accessor: "price", label: "Price", width: 100, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createProductData().slice(0, 8), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "400px",
+      selectableCells: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await clickCell(canvasElement, 1, 0);
+    expect(isCellSelected(canvasElement, 1, 0)).toBe(true);
+
+    // Expand down: rows 1..4 (4 cells)
+    for (let i = 0; i < 3; i++) {
+      dispatchKey("ArrowDown", { shiftKey: true });
+      await new Promise((r) => setTimeout(r, 80));
+    }
+    expect(getSelectedCellCount(canvasElement)).toBe(4);
+    expect(isCellSelected(canvasElement, 1, 0)).toBe(true);
+    expect(isCellSelected(canvasElement, 4, 0)).toBe(true);
+
+    // Contract up toward the anchor: rows 1..3
+    dispatchKey("ArrowUp", { shiftKey: true });
+    await new Promise((r) => setTimeout(r, 150));
+    expect(getSelectedCellCount(canvasElement)).toBe(3);
+    expect(isCellSelected(canvasElement, 1, 0)).toBe(true);
+    expect(isCellSelected(canvasElement, 3, 0)).toBe(true);
+    expect(isCellSelected(canvasElement, 4, 0)).toBe(false);
+
+    // Contract again: rows 1..2
+    dispatchKey("ArrowUp", { shiftKey: true });
+    await new Promise((r) => setTimeout(r, 150));
+    expect(getSelectedCellCount(canvasElement)).toBe(2);
+    expect(isCellSelected(canvasElement, 2, 0)).toBe(true);
+    expect(isCellSelected(canvasElement, 3, 0)).toBe(false);
+  },
+};
+
+/**
+ * After a mouse-drag range, Shift+Arrow must continue from the drag endpoint
+ * (spreadsheet active cell), contracting/expanding that free end — not restart
+ * from the mousedown anchor and collapse the range.
+ */
+export const ShiftArrowContractsAfterMouseDrag = {
+  tags: ["shift-arrow-range"],
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 120, type: "string" },
+      { accessor: "price", label: "Price", width: 100, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createProductData().slice(0, 8), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "400px",
+      selectableCells: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    // Drag-select rows 1..4 in column 0
+    await selectCellRange(canvasElement, 1, 0, 4, 0);
+    expect(getSelectedCellCount(canvasElement)).toBe(4);
+    expect(isCellSelected(canvasElement, 1, 0)).toBe(true);
+    expect(isCellSelected(canvasElement, 4, 0)).toBe(true);
+
+    // Shift+ArrowUp should shrink from the drag endpoint (row 4 → row 3)
+    dispatchKey("ArrowUp", { shiftKey: true });
+    await new Promise((r) => setTimeout(r, 150));
+    expect(getSelectedCellCount(canvasElement)).toBe(3);
+    expect(isCellSelected(canvasElement, 1, 0)).toBe(true);
+    expect(isCellSelected(canvasElement, 3, 0)).toBe(true);
+    expect(isCellSelected(canvasElement, 4, 0)).toBe(false);
+
+    // Shift+ArrowDown should grow from the free end again (back to rows 1..4)
+    dispatchKey("ArrowDown", { shiftKey: true });
+    await new Promise((r) => setTimeout(r, 150));
+    expect(getSelectedCellCount(canvasElement)).toBe(4);
+    expect(isCellSelected(canvasElement, 4, 0)).toBe(true);
+  },
+};
+
+/**
+ * Horizontal Shift+Arrow expand then contract toward the column anchor.
+ */
+export const ShiftArrowContractsHorizontalSelection = {
+  tags: ["shift-arrow-range"],
+  render: () => {
+    const headers: HeaderObject[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 120, type: "string" },
+      { accessor: "category", label: "Category", width: 120, type: "string" },
+      { accessor: "price", label: "Price", width: 100, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createProductData().slice(0, 4), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "300px",
+      selectableCells: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await clickCell(canvasElement, 0, 0);
+
+    dispatchKey("ArrowRight", { shiftKey: true });
+    await new Promise((r) => setTimeout(r, 80));
+    dispatchKey("ArrowRight", { shiftKey: true });
+    await new Promise((r) => setTimeout(r, 80));
+    expect(getSelectedCellCount(canvasElement)).toBe(3);
+    expect(isCellSelected(canvasElement, 0, 2)).toBe(true);
+
+    dispatchKey("ArrowLeft", { shiftKey: true });
+    await new Promise((r) => setTimeout(r, 150));
+    expect(getSelectedCellCount(canvasElement)).toBe(2);
+    expect(isCellSelected(canvasElement, 0, 0)).toBe(true);
+    expect(isCellSelected(canvasElement, 0, 1)).toBe(true);
+    expect(isCellSelected(canvasElement, 0, 2)).toBe(false);
   },
 };
 

@@ -29,6 +29,24 @@ export const calculateBufferRowCount = (rowHeight: number): number => {
 };
 
 export const COLUMN_EDIT_WIDTH = 29.5;
+
+/**
+ * Horizontal space reserved for the built-in column-editor toggle strip.
+ * Returns 0 when editing is off or the strip is hidden via `showToggle: false`.
+ */
+export const getColumnEditorStripWidth = (
+  editColumns: boolean | undefined,
+  showToggle: boolean = true,
+): number => (editColumns && showToggle ? COLUMN_EDIT_WIDTH : 0);
+
+/**
+ * Whether the built-in column-editor toggle strip is visible and takes layout space.
+ */
+export const isColumnEditorStripVisible = (
+  editColumns: boolean | undefined,
+  showToggle: boolean = true,
+): boolean => Boolean(editColumns && showToggle);
+
 export const TABLE_HEADER_CELL_WIDTH_DEFAULT = 150;
 export const PINNED_BORDER_WIDTH = 1;
 export const CHART_COLUMN_TYPES = ["lineAreaChart", "barChart"];

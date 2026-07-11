@@ -14,6 +14,7 @@ import { SortManager } from "../managers/SortManager";
 import { FilterManager } from "../managers/FilterManager";
 import { SelectionManager } from "../managers/SelectionManager";
 import { RowSelectionManager } from "../managers/RowSelectionManager";
+import { shouldShowRowSelectionColumn } from "../utils/rowSelectionUtils";
 import WindowResizeManager from "../hooks/windowResize";
 import HandleOutsideClickManager from "../hooks/handleOutsideClick";
 import ScrollbarVisibilityManager from "../hooks/scrollbarVisibility";
@@ -136,6 +137,12 @@ export class SimpleTableVanilla {
   private announcement: string = "";
 
   private cellRegistry: Map<string, any> = new Map();
+  private static nextHoverScopeId = 0;
+  /**
+   * Unique id for this table instance. Scopes the module-level row-hover cell
+   * map so multiple tables on one page with overlapping rowIds don't cross-hover.
+   */
+  private readonly hoverScopeId: string = `st-hover-${++SimpleTableVanilla.nextHoverScopeId}`;
   private headerRegistry: Map<string, any> = new Map();
   private rowIndexMap: Map<string | number, number> = new Map();
 
@@ -544,14 +551,13 @@ export class SimpleTableVanilla {
     // Initialize SelectionManager with empty tableRows (will be updated during render)
     this.selectionManager = new SelectionManager({
       selectableCells: this.config.selectableCells ?? false,
-      selectableColumns: this.config.selectableColumns ?? false,
       headers: this.headers,
       tableRows: [],
       onCellEdit: (props) => this.config.onCellEdit?.(props),
       cellRegistry: this.cellRegistry,
       collapsedHeaders: this.collapsedHeaders,
       rowHeight: this.customTheme.rowHeight,
-      enableRowSelection: this.config.enableRowSelection,
+      enableRowSelection: shouldShowRowSelectionColumn(this.config),
       copyHeadersToClipboard: this.config.copyHeadersToClipboard,
       customTheme: this.customTheme,
       tableRoot: this.container,
@@ -638,7 +644,7 @@ export class SimpleTableVanilla {
       const header = this.domManager.getRefs().mainHeaderRef.current;
       const sel = this.selectionManager;
       const liveSelection =
-        sel && (this.config.selectableCells || this.config.selectableColumns)
+        sel && this.config.selectableCells
           ? {
               columnsWithSelectedCells: sel.getColumnsWithSelectedCells(),
               selectedColumns: sel.getSelectedColumns(),
@@ -699,20 +705,11 @@ export class SimpleTableVanilla {
       this.render("scrollbarWidth-change");
     });
 
-    if (this.config.enableRowSelection) {
-      this.rowSelectionManager = new RowSelectionManager({
-        tableRows: [],
-        onRowSelectionChange: this.config.onRowSelectionChange,
-        enableRowSelection: true,
-      });
-      this.rowSelectionManager.subscribe(() => {
-        this.render("rowSelectionManager");
-      });
-    }
+    this.syncRowSelectionManager();
 
     if (this.selectionManager) {
       this.handleOutsideClickManager = new HandleOutsideClickManager({
-        selectableColumns: this.config.selectableColumns ?? false,
+        selectableCells: this.config.selectableCells ?? false,
         selectedCells: new Set(),
         selectedColumns: new Set(),
         setSelectedCells: (cells) => this.selectionManager!.setSelectedCells(cells),
@@ -1165,6 +1162,7 @@ export class SimpleTableVanilla {
       createNestedTable: (container, nestedConfig) =>
         new SimpleTableVanilla(container, nestedConfig),
       cellRegistry: this.cellRegistry,
+      hoverScopeId: this.hoverScopeId,
       headerRegistry: this.headerRegistry,
       draggedHeaderRef: this.draggedHeaderRef,
       hoveredHeaderRef: this.hoveredHeaderRef,
@@ -1769,14 +1767,43 @@ export class SimpleTableVanilla {
       }
     }
 
-    if (
-      (config.selectableColumns !== undefined || config.selectableCells !== undefined) &&
-      this.selectionManager
-    ) {
+    if (config.selectableCells !== undefined && this.selectionManager) {
       this.selectionManager.updateConfig({
-        selectableColumns: this.config.selectableColumns ?? false,
         selectableCells: this.config.selectableCells ?? false,
       });
+    }
+
+    if (
+      config.enableRowSelection !== undefined ||
+      config.rowSelectionMode !== undefined ||
+      config.selectRowOnClick !== undefined ||
+      config.showRowSelectionColumn !== undefined ||
+      config.rowButtons !== undefined ||
+      config.onRowSelectionChange !== undefined ||
+      config.selectableCells !== undefined
+    ) {
+      this.syncRowSelectionManager();
+      // Selection column presence affects cell-selection column indices
+      this.selectionManager?.updateConfig({
+        enableRowSelection: shouldShowRowSelectionColumn(this.config),
+      });
+      // Header set may gain/lose the selection column
+      if (
+        config.enableRowSelection !== undefined ||
+        config.showRowSelectionColumn !== undefined ||
+        config.rowButtons !== undefined
+      ) {
+        this.renderOrchestrator.invalidateCache("header");
+        this.renderOrchestrator.invalidateCache("all");
+        if (this.dimensionManager) {
+          const effectiveHeaders = this.renderOrchestrator.computeEffectiveHeaders(
+            this.headers,
+            this.config,
+            this.customTheme,
+          );
+          this.dimensionManager.updateConfig({ effectiveHeaders });
+        }
+      }
     }
 
     if (config.height !== undefined || config.maxHeight !== undefined) {
@@ -1815,6 +1842,39 @@ export class SimpleTableVanilla {
   /** @deprecated Use {@link update} — same behavior. */
   updateConfig(config: Partial<SimpleTableConfig>): void {
     this.update(config);
+  }
+
+  /**
+   * Create, update, or destroy the RowSelectionManager when enableRowSelection
+   * (and related props) change at runtime.
+   */
+  private syncRowSelectionManager(): void {
+    if (this.config.enableRowSelection) {
+      const shared = {
+        onRowSelectionChange: this.config.onRowSelectionChange,
+        enableRowSelection: true as const,
+        rowSelectionMode: this.config.rowSelectionMode ?? ("multiple" as const),
+        selectRowOnClick: this.config.selectRowOnClick ?? false,
+        showRowSelectionColumn: this.config.showRowSelectionColumn !== false,
+        selectableCells: this.config.selectableCells ?? false,
+        tableRoot: this.container,
+      };
+
+      if (!this.rowSelectionManager) {
+        this.rowSelectionManager = new RowSelectionManager({
+          tableRows: this.renderOrchestrator.getLastProcessedResult()?.currentTableRows ?? [],
+          ...shared,
+        });
+        this.rowSelectionManager.subscribe(() => {
+          this.render("rowSelectionManager");
+        });
+      } else {
+        this.rowSelectionManager.updateConfig(shared);
+      }
+    } else if (this.rowSelectionManager) {
+      this.rowSelectionManager.destroy();
+      this.rowSelectionManager = null;
+    }
   }
 
   destroy(): void {
@@ -1941,6 +2001,9 @@ export class SimpleTableVanilla {
       getCachedProcessedResult: () => this.renderOrchestrator.getLastProcessedResult(),
       expandedDepthsManager: this.expandedDepthsManager,
       selectionManager: this.selectionManager,
+      get rowSelectionManager() {
+        return thiz.rowSelectionManager;
+      },
       sortManager: this.sortManager,
       filterManager: this.filterManager,
       onRender: () => this.render("columnEditor-onRender"),

@@ -50,6 +50,7 @@ import type {
 } from "./types/QuickFilterTypes";
 import type { ColumnVisibilityState } from "./types/ColumnVisibilityTypes";
 import type RowSelectionChangeProps from "./types/RowSelectionChangeProps";
+import type { RowSelectionMode } from "./types/RowSelectionMode";
 import type CellClickProps from "./types/CellClickProps";
 import type CellRendererProps from "./types/CellRendererProps";
 import type { CellRenderer } from "./types/CellRendererProps";
@@ -155,6 +156,7 @@ export type {
   RowButtonProps,
   RowId,
   RowSelectionChangeProps,
+  RowSelectionMode,
   RowState,
   SetHeaderRenameProps,
   SharedTableProps,

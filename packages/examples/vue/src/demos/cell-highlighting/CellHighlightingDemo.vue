@@ -5,7 +5,6 @@
     :height="height"
     :theme="theme"
     :selectable-cells="cellHighlightingConfig.tableProps.selectableCells"
-    :selectable-columns="cellHighlightingConfig.tableProps.selectableColumns"
   />
 </template>
 

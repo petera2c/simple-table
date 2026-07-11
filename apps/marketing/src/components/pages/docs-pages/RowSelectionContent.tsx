@@ -4,11 +4,17 @@ import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckSquare } from "@fortawesome/free-solid-svg-icons";
 import RowSelectionDemo from "@/components/demos/RowSelectionDemo";
+import {
+  RowSelectionSingleDemo,
+  RowSelectionClickDemo,
+  RowSelectionApiDemo,
+} from "@/components/demos/RowSelectionVariantsDemo";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
 import PageWrapper from "@/components/PageWrapper";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
 import { ROW_SELECTION_CHANGE_PROPS } from "@/constants/propDefinitions";
+import Link from "next/link";
 
 const ROW_SELECTION_PROPS: PropInfo[] = [
   {
@@ -16,11 +22,49 @@ const ROW_SELECTION_PROPS: PropInfo[] = [
     name: "enableRowSelection",
     required: false,
     description:
-      "Enable row selection functionality. When enabled, users can select individual rows or all rows using checkboxes.",
+      "Enable row selection. When enabled, users can select rows via checkboxes (by default), click, keyboard, or the TableAPI.",
     type: "boolean",
     example: `<SimpleTable
   enableRowSelection={true}
   // ... other props
+/>`,
+  },
+  {
+    key: "rowSelectionMode",
+    name: "rowSelectionMode",
+    required: false,
+    description:
+      'Selection mode: `"multiple"` (default) allows any number of selected rows; `"single"` replaces the previous selection and hides the header select-all checkbox.',
+    type: '"single" | "multiple"',
+    example: `<SimpleTable
+  enableRowSelection
+  rowSelectionMode="single"
+/>`,
+  },
+  {
+    key: "selectRowOnClick",
+    name: "selectRowOnClick",
+    required: false,
+    description:
+      "When true, clicking a data cell selects the row (toggles in multiple mode, replaces in single mode). Prefer `selectableCells={false}` for a pure click-to-select UX.",
+    type: "boolean",
+    example: `<SimpleTable
+  enableRowSelection
+  selectRowOnClick
+  selectableCells={false}
+/>`,
+  },
+  {
+    key: "showRowSelectionColumn",
+    name: "showRowSelectionColumn",
+    required: false,
+    description:
+      "When false, the checkbox column is hidden; selection still works via click, keyboard, or TableAPI. The column is still shown when `rowButtons` is set. Default true.",
+    type: "boolean",
+    example: `<SimpleTable
+  enableRowSelection
+  showRowSelectionColumn={false}
+  selectRowOnClick
 />`,
   },
   {
@@ -61,32 +105,122 @@ const RowSelectionContent = () => {
         transition={{ duration: 0.5, delay: 0.2 }}
       >
         Row selection enables users to select one or multiple rows in your table for bulk
-        operations, data export, or interactive workflows. This feature includes checkboxes in each
-        row and a header checkbox for select-all functionality.
+        operations, data export, or interactive workflows. Use checkboxes, click-to-select,
+        keyboard navigation, or the TableAPI depending on your UX.
       </motion.p>
 
-      {/* Demo Section */}
       <motion.div
-        className="mb-4"
+        className="flex flex-col gap-4 mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >
+        <h3 className="text-xl font-bold text-gray-800 dark:text-white">
+          Checkbox selection (multiple)
+        </h3>
+        <p className="text-gray-700 dark:text-gray-300">
+          The default experience: a pinned checkbox column with select-all in the header. Ideal for
+          bulk actions.
+        </p>
+        <LivePreview demoId="row-selection" height="420px" demoHeight="320px" Preview={RowSelectionDemo} />
+      </motion.div>
+
+      <motion.div
+        className="flex flex-col gap-4 mb-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.15 }}
+      >
+        <h3 className="text-xl font-bold text-gray-800 dark:text-white">Single selection mode</h3>
+        <p className="text-gray-700 dark:text-gray-300">
+          Set{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+            rowSelectionMode=&quot;single&quot;
+          </code>{" "}
+          when only one row should be selected at a time. Selecting another row replaces the
+          previous selection, and the header select-all control is hidden.
+        </p>
         <LivePreview
-          demoId="row-selection"
-          height="500px"
-          Preview={RowSelectionDemo}
+          demoId="row-selection-single"
+          height="340px"
+          demoHeight="260px"
+          Preview={RowSelectionSingleDemo}
         />
       </motion.div>
 
-      {/* Basic Row Selection Section */}
+      <motion.div
+        className="flex flex-col gap-4 mb-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <h3 className="text-xl font-bold text-gray-800 dark:text-white">
+          Click to select (no checkbox column)
+        </h3>
+        <p className="text-gray-700 dark:text-gray-300">
+          Combine{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">selectRowOnClick</code>{" "}
+          with{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+            showRowSelectionColumn=&#123;false&#125;
+          </code>{" "}
+          for a denser UI. Turn off{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">selectableCells</code>{" "}
+          so clicks and arrow keys belong to row selection.
+        </p>
+        <LivePreview
+          demoId="row-selection-click"
+          height="340px"
+          demoHeight="260px"
+          Preview={RowSelectionClickDemo}
+        />
+      </motion.div>
+
+      <motion.div
+        className="flex flex-col gap-4 mb-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.25 }}
+      >
+        <h3 className="text-xl font-bold text-gray-800 dark:text-white">
+          Programmatic selection (TableAPI)
+        </h3>
+        <p className="text-gray-700 dark:text-gray-300">
+          Use a table ref to call{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">selectRow</code>,{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+            toggleRowSelection
+          </code>
+          ,{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+            getSelectedRowsData
+          </code>
+          , and{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">clearRowSelection</code>
+          . See also{" "}
+          <Link
+            href="/docs/programmatic-control"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Programmatic Control
+          </Link>
+          .
+        </p>
+        <LivePreview
+          demoId="row-selection-api"
+          height="400px"
+          demoHeight="260px"
+          Preview={RowSelectionApiDemo}
+        />
+      </motion.div>
+
       <motion.h2
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        Basic Row Selection
+        Configuration
       </motion.h2>
 
       <motion.div
@@ -96,18 +230,16 @@ const RowSelectionContent = () => {
         transition={{ duration: 0.5, delay: 0.4 }}
       >
         <p className="text-gray-700 dark:text-gray-300 mb-4">
-          Enable row selection by adding the{" "}
+          Enable row selection with{" "}
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
             enableRowSelection
-          </code>{" "}
-          prop to your SimpleTable component. This adds checkboxes to each row and the header for
-          easy selection management.
+          </code>
+          , then tune mode, click behavior, and whether the checkbox column is shown:
         </p>
 
         <PropTable props={ROW_SELECTION_PROPS} title="Row Selection Properties" />
       </motion.div>
 
-      {/* Selection Behavior Section */}
       <motion.h2
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
@@ -127,14 +259,33 @@ const RowSelectionContent = () => {
           When row selection is enabled, users can:
         </p>
         <ul className="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
-          <li>Click individual row checkboxes to select/deselect specific rows</li>
-          <li>Click the header checkbox to select or deselect all rows at once</li>
-          <li>Use keyboard navigation to interact with checkboxes</li>
-          <li>Maintain selection state during sorting, filtering, and pagination</li>
+          <li>
+            Click individual row checkboxes to select/deselect specific rows (when the column is
+            shown)
+          </li>
+          <li>Click the header checkbox to select or deselect all rows (multiple mode only)</li>
+          <li>
+            Click a data cell to select a row when{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">selectRowOnClick</code>{" "}
+            is enabled
+          </li>
+          <li>
+            Use Space to toggle, and Arrow/Home/End (with Shift for ranges in multiple mode) when
+            cell selection is off
+          </li>
+          <li>
+            Call{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">selectRow</code>,{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">getSelectedRows</code>
+            , and related methods on the TableAPI
+          </li>
+          <li>
+            Maintain selection state during sorting, filtering, and pagination (with{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">getRowId</code>)
+          </li>
         </ul>
       </motion.div>
 
-      {/* Callback Function Section */}
       <motion.h2
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
@@ -155,14 +306,16 @@ const RowSelectionContent = () => {
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
             onRowSelectionChange
           </code>{" "}
-          callback to respond to selection changes and implement your business logic:
+          callback, or read the current selection from the table ref with{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+            getSelectedRowsData()
+          </code>
+          :
         </p>
 
         <PropTable props={ROW_SELECTION_CHANGE_PROPS} title="RowSelectionChangeProps" />
-
       </motion.div>
 
-      {/* Use Cases Section */}
       <motion.h2
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
@@ -177,51 +330,50 @@ const RowSelectionContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 1.0 }}
       >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          Row selection is essential for many interactive table scenarios:
-        </p>
-
         <ul className="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300 mb-6">
           <li>
-            <strong>Bulk Operations:</strong> Delete, update, or process multiple records
-            simultaneously
+            <strong>Bulk operations:</strong> Delete, update, or export multiple records with
+            checkbox multi-select
           </li>
           <li>
-            <strong>Data Export:</strong> Allow users to select specific rows for export to CSV,
-            Excel, or other formats
+            <strong>Detail panes:</strong> Use single selection so clicking a row drives a side
+            panel
           </li>
           <li>
-            <strong>Batch Actions:</strong> Apply actions like status changes, category assignments,
-            or approvals to multiple items
+            <strong>Dense lists:</strong> Hide the checkbox column and select by clicking the row
           </li>
           <li>
-            <strong>Comparison Views:</strong> Select multiple items to compare their properties
-            side-by-side
-          </li>
-          <li>
-            <strong>Workflow Management:</strong> Move selected items through different stages of a
-            process
+            <strong>External controls:</strong> Select or clear rows from toolbar buttons via the
+            TableAPI
           </li>
         </ul>
 
         <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-400 dark:border-blue-700 p-4 rounded-lg shadow-sm mb-6">
-          <h4 className="font-bold text-gray-800 dark:text-white mb-2">Performance Tip</h4>
+          <h4 className="font-bold text-gray-800 dark:text-white mb-2">Stable row IDs</h4>
           <p className="text-gray-700 dark:text-gray-300">
-            The{" "}
+            Provide{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-              selectedRows
+              getRowId
             </code>{" "}
-            parameter uses a Set for optimal performance when dealing with large datasets. Convert
-            to an Array only when needed for your specific operations.
+            so selection survives sort, filter, and pagination. Prefer{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+              getSelectedRowsData()
+            </code>{" "}
+            when you need the selected row objects rather than matching IDs yourself.
           </p>
         </div>
 
         <div className="bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 dark:border-yellow-700 p-4 rounded-lg shadow-sm">
-          <h4 className="font-bold text-gray-800 dark:text-white mb-2">Accessibility Note</h4>
+          <h4 className="font-bold text-gray-800 dark:text-white mb-2">Accessibility</h4>
           <p className="text-gray-700 dark:text-gray-300">
-            Row selection checkboxes are fully accessible with proper ARIA labels and keyboard
-            navigation support. Users can navigate using Tab/Shift+Tab and select/deselect using
-            Space or Enter keys.
+            Selected rows expose{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">aria-selected</code>.
+            Multiple mode sets{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+              aria-multiselectable=&quot;true&quot;
+            </code>
+            . Keyboard users can toggle with Space and move with Arrow/Home/End when cell selection
+            is off.
           </p>
         </div>
       </motion.div>

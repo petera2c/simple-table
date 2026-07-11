@@ -36,7 +36,6 @@ export function renderColumnEditingDemo(
     height: options?.height ?? "400px",
     theme: options?.theme,
     enableHeaderEditing: true,
-    selectableColumns: true,
     onHeaderEdit: (_header: HeaderObject, newLabel: string) => {
       info.textContent = `Renamed to: ${newLabel}`;
     },
@@ -85,5 +84,5 @@ export const columnEditingData = [
 export const columnEditingConfig = {
   headers: columnEditingHeaders,
   rows: columnEditingData,
-  tableProps: { enableHeaderEditing: true, selectableColumns: true },
+  tableProps: { enableHeaderEditing: true },
 } as const;

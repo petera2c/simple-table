@@ -12,7 +12,7 @@ export function renderColumnSelectionDemo(
     rows: columnSelectionConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
-    selectableColumns: columnSelectionConfig.tableProps.selectableColumns,
+    selectableCells: columnSelectionConfig.tableProps.selectableCells,
   });
   return table;
 }

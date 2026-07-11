@@ -362,6 +362,16 @@ export const COLUMN_EDITOR_CONFIG_PROPS: PropInfo[] = [
     example: `{ text: "Columns" }`,
   },
   {
+    key: "showToggle",
+    name: "showToggle",
+    required: false,
+    description:
+      "Default true. When false, hides the built-in vertical Columns strip (no border, no label, no reserved width) while keeping the column editor popout and tableRef.toggleColumnEditor() available for custom toolbars.",
+    type: "boolean",
+    link: "/docs/column-visibility",
+    example: `{ showToggle: false }`,
+  },
+  {
     key: "searchEnabled",
     name: "searchEnabled",
     required: false,

@@ -159,3 +159,154 @@ export const LoadingToLoadedRemovesStaleCells = {
     expect(bodyContainer.textContent).toContain("Alice");
   },
 };
+
+// ============================================================================
+// EXPANDABLE CELLS + LOADING STATE
+// ============================================================================
+
+const expandableLoadingHeaders: HeaderObject[] = [
+  { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
+  { accessor: "role", label: "Role", width: 120, type: "string" },
+];
+
+const expandableLoadingRows = [
+  {
+    id: "dept-1",
+    name: "Engineering",
+    role: "Dept",
+    teams: [
+      { id: "team-1", name: "Frontend", role: "Team" },
+      { id: "team-2", name: "Backend", role: "Team" },
+    ],
+  },
+  {
+    id: "dept-2",
+    name: "Sales",
+    role: "Dept",
+    teams: [{ id: "team-3", name: "West", role: "Team" }],
+  },
+];
+
+const EXPANDABLE_ENTER_LOADING_REF_KEY = "__storybook_expandable_enter_loading_table_ref";
+const getExpandableEnterLoadingTable = (): TableInstance => {
+  const t = (globalThis as unknown as Record<string, TableInstance | undefined>)[
+    EXPANDABLE_ENTER_LOADING_REF_KEY
+  ];
+  if (!t) throw new Error("Table ref not set (run render first)");
+  return t;
+};
+
+const EXPANDABLE_EXIT_LOADING_REF_KEY = "__storybook_expandable_exit_loading_table_ref";
+const getExpandableExitLoadingTable = (): TableInstance => {
+  const t = (globalThis as unknown as Record<string, TableInstance | undefined>)[
+    EXPANDABLE_EXIT_LOADING_REF_KEY
+  ];
+  if (!t) throw new Error("Table ref not set (run render first)");
+  return t;
+};
+
+/**
+ * Repro: `updateBodyCellElement` skips content rebuilds for expandable cells
+ * so the expand-icon DOM node survives for CSS transitions. That bypass also
+ * skips loading-skeleton swaps, so toggling `isLoading` on already-rendered
+ * row-grouped rows leaves the expandable column out of sync with every other
+ * column.
+ *
+ * Entering loading: non-expandable columns show skeletons; expandable columns
+ * keep their stale expand icon + value.
+ */
+export const ExpandableCellsShowSkeletonWhenEnteringLoading = {
+  render: () => {
+    const result = renderVanillaTable(expandableLoadingHeaders, expandableLoadingRows, {
+      getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+      rowGrouping: ["teams"],
+      height: "300px",
+      isLoading: false,
+    });
+    (globalThis as unknown as Record<string, TableInstance>)[EXPANDABLE_ENTER_LOADING_REF_KEY] =
+      result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    const body = () => canvasElement.querySelector(".st-body-container") as HTMLElement;
+    const nameCells = () => body().querySelectorAll<HTMLElement>('.st-cell[data-accessor="name"]');
+    const roleCells = () => body().querySelectorAll<HTMLElement>('.st-cell[data-accessor="role"]');
+
+    await waitUntil(() => nameCells().length > 0);
+    expect(canvasElement.textContent).toContain("Engineering");
+    expect(nameCells()[0].querySelector(".st-expand-icon-container")).toBeTruthy();
+    expect(body().querySelectorAll(".st-loading-skeleton").length).toBe(0);
+
+    getExpandableEnterLoadingTable().update({ isLoading: true });
+    await waitUntil(() => roleCells()[0]?.querySelector(".st-loading-skeleton") !== null);
+
+    const nameWhileLoading = Array.from(nameCells());
+    const roleWhileLoading = Array.from(roleCells());
+    expect(nameWhileLoading.length).toBeGreaterThan(0);
+    expect(roleWhileLoading.length).toBeGreaterThan(0);
+
+    roleWhileLoading.forEach((cell) => {
+      expect(cell.querySelector(".st-loading-skeleton")).toBeTruthy();
+    });
+    nameWhileLoading.forEach((cell) => {
+      expect(
+        cell.querySelector(".st-loading-skeleton"),
+        "expandable cell should show a loading skeleton when isLoading becomes true",
+      ).toBeTruthy();
+    });
+  },
+};
+
+/**
+ * Repro (exit path): expandable cells created while `isLoading` is true render
+ * as skeletons. When loading ends, content updates are still skipped for
+ * expandable cells, so they stay stuck on the skeleton instead of restoring
+ * the expand icon + value.
+ */
+export const ExpandableCellsRestoreContentWhenLeavingLoading = {
+  render: () => {
+    const result = renderVanillaTable(expandableLoadingHeaders, expandableLoadingRows, {
+      getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+      rowGrouping: ["teams"],
+      height: "300px",
+      isLoading: true,
+    });
+    (globalThis as unknown as Record<string, TableInstance>)[EXPANDABLE_EXIT_LOADING_REF_KEY] =
+      result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    const body = () => canvasElement.querySelector(".st-body-container") as HTMLElement;
+    const nameCells = () => body().querySelectorAll<HTMLElement>('.st-cell[data-accessor="name"]');
+
+    await waitUntil(
+      () => nameCells()[0]?.querySelector(".st-loading-skeleton") !== null,
+    );
+    expect(nameCells().length).toBeGreaterThan(0);
+
+    getExpandableExitLoadingTable().update({ isLoading: false });
+    await waitUntil(() => (canvasElement.textContent?.includes("Engineering") ?? false));
+
+    const nameAfterLoad = Array.from(nameCells());
+    const expandableSkeletons = body().querySelectorAll(
+      '.st-cell[data-accessor="name"] .st-loading-skeleton',
+    );
+    expect(
+      expandableSkeletons.length,
+      "expandable cells must not stay stuck on loading skeletons after isLoading becomes false",
+    ).toBe(0);
+    expect(nameAfterLoad.some((c) => c.textContent?.includes("Engineering"))).toBe(true);
+    nameAfterLoad
+      .filter((c) => c.textContent?.includes("Engineering") || c.textContent?.includes("Sales"))
+      .forEach((cell) => {
+        expect(
+          cell.querySelector(".st-expand-icon-container"),
+          "expand chevron should be restored after loading ends",
+        ).toBeTruthy();
+      });
+  },
+};

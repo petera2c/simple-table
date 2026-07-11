@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { CellRendererProps, ReactHeaderObject, Theme } from "@simple-table/react";
+import type { CellRendererProps, ReactHeaderObject, TableAPI, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 type LibraryBook = {
@@ -17,7 +17,6 @@ type LibraryBook = {
   borrowedBy?: string;
 };
 
-// Define headers
 const headers: ReactHeaderObject[] = [
   { accessor: "id", label: "Book ID", width: 80, isSortable: true, type: "number" },
   { accessor: "isbn", label: "ISBN", width: 120, isSortable: true, type: "string" },
@@ -40,7 +39,7 @@ const headers: ReactHeaderObject[] = [
     width: 100,
     isSortable: true,
     type: "string",
-    cellRenderer: ({ accessor, colIndex, row, theme }: CellRendererProps) => (
+    cellRenderer: ({ row }: CellRendererProps) => (
       <span
         style={{
           color:
@@ -55,7 +54,6 @@ const headers: ReactHeaderObject[] = [
   { accessor: "librarySection", label: "Section", width: 120, isSortable: true, type: "string" },
 ];
 
-// Sample library books data - completely unique from other demos
 const LIBRARY_BOOKS: LibraryBook[] = [
   {
     id: 1001,
@@ -206,25 +204,22 @@ const LIBRARY_BOOKS: LibraryBook[] = [
   },
 ];
 
-const RowSelectionDemo = ({ theme }: { height?: string | number; theme?: Theme }) => {
+const RowSelectionDemo = ({
+  height = "320px",
+  theme,
+}: {
+  height?: string | number;
+  theme?: Theme;
+}) => {
+  const tableRef = useRef<TableAPI>(null);
   const [selectedRowsInfo, setSelectedRowsInfo] = useState<LibraryBook[]>([]);
-  const [lastAction, setLastAction] = useState<string>("");
 
-  const handleRowSelectionChange = ({ row, isSelected, selectedRows }: any) => {
-    const action = isSelected ? "Selected" : "Deselected";
-    setLastAction(`${action}: "${row.title}" by ${row.author}`);
-
-    // Convert Set to Array for display
-    const selectedRowsArray = Array.from(selectedRows)
-      .map((rowId) => LIBRARY_BOOKS.find((book) => String(book.id) === rowId))
-      .filter(Boolean) as LibraryBook[];
-
-    setSelectedRowsInfo(selectedRowsArray);
+  const handleRowSelectionChange = () => {
+    setSelectedRowsInfo((tableRef.current?.getSelectedRowsData() as LibraryBook[]) ?? []);
   };
 
   return (
     <div>
-      {/* Demo Info Panel */}
       <div
         style={{
           marginBottom: "16px",
@@ -256,7 +251,7 @@ const RowSelectionDemo = ({ theme }: { height?: string | number; theme?: Theme }
           }}
         >
           <strong style={{ color: "#495057" }}>Selected Books:</strong>{" "}
-          {selectedRowsInfo.length > 0 && (
+          {selectedRowsInfo.length > 0 ? (
             <span
               style={{
                 fontSize: "12px",
@@ -268,20 +263,23 @@ const RowSelectionDemo = ({ theme }: { height?: string | number; theme?: Theme }
             >
               ({selectedRowsInfo.map((book) => book.title).join(", ")})
             </span>
+          ) : (
+            <span style={{ fontSize: "12px", color: "#6c757d" }}>None</span>
           )}
         </div>
       </div>
 
       <SimpleTable
+        ref={tableRef}
         defaultHeaders={headers}
         rows={LIBRARY_BOOKS}
-        enableRowSelection={true}
+        enableRowSelection
+        getRowId={({ row }) => String((row as LibraryBook).id)}
         onRowSelectionChange={handleRowSelectionChange}
-        height="348px"
+        height={height}
         theme={theme}
-        columnResizing={true}
-        columnReordering={true}
-        selectableCells={true}
+        columnResizing
+        columnReordering
       />
     </div>
   );

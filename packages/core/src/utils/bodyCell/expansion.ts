@@ -186,6 +186,13 @@ export type UpdateExpandIconStateOptions = {
   syncAriaExpanded?: boolean;
 };
 
+/** Latest desired expand state per icon; coalesces rapid collapseAll→expandDepth updates. */
+const pendingExpandIconState = new WeakMap<
+  HTMLElement,
+  { desired: boolean; options?: UpdateExpandIconStateOptions }
+>();
+const expandIconUpdateScheduled = new WeakSet<HTMLElement>();
+
 /** Update expand/collapse icon direction on an existing cell (e.g. after expand state changes for nested grids). */
 export const updateExpandIconState = (
   cellElement: HTMLElement,
@@ -194,22 +201,43 @@ export const updateExpandIconState = (
 ): void => {
   const iconContainer = cellElement.querySelector(".st-expand-icon-container");
   if (!iconContainer || !(iconContainer instanceof HTMLElement)) return;
-  const currentlyExpanded = iconContainer.classList.contains("expanded");
-  if (currentlyExpanded === isExpanded) return;
 
-  const labelExpanded = options?.ariaLabelWhenExpanded ?? "Collapse row";
-  const labelCollapsed = options?.ariaLabelWhenCollapsed ?? "Expand row";
+  const currentlyExpanded = iconContainer.classList.contains("expanded");
+
+  // Always keep the latest desired state so a later expandDepth(0) wins over an
+  // in-flight collapseAll animation from the same click (marketing "Only Divisions").
+  pendingExpandIconState.set(iconContainer, { desired: isExpanded, options });
+  if (expandIconUpdateScheduled.has(iconContainer)) return;
+
+  if (currentlyExpanded === isExpanded) {
+    pendingExpandIconState.delete(iconContainer);
+    return;
+  }
+
+  expandIconUpdateScheduled.add(iconContainer);
 
   // Defer class toggle so the browser paints the current state first, then we apply the new state
   // and the CSS transition runs. Use double rAF so the first paint has committed.
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
-      iconContainer.classList.toggle("expanded", isExpanded);
-      iconContainer.classList.toggle("collapsed", !isExpanded);
-      iconContainer.setAttribute("aria-label", isExpanded ? labelExpanded : labelCollapsed);
+      expandIconUpdateScheduled.delete(iconContainer);
+      const pending = pendingExpandIconState.get(iconContainer);
+      pendingExpandIconState.delete(iconContainer);
+      if (!pending) return;
+
+      const desired = pending.desired;
+      const nowExpanded = iconContainer.classList.contains("expanded");
+      if (nowExpanded === desired) return;
+
+      const labelExpanded = pending.options?.ariaLabelWhenExpanded ?? "Collapse row";
+      const labelCollapsed = pending.options?.ariaLabelWhenCollapsed ?? "Expand row";
+
+      iconContainer.classList.toggle("expanded", desired);
+      iconContainer.classList.toggle("collapsed", !desired);
+      iconContainer.setAttribute("aria-label", desired ? labelExpanded : labelCollapsed);
       // The chevron always carries aria-expanded (set at creation), so keep it
       // in sync on every toggle regardless of the legacy opt-in flag.
-      iconContainer.setAttribute("aria-expanded", String(isExpanded));
+      iconContainer.setAttribute("aria-expanded", String(desired));
     });
   });
 };

@@ -182,7 +182,7 @@ const ColumnEditingDemo = ({
       height={height}
       onHeaderEdit={handleHeaderEdit}
       rows={EMPLOYEE_DATA}
-      selectableColumns={true}
+      selectableCells={true}
       theme={theme}
     />
   );

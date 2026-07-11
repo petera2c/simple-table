@@ -28,5 +28,5 @@ export const columnEditingData = [
 export const columnEditingConfig = {
   headers: columnEditingHeaders,
   rows: columnEditingData,
-  tableProps: { enableHeaderEditing: true, selectableColumns: true },
+  tableProps: { enableHeaderEditing: true, selectableCells: true },
 } as const;

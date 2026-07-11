@@ -12,14 +12,14 @@ import Link from "next/link";
 
 const COLUMN_EDITING_PROPS: PropInfo[] = [
   {
-    key: "selectableColumns",
-    name: "selectableColumns",
+    key: "selectableCells",
+    name: "selectableCells",
     required: true,
     description:
-      "Required for column editing to work. Enables column selection and interaction functionality that column editing depends on.",
+      "Required for column editing to work. Enables cell and column selection functionality that column editing depends on.",
     type: "boolean",
     example: `<SimpleTable
-  selectableColumns={true}
+  selectableCells={true}
   enableHeaderEditing={true}
   // ... other props
 />`,
@@ -32,7 +32,7 @@ const COLUMN_EDITING_PROPS: PropInfo[] = [
       "Enables header editing functionality. When true, users can double-click on column headers to edit their labels.",
     type: "boolean",
     example: `<SimpleTable
-  selectableColumns={true}
+  selectableCells={true}
   enableHeaderEditing={true}
   onHeaderEdit={handleHeaderEdit}
   // ... other props
@@ -148,9 +148,9 @@ const ColumnEditingContent = () => {
 
         <ol className="list-decimal pl-8 space-y-2 text-gray-700 dark:text-gray-300 mb-6">
           <li>
-            <strong>Enable column selection</strong> with{" "}
+            <strong>Enable cell and column selection</strong> with{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-              selectableColumns={true}
+              selectableCells={true}
             </code>{" "}
             (required for column editing to work)
           </li>

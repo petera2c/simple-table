@@ -41,7 +41,7 @@
     {height}
     {theme}
     enableHeaderEditing={true}
-    selectableColumns={true}
+    selectableCells={true}
     onHeaderEdit={handleHeaderEdit}
   />
 </div>

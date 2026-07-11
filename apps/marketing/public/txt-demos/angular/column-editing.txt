@@ -29,7 +29,7 @@ import "@simple-table/angular/styles.css";
         [height]="height"
         [theme]="theme"
         [enableHeaderEditing]="true"
-        [selectableColumns]="true"
+        [selectableCells]="true"
         [onHeaderEdit]="handleHeaderEdit"
       ></simple-table>
     </div>
@@ -174,5 +174,5 @@ export const columnEditingData = [
 export const columnEditingConfig = {
   headers: columnEditingHeaders,
   rows: columnEditingData,
-  tableProps: { enableHeaderEditing: true, selectableColumns: true },
+  tableProps: { enableHeaderEditing: true },
 } as const;

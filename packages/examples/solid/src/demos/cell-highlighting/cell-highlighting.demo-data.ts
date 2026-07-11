@@ -29,5 +29,5 @@ export const cellHighlightingData = [
 export const cellHighlightingConfig = {
   headers: cellHighlightingHeaders,
   rows: cellHighlightingData,
-  tableProps: { selectableCells: true, selectableColumns: true },
+  tableProps: { selectableCells: true },
 } as const;

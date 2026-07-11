@@ -13,7 +13,7 @@ import "@simple-table/angular/styles.css";
       [defaultHeaders]="headers"
       [height]="height"
       [theme]="theme"
-      [selectableColumns]="selectableColumns"
+      [selectableCells]="selectableCells"
     ></simple-table>
   `,
 })
@@ -23,5 +23,5 @@ export class ColumnSelectionDemoComponent {
 
   readonly rows: Row[] = columnSelectionConfig.rows;
   readonly headers: AngularHeaderObject[] = columnSelectionConfig.headers;
-  readonly selectableColumns = columnSelectionConfig.tableProps.selectableColumns;
+  readonly selectableCells = columnSelectionConfig.tableProps.selectableCells;
 }

@@ -12,6 +12,7 @@ export interface HorizontalScrollbarProps {
   pinnedLeftContentWidth: number;
   pinnedRightContentWidth: number;
   tableBodyContainerRef: HTMLDivElement;
+  /** True when the column-editor toggle strip is visible and reserves horizontal space. */
   editColumns: boolean;
   sectionScrollController?: SectionScrollController | null;
   /**

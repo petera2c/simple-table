@@ -45,7 +45,7 @@ export default function ColumnEditingDemo(props: { height?: string | number; the
         height={props.height ?? "400px"}
         theme={props.theme}
         enableHeaderEditing
-        selectableColumns
+        selectableCells
         onHeaderEdit={(_header, newLabel) => setLastAdded(`Renamed to: ${newLabel}`)}
       />
     </div>

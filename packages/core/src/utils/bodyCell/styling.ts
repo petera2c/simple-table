@@ -12,9 +12,17 @@ import { CellLiveRef, cellLiveRefMap } from "./cellLiveRef";
 export { cellLiveRefMap };
 export type { CellLiveRef };
 
-// Global map for efficient row hover tracking: stable rowId -> Set<HTMLElement>
+// Per-table-instance row hover tracking: hoverScopeId -> (rowId -> Set<HTMLElement>).
+// Scoped so multiple tables on one page with overlapping rowIds don't cross-hover.
 // (Visual rowIndex within the viewport slice can change on scroll; rowId does not.)
-const rowCellsMap = new Map<string, Set<HTMLElement>>();
+const rowCellsMaps = new Map<string, Map<string, Set<HTMLElement>>>();
+
+// Per-scope currently hovered row id (for clearing the previous row on enter).
+const currentHoveredRowIds = new Map<string, string | null>();
+
+// Remembers which hover scope owns each cell so untrack/destroy paths that
+// lack render context can still remove the correct map entry.
+const cellHoverScopeMap = new WeakMap<HTMLElement, string>();
 
 // Per-element registry key so we can re-key entries when a cell is reused
 // for a different row across sort/scroll without leaving stale entries behind.
@@ -36,11 +44,19 @@ export const invalidateBodyCellContentMemo = (cellElement: HTMLElement): void =>
   contentKeyMap.delete(cellElement);
 };
 
-// Track current hovered row for cleanup
-let currentHoveredRowId: string | null = null;
+const getRowCellsMap = (scopeId: string): Map<string, Set<HTMLElement>> => {
+  let map = rowCellsMaps.get(scopeId);
+  if (!map) {
+    map = new Map();
+    rowCellsMaps.set(scopeId, map);
+  }
+  return map;
+};
 
 // Helper to add cell to row tracking
-const trackCellByRow = (rowId: string, cellElement: HTMLElement): void => {
+const trackCellByRow = (rowId: string, cellElement: HTMLElement, scopeId: string): void => {
+  cellHoverScopeMap.set(cellElement, scopeId);
+  const rowCellsMap = getRowCellsMap(scopeId);
   if (!rowCellsMap.has(rowId)) {
     rowCellsMap.set(rowId, new Set());
   }
@@ -49,12 +65,21 @@ const trackCellByRow = (rowId: string, cellElement: HTMLElement): void => {
 
 // Helper to remove cell from row tracking
 export const untrackCellByRow = (rowId: string, cellElement: HTMLElement): void => {
+  const scopeId = cellHoverScopeMap.get(cellElement);
+  if (!scopeId) return;
+  cellHoverScopeMap.delete(cellElement);
+  const rowCellsMap = rowCellsMaps.get(scopeId);
+  if (!rowCellsMap) return;
   const cellSet = rowCellsMap.get(rowId);
   if (cellSet) {
     cellSet.delete(cellElement);
     if (cellSet.size === 0) {
       rowCellsMap.delete(rowId);
     }
+  }
+  if (rowCellsMap.size === 0) {
+    rowCellsMaps.delete(scopeId);
+    currentHoveredRowIds.delete(scopeId);
   }
 };
 
@@ -73,9 +98,9 @@ export const unregisterCellFromRegistry = (
   }
 };
 
-// Helper to set hover state for entire row
-const setRowHoverState = (rowId: string, hovered: boolean): void => {
-  const cellSet = rowCellsMap.get(rowId);
+// Helper to set hover state for entire row within one table instance
+const setRowHoverState = (rowId: string, hovered: boolean, scopeId: string): void => {
+  const cellSet = rowCellsMaps.get(scopeId)?.get(rowId);
   if (cellSet) {
     cellSet.forEach((cell) => {
       if (hovered) {
@@ -93,7 +118,9 @@ const calculateBodyCellClasses = (cell: AbsoluteBodyCell, context: CellRenderCon
 
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
   const clickable =
-    Boolean(header?.isEditable) || Boolean(context.onCellClick && !isSelectionColumn);
+    Boolean(header?.isEditable) ||
+    Boolean(context.onCellClick && !isSelectionColumn) ||
+    Boolean(context.selectRowOnClick && context.enableRowSelection && !isSelectionColumn);
 
   // Calculate selection states
   const cellData: CellData = { rowIndex, colIndex, rowId };
@@ -167,6 +194,9 @@ const calculateBodyCellClasses = (cell: AbsoluteBodyCell, context: CellRenderCon
     isSubCell ? "st-sub-cell" : "",
     context.useOddEvenRowBackground ? (isOdd ? "st-cell-even-row" : "st-cell-odd-row") : "",
     context.isRowSelected?.(rowId) ? "st-cell-selected-row" : "",
+    context.activeRowId != null && String(context.activeRowId) === String(rowId)
+      ? "st-row-active"
+      : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -418,8 +448,8 @@ export const createBodyCellElement = (
 
   addTrackedEventListener(cellElement, "dblclick", handleDoubleClick);
 
-  // Cell click callback
-  if (context.onCellClick && !isSelectionColumn) {
+  // Cell click callback and/or click-to-select row
+  if ((context.onCellClick || context.selectRowOnClick) && !isSelectionColumn) {
     const handleClick = (event: Event) => {
       const target = event.target as HTMLElement;
 
@@ -429,44 +459,58 @@ export const createBodyCellElement = (
       }
 
       const currentRow = cellLiveRefMap.get(cellElement)?.row ?? row;
-      const currentValue = getNestedValue(currentRow, header.accessor);
-      const clickRi = parseInt(cellElement.getAttribute("data-row-index") ?? String(rowIndex), 10);
-      const clickCi = parseInt(cellElement.getAttribute("data-col-index") ?? String(colIndex), 10);
-      context.onCellClick?.({
-        accessor: header.accessor,
-        colIndex: clickCi,
-        row: currentRow,
-        rowIndex: clickRi,
-        value: currentValue,
-      });
+      const liveContext = cellLiveRefMap.get(cellElement)?.context ?? context;
+      const clickRowId = cellElement.getAttribute("data-row-id") ?? String(rowId);
+
+      if (liveContext.selectRowOnClick && liveContext.enableRowSelection) {
+        liveContext.handleToggleRow?.(clickRowId);
+      }
+
+      if (liveContext.onCellClick) {
+        const currentValue = getNestedValue(currentRow, header.accessor);
+        const clickRi = parseInt(cellElement.getAttribute("data-row-index") ?? String(rowIndex), 10);
+        const clickCi = parseInt(cellElement.getAttribute("data-col-index") ?? String(colIndex), 10);
+        liveContext.onCellClick({
+          accessor: header.accessor,
+          colIndex: clickCi,
+          row: currentRow,
+          rowIndex: clickRi,
+          value: currentValue,
+        });
+      }
     };
 
     addTrackedEventListener(cellElement, "click", handleClick);
   }
 
-  // Row hover handlers - use efficient Map-based tracking
+  // Row hover handlers - use efficient Map-based tracking, scoped per table
+  // so overlapping rowIds across multiple tables on one page don't cross-hover.
   if (context.useHoverRowBackground) {
     const rowIdKey = String(rowId);
+    const hoverScopeId = context.hoverScopeId;
     // Track this cell by row id (re-keyed in updateBodyCellElement when the
     // DOM cell is reused for a different row across sort/scroll).
-    trackCellByRow(rowIdKey, cellElement);
+    trackCellByRow(rowIdKey, cellElement, hoverScopeId);
 
     // The handlers must read the *current* row id from the DOM so they
     // reference the correct row when this cell is reused after a sort.
     const handleMouseEnter = () => {
+      const scopeId = cellHoverScopeMap.get(cellElement) ?? hoverScopeId;
       const currentRowId = cellElement.getAttribute("data-row-id") ?? rowIdKey;
-      if (currentHoveredRowId !== null && currentHoveredRowId !== currentRowId) {
-        setRowHoverState(currentHoveredRowId, false);
+      const previousHoveredRowId = currentHoveredRowIds.get(scopeId) ?? null;
+      if (previousHoveredRowId !== null && previousHoveredRowId !== currentRowId) {
+        setRowHoverState(previousHoveredRowId, false, scopeId);
       }
-      setRowHoverState(currentRowId, true);
-      currentHoveredRowId = currentRowId;
+      setRowHoverState(currentRowId, true, scopeId);
+      currentHoveredRowIds.set(scopeId, currentRowId);
     };
 
     const handleMouseLeave = () => {
+      const scopeId = cellHoverScopeMap.get(cellElement) ?? hoverScopeId;
       const currentRowId = cellElement.getAttribute("data-row-id") ?? rowIdKey;
-      setRowHoverState(currentRowId, false);
-      if (currentHoveredRowId === currentRowId) {
-        currentHoveredRowId = null;
+      setRowHoverState(currentRowId, false, scopeId);
+      if ((currentHoveredRowIds.get(scopeId) ?? null) === currentRowId) {
+        currentHoveredRowIds.set(scopeId, null);
       }
     };
 
@@ -555,8 +599,9 @@ export const updateBodyCellElement = (
   const previousRowId = cellElement.getAttribute("data-row-id");
   const nextRowId = String(rowId);
   if (previousRowId && previousRowId !== nextRowId) {
+    const scopeId = cellHoverScopeMap.get(cellElement) ?? context.hoverScopeId;
     untrackCellByRow(previousRowId, cellElement);
-    trackCellByRow(nextRowId, cellElement);
+    trackCellByRow(nextRowId, cellElement, scopeId);
   }
   cellElement.setAttribute("data-row-id", nextRowId);
   cellElement.setAttribute("data-accessor", String(cell.header.accessor));
@@ -595,8 +640,8 @@ export const updateBodyCellElement = (
     // loading skeleton is rendered inside the content span, so a change in
     // skeleton state still requires a rebuild: entering the loading state
     // swaps the expand icon + value for a skeleton, and leaving it restores
-    // them. Without this, flipping `isLoading` to true leaves the expandable
-    // column showing stale content while every other column shows a skeleton.
+    // them. Without this, flipping `isLoading` leaves the expandable column
+    // stuck (stale content while loading, or permanent skeleton after load).
     const contentSpan = cellElement.querySelector(".st-cell-content") as HTMLElement;
     if (contentSpan) {
       const isSkeleton = Boolean(context.isLoading || cell.tableRow.isLoadingSkeleton);

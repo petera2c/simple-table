@@ -1,4 +1,4 @@
-import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
+import { getColumnEditorStripWidth } from "../../consts/general-consts";
 import { SimpleTableConfig } from "../../types/SimpleTableConfig";
 
 export interface DOMElements {
@@ -71,10 +71,13 @@ export class DOMManager {
     const isTreeGrid = Array.isArray(config.rowGrouping) && config.rowGrouping.length > 0;
     content.setAttribute("role", isTreeGrid ? "treegrid" : "grid");
     // Match RenderOrchestrator so DimensionManager's first clientWidth read (before any render)
-    // already excludes the column editor strip when editColumns is on.
-    content.style.width = config.editColumns
-      ? `calc(100% - ${COLUMN_EDIT_WIDTH}px)`
-      : "100%";
+    // already excludes the column editor strip when the toggle is visible.
+    const editorStripWidth = getColumnEditorStripWidth(
+      config.editColumns,
+      config.columnEditorConfig?.showToggle,
+    );
+    content.style.width =
+      editorStripWidth > 0 ? `calc(100% - ${editorStripWidth}px)` : "100%";
 
     const headerContainer = document.createElement("div");
     headerContainer.className = "st-header-container";

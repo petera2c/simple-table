@@ -34,6 +34,8 @@ export interface HeaderRenderContext {
   draggedHeaderRef: MutableRefObject<HeaderObject | null>;
   enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
+  /** When `"single"`, header select-all checkbox is hidden. */
+  rowSelectionMode?: "single" | "multiple";
   filters: TableFilterState;
   forceUpdate: () => void;
   getCollapsedHeaders?: () => Set<Accessor>; /** Get current collapsed headers (avoids stale closure in toggle handler). */
@@ -69,7 +71,7 @@ export interface HeaderRenderContext {
   reverse: boolean;
   rows: Row[];
   selectColumns?: (columnIndices: number[]) => void;
-  selectableColumns?: boolean;
+  selectableCells?: boolean;
   selectedColumns: Set<number>;
   selectedRowCount?: number; /** Used for context cache invalidation when row selection changes */
   setCollapsedHeaders: Dispatch<SetStateAction<Set<Accessor>>>;

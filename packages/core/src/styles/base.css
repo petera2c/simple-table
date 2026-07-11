@@ -446,12 +446,21 @@ input {
   color: var(--st-cell-odd-row-color);
 }
 
-/* Selected row styling for cells */
-.st-cell.st-cell-selected-row {
+/* Selected row styling for cells — yield to cell/column selection and hover */
+.st-cell.st-cell-selected-row:not(.st-row-hovered):not(.st-cell-selected):not(
+    .st-cell-selected-first
+  ):not(.st-cell-column-selected):not(.st-cell-column-selected-first) {
   background-color: var(--st-selected-row-background-color);
 }
 
-/* Row hover styling for cells */
+/* Keyboard-active row outline (when navigating with arrow keys).
+   Hide on hover so the hover fill isn't framed by the selection tint. */
+.st-cell.st-row-active:not(.st-row-hovered) {
+  outline: 1px solid var(--st-selected-row-background-color, #93c5fd);
+  outline-offset: -1px;
+}
+
+/* Row hover styling for cells — wins over selected-row background */
 .st-cell.st-row-hovered:not(.st-cell-selected):not(.st-cell-selected-first):not(
     .st-cell-column-selected
   ):not(.st-cell-column-selected-first) {
@@ -1065,6 +1074,22 @@ input {
   height: auto;
   min-height: 0;
   cursor: pointer;
+}
+
+/* Hidden toggle strip: keep a zero-width anchor for the popout (opened via API). */
+.st-column-editor.st-column-editor--no-toggle {
+  width: 0;
+  border-left: none;
+  background: transparent;
+  overflow: visible;
+  pointer-events: none;
+  cursor: default;
+}
+
+.st-column-editor.st-column-editor--no-toggle .st-column-editor-popout {
+  pointer-events: auto;
+  /* Zero-width anchor sits on the content edge; align popout to that edge. */
+  right: 100%;
 }
 
 .st-column-editor-text {

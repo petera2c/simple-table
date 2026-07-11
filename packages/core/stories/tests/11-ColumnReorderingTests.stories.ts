@@ -509,7 +509,7 @@ export const ColumnEditorSearchFunction = {
       getRowId: (params) => String(params.row?.id),
       height: "400px",
       editColumns: true,
-      selectableColumns: true,
+      selectableCells: true,
       columnEditorConfig: {
         searchEnabled: true,
         searchFunction: (header: HeaderObject, searchTerm: string) =>

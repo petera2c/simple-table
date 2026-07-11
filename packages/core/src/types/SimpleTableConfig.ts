@@ -15,6 +15,7 @@ import { TableFilterState } from "./FilterTypes";
 import OnNextPage from "./OnNextPage";
 import OnRowGroupExpandProps from "./OnRowGroupExpandProps";
 import RowSelectionChangeProps from "./RowSelectionChangeProps";
+import type { RowSelectionMode } from "./RowSelectionMode";
 import { RowButton } from "./RowButton";
 import Theme from "./Theme";
 import { CustomThemeProps } from "./CustomTheme";
@@ -50,6 +51,12 @@ export interface SimpleTableConfig {
   emptyStateRenderer?: VanillaEmptyStateRenderer;
   enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
+  /** @see SimpleTableProps.rowSelectionMode */
+  rowSelectionMode?: RowSelectionMode;
+  /** @see SimpleTableProps.selectRowOnClick */
+  selectRowOnClick?: boolean;
+  /** @see SimpleTableProps.showRowSelectionColumn */
+  showRowSelectionColumn?: boolean;
   enableStickyParents?: boolean;
   errorStateRenderer?: VanillaErrorStateRenderer;
   expandAll?: boolean;
@@ -103,7 +110,6 @@ export interface SimpleTableConfig {
   rowsPerPage?: number;
   scrollParent?: HTMLElement | "window" | (() => HTMLElement | null);
   selectableCells?: boolean;
-  selectableColumns?: boolean;
   serverSidePagination?: boolean;
   shouldPaginate?: boolean;
   tableEmptyStateRenderer?: HTMLElement | string | null;

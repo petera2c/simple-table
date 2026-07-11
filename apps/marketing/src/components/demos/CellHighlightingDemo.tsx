@@ -130,7 +130,6 @@ const CellHighlightingDemo = ({
     <SimpleTable
       defaultHeaders={headers}
       selectableCells
-      selectableColumns
       rows={EMPLOYEE_DATA}
       height={height}
       theme={theme}

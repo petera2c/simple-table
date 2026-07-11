@@ -2,7 +2,7 @@ import HeaderObject from "../types/HeaderObject";
 import Cell from "../types/Cell";
 
 export interface HandleOutsideClickConfig {
-  selectableColumns: boolean;
+  selectableCells: boolean;
   selectedCells: Set<string>;
   selectedColumns: Set<number>;
   setSelectedCells: (cells: Set<string>) => void;
@@ -59,7 +59,7 @@ export class HandleOutsideClickManager {
 
     if (
       !target.closest(".st-cell") &&
-      (this.config.selectableColumns
+      (this.config.selectableCells
         ? !target.classList.contains("st-header-cell") &&
           !target.classList.contains("st-header-label") &&
           !target.classList.contains("st-header-label-text")

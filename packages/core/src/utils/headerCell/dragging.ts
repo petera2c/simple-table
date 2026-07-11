@@ -32,7 +32,7 @@ export const handleColumnHeaderClick = (
 ) => {
   if (header.isSelectionColumn) return;
 
-  if (context.selectableColumns) {
+  if (context.selectableCells) {
     const columnsToSelect = getHeaderLeafIndices(header, colIndex);
 
     const isHeaderAlreadySelected = columnsToSelect.some((columnIndex) =>
@@ -103,7 +103,7 @@ export const handleColumnHeaderClick = (
     context.onColumnSelect(header);
   }
 
-  if (!context.selectableColumns && header.isSortable) {
+  if (!context.selectableCells && header.isSortable) {
     context.onSort(header.accessor);
   }
 };
@@ -115,7 +115,7 @@ export const handleColumnHeaderDoubleClick = (
 ) => {
   if (header.isSelectionColumn) return;
 
-  if (context.selectableColumns && header.isSortable) {
+  if (context.selectableCells && header.isSortable) {
     context.onSort(header.accessor);
   }
 };

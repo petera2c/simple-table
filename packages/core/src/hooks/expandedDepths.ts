@@ -22,6 +22,8 @@ export const initializeExpandedDepths = (
 export class ExpandedDepthsManager {
   private expandedDepths: Set<number>;
   private observers: Set<(depths: Set<number>) => void> = new Set();
+  /** Coalesce sync collapseAll→expandDepth into a single observer notification. */
+  private notifyMicrotaskScheduled = false;
 
   constructor(expandAll: boolean, rowGrouping?: Accessor[]) {
     this.expandedDepths = initializeExpandedDepths(expandAll, rowGrouping);
@@ -74,10 +76,17 @@ export class ExpandedDepthsManager {
   }
 
   /**
-   * Notifies all observers of depth changes
+   * Notifies all observers of depth changes.
+   * Batched to a microtask so collapseAll() + expandDepth(0) in one turn
+   * (marketing "Only Divisions") triggers a single render with the final depths.
    */
   private notifyObservers(): void {
-    this.observers.forEach(callback => callback(this.expandedDepths));
+    if (this.notifyMicrotaskScheduled) return;
+    this.notifyMicrotaskScheduled = true;
+    queueMicrotask(() => {
+      this.notifyMicrotaskScheduled = false;
+      this.observers.forEach((callback) => callback(this.expandedDepths));
+    });
   }
 
   /**

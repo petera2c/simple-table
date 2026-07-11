@@ -877,7 +877,7 @@ export class SelectionManager {
    * Body cells are patched here; headers normally update only on full render.
    */
   private syncHeaderSelectionClasses(): void {
-    if (!this.config.selectableColumns && !this.config.selectableCells) return;
+    if (!this.config.selectableCells) return;
 
     const root = this.config.tableRoot ?? document;
     const headerCells = root.querySelectorAll(".st-header-cell");
@@ -935,7 +935,7 @@ export class SelectionManager {
   }
 
   private clearHeaderSelectionHighlightClasses(): void {
-    if (!this.config.selectableColumns && !this.config.selectableCells) return;
+    if (!this.config.selectableCells) return;
     const root = this.config.tableRoot ?? document;
     const headerCells = root.querySelectorAll(".st-header-cell");
     for (let i = 0; i < headerCells.length; i++) {
@@ -1270,6 +1270,8 @@ export class SelectionManager {
     this.selectedColumns = new Set();
     this.lastSelectedColumnIndex = null;
     this.selectedCells = newSelectedCells;
+    // Keep the range anchor so subsequent Shift+Arrow moves the free end.
+    this.startCell = startCell;
     this.initialFocusedCell = endCell;
 
     this.updateDerivedState();
@@ -1319,6 +1321,8 @@ export class SelectionManager {
       this.config.tableRows,
       !!this.config.enableRowSelection,
     );
+    // Active endpoint follows the drag cursor so Shift+Arrow can continue from it.
+    this.initialFocusedCell = endCell;
     if (this.selectedCells.size === newSelectedCells.size) {
       const allSame = Array.from(newSelectedCells).every((id) => this.selectedCells.has(id));
       if (allSame) return;
@@ -1383,13 +1387,18 @@ export class SelectionManager {
     this.fullTableSelected = false;
     this.isSelecting = true;
     this.startCell = { rowIndex, colIndex, rowId };
+    this.initialFocusedCell = { rowIndex, colIndex, rowId };
+    const clickedCellId = createSetString({ colIndex, rowIndex, rowId });
+    this.selectedCells = new Set([clickedCellId]);
 
     setTimeout(() => {
       this.selectedColumns = new Set();
       this.lastSelectedColumnIndex = null;
-      const cellId = createSetString({ colIndex, rowIndex, rowId });
-      this.selectedCells = new Set([cellId]);
-      this.initialFocusedCell = { rowIndex, colIndex, rowId };
+      // Don't clobber a range already built by a fast drag before this timeout.
+      if (this.selectedCells.size <= 1) {
+        this.selectedCells = new Set([clickedCellId]);
+        this.initialFocusedCell = { rowIndex, colIndex, rowId };
+      }
       this.updateDerivedState();
       this.updateAllCellClasses();
     }, 0);

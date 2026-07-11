@@ -12,6 +12,7 @@ import { SetHeaderRenameProps, ExportToCSVProps } from "../../types/TableAPI";
 import RowState from "../../types/RowState";
 import Cell from "../../types/Cell";
 import { SelectionManager } from "../../managers/SelectionManager";
+import { RowSelectionManager } from "../../managers/RowSelectionManager";
 import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { flattenRows, FlattenRowsResult } from "../../utils/rowFlattening";
@@ -59,6 +60,7 @@ export interface TableAPIContext {
   columnEditorOpen: boolean;
   expandedDepthsManager: any;
   selectionManager: SelectionManager | null;
+  rowSelectionManager: RowSelectionManager | null;
   sortManager: SortManager | null;
   filterManager: FilterManager | null;
   getCachedFlattenResult?: () => FlattenRowsResult | null;
@@ -421,6 +423,44 @@ export class TableAPIImpl {
 
       selectCellRange: (startCell: Cell, endCell: Cell) => {
         context.selectionManager?.selectCellRange(startCell, endCell);
+      },
+
+      getSelectedRows: (): Set<string> => {
+        return context.rowSelectionManager?.getSelectedRows() ?? new Set();
+      },
+
+      getSelectedRowsData: (): Row[] => {
+        return context.rowSelectionManager?.getSelectedRowsData() ?? [];
+      },
+
+      getRow: (rowId: string): Row | undefined => {
+        const fromManager = context.rowSelectionManager?.getRow(rowId);
+        if (fromManager !== undefined) return fromManager;
+        // Fall back to current processed / flattened rows even when row selection is off
+        const processed = context.getCachedProcessedResult?.();
+        if (processed) {
+          const found = processed.currentTableRows.find(
+            (tr) => tr?.rowId != null && rowIdToString(tr.rowId) === rowId,
+          );
+          if (found) return found.row;
+        }
+        return undefined;
+      },
+
+      selectRow: (rowId: string) => {
+        context.rowSelectionManager?.selectRow(rowId);
+      },
+
+      deselectRow: (rowId: string) => {
+        context.rowSelectionManager?.deselectRow(rowId);
+      },
+
+      toggleRowSelection: (rowId: string) => {
+        context.rowSelectionManager?.handleToggleRow(rowId);
+      },
+
+      clearRowSelection: () => {
+        context.rowSelectionManager?.clearSelection();
       },
     };
   }
