@@ -47,6 +47,10 @@ export const v3_9_6: ChangelogEntry = {
         "Removed selectableColumns. Use selectableCells to enable cell and column selection.",
       link: "/docs/cell-highlighting",
     },
+    {
+      type: "bugfix",
+      description: "Shift+Arrow now contracts cell ranges.",
+    },
   ],
 };
 

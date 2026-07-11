@@ -847,6 +847,7 @@ export const ShiftArrowExtendsSelection = {
  * jump/expand the opposite edge).
  */
 export const ShiftArrowContractsSelection = {
+  tags: ["shift-arrow-range"],
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -897,6 +898,7 @@ export const ShiftArrowContractsSelection = {
  * from the mousedown anchor and collapse the range.
  */
 export const ShiftArrowContractsAfterMouseDrag = {
+  tags: ["shift-arrow-range"],
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
@@ -938,6 +940,7 @@ export const ShiftArrowContractsAfterMouseDrag = {
  * Horizontal Shift+Arrow expand then contract toward the column anchor.
  */
 export const ShiftArrowContractsHorizontalSelection = {
+  tags: ["shift-arrow-range"],
   render: () => {
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
