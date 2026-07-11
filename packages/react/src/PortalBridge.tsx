@@ -31,12 +31,13 @@ const PORTAL_ID_ATTR = "data-st-portal-id";
  *
  * Cleanup is authoritative, not inferred: core invokes `onRendererHostDiscard(host)`
  * — wired to {@link disposeHost} — immediately before it permanently discards a
- * host element (cell rebuild/edit `innerHTML = ""`, header renderer refresh on
- * sort/filter, plain cell/header removal, and the animation coordinator's
- * ghost/FLIP/shrink teardown). `disposeHost` unregisters the portal(s) tagged
- * with {@link PORTAL_ID_ATTR} inside that host, so React unmounts exactly those
- * subtrees. Reuse/reparent paths never signal, so a reused node keeps its portal
- * entry (and its content) with zero churn.
+ * host element (cell rebuild/edit `innerHTML = ""`, plain cell/header removal, and
+ * the animation coordinator's ghost/FLIP/shrink teardown). Header sort/filter icon
+ * refresh reuses the same host via {@link update} when the adapter returns it
+ * in place, so React state is preserved. `disposeHost` unregisters the portal(s)
+ * tagged with {@link PORTAL_ID_ATTR} inside that host, so React unmounts exactly
+ * those subtrees. Reuse/reparent paths never signal, so a reused node keeps its
+ * portal entry (and its content) with zero churn.
  */
 export class PortalBridge {
   private entries = new Map<string, PortalEntry>();
@@ -63,6 +64,23 @@ export class PortalBridge {
     this.entries.set(id, { id, container, node });
     this.scheduleEmit();
     return { id, unregister: () => this.unregister(id) };
+  }
+
+  /**
+   * Replace the React node for an existing portal host without changing its id
+   * or container. Used when core re-invokes a headerRenderer on sort/filter so
+   * icon props can update while the React subtree (and its state) stays mounted.
+   * Returns false when `container` is not a live registered host (e.g. after
+   * {@link disposeHost}), so callers can fall back to {@link register}.
+   */
+  update(container: HTMLElement, node: ReactNode): boolean {
+    const id = container.getAttribute(PORTAL_ID_ATTR);
+    if (id === null) return false;
+    const entry = this.entries.get(id);
+    if (!entry || entry.container !== container) return false;
+    entry.node = node;
+    this.scheduleEmit();
+    return true;
   }
 
   private unregister(id: string): void {

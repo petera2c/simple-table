@@ -103,6 +103,10 @@ export const calculateHeaderCellClasses = (
  * `components.sortIcon` appear (and stay current) when sorting toggles after the
  * cell already exists: the sort icon only exists for the active sort column, so a
  * custom header must be re-rendered with the new icon instead of being skipped.
+ *
+ * Framework adapters (e.g. React) may return the same host element already
+ * mounted in `labelElement` and update props in place. In that case we skip
+ * dispose/clear so stateful header UI is not remounted on every sort/filter.
  */
 const renderHeaderRendererContent = (
   labelElement: HTMLElement,
@@ -117,14 +121,6 @@ const renderHeaderRendererContent = (
 ): void => {
   const labelContent = createLabelContent(header, context);
 
-  // Discard the previous renderer subtree (React portal, etc.) before replacing
-  // the label's children. Without this, in-place icon refresh on sort/filter
-  // orphans the prior portal host — floating UI portaled to document.body
-  // (tooltips/popovers) stays mounted under a detached anchor.
-  context.onRendererHostDiscard?.(labelElement);
-  removeFloatingHeaderTooltips(labelElement);
-  labelElement.innerHTML = "";
-
   const renderedContent = header.headerRenderer!({
     accessor: header.accessor,
     colIndex,
@@ -136,6 +132,20 @@ const renderHeaderRendererContent = (
       labelContent,
     },
   });
+
+  // In-place update: adapter reused the existing host (already a child of the
+  // label). Do not dispose or clear — that would remount React/Vue/Solid trees.
+  if (renderedContent instanceof HTMLElement && renderedContent.parentElement === labelElement) {
+    return;
+  }
+
+  // Full replace: discard the previous renderer subtree (React portal, etc.)
+  // before replacing the label's children. Without this, swapping to a new host
+  // orphans the prior portal — floating UI portaled to document.body
+  // (tooltips/popovers) stays mounted under a detached anchor.
+  context.onRendererHostDiscard?.(labelElement);
+  removeFloatingHeaderTooltips(labelElement);
+  labelElement.innerHTML = "";
 
   // The headerRenderer should return a DOM element (HTMLElement). The React
   // adapter wraps React-based headerRenderers to convert them to DOM elements.

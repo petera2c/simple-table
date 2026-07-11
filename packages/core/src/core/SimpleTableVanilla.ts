@@ -1440,7 +1440,14 @@ export class SimpleTableVanilla {
         if (!leaf) continue;
         // Sampling/outlier tuning uses internal defaults; per-column control is
         // via the header's `maxWidth` / `minWidth` / `autoSizeMode`.
-        const width = calculateHeaderContentWidth(accessor, {
+        //
+        // `settled` is informational for callers that care; we still apply the
+        // best-effort width now. We do NOT keep unsettled accessors pending —
+        // retrying on every subsequent render is a common infinite-loop source
+        // when measurement is provisional (async portals / loading skeletons).
+        // Re-measure only via explicit re-queue: rows change, isLoading flip,
+        // or `refitAutoSizeColumns()`.
+        const { width } = calculateHeaderContentWidth(accessor, {
           rows: autoSizeRows,
           header: leaf,
           styleRoot,
@@ -1453,8 +1460,25 @@ export class SimpleTableVanilla {
         widths.set(accessor, width);
       }
 
+      // Always clear — one measure pass per pending set. Never leave accessors
+      // pending across renders.
       this.pendingAutoSize.clear();
       if (widths.size === 0) return;
+
+      // Avoid a corrective re-render when nothing changed.
+      let changed = false;
+      for (const [accessor, width] of widths) {
+        const leaf = leafByAccessor.get(accessor);
+        const current =
+          typeof leaf?.width === "number"
+            ? leaf.width
+            : this.naturalWidths.get(String(accessor));
+        if (current !== width) {
+          changed = true;
+          break;
+        }
+      }
+      if (!changed) return;
 
       this.applyMeasuredWidths(widths);
       this.renderOrchestrator.invalidateCache("header");
@@ -1698,7 +1722,14 @@ export class SimpleTableVanilla {
     }
 
     if (config.isLoading !== undefined) {
+      const wasLoading = this.internalIsLoading;
       this.internalIsLoading = config.isLoading;
+      // Leaving the loading state reveals real cellRenderer / headerRenderer
+      // DOM (replacing skeletons). Re-queue auto columns so widths can settle
+      // from painted content instead of staying on a provisional measure.
+      if (wasLoading && !config.isLoading && this.autoSizeAccessors.size > 0) {
+        this.autoSizeAccessors.forEach((accessor) => this.pendingAutoSize.add(accessor));
+      }
     }
 
     if (config.theme !== undefined) {

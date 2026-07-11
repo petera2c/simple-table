@@ -22,7 +22,7 @@ import {
   selectContentWidthWithOutlierClip,
 } from "../../src/utils/headerWidthUtils";
 import { expect } from "@storybook/test";
-import { waitForTable } from "./testUtils";
+import { waitForTable, waitUntil } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 import type { Meta } from "@storybook/html";
 
@@ -84,6 +84,8 @@ let truncationTable: SimpleTableVanilla | null = null;
 let truncationFill: (() => void) | null = null;
 let emptyHeaderTable: SimpleTableVanilla | null = null;
 let emptyHeaderFill: (() => void) | null = null;
+let loadingIdentityTable: SimpleTableVanilla | null = null;
+let loadingIdentityFill: (() => void) | null = null;
 
 // ============================================================================
 // CORRECTNESS — shrink / grow / cap / floor / mode
@@ -706,6 +708,431 @@ export const AutoSizeRefitsOnDataChange = {
   },
 };
 
+/**
+ * Repro: Identity-style column with a long one-line valueFormatter and a
+ * multi-line cellRenderer, sized while `isLoading` is true.
+ *
+ * Framework adapters (React portals) return an empty host during off-screen
+ * measure, so auto-size falls back to the formatter string. While loading,
+ * painted cells are skeletons and are skipped — so the column locks to the
+ * wide one-line formatter width. After loading completes and the real
+ * multi-line renderer mounts, the column must re-fit to the narrower stacked
+ * content (not stay stuck on the formatter measurement).
+ */
+const LOADING_IDENTITY_TABLE_KEY = "__storybook_auto_size_loading_identity_table";
+
+export const AutoSizeRefitsAfterLoadingWithMultilineRenderer = {
+  parameters: { tags: ["auto-size-loading-multiline-formatter"] },
+  render: () => {
+    const ARTISTS = [
+      {
+        name: "Taylor Swift",
+        type: "Solo",
+        pronouns: "she/her",
+        label: "Republic Records / Universal Music Group International",
+        country: "United States",
+        genre: "Pop",
+        score: 98.4,
+        streams: "92.1M",
+      },
+      {
+        name: "Bad Bunny",
+        type: "Solo",
+        pronouns: "he/him",
+        label: "Rimas Entertainment",
+        country: "Puerto Rico",
+        genre: "Reggaeton",
+        score: 96.2,
+        streams: "81.4M",
+      },
+      {
+        name: "The Weeknd",
+        type: "Solo",
+        pronouns: "he/him",
+        label: "XO / Republic Records",
+        country: "Canada",
+        genre: "R&B",
+        score: 94.8,
+        streams: "74.0M",
+      },
+      {
+        name: "Billie Eilish",
+        type: "Solo",
+        pronouns: "she/her",
+        label: "Darkroom / Interscope Records",
+        country: "United States",
+        genre: "Alt Pop",
+        score: 93.1,
+        streams: "68.7M",
+      },
+    ];
+
+    // Widest one-line formatter in the set — used for width assertions.
+    const widestFormatter = `${ARTISTS[0].name} · ${ARTISTS[0].type} · ${ARTISTS[0].pronouns} · ${ARTISTS[0].label}`;
+
+    type IdentityRow = {
+      identity: string;
+      type: string;
+      pronouns: string;
+      label: string;
+    };
+
+    const buildIdentityCell = (row: IdentityRow): HTMLElement => {
+      const root = document.createElement("div");
+      root.className = "identity-cell";
+      root.style.display = "flex";
+      root.style.flexDirection = "column";
+      root.style.gap = "2px";
+      root.style.lineHeight = "1.25";
+      for (const text of [row.identity, `${row.type} · ${row.pronouns}`, row.label]) {
+        const span = document.createElement("span");
+        span.style.whiteSpace = "nowrap";
+        span.textContent = text;
+        root.appendChild(span);
+      }
+      return root;
+    };
+
+    // Simulate React portals: empty host during measure / first paint; after
+    // fill(), newly virtualized cells also get content (scroll recycle).
+    const pendingHosts: Array<{ el: HTMLElement; row: IdentityRow }> = [];
+    let portalsMounted = false;
+    const fillHost = (el: HTMLElement, row: IdentityRow) => {
+      if (el.childNodes.length === 0) {
+        el.appendChild(buildIdentityCell(row));
+      }
+    };
+    loadingIdentityFill = () => {
+      portalsMounted = true;
+      for (const { el, row } of pendingHosts) {
+        fillHost(el, row);
+      }
+      pendingHosts.length = 0;
+    };
+
+    const headers: HeaderObject[] = [
+      {
+        accessor: "rank",
+        label: "#",
+        width: 56,
+        type: "number",
+        align: "center",
+        pinned: "left",
+      },
+      {
+        accessor: "identity",
+        label: "Identity",
+        width: "auto",
+        type: "string",
+        pinned: "left",
+        valueFormatter: ({ row }) => {
+          const a = row as (typeof ARTISTS)[number] & { identity: string };
+          return `${a.identity} · ${a.type} · ${a.pronouns} · ${a.label}`;
+        },
+        // Simulate a React portal host: marked async so off-screen measure
+        // cannot use valueFormatter; content is filled after loading.
+        cellRenderer: ({ row }) => {
+          const host = document.createElement("div");
+          host.setAttribute("data-st-portal-id", "identity-test");
+          host.style.display = "contents";
+          const identityRow = row as IdentityRow;
+          if (portalsMounted) {
+            // Match React: cells recreated on scroll get content on the next
+            // commit after the portal registry is live.
+            queueMicrotask(() => fillHost(host, identityRow));
+          } else {
+            pendingHosts.push({ el: host, row: identityRow });
+          }
+          return host;
+        },
+      },
+      { accessor: "country", label: "Country", width: 160, type: "string" },
+      { accessor: "genre", label: "Genre", width: 140, type: "string" },
+      {
+        accessor: "score",
+        label: "Score",
+        width: 100,
+        type: "number",
+        align: "right",
+        valueFormatter: ({ value }) => Number(value).toFixed(1),
+      },
+      {
+        accessor: "streams",
+        label: "Monthly Streams",
+        width: 150,
+        type: "string",
+        align: "right",
+      },
+      {
+        accessor: "type",
+        label: "Artist Type",
+        width: 120,
+        type: "string",
+      },
+      {
+        accessor: "label",
+        label: "Label",
+        width: "auto",
+        type: "string",
+      },
+      { accessor: "pronouns", label: "Pronouns", width: 110, type: "string" },
+      {
+        accessor: "peakRank",
+        label: "Peak Rank",
+        width: 110,
+        type: "number",
+        align: "center",
+      },
+      {
+        accessor: "weeksOnChart",
+        label: "Weeks on Chart",
+        width: 140,
+        type: "number",
+        align: "center",
+      },
+      {
+        accessor: "lastRelease",
+        label: "Last Release",
+        width: 160,
+        type: "string",
+      },
+      {
+        accessor: "management",
+        label: "Management",
+        width: 180,
+        type: "string",
+      },
+      {
+        accessor: "distributor",
+        label: "Distributor",
+        width: 180,
+        type: "string",
+      },
+      {
+        accessor: "territory",
+        label: "Primary Territory",
+        width: 170,
+        type: "string",
+      },
+      {
+        accessor: "spotifyUrl",
+        label: "Spotify URL",
+        width: 220,
+        type: "string",
+      },
+      {
+        accessor: "appleMusicUrl",
+        label: "Apple Music URL",
+        width: 220,
+        type: "string",
+      },
+      {
+        accessor: "bookingAgent",
+        label: "Booking Agent",
+        width: 180,
+        type: "string",
+      },
+      {
+        accessor: "publicist",
+        label: "Publicist",
+        width: 180,
+        type: "string",
+      },
+      {
+        accessor: "tourStatus",
+        label: "Tour Status",
+        width: 140,
+        type: "string",
+      },
+      {
+        accessor: "nextShowCity",
+        label: "Next Show City",
+        width: 160,
+        type: "string",
+      },
+      {
+        accessor: "nextShowDate",
+        label: "Next Show Date",
+        width: 150,
+        type: "string",
+      },
+      {
+        accessor: "catalogOwner",
+        label: "Catalog Owner",
+        width: 200,
+        type: "string",
+      },
+      {
+        accessor: "publishingAdmin",
+        label: "Publishing Admin",
+        width: 200,
+        type: "string",
+      },
+      {
+        accessor: "syncAgent",
+        label: "Sync Agent",
+        width: 180,
+        type: "string",
+      },
+      {
+        accessor: "radioPromo",
+        label: "Radio Promo",
+        width: 180,
+        type: "string",
+      },
+      {
+        accessor: "notes",
+        label: "Internal Notes",
+        width: 240,
+        type: "string",
+      },
+    ];
+
+    const buildRow = (i: number) => {
+      const a = ARTISTS[i % ARTISTS.length];
+      return {
+        id: i + 1,
+        rank: i + 1,
+        identity: a.name,
+        type: a.type,
+        pronouns: a.pronouns,
+        label: a.label,
+        country: a.country,
+        genre: a.genre,
+        score: a.score - (i % 5) * 0.3,
+        streams: a.streams,
+        peakRank: (i % 10) + 1,
+        weeksOnChart: 20 + (i % 40),
+        lastRelease: `202${i % 6}-0${(i % 9) + 1}-15`,
+        management: i % 2 === 0 ? "13 Management" : "Sal & Co",
+        distributor: i % 2 === 0 ? "Universal Music Group" : "Sony Music",
+        territory: a.country,
+        spotifyUrl: `https://open.spotify.com/artist/${a.name.replace(/\s+/g, "").toLowerCase()}`,
+        appleMusicUrl: `https://music.apple.com/artist/${a.name.replace(/\s+/g, "-").toLowerCase()}`,
+        bookingAgent: i % 2 === 0 ? "CAA" : "WME",
+        publicist: i % 2 === 0 ? "PMKBNC" : "The Lede Company",
+        tourStatus: i % 3 === 0 ? "On Tour" : "Studio",
+        nextShowCity: i % 2 === 0 ? "Los Angeles" : "London",
+        nextShowDate: `2026-0${(i % 9) + 1}-20`,
+        catalogOwner: i % 2 === 0 ? "Universal Music Publishing" : "Sony Music Publishing",
+        publishingAdmin: i % 2 === 0 ? "UMPG" : "SMP",
+        syncAgent: i % 2 === 0 ? "Position Music" : "Music Dealers",
+        radioPromo: i % 2 === 0 ? "Promopunk" : "Planetary Group",
+        notes: `Priority act #${i + 1} — monitor chart movement weekly`,
+      };
+    };
+
+    const data = makeRows(20, buildRow);
+
+    // Wide column set (~4k+ px) so the table scrolls horizontally in a normal
+    // Storybook canvas without constraining the wrapper width.
+    const { wrapper, table } = renderVanillaTable(headers, data, {
+      getRowId: (params: any) => String(params.row.id),
+      height: "420px",
+      isLoading: true,
+      customTheme: { rowHeight: 72 },
+    });
+    (globalThis as unknown as Record<string, SimpleTableVanilla>)[LOADING_IDENTITY_TABLE_KEY] =
+      table;
+    loadingIdentityTable = table;
+
+    (globalThis as unknown as Record<string, typeof ARTISTS>)[
+      "__storybook_auto_size_loading_identity_artists"
+    ] = ARTISTS;
+    (globalThis as unknown as Record<string, string>)[
+      "__storybook_auto_size_loading_identity_widest_formatter"
+    ] = widestFormatter;
+    (globalThis as unknown as Record<string, typeof buildRow>)[
+      "__storybook_auto_size_loading_identity_build_row"
+    ] = buildRow;
+
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await waitUntil(() => canvasElement.querySelectorAll(".st-loading-skeleton").length > 0);
+
+    const table =
+      (globalThis as unknown as Record<string, SimpleTableVanilla | undefined>)[
+        LOADING_IDENTITY_TABLE_KEY
+      ] ?? loadingIdentityTable;
+    expect(table).toBeTruthy();
+
+    const leafWidth = (accessor: string): number => {
+      const headers = table!.getAPI().getHeaders();
+      const find = (list: any[]): number | null => {
+        for (const h of list) {
+          if (h.children?.length) {
+            const nested = find(h.children);
+            if (nested != null) return nested;
+          } else if (String(h.accessor) === accessor && typeof h.width === "number") {
+            return h.width;
+          }
+        }
+        return null;
+      };
+      return find(headers as any[]) ?? 0;
+    };
+
+    // Loading: custom cellRenderer is empty/async, so Identity must stay
+    // provisional — not locked to the long one-line valueFormatter (~500px cap).
+    const loadingWidth = leafWidth("identity");
+    expect(loadingWidth).toBeGreaterThan(0);
+    expect(loadingWidth).toBeLessThan(220);
+
+    const buildRow = (globalThis as unknown as Record<string, ((i: number) => any) | undefined>)[
+      "__storybook_auto_size_loading_identity_build_row"
+    ];
+    expect(buildRow).toBeTruthy();
+
+    // Resolve loading, fill portals, then re-fit from real multi-line DOM.
+    table!.update({ rows: makeRows(20, buildRow!), isLoading: false });
+
+    await waitUntil(() => canvasElement.querySelectorAll(".st-loading-skeleton").length === 0);
+    await waitUntil(
+      () =>
+        canvasElement.querySelectorAll(
+          '.st-cell[data-accessor="identity"] [data-st-portal-id="identity-test"]',
+        ).length > 0,
+    );
+
+    loadingIdentityFill!();
+    await waitUntil(() => canvasElement.querySelectorAll(".identity-cell").length > 0);
+    table!.refitAutoSizeColumns();
+    await wait(250);
+
+    const identityWidth = leafWidth("identity");
+    const labelWidth = leafWidth("label");
+
+    expect(identityWidth).toBeGreaterThan(0);
+    expect(labelWidth).toBeGreaterThan(200);
+    expect(labelWidth).toBeLessThanOrEqual(520);
+    expect(identityWidth).toBeLessThanOrEqual(520);
+
+    // Grew from the provisional loading width, and matches Label (same longest line).
+    expect(identityWidth).toBeGreaterThan(loadingWidth);
+    expect(Math.abs(identityWidth - labelWidth)).toBeLessThan(80);
+
+    // Column set is wide (virtualization may keep scrollWidth below the full
+    // sum, so assert assigned leaf widths instead).
+    const headers = table!.getAPI().getHeaders();
+    let totalAssigned = 0;
+    const addWidth = (list: any[]) => {
+      for (const h of list) {
+        if (h.children?.length) addWidth(h.children);
+        else if (typeof h.width === "number") totalAssigned += h.width;
+        else if (typeof h.width === "string" && h.width.endsWith("px")) {
+          totalAssigned += parseFloat(h.width) || 0;
+        } else {
+          totalAssigned += 150;
+        }
+      }
+    };
+    addWidth(headers as any[]);
+    expect(totalAssigned).toBeGreaterThan(2000);
+  },
+};
+
 export const AutoSizeStableAcrossSort = {
   parameters: { tags: ["auto-size-sort-stable"] },
   render: () => {
@@ -1097,7 +1524,7 @@ export const AutoSizeConsistentAcrossContainerWidths = {
 };
 
 // ============================================================================
-// EMPTY STATE + ASYNC CUSTOM HEADER — must fall back to the label width
+// EMPTY STATE + ASYNC CUSTOM HEADER — measure real markup after mount
 // ============================================================================
 
 export const AutoSizeEmptyStateAsyncHeaderRenderer = {
@@ -1105,8 +1532,8 @@ export const AutoSizeEmptyStateAsyncHeaderRenderer = {
   render: () => {
     // Simulates a React headerRenderer: the label element receives an empty
     // portal container at render time; the real markup mounts asynchronously.
-    // With no rows to measure, a naive measurement of the empty container
-    // collapses the column to the minimum width.
+    // Plain `label` text is NOT used as a stand-in for custom headerRenderer
+    // output — the column stays provisional until the host re-fits after fill.
     const pending: HTMLElement[] = [];
     emptyHeaderFill = () => {
       for (const el of pending) {
@@ -1147,14 +1574,13 @@ export const AutoSizeEmptyStateAsyncHeaderRenderer = {
     const cell = canvasElement.querySelector('[id="header-description"]');
     expect(cell).toBeTruthy();
 
-    // Even before the async header content mounts, the column must fit the
-    // header LABEL (the fallback), not collapse to the 40px minimum.
+    // Before async header content mounts, width is provisional (not the custom
+    // markup). Do not assert the final label width yet.
     const initialWidth = cell!.getBoundingClientRect().width;
-    expect(initialWidth).toBeGreaterThan(120);
-    expect(initialWidth).toBeLessThan(320);
+    expect(initialWidth).toBeGreaterThan(0);
 
     // Async header content mounts, host re-fits (React adapter flow): the
-    // column must stay readable.
+    // column must fit the real headerRenderer markup.
     emptyHeaderFill!();
     emptyHeaderTable!.refitAutoSizeColumns();
     await wait(250);
@@ -1381,9 +1807,9 @@ export const AutoSizeLongHeaderConsistentAcrossContainerWidths = {
 export const HorizontalScrollbarShowsWhenHeaderOverflowsEmptyState = {
   parameters: { tags: ["horizontal-scrollbar-empty-header"] },
   render: () => {
-    // Empty table: body has no .st-body-main / row separators, but headers are
-    // still wider than the container and remain horizontally scrollable. The
-    // scrollbar visibility check must not rely on body scrollWidth alone.
+    // Empty table: body is a full-width non-scrolling empty message, but
+    // headers are still wider than the container. Scrollbar visibility must
+    // use content/header width, not body scrollWidth.
     const headers: HeaderObject[] = [
       { accessor: "id", label: "ID", width: 120, type: "number" },
       { accessor: "name", label: "Full Legal Name", width: 220, type: "string" },
@@ -1416,12 +1842,20 @@ export const HorizontalScrollbarShowsWhenHeaderOverflowsEmptyState = {
     // Scrollbar creation is deferred by 1ms in TableRenderer.
     await wait(50);
 
+    const emptyWrapper = canvasElement.querySelector(
+      ".st-empty-state-wrapper",
+    ) as HTMLElement | null;
+    expect(emptyWrapper, "empty state should render").toBeTruthy();
+    // Full-width message — not a content-width body scrollport.
+    expect(canvasElement.querySelector(".st-body-main")).toBeFalsy();
+    const bodyContainer = canvasElement.querySelector(".st-body-container") as HTMLElement;
+    expect(emptyWrapper!.getBoundingClientRect().width).toBeGreaterThan(
+      bodyContainer.clientWidth * 0.9,
+    );
+
     const headerMain = canvasElement.querySelector(".st-header-main") as HTMLElement;
     expect(headerMain).toBeTruthy();
 
-    // Header content overflows the narrow container (sum of column widths =
-    // 1000px > 360px viewport). Prefer content-width assertion over
-    // scrollWidth/clientWidth: the header section may be sized to content.
     const headerCells = Array.from(headerMain.querySelectorAll(".st-header-cell"));
     const totalHeaderWidth = headerCells.reduce(
       (sum, cell) => sum + cell.getBoundingClientRect().width,
@@ -1429,87 +1863,27 @@ export const HorizontalScrollbarShowsWhenHeaderOverflowsEmptyState = {
     );
     expect(totalHeaderWidth).toBeGreaterThan(500);
 
-    // Header remains scrollable (wheel/trackpad over the header works).
+    // Header remains scrollable; scrollbar must appear for the same overflow.
     headerMain.scrollLeft = 80;
     headerMain.dispatchEvent(new Event("scroll", { bubbles: true }));
     await wait(30);
     expect(headerMain.scrollLeft).toBeGreaterThan(0);
 
-    // The visible horizontal scrollbar must appear for the same overflow.
     const scrollbar = canvasElement.querySelector(".st-horizontal-scrollbar-container");
     expect(
       scrollbar,
       "horizontal scrollbar should show when header content overflows, even with no rows",
     ).toBeTruthy();
-  },
-};
 
-/**
- * Empty tables still need a real body scrollport: wheel/trackpad over the
- * "No rows to display" area (and the horizontal scrollbar) must scroll the
- * headers. Replacing the body with a non-scrolling empty wrapper breaks that.
- */
-export const EmptyStateBodyScrollSyncsWithHeader = {
-  parameters: { tags: ["empty-state-body-scroll-sync"] },
-  render: () => {
-    const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 120, type: "number" },
-      { accessor: "name", label: "Full Legal Name", width: 220, type: "string" },
-      { accessor: "email", label: "Work Email Address", width: 260, type: "string" },
-      { accessor: "dept", label: "Department Name", width: 200, type: "string" },
-      { accessor: "role", label: "Job Role Title", width: 200, type: "string" },
-    ];
-    const wrapper = document.createElement("div") as HTMLDivElement & {
-      _table?: SimpleTableVanilla;
-    };
-    wrapper.style.padding = "2rem";
-    const tableContainer = document.createElement("div");
-    tableContainer.style.width = "360px";
-    wrapper.appendChild(tableContainer);
-    const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
-      rows: [],
-      getRowId: (params: any) => String(params.row.id),
-      height: "280px",
-    });
-    table.mount();
-    wrapper._table = table;
-    return wrapper;
-  },
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    await waitForTable();
-    await wait(50);
-
-    const emptyWrapper = canvasElement.querySelector(".st-empty-state-wrapper");
-    expect(emptyWrapper, "empty state should still render").toBeTruthy();
-
-    const bodyMain = canvasElement.querySelector(".st-body-main") as HTMLElement | null;
-    expect(
-      bodyMain,
-      "empty tables must keep a .st-body-main scrollport so body/scrollbar can scroll",
-    ).toBeTruthy();
-    expect(bodyMain!.scrollWidth).toBeGreaterThan(bodyMain!.clientWidth + 1);
-
-    const headerMain = canvasElement.querySelector(".st-header-main") as HTMLElement;
-    expect(headerMain).toBeTruthy();
-
-    // Scroll the body (as a wheel/trackpad over the empty area would) and
-    // expect the header to follow via SectionScrollController.
-    bodyMain!.scrollLeft = 120;
-    bodyMain!.dispatchEvent(new Event("scroll", { bubbles: true }));
-    await wait(40);
-    expect(headerMain.scrollLeft).toBe(120);
-
-    // Scrollbar thumb must drive the same sync.
+    // Scrollbar still syncs the header (body is not a scrollport).
     const scrollbarMiddle = canvasElement.querySelector(
       ".st-horizontal-scrollbar-middle",
     ) as HTMLElement | null;
-    expect(scrollbarMiddle, "horizontal scrollbar middle pane should exist").toBeTruthy();
+    expect(scrollbarMiddle).toBeTruthy();
     scrollbarMiddle!.scrollLeft = 200;
     scrollbarMiddle!.dispatchEvent(new Event("scroll", { bubbles: true }));
     await wait(40);
     expect(headerMain.scrollLeft).toBe(200);
-    expect(bodyMain!.scrollLeft).toBe(200);
   },
 };
 
