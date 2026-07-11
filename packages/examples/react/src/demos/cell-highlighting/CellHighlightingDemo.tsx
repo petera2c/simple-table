@@ -16,6 +16,7 @@ const CellHighlightingDemo = ({
       height={height}
       theme={theme}
       selectableCells={cellHighlightingConfig.tableProps.selectableCells}
+      selectableColumns={cellHighlightingConfig.tableProps.selectableColumns}
     />
   );
 };

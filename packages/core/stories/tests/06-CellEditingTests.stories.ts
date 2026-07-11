@@ -523,7 +523,7 @@ export const EnableHeaderEditing = {
       defaultHeaders: headers,
       rows: editData,
       height: "300px",
-      selectableCells: true,
+      selectableColumns: true,
       enableHeaderEditing: true,
       onHeaderEdit: (header: HeaderObject, newLabel: string) => {
         capturedRenames.push({ accessor: header.accessor as string, newLabel });

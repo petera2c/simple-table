@@ -17,7 +17,7 @@
       :height="height"
       :theme="theme"
       :enable-header-editing="true"
-      :selectable-cells="true"
+      :selectable-columns="true"
       :on-header-edit="handleHeaderEdit"
     />
   </div>

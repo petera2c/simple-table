@@ -110,6 +110,7 @@ export interface SimpleTableConfig {
   rowsPerPage?: number;
   scrollParent?: HTMLElement | "window" | (() => HTMLElement | null);
   selectableCells?: boolean;
+  selectableColumns?: boolean;
   serverSidePagination?: boolean;
   shouldPaginate?: boolean;
   tableEmptyStateRenderer?: HTMLElement | string | null;

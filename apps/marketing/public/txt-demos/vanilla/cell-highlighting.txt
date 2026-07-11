@@ -14,6 +14,7 @@ export function renderCellHighlightingDemo(
     height: options?.height ?? "400px",
     theme: options?.theme,
     selectableCells: cellHighlightingConfig.tableProps.selectableCells,
+    selectableColumns: cellHighlightingConfig.tableProps.selectableColumns,
   });
   return table;
 }
@@ -51,5 +52,5 @@ export const cellHighlightingData = [
 export const cellHighlightingConfig = {
   headers: cellHighlightingHeaders,
   rows: cellHighlightingData,
-  tableProps: { selectableCells: true },
+  tableProps: { selectableCells: true, selectableColumns: true },
 } as const;

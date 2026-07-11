@@ -49,7 +49,7 @@ export default function FromAgGridAngularPage() {
         { competitor: "[rowData]", simpleTable: "[rows]", notes: "See the Simple Table docs for the row shape." },
         { competitor: "[columnDefs]", simpleTable: "[defaultHeaders]", notes: "field → accessor; headerName → label; width unchanged." },
         { competitor: "ColDef.cellRenderer", simpleTable: "HeaderObject.cellRenderer", notes: "Pass an Angular component or a function returning a TemplateRef." },
-        { competitor: "rowSelection: 'multiple'", simpleTable: "selectableCells", notes: "Configure on the table, not on each column." },
+        { competitor: "rowSelection: 'multiple'", simpleTable: "selectableCells / selectableColumns", notes: "Configure on the table, not on each column." },
         { competitor: "pinned: 'left' | 'right'", simpleTable: "HeaderObject.pinned", notes: "Same values; pinning is built-in." },
         { competitor: "rowGroup + aggFunc (Enterprise)", simpleTable: "rowGrouping + aggregation", notes: "Free in Simple Table—no Enterprise license required." },
         { competitor: "valueFormatter", simpleTable: "Custom cell renderer", notes: "Format inside the renderer or pre-format your data." },

@@ -568,7 +568,7 @@ canExpandRowGroup={(row) => {
     key: "selectableCells",
     name: "selectableCells",
     required: false,
-    description: "Enable cell and column selection functionality. When true, users can select individual cells and click column headers to select entire columns.",
+    description: "Enable cell selection functionality.",
     type: "boolean",
     example: `selectableCells={true}`,
   },
@@ -580,6 +580,14 @@ canExpandRowGroup={(row) => {
       "When true, includes column headers as the first row when copying selected cells to clipboard. Defaults to false.",
     type: "boolean",
     example: `copyHeadersToClipboard={true}`,
+  },
+  {
+    key: "selectableColumns",
+    name: "selectableColumns",
+    required: false,
+    description: "Flag for selectable column headers.",
+    type: "boolean",
+    example: `selectableColumns={true}`,
   },
   {
     key: "shouldPaginate",

@@ -51,7 +51,7 @@ export default function FromNgxDatatablePage() {
         { competitor: "[columnMode]='force'", simpleTable: "Width-based layout", notes: "Set explicit widths or use 'minmax' helpers on Simple Table headers." },
         { competitor: "[scrollbarV]='true'", simpleTable: "height + virtualization (built-in)", notes: "Set a height; row virtualization kicks in automatically." },
         { competitor: "ngx-datatable-column", simpleTable: "HeaderObject.cellRenderer", notes: "Replace template-projection columns with renderer components." },
-        { competitor: "[selected] / (select)", simpleTable: "selectableCells", notes: "Configure on the table." },
+        { competitor: "[selected] / (select)", simpleTable: "selectableCells / selectableColumns", notes: "Configure on the table." },
         { competitor: "[sorts]", simpleTable: "Initial sort on HeaderObject", notes: "Set HeaderObject.sortDirection on the column you want sorted." },
         { competitor: "Theme classes (material/dark)", simpleTable: "@simple-table/angular/styles.css", notes: "Theme via CSS variables." },
       ]}

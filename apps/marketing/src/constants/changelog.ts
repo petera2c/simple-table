@@ -38,16 +38,9 @@ export const v3_9_5: ChangelogEntry = {
 export const v3_9_6: ChangelogEntry = {
   version: "3.9.6",
   date: "2026-07-10",
-  title: "Selection API cleanup",
-  description:
-    "selectableCells now controls both cell and column selection, plus richer row selection modes and APIs.",
+  title: "Row selection modes and APIs",
+  description: "Richer row selection modes, keyboard support, and TableAPI helpers.",
   changes: [
-    {
-      type: "breaking",
-      description:
-        "Removed selectableColumns. Use selectableCells to enable cell and column selection.",
-      link: "/docs/cell-highlighting",
-    },
     {
       type: "bugfix",
       description: "Shift+Arrow now contracts cell ranges.",

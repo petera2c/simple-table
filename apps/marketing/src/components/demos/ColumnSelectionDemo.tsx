@@ -139,7 +139,7 @@ const ColumnSelectionDemo = ({
       height={height}
       onColumnSelect={handleColumnSelect}
       rows={EMPLOYEE_DATA}
-      selectableCells={true}
+      selectableColumns={true}
       theme={theme}
     />
   );

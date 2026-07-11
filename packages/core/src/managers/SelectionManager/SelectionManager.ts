@@ -877,7 +877,7 @@ export class SelectionManager {
    * Body cells are patched here; headers normally update only on full render.
    */
   private syncHeaderSelectionClasses(): void {
-    if (!this.config.selectableCells) return;
+    if (!this.config.selectableColumns && !this.config.selectableCells) return;
 
     const root = this.config.tableRoot ?? document;
     const headerCells = root.querySelectorAll(".st-header-cell");
@@ -935,7 +935,7 @@ export class SelectionManager {
   }
 
   private clearHeaderSelectionHighlightClasses(): void {
-    if (!this.config.selectableCells) return;
+    if (!this.config.selectableColumns && !this.config.selectableCells) return;
     const root = this.config.tableRoot ?? document;
     const headerCells = root.querySelectorAll(".st-header-cell");
     for (let i = 0; i < headerCells.length; i++) {

@@ -60,7 +60,7 @@ const ColumnEditingDemo = ({
         defaultHeaders={headers}
         rows={columnEditingData}
         enableHeaderEditing
-        selectableCells
+        selectableColumns
         onHeaderEdit={handleHeaderEdit}
         height={height}
         theme={theme}

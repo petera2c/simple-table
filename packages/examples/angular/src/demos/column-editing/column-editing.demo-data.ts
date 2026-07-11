@@ -111,5 +111,5 @@ export const columnEditingData = [
 export const columnEditingConfig = {
   headers: columnEditingHeaders,
   rows: columnEditingData,
-  tableProps: { enableHeaderEditing: true, selectableCells: true },
+  tableProps: { enableHeaderEditing: true, selectableColumns: true },
 } as const;

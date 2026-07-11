@@ -13,6 +13,7 @@ export function renderCellHighlightingDemo(
     height: options?.height ?? "400px",
     theme: options?.theme,
     selectableCells: cellHighlightingConfig.tableProps.selectableCells,
+    selectableColumns: cellHighlightingConfig.tableProps.selectableColumns,
   });
   return table;
 }
