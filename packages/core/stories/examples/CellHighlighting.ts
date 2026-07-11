@@ -96,6 +96,7 @@ const ROWS: Row[] = [
 export const cellHighlightingExampleDefaults = {
   height: "300px",
   selectableCells: true,
+  selectableColumns: true,
 };
 
 export function renderCellHighlightingExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {

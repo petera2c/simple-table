@@ -78,6 +78,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() editColumns?: SimpleTableAngularProps["editColumns"];
   @Input() editColumnsInitOpen?: SimpleTableAngularProps["editColumnsInitOpen"];
   @Input() selectableCells?: SimpleTableAngularProps["selectableCells"];
+  @Input() selectableColumns?: SimpleTableAngularProps["selectableColumns"];
   @Input() enableHeaderEditing?: SimpleTableAngularProps["enableHeaderEditing"];
   @Input() onHeaderEdit?: SimpleTableAngularProps["onHeaderEdit"];
   @Input() customTheme?: SimpleTableAngularProps["customTheme"];
@@ -186,6 +187,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     if (this.editColumnsInitOpen !== undefined)
       props.editColumnsInitOpen = this.editColumnsInitOpen;
     if (this.selectableCells !== undefined) props.selectableCells = this.selectableCells;
+    if (this.selectableColumns !== undefined) props.selectableColumns = this.selectableColumns;
     if (this.enableHeaderEditing !== undefined)
       props.enableHeaderEditing = this.enableHeaderEditing;
     if (this.onHeaderEdit !== undefined) props.onHeaderEdit = this.onHeaderEdit;

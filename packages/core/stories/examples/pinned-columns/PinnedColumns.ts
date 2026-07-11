@@ -11,6 +11,7 @@ export const pinnedColumnsExampleDefaults = {
   rowGrouping: ["stores"] as const,
   columnReordering: true,
   selectableCells: true,
+  selectableColumns: true,
   editColumns: true,
   height: "calc(100dvh - 112px)",
   enableStickyParents: true,

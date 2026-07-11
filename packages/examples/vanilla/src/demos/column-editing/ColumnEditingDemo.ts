@@ -35,7 +35,7 @@ export function renderColumnEditingDemo(
     height: options?.height ?? "400px",
     theme: options?.theme,
     enableHeaderEditing: true,
-    selectableCells: true,
+    selectableColumns: true,
     onHeaderEdit: (_header: HeaderObject, newLabel: string) => {
       info.textContent = `Renamed to: ${newLabel}`;
     },

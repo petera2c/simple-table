@@ -14,6 +14,7 @@ export const paginationExampleDefaults = {
   columnReordering: true,
   columnResizing: true,
   selectableCells: true,
+  selectableColumns: true,
   theme: "modern-dark" as const,
   height: "500px",
 };

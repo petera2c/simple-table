@@ -322,6 +322,7 @@ export const ColumnHeaderSelection = {
       getRowId: (params) => String(params.row.id),
       height: "400px",
       selectableCells: true,
+      selectableColumns: true,
     });
     return wrapper;
   },
@@ -398,6 +399,7 @@ export const MultipleColumnHeaderSelections = {
       getRowId: (params) => String(params.row.id),
       height: "400px",
       selectableCells: true,
+      selectableColumns: true,
     });
     return wrapper;
   },
@@ -444,7 +446,7 @@ export const OutsideClickClearsSelection = {
 };
 
 /**
- * Edge case: when selectableCells is true, clicking a column header should clear
+ * Edge case: when selectableColumns is true, clicking a column header should clear
  * any existing cell selection (and initial focused cell) so that column selection takes over.
  */
 export const ColumnHeaderClickClearsCellSelection = {
@@ -459,6 +461,7 @@ export const ColumnHeaderClickClearsCellSelection = {
       getRowId: (params) => String(params.row.id),
       height: "400px",
       selectableCells: true,
+      selectableColumns: true,
     });
     return wrapper;
   },

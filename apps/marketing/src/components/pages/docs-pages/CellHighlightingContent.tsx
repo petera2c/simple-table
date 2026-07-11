@@ -15,10 +15,22 @@ const CELL_HIGHLIGHTING_PROPS: PropInfo[] = [
     name: "selectableCells",
     required: false,
     description:
-      "Enables both cell and column selection. When enabled, users can click on individual cells to select them, click on column headers to select entire columns, and use keyboard shortcuts to copy the selected data.",
+      "Enable selection of individual cells. When enabled, users can click on cells to select them and use keyboard shortcuts to copy the selected data.",
     type: "boolean",
     example: `<SimpleTable
   selectableCells={true}
+  // ... other props
+/>`,
+  },
+  {
+    key: "selectableColumns",
+    name: "selectableColumns",
+    required: false,
+    description:
+      "Enable selection of entire columns. When enabled, users can click on column headers to select all cells in that column.",
+    type: "boolean",
+    example: `<SimpleTable
+  selectableColumns={true}
   // ... other props
 />`,
   },
@@ -94,11 +106,15 @@ const CellHighlightingContent = () => {
         transition={{ duration: 0.5, delay: 0.4 }}
       >
         <p className="text-gray-700 dark:text-gray-300 mb-4">
-          Enable cell and column selection by adding the{" "}
+          Enable cell selection by adding the{" "}
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
             selectableCells
           </code>{" "}
-          prop to your SimpleTable component. This enables users to select individual cells and
+          and{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+            selectableColumns
+          </code>{" "}
+          props to your SimpleTable component. This enables users to select individual cells and
           entire columns.
         </p>
 

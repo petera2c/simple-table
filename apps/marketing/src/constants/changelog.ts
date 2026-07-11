@@ -11,26 +11,15 @@ export interface ChangelogEntry {
   }[];
 }
 
-export const v3_9_5: ChangelogEntry = {
-  version: "3.9.5",
-  date: "2026-07-10",
-  title: "Full-width empty state",
-  description: "The empty-table message fills the table width again.",
+export const v3_9_7: ChangelogEntry = {
+  version: "3.9.7",
+  date: "2026-07-11",
+  title: "selectableColumns restored",
+  description: "selectableColumns is back as its own prop.",
   changes: [
     {
       type: "bugfix",
-      description:
-        "Empty tables show a full-width empty message again, and still scroll horizontally when headers are too wide.",
-    },
-    {
-      type: "bugfix",
-      description:
-        "Custom header UI (pins, popovers, and similar) no longer resets when you sort or filter.",
-    },
-    {
-      type: "bugfix",
-      description:
-        "Auto-sized columns with custom cell layouts no longer stay too wide after data finishes loading.",
+      description: "Restored selectableColumns prop support.",
     },
   ],
 };
@@ -38,16 +27,9 @@ export const v3_9_5: ChangelogEntry = {
 export const v3_9_6: ChangelogEntry = {
   version: "3.9.6",
   date: "2026-07-10",
-  title: "Selection API cleanup",
-  description:
-    "selectableCells now controls both cell and column selection, plus richer row selection modes and APIs.",
+  title: "Row selection modes and APIs",
+  description: "Richer row selection modes, keyboard support, and TableAPI helpers.",
   changes: [
-    {
-      type: "breaking",
-      description:
-        "Removed selectableColumns. Use selectableCells to enable cell and column selection.",
-      link: "/docs/cell-highlighting",
-    },
     {
       type: "bugfix",
       description: "Shift+Arrow now contracts cell ranges.",
@@ -86,6 +68,30 @@ export const v3_9_6: ChangelogEntry = {
       description:
         "Expandable columns in row-grouped tables now show and clear loading skeletons when isLoading toggles, instead of staying stuck on stale content or skeletons.",
       link: "/docs/row-grouping",
+    },
+  ],
+};
+
+export const v3_9_5: ChangelogEntry = {
+  version: "3.9.5",
+  date: "2026-07-10",
+  title: "Full-width empty state",
+  description: "The empty-table message fills the table width again.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Empty tables show a full-width empty message again, and still scroll horizontally when headers are too wide.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Custom header UI (pins, popovers, and similar) no longer resets when you sort or filter.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Auto-sized columns with custom cell layouts no longer stay too wide after data finishes loading.",
     },
   ],
 };
@@ -137,13 +143,11 @@ export const v3_9_2: ChangelogEntry = {
     },
     {
       type: "bugfix",
-      description:
-        '"auto" width no longer over-allocates for multi-line valueFormatter output.',
+      description: '"auto" width no longer over-allocates for multi-line valueFormatter output.',
     },
     {
       type: "bugfix",
-      description:
-        "Fixed blank rows after resize and scrolling back up.",
+      description: "Fixed blank rows after resize and scrolling back up.",
     },
   ],
 };
@@ -2229,6 +2233,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_9_7,
   v3_9_6,
   v3_9_5,
   v3_9_3,

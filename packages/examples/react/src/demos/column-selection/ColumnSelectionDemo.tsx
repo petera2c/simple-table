@@ -15,7 +15,7 @@ const ColumnSelectionDemo = ({
       rows={columnSelectionConfig.rows}
       height={height}
       theme={theme}
-      selectableCells={columnSelectionConfig.tableProps.selectableCells}
+      selectableColumns={columnSelectionConfig.tableProps.selectableColumns}
     />
   );
 };

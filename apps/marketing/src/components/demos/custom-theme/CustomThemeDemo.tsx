@@ -146,6 +146,7 @@ const CustomThemeDemo = ({ height = "400px" }: { height?: string | number }) => 
         height={height}
         rows={data}
         selectableCells
+        selectableColumns
         theme="custom"
       />
     </div>

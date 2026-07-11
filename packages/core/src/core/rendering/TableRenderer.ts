@@ -232,11 +232,11 @@ export class TableRenderer {
       filters: filterState?.filters ?? {},
       icons: deps.resolvedIcons,
       selectedColumns:
-        deps.config.selectableCells && deps.selectionManager
+        deps.config.selectableColumns && deps.selectionManager
           ? deps.selectionManager.getSelectedColumns()
           : new Set<number>(),
       columnsWithSelectedCells:
-        deps.selectionManager && deps.config.selectableCells
+        deps.selectionManager && (deps.config.selectableCells || deps.config.selectableColumns)
           ? deps.selectionManager.getColumnsWithSelectedCells()
           : new Set<number>(),
       sort: sortState?.sort ?? null,
@@ -244,7 +244,7 @@ export class TableRenderer {
       getShrinkFloors: deps.getShrinkFloors,
       onAutoExpandNaturalWidths: deps.onAutoExpandNaturalWidths,
       essentialAccessors: deps.essentialAccessors,
-      selectableCells: deps.config.selectableCells,
+      selectableColumns: deps.config.selectableColumns,
       headers: deps.effectiveHeaders,
       rows: deps.localRows,
       headerHeight: deps.customTheme.headerHeight,
@@ -303,14 +303,14 @@ export class TableRenderer {
       onHeaderEdit: deps.config.onHeaderEdit,
       onColumnSelect: deps.config.onColumnSelect,
       selectColumns:
-        deps.selectionManager && deps.config.selectableCells
+        deps.selectionManager && deps.config.selectableColumns
           ? (columnIndices: number[], isShiftKey?: boolean) => {
               deps.selectionManager!.selectColumns(columnIndices, isShiftKey);
               deps.onRender();
             }
           : (columnIndices: number[]) => {},
       setSelectedColumns:
-        deps.selectionManager && deps.config.selectableCells
+        deps.selectionManager && deps.config.selectableColumns
           ? (value: Set<number> | ((prev: Set<number>) => Set<number>)) => {
               const prev = deps.selectionManager!.getSelectedColumns();
               const next = typeof value === "function" ? value(prev) : value;
@@ -443,7 +443,7 @@ export class TableRenderer {
           tableRows: processedResult.currentTableRows,
           headers: deps.effectiveHeaders,
           collapsedHeaders: deps.collapsedHeaders,
-          selectableCells: deps.config.selectableCells ?? false,
+          selectableColumns: deps.config.selectableColumns ?? false,
         },
         { positionOnlyBody: deps.positionOnlyBody },
       );

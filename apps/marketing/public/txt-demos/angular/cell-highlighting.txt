@@ -15,6 +15,7 @@ import "@simple-table/angular/styles.css";
       [height]="height"
       [theme]="theme"
       [selectableCells]="selectableCells"
+      [selectableColumns]="selectableColumns"
     ></simple-table>
   `,
 })
@@ -25,6 +26,7 @@ export class CellHighlightingDemoComponent {
   readonly rows: Row[] = cellHighlightingConfig.rows;
   readonly headers: AngularHeaderObject[] = cellHighlightingConfig.headers;
   readonly selectableCells = cellHighlightingConfig.tableProps.selectableCells;
+  readonly selectableColumns = cellHighlightingConfig.tableProps.selectableColumns;
 }
 
 
@@ -60,5 +62,5 @@ export const cellHighlightingData = [
 export const cellHighlightingConfig = {
   headers: cellHighlightingHeaders,
   rows: cellHighlightingData,
-  tableProps: { selectableCells: true },
+  tableProps: { selectableCells: true, selectableColumns: true },
 } as const;

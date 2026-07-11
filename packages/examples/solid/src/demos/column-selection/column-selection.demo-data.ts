@@ -29,5 +29,5 @@ export const columnSelectionData = [
 export const columnSelectionConfig = {
   headers: columnSelectionHeaders,
   rows: columnSelectionData,
-  tableProps: { selectableCells: true },
+  tableProps: { selectableColumns: true },
 } as const;
