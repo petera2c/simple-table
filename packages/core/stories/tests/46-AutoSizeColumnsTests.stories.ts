@@ -596,7 +596,8 @@ export const AutoSize50kUniformShort = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const start = performance.now();
-    await waitForTable();
+    await waitForTable(canvasElement, 15_000);
+    await waitUntil(() => widthOf(canvasElement, "ID") > 0, { timeoutMs: 10_000 });
     const idWidth = widthOf(canvasElement, "ID");
     const elapsed = performance.now() - start;
     // eslint-disable-next-line no-console
@@ -632,7 +633,8 @@ export const AutoSize50kDeepOutlierStaysCompact = {
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    await waitForTable();
+    await waitForTable(canvasElement, 15_000);
+    await waitUntil(() => widthOf(canvasElement, "Value") > 0, { timeoutMs: 10_000 });
     const valueWidth = widthOf(canvasElement, "Value");
     expect(valueWidth).toBeGreaterThan(0);
     expect(valueWidth).toBeLessThan(160);
@@ -655,7 +657,10 @@ export const AutoSize50kWidespreadLongGrows = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     const start = performance.now();
-    await waitForTable();
+    // Scope to this story's canvas — document-wide waitForTable can resolve on a
+    // previous story's table while this heavy 50k mount is still attaching.
+    await waitForTable(canvasElement, 15_000);
+    await waitUntil(() => widthOf(canvasElement, "Blurb") > 250, { timeoutMs: 15_000 });
     const blurbWidth = widthOf(canvasElement, "Blurb");
     const elapsed = performance.now() - start;
     // eslint-disable-next-line no-console

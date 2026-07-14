@@ -56,10 +56,16 @@ export const getVirtualRows = (container: HTMLElement): HTMLElement[][] => {
   return rowIndices.map((rowIndex) => getCellsForRow(container, String(rowIndex)));
 };
 
-export const waitForTable = async (timeout = 5000): Promise<void> => {
+export const waitForTable = async (
+  timeoutOrRoot: number | ParentNode = 5000,
+  maybeTimeout?: number,
+): Promise<void> => {
+  const root: ParentNode =
+    typeof timeoutOrRoot === "number" ? document : timeoutOrRoot;
+  const timeout = typeof timeoutOrRoot === "number" ? timeoutOrRoot : (maybeTimeout ?? 5000);
   const startTime = Date.now();
   while (Date.now() - startTime < timeout) {
-    const table = document.querySelector(".simple-table-root");
+    const table = root.querySelector(".simple-table-root");
     if (table) {
       await new Promise((resolve) => setTimeout(resolve, 200));
       return;
