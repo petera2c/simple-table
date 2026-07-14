@@ -298,6 +298,11 @@ export class AnimationCoordinator {
     return this.inFlight.has(cellId);
   }
 
+  /** True while any FLIP / retained-cell transition is still running. */
+  hasInFlight(): boolean {
+    return this.inFlight.size > 0;
+  }
+
   getDuration(): number {
     return this.duration;
   }

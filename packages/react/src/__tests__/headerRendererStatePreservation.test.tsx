@@ -203,3 +203,110 @@ describe("SimpleTable (React adapter) — headerRenderer state across sort/filte
     expect(readStatefulHeader(host).getAttribute(STATE_ATTR)).toBe("1");
   });
 });
+
+describe("SimpleTable (React adapter) — unstable defaultHeaders / rows refs", () => {
+  it("preserves React header state when defaultHeaders is rebuilt with the same structure", async () => {
+    function buildHeaders(): ReactHeaderObject[] {
+      return [
+        { accessor: "name", label: "Name", width: 120, type: "string" },
+        {
+          accessor: "score",
+          label: "Score",
+          width: 140,
+          type: "number",
+          isSortable: true,
+          // New function identity every rebuild — classic unstable columns.
+          headerRenderer: (props: HeaderRendererProps) => createElement(StatefulHeader, props),
+        },
+      ];
+    }
+
+    function Harness() {
+      const [tick, setTick] = useState(0);
+      const [rowData, setRowData] = useState(rows);
+      return createElement(
+        "div",
+        null,
+        createElement(
+          "button",
+          {
+            type: "button",
+            "data-st-churn": "true",
+            onClick: () => {
+              setTick((n) => n + 1);
+              setRowData((prev) => prev.map((r) => ({ ...r })));
+            },
+          },
+          `churn ${tick}`,
+        ),
+        createElement(SimpleTable, {
+          defaultHeaders: buildHeaders(),
+          rows: rowData,
+          getRowId: (p: { row: unknown }) => String((p.row as { id?: number })?.id),
+          height: "250px",
+          theme: "light",
+        }),
+      );
+    }
+
+    const host = mount(createElement(Harness));
+    await setLocalHeaderState(host);
+
+    const churn = host.querySelector<HTMLButtonElement>("[data-st-churn]");
+    expect(churn).toBeTruthy();
+    churn!.click();
+    churn!.click();
+    churn!.click();
+    await wait(80);
+
+    // Unstable column/row refs must not remount the header portal.
+    expect(mountCount).toBe(1);
+    expect(readStatefulHeader(host).getAttribute(STATE_ATTR)).toBe("1");
+  });
+
+  it("applies a real structural header change after unstable rebuilds", async () => {
+    function Harness() {
+      const [extra, setExtra] = useState(false);
+      const headers: ReactHeaderObject[] = [
+        { accessor: "name", label: "Name", width: 120, type: "string" },
+        {
+          accessor: "score",
+          label: "Score",
+          width: 140,
+          type: "number",
+          headerRenderer: StatefulHeader,
+        },
+        ...(extra
+          ? [{ accessor: "extra", label: "Extra Col", width: 100, type: "string" as const }]
+          : []),
+      ];
+      return createElement(
+        "div",
+        null,
+        createElement(
+          "button",
+          {
+            type: "button",
+            "data-st-add-col": "true",
+            onClick: () => setExtra(true),
+          },
+          "add column",
+        ),
+        createElement(SimpleTable, {
+          defaultHeaders: headers.map((h) => ({ ...h })),
+          rows: rows.map((r) => ({ ...r, extra: "x" })),
+          getRowId: (p: { row: unknown }) => String((p.row as { id?: number })?.id),
+          height: "250px",
+          theme: "light",
+        }),
+      );
+    }
+
+    const host = mount(createElement(Harness));
+    await waitFor(() => host.querySelector(".stateful-custom-head") !== null);
+    expect(host.querySelector('[data-accessor="extra"]')).toBeNull();
+
+    host.querySelector<HTMLButtonElement>("[data-st-add-col]")!.click();
+    await waitFor(() => host.querySelector('[data-accessor="extra"]') !== null);
+  });
+});

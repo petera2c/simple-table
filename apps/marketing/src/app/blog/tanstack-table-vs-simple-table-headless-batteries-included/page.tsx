@@ -53,8 +53,7 @@ export default function TanStackVsSimpleTablePage() {
       {/* Hero Section */}
       <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
-          TanStack Table (React Table) vs Simple Table: When to Choose Headless vs
-          Batteries-Included
+          TanStack Table vs Simple Table: Headless or Ready-Made Grid?
         </h1>
 
         <div className="flex justify-center mb-4 gap-2 flex-wrap">
@@ -73,9 +72,8 @@ export default function TanStackVsSimpleTablePage() {
         </div>
 
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
-          Should you build your own UI with TanStack Table (React Table v8) or get started instantly
-          with Simple Table? This guide breaks down the headless vs batteries-included debate with
-          real-world examples.
+          Choose TanStack Table when you need full UI control; choose Simple Table when you want a
+          working grid fast—with real code and bundle-size comparisons below.
         </p>
         <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
           <strong>Simple Table</strong> pairs a shared core with official adapters for{" "}
@@ -97,12 +95,11 @@ export default function TanStackVsSimpleTablePage() {
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                When choosing a data grid for React, you'll encounter two fundamentally different
-                philosophies: <strong>headless</strong> libraries like TanStack Table (formerly
-                React Table, now v8) that provide logic without UI, and{" "}
-                <strong>batteries-included</strong> solutions like Simple Table that come with
-                everything out of the box. TanStack Table is React-first; Simple Table ships the same
-                ready-to-use grid through official adapters for {SIMPLE_TABLE_FRAMEWORKS_SHORT}.
+                The short decision rule: use <strong>TanStack Table</strong> (headless) when you
+                need full UI control, and use <strong>Simple Table</strong> (batteries-included)
+                when you want a working grid without building the UI yourself. TanStack Table is
+                React-first; Simple Table ships the same ready-to-use grid through official adapters
+                for {SIMPLE_TABLE_FRAMEWORKS_SHORT}.
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
@@ -116,7 +113,7 @@ export default function TanStackVsSimpleTablePage() {
                   href="/blog/best-react-table-libraries-2026"
                   className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
                 >
-                  the best React table libraries in 2025
+                  the best React table libraries in 2026
                 </Link>
                 .
               </p>

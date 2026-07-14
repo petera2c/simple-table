@@ -1,6 +1,10 @@
-import { defineComponent, onMounted, onUnmounted, onUpdated, ref, h, camelize } from "vue";
-import { SimpleTableVanilla } from "simple-table-core";
-import type { TableAPI } from "simple-table-core";
+import { defineComponent, onMounted, onUnmounted, watch, ref, h, camelize } from "vue";
+import {
+  SimpleTableVanilla,
+  headersStructurallyEqual,
+  rowsShallowUnchanged,
+} from "simple-table-core";
+import type { SimpleTableConfig, TableAPI } from "simple-table-core";
 import { buildVanillaConfig } from "./buildVanillaConfig";
 import { MountRegistry } from "./MountRegistry";
 import type { SimpleTableVueProps, TableInstance } from "./types";
@@ -55,26 +59,58 @@ const SimpleTable = defineComponent({
     const containerRef = ref<HTMLDivElement | null>(null);
     let instance: TableInstance | null = null;
     const registry = new MountRegistry();
+    let syncedDefaultHeaders: SimpleTableVueProps["defaultHeaders"] | undefined;
+    let syncedRows: SimpleTableVueProps["rows"] | undefined;
+
+    function syncFromAttrs() {
+      if (!instance) return;
+      const props = camelizeAttrs(attrs) as unknown as SimpleTableVueProps;
+      const fullConfig = buildVanillaConfig(props, registry);
+      const patch: Partial<SimpleTableConfig> = { ...fullConfig };
+
+      const headersUnchanged = headersStructurallyEqual(
+        syncedDefaultHeaders,
+        props.defaultHeaders,
+      );
+      syncedDefaultHeaders = props.defaultHeaders;
+      if (headersUnchanged) {
+        delete patch.defaultHeaders;
+      }
+
+      const rowsUnchanged = rowsShallowUnchanged(
+        syncedRows as ReadonlyArray<object> | undefined,
+        props.rows as ReadonlyArray<object>,
+        props.getRowId,
+      );
+      syncedRows = props.rows;
+      if (rowsUnchanged) {
+        delete patch.rows;
+      }
+
+      instance.update(patch);
+    }
 
     onMounted(() => {
       if (!containerRef.value) return;
 
+      const props = camelizeAttrs(attrs) as unknown as SimpleTableVueProps;
       instance = new SimpleTableVanilla(
         containerRef.value,
-        buildVanillaConfig(camelizeAttrs(attrs) as unknown as SimpleTableVueProps, registry),
+        buildVanillaConfig(props, registry),
       ) as unknown as TableInstance;
       instance.mount();
+      syncedDefaultHeaders = props.defaultHeaders;
+      syncedRows = props.rows;
     });
 
-    onUpdated(() => {
-      instance?.update(
-        buildVanillaConfig(camelizeAttrs(attrs) as unknown as SimpleTableVueProps, registry),
-      );
-    });
+    // Watch attrs (not onUpdated) so we only sync when bindings actually change.
+    watch(attrs, syncFromAttrs, { deep: true });
 
     onUnmounted(() => {
       instance?.destroy();
       instance = null;
+      syncedDefaultHeaders = undefined;
+      syncedRows = undefined;
       registry.clear();
     });
 

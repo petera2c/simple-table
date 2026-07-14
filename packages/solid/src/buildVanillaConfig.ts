@@ -1,4 +1,5 @@
 import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig, Row } from "simple-table-core";
+import { collectHeaderAccessors } from "simple-table-core";
 import type {
   SimpleTableSolidProps,
   SolidHeaderObject,
@@ -8,6 +9,7 @@ import type {
 import type { MountRegistry } from "./MountRegistry";
 import {
   wrapSolidRenderer,
+  wrapCachedSolidRenderer,
   wrapSolidNode,
   solidNodeToHtmlString,
   isSolidComponent,
@@ -47,15 +49,26 @@ function transformHeader(
   registry: MountRegistry,
 ): HeaderObject {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
+  const accessor = String(header.accessor);
 
   const transformed: HeaderObject = { ...(rest as any) };
 
   if (cellRenderer) {
-    transformed.cellRenderer = wrapSolidRenderer(registry, cellRenderer) as any;
+    transformed.cellRenderer = wrapCachedSolidRenderer(
+      registry,
+      accessor,
+      "cell",
+      cellRenderer,
+    ) as any;
   }
 
   if (headerRenderer) {
-    transformed.headerRenderer = wrapSolidRenderer(registry, headerRenderer) as any;
+    transformed.headerRenderer = wrapCachedSolidRenderer(
+      registry,
+      accessor,
+      "header",
+      headerRenderer,
+    ) as any;
   }
 
   if (children) {
@@ -93,6 +106,8 @@ export function buildVanillaConfig(
     onColumnSelect,
     ...rest
   } = config;
+
+  registry.pruneRendererCaches(collectHeaderAccessors(defaultHeaders));
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,

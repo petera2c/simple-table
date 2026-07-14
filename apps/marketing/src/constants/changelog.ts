@@ -11,6 +11,26 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v3_9_8: ChangelogEntry = {
+  version: "3.9.8",
+  date: "2026-07-14",
+  title: "Unstable column and row refs",
+  description: "Tables stay stable when columns or rows are rebuilt every render.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Hardened unstable props: rebuilding columns or cloning rows on every render no longer flickers header menus or breaks column resizing.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Live cell updates now respect filters and sort — rows hide, show, or reorder when an updated value no longer matches.",
+      link: "/docs/live-updates",
+    },
+  ],
+};
+
 export const v3_9_7: ChangelogEntry = {
   version: "3.9.7",
   date: "2026-07-11",
@@ -2233,6 +2253,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_9_8,
   v3_9_7,
   v3_9_6,
   v3_9_5,

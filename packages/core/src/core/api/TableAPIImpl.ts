@@ -17,7 +17,7 @@ import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { flattenRows, FlattenRowsResult } from "../../utils/rowFlattening";
 import { ProcessRowsResult } from "../../utils/rowProcessing";
-import { generateStableRowKey, rowIdToString } from "../../utils/rowUtils";
+import { generateStableRowKey, rowIdToString, setNestedValue } from "../../utils/rowUtils";
 import { getCellId } from "../../utils/cellUtils";
 import { exportTableToCSV } from "../../utils/csvExportUtils";
 import {
@@ -57,6 +57,8 @@ export interface TableAPIContext {
    * re-render once the animation settles.
    */
   isCellAnimating?: (cellId: string) => boolean;
+  /** True while any FLIP cell transition is in flight (blocks live re-sort/re-filter). */
+  hasAnimatingCells?: () => boolean;
   columnEditorOpen: boolean;
   expandedDepthsManager: any;
   selectionManager: SelectionManager | null;
@@ -66,6 +68,17 @@ export interface TableAPIContext {
   getCachedFlattenResult?: () => FlattenRowsResult | null;
   getCachedProcessedResult?: () => ProcessRowsResult | null;
   onRender: () => void;
+  /**
+   * Bust the flatten / body row caches so the next render re-runs quick filter
+   * (and related processing) against in-place mutated row values.
+   */
+  invalidateRowsCache?: () => void;
+  /**
+   * Run `fn` without capturing a FLIP snapshot when sort/filter subscribers
+   * fire. Used for live-update-driven reorder/visibility changes so high-
+   * frequency ticks don't spam sort animations.
+   */
+  runWithoutAnimationSnapshot?: (fn: () => void) => void;
   setHeaders: (headers: HeaderObject[]) => void;
   setCurrentPage: (page: number) => void;
   setColumnEditorOpen: (open: boolean) => void;
@@ -96,12 +109,25 @@ export class TableAPIImpl {
 
     /** Coalesce many `updateData` calls in one turn (e.g. live metrics) into one DOM pass. */
     const pendingUpdateDataByKey = new Map<string, CellValue>();
+    /** Accessors mutated since the last filter/sort recompute (for targeted pipeline work). */
+    const pendingLiveAccessors = new Set<string>();
     let updateDataFlushScheduled = false;
     let updateDataRetryScheduled = false;
+    let livePipelineTimer: ReturnType<typeof setTimeout> | null = null;
+    /** Min gap between live-driven filter/sort full renders so header clicks can land. */
+    const LIVE_PIPELINE_MIN_MS = 400;
 
     const flushPendingUpdateData = () => {
       updateDataFlushScheduled = false;
-      if (pendingUpdateDataByKey.size === 0) return;
+      if (pendingUpdateDataByKey.size === 0) {
+        // Accessors may still be pending after an animation-deferred flush.
+        if (pendingLiveAccessors.size > 0 && !context.hasAnimatingCells?.()) {
+          scheduleLiveFilterSortPipeline();
+        } else if (pendingLiveAccessors.size > 0) {
+          scheduleAnimatingUpdateRetry();
+        }
+        return;
+      }
 
       let deferredAnimatingCell = false;
       pendingUpdateDataByKey.forEach((value, key) => {
@@ -126,6 +152,80 @@ export class TableAPIImpl {
       if (deferredAnimatingCell && pendingUpdateDataByKey.size > 0) {
         scheduleAnimatingUpdateRetry();
       }
+
+      // Never re-filter/re-sort while a user-initiated FLIP is in flight — that
+      // full-renders every live tick and swallows subsequent header clicks.
+      if (context.hasAnimatingCells?.()) {
+        scheduleAnimatingUpdateRetry();
+        return;
+      }
+
+      scheduleLiveFilterSortPipeline();
+    };
+
+    /**
+     * After live cell writes, push mutated `localRows` through FilterManager /
+     * SortManager (and bust the quick-filter flatten cache) when those features
+     * are active. Managers only notify when membership/order actually change.
+     * Coalesced to one rAF so high-frequency ticks don't thrash full renders.
+     */
+    const runLiveFilterSortPipeline = () => {
+      if (context.hasAnimatingCells?.()) {
+        scheduleAnimatingUpdateRetry();
+        return;
+      }
+
+      const accessors = pendingLiveAccessors;
+      if (accessors.size === 0) return;
+
+      const filters = context.filterManager?.getFilters();
+      const filterAccessors = filters ? Object.keys(filters) : [];
+      const hasRelevantFilter = filterAccessors.some((a) => accessors.has(a));
+      const sortColumn = context.sortManager?.getSortColumn();
+      const hasRelevantSort = Boolean(
+        sortColumn && accessors.has(String(sortColumn.key.accessor)),
+      );
+      const quickFilterText = context.config.quickFilter?.text?.trim() ?? "";
+      const hasQuickFilter = quickFilterText.length > 0;
+
+      if (!hasRelevantFilter && !hasRelevantSort && !hasQuickFilter) {
+        accessors.clear();
+        return;
+      }
+
+      accessors.clear();
+
+      const run = () => {
+        if (hasRelevantFilter && context.filterManager) {
+          context.filterManager.updateConfig({ rows: context.localRows });
+        }
+        if (hasRelevantSort && context.sortManager) {
+          const tableRows =
+            context.filterManager?.getFilteredRows() ?? context.localRows;
+          context.sortManager.updateConfig({ tableRows });
+        }
+        if (hasQuickFilter) {
+          context.invalidateRowsCache?.();
+          context.onRender();
+        }
+      };
+
+      if (context.runWithoutAnimationSnapshot) {
+        context.runWithoutAnimationSnapshot(run);
+      } else {
+        run();
+      }
+    };
+
+    const scheduleLiveFilterSortPipeline = () => {
+      // Trailing throttle: cell values still flash every tick via the registry;
+      // membership/order full-renders at most every LIVE_PIPELINE_MIN_MS so
+      // header click targets are not torn down under the cursor.
+      if (livePipelineTimer != null) return;
+      livePipelineTimer = setTimeout(() => {
+        livePipelineTimer = null;
+        runLiveFilterSortPipeline();
+      }, LIVE_PIPELINE_MIN_MS);
     };
 
     const scheduleUpdateDataFlush = () => {
@@ -144,7 +244,9 @@ export class TableAPIImpl {
       updateDataRetryScheduled = true;
       setTimeout(() => {
         updateDataRetryScheduled = false;
-        if (pendingUpdateDataByKey.size > 0) scheduleUpdateDataFlush();
+        if (pendingUpdateDataByKey.size > 0 || pendingLiveAccessors.size > 0) {
+          scheduleUpdateDataFlush();
+        }
       }, ANIMATING_UPDATE_RETRY_MS);
     };
 
@@ -178,8 +280,8 @@ export class TableAPIImpl {
       updateData: (props: UpdateDataProps) => {
         const { rowIndex, accessor, newValue } = props;
         if (rowIndex >= 0 && rowIndex < context.localRows.length) {
-          const row = context.localRows[rowIndex] as any;
-          row[accessor] = newValue;
+          const row = context.localRows[rowIndex];
+          setNestedValue(row, accessor, newValue);
 
           // Resolve the row's STABLE identity (`stableRowKey ?? positional
           // rowId`) so the cell registry key matches exactly what `styling.ts`
@@ -202,6 +304,7 @@ export class TableAPIImpl {
               });
           const key = getCellId({ accessor, rowId: rowIdentity });
           pendingUpdateDataByKey.set(key, newValue);
+          pendingLiveAccessors.add(String(accessor));
           scheduleUpdateDataFlush();
         }
       },

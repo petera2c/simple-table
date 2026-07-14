@@ -9,6 +9,10 @@ import {
 } from "../examples/billing-example/BillingExample";
 import { renderClayExample, clayExampleDefaults } from "../examples/ClayExample";
 import {
+  renderCryptoExample,
+  cryptoExampleDefaults,
+} from "../examples/crypto/CryptoExample";
+import {
   renderFinanceExample,
   financeExampleDefaults,
 } from "../examples/finance-example/FinancialExample";
@@ -55,6 +59,19 @@ export const Clay: StoryObj = {
   render: (args) => renderClayExample(args),
   parameters: {
     docs: { description: { story: "Clay design system styling example for the table." } },
+  },
+};
+
+export const Crypto: StoryObj = {
+  ...storyArgs(cryptoExampleDefaults),
+  render: (args) => renderCryptoExample(args),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Crypto market table with live updateData ticks (price, 24h change, sparkline). Sort/filter stay in sync as values change.",
+      },
+    },
   },
 };
 

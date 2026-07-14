@@ -2,7 +2,7 @@ import HeaderObject, { Accessor } from "../types/HeaderObject";
 import Row from "../types/Row";
 import SortColumn, { SortDirection } from "../types/SortColumn";
 import { handleSort } from "../utils/sortUtils";
-import { isRowArray } from "../utils/rowUtils";
+import { isRowArray, rowsOrderEqual } from "../utils/rowUtils";
 import { flattenAllHeaders } from "../utils/headerUtils";
 import { calculateAggregatedRows } from "../hooks/useAggregatedRows";
 
@@ -137,8 +137,10 @@ export class SortManager {
     }
 
     const sortedRows = this.computeSortedRows(this.config.tableRows, this.state.sort);
-    
-    if (sortedRows !== this.state.sortedRows) {
+
+    // Compare by row identity/order, not array reference — sort always
+    // allocates a new array when a sort column is active.
+    if (!rowsOrderEqual(sortedRows, this.state.sortedRows)) {
       this.state = {
         ...this.state,
         sortedRows,

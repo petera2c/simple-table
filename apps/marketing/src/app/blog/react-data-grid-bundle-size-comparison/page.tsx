@@ -64,7 +64,7 @@ export default function BundleSizeComparisonPage() {
       {/* Hero Section */}
       <section className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900 dark:to-blue-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
-          React Data Grid Bundle Size Showdown: Finding the Lightest Solution (2025)
+          React Data Grid Bundle Size Comparison 2026: Lightest Libraries Ranked
         </h1>
 
         <div className="flex justify-center mb-4 gap-2 flex-wrap">
@@ -87,8 +87,9 @@ export default function BundleSizeComparisonPage() {
         </div>
 
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
-          When memory footprint is critical, which free React data grid has the lightest bundle
-          size? We measured them all so you don't have to.
+          Simple Table is {SIMPLE_TABLE_INFO.bundleSizeMinGzip} gzipped vs AG Grid Community at{" "}
+          {AG_GRID_COMMUNITY_INFO.bundleSizeMinGzip}. Here&apos;s the full 2026 ranking of React
+          data grid bundle sizes.
         </p>
       </section>
 

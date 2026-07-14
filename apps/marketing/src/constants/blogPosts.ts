@@ -149,13 +149,13 @@ export const agGridAlternativesPost: BlogPostMetadata = {
 };
 
 export const bundleSizeComparisonPost: BlogPostMetadata = {
-  title: "React Data Grid Bundle Size Showdown: Finding the Lightest Solution (2025)",
+  title: "React Data Grid Bundle Size Comparison 2026: Lightest Libraries Ranked",
   description:
-    "When memory footprint is critical, which free React data grid has the lightest bundle size? Comprehensive bundle size comparison of TanStack Table, AG Grid, Simple Table, and more.",
+    "Simple Table is 62.4 kB gzipped vs AG Grid Community at 298.2 kB. Full 2026 React data grid bundle size ranking: TanStack Table, Material React Table, and more.",
   slug: "react-data-grid-bundle-size-comparison",
   tags: ["react", "performance", "bundle-size", "comparison"],
   createdAt: "2025-11-15",
-  updatedAt: "2025-11-15",
+  updatedAt: "2026-07-12",
 };
 
 export const tanstackVsAgGridPost: BlogPostMetadata = {
@@ -179,22 +179,22 @@ export const handsontableAlternativesPost: BlogPostMetadata = {
 };
 
 export const agGridPricing2026Post: BlogPostMetadata = {
-  title: "AG Grid Pricing & License Cost 2026 (Per Developer)",
+  title: "AG Grid License Cost & Pricing 2026 (Per Developer)",
   description:
-    "AG Grid Enterprise is $999/developer/year. Full 2026 license breakdown: pricing tiers, hidden renewal fees, real team costs, and free alternatives that save $25K+.",
+    "AG Grid Enterprise license is $999/developer/year. Full 2026 license cost breakdown: Community vs Enterprise, pricing tiers, renewals, real team costs, and free alternatives.",
   slug: "ag-grid-pricing-license-breakdown-2026",
   tags: ["react", "ag-grid", "pricing", "comparison"],
   createdAt: "2025-11-22",
-  updatedAt: "2026-06-22",
+  updatedAt: "2026-07-12",
 };
 
 export const tanstackVsSimpleTablePost: BlogPostMetadata = {
-  title: "TanStack Table vs Simple Table: When to Choose Headless vs Batteries-Included",
-  description: `Should you build your own UI with TanStack Table or get started instantly with Simple Table? Real code comparisons, bundle sizes, and decision criteria for headless vs batteries-included approaches. Simple Table ships official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`,
+  title: "TanStack Table vs Simple Table: Headless or Ready-Made Grid?",
+  description: `Choose TanStack Table when you need full UI control; choose Simple Table when you want a working grid fast. Real code, bundle sizes, and decision criteria. Simple Table ships adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`,
   slug: "tanstack-table-vs-simple-table-headless-batteries-included",
   tags: ["react", "comparison", "tanstack-table", "architecture"],
   createdAt: "2025-11-22",
-  updatedAt: "2025-11-22",
+  updatedAt: "2026-07-12",
 };
 
 export const mitLicensedAccessibilityPost: BlogPostMetadata = {

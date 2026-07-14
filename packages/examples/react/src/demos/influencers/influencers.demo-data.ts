@@ -1,14 +1,5 @@
 export type InfluencerTheme = string | undefined;
 
-export type AudienceAge = {
-  "13-17": number;
-  "18-24": number;
-  "25-34": number;
-  "35-44": number;
-  "45-64": number;
-  "65+": number;
-};
-
 export type AudienceGender = { f: number; m: number };
 
 export type BreakdownItem = { label: string; flag?: string; percent: number };
@@ -22,25 +13,13 @@ export type TopVideo = {
   color: string;
 };
 
-export type PlatformStats = {
-  postsCount: number;
-  postsCountFormatted: string;
-  engagementRate: number | null;
-  engagementRateFormatted: string;
-  avgViews: number | null;
-  avgViewsFormatted: string;
-  avgLikes: number | null;
-  avgLikesFormatted: string;
-  avgComments: number | null;
-  avgCommentsFormatted: string;
-  /** Instagram-only */
-  avgReelsPlays?: number | null;
-  avgReelsPlaysFormatted?: string;
-};
-
+/**
+ * Chartmetric-faithful row shape: nested accessors match their production table
+ * (profiles.*, audienceStats.*, ranks.score_100, etc.).
+ */
 export type Influencer = {
   id: string;
-  rank: number;
+  __index__: number;
   name: string;
   avatarColor: string;
   category: string;
@@ -50,24 +29,39 @@ export type Influencer = {
   role: string;
   gender: string;
   ageRange: string;
-  score: number;
-  scoreFormatted: string;
-  tiktokFollowers: number;
-  tiktokFollowersFormatted: string;
-  youtubeFollowers: number;
-  youtubeFollowersFormatted: string;
-  instagramFollowers: number;
-  instagramFollowersFormatted: string;
-  topVideos: TopVideo[];
-  trackFeatured: FeaturedEntity | null;
-  artistFeatured: FeaturedEntity | null;
+  ranks: { score_100: number };
+  profiles: {
+    tiktok_followers: number;
+    youtube_followers: number;
+    instagram_followers: number;
+    tiktok_posts_count: number;
+    instagram_posts_count: number;
+    youtube_posts_count: number;
+  };
+  audienceStats: {
+    /** Location column accessor in Chartmetric */
+    code2: string;
+    language: string;
+    gender: AudienceGender;
+    tiktok_engagement_rate: number | null;
+    tiktok_avg_views: number | null;
+    tiktok_avg_likes: number | null;
+    tiktok_avg_comments: number | null;
+    instagram_engagement_rate: number | null;
+    instagram_avg_reels_plays: number | null;
+    instagram_avg_likes: number | null;
+    instagram_avg_comments: number | null;
+    youtube_engagement_rate: number | null;
+    youtube_avg_views: number | null;
+    youtube_avg_likes: number | null;
+    youtube_avg_comments: number | null;
+  };
+  /** Rich display payloads used by custom cell renderers (not column accessors). */
   audienceLocation: BreakdownItem;
   audienceLanguage: BreakdownItem;
-  audienceGender: AudienceGender;
-  audienceAge: AudienceAge;
-  tiktokStats: PlatformStats;
-  instagramStats: PlatformStats;
-  youtubeStats: PlatformStats;
+  topContents: TopVideo[];
+  tracksFeatured: FeaturedEntity | null;
+  artistsFeatured: FeaturedEntity | null;
 };
 
 const NAMES = [
@@ -97,10 +91,6 @@ const NAMES = [
   "Leo Andersson",
   "Mei Chen",
   "Omar Hassan",
-  "Isla MacLeod",
-  "Ravi Patel",
-  "Nina Volkov",
-  "Theo Martins",
 ];
 
 const CATEGORIES = [
@@ -139,21 +129,30 @@ const ROLES = [
 ];
 
 const REGIONS = [
-  { country: "United States", flag: "🇺🇸" },
-  { country: "Mexico", flag: "🇲🇽" },
-  { country: "El Salvador", flag: "🇸🇻" },
-  { country: "Germany", flag: "🇩🇪" },
-  { country: "Malaysia", flag: "🇲🇾" },
-  { country: "Brazil", flag: "🇧🇷" },
-  { country: "Italy", flag: "🇮🇹" },
-  { country: "Japan", flag: "🇯🇵" },
-  { country: "France", flag: "🇫🇷" },
-  { country: "India", flag: "🇮🇳" },
-  { country: "Spain", flag: "🇪🇸" },
-  { country: "Canada", flag: "🇨🇦" },
+  { country: "United States", flag: "🇺🇸", code2: "US" },
+  { country: "Mexico", flag: "🇲🇽", code2: "MX" },
+  { country: "El Salvador", flag: "🇸🇻", code2: "SV" },
+  { country: "Germany", flag: "🇩🇪", code2: "DE" },
+  { country: "Malaysia", flag: "🇲🇾", code2: "MY" },
+  { country: "Brazil", flag: "🇧🇷", code2: "BR" },
+  { country: "Italy", flag: "🇮🇹", code2: "IT" },
+  { country: "Japan", flag: "🇯🇵", code2: "JP" },
+  { country: "France", flag: "🇫🇷", code2: "FR" },
+  { country: "India", flag: "🇮🇳", code2: "IN" },
+  { country: "Spain", flag: "🇪🇸", code2: "ES" },
+  { country: "Canada", flag: "🇨🇦", code2: "CA" },
 ];
 
-const LANGUAGES = ["English", "Spanish", "Portuguese", "German", "Malay", "Japanese", "French", "Italian"];
+const LANGUAGES = [
+  "English",
+  "Spanish",
+  "Portuguese",
+  "German",
+  "Malay",
+  "Japanese",
+  "French",
+  "Italian",
+];
 
 const TRACKS = [
   { name: "The Outspoken", subtitle: "Bloodhunter" },
@@ -202,10 +201,16 @@ function createRng(seed: number) {
   };
 }
 
-export function formatCompact(n: number): string {
+export function formatCompact(n: number | null | undefined): string {
+  if (n == null) return "";
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1)}M`.replace(".0M", "M");
   if (n >= 1_000) return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1)}K`.replace(".0K", "K");
   return String(Math.round(n));
+}
+
+export function formatRate(n: number | null | undefined): string {
+  if (n == null) return "";
+  return `${n.toFixed(2)}%`;
 }
 
 const THEME_COLORS: Record<string, { text: string; muted: string; border: string; chipBg: string }> = {
@@ -220,93 +225,43 @@ export function getInfluencerThemeColors(theme?: InfluencerTheme) {
   return THEME_COLORS[theme ?? "light"] ?? THEME_COLORS.light;
 }
 
-function buildAudienceAge(rand: () => number): AudienceAge {
-  const between = (min: number, max: number) => min + rand() * (max - min);
-  const raw = {
-    "13-17": between(1, 12),
-    "18-24": between(15, 45),
-    "25-34": between(18, 40),
-    "35-44": between(8, 25),
-    "45-64": between(3, 20),
-    "65+": between(0.2, 8),
-  };
-  const total = Object.values(raw).reduce((a, b) => a + b, 0);
-  const age = {} as AudienceAge;
-  for (const key of Object.keys(raw) as (keyof AudienceAge)[]) {
-    age[key] = Math.round((raw[key] / total) * 100);
-  }
-  return age;
-}
-
-function maybeNull<T>(rand: () => number, value: T, chanceEmpty = 0.35): T | null {
+function maybeNull(rand: () => number, value: number, chanceEmpty: number): number | null {
   return rand() < chanceEmpty ? null : value;
 }
 
-function buildPlatformStats(
-  rand: () => number,
-  opts: {
-    postsMin: number;
-    postsMax: number;
-    viewsMin: number;
-    viewsMax: number;
-    likesMin: number;
-    likesMax: number;
-    commentsMin: number;
-    commentsMax: number;
-    withReels?: boolean;
-    emptyChance?: number;
-  }
-): PlatformStats {
-  const between = (min: number, max: number) => min + rand() * (max - min);
-  const intBetween = (min: number, max: number) => Math.round(between(min, max));
-  const emptyChance = opts.emptyChance ?? 0.35;
-  const postsCount = intBetween(opts.postsMin, opts.postsMax);
-  const engagement = maybeNull(rand, +between(0.8, 12).toFixed(2), emptyChance);
-  const avgViews = maybeNull(rand, intBetween(opts.viewsMin, opts.viewsMax), emptyChance);
-  const avgLikes = maybeNull(rand, intBetween(opts.likesMin, opts.likesMax), emptyChance);
-  const avgComments = maybeNull(rand, intBetween(opts.commentsMin, opts.commentsMax), emptyChance);
-  const avgReelsPlays = opts.withReels
-    ? maybeNull(rand, intBetween(5_000, 8_000_000), emptyChance)
-    : undefined;
+/**
+ * Generate a batch of influencers for infinite scroll.
+ * `startIndex` is the absolute row offset; each index is seeded so batches are
+ * stable and non-overlapping across loads (Chartmetric-style page fetches).
+ */
+export function generateInfluencerData(startIndex = 0, count = 26): Influencer[] {
+  return Array.from({ length: count }, (_, offset) => {
+    const i = startIndex + offset;
+    const rand = createRng(2026 + i * 9973);
+    const between = (min: number, max: number) => min + rand() * (max - min);
+    const intBetween = (min: number, max: number) => Math.round(between(min, max));
+    const pick = <T>(arr: T[]): T => arr[Math.floor(rand() * arr.length)];
 
-  return {
-    postsCount,
-    postsCountFormatted: formatCompact(postsCount),
-    engagementRate: engagement,
-    engagementRateFormatted: engagement == null ? "" : `${engagement.toFixed(2)}%`,
-    avgViews,
-    avgViewsFormatted: avgViews == null ? "" : formatCompact(avgViews),
-    avgLikes,
-    avgLikesFormatted: avgLikes == null ? "" : formatCompact(avgLikes),
-    avgComments,
-    avgCommentsFormatted: avgComments == null ? "" : formatCompact(avgComments),
-    avgReelsPlays,
-    avgReelsPlaysFormatted: avgReelsPlays == null ? "" : formatCompact(avgReelsPlays),
-  };
-}
-
-export function generateInfluencerData(count = 80): Influencer[] {
-  const rand = createRng(2026);
-  const between = (min: number, max: number) => min + rand() * (max - min);
-  const intBetween = (min: number, max: number) => Math.round(between(min, max));
-  const pick = <T>(arr: T[]): T => arr[Math.floor(rand() * arr.length)];
-
-  return Array.from({ length: count }, (_, i) => {
-    const baseName = NAMES[i % NAMES.length];
-    const cycle = Math.floor(i / NAMES.length);
-    const name = cycle === 0 ? baseName : `${baseName} ${cycle + 1}`;
+    const name = NAMES[i % NAMES.length];
     const region = pick(REGIONS);
     const genderRoll = rand();
-    const gender = genderRoll < 0.48 ? "Female" : genderRoll < 0.92 ? "Male" : "";
+    const genderLabel = genderRoll < 0.48 ? "Female" : genderRoll < 0.92 ? "Male" : "";
     const ageRange = pick(["18-24", "25-34", "35-44", "45-64", "65+"]);
     const f = intBetween(7, 90);
     const track = rand() > 0.15 ? pick(TRACKS) : null;
     const artist = rand() > 0.15 ? pick(ARTISTS) : null;
     const locationPct = intBetween(22, 95);
     const languagePct = intBetween(30, 95);
-    const platforms: Array<TopVideo["platform"]> = ["tiktok", "instagram", "youtube", "tiktok", "instagram"];
+    const language = pick(LANGUAGES);
+    const platforms: Array<TopVideo["platform"]> = [
+      "tiktok",
+      "instagram",
+      "youtube",
+      "tiktok",
+      "instagram",
+    ];
 
-    const topVideos: TopVideo[] = [0, 1, 2, 3, 4].map((idx) => {
+    const topContents: TopVideo[] = [0, 1, 2, 3, 4].map((idx) => {
       const platform = platforms[idx % platforms.length];
       const metricValue =
         platform === "instagram" ? intBetween(20_000, 3_000_000) : intBetween(12_000, 6_000_000);
@@ -318,14 +273,9 @@ export function generateInfluencerData(count = 80): Influencer[] {
       };
     });
 
-    const tiktokFollowers = intBetween(50_000, 4_500_000);
-    const youtubeFollowers = intBetween(10_000, 2_800_000);
-    const instagramFollowers = intBetween(20_000, 3_200_000);
-    const score = intBetween(35, 99);
-
     return {
       id: `inf-${i + 1}`,
-      rank: i + 1,
+      __index__: i + 1,
       name,
       avatarColor: AVATAR_COLORS[i % AVATAR_COLORS.length],
       category: pick(CATEGORIES),
@@ -333,74 +283,56 @@ export function generateInfluencerData(count = 80): Influencer[] {
       country: region.country,
       countryFlag: region.flag,
       role: pick(ROLES),
-      gender,
+      gender: genderLabel,
       ageRange,
-      score,
-      scoreFormatted: String(score),
-      tiktokFollowers,
-      tiktokFollowersFormatted: formatCompact(tiktokFollowers),
-      youtubeFollowers,
-      youtubeFollowersFormatted: formatCompact(youtubeFollowers),
-      instagramFollowers,
-      instagramFollowersFormatted: formatCompact(instagramFollowers),
-      topVideos,
-      trackFeatured: track
-        ? {
-            name: track.name,
-            subtitle: track.subtitle,
-            color: AVATAR_COLORS[(i + 2) % AVATAR_COLORS.length],
-          }
-        : null,
-      artistFeatured: artist
-        ? { name: artist, color: AVATAR_COLORS[(i + 5) % AVATAR_COLORS.length] }
-        : null,
+      ranks: { score_100: intBetween(35, 99) },
+      profiles: {
+        tiktok_followers: intBetween(50_000, 4_500_000),
+        youtube_followers: intBetween(10_000, 2_800_000),
+        instagram_followers: intBetween(20_000, 3_200_000),
+        tiktok_posts_count: intBetween(200, 4500),
+        instagram_posts_count: intBetween(40, 1800),
+        youtube_posts_count: intBetween(20, 1500),
+      },
+      audienceStats: {
+        code2: region.code2,
+        language,
+        gender: { f, m: 100 - f },
+        tiktok_engagement_rate: maybeNull(rand, +between(0.8, 12).toFixed(2), 0.1),
+        tiktok_avg_views: maybeNull(rand, intBetween(8_000, 2_500_000), 0.1),
+        tiktok_avg_likes: maybeNull(rand, intBetween(500, 900_000), 0.1),
+        tiktok_avg_comments: maybeNull(rand, intBetween(2, 12_000), 0.1),
+        instagram_engagement_rate: maybeNull(rand, +between(0.8, 12).toFixed(2), 0.4),
+        instagram_avg_reels_plays: maybeNull(rand, intBetween(5_000, 8_000_000), 0.4),
+        instagram_avg_likes: maybeNull(rand, intBetween(200, 400_000), 0.4),
+        instagram_avg_comments: maybeNull(rand, intBetween(5, 4_000), 0.4),
+        youtube_engagement_rate: maybeNull(rand, +between(0.8, 12).toFixed(2), 0.55),
+        youtube_avg_views: maybeNull(rand, intBetween(10_000, 4_000_000), 0.55),
+        youtube_avg_likes: maybeNull(rand, intBetween(300, 200_000), 0.55),
+        youtube_avg_comments: maybeNull(rand, intBetween(10, 5_000), 0.55),
+      },
       audienceLocation: {
         label: region.country,
         flag: region.flag,
         percent: locationPct,
       },
       audienceLanguage: {
-        label: pick(LANGUAGES),
+        label: language,
         percent: languagePct,
       },
-      audienceGender: { f, m: 100 - f },
-      audienceAge: buildAudienceAge(rand),
-      tiktokStats: buildPlatformStats(rand, {
-        postsMin: 200,
-        postsMax: 4500,
-        viewsMin: 8_000,
-        viewsMax: 2_500_000,
-        likesMin: 500,
-        likesMax: 900_000,
-        commentsMin: 2,
-        commentsMax: 12_000,
-        emptyChance: 0.1,
-      }),
-      instagramStats: buildPlatformStats(rand, {
-        postsMin: 40,
-        postsMax: 1800,
-        viewsMin: 5_000,
-        viewsMax: 1_200_000,
-        likesMin: 200,
-        likesMax: 400_000,
-        commentsMin: 5,
-        commentsMax: 4_000,
-        withReels: true,
-        emptyChance: 0.4,
-      }),
-      youtubeStats: buildPlatformStats(rand, {
-        postsMin: 20,
-        postsMax: 1500,
-        viewsMin: 10_000,
-        viewsMax: 4_000_000,
-        likesMin: 300,
-        likesMax: 200_000,
-        commentsMin: 10,
-        commentsMax: 5_000,
-        emptyChance: 0.55,
-      }),
+      topContents,
+      tracksFeatured: track
+        ? {
+            name: track.name,
+            subtitle: track.subtitle,
+            color: AVATAR_COLORS[(i + 2) % AVATAR_COLORS.length],
+          }
+        : null,
+      artistsFeatured: artist
+        ? { name: artist, color: AVATAR_COLORS[(i + 5) % AVATAR_COLORS.length] }
+        : null,
     };
   });
 }
 
-export const influencerData = generateInfluencerData(80);
+export const influencerData = generateInfluencerData(0, 26);

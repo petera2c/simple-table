@@ -62,6 +62,7 @@ export const registry: DemoRegistry = {
   crm: () => import("./demos/crm/CRMDemo"),
   infrastructure: () => import("./demos/infrastructure/InfrastructureDemo"),
   music: () => import("./demos/music/MusicDemo"),
+  influencers: () => import("./demos/influencers/InfluencersDemo"),
   "radio-stations": () => import("./demos/radio-stations/RadioStationsDemo"),
   billing: () => import("./demos/billing/BillingDemo"),
   manufacturing: () => import("./demos/manufacturing/ManufacturingDemo"),

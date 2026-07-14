@@ -55,7 +55,7 @@ export default function AgGridPricingPage() {
       {/* Hero Section */}
       <section className="bg-linear-to-r from-red-50 to-orange-50 dark:from-red-900 dark:to-orange-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
-          AG Grid Pricing & License Breakdown 2026: What You Actually Pay
+          AG Grid License Cost & Pricing 2026: What You Actually Pay
         </h1>
 
         <div className="flex justify-center mb-4 gap-2 flex-wrap">
@@ -74,8 +74,8 @@ export default function AgGridPricingPage() {
         </div>
 
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
-          Thinking about AG Grid Enterprise? Here's the complete pricing breakdown, hidden costs,
-          and free alternatives that might save your team thousands.
+          AG Grid Enterprise is $999 per developer per year. Here&apos;s the full 2026 license cost
+          breakdown—Community vs Enterprise, renewals, team totals, and free alternatives.
         </p>
       </section>
 
@@ -86,17 +86,17 @@ export default function AgGridPricingPage() {
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                AG Grid is one of the most powerful data grid libraries available for React,
-                Angular, and Vue. It's feature-rich, well-documented, and trusted by thousands of
-                companies worldwide. However, understanding its pricing can be surprisingly complex,
-                and many teams discover unexpected costs only after they've already committed to the
-                platform.
+                AG Grid&apos;s license model is the first thing most teams need to understand:{" "}
+                <strong>Community is free</strong> (with a smaller feature set), while{" "}
+                <strong>Enterprise is $999 per developer per year</strong>. AG Grid is one of the
+                most powerful data grids for React, Angular, and Vue—but pricing and renewals are
+                easy to underestimate until you&apos;ve already committed.
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                In this comprehensive guide, we'll break down AG Grid's 2026 pricing structure,
-                reveal the actual costs you'll pay, and help you determine whether it's the right
-                investment for your team—or if there are{" "}
+                In this guide, we break down AG Grid&apos;s 2026 license cost and pricing structure,
+                show what real teams pay, and help you decide whether Enterprise is worth it—or if
+                there are{" "}
                 <Link
                   href="/blog/ag-grid-alternatives-free-react-data-grids"
                   className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"

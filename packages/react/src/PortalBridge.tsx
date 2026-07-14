@@ -38,7 +38,18 @@ const PORTAL_ID_ATTR = "data-st-portal-id";
  * tagged with {@link PORTAL_ID_ATTR} inside that host, so React unmounts exactly
  * those subtrees. Reuse/reparent paths never signal, so a reused node keeps its
  * portal entry (and its content) with zero churn.
+ *
+ * {@link cellRendererCache} / {@link headerRendererCache} keep one wrapped
+ * renderer per accessor so unstable column rebuilds (new Component identity,
+ * same accessor) reuse the portal host instead of remounting React state.
  */
+
+/** Mutable slot so wrapped renderers keep a stable closure across rebuilds. */
+export type CachedRendererSlot<T = unknown> = {
+  component: T;
+  wrapped: unknown;
+};
+
 export class PortalBridge {
   private entries = new Map<string, PortalEntry>();
   private listeners = new Set<() => void>();
@@ -50,6 +61,11 @@ export class PortalBridge {
   private snapshotDirty = true;
 
   private emitScheduled = false;
+
+  /** Per-accessor cached cellRenderer wrappers (stable across rebuildHeaders). */
+  readonly cellRendererCache = new Map<string, CachedRendererSlot>();
+  /** Per-accessor cached headerRenderer wrappers. */
+  readonly headerRendererCache = new Map<string, CachedRendererSlot>();
 
   /**
    * Register a React node to be rendered into `container`. The container is
@@ -110,9 +126,24 @@ export class PortalBridge {
 
   /** Remove all entries (used on table teardown). */
   clear(): void {
+    this.cellRendererCache.clear();
+    this.headerRendererCache.clear();
     if (this.entries.size === 0) return;
     this.entries.clear();
     this.emit();
+  }
+
+  /**
+   * Drop cached wrappers for accessors no longer present in the header tree
+   * so remounted columns with the same accessor don't reuse a stale Component box.
+   */
+  pruneRendererCaches(liveAccessors: ReadonlySet<string>): void {
+    for (const key of this.cellRendererCache.keys()) {
+      if (!liveAccessors.has(key)) this.cellRendererCache.delete(key);
+    }
+    for (const key of this.headerRendererCache.keys()) {
+      if (!liveAccessors.has(key)) this.headerRendererCache.delete(key);
+    }
   }
 
   subscribe = (listener: () => void): (() => void) => {

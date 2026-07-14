@@ -12,7 +12,11 @@ import {
   inject,
 } from "@angular/core";
 import { SimpleTableVanilla } from "simple-table-core";
-import type { TableAPI } from "simple-table-core";
+import type { SimpleTableConfig, TableAPI } from "simple-table-core";
+import {
+  headersStructurallyEqual,
+  rowsShallowUnchanged,
+} from "simple-table-core";
 import { buildVanillaConfig } from "../buildVanillaConfig";
 import { MountRegistry } from "../MountRegistry";
 import type { SimpleTableAngularProps, TableInstance } from "../types";
@@ -100,6 +104,8 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
 
   private instance: TableInstance | null = null;
   private registry = new MountRegistry();
+  private syncedDefaultHeaders: SimpleTableAngularProps["defaultHeaders"] | undefined;
+  private syncedRows: SimpleTableAngularProps["rows"] | undefined;
   private hostEl = inject(ElementRef<HTMLElement>);
   private appRef = inject(ApplicationRef);
   private envInjector = inject(EnvironmentInjector);
@@ -108,24 +114,52 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     const container = this.hostEl.nativeElement.querySelector("div") as HTMLElement;
     if (!container) return;
 
+    const props = this.getProps();
     this.instance = new SimpleTableVanilla(
       container,
-      buildVanillaConfig(this.getProps(), this.registry, this.appRef, this.envInjector),
+      buildVanillaConfig(props, this.registry, this.appRef, this.envInjector),
     ) as unknown as TableInstance;
     this.instance.mount();
+    this.syncedDefaultHeaders = props.defaultHeaders;
+    this.syncedRows = props.rows;
 
     this.tableReady.emit(this.instance.getAPI());
   }
 
   ngOnChanges(): void {
-    this.instance?.update(
-      buildVanillaConfig(this.getProps(), this.registry, this.appRef, this.envInjector),
+    if (!this.instance) return;
+
+    const props = this.getProps();
+    const fullConfig = buildVanillaConfig(props, this.registry, this.appRef, this.envInjector);
+    const patch: Partial<SimpleTableConfig> = { ...fullConfig };
+
+    const headersUnchanged = headersStructurallyEqual(
+      this.syncedDefaultHeaders,
+      props.defaultHeaders,
     );
+    this.syncedDefaultHeaders = props.defaultHeaders;
+    if (headersUnchanged) {
+      delete patch.defaultHeaders;
+    }
+
+    const rowsUnchanged = rowsShallowUnchanged(
+      this.syncedRows as ReadonlyArray<object> | undefined,
+      props.rows as ReadonlyArray<object>,
+      props.getRowId,
+    );
+    this.syncedRows = props.rows;
+    if (rowsUnchanged) {
+      delete patch.rows;
+    }
+
+    this.instance.update(patch);
   }
 
   ngOnDestroy(): void {
     this.instance?.destroy();
     this.instance = null;
+    this.syncedDefaultHeaders = undefined;
+    this.syncedRows = undefined;
     this.registry.clear();
   }
 

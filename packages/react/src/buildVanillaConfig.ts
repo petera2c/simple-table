@@ -9,8 +9,8 @@ import type {
 import type { PortalBridge } from "./PortalBridge";
 import {
   wrapReactRenderer,
-  wrapReactRendererIntoFragment,
-  wrapReactHeaderRenderer,
+  wrapCachedCellRenderer,
+  wrapCachedHeaderRenderer,
   wrapReactHeaderDropdown,
   wrapReactFooterRenderer,
   wrapReactColumnEditorRowRenderer,
@@ -20,6 +20,7 @@ import {
   reactNodeToHtmlString,
   isReactComponent,
 } from "./utils/wrapReactRenderer";
+import { collectHeaderAccessors } from "./utils/headersEqual";
 
 function transformIcons(icons: ReactIconsConfig): NonNullable<SimpleTableConfig["icons"]> {
   const result: NonNullable<SimpleTableConfig["icons"]> = {};
@@ -66,19 +67,22 @@ function transformColumnEditorConfig(
 
 function transformHeader(header: ReactHeaderObject, bridge: PortalBridge): HeaderObject {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
+  const accessor = String(header.accessor);
 
   const transformed: HeaderObject = { ...(rest as any) };
 
   if (cellRenderer) {
-    transformed.cellRenderer = wrapReactRendererIntoFragment(
+    transformed.cellRenderer = wrapCachedCellRenderer(
       bridge,
+      accessor,
       cellRenderer as ComponentType<object>,
     ) as any;
   }
 
   if (headerRenderer) {
-    transformed.headerRenderer = wrapReactHeaderRenderer(
+    transformed.headerRenderer = wrapCachedHeaderRenderer(
       bridge,
+      accessor,
       headerRenderer as ComponentType<any>,
     ) as any;
   }
@@ -119,6 +123,8 @@ export function buildVanillaConfig(
     onColumnSelect,
     ...rest
   } = config;
+
+  bridge.pruneRendererCaches(collectHeaderAccessors(defaultHeaders));
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,

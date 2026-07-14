@@ -147,6 +147,14 @@ export class SimpleTableVanilla {
   private rowIndexMap: Map<string | number, number> = new Map();
 
   private animationCoordinator: AnimationCoordinator;
+  /**
+   * When true, the sort subscriber skips `captureAnimationSnapshot` so
+   * live-update-driven reorder/visibility changes don't FLIP-animate.
+   * User-initiated sorts leave this false and keep FLIP.
+   */
+  private suppressNextAnimationSnapshot = false;
+  /** Lazily created once — callers often invoke getAPI() every live tick. */
+  private cachedAPI: TableAPI | null = null;
 
   private autoScaleManager: AutoScaleManager | null = null;
   private dimensionManager: DimensionManager | null = null;
@@ -529,6 +537,12 @@ export class SimpleTableVanilla {
     });
 
     this.sortManager.subscribe((state) => {
+      if (this.suppressNextAnimationSnapshot) {
+        // Live-driven reorder: skip FLIP play so we don't thrash retained cells
+        // or interrupt a user-initiated sort animation.
+        this.render("live-sort");
+        return;
+      }
       this.captureAnimationSnapshot();
       this.render("sortManager");
     });
@@ -1558,11 +1572,13 @@ export class SimpleTableVanilla {
 
     // FLIP play step. No-op when no snapshot is armed or when scroll-driven.
     // Position-only scroll renders deliberately skip play so out-going /
-    // in-coming cells aren't FLIP-tweened during vertical scrolls. Every
-    // other render — including the chain of mid-drag `setHeaders` renders
+    // in-coming cells aren't FLIP-tweened during vertical scrolls. Live-sort
+    // reorders (from updateData) also skip play so they don't interrupt an
+    // in-flight user sort or thrash retained-cell cleanup every tick.
+    // Every other render — including the chain of mid-drag `setHeaders` renders
     // that fire on each `dragover` swap — runs play so columns being
     // displaced by the drag slide smoothly to their new slots.
-    if (source !== "scroll-raf") {
+    if (source !== "scroll-raf" && source !== "live-sort") {
       this.animationCoordinator.play({ containers: this.getAnimatableContainers() });
     }
 
@@ -1682,11 +1698,15 @@ export class SimpleTableVanilla {
       });
     }
 
-    if (config.defaultHeaders !== undefined) {
+    if (config.defaultHeaders !== undefined && !this.isResizing) {
       // Snapshot before mutating headers so the FLIP `play` at the end of the
       // ensuing render can inverse-transform from the old layout to the new
       // one — works the same whether the caller is reordering programmatically
       // or via an in-flight header drag.
+      //
+      // Skip entirely while `isResizing`: mid-drag parent re-renders often push
+      // a fresh defaultHeaders tree with stale widths, which would replace
+      // this.headers, clear naturalWidths, and fight the in-progress resize.
       this.captureAnimationSnapshot();
       this.headers = [...config.defaultHeaders];
       this.pristineDefaultHeaders = deepClone(config.defaultHeaders);
@@ -1956,29 +1976,45 @@ export class SimpleTableVanilla {
 
     this.renderOrchestrator.cleanup();
     this.domManager.destroy(this.container);
+    this.cachedAPI = null;
   }
 
   getAPI(): TableAPI {
-    const effectiveHeaders = this.renderOrchestrator.computeEffectiveHeaders(
-      this.headers,
-      this.config,
-      this.customTheme,
-    );
+    if (this.cachedAPI) return this.cachedAPI;
 
     // Use `thiz` so that getter properties can read live instance state rather
-    // than a snapshot captured at getAPI() call time.
+    // than a snapshot captured at getAPI() call time. The API is cached: live
+    // tickers commonly call getAPI() every interval, and each createAPI() used
+    // to allocate a fresh updateData coalescer — which defeated coalescing and
+    // thrashed full re-sorts on every tick.
     const thiz = this;
     const context: TableAPIContext = {
-      config: this.config,
-      localRows: this.localRows,
-      effectiveHeaders,
+      get config() {
+        return thiz.config;
+      },
+      get localRows() {
+        return thiz.localRows;
+      },
+      get effectiveHeaders() {
+        return thiz.renderOrchestrator.computeEffectiveHeaders(
+          thiz.headers,
+          thiz.config,
+          thiz.customTheme,
+        );
+      },
       get headers() {
         return thiz.headers;
       },
       getPristineDefaultHeaders: () => thiz.pristineDefaultHeaders,
-      essentialAccessors: this.essentialAccessors,
-      customTheme: this.customTheme,
-      currentPage: this.currentPage,
+      get essentialAccessors() {
+        return thiz.essentialAccessors;
+      },
+      get customTheme() {
+        return thiz.customTheme;
+      },
+      get currentPage() {
+        return thiz.currentPage;
+      },
       getCurrentPage: () => this.currentPage,
       get expandedRows() {
         return thiz.expandedRows;
@@ -1995,23 +2031,49 @@ export class SimpleTableVanilla {
       clearCollapsedRows: () => {
         thiz.collapsedRows = new Map();
       },
-      rowStateMap: this.rowStateMap,
-      headerRegistry: this.headerRegistry,
-      cellRegistry: this.cellRegistry,
+      get rowStateMap() {
+        return thiz.rowStateMap;
+      },
+      get headerRegistry() {
+        return thiz.headerRegistry;
+      },
+      get cellRegistry() {
+        return thiz.cellRegistry;
+      },
       isCellAnimating: (cellId: string) => this.animationCoordinator.isInFlight(cellId),
+      hasAnimatingCells: () => this.animationCoordinator.hasInFlight(),
       get columnEditorOpen() {
         return thiz.columnEditorOpen;
       },
       getCachedFlattenResult: () => this.renderOrchestrator.getCachedFlattenResult(),
       getCachedProcessedResult: () => this.renderOrchestrator.getLastProcessedResult(),
-      expandedDepthsManager: this.expandedDepthsManager,
-      selectionManager: this.selectionManager,
+      get expandedDepthsManager() {
+        return thiz.expandedDepthsManager;
+      },
+      get selectionManager() {
+        return thiz.selectionManager;
+      },
       get rowSelectionManager() {
         return thiz.rowSelectionManager;
       },
-      sortManager: this.sortManager,
-      filterManager: this.filterManager,
+      get sortManager() {
+        return thiz.sortManager;
+      },
+      get filterManager() {
+        return thiz.filterManager;
+      },
       onRender: () => this.render("columnEditor-onRender"),
+      invalidateRowsCache: () => {
+        this.renderOrchestrator.invalidateCache("body");
+      },
+      runWithoutAnimationSnapshot: (fn: () => void) => {
+        this.suppressNextAnimationSnapshot = true;
+        try {
+          fn();
+        } finally {
+          this.suppressNextAnimationSnapshot = false;
+        }
+      },
       setHeaders: (headers: HeaderObject[]) => {
         // Same trigger as the renderContext.setHeaders path: open the
         // accordion-horizontal animation window when the visible/pinned set
@@ -2036,6 +2098,7 @@ export class SimpleTableVanilla {
       },
     };
 
-    return TableAPIImpl.createAPI(context);
+    this.cachedAPI = TableAPIImpl.createAPI(context);
+    return this.cachedAPI;
   }
 }

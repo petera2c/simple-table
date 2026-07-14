@@ -12,6 +12,7 @@ import {
   handsontableAlternativesPost,
   agGridPricing2026Post,
   tanstackVsSimpleTablePost,
+  bundleSizeComparisonPost,
   materialReactTableVsSimpleTablePost,
   reactTableRowSelectionPost,
   autoExpandColumnsReactTablesPost,
@@ -268,9 +269,8 @@ export const SEO_STRINGS = {
       ],
     },
     bundleSizeComparison: {
-      title: "React Data Grid Bundle Size Comparison 2025: Lightweight Libraries Ranked",
-      description:
-        "Compare bundle sizes of popular React data grid libraries. See which table library is the lightest: Simple Table, TanStack Table, AG Grid, Material React Table, and more. Performance metrics included.",
+      title: bundleSizeComparisonPost.title,
+      description: bundleSizeComparisonPost.description,
       keywords: [
         "react data grid bundle size",
         "lightweight react data grid",
@@ -332,6 +332,10 @@ export const SEO_STRINGS = {
       title: agGridPricing2026Post.title,
       description: agGridPricing2026Post.description,
       keywords: [
+        "ag grid license",
+        "ag grid licence",
+        "ag grid community license",
+        "ag grid enterprise license",
         "ag grid pricing",
         "ag grid cost",
         "ag grid pricing 2026",

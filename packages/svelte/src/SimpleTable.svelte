@@ -1,7 +1,11 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
-  import { SimpleTableVanilla } from "simple-table-core";
-  import type { TableAPI } from "simple-table-core";
+  import {
+    SimpleTableVanilla,
+    headersStructurallyEqual,
+    rowsShallowUnchanged,
+  } from "simple-table-core";
+  import type { SimpleTableConfig, TableAPI } from "simple-table-core";
   import { buildVanillaConfig } from "./buildVanillaConfig";
   import { MountRegistry } from "./MountRegistry";
   import type { SimpleTableSvelteProps, TableInstance } from "./types";
@@ -20,31 +24,52 @@
   let instance: TableInstance | null = null;
   const registry = new MountRegistry();
 
+  /** Last headers/rows whose structure/content was applied via update. */
+  let syncedDefaultHeaders: $$Props["defaultHeaders"] | undefined = undefined;
+  let syncedRows: $$Props["rows"] | undefined = undefined;
+
   onMount(() => {
+    const props = { rows, defaultHeaders, ...$$restProps } as SimpleTableSvelteProps;
     instance = new SimpleTableVanilla(
       container,
-      buildVanillaConfig(
-        { rows, defaultHeaders, ...$$restProps } as SimpleTableSvelteProps,
-        registry,
-      ),
+      buildVanillaConfig(props, registry),
     ) as unknown as TableInstance;
     instance.mount();
+    syncedDefaultHeaders = defaultHeaders;
+    syncedRows = rows;
   });
 
   onDestroy(() => {
     instance?.destroy();
     instance = null;
+    syncedDefaultHeaders = undefined;
+    syncedRows = undefined;
     registry.clear();
   });
 
-  // Reactive update: re-run whenever any prop changes.
+  // Reactive update: skip no-op defaultHeaders/rows when structure/content is unchanged.
   $: if (instance) {
-    instance.update(
-      buildVanillaConfig(
-        { rows, defaultHeaders, ...$$restProps } as SimpleTableSvelteProps,
-        registry,
-      ),
+    const props = { rows, defaultHeaders, ...$$restProps } as SimpleTableSvelteProps;
+    const fullConfig = buildVanillaConfig(props, registry);
+    const patch: Partial<SimpleTableConfig> = { ...fullConfig };
+
+    const headersUnchanged = headersStructurallyEqual(syncedDefaultHeaders, defaultHeaders);
+    syncedDefaultHeaders = defaultHeaders;
+    if (headersUnchanged) {
+      delete patch.defaultHeaders;
+    }
+
+    const rowsUnchanged = rowsShallowUnchanged(
+      syncedRows as ReadonlyArray<object> | undefined,
+      rows as ReadonlyArray<object>,
+      props.getRowId,
     );
+    syncedRows = rows;
+    if (rowsUnchanged) {
+      delete patch.rows;
+    }
+
+    instance.update(patch);
   }
 
   /** Expose the TableAPI for consumers using bind:this. */

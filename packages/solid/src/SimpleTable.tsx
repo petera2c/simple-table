@@ -1,6 +1,10 @@
 import { createEffect, onCleanup, onMount } from "solid-js";
-import { SimpleTableVanilla } from "simple-table-core";
-import type { TableAPI } from "simple-table-core";
+import {
+  SimpleTableVanilla,
+  headersStructurallyEqual,
+  rowsShallowUnchanged,
+} from "simple-table-core";
+import type { SimpleTableConfig, TableAPI } from "simple-table-core";
 import { buildVanillaConfig } from "./buildVanillaConfig";
 import { MountRegistry } from "./MountRegistry";
 import type { SimpleTableSolidProps, TableInstance } from "./types";
@@ -26,6 +30,8 @@ export function SimpleTable(props: SimpleTableSolidProps) {
   let containerEl!: HTMLDivElement;
   let instance: TableInstance | null = null;
   const registry = new MountRegistry();
+  let syncedDefaultHeaders: SimpleTableSolidProps["defaultHeaders"] | undefined;
+  let syncedRows: SimpleTableSolidProps["rows"] | undefined;
 
   onMount(() => {
     instance = new SimpleTableVanilla(
@@ -33,23 +39,49 @@ export function SimpleTable(props: SimpleTableSolidProps) {
       buildVanillaConfig(props, registry),
     ) as unknown as TableInstance;
     instance.mount();
+    syncedDefaultHeaders = props.defaultHeaders;
+    syncedRows = props.rows;
 
     if (props.ref) {
       props.ref(instance.getAPI() as TableAPI);
     }
   });
 
-  // Sync prop changes reactively. Solid tracks signal reads inside createEffect
-  // so this re-runs whenever any reactive prop changes.
+  // Sync prop changes reactively. Skip no-op defaultHeaders/rows when
+  // structure/content is unchanged (unstable column/row rebuilds).
   createEffect(() => {
-    if (instance) {
-      instance.update(buildVanillaConfig(props, registry));
+    if (!instance) return;
+
+    const fullConfig = buildVanillaConfig(props, registry);
+    const patch: Partial<SimpleTableConfig> = { ...fullConfig };
+
+    const headersUnchanged = headersStructurallyEqual(
+      syncedDefaultHeaders,
+      props.defaultHeaders,
+    );
+    syncedDefaultHeaders = props.defaultHeaders;
+    if (headersUnchanged) {
+      delete patch.defaultHeaders;
     }
+
+    const rowsUnchanged = rowsShallowUnchanged(
+      syncedRows as ReadonlyArray<object> | undefined,
+      props.rows as ReadonlyArray<object>,
+      props.getRowId,
+    );
+    syncedRows = props.rows;
+    if (rowsUnchanged) {
+      delete patch.rows;
+    }
+
+    instance.update(patch);
   });
 
   onCleanup(() => {
     instance?.destroy();
     instance = null;
+    syncedDefaultHeaders = undefined;
+    syncedRows = undefined;
     registry.clear();
   });
 

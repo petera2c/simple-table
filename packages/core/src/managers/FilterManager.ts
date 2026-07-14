@@ -2,7 +2,7 @@ import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import { applyFilterToValue } from "../utils/filterUtils";
 import Row from "../types/Row";
 import HeaderObject, { Accessor } from "../types/HeaderObject";
-import { getNestedValue } from "../utils/rowUtils";
+import { getNestedValue, rowsOrderEqual } from "../utils/rowUtils";
 import { flattenAllHeaders } from "../utils/headerUtils";
 
 export interface FilterManagerConfig {
@@ -74,8 +74,10 @@ export class FilterManager {
     }
 
     const filteredRows = this.computeFilteredRows(this.config.rows, this.state.filters);
-    
-    if (filteredRows !== this.state.filteredRows) {
+
+    // Compare by row identity/order, not array reference — recomputes always
+    // allocate a new array when filters are active.
+    if (!rowsOrderEqual(filteredRows, this.state.filteredRows)) {
       this.state = {
         ...this.state,
         filteredRows,

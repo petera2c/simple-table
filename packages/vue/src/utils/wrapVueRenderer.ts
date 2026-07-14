@@ -23,6 +23,38 @@ export function wrapVueRenderer<P extends object>(
 }
 
 /**
+ * Like {@link wrapVueRenderer}, but reuses one wrapper per accessor so
+ * unstable column rebuilds keep a stable function identity on HeaderObject.
+ */
+export function wrapCachedVueRenderer<P extends object>(
+  registry: MountRegistry,
+  accessor: string,
+  kind: "cell" | "header",
+  component: Component,
+): (props: P) => HTMLElement {
+  const cache = kind === "cell" ? registry.cellRendererCache : registry.headerRendererCache;
+  const existing = cache.get(accessor);
+  if (existing) {
+    existing.component = component;
+    return existing.wrapped as (props: P) => HTMLElement;
+  }
+
+  const slot: { component: Component; wrapped: (props: P) => HTMLElement } = {
+    component,
+    wrapped: null as unknown as (props: P) => HTMLElement,
+  };
+  const wrapped = (props: P): HTMLElement => {
+    const el = document.createElement("div");
+    render(h(slot.component, props as any), el);
+    registry.register(el, () => render(null, el));
+    return el;
+  };
+  slot.wrapped = wrapped;
+  cache.set(accessor, slot);
+  return wrapped;
+}
+
+/**
  * Renders a static VNode into an HTMLElement.
  * Used for props like tableEmptyStateRenderer that are not called with arguments.
  */

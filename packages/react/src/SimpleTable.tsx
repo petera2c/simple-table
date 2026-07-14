@@ -4,6 +4,8 @@ import type { SimpleTableConfig, TableAPI } from "simple-table-core";
 import { buildVanillaConfig } from "./buildVanillaConfig";
 import { PortalBridge, useTablePortals } from "./PortalBridge";
 import type { SimpleTableReactProps, TableInstance } from "./types";
+import { headersStructurallyEqual } from "./utils/headersEqual";
+import { rowsShallowUnchanged } from "./utils/rowsEqual";
 
 /** Top-level referential equality; avoids pushing duplicate `update` when parent re-renders with a new props object. */
 function shallowTablePropsChanged(
@@ -56,10 +58,16 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
     // SimpleTableVanilla class — so the component stays decoupled from
     // internal implementation details.
     const instanceRef = useRef<TableInstance | null>(null);
-    /** Last `defaultHeaders` array reference applied via `update` (full config). */
+    /**
+     * Last `defaultHeaders` array whose *structure* was applied via `update`.
+     * Consumer may pass a new array reference every render; we only push
+     * headers into core when accessors/widths/flags actually change.
+     */
     const syncedDefaultHeadersRef = useRef<SimpleTableReactProps["defaultHeaders"] | undefined>(
       undefined,
     );
+    /** Last `rows` array whose content was applied via `update`. */
+    const syncedRowsRef = useRef<SimpleTableReactProps["rows"] | undefined>(undefined);
     const lastSyncedPropsRef = useRef<SimpleTableReactProps | null>(null);
 
     // forwardRef omits `ref` from props at the type level; cast it back so
@@ -81,6 +89,7 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
       // doesn't immediately re-apply (and re-render) the same config.
       lastSyncedPropsRef.current = reactProps;
       syncedDefaultHeadersRef.current = reactProps.defaultHeaders;
+      syncedRowsRef.current = reactProps.rows;
 
       if (ref) {
         const api = instance.getAPI();
@@ -95,6 +104,7 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
         instance.destroy();
         instanceRef.current = null;
         syncedDefaultHeadersRef.current = undefined;
+        syncedRowsRef.current = undefined;
         lastSyncedPropsRef.current = null;
         bridge.clear();
         if (ref && typeof ref !== "function") {
@@ -104,9 +114,11 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Sync prop changes to the vanilla instance (deferred like mount).
-    // When `defaultHeaders` keeps the same reference, omit it so core does not
-    // reset internal header state (widths, reorder results). New reference = new columns.
+    // Sync prop changes to the vanilla instance.
+    // - `defaultHeaders`: push only when structure changes (ignore renderer
+    //   identity churn from inline column builders).
+    // - `rows`: skip when ids + shallow field equality match the last sync
+    //   (covers `rows.map(r => ({...r}))` anti-pattern).
     useLayoutEffect(() => {
       const instance = instanceRef.current;
       if (!instance) return;
@@ -120,15 +132,30 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
       lastSyncedPropsRef.current = reactProps;
 
       const fullConfig = buildVanillaConfig(reactProps, bridge);
+      const patch: Partial<SimpleTableConfig> = { ...fullConfig };
 
-      if (syncedDefaultHeadersRef.current !== reactProps.defaultHeaders) {
-        syncedDefaultHeadersRef.current = reactProps.defaultHeaders;
-        instance.update(fullConfig);
-        return;
+      const headersUnchanged = headersStructurallyEqual(
+        syncedDefaultHeadersRef.current,
+        reactProps.defaultHeaders,
+      );
+      // Always track the latest consumer ref so rotating identical trees don't
+      // keep looking "new" under reference equality.
+      syncedDefaultHeadersRef.current = reactProps.defaultHeaders;
+      if (headersUnchanged) {
+        delete patch.defaultHeaders;
       }
 
-      const { defaultHeaders: _headers, ...rest } = fullConfig;
-      instance.update(rest as Partial<SimpleTableConfig>);
+      const rowsUnchanged = rowsShallowUnchanged(
+        syncedRowsRef.current as ReadonlyArray<object> | undefined,
+        reactProps.rows as ReadonlyArray<object>,
+        reactProps.getRowId,
+      );
+      syncedRowsRef.current = reactProps.rows;
+      if (rowsUnchanged) {
+        delete patch.rows;
+      }
+
+      instance.update(patch);
     }, [reactProps]);
 
     const portals = useTablePortals(bridge);

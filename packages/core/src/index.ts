@@ -90,6 +90,14 @@ import type { PinnedSectionsState } from "./types/PinnedSectionsState";
 
 export { SimpleTableVanilla };
 export { asRows } from "./utils/asRows";
+export {
+  headersStructurallyEqual,
+  collectHeaderAccessors,
+  rowsShallowUnchanged,
+  shallowEqualRow,
+  SHALLOW_ROW_COMPARE_MAX,
+} from "./utils/propSyncEqual";
+export type { HeaderStructureLike, GetRowIdLike } from "./utils/propSyncEqual";
 
 export type {
   Accessor,

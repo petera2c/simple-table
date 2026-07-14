@@ -1,4 +1,5 @@
 import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig, Row } from "simple-table-core";
+import { collectHeaderAccessors } from "simple-table-core";
 import type { VNode } from "vue";
 import type {
   SimpleTableVueProps,
@@ -9,6 +10,7 @@ import type {
 import type { MountRegistry } from "./MountRegistry";
 import {
   wrapVueRenderer,
+  wrapCachedVueRenderer,
   wrapVueNode,
   vueNodeToHtmlString,
   isVueComponent,
@@ -47,12 +49,18 @@ function transformHeader(
   registry: MountRegistry,
 ): HeaderObject {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
+  const accessor = String(header.accessor);
 
   const transformed: HeaderObject = { ...(rest as any) };
 
   if (cellRenderer) {
     if (typeof cellRenderer === "object") {
-      transformed.cellRenderer = wrapVueRenderer(registry, cellRenderer) as any;
+      transformed.cellRenderer = wrapCachedVueRenderer(
+        registry,
+        accessor,
+        "cell",
+        cellRenderer,
+      ) as any;
     } else {
       transformed.cellRenderer = cellRenderer as any;
     }
@@ -60,7 +68,12 @@ function transformHeader(
 
   if (headerRenderer) {
     if (typeof headerRenderer === "object") {
-      transformed.headerRenderer = wrapVueRenderer(registry, headerRenderer) as any;
+      transformed.headerRenderer = wrapCachedVueRenderer(
+        registry,
+        accessor,
+        "header",
+        headerRenderer,
+      ) as any;
     } else {
       transformed.headerRenderer = headerRenderer as any;
     }
@@ -96,6 +109,8 @@ export function buildVanillaConfig(
     rowButtons,
     ...rest
   } = config;
+
+  registry.pruneRendererCaches(collectHeaderAccessors(defaultHeaders));
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,

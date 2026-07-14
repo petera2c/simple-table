@@ -132,6 +132,89 @@ export function wrapReactHeaderRenderer(
 }
 
 /**
+ * Like {@link wrapReactRendererIntoFragment}, but reuses one wrapper per
+ * `accessor` on the bridge. When the consumer rebuilds columns with a new
+ * Component identity, the slot's `component` is updated in place so the
+ * wrapped function identity stays stable across `defaultHeaders` rebuilds.
+ */
+export function wrapCachedCellRenderer<P extends object>(
+  bridge: PortalBridge,
+  accessor: string,
+  Component: React.ComponentType<P>,
+): (props: P) => HTMLElement {
+  if (isWrappedRenderer(Component)) {
+    return Component as unknown as (props: P) => HTMLElement;
+  }
+
+  const existing = bridge.cellRendererCache.get(accessor);
+  if (existing) {
+    existing.component = Component;
+    return existing.wrapped as (props: P) => HTMLElement;
+  }
+
+  const slot: { component: React.ComponentType<P>; wrapped: (props: P) => HTMLElement } = {
+    component: Component,
+    wrapped: null as unknown as (props: P) => HTMLElement,
+  };
+  const wrapped = markWrapped((props: P): HTMLElement => {
+    const Comp = slot.component;
+    const container = document.createElement("div");
+    container.style.display = "contents";
+    bridge.register(<Comp {...(props as any)} />, container);
+    return container;
+  });
+  slot.wrapped = wrapped;
+  bridge.cellRendererCache.set(accessor, slot);
+  return wrapped;
+}
+
+/**
+ * Like {@link wrapReactHeaderRenderer}, but reuses one host-bearing wrapper per
+ * `accessor` so unstable column rebuilds do not remount header React state.
+ */
+export function wrapCachedHeaderRenderer(
+  bridge: PortalBridge,
+  accessor: string,
+  Component: React.ComponentType<VanillaHeaderRendererProps>,
+): (props: VanillaHeaderRendererProps) => HTMLElement {
+  if (isWrappedRenderer(Component)) {
+    return Component as unknown as (props: VanillaHeaderRendererProps) => HTMLElement;
+  }
+
+  const existing = bridge.headerRendererCache.get(accessor);
+  if (existing) {
+    existing.component = Component;
+    return existing.wrapped as (props: VanillaHeaderRendererProps) => HTMLElement;
+  }
+
+  const slot: {
+    component: React.ComponentType<VanillaHeaderRendererProps>;
+    wrapped: (props: VanillaHeaderRendererProps) => HTMLElement;
+  } = {
+    component: Component,
+    wrapped: null as unknown as (props: VanillaHeaderRendererProps) => HTMLElement,
+  };
+  let host: HTMLElement | null = null;
+  const wrapped = markWrapped((props: VanillaHeaderRendererProps): HTMLElement => {
+    const Comp = slot.component;
+    const reactProps = {
+      ...props,
+      components: mapHeaderRendererComponentsForReact(props.components),
+    };
+    const node = <Comp {...(reactProps as any)} />;
+    if (host && bridge.update(host, node)) {
+      return host;
+    }
+    host = document.createElement("div");
+    bridge.register(node, host);
+    return host;
+  });
+  slot.wrapped = wrapped;
+  bridge.headerRendererCache.set(accessor, slot);
+  return wrapped;
+}
+
+/**
  * Like {@link wrapReactHeaderRenderer} for the header dropdown, which shares the
  * same `components` slot shape.
  */

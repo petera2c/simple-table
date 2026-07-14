@@ -159,6 +159,21 @@ export const getNestedValue = (obj: Row, path: Accessor): CellValue => {
 };
 
 /**
+ * True when both arrays have the same length and the same row object references
+ * at each index. Used by FilterManager / SortManager so in-place live updates
+ * that recompute filter/sort only notify subscribers when membership or order
+ * actually changed (`.filter()` / `handleSort` always allocate new arrays).
+ */
+export const rowsOrderEqual = (a: Row[], b: Row[]): boolean => {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+};
+
+/**
  * Set a nested property value in an object using dot notation and array bracket notation
  * Examples:
  *   setNestedValue(row, "latest.rank", 5) sets row.latest.rank = 5

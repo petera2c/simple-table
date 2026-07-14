@@ -1,5 +1,6 @@
 import type { ApplicationRef, EnvironmentInjector } from "@angular/core";
 import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig, Row } from "simple-table-core";
+import { collectHeaderAccessors } from "simple-table-core";
 import type {
   SimpleTableAngularProps,
   AngularHeaderObject,
@@ -7,7 +8,7 @@ import type {
   AngularIconsConfig,
 } from "./types";
 import type { MountRegistry } from "./MountRegistry";
-import { wrapAngularRenderer } from "./utils/wrapAngularRenderer";
+import { wrapAngularRenderer, wrapCachedAngularRenderer } from "./utils/wrapAngularRenderer";
 
 export function buildVanillaConfig(
   config: SimpleTableAngularProps,
@@ -67,18 +68,33 @@ export function buildVanillaConfig(
 
   function transformHeader(header: HeaderObject | AngularHeaderObject): HeaderObject {
     const { cellRenderer, headerRenderer, children, nestedTable, ...headerRest } = header;
+    const accessor = String(header.accessor);
     const transformed: HeaderObject = { ...(headerRest as any) };
 
     if (cellRenderer) {
       if ((cellRenderer as any).ɵcmp) {
-        transformed.cellRenderer = wrap(cellRenderer) as any;
+        transformed.cellRenderer = wrapCachedAngularRenderer(
+          cellRenderer as any,
+          appRef,
+          injector,
+          registry,
+          accessor,
+          "cell",
+        ) as any;
       } else {
         transformed.cellRenderer = cellRenderer as any;
       }
     }
     if (headerRenderer) {
       if ((headerRenderer as any).ɵcmp) {
-        transformed.headerRenderer = wrap(headerRenderer) as any;
+        transformed.headerRenderer = wrapCachedAngularRenderer(
+          headerRenderer as any,
+          appRef,
+          injector,
+          registry,
+          accessor,
+          "header",
+        ) as any;
       } else {
         transformed.headerRenderer = headerRenderer as any;
       }
@@ -97,6 +113,8 @@ export function buildVanillaConfig(
 
     return transformed;
   }
+
+  registry.pruneRendererCaches(collectHeaderAccessors(defaultHeaders));
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,

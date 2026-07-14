@@ -1,33 +1,27 @@
 /**
- * Tracks imperative Angular component mounts created for custom cell/header/
- * footer renderers so they can be torn down when core discards their hosts.
- *
- * Core invokes `onRendererHostDiscard(host)` — wired to {@link disposeHost} —
- * immediately before permanently discarding a host (header refresh on sort,
- * cell content rebuild, cell/header removal). Without this, `innerHTML = ""`
- * detaches the host element while the Angular ComponentRef (and any CDK Overlay
- * / floating UI) stays alive.
+ * Tracks imperative Angular mounts and caches wrapped cell/header renderers per
+ * accessor so unstable column rebuilds keep stable wrapper identity.
  */
 const MOUNT_ID_ATTR = "data-st-mount-id";
+
+export type CachedRendererSlot<T = unknown> = {
+  component: T;
+  wrapped: unknown;
+};
 
 export class MountRegistry {
   private entries = new Map<string, () => void>();
   private nextId = 0;
 
-  /**
-   * Register a dispose callback for a mount container. Tags the container so
-   * {@link disposeHost} can find it when core discards an ancestor host.
-   */
+  readonly cellRendererCache = new Map<string, CachedRendererSlot>();
+  readonly headerRendererCache = new Map<string, CachedRendererSlot>();
+
   register(container: HTMLElement, dispose: () => void): void {
     const id = `st-mount-${this.nextId++}`;
     container.setAttribute(MOUNT_ID_ATTR, id);
     this.entries.set(id, dispose);
   }
 
-  /**
-   * Tear down mounts owned by a host element core is permanently discarding.
-   * Collects `host` itself plus every descendant tagged with {@link MOUNT_ID_ATTR}.
-   */
   disposeHost = (host: HTMLElement): void => {
     if (typeof host.getAttribute !== "function") return;
     const ids: string[] = [];
@@ -46,15 +40,24 @@ export class MountRegistry {
     }
   };
 
-  /** Dispose every tracked mount (used on table teardown). */
   clear(): void {
+    this.cellRendererCache.clear();
+    this.headerRendererCache.clear();
     for (const dispose of this.entries.values()) {
       dispose();
     }
     this.entries.clear();
   }
 
-  /** Test helper — number of live mounts. */
+  pruneRendererCaches(liveAccessors: ReadonlySet<string>): void {
+    for (const key of this.cellRendererCache.keys()) {
+      if (!liveAccessors.has(key)) this.cellRendererCache.delete(key);
+    }
+    for (const key of this.headerRendererCache.keys()) {
+      if (!liveAccessors.has(key)) this.headerRendererCache.delete(key);
+    }
+  }
+
   get size(): number {
     return this.entries.size;
   }

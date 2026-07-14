@@ -1,4 +1,5 @@
 import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig, Row } from "simple-table-core";
+import { collectHeaderAccessors } from "simple-table-core";
 import type {
   SimpleTableSvelteProps,
   SvelteHeaderObject,
@@ -9,6 +10,7 @@ import type { Component } from "svelte";
 import type { MountRegistry } from "./MountRegistry";
 import {
   wrapSvelteRenderer,
+  wrapCachedSvelteRenderer,
   wrapSvelteStatic,
   svelteComponentToHtmlString,
   isSvelteComponent,
@@ -48,12 +50,18 @@ function transformHeader(
   registry: MountRegistry,
 ): HeaderObject {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
+  const accessor = String(header.accessor);
 
   const transformed: HeaderObject = { ...(rest as any) };
 
   if (cellRenderer) {
     if (typeof cellRenderer === "function" && cellRenderer.length >= 2) {
-      transformed.cellRenderer = wrapSvelteRenderer(registry, cellRenderer) as any;
+      transformed.cellRenderer = wrapCachedSvelteRenderer(
+        registry,
+        accessor,
+        "cell",
+        cellRenderer,
+      ) as any;
     } else {
       transformed.cellRenderer = cellRenderer as any;
     }
@@ -61,7 +69,12 @@ function transformHeader(
 
   if (headerRenderer) {
     if (typeof headerRenderer === "function" && headerRenderer.length >= 2) {
-      transformed.headerRenderer = wrapSvelteRenderer(registry, headerRenderer) as any;
+      transformed.headerRenderer = wrapCachedSvelteRenderer(
+        registry,
+        accessor,
+        "header",
+        headerRenderer,
+      ) as any;
     } else {
       transformed.headerRenderer = headerRenderer as any;
     }
@@ -101,6 +114,8 @@ export function buildVanillaConfig(
     onColumnSelect,
     ...rest
   } = config;
+
+  registry.pruneRendererCaches(collectHeaderAccessors(defaultHeaders));
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,
