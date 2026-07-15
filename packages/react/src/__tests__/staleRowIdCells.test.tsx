@@ -6,21 +6,13 @@ import type { ReactHeaderObject } from "../index";
 
 // Repro for the "stale rowId cell" bug.
 //
-// Body cells are reused by the DOM id `${rowId}-${accessor}`, where `rowId`
-// comes from `getRowId`. The classic trigger is `getRowId` returning
-// "undefined" while data is loading (the row's real id hasn't arrived yet) and
-// the real id after it resolves.
+// Body cells are reused by the DOM id `${rowId}-${accessor}`. When loading
+// finishes, placeholder skeleton cells (keyed by synthetic stable ids) must be
+// removed so they do not linger underneath the newly keyed data cells.
 //
-// While loading, every skeleton/placeholder row resolves to the SAME id
-// ("undefined"), so all of their cells share the same DOM id. Cells are tracked
-// in a Map keyed by that id, so only the last cell per id is tracked — the rest
-// become untracked DOM orphans. When the data resolves and `getRowId` starts
-// returning real, unique ids, the removal pass only sees the tracked cells and
-// the orphaned "undefined"-keyed skeleton cells linger in the DOM, stacked
-// underneath the freshly-keyed data cells.
-//
-// Cells whose ids are no longer present in the current row set should be
-// removed. This test fails until they are.
+// Empty + isLoading synthesizes placeholder rows with unique identity keys
+// (getRowId is skipped for that batch). After data loads, none of those
+// loading-phase cell ids should remain in the DOM.
 
 let container: HTMLDivElement | null = null;
 let root: Root | null = null;
@@ -59,7 +51,6 @@ function render(rows: RowData[], isLoading: boolean): void {
       defaultHeaders: headers,
       rows,
       isLoading,
-      // The classic trigger: id is undefined while loading, real once resolved.
       getRowId: (p) => String(p.row.id),
       height: "400px",
       theme: "light",
@@ -75,18 +66,19 @@ describe("SimpleTable (React adapter) — stale rowId cells", () => {
     root = createRoot(host);
 
     // Loading phase: no data yet, so the table renders loading skeleton rows.
-    // getRowId returns "undefined" for every one of them.
     render([], true);
 
     await waitFor(() => host.querySelectorAll(".st-body-container .st-cell").length > 0);
 
-    // Sanity: the skeleton cells are keyed under the "undefined" rowId
-    // (DOM id is `${rowId}-${accessor}`).
-    const skeletonCells = host.querySelectorAll('.st-body-container [id^="undefined-"]');
-    expect(skeletonCells.length).toBeGreaterThan(0);
+    const loadingCells = host.querySelectorAll(".st-body-container .st-cell");
+    const loadingCellIds = Array.from(loadingCells).map((el) => el.id);
+    const skeletons = host.querySelectorAll(".st-body-container .st-loading-skeleton");
 
-    // Data resolves: each row now has a real, unique id, so getRowId returns a
-    // different value than the "undefined" used during loading.
+    expect(skeletons.length).toBeGreaterThan(0);
+    expect(loadingCellIds.length).toBeGreaterThan(0);
+    expect(loadingCellIds.every((id) => id.length > 0)).toBe(true);
+
+    // Data resolves: each row now has a real, unique id.
     const loadedRows: RowData[] = [
       { id: 1, name: "Alpha" },
       { id: 2, name: "Beta" },
@@ -97,10 +89,15 @@ describe("SimpleTable (React adapter) — stale rowId cells", () => {
     await waitFor(() => host.textContent?.includes("Alpha") ?? false);
     await wait(80);
 
-    // The previous "undefined"-keyed skeleton cells must be gone — otherwise
-    // they remain stacked underneath the new data cells at the same position.
-    const stale = host.querySelectorAll('.st-body-container [id^="undefined-"]');
-    expect(stale.length).toBe(0);
+    // Loading-phase cell ids must be gone — otherwise they remain stacked
+    // underneath the new data cells at the same position.
+    const remainingIds = new Set(
+      Array.from(host.querySelectorAll(".st-body-container .st-cell")).map((el) => el.id),
+    );
+    for (const id of loadingCellIds) {
+      expect(remainingIds.has(id)).toBe(false);
+    }
+    expect(host.querySelectorAll(".st-loading-skeleton").length).toBe(0);
 
     // And the body should hold exactly one set of cells per loaded row (3 rows
     // × 2 columns = 6), with no leftover orphans from the loading phase.
