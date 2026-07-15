@@ -51,7 +51,7 @@ function sanitizeHtml(html: string): string {
   return $("body").html() ?? "";
 }
 
-function extractEncodedHtml($: cheerio.CheerioAPI, el: any): string {
+function extractEncodedHtml($: ReturnType<typeof cheerio.load>, el: any): string {
   const $item = $(el);
   let encoded =
     $item.find("content\\:encoded").html() || $item.find("encoded").html() || "";
@@ -94,7 +94,7 @@ async function main() {
     throw new Error("Soro RSS feed is disabled. Enable it in Settings → Other Platform.");
   }
 
-  const $ = cheerio.load(xml, { xml: true });
+  const $ = cheerio.load(xml, { xmlMode: true });
   const parsed: SoroArticle[] = [];
 
   $("item").each((_, el) => {

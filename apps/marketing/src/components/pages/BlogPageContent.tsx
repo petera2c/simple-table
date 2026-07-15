@@ -93,7 +93,7 @@ export default function BlogPageContent({
     for (const post of BLOG_POSTS) {
       bySlug.set(post.slug, post);
     }
-    return [...bySlug.values()].sort(
+    return Array.from(bySlug.values()).sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   }, [extraPosts]);
@@ -108,7 +108,7 @@ export default function BlogPageContent({
             return (
               post.title.toLowerCase().includes(q) ||
               post.description.toLowerCase().includes(q) ||
-              post.tags.some((tag) => tag.toLowerCase().includes(q)) ||
+              post.tags.some((tag: string) => tag.toLowerCase().includes(q)) ||
               post.slug.toLowerCase().includes(q)
             );
           });
