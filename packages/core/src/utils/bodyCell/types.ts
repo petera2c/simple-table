@@ -128,6 +128,11 @@ export interface CellRenderContext {
    * here makes every column count as visible, disabling virtualization.
    */
   mainSectionViewportWidth?: number;
+  /**
+   * When false, skip column virtualization and render every body cell in the
+   * main section. Default true. Mirrors {@link SimpleTableProps.enableVirtualization}.
+   */
+  enableVirtualization?: boolean;
 
   // Callbacks
   onCellEdit?: (params: CellEditParams) => void;

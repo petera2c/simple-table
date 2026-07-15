@@ -63,6 +63,13 @@ export interface SimpleTableProps {
    */
   showRowSelectionColumn?: boolean;
   enableStickyParents?: boolean; // Flag for enabling sticky parent rows during scrolling in grouped tables (default: false)
+  /**
+   * When false, disables both row and column virtualization so every row and
+   * column is rendered in the DOM. Useful for print, a11y tooling, or small
+   * datasets that still need a fixed `height` / `maxHeight` for layout.
+   * Default true.
+   */
+  enableVirtualization?: boolean;
   errorStateRenderer?: ErrorStateRenderer; // Custom renderer for error states
   expandAll?: boolean; // Flag for expanding all rows by default
   externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely

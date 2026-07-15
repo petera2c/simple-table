@@ -1599,6 +1599,8 @@ export class SimpleTableVanilla {
     if (this.hasWarnedUnvirtualizedRows) return;
     if (this.unvirtualizedRowsCheckTimeoutId !== null) return;
     if (typeof window === "undefined") return;
+    // Consumer explicitly opted out of virtualization — don't warn.
+    if (this.config.enableVirtualization === false) return;
 
     // Cheap synchronous pre-check: only arm the deferred confirmation when this
     // render already looks unvirtualized with a large dataset. Healthy
@@ -1619,6 +1621,7 @@ export class SimpleTableVanilla {
 
   private evaluateUnvirtualizedRowsWarning(): void {
     if (this.hasWarnedUnvirtualizedRows || !this.mounted) return;
+    if (this.config.enableVirtualization === false) return;
 
     // `contentHeight === undefined` is precisely the signal that virtualization
     // is OFF and every row is rendered to the DOM. A number means a viewport

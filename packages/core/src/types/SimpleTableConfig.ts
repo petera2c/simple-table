@@ -58,6 +58,8 @@ export interface SimpleTableConfig {
   /** @see SimpleTableProps.showRowSelectionColumn */
   showRowSelectionColumn?: boolean;
   enableStickyParents?: boolean;
+  /** @see SimpleTableProps.enableVirtualization */
+  enableVirtualization?: boolean;
   errorStateRenderer?: VanillaErrorStateRenderer;
   expandAll?: boolean;
   externalFilterHandling?: boolean;

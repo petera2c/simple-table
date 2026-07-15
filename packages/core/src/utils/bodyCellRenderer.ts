@@ -308,11 +308,13 @@ export const renderBodyCells = (
     ? (context.containerWidth ?? container.clientWidth ?? 0)
     : (context.mainSectionViewportWidth ?? context.containerWidth ?? container.clientWidth ?? 0);
 
-  // For pinned sections, always render all cells (they don't scroll horizontally)
-  // For main section, only render visible cells based on scroll position
-  const cellsToRender = context.pinned
-    ? cells
-    : getVisibleBodyCells(cells, scrollLeft, viewportWidth);
+  // For pinned sections, always render all cells (they don't scroll horizontally).
+  // For main section, only render visible cells based on scroll position unless
+  // column virtualization is disabled.
+  const cellsToRender =
+    context.pinned || context.enableVirtualization === false
+      ? cells
+      : getVisibleBodyCells(cells, scrollLeft, viewportWidth);
 
   const renderedCells = getRenderedCells(container);
   const renderedSeparators = getRenderedSeparators(container);

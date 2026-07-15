@@ -57,6 +57,8 @@ export interface HeaderRenderContext {
   mainBodyRef: RefObject<HTMLDivElement>;
   mainSectionContainerWidth?: number; /** Main section *content* width (sum of all non-pinned column widths). NOT the virtualization viewport. */
   mainSectionViewportWidth?: number; /** Main section *visible* viewport width (container minus pinned); use for getVisibleCells when !pinned */
+  /** When false, skip column virtualization and render every header cell in the main section. Default true. */
+  enableVirtualization?: boolean;
   onColumnOrderChange?: (headers: HeaderObject[]) => void;
   onColumnSelect?: (header: HeaderObject) => void;
   onColumnWidthChange?: (headers: HeaderObject[]) => void;

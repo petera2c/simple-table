@@ -243,6 +243,16 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link
+                    href="/articles"
+                    className={`text-gray-400 hover:text-white transition-colors ${
+                      isActive("/articles") ? "text-white font-medium" : ""
+                    }`}
+                  >
+                    Articles
+                  </Link>
+                </li>
+                <li>
+                  <Link
                     href="/changelog"
                     className={`text-gray-400 hover:text-white transition-colors ${
                       isActive("/changelog") ? "text-white font-medium" : ""

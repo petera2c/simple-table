@@ -11,6 +11,26 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v3_9_9: ChangelogEntry = {
+  version: "3.9.9",
+  date: "2026-07-15",
+  title: "Disable virtualization flag",
+  description: "Opt out of row and column virtualization with one prop.",
+  changes: [
+    {
+      type: "feature",
+      description:
+        "Added enableVirtualization (default true). Set to false to render every row and column in the DOM while keeping height/maxHeight layout.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "When isLoading is true with no rows, placeholder skeleton rows no longer share the same getRowId key (e.g. \"undefined\"), so every row renders skeleton cells instead of only the first.",
+      link: "/docs/loading-state",
+    },
+  ],
+};
+
 export const v3_9_8: ChangelogEntry = {
   version: "3.9.8",
   date: "2026-07-14",
@@ -2253,6 +2273,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v3_9_9,
   v3_9_8,
   v3_9_7,
   v3_9_6,

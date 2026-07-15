@@ -152,6 +152,20 @@ animations={{ enabled: false }}`,
 />`,
   },
   {
+    key: "enableVirtualization",
+    name: "enableVirtualization",
+    required: false,
+    description:
+      "When false, disables both row and column virtualization so every row and column is rendered in the DOM. Useful for print, accessibility tooling, or small datasets that still need a fixed height/maxHeight for layout. Defaults to true.",
+    type: "boolean",
+    example: `// Keep a fixed height for layout, but render every row/column
+<SimpleTable
+  height="400px"
+  enableVirtualization={false}
+  // ... other props
+/>`,
+  },
+  {
     key: "icons",
     name: "icons",
     required: false,

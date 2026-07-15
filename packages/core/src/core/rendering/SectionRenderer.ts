@@ -1075,6 +1075,9 @@ export class SectionRenderer {
       // into view — blank rows that only recover after a later resize.
       "mainSectionViewportWidth",
       "mainSectionContainerWidth",
+      // Toggling enableVirtualization must invalidate cached body/header contexts
+      // so column culling turns on/off without waiting for an unrelated resize.
+      "enableVirtualization",
     ];
     let hash = keys.map((k) => `${k}:${context[k]}`).join("|");
 

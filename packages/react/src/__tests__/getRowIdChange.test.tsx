@@ -72,6 +72,34 @@ function render(
 }
 
 describe("SimpleTable (React adapter) — getRowId value change while loading", () => {
+  it("renders a skeleton cell per placeholder row when getRowId would collide", async () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    container = host;
+    root = createRoot(host);
+
+    // Empty + loading synthesizes ~10 `{}` placeholders. A typical getRowId
+    // (`row.id`) returns "undefined" for each; without unique stable keys,
+    // cell dedupe would only paint the first skeleton row.
+    render(host, [], true);
+    await waitForElement(host, ".st-body-container .st-cell");
+    await wait(60);
+
+    const nameCells = host.querySelectorAll('.st-body-container .st-cell[data-accessor="name"]');
+    const idCells = host.querySelectorAll('.st-body-container .st-cell[data-accessor="id"]');
+    const skeletons = host.querySelectorAll(".st-body-container .st-loading-skeleton");
+    const nameRowIds = Array.from(nameCells).map((el) => el.getAttribute("data-row-id"));
+
+    // Default placeholder count is 10 (11 when the main section is scrollable).
+    expect(nameCells.length).toBeGreaterThanOrEqual(10);
+    expect(idCells.length).toBe(nameCells.length);
+    expect(skeletons.length).toBe(nameCells.length + idCells.length);
+    expect(new Set(nameRowIds).size).toBe(nameCells.length);
+    nameCells.forEach((cell) => {
+      expect(cell.querySelector(".st-loading-skeleton")).not.toBeNull();
+    });
+  });
+
   it("removes stale skeleton cells when getRowId resolves from undefined to a real id", async () => {
     const host = document.createElement("div");
     document.body.appendChild(host);

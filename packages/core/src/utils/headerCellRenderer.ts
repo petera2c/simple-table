@@ -85,11 +85,13 @@ export const renderHeaderCells = (
         container.clientWidth ||
         0));
 
-  // For pinned sections, always render all cells (they don't scroll)
-  // For main section, only render visible cells based on scroll position
-  const cellsToRender = context.pinned
-    ? absoluteCells
-    : getVisibleCells(absoluteCells, scrollLeft, viewportWidth);
+  // For pinned sections, always render all cells (they don't scroll).
+  // For main section, only render visible cells based on scroll position unless
+  // column virtualization is disabled.
+  const cellsToRender =
+    context.pinned || context.enableVirtualization === false
+      ? absoluteCells
+      : getVisibleCells(absoluteCells, scrollLeft, viewportWidth);
 
   const lastHeaderIndex = getLastHeaderIndex(absoluteCells);
   const renderedCells = getRenderedCells(container);

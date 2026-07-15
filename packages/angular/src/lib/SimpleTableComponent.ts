@@ -98,6 +98,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() expandAll?: SimpleTableAngularProps["expandAll"];
   @Input() autoExpandColumns?: SimpleTableAngularProps["autoExpandColumns"];
   @Input() animations?: SimpleTableAngularProps["animations"];
+  @Input() enableVirtualization?: SimpleTableAngularProps["enableVirtualization"];
 
   /** Emits the TableAPI once the table has mounted. */
   @Output() tableReady = new EventEmitter<TableAPI>();
@@ -241,6 +242,8 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     if (this.expandAll !== undefined) props.expandAll = this.expandAll;
     if (this.autoExpandColumns !== undefined) props.autoExpandColumns = this.autoExpandColumns;
     if (this.animations !== undefined) props.animations = this.animations;
+    if (this.enableVirtualization !== undefined)
+      props.enableVirtualization = this.enableVirtualization;
 
     return props;
   }

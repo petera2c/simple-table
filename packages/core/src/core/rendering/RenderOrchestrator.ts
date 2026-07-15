@@ -320,12 +320,18 @@ export class RenderOrchestrator {
       this.lastRowsRef = effectiveRows;
     }
 
+    // Synthetic empty `{}` placeholders have no real ids. If we still call the
+    // consumer's `getRowId`, every placeholder typically collapses to the same
+    // key (e.g. "undefined"), and cell dedupe only paints the first skeleton row.
+    // Skip `getRowId` for this batch so WeakMap identity keys stay unique.
+    let syntheticLoadingPlaceholders = false;
     if (context.internalIsLoading && effectiveRows.length === 0) {
       let rowsToShow = context.config.shouldPaginate ? (context.config.rowsPerPage ?? 10) : 10;
       if (state.isMainSectionScrollable) {
         rowsToShow += 1;
       }
       effectiveRows = Array.from({ length: rowsToShow }, () => ({}));
+      syntheticLoadingPlaceholders = true;
     }
 
     const sortState = context.sortManager?.getState();
@@ -376,7 +382,7 @@ export class RenderOrchestrator {
       flattenResult = flattenRows({
         rows: quickFilteredRows,
         rowGrouping: context.config.rowGrouping,
-        getRowId: context.config.getRowId,
+        getRowId: syntheticLoadingPlaceholders ? undefined : context.config.getRowId,
         expandedRows: context.expandedRows,
         collapsedRows: context.collapsedRows,
         expandedDepths: context.expandedDepths,
@@ -407,21 +413,24 @@ export class RenderOrchestrator {
       };
     }
 
-    const contentHeight = calculateContentHeight({
-      height: context.config.height,
-      maxHeight: context.config.maxHeight,
-      rowHeight: context.customTheme.rowHeight,
-      shouldPaginate: context.config.shouldPaginate ?? false,
-      rowsPerPage: context.config.rowsPerPage ?? 10,
-      totalRowCount: context.config.totalRowCount ?? flattenResult.paginatableRows.length,
-      headerHeight: calculatedHeaderHeight,
-      footerHeight:
-        (context.config.shouldPaginate || context.config.footerRenderer) &&
-        !context.config.hideFooter
-          ? context.customTheme.footerHeight
-          : undefined,
-      externalViewportHeight: context.externalViewportHeight,
-    });
+    const contentHeight =
+      context.config.enableVirtualization === false
+        ? undefined
+        : calculateContentHeight({
+            height: context.config.height,
+            maxHeight: context.config.maxHeight,
+            rowHeight: context.customTheme.rowHeight,
+            shouldPaginate: context.config.shouldPaginate ?? false,
+            rowsPerPage: context.config.rowsPerPage ?? 10,
+            totalRowCount: context.config.totalRowCount ?? flattenResult.paginatableRows.length,
+            headerHeight: calculatedHeaderHeight,
+            footerHeight:
+              (context.config.shouldPaginate || context.config.footerRenderer) &&
+              !context.config.hideFooter
+                ? context.customTheme.footerHeight
+                : undefined,
+            externalViewportHeight: context.externalViewportHeight,
+          });
 
     const shouldPaginate = context.config.shouldPaginate ?? false;
     const rowsPerPage = context.config.rowsPerPage ?? 10;
