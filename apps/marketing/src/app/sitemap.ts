@@ -3,6 +3,7 @@ import { join } from "path";
 import type { MetadataRoute } from "next";
 import { BLOG_POSTS } from "@/constants/blogPosts";
 import { FRAMEWORK_HUB_IDS } from "@/constants/frameworkIntegrationHub";
+import { listSoroArticles } from "@/lib/soroArticles";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 
 const SITE_URL = SEO_STRINGS.site.url.replace(/\/$/, "");
@@ -73,6 +74,13 @@ function expandDynamicRoutes(routes: string[]): string[] {
       continue;
     }
 
+    if (route === "/blog/[slug]") {
+      for (const article of listSoroArticles()) {
+        expanded.push(`/blog/${article.slug}`);
+      }
+      continue;
+    }
+
     if (route === "/examples/[framework]") {
       for (const id of FRAMEWORK_HUB_IDS) {
         expanded.push(`/examples/${id}`);
@@ -125,6 +133,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const blogUpdatedAt = new Map<string, string>();
   for (const post of BLOG_POSTS) {
     if (post.updatedAt) blogUpdatedAt.set(`/blog/${post.slug}`, post.updatedAt);
+  }
+  for (const article of listSoroArticles()) {
+    blogUpdatedAt.set(
+      `/blog/${article.slug}`,
+      article.updatedAt || article.publishedAt
+    );
   }
 
   const seen = new Set<string>();

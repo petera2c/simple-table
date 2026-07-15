@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import BlogPageContent from "@/components/pages/BlogPageContent";
+import { listSoroBlogPostMetadata } from "@/lib/soroArticles";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.blog.title,
@@ -28,9 +29,11 @@ export const metadata: Metadata = {
 };
 
 export default function BlogPage() {
+  const soroPosts = listSoroBlogPostMetadata();
+
   return (
     <BlogLayout width="wide">
-      <BlogPageContent />
+      <BlogPageContent extraPosts={soroPosts} />
     </BlogLayout>
   );
 }

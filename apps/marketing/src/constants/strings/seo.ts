@@ -87,14 +87,6 @@ export const SEO_STRINGS = {
     keywords:
       "data grid blog, javascript data grid, vue data grid, angular data grid, svelte table, solid table, vanilla typescript table, react table tutorial, simple-table, react-grid, data-grid, datagrid, typescript table, ag grid alternative, multi-framework table",
   },
-  articles: {
-    title: "Articles - Data Grid Tips, Guides & Industry Insights",
-    description:
-      "Short-form articles and insights on JavaScript data grids, table libraries, and building better datagrid experiences with Simple Table.",
-    keywords:
-      "data grid articles, javascript table guides, react data grid tips, simple-table articles, datagrid insights, table library news",
-  },
-
   blogPosts: {
     replicatingGojiberryUI: {
       title: replicatingGojiberryUIPost.title,

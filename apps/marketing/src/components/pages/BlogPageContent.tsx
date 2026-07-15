@@ -5,7 +5,6 @@ import { SearchOutlined, CalendarOutlined, TagOutlined } from "@ant-design/icons
 import Link from "next/link";
 import {
   BLOG_POSTS,
-  searchBlogPosts,
   BlogPostMetadata,
   getPostFrameworkId,
 } from "@/constants/blogPosts";
@@ -71,6 +70,8 @@ interface BlogPageContentProps {
   heading?: string;
   /** Optional intro paragraph override. */
   intro?: string;
+  /** Extra posts (e.g. Soro RSS) merged into the index. Hand-authored posts win on slug clash. */
+  extraPosts?: BlogPostMetadata[];
 }
 
 export default function BlogPageContent({
@@ -78,26 +79,41 @@ export default function BlogPageContent({
   hideFrameworkFilter = false,
   heading,
   intro,
+  extraPosts = [],
 }: BlogPageContentProps = {}) {
   const [searchQuery, setSearchQuery] = useState("");
   const [frameworkFilter, setFrameworkFilter] = useState<FrameworkFilter>(initialFramework);
 
-  const sortedBlogPosts = useMemo(
-    () =>
-      [...BLOG_POSTS].sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      ),
-    []
-  );
+  const sortedBlogPosts = useMemo(() => {
+    const bySlug = new Map<string, BlogPostMetadata>();
+    for (const post of extraPosts) {
+      bySlug.set(post.slug, post);
+    }
+    // Hand-authored registry wins over RSS on conflicts.
+    for (const post of BLOG_POSTS) {
+      bySlug.set(post.slug, post);
+    }
+    return [...bySlug.values()].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }, [extraPosts]);
 
   const visiblePosts = useMemo<BlogPostMetadata[]>(() => {
     const trimmed = searchQuery.trim();
-    const base = trimmed === "" ? sortedBlogPosts : searchBlogPosts(trimmed);
-    const sortedBase = [...base].sort(
-      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-    if (frameworkFilter === "all") return sortedBase;
-    return sortedBase.filter((post) => getPostFrameworkId(post.slug) === frameworkFilter);
+    const base =
+      trimmed === ""
+        ? sortedBlogPosts
+        : sortedBlogPosts.filter((post) => {
+            const q = trimmed.toLowerCase();
+            return (
+              post.title.toLowerCase().includes(q) ||
+              post.description.toLowerCase().includes(q) ||
+              post.tags.some((tag) => tag.toLowerCase().includes(q)) ||
+              post.slug.toLowerCase().includes(q)
+            );
+          });
+    if (frameworkFilter === "all") return base;
+    return base.filter((post) => getPostFrameworkId(post.slug) === frameworkFilter);
   }, [searchQuery, frameworkFilter, sortedBlogPosts]);
 
   const handleSearch = (value: string) => {

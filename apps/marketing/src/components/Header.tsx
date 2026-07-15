@@ -121,12 +121,12 @@ const GitHubLink = ({
   return (
     <button
       onClick={handleClick}
-      className={`flex items-center gap-1 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-full bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors text-gray-700 dark:text-white text-sm ${
+      className={`flex items-center gap-1 px-2 py-1 min-w-[4.25rem] border border-gray-300 dark:border-gray-600 rounded-full bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors text-gray-700 dark:text-white text-sm tabular-nums ${
         isMobile ? "justify-start w-fit" : ""
       }`}
     >
       <FontAwesomeIcon icon={faGithub} style={{ fontSize: "1.5rem" }} />
-      {isLoading ? "..." : stars}
+      <span className="min-w-[1.75rem] text-left">{isLoading ? "…" : stars}</span>
     </button>
   );
 };
@@ -148,17 +148,17 @@ const DiscordLink = ({
   return (
     <button
       onClick={handleClick}
-      className={`flex items-center gap-1 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-full bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors text-gray-700 dark:text-white text-sm ${
+      className={`flex items-center gap-1 px-2 py-1 min-w-[4.25rem] border border-gray-300 dark:border-gray-600 rounded-full bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors text-gray-700 dark:text-white text-sm tabular-nums ${
         isMobile ? "justify-start w-fit" : ""
       }`}
     >
       <FontAwesomeIcon icon={faDiscord} style={{ fontSize: "1.5rem" }} />
-      {!isLoading && memberCount !== null && (
-        <>
-          {memberCount}
+      <span className="min-w-[1.75rem] text-left inline-flex items-center gap-1">
+        {isLoading ? "…" : memberCount !== null ? memberCount : null}
+        {!isLoading && memberCount !== null && (
           <span className="w-2 h-2 bg-green-500 rounded-full" aria-label="online" />
-        </>
-      )}
+        )}
+      </span>
     </button>
   );
 };
@@ -397,8 +397,8 @@ const Header = () => {
         ref={headerRef}
         className="backdrop-blur-md bg-white/80 dark:bg-gray-900/90 shadow-sm sticky top-0 z-50"
       >
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex items-center justify-between">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 min-h-[60px]">
+          <div className="flex items-center justify-between min-h-[36px]">
             <div className="flex items-center">
               <Link
                 href="/"

@@ -24,6 +24,41 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
 });
 
+const RESERVED_ROOT_SEGMENTS = new Set([
+  "articles",
+  "blog",
+  "docs",
+  "examples",
+  "pricing",
+  "changelog",
+  "frameworks",
+  "comparisons",
+  "migrations",
+  "case-studies",
+  "legal",
+  "theme-builder",
+  "api",
+  "sandbox",
+  "mobile-unsupported",
+  "not-found",
+]);
+
+function soroArticleRootRedirects(): { source: string; destination: string; permanent: boolean }[] {
+  const articlesDir = path.join(__dirname, "content", "articles");
+  if (!fs.existsSync(articlesDir)) return [];
+
+  return fs
+    .readdirSync(articlesDir)
+    .filter((name) => name.endsWith(".json"))
+    .map((name) => name.replace(/\.json$/, ""))
+    .filter((slug) => slug && !RESERVED_ROOT_SEGMENTS.has(slug) && !slug.includes("/"))
+    .map((slug) => ({
+      source: `/${slug}`,
+      destination: `/blog/${slug}`,
+      permanent: true,
+    }));
+}
+
 const config: NextConfig = {
   // Use git commit hash for stable build IDs to prevent unnecessary chunk hash changes
   generateBuildId: async () => {
@@ -88,6 +123,18 @@ const config: NextConfig = {
         destination: "/blog/ag-grid-pricing-license-breakdown-2026",
         permanent: true,
       },
+      {
+        source: "/articles",
+        destination: "/blog",
+        permanent: true,
+      },
+      {
+        source: "/articles/:slug",
+        destination: "/blog/:slug",
+        permanent: true,
+      },
+      // Soro RSS publishes absolute links at the site root; serve under /blog.
+      ...soroArticleRootRedirects(),
     ];
   },
   // Turbopack: widen root when local simple-table-core exists as a sibling (npm link dev).

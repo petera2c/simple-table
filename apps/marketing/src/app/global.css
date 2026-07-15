@@ -32,6 +32,18 @@ body {
     linear-gradient(to bottom, rgba(100, 116, 139, 0.05) 1px, transparent 1px);
 }
 
+/* Keep header framework select content-sized (antd defaults can stretch in flex rows) */
+.framework-selector.ant-select {
+  width: max-content !important;
+}
+.framework-selector .ant-select-selector {
+  /* End padding reserves space for the absolutely positioned caret */
+  padding-inline: 4px 28px !important;
+}
+.framework-selector .ant-select-arrow {
+  inset-inline-end: 8px !important;
+}
+
 /* Custom scrollbar styling */
 ::-webkit-scrollbar {
   width: 6px;

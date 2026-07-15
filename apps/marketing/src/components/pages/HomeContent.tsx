@@ -190,19 +190,21 @@ export default function HomeContent() {
           </div>
         </div>
 
-        {/* Demo section with animated entrance */}
+        {/* Demo section — reserved height prevents CLS when the table mounts */}
         <motion.section
           className="mb-16 shadow-xl rounded-lg"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.1 }}
         >
           {isCodeVisible ? (
             <CodeBlock demoId="infrastructure" />
           ) : (
-            <Suspense fallback={<div />}>
-              <InfrastructureExample key={iconLibrary} theme={tableTheme} icons={tableIcons} />
-            </Suspense>
+            <div className="h-[60dvh]">
+              <Suspense fallback={<div className="h-full" aria-hidden />}>
+                <InfrastructureExample key={iconLibrary} theme={tableTheme} icons={tableIcons} />
+              </Suspense>
+            </div>
           )}
         </motion.section>
 
