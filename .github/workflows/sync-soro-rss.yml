@@ -22,6 +22,8 @@ jobs:
         with:
           # Persist credentials so we can push back to main
           token: ${{ secrets.GITHUB_TOKEN }}
+          # Heroku rejects shallow clones ("shallow update not allowed").
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -39,6 +41,7 @@ jobs:
         run: pnpm --filter simple-table-marketing run sync-soro-rss
 
       - name: Commit and push if changed
+        id: commit
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
@@ -46,7 +49,27 @@ jobs:
           git add apps/marketing/content/articles
           if git diff --staged --quiet; then
             echo "No article changes to commit."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git commit -m "content(articles): sync Soro RSS"
           git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      # GITHUB_TOKEN pushes do not trigger other workflows, so deploy here.
+      - name: Deploy marketing to Heroku
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+          HEROKU_GIT_BRANCH: ${{ vars.HEROKU_GIT_BRANCH }}
+        run: |
+          set -euo pipefail
+          if [ -z "${HEROKU_API_KEY:-}" ] || [ -z "${HEROKU_APP_NAME:-}" ]; then
+            echo "::error title=Heroku::HEROKU_API_KEY / HEROKU_APP_NAME secrets are required to deploy synced articles."
+            exit 1
+          fi
+          BRANCH="${HEROKU_GIT_BRANCH:-main}"
+          git remote remove heroku 2>/dev/null || true
+          git remote add heroku "https://heroku:${HEROKU_API_KEY}@git.heroku.com/${HEROKU_APP_NAME}.git"
+          git push -f heroku "HEAD:refs/heads/${BRANCH}"
