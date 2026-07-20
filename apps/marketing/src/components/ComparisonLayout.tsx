@@ -1,12 +1,17 @@
+"use client";
+
 import React, { ReactNode, useState, useEffect, useMemo } from "react";
 import { Typography, Table, Space, Card, Button, Tooltip, Alert } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import NextLink from "next/link";
 import PageWrapper from "@/components/PageWrapper";
 import { ALL_FEATURES, getFeatureStatus } from "@/constants/comparisonFeatures";
 import { FEATURE_LABELS } from "@/constants/featureLabels";
 import { FeatureStatusBadge } from "@/components/CommonFeatures";
 import { SIMPLE_TABLE_INFO } from "@/constants/packageInfo";
+import { getStackBlitzUrl } from "@/utils/getStackBlitzUrl";
+import { useFramework } from "@/providers/FrameworkProvider";
 
 const { Title, Paragraph, Text, Link } = Typography;
 
@@ -35,6 +40,8 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
   summaryContent,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const { framework } = useFramework();
+  const stackBlitzUrl = getStackBlitzUrl("quick-start", framework);
 
   // Handle responsive layout
   useEffect(() => {
@@ -277,6 +284,48 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
           </Title>
           <Paragraph className="text-lg text-gray-700 dark:text-gray-300 mb-4">
             {summaryContent}
+          </Paragraph>
+        </Card>
+
+        {/* Conversion CTAs */}
+        <Card
+          className="mb-8 shadow-sm dark:bg-gray-800 dark:border-gray-700 border-blue-200 dark:border-blue-800"
+          styles={isMobile ? { body: { padding: "12px 8px" } } : undefined}
+        >
+          <Title
+            level={2}
+            className={`${
+              isMobile ? "text-xl" : "text-2xl"
+            } font-semibold text-gray-900 dark:text-white mb-2`}
+          >
+            Try Simple Table next
+          </Title>
+          <Paragraph className="text-lg text-gray-700 dark:text-gray-300 mb-4">
+            Open a live sandbox, compare pricing to {competitorName}, or read how teams evaluate
+            Simple Table in production.
+          </Paragraph>
+          <Space direction={isMobile ? "vertical" : "horizontal"} className="w-full mb-4" wrap>
+            <Button type="primary" href="/docs/installation" size="large">
+              Install from docs
+            </Button>
+            <Button href={stackBlitzUrl} target="_blank" rel="noopener noreferrer" size="large">
+              Open StackBlitz demo
+            </Button>
+            <Button href="/pricing" size="large">
+              View pricing
+            </Button>
+            <Button href="/benchmarks" size="large">
+              See benchmarks
+            </Button>
+          </Space>
+          <Paragraph className="text-base text-gray-600 dark:text-gray-400 mb-0">
+            Proof:{" "}
+            <NextLink
+              href="/case-studies/chartmetric"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              ChartMetric case study
+            </NextLink>
           </Paragraph>
         </Card>
 

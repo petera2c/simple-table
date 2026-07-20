@@ -311,6 +311,9 @@ export default function ChartMetricCaseStudyPage() {
               <Link href="/pricing">
                 <Button size="large">View Pricing</Button>
               </Link>
+              <Link href="/benchmarks">
+                <Button size="large">Benchmarks</Button>
+              </Link>
             </div>
           </div>
         </section>

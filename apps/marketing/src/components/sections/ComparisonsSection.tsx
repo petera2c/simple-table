@@ -1,11 +1,34 @@
 "use client";
 
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
+import {
+  COMPARISON_ENTRIES,
+  type ComparisonFrameworkTag,
+} from "@/constants/comparisons";
+
+const FRAMEWORK_FILTERS: { id: ComparisonFrameworkTag | "all"; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "react", label: "React" },
+  { id: "vue", label: "Vue" },
+  { id: "angular", label: "Angular" },
+  { id: "svelte", label: "Svelte" },
+  { id: "vanilla", label: "Vanilla" },
+  { id: "multi", label: "Multi-framework" },
+];
 
 export default function ComparisonsSection() {
+  const [filter, setFilter] = useState<ComparisonFrameworkTag | "all">("all");
+
+  const visibleComparisons = useMemo(() => {
+    if (filter === "all") return COMPARISON_ENTRIES;
+    return COMPARISON_ENTRIES.filter(
+      (entry) => entry.framework === filter || entry.framework === "multi",
+    );
+  }, [filter]);
+
   return (
     <motion.section
       className="mb-16"
@@ -18,48 +41,37 @@ export default function ComparisonsSection() {
         How We Compare
       </h2>
 
-      <p className="text-lg text-center text-gray-600 dark:text-gray-300 mb-10 max-w-3xl mx-auto">
+      <p className="text-lg text-center text-gray-600 dark:text-gray-300 mb-6 max-w-3xl mx-auto">
         See how Simple Table stacks up against other popular data grid solutions. Free for startups
         and side projects, a fraction of enterprise pricing for everyone else, with official
         adapters for {SIMPLE_TABLE_FRAMEWORKS_SHORT}.
       </p>
 
+      <div className="flex flex-wrap justify-center gap-2 mb-10">
+        {FRAMEWORK_FILTERS.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => setFilter(item.id)}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              filter === item.id
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+            }`}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[
-          {
-            title: "vs AG Grid",
-            description:
-              "Compare our lightweight solution against AG Grid's enterprise features and pricing",
-            link: "/comparisons/simple-table-vs-ag-grid",
-          },
-          {
-            title: "vs Handsontable",
-            description: "See how we match up to Handsontable's spreadsheet-like functionality",
-            link: "/comparisons/simple-table-vs-handsontable",
-          },
-          {
-            title: "vs Material-UI Table",
-            description: "Discover the benefits over Material-UI's basic table component",
-            link: "/comparisons/simple-table-vs-material-react",
-          },
-          {
-            title: "vs Ant Design Table",
-            description: "Compare with Ant Design's table component for feature-rich applications",
-            link: "/comparisons/simple-table-vs-ant-design",
-          },
-          {
-            title: "vs TanStack Table",
-            description:
-              "See how our ready-to-use solution compares to TanStack's headless approach",
-            link: "/comparisons/simple-table-vs-tanstack",
-          },
-        ].map((comparison, index) => (
-          <Link key={index} href={comparison.link}>
+        {visibleComparisons.map((comparison, index) => (
+          <Link key={comparison.link} href={comparison.link}>
             <motion.div
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow cursor-pointer"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow cursor-pointer h-full"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: Math.min(index, 8) * 0.05 }}
               viewport={{ once: true }}
             >
               <div className="h-2 bg-linear-to-r from-blue-500 to-indigo-600"></div>

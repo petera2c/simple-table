@@ -81,15 +81,10 @@ function expandDynamicRoutes(routes: string[]): string[] {
       continue;
     }
 
-    if (route === "/examples/[framework]") {
-      for (const id of FRAMEWORK_HUB_IDS) {
-        expanded.push(`/examples/${id}`);
-      }
-      continue;
-    }
-
+    // Skip unknown dynamic routes (e.g. removed /examples/[framework]) so they
+    // never emit dead URLs into the sitemap.
     console.warn(
-      `[sitemap] Unhandled dynamic route "${route}". Add an expansion branch in expandDynamicRoutes.`
+      `[sitemap] Skipping unhandled dynamic route "${route}". Add an expansion branch if it should be indexed.`
     );
   }
 
@@ -106,6 +101,7 @@ function categorize(route: string): { priority: number; changeFrequency: ChangeF
     return { priority: 0.8, changeFrequency: "weekly" };
   }
   if (route.startsWith("/examples/")) return { priority: 0.7, changeFrequency: "weekly" };
+  if (route.startsWith("/benchmarks")) return { priority: 0.9, changeFrequency: "monthly" };
   if (route.startsWith("/migrations/")) return { priority: 0.6, changeFrequency: "weekly" };
   if (route.startsWith("/legal/")) return { priority: 0.5, changeFrequency: "monthly" };
   return { priority: 0.6, changeFrequency: "weekly" };
@@ -118,6 +114,8 @@ const NON_INDEXABLE_SEGMENTS = new Set([
   "/docs/column-editing",
   // Internal reproduction page; reachable by direct URL only.
   "/sandbox/context-isolation",
+  // Internal marketing ops checklist; noindex.
+  "/sandbox/distribution-cadence",
   // Thin brand-replication post, noindexed (only attracts off-topic noise
   // queries). Page route still exists; remove this line to re-include.
   "/blog/replicating-gojiberry-ui-simple-table",

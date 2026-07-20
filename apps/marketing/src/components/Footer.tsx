@@ -6,7 +6,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { TECHNICAL_STRINGS } from "../constants/strings/technical";
 import { useThemeContext } from "@/providers/ThemeProvider";
-import { DEFAULT_EXAMPLE_PATH } from "@/constants/global";
+import { COMPARISON_FOOTER_LINKS } from "@/constants/comparisons";
+import { EXAMPLE_NAV_ITEMS } from "@/constants/examplesNav";
 import PageWrapper from "./PageWrapper";
 import { getExampleUrl } from "@/utils/getExampleUrl";
 
@@ -62,135 +63,38 @@ export default function Footer() {
             {/* Examples */}
             <div>
               <h3 className="text-lg font-semibold mb-4">Examples</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href={getExampleUrl(DEFAULT_EXAMPLE_PATH, theme)}
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive(DEFAULT_EXAMPLE_PATH) ? "text-white font-medium" : ""
-                    }`}
-                  >
-                    CRM Dashboard
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href={getExampleUrl("/examples/manufacturing", theme)}
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/examples/manufacturing") ? "text-white font-medium" : ""
-                    }`}
-                  >
-                    Manufacturing
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href={getExampleUrl("/examples/hr", theme)}
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/examples/hr") ? "text-white font-medium" : ""
-                    }`}
-                  >
-                    HR Management
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href={getExampleUrl("/examples/billing", theme)}
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/examples/billing") ? "text-white font-medium" : ""
-                    }`}
-                  >
-                    Billing
-                  </Link>
-                </li>
+              <ul className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                {EXAMPLE_NAV_ITEMS.map((example) => (
+                  <li key={example.id}>
+                    <Link
+                      href={getExampleUrl(example.path, theme)}
+                      className={`text-gray-400 hover:text-white transition-colors ${
+                        isActive(example.path) ? "text-white font-medium" : ""
+                      }`}
+                    >
+                      {example.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
             {/* Comparisons */}
             <div>
               <h3 className="text-lg font-semibold mb-4">Comparisons</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="/comparisons/simple-table-vs-ag-grid"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/comparisons/SimpleTableVsAgGrid") ? "text-white font-medium" : ""
-                    }`}
-                  >
-                    Simple Table vs AG Grid
-                  </Link>
-                </li>
-
-                <li>
-                  <Link
-                    href="/comparisons/simple-table-vs-tanstack"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/comparisons/SimpleTableVsTanstack") ? "text-white font-medium" : ""
-                    }`}
-                  >
-                    Simple Table vs Tanstack
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/comparisons/simple-table-vs-handsontable"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/comparisons/SimpleTableVsHandsontable")
-                        ? "text-white font-medium"
-                        : ""
-                    }`}
-                  >
-                    Simple Table vs Handsontable
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/comparisons/simple-table-vs-material-react"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/comparisons/SimpleTableVsMaterialReact")
-                        ? "text-white font-medium"
-                        : ""
-                    }`}
-                  >
-                    Simple Table vs Material React
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/comparisons/simple-table-vs-ant-design"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/comparisons/SimpleTableVsAntDesign")
-                        ? "text-white font-medium"
-                        : ""
-                    }`}
-                  >
-                    Simple Table vs Ant Design
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/comparisons/simple-table-vs-syncfusion"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/comparisons/SimpleTableVsSyncfusion")
-                        ? "text-white font-medium"
-                        : ""
-                    }`}
-                  >
-                    Simple Table vs Syncfusion
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/comparisons/simple-table-vs-tabulator"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/comparisons/SimpleTableVsTabulator")
-                        ? "text-white font-medium"
-                        : ""
-                    }`}
-                  >
-                    Simple Table vs Tabulator
-                  </Link>
-                </li>
+              <ul className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                {COMPARISON_FOOTER_LINKS.map((item) => (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={`text-gray-400 hover:text-white transition-colors ${
+                        isActive(item.href) ? "text-white font-medium" : ""
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
@@ -239,6 +143,26 @@ export default function Footer() {
                     }`}
                   >
                     Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/case-studies"
+                    className={`text-gray-400 hover:text-white transition-colors ${
+                      isActive("/case-studies") ? "text-white font-medium" : ""
+                    }`}
+                  >
+                    Case Studies
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/benchmarks"
+                    className={`text-gray-400 hover:text-white transition-colors ${
+                      isActive("/benchmarks") ? "text-white font-medium" : ""
+                    }`}
+                  >
+                    Benchmarks
                   </Link>
                 </li>
                 <li>

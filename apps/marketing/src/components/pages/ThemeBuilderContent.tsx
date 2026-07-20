@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { Button, Input } from "antd";
+import { Button, Input, message } from "antd";
 import PageWrapper from "@/components/PageWrapper";
 import type { Color } from "antd/es/color-picker";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,6 +28,7 @@ import {
   faRectangleList,
   faColumns,
   faChartLine,
+  faLink,
 } from "@fortawesome/free-solid-svg-icons";
 import { UI_STRINGS } from "@/constants/strings/ui";
 import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
@@ -434,6 +435,32 @@ export default function ThemeBuilderContent() {
 
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Hydrate theme from shareable URL (?theme=base64url JSON of userChanges)
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const encoded = params.get("theme");
+      if (!encoded) return;
+      const padded = encoded.replace(/-/g, "+").replace(/_/g, "/");
+      const pad = padded.length % 4 === 0 ? "" : "=".repeat(4 - (padded.length % 4));
+      const json = new TextDecoder().decode(
+        Uint8Array.from(atob(padded + pad), (c) => c.charCodeAt(0)),
+      );
+      const parsed = JSON.parse(json) as {
+        changes?: Partial<ThemeConfig>;
+        rowHeight?: string;
+        headerHeight?: string;
+      };
+      if (parsed.changes && typeof parsed.changes === "object") {
+        setUserChanges(parsed.changes);
+      }
+      if (parsed.rowHeight) setRowHeightInput(parsed.rowHeight);
+      if (parsed.headerHeight) setHeaderHeightInput(parsed.headerHeight);
+    } catch {
+      // Ignore malformed share links
+    }
+  }, []);
+
   // Update the theme when app theme changes or user makes changes
   useEffect(() => {
     const baseTheme = appTheme === "light" ? lightThemeDefaults : darkThemeDefaults;
@@ -506,6 +533,27 @@ export default function ThemeBuilderContent() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const copyShareLink = async () => {
+    const payload = {
+      changes: userChanges,
+      rowHeight: rowHeightInput,
+      headerHeight: headerHeightInput,
+    };
+    const bytes = new TextEncoder().encode(JSON.stringify(payload));
+    let binary = "";
+    bytes.forEach((b) => {
+      binary += String.fromCharCode(b);
+    });
+    const encoded = btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    const shareUrl = `${window.location.origin}/theme-builder?theme=${encoded}`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      message.success("Share link copied to clipboard");
+    } catch {
+      message.error("Could not copy share link");
+    }
   };
 
   // Toggle expanded sections
@@ -1324,6 +1372,15 @@ export default function ThemeBuilderContent() {
         icon={<FontAwesomeIcon icon={faDownload} />}
       >
         {UI_STRINGS.common.download} {UI_STRINGS.common.theme}
+      </Button>
+
+      <Button
+        className="w-full"
+        onClick={copyShareLink}
+        icon={<FontAwesomeIcon icon={faLink} />}
+        disabled={modificationCount === 0}
+      >
+        Copy share link
       </Button>
     </div>
   );

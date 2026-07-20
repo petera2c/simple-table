@@ -972,16 +972,28 @@ export default function HandsontablePricingPage() {
                     → Detailed feature comparison
                   </Link>
                   <Link
+                    href="/benchmarks"
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                  >
+                    → Bundle & performance benchmarks
+                  </Link>
+                  <Link
+                    href="/case-studies/chartmetric"
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                  >
+                    → ChartMetric case study
+                  </Link>
+                  <Link
+                    href="/examples/crm"
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                  >
+                    → Live CRM demo
+                  </Link>
+                  <Link
                     href="/blog/handsontable-alternatives-free-react"
                     className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
                   >
                     → Handsontable alternatives guide
-                  </Link>
-                  <Link
-                    href="/blog/react-data-grid-bundle-size-comparison"
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-                  >
-                    → Bundle size comparison
                   </Link>
                 </div>
               </div>
@@ -993,9 +1005,9 @@ export default function HandsontablePricingPage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Skip the $22K+ Handsontable bill. Start with Simple Table's FREE tier."
-        description="Get data grid features like sorting, filtering, editing, row grouping, and column pinning in the FREE tier. Optional PRO plan ($85/mo) adds priority support. Source-available, free for pre-revenue teams, lightweight, and built for modern React apps. Save thousands compared to Handsontable."
+        description="Install free for pre-revenue teams (same features). Upgrade to Pro for a commercial EULA + priority support when you earn revenue — per product, not per developer. Compare live demos and benchmarks before committing to spreadsheet-grid licensing."
         primaryButton={{
-          text: "Start Free",
+          text: "Install Free (Docs)",
           href: "/docs/installation",
         }}
         secondaryButton={{

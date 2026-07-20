@@ -151,7 +151,7 @@ export const agGridAlternativesPost: BlogPostMetadata = {
 export const bundleSizeComparisonPost: BlogPostMetadata = {
   title: "React Data Grid Bundle Size Comparison 2026: Lightest Libraries Ranked",
   description:
-    "Simple Table is 62.4 kB gzipped vs AG Grid Community at 298.2 kB. Full 2026 React data grid bundle size ranking: TanStack Table, Material React Table, and more.",
+    "Simple Table is 84.6 kB gzipped vs AG Grid Community at 298.2 kB. Full 2026 React data grid bundle size ranking: TanStack Table, Material React Table, and more.",
   slug: "react-data-grid-bundle-size-comparison",
   tags: ["react", "performance", "bundle-size", "comparison"],
   createdAt: "2025-11-15",

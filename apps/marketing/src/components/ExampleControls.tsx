@@ -2,79 +2,14 @@
 
 import { Select } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faChartLine,
-  faIndustry,
-  faUsers,
-  faFileInvoiceDollar,
-  faServer,
-  faMusic,
-  faUserTie,
-  faBitcoinSign,
-  faFutbol,
-} from "@fortawesome/free-solid-svg-icons";
 import ThemeSelector from "@/components/ThemeSelector";
 import type { Theme } from "@simple-table/react";
 import IconLibrarySelector from "@/components/IconLibrarySelector";
 import { useExamplesContext } from "@/providers/ExamplesProvider";
+import { EXAMPLE_NAV_ITEMS } from "@/constants/examplesNav";
 import { ReactNode } from "react";
 
-const examples = [
-  {
-    id: "crypto",
-    label: "Crypto",
-    path: "/examples/crypto",
-    icon: faBitcoinSign,
-  },
-  {
-    id: "soccer",
-    label: "Sports",
-    path: "/examples/soccer",
-    icon: faFutbol,
-  },
-  {
-    id: "crm",
-    label: "CRM",
-    path: "/examples/crm",
-    icon: faUserTie,
-  },
-  {
-    id: "infrastructure",
-    label: "Infrastructure",
-    path: "/examples/infrastructure",
-    icon: faServer,
-  },
-  {
-    id: "music",
-    label: "Music",
-    path: "/examples/music",
-    icon: faMusic,
-  },
-  {
-    id: "billing",
-    label: "Billing",
-    path: "/examples/billing",
-    icon: faFileInvoiceDollar,
-  },
-  {
-    id: "manufacturing",
-    label: "Manufacturing",
-    path: "/examples/manufacturing",
-    icon: faIndustry,
-  },
-  {
-    id: "hr",
-    label: "HR",
-    path: "/examples/hr",
-    icon: faUsers,
-  },
-  {
-    id: "sales",
-    label: "Sales",
-    path: "/examples/sales",
-    icon: faChartLine,
-  },
-];
+const examples = EXAMPLE_NAV_ITEMS;
 
 interface ExampleControlsProps {
   codeButton?: ReactNode;

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PageWrapper from "@/components/PageWrapper";
 import {
@@ -381,18 +382,30 @@ export default function PerformanceDemo() {
           </div>
         </section>
 
+        <div className="mb-8 rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-4 text-center">
+          <p className="text-gray-700 dark:text-gray-300 mb-2">
+            Compare bundle size and scroll methodology against AG Grid, TanStack Table, and
+            Handsontable.
+          </p>
+          <Link
+            href="/benchmarks"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+          >
+            Open the benchmarks page →
+          </Link>
+        </div>
+
         {/* Call to Action */}
         <CallToActionCard
           title="Ready to scale your data grids?"
-          description="Simple Table makes it easy to handle large datasets with lightning-fast performance."
+          description="Simple Table makes it easy to handle large datasets with lightning-fast performance. Install free for pre-revenue teams, or see Pro pricing when you earn revenue."
           primaryButton={{
-            text: "View on NPM",
-            href: "https://www.npmjs.com/package/@simple-table/react",
-            external: true,
+            text: "Install from docs",
+            href: "/docs/installation",
           }}
           secondaryButton={{
-            text: "Back to Home",
-            href: "/",
+            text: "View benchmarks",
+            href: "/benchmarks",
           }}
         />
       </article>

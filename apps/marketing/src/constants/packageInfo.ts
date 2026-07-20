@@ -29,10 +29,10 @@ export interface PackageInfo {
 export const SIMPLE_TABLE_INFO: PackageInfo = {
   name: "Simple Table",
   npmPackage: "simple-table-core",
-  version: "3.1.0",
-  bundleSizeMinGzip: "62.4 kB",
-  bundleSizeMinGzipKB: 62.4,
-  bundlePhobiaUrl: "https://bundlephobia.com/package/simple-table-core",
+  version: "3.9.9",
+  bundleSizeMinGzip: "84.6 kB",
+  bundleSizeMinGzipKB: 84.6,
+  bundlePhobiaUrl: "https://bundlephobia.com/package/simple-table-core@3.9.9",
   pricing: {
     free: false,
     cost: SIMPLE_TABLE_ANNUAL_COST_RANGE,

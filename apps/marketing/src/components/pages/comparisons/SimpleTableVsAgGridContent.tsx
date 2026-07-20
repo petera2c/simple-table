@@ -134,10 +134,17 @@ const SimpleVsAgGrid = () => {
         </NextLink>
         {" • "}
         <NextLink
-          href="/blog/best-react-table-libraries-2026"
+          href="/benchmarks"
           className="text-blue-600 dark:text-blue-400 hover:underline"
         >
-          Best React table libraries 2025
+          Benchmarks
+        </NextLink>
+        {" • "}
+        <NextLink
+          href="/case-studies/chartmetric"
+          className="text-blue-600 dark:text-blue-400 hover:underline"
+        >
+          ChartMetric case study
         </NextLink>
         {" • "}
         <NextLink

@@ -1377,6 +1377,18 @@ export const SEO_STRINGS = {
       "simple-table changelog, release notes, version history, updates, data grid releases, data grid updates, feature updates, bug fixes, version notes",
   },
   caseStudies: {
+    index: {
+      title: "Case Studies - Simple Table",
+      description:
+        "See how ChartMetric chose Simple Table over AG Grid, TanStack Table, and Material UI Data Grid — and saved over $19K in the first year.",
+      keywords: [
+        "simple table case studies",
+        "ag grid alternative case study",
+        "react data grid case study",
+        "chartmetric case study",
+        "simple table customers",
+      ],
+    },
     chartmetric: {
       title: "ChartMetric Case Study - Simple Table",
       description:
@@ -1393,5 +1405,11 @@ export const SEO_STRINGS = {
         "simple table testimonial",
       ],
     },
+  },
+  benchmarks: {
+    title: "Data Grid Benchmarks: Bundle Size & Scroll Performance | Simple Table",
+    description: `Reproducible comparisons of Simple Table (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}) vs AG Grid, TanStack Table, and Handsontable — bundle size methodology and large-row scroll guidance.`,
+    keywords:
+      "data grid benchmarks, react table bundle size, ag grid bundle size, handsontable bundle size, tanstack table size, simple table performance, virtualization fps",
   },
 };

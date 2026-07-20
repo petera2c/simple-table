@@ -917,10 +917,22 @@ export default function AgGridPricingPage() {
                     → Detailed feature comparison
                   </Link>
                   <Link
-                    href="/blog/best-react-table-libraries-2026"
+                    href="/benchmarks"
                     className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
                   >
-                    → Best React table libraries 2026
+                    → Bundle & performance benchmarks
+                  </Link>
+                  <Link
+                    href="/case-studies/chartmetric"
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                  >
+                    → ChartMetric case study
+                  </Link>
+                  <Link
+                    href="/examples/crm"
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                  >
+                    → Live CRM demo
                   </Link>
                   <Link
                     href="/blog/react-data-grid-bundle-size-comparison"
@@ -938,9 +950,9 @@ export default function AgGridPricingPage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Skip the $25K+ AG Grid bill. Start with Simple Table's FREE tier."
-        description="Get enterprise features like row grouping, aggregation, and column pinning in the FREE tier. Optional PRO plan ($85/mo) adds priority support. Source-available, free for pre-revenue teams, lightweight, and built for modern React apps. Save thousands compared to AG Grid."
+        description="Install free for pre-revenue teams (same features). Upgrade to Pro for a commercial EULA + priority support when you earn revenue — per product, not per developer. Try the live CRM demo or compare benchmarks before you buy."
         primaryButton={{
-          text: "Start Free",
+          text: "Install Free (Docs)",
           href: "/docs/installation",
         }}
         secondaryButton={{

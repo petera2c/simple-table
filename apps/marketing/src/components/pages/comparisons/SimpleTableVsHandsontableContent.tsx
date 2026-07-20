@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { Typography } from "antd";
+import NextLink from "next/link";
 import ComparisonLayout from "../../ComparisonLayout";
 import { SIMPLE_TABLE_INFO, HANDSONTABLE_INFO, getPricingString } from "@/constants/packageInfo";
 
@@ -124,7 +125,7 @@ const SimpleTableVsHandsontableContent = () => {
         and require a commercial license at {getPricingString(HANDSONTABLE_INFO)} for production
         use.
       </Text>
-      <Text className="text-lg block text-inherit">
+      <Text className="text-lg block text-inherit mb-4">
         If you need basic spreadsheet functionality with a small footprint,{" "}
         <a
           href="https://www.simple-table.com"
@@ -134,6 +135,26 @@ const SimpleTableVsHandsontableContent = () => {
         </a>
         . If you need full Excel-like capabilities and don't mind the commercial license,
         Handsontable might be the better choice.
+      </Text>
+      <Text className="text-base block text-inherit">
+        <strong>Related reading:</strong>{" "}
+        <NextLink
+          href="/blog/handsontable-pricing-breakdown-2026"
+          className="text-blue-600 dark:text-blue-400 hover:underline"
+        >
+          Handsontable pricing breakdown
+        </NextLink>
+        {" • "}
+        <NextLink href="/benchmarks" className="text-blue-600 dark:text-blue-400 hover:underline">
+          Benchmarks
+        </NextLink>
+        {" • "}
+        <NextLink
+          href="/case-studies/chartmetric"
+          className="text-blue-600 dark:text-blue-400 hover:underline"
+        >
+          ChartMetric case study
+        </NextLink>
       </Text>
     </>
   );

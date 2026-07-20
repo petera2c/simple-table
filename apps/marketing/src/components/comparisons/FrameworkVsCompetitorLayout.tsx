@@ -331,10 +331,28 @@ export default function FrameworkVsCompetitorLayout(props: FrameworkVsCompetitor
               See {fw.label} setup
             </Link>
             <Link
-              href="/docs/quick-start"
+              href="/docs/installation"
               className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-900/50"
             >
-              Quick start docs
+              Install from docs
+            </Link>
+            <Link
+              href="/pricing"
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-900/50"
+            >
+              View pricing
+            </Link>
+            <Link
+              href="/case-studies/chartmetric"
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-900/50"
+            >
+              Case study
+            </Link>
+            <Link
+              href="/benchmarks"
+              className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm text-gray-800 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-900/50"
+            >
+              Benchmarks
             </Link>
           </div>
         </section>

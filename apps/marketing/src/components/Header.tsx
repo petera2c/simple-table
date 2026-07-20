@@ -12,7 +12,6 @@ import {
   faMoon,
   faQuestionCircle,
   faEnvelope,
-  faEllipsisH,
 } from "@fortawesome/free-solid-svg-icons";
 import { faDiscord, faNpm, faGithub } from "@fortawesome/free-brands-svg-icons";
 import { Dropdown, Divider } from "antd";
@@ -160,48 +159,6 @@ const DiscordLink = ({
         )}
       </span>
     </button>
-  );
-};
-
-// More dropdown component for overflow navigation items
-// includeThemeBuilder: whether to include Theme Builder in the dropdown
-const MoreDropdown = ({ includeThemeBuilder = false }: { includeThemeBuilder?: boolean }) => {
-  const pathname = usePathname();
-
-  const moreLinks = [
-    ...(includeThemeBuilder
-      ? [{ key: "theme-builder", href: "/theme-builder", label: "Theme Builder" }]
-      : []),
-    { key: "blog", href: "/blog", label: "Blog" },
-    { key: "changelog", href: "/changelog", label: "Changelog" },
-  ];
-
-  const menuItems: MenuProps["items"] = moreLinks.map((link) => {
-    const isActive = pathname === link.href;
-    return {
-      key: link.key,
-      label: (
-        <Link
-          href={link.href}
-          className={`flex items-center transition-colors ${
-            isActive
-              ? "text-blue-600 dark:text-blue-400 font-semibold"
-              : "text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
-          }`}
-        >
-          {link.label}
-        </Link>
-      ),
-    };
-  });
-
-  return (
-    <Dropdown menu={{ items: menuItems }} placement="bottomRight" trigger={["hover"]}>
-      <button className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center focus:outline-none whitespace-nowrap">
-        <FontAwesomeIcon icon={faEllipsisH} className="mr-2" />
-        More
-      </button>
-    </Dropdown>
   );
 };
 
@@ -433,36 +390,9 @@ const Header = () => {
             {/* Desktop navigation */}
             <div className="hidden md:flex items-center gap-3 lg:gap-4">
               <div className="flex items-center gap-3 lg:gap-4">
-                {navLinks.map((link) => {
-                  // Progressive hiding as screen size decreases:
-                  // - Blog & Changelog: hide below 1280px (xl), show on xl+ (1280px+)
-                  // - Theme Builder: hide below 1140px (nav), show on nav+ (1140px+)
-                  if (link.href === "/blog" || link.href === "/changelog") {
-                    return (
-                      <div key={link.href} className="hidden xl:block">
-                        <LinkButton {...link} />
-                      </div>
-                    );
-                  }
-                  if (link.href === "/theme-builder") {
-                    return (
-                      <div key={link.href} className="hidden nav:block">
-                        <LinkButton {...link} />
-                      </div>
-                    );
-                  }
-                  return <LinkButton key={link.href} {...link} />;
-                })}
-
-                {/* More dropdown - progressively includes more items as space decreases */}
-                {/* md-nav (768-1139px): Theme Builder + Blog + Changelog */}
-                <div className="nav:hidden">
-                  <MoreDropdown includeThemeBuilder={true} />
-                </div>
-                {/* nav-xl (1140-1279px): Blog + Changelog only */}
-                <div className="hidden nav:block xl:hidden">
-                  <MoreDropdown includeThemeBuilder={false} />
-                </div>
+                {navLinks.map((link) => (
+                  <LinkButton key={link.href} {...link} />
+                ))}
               </div>
 
               <Divider type="vertical" className="h-8" />
