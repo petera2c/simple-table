@@ -31,7 +31,7 @@
           Revenue Analytics
         </h2>
       </div>
-      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px">
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
         <button
           v-for="preset in analyticsPresets"
           :key="preset.id"
@@ -50,25 +50,6 @@
         >
           {{ preset.label }}
         </button>
-      </div>
-      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
-        <input
-          type="search"
-          v-model="searchText"
-          placeholder="Quick filter…"
-          aria-label="Quick filter"
-          :style="{
-            flex: '1 1 180px',
-            maxWidth: '280px',
-            padding: '7px 10px',
-            borderRadius: '6px',
-            border: `1px solid ${inputBorder}`,
-            background: inputBg,
-            color: inputColor,
-            fontSize: '13px',
-            outline: 'none',
-          }"
-        />
         <button
           type="button"
           @click="exportCsv"
@@ -109,7 +90,6 @@
           :initial-sort-column="isPivoted ? undefined : 'sales'"
           :initial-sort-direction="isPivoted ? undefined : 'desc'"
           :pivot="active.pivot"
-          :quick-filter="{ text: searchText, mode: 'simple', caseSensitive: false }"
           :rows="analyticsDemoConfig.rows"
           :selectable-cells="true"
           :theme="theme"
@@ -133,7 +113,6 @@ const props = withDefaults(defineProps<{ height?: string | number | null; theme?
 });
 
 const activeId = ref(analyticsPresets[0].id);
-const searchText = ref("");
 const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
 const active = computed(
   () => analyticsPresets.find((p) => p.id === activeId.value) ?? analyticsPresets[0]
@@ -146,9 +125,7 @@ const chromeBorder = computed(() => (isDark.value ? "#1e293b" : "#e2e8f0"));
 const titleColor = computed(() => (isDark.value ? "#f1f5f9" : "#0f172a"));
 const chipIdleBg = computed(() => (isDark.value ? "#1e293b" : "#e2e8f0"));
 const chipIdleColor = computed(() => (isDark.value ? "#cbd5e1" : "#334155"));
-const inputBg = computed(() => (isDark.value ? "#1e293b" : "#fff"));
 const inputBorder = computed(() => (isDark.value ? "#334155" : "#cbd5e1"));
-const inputColor = computed(() => (isDark.value ? "#e2e8f0" : "#0f172a"));
 const formatHeight = computed(() => {
   if (props.height == null) return "100%";
   if (typeof props.height === "number") return `${props.height}px`;

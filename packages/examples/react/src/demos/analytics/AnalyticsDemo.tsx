@@ -18,7 +18,6 @@ const AnalyticsDemo = ({
   theme?: Theme;
 }) => {
   const [activeId, setActiveId] = useState(analyticsPresets[0].id);
-  const [searchText, setSearchText] = useState("");
   const active = analyticsPresets.find((p) => p.id === activeId) ?? analyticsPresets[0];
   const isPivoted = active.pivot != null;
   const nestedRows = (active.pivot?.rows.length ?? 0) > 1;
@@ -50,9 +49,7 @@ const AnalyticsDemo = ({
   const titleColor = isDark ? "#f1f5f9" : "#0f172a";
   const chipIdleBg = isDark ? "#1e293b" : "#e2e8f0";
   const chipIdleColor = isDark ? "#cbd5e1" : "#334155";
-  const inputBg = isDark ? "#1e293b" : "#fff";
   const inputBorder = isDark ? "#334155" : "#cbd5e1";
-  const inputColor = isDark ? "#e2e8f0" : "#0f172a";
 
   return (
     <div
@@ -87,7 +84,7 @@ const AnalyticsDemo = ({
             Revenue Analytics
           </h2>
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
           {analyticsPresets.map((preset) => {
             const selected = preset.id === activeId;
             return (
@@ -110,26 +107,6 @@ const AnalyticsDemo = ({
               </button>
             );
           })}
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-          <input
-            type="search"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            placeholder="Quick filter…"
-            aria-label="Quick filter"
-            style={{
-              flex: "1 1 180px",
-              maxWidth: 280,
-              padding: "7px 10px",
-              borderRadius: 6,
-              border: `1px solid ${inputBorder}`,
-              background: inputBg,
-              color: inputColor,
-              fontSize: 13,
-              outline: "none",
-            }}
-          />
           <button
             type="button"
             onClick={() => tableRef.current?.exportToCSV()}
@@ -180,11 +157,6 @@ const AnalyticsDemo = ({
               initialSortColumn={isPivoted ? undefined : "sales"}
               initialSortDirection={isPivoted ? undefined : "desc"}
               pivot={active.pivot}
-              quickFilter={{
-                text: searchText,
-                mode: "simple",
-                caseSensitive: false,
-              }}
               rows={analyticsDemoConfig.rows}
               selectableCells
               theme={theme}

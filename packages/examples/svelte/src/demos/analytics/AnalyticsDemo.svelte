@@ -7,7 +7,6 @@
   let { height = "480px", theme }: { height?: string | number | null; theme?: Theme } = $props();
 
   let activeId = $state(analyticsPresets[0].id);
-  let searchText = $state("");
   let tableRef = $state<{ getAPI: () => TableAPI | null } | null>(null);
   const active = $derived(analyticsPresets.find((p) => p.id === activeId) ?? analyticsPresets[0]);
   const isPivoted = $derived(active.pivot != null);
@@ -18,9 +17,7 @@
   const titleColor = $derived(isDark ? "#f1f5f9" : "#0f172a");
   const chipIdleBg = $derived(isDark ? "#1e293b" : "#e2e8f0");
   const chipIdleColor = $derived(isDark ? "#cbd5e1" : "#334155");
-  const inputBg = $derived(isDark ? "#1e293b" : "#fff");
   const inputBorder = $derived(isDark ? "#334155" : "#cbd5e1");
-  const inputColor = $derived(isDark ? "#e2e8f0" : "#0f172a");
   const formatHeight = $derived(
     height == null ? "100%" : typeof height === "number" ? `${height}px` : height
   );
@@ -41,7 +38,7 @@
         Revenue Analytics
       </h2>
     </div>
-    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px">
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
       {#each analyticsPresets as preset}
         <button
           type="button"
@@ -54,15 +51,6 @@
           {preset.label}
         </button>
       {/each}
-    </div>
-    <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
-      <input
-        type="search"
-        bind:value={searchText}
-        placeholder="Quick filter…"
-        aria-label="Quick filter"
-        style="flex: 1 1 180px; max-width: 280px; padding: 7px 10px; border-radius: 6px; border: 1px solid {inputBorder}; background: {inputBg}; color: {inputColor}; font-size: 13px; outline: none"
-      />
       <button
         type="button"
         onclick={() => tableRef?.getAPI()?.exportToCSV()}
@@ -94,7 +82,6 @@
           initialSortColumn={isPivoted ? undefined : "sales"}
           initialSortDirection={isPivoted ? undefined : "desc"}
           pivot={active.pivot}
-          quickFilter={{ text: searchText, mode: "simple", caseSensitive: false }}
           rows={analyticsDemoConfig.rows}
           selectableCells={true}
           {theme}

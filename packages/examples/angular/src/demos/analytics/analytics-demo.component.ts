@@ -1,5 +1,4 @@
 import { Component, Input, ViewChild } from "@angular/core";
-import { FormsModule } from "@angular/forms";
 import { SimpleTableComponent } from "@simple-table/angular";
 import type { AngularHeaderObject, PivotConfig, Row, Theme } from "@simple-table/angular";
 import {
@@ -12,7 +11,7 @@ import "@simple-table/angular/styles.css";
 @Component({
   selector: "analytics-demo",
   standalone: true,
-  imports: [SimpleTableComponent, FormsModule],
+  imports: [SimpleTableComponent],
   template: `
     <div
       [style.display]="'flex'"
@@ -40,7 +39,7 @@ import "@simple-table/angular/styles.css";
             Revenue Analytics
           </h2>
         </div>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px">
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
           @for (preset of presets; track preset.id) {
             <button
               type="button"
@@ -57,23 +56,6 @@ import "@simple-table/angular/styles.css";
               {{ preset.label }}
             </button>
           }
-        </div>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
-          <input
-            type="search"
-            [(ngModel)]="searchText"
-            placeholder="Quick filter…"
-            aria-label="Quick filter"
-            [style.flex]="'1 1 180px'"
-            [style.maxWidth]="'280px'"
-            [style.padding]="'7px 10px'"
-            [style.borderRadius]="'6px'"
-            [style.border]="'1px solid ' + inputBorder"
-            [style.background]="inputBg"
-            [style.color]="inputColor"
-            [style.fontSize]="'13px'"
-            [style.outline]="'none'"
-          />
           <button
             type="button"
             (click)="exportCsv()"
@@ -109,7 +91,6 @@ import "@simple-table/angular/styles.css";
             [initialSortColumn]="isPivoted ? undefined : 'sales'"
             [initialSortDirection]="isPivoted ? undefined : 'desc'"
             [pivot]="pivot"
-            [quickFilter]="{ text: searchText, mode: 'simple', caseSensitive: false }"
             [selectableCells]="true"
             [theme]="theme"
           ></simple-table>
@@ -133,7 +114,6 @@ export class AnalyticsDemoComponent {
   pivot: PivotConfig | null = analyticsPresets[0].pivot;
   nestedRows = (analyticsPresets[0].pivot?.rows.length ?? 0) > 1;
   isPivoted = analyticsPresets[0].pivot != null;
-  searchText = "";
 
   get formatHeight(): string {
     if (this.height == null) return "100%";
@@ -165,16 +145,8 @@ export class AnalyticsDemoComponent {
     return this.isDark ? "#cbd5e1" : "#334155";
   }
 
-  get inputBg(): string {
-    return this.isDark ? "#1e293b" : "#fff";
-  }
-
   get inputBorder(): string {
     return this.isDark ? "#334155" : "#cbd5e1";
-  }
-
-  get inputColor(): string {
-    return this.isDark ? "#e2e8f0" : "#0f172a";
   }
 
   selectPreset(preset: AnalyticsPreset): void {

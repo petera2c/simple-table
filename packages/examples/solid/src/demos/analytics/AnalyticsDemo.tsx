@@ -15,7 +15,6 @@ export default function AnalyticsDemo(props: {
   theme?: Theme;
 }) {
   const [activeId, setActiveId] = createSignal(analyticsPresets[0].id);
-  const [searchText, setSearchText] = createSignal("");
   const [tableHeightPx, setTableHeightPx] = createSignal<number | null>(null);
   let tableHost: HTMLDivElement | undefined;
   let tableApi: TableAPI | undefined;
@@ -31,9 +30,7 @@ export default function AnalyticsDemo(props: {
   const titleColor = () => (isDark() ? "#f1f5f9" : "#0f172a");
   const chipIdleBg = () => (isDark() ? "#1e293b" : "#e2e8f0");
   const chipIdleColor = () => (isDark() ? "#cbd5e1" : "#334155");
-  const inputBg = () => (isDark() ? "#1e293b" : "#fff");
   const inputBorder = () => (isDark() ? "#334155" : "#cbd5e1");
-  const inputColor = () => (isDark() ? "#e2e8f0" : "#0f172a");
 
   createEffect(() => {
     const el = tableHost;
@@ -85,7 +82,7 @@ export default function AnalyticsDemo(props: {
             Revenue Analytics
           </h2>
         </div>
-        <div style={{ display: "flex", "flex-wrap": "wrap", gap: "8px", "margin-bottom": "10px" }}>
+        <div style={{ display: "flex", "flex-wrap": "wrap", gap: "8px", "align-items": "center" }}>
           <For each={analyticsPresets}>
             {(preset) => {
               const selected = () => preset.id === activeId();
@@ -109,26 +106,6 @@ export default function AnalyticsDemo(props: {
               );
             }}
           </For>
-        </div>
-        <div style={{ display: "flex", "flex-wrap": "wrap", gap: "8px", "align-items": "center" }}>
-          <input
-            type="search"
-            value={searchText()}
-            onInput={(e) => setSearchText(e.currentTarget.value)}
-            placeholder="Quick filter…"
-            aria-label="Quick filter"
-            style={{
-              flex: "1 1 180px",
-              "max-width": "280px",
-              padding: "7px 10px",
-              "border-radius": "6px",
-              border: `1px solid ${inputBorder()}`,
-              background: inputBg(),
-              color: inputColor(),
-              "font-size": "13px",
-              outline: "none",
-            }}
-          />
           <button
             type="button"
             onClick={() => tableApi?.exportToCSV()}
@@ -180,11 +157,6 @@ export default function AnalyticsDemo(props: {
               initialSortColumn={isPivoted() ? undefined : "sales"}
               initialSortDirection={isPivoted() ? undefined : "desc"}
               pivot={active().pivot}
-              quickFilter={{
-                text: searchText(),
-                mode: "simple",
-                caseSensitive: false,
-              }}
               rows={analyticsDemoConfig.rows}
               selectableCells
               theme={props.theme}

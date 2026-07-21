@@ -14,7 +14,6 @@ export function renderAnalyticsDemo(
   options?: { height?: string | number | null; theme?: Theme }
 ): SimpleTableVanilla {
   let activeId = analyticsPresets[0].id;
-  let searchText = "";
   let table: SimpleTableVanilla | null = null;
 
   const isDark = options?.theme === "dark" || options?.theme === "modern-dark";
@@ -23,9 +22,7 @@ export function renderAnalyticsDemo(
   const titleColor = isDark ? "#f1f5f9" : "#0f172a";
   const chipIdleBg = isDark ? "#1e293b" : "#e2e8f0";
   const chipIdleColor = isDark ? "#cbd5e1" : "#334155";
-  const inputBg = isDark ? "#1e293b" : "#fff";
   const inputBorder = isDark ? "#334155" : "#cbd5e1";
-  const inputColor = isDark ? "#e2e8f0" : "#0f172a";
 
   const root = document.createElement("div");
   root.style.cssText = `display:flex;flex-direction:column;width:100%;height:${formatHeight(
@@ -43,30 +40,13 @@ export function renderAnalyticsDemo(
   title.style.cssText = `margin:0;font-size:18px;font-weight:650;color:${titleColor};letter-spacing:-0.02em`;
 
   const buttons = document.createElement("div");
-  buttons.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px";
-
-  const toolbar = document.createElement("div");
-  toolbar.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;align-items:center";
-
-  const search = document.createElement("input");
-  search.type = "search";
-  search.placeholder = "Quick filter…";
-  search.setAttribute("aria-label", "Quick filter");
-  search.style.cssText = `flex:1 1 180px;max-width:280px;padding:7px 10px;border-radius:6px;border:1px solid ${inputBorder};background:${inputBg};color:${inputColor};font-size:13px;outline:none`;
-  search.addEventListener("input", () => {
-    searchText = search.value;
-    table?.updateConfig({
-      quickFilter: { text: searchText, mode: "simple", caseSensitive: false },
-    });
-  });
+  buttons.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;align-items:center";
 
   const exportBtn = document.createElement("button");
   exportBtn.type = "button";
   exportBtn.textContent = "Export CSV";
   exportBtn.style.cssText = `padding:7px 12px;border-radius:6px;border:1px solid ${inputBorder};cursor:pointer;font-size:13px;font-weight:550;background:${chipIdleBg};color:${chipIdleColor}`;
   exportBtn.addEventListener("click", () => table?.getAPI().exportToCSV());
-
-  toolbar.append(search, exportBtn);
 
   const tablePad = document.createElement("div");
   tablePad.style.cssText =
@@ -99,7 +79,6 @@ export function renderAnalyticsDemo(
       initialSortColumn: pivoted ? undefined : "sales",
       initialSortDirection: pivoted ? undefined : "desc",
       pivot: active.pivot,
-      quickFilter: { text: searchText, mode: "simple", caseSensitive: false },
       rows: analyticsDemoConfig.rows,
       selectableCells: true,
       theme: options?.theme,
@@ -125,11 +104,12 @@ export function renderAnalyticsDemo(
       });
       buttons.appendChild(btn);
     }
+    buttons.appendChild(exportBtn);
   };
 
   paint();
   titleBlock.append(title);
-  chrome.append(titleBlock, buttons, toolbar);
+  chrome.append(titleBlock, buttons);
   root.append(chrome, tablePad);
   container.replaceChildren(root);
   remountTable();
