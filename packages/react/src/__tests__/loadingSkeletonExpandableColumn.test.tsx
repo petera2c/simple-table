@@ -4,17 +4,11 @@ import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
 import type { ReactHeaderObject } from "../index";
 
-// Repro: with dynamic row grouping enabled (rowGrouping + onRowGroupExpand),
-// toggling `isLoading` should keep the expandable column in sync with every
-// other column:
+// With dynamic row grouping (rowGrouping + onRowGroupExpand):
 //
-//   - entering loading: every column (including expandable) shows a skeleton
-//   - leaving loading: expandable cells created as skeletons restore expand
-//     icon + value instead of staying stuck on the skeleton
-//
-// The bug: `updateBodyCellElement` skips the content rebuild for expandable
-// cells (to preserve the expand-icon DOM node for CSS transitions), so
-// loading-skeleton swaps are skipped for that column.
+//   - empty + isLoading → full skeleton page (every column, including expandable)
+//   - rows + isLoading → real rows keep content; skeleton placeholders append below
+//   - leaving a full-skeleton mount for real rows restores expand icon + value
 
 let container: HTMLDivElement | null = null;
 let root: Root | null = null;
@@ -98,7 +92,7 @@ const expectAllCellsShowSkeleton = (host: HTMLElement): void => {
 };
 
 describe("SimpleTable (React adapter) — loading skeletons with dynamic row grouping", () => {
-  it("shows a skeleton in the expandable column when isLoading flips to true on rendered rows", async () => {
+  it("keeps expandable rows and appends skeletons when isLoading flips to true on rendered rows", async () => {
     const host = mount();
 
     render(host, data, false);
@@ -108,7 +102,14 @@ describe("SimpleTable (React adapter) — loading skeletons with dynamic row gro
     render(host, data, true);
     await wait(150);
 
-    expectAllCellsShowSkeleton(host);
+    expect(host.textContent).toContain("Alice");
+    expect(host.textContent).toContain("Bob");
+    const alice = Array.from(
+      host.querySelectorAll<HTMLElement>('.st-cell[data-accessor="name"]'),
+    ).find((c) => c.textContent?.includes("Alice"));
+    expect(alice?.querySelector(".st-expand-icon-container")).not.toBeNull();
+    expect(alice?.querySelector(".st-loading-skeleton")).toBeNull();
+    expect(host.querySelectorAll(".st-loading-skeleton").length).toBeGreaterThan(0);
   });
 
   it("restores the expandable column content (expand icon + value) when isLoading flips back to false", async () => {
@@ -148,13 +149,11 @@ describe("SimpleTable (React adapter) — loading skeletons with dynamic row gro
     expectAllCellsShowSkeleton(host);
   });
 
-  it("clears expandable-column skeletons when isLoading flips from true to false", async () => {
+  it("clears expandable-column skeletons when empty+loading resolves to rows", async () => {
     const host = mount();
 
-    // Mount already loading so expandable cells are created as skeletons.
-    // (The loaded→loading→loaded path never puts a skeleton in the expandable
-    // column under the bug, so it cannot catch the stuck-skeleton exit path.)
-    render(host, data, true);
+    // Mount empty + loading so expandable cells are created as skeletons.
+    render(host, [], true);
     await waitForElement(host, ".st-body-container .st-cell");
     await wait(80);
     expectAllCellsShowSkeleton(host);
