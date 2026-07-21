@@ -326,16 +326,16 @@ export default function ReactGridColumnPinningPage() {
 
               <CodeBlock
                 className="mb-6"
-                code={`import { SimpleTable, HeaderObject } from "@simple-table/react";
+                code={`import { SimpleTable, ColumnDef } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
     width: 80,
     pinned: "left", // Pin to the left
-    isSortable: true,
+    sortable: true,
     type: "number",
   },
   {
@@ -343,28 +343,28 @@ const headers: HeaderObject[] = [
     label: "Contact Name",
     width: 200,
     pinned: "left", // Also pin to the left
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
     accessor: "company",
     label: "Company",
     width: 180,
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
     accessor: "dealStage",
     label: "Deal Stage",
     width: 150,
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
     accessor: "dealValue",
     label: "Deal Value",
     width: 120,
-    isSortable: true,
+    sortable: true,
     type: "number",
     align: "right",
     valueFormatter: ({ value }) => 
@@ -377,7 +377,7 @@ const headers: HeaderObject[] = [
     accessor: "probability",
     label: "Probability",
     width: 100,
-    isSortable: true,
+    sortable: true,
     type: "number",
     align: "right",
   },
@@ -385,7 +385,7 @@ const headers: HeaderObject[] = [
     accessor: "lastContact",
     label: "Last Contact",
     width: 140,
-    isSortable: true,
+    sortable: true,
     type: "date",
   },
   {
@@ -406,7 +406,7 @@ const headers: HeaderObject[] = [
 export default function CRMTable({ data }) {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={data}
       
       height="500px"
@@ -634,7 +634,7 @@ export default function CRMTable({ data }) {
 export default function ResponsiveTable({ data }) {
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
-  const headers: HeaderObject[] = [
+  const headers: ColumnDef[] = [
     {
       accessor: "id",
       label: "ID",
@@ -656,7 +656,7 @@ export default function ResponsiveTable({ data }) {
     },
   ];
 
-  return <SimpleTable defaultHeaders={headers} rows={data} />;
+  return <SimpleTable columns={headers} rows={data} />;
 }`}
               />
 
@@ -675,7 +675,7 @@ export default function ResponsiveTable({ data }) {
 export default function ConfigurableTable({ data }) {
   const [pinnedColumns, setPinnedColumns] = useState<string[]>(["id", "name"]);
 
-  const headers: HeaderObject[] = [
+  const headers: ColumnDef[] = [
     {
       accessor: "id",
       label: "ID",
@@ -710,7 +710,7 @@ export default function ConfigurableTable({ data }) {
           {pinnedColumns.includes("name") ? "Unpin" : "Pin"} Name
         </button>
       </div>
-      <SimpleTable defaultHeaders={headers} rows={data} />
+      <SimpleTable columns={headers} rows={data} />
     </div>
   );
 }`}

@@ -296,7 +296,7 @@ export default function ReactPivotTablePage() {
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 Simple Table&apos;s matrix engine is declarative. Pass flat rows, a field catalog in{" "}
                 <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
-                  defaultHeaders
+                  columns
                 </code>
                 , and a{" "}
                 <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
@@ -320,10 +320,10 @@ export default function ReactPivotTablePage() {
               <CodeBlock
                 className="mb-6"
                 code={`import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Row } from "@simple-table/react";
+import type { ReactColumnDef, Row } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "region", label: "Region", width: 110, type: "string" },
   { accessor: "quarter", label: "Quarter", width: 80, type: "string" },
   { accessor: "sales", label: "Sales", width: 100, type: "number", align: "right" },
@@ -339,7 +339,7 @@ const rows: Row[] = [
 export default function RevenuePivot() {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={rows}
       // Same shape as the docs / analytics "Region × Quarter" preset
       pivot={{
@@ -393,7 +393,7 @@ export default function RevenuePivot() {
               <CodeBlock
                 className="mb-6"
                 code={`<SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={rows}
   pivot={{
     rows: ["region", "product"],
@@ -578,7 +578,7 @@ export default function AnalyticsPivot() {
         </button>
       ))}
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         rows={rows}
         pivot={active.pivot}
         expandAll={nestedRows}

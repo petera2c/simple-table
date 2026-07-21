@@ -47,7 +47,7 @@ export default function Page() {
         { title: "Excel-like ergonomics", body: "Power users expect Freeze Panes; pinning delivers the same affordance." },
       ]}
       libraryRows={[
-        { library: "simple-table-core", support: { value: "Built-in (left + right)", tone: "good" }, notes: "pinned: 'left' | 'right' on HeaderObject; sticky on horizontal scroll." },
+        { library: "simple-table-core", support: { value: "Built-in (left + right)", tone: "good" }, notes: "pinned: 'left' | 'right' on ColumnDef; sticky on horizontal scroll." },
         { library: "Tabulator", support: { value: "Built-in", tone: "good" }, notes: "frozen: true on column defs; sticky to left or right via column position." },
         { library: "Grid.js", support: { value: "Manual", tone: "bad" }, notes: "No native pinning—use position: sticky CSS on column cells." },
         { library: "Handsontable", support: { value: "Built-in (commercial)", tone: "neutral" }, notes: "Pinning built-in but commercial license required." },
@@ -55,7 +55,7 @@ export default function Page() {
       ]}
       simpleTableSection={{
         headline: "Implementation: simple-table-core",
-        intro: "Set pinned: 'left' or pinned: 'right' on individual HeaderObjects. simple-table-core handles z-index, sticky positioning, and shadow indicators automatically.",
+        intro: "Set pinned: 'left' or pinned: 'right' on individual ColumnDefs. simple-table-core handles z-index, sticky positioning, and shadow indicators automatically.",
                 notes: <>Keep pinned columns narrow (under ~30% of viewport) so the scrolling area stays usable. Combine with <code>columnResizing</code> if users should be able to resize pinned columns.</>,
       }}
       pitfalls={[

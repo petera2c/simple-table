@@ -99,7 +99,7 @@ export default function Page() {
       faqs={[
         { question: "Can I keep Element Plus for forms?", answer: "Yes. Many teams keep Element Plus for forms and dialogs and switch only the data grid." },
         { question: "Will el-table-v2 work for my use case?", answer: "el-table-v2 is virtualization-only and a different API surface than el-table. If you need both grouping and virtualization, you're juggling two components. Simple Table covers both in one." },
-        { question: "How big is the migration?", answer: "Usually a few hours per table. Map el-table-column children to HeaderObject entries; convert slot templates to cellRenderer Vue components." },
+        { question: "How big is the migration?", answer: "Usually a few hours per table. Map el-table-column children to ColumnDef entries; convert slot templates to cellRenderer Vue components." },
       ]}
       conclusionParagraphs={[
         "Element Plus el-table is the right choice if Element Plus is your design system. Simple Table for Vue is the better trade when el-table is the only Element Plus piece you actually need.",

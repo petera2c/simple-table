@@ -68,8 +68,9 @@ export interface SolidColumnEditorConfig
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
 /**
- * Column definition for `defaultHeaders`: core column metadata with Solid-only
- * renderer fields. `defaultHeaders` also accepts plain `HeaderObject[]` from shared configs.
+ * Column definition for `columns` / `defaultHeaders`: core column metadata with
+ * Solid-only renderer fields. `columns` / `defaultHeaders` also accept plain
+ * `HeaderObject[]` from shared configs.
  */
 export interface SolidHeaderObject
   extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
@@ -86,14 +87,21 @@ export interface SolidHeaderObject
   >;
 }
 
+/** Preferred name for Solid column definitions. Alias of {@link SolidHeaderObject}. */
+export type SolidColumnDef = SolidHeaderObject;
+
 // ─── Top-level props ──────────────────────────────────────────────────────────
 // Mirrors SimpleTableProps with Solid-specific overrides. Pass `ref` to receive
 // the TableAPI once mounted (callback ref).
+//
+//   Overridden to Solid equivalents:
+//     - columns / defaultHeaders → ReadonlyArray<HeaderObject | SolidHeaderObject>
 export interface SimpleTableSolidProps
   extends Omit<
     SimpleTableProps,
     | "rows"
     | "defaultHeaders"
+    | "columns"
     | "footerRenderer"
     | "emptyStateRenderer"
     | "errorStateRenderer"
@@ -108,7 +116,13 @@ export interface SimpleTableSolidProps
     | "onHeaderEdit"
     | "onColumnSelect"
   > {
-  defaultHeaders: ReadonlyArray<HeaderObject | SolidHeaderObject>;
+  /**
+   * Column definitions.
+   * @deprecated Prefer {@link columns}
+   */
+  defaultHeaders?: ReadonlyArray<HeaderObject | SolidHeaderObject>;
+  /** Column definitions. Preferred over `defaultHeaders`. */
+  columns?: ReadonlyArray<HeaderObject | SolidHeaderObject>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   onColumnOrderChange?: (newHeaders: SolidHeaderObject[]) => void;

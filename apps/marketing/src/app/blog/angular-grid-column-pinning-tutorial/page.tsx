@@ -47,7 +47,7 @@ export default function Page() {
         { title: "Excel-like ergonomics", body: "Power users expect Freeze Panes; pinning delivers the same affordance." },
       ]}
       libraryRows={[
-        { library: "Simple Table for Angular", support: { value: "Built-in (left + right)", tone: "good" }, notes: "pinned: 'left' | 'right' on HeaderObject; sticky on horizontal scroll." },
+        { library: "Simple Table for Angular", support: { value: "Built-in (left + right)", tone: "good" }, notes: "pinned: 'left' | 'right' on ColumnDef; sticky on horizontal scroll." },
         { library: "AG Grid Angular", support: { value: "Built-in", tone: "good" }, notes: "pinned: 'left' | 'right' on column defs." },
         { library: "PrimeNG Table", support: { value: "Built-in", tone: "good" }, notes: "frozenColumns + scrollable + scrollDirection='horizontal'." },
         { library: "ngx-datatable", support: { value: "Limited", tone: "neutral" }, notes: "[frozenLeft] / [frozenRight] but limited theming and edge cases." },
@@ -55,7 +55,7 @@ export default function Page() {
       ]}
       simpleTableSection={{
         headline: "Implementation: Simple Table for Angular",
-        intro: "Set pinned: 'left' or pinned: 'right' on individual HeaderObjects. Simple Table handles z-index, sticky positioning, and shadow indicators automatically.",
+        intro: "Set pinned: 'left' or pinned: 'right' on individual ColumnDefs. Simple Table handles z-index, sticky positioning, and shadow indicators automatically.",
                 notes: (
           <>
             Keep pinned columns narrow (under ~30% of viewport) so the scrolling area stays usable. Combine with <code>columnResizing</code> if users should be able to resize pinned columns.

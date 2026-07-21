@@ -1,10 +1,10 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import { useState, useCallback, useRef } from "react";
 import "@simple-table/react/styles.css";
 
 // Define headers
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "User Name", width: "1fr", type: "string" },
   { accessor: "email", label: "Email", width: "1fr", type: "string" },
@@ -141,7 +141,7 @@ const InfiniteScrollDemo = ({
         {!hasMore && rows.length > 20 ? " (all loaded)" : ""}
       </div>
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         rows={rows}
         height={height}
         onLoadMore={handleLoadMore}

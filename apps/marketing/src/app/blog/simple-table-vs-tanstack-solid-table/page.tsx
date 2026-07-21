@@ -105,7 +105,7 @@ export default function Page() {
       ]}
       faqs={[
         { question: "Is TanStack Solid Table dead?", answer: "No—it's actively maintained as part of the TanStack family. The trade-off vs Simple Table is headless vs batteries-included, not maintenance." },
-        { question: "Can I migrate gradually?", answer: "Yes. Replace one table at a time. Map your column defs to HeaderObject entries; replace your TanStack Virtual integration with Simple Table's built-in virtualization; convert custom cell renderers to Simple Table cellRenderer Solid components." },
+        { question: "Can I migrate gradually?", answer: "Yes. Replace one table at a time. Map your column defs to ColumnDef entries; replace your TanStack Virtual integration with Simple Table's built-in virtualization; convert custom cell renderers to Simple Table cellRenderer Solid components." },
         { question: "Does Simple Table for Solid use signals?", answer: "Yes. Inputs accept signals or static values; updates flow through Solid's fine-grained reactivity." },
       ]}
       conclusionParagraphs={[

@@ -114,7 +114,7 @@ export default function Page() {
         { question: "What's the best free Vue 3 data grid in 2026?", answer: "For most new Vue 3 / Nuxt projects, Simple Table for Vue—source-available (free for pre-revenue teams), idiomatic Composition API, ~70 kB gzipped, virtualization + pinning + grouping + editing in one package. Stay on the design-system grid (Vuetify, PrimeVue, Element Plus, Naive UI) if you're invested in that suite." },
         { question: "Is AG Grid Community enough for Vue?", answer: "It depends. AG Grid Community covers virtualization, pinning, sort, and filter—but row grouping with aggregations, pivoting, and tree data are Enterprise-only. Many Vue teams discover the gap mid-project." },
         { question: "Which alternative has the smallest bundle?", answer: "Simple Table for Vue and Vue Good Table are the lightest standalone options. The design-system grids (Vuetify, PrimeVue, Element Plus, Naive UI) carry their suite's runtime, theme, and icon costs." },
-        { question: "How hard is migration from Vuetify or PrimeVue?", answer: "Hours to a few days per table. Map column children to HeaderObjects; convert slot templates to cellRenderer Vue components; keep the rest of the suite if you want." },
+        { question: "How hard is migration from Vuetify or PrimeVue?", answer: "Hours to a few days per table. Map column children to ColumnDefs; convert slot templates to cellRenderer Vue components; keep the rest of the suite if you want." },
       ]}
       conclusionParagraphs={[
         "There's no single right answer for every Vue team. Quick decision: if you need grouping with aggregations or virtualization, you're not committed to a design system, and you don't want to pay AG Grid Enterprise—pick Simple Table for Vue.",

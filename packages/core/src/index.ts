@@ -8,6 +8,7 @@ import type {
   Accessor,
   AutoSizeMode,
   ChartOptions,
+  ColumnDef,
   ColumnType,
   Comparator,
   ComparatorProps,
@@ -19,6 +20,7 @@ import type {
   ValueGetter,
   ValueGetterProps,
 } from "./types/HeaderObject";
+import type { SimpleTableConfigInput } from "./utils/normalizeConfig";
 import type { AggregationConfig, AggregationType } from "./types/AggregationTypes";
 import type { PivotConfig, PivotValueConfig, PivotResult } from "./types/PivotTypes";
 import {
@@ -96,6 +98,12 @@ import type TableRow from "./types/TableRow";
 export { SimpleTableVanilla };
 export { asRows } from "./utils/asRows";
 export {
+  normalizeConfig,
+  normalizeConfigPatch,
+  normalizeColumnDef,
+  normalizeColumnDefs,
+} from "./utils/normalizeConfig";
+export {
   pivotRows,
   buildPivotAccessor,
   buildPivotRowTotalAccessor,
@@ -132,6 +140,7 @@ export type {
   ColumnEditorRowRenderer,
   ColumnEditorRowRendererComponents,
   ColumnEditorRowRendererProps,
+  ColumnDef,
   ColumnEditorSearchFunction,
   ColumnType,
   ColumnVisibilityState,
@@ -186,6 +195,7 @@ export type {
   SetHeaderRenameProps,
   ShowWhen,
   SimpleTableConfig,
+  SimpleTableConfigInput,
   SimpleTableProps,
   SortColumn,
   TableAPI,

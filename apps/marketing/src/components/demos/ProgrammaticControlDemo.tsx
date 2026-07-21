@@ -1,16 +1,16 @@
 import { useRef, useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, TableAPI, Theme, CellRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, TableAPI, Theme, CellRendererProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Define headers with various types for comprehensive testing
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
     width: 70,
     type: "number",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -19,7 +19,7 @@ const headers: ReactHeaderObject[] = [
     width: "1fr",
     minWidth: 150,
     type: "string",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -27,7 +27,7 @@ const headers: ReactHeaderObject[] = [
     label: "Category",
     width: 140,
     type: "enum",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     enumOptions: [
       { label: "Electronics", value: "Electronics" },
@@ -42,7 +42,7 @@ const headers: ReactHeaderObject[] = [
     width: 110,
     align: "right",
     type: "number",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     cellRenderer: ({ row }: CellRendererProps) => {
       const price = row.price as number;
@@ -55,7 +55,7 @@ const headers: ReactHeaderObject[] = [
     width: 100,
     align: "right",
     type: "number",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -63,7 +63,7 @@ const headers: ReactHeaderObject[] = [
     label: "Status",
     width: 110,
     type: "enum",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     enumOptions: [
       { label: "Available", value: "Available" },
@@ -294,7 +294,7 @@ const ProgrammaticControlDemo = ({
 
       {/* Table */}
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         rows={PRODUCT_DATA}
         ref={tableRef}
         height={height}

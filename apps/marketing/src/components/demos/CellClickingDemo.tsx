@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, CellClickProps, CellRendererProps, Theme } from "@simple-table/react";
+import type { ReactColumnDef, CellClickProps, CellRendererProps, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 type ProjectTask = {
@@ -16,22 +16,22 @@ type ProjectTask = {
 };
 
 // Define headers
-const headers: ReactHeaderObject[] = [
-  { accessor: "id", label: "Task ID", width: 80, isSortable: true, type: "number" },
+const headers: ReactColumnDef[] = [
+  { accessor: "id", label: "Task ID", width: 80, sortable: true, type: "number" },
   {
     accessor: "task",
     label: "Task Name",
     minWidth: 150,
     width: "1fr",
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
-  { accessor: "assignee", label: "Assignee", width: 120, isSortable: true, type: "string" },
+  { accessor: "assignee", label: "Assignee", width: 120, sortable: true, type: "string" },
   {
     accessor: "priority",
     label: "Priority",
     width: 100,
-    isSortable: true,
+    sortable: true,
     type: "string",
     cellRenderer: ({ accessor, colIndex, row, theme }: CellRendererProps) => (
       <span
@@ -51,7 +51,7 @@ const headers: ReactHeaderObject[] = [
     accessor: "status",
     label: "Status",
     width: 120,
-    isSortable: true,
+    sortable: true,
     type: "string",
     cellRenderer: ({ accessor, colIndex, row, theme }: CellRendererProps) => (
       <span
@@ -80,9 +80,9 @@ const headers: ReactHeaderObject[] = [
       </span>
     ),
   },
-  { accessor: "dueDate", label: "Due Date", width: 120, isSortable: true, type: "date" },
-  { accessor: "estimatedHours", label: "Est. Hours", width: 100, isSortable: true, type: "number" },
-  { accessor: "completedHours", label: "Done Hours", width: 100, isSortable: true, type: "number" },
+  { accessor: "dueDate", label: "Due Date", width: 120, sortable: true, type: "date" },
+  { accessor: "estimatedHours", label: "Est. Hours", width: 100, sortable: true, type: "number" },
+  { accessor: "completedHours", label: "Done Hours", width: 100, sortable: true, type: "number" },
   {
     accessor: "details",
     label: "View Details",
@@ -503,7 +503,7 @@ const CellClickingDemo = ({ theme }: { height?: string | number; theme?: Theme }
       )}
       <SimpleTable
         columnResizing={true}
-        defaultHeaders={headers}
+        columns={headers}
         height={"320px"}
         onCellClick={handleCellClick}
         rows={rows}

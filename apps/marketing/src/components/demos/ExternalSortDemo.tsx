@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, SortColumn, Theme, CellRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, SortColumn, Theme, CellRendererProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Type for our sample data
@@ -177,40 +177,40 @@ const sampleData: EmployeeData[] = [
   },
 ];
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   {
     accessor: "name",
     label: "Name",
     width: "1fr",
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
     accessor: "age",
     label: "Age",
     width: 120,
-    isSortable: true,
+    sortable: true,
     type: "number",
   },
   {
     accessor: "department",
     label: "Department",
     width: 150,
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
     accessor: "email",
     label: "Email",
     width: 200,
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
     accessor: "salary",
     label: "Salary",
     width: 120,
-    isSortable: true,
+    sortable: true,
     type: "number",
     cellRenderer: ({ row }: CellRendererProps) => `$${(row.salary || 0).toLocaleString()}`,
     align: "right",
@@ -257,7 +257,7 @@ const ExternalSortDemo = ({ theme }: { theme?: Theme }) => {
       </div>
 
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         rows={sortedData} // We provide the pre-sorted data
         onSortChange={setSortConfig} // Handle sort changes externally
         externalSortHandling={true} // Disable internal sorting logic

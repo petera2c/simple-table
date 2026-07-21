@@ -1,9 +1,9 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Define all headers with pinned status
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "name", label: "Name", width: 132, pinned: "left", type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },
   { accessor: "role", label: "Role", width: 150, type: "string" },
@@ -193,11 +193,11 @@ const ColumnPinningDemo = ({
   return (
     <SimpleTable
       columnResizing
-      defaultHeaders={headers}
+      columns={headers}
       height={height}
       rows={EMPLOYEE_DATA}
       theme={theme}
-      editColumns={true}
+      enableColumnEditor={true}
     />
   );
 };

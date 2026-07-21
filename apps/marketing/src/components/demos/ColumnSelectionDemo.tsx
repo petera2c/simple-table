@@ -1,23 +1,23 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Define headers
-const headers: ReactHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
+const headers: ReactColumnDef[] = [
+  { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   {
     accessor: "name",
     label: "Name",
     minWidth: 120,
     width: "1fr",
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
-  { accessor: "age", label: "Age", width: 100, isSortable: true, type: "number" },
-  { accessor: "role", label: "Role", width: 150, isSortable: true, type: "string" },
-  { accessor: "department", label: "Department", width: 150, isSortable: true, type: "string" },
-  { accessor: "email", label: "Email", width: 200, isSortable: true, type: "string" },
+  { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },
+  { accessor: "role", label: "Role", width: 150, sortable: true, type: "string" },
+  { accessor: "department", label: "Department", width: 150, sortable: true, type: "string" },
+  { accessor: "email", label: "Email", width: 200, sortable: true, type: "string" },
 ];
 
 // Sample data
@@ -127,15 +127,15 @@ const ColumnSelectionDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const [selectedColumn, setSelectedColumn] = useState<ReactHeaderObject | null>(null);
+  const [selectedColumn, setSelectedColumn] = useState<ReactColumnDef | null>(null);
 
-  const handleColumnSelect = (header: ReactHeaderObject) => {
+  const handleColumnSelect = (header: ReactColumnDef) => {
     setSelectedColumn(header);
   };
 
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       height={height}
       onColumnSelect={handleColumnSelect}
       rows={EMPLOYEE_DATA}

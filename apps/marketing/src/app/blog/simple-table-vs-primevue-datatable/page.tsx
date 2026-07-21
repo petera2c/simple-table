@@ -107,7 +107,7 @@ export default function Page() {
       faqs={[
         { question: "Can I keep PrimeVue for forms and switch only the table?", answer: "Yes. Many teams keep PrimeVue for forms / dialogs and switch only the data grid. They coexist fine." },
         { question: "Does Simple Table for Vue work in Nuxt 3 SSR?", answer: "Yes. @simple-table/vue is ESM and SSR-friendly. It works in Nuxt 3 and Nuxt 4 out of the box." },
-        { question: "How big is the migration from DataTable?", answer: "Hours to a few days depending on customizations. Replace <Column field='x' header='Y' /> children with HeaderObject entries; convert #body slots to cellRenderer Vue components." },
+        { question: "How big is the migration from DataTable?", answer: "Hours to a few days depending on customizations. Replace <Column field='x' header='Y' /> children with ColumnDef entries; convert #body slots to cellRenderer Vue components." },
         { question: "Will I lose PrimeVue's TreeTable?", answer: "Simple Table supports tree data and expandable rows natively. Most TreeTable use cases port over with no functional regressions." },
       ]}
       conclusionParagraphs={[

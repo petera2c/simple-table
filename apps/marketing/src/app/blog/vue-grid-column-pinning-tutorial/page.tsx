@@ -47,7 +47,7 @@ export default function Page() {
         { title: "Excel-like ergonomics", body: "Power users expect Freeze Panes; pinning delivers the same affordance." },
       ]}
       libraryRows={[
-        { library: "Simple Table for Vue", support: { value: "Built-in (left + right)", tone: "good" }, notes: "pinned: 'left' | 'right' on HeaderObject; sticky on horizontal scroll." },
+        { library: "Simple Table for Vue", support: { value: "Built-in (left + right)", tone: "good" }, notes: "pinned: 'left' | 'right' on ColumnDef; sticky on horizontal scroll." },
         { library: "PrimeVue DataTable", support: { value: "Built-in", tone: "good" }, notes: "frozen prop on <Column>; alignFrozen='left'|'right'." },
         { library: "Element Plus el-table", support: { value: "Built-in", tone: "good" }, notes: "<el-table-column fixed=\"left\" /> or fixed=\"right\"." },
         { library: "Vuetify v-data-table", support: { value: "Manual", tone: "bad" }, notes: "No native sticky columns; use position: sticky CSS yourself." },
@@ -55,7 +55,7 @@ export default function Page() {
       ]}
       simpleTableSection={{
         headline: "Implementation: Simple Table for Vue",
-        intro: "Set pinned: 'left' or pinned: 'right' on individual HeaderObjects. Simple Table handles z-index, sticky positioning, and shadow indicators automatically.",
+        intro: "Set pinned: 'left' or pinned: 'right' on individual ColumnDefs. Simple Table handles z-index, sticky positioning, and shadow indicators automatically.",
                 notes: <>Keep pinned columns narrow (under ~30% of viewport) so the scrolling area stays usable. Combine with <code>columnResizing</code> if users should be able to resize pinned columns.</>,
       }}
       pitfalls={[

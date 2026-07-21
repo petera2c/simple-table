@@ -529,10 +529,10 @@ function onResizeStart(columnId) {
 
               <CodeBlock
                 className="mb-6"
-                code={`import { SimpleTable, HeaderObject } from "@simple-table/react";
+                code={`import { SimpleTable, ColumnDef } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
@@ -568,7 +568,7 @@ const headers: HeaderObject[] = [
 export default function AutoExpandTable({ data }) {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={data}
       
       autoExpandColumns={true} // That's it!
@@ -619,7 +619,7 @@ useEffect(() => {
 
 <SimpleTable
   autoExpandColumns={!isMobile}
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   
 />`}
@@ -644,7 +644,7 @@ useEffect(() => {
 
               <CodeBlock
                 className="mb-6"
-                code={`const headers: HeaderObject[] = [
+                code={`const headers: ColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
@@ -681,7 +681,7 @@ useEffect(() => {
 ];
 
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   
   autoExpandColumns={true}
@@ -721,7 +721,7 @@ useEffect(() => {
               <CodeBlock
                 className="mb-6"
                 code={`<SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   
   autoExpandColumns={true}
@@ -900,7 +900,7 @@ useEffect(() => {
 
 <SimpleTable
   autoExpandColumns={!isMobile} // Disable on mobile
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   
 />`}

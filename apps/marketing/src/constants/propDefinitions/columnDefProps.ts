@@ -1,6 +1,6 @@
 import type { PropInfo } from "./types";
 
-export const HEADER_OBJECT_PROPS: PropInfo[] = [
+export const COLUMN_DEF_PROPS: PropInfo[] = [
   {
     key: "accessor",
     name: "accessor",
@@ -122,12 +122,12 @@ minWidth: "100px"`,
 maxWidth: "400px"`,
   },
   {
-    key: "isSortable",
-    name: "isSortable",
+    key: "sortable",
+    name: "sortable",
     required: false,
     description: "Enable sorting for this column.",
     type: "boolean",
-    example: `isSortable: true`,
+    example: `sortable: true`,
   },
   {
     key: "sortingOrder",
@@ -206,12 +206,12 @@ quickFilterGetter: ({ row }) =>
   row.tags?.map(t => t.name).join(" ") || ""`,
   },
   {
-    key: "isEditable",
-    name: "isEditable",
+    key: "editable",
+    name: "editable",
     required: false,
     description: "Enable inline editing for this column.",
     type: "boolean",
-    example: `isEditable: true`,
+    example: `editable: true`,
   },
   {
     key: "hide",
@@ -253,7 +253,7 @@ quickFilterGetter: ({ row }) =>
   expandable: true,
   nestedTable: {
     // Child level with 6 different columns
-    defaultHeaders: [
+    columns: [
       { accessor: "divisionId", label: "Division ID", width: 120 },
       { accessor: "divisionName", label: "Division", width: 200 },
       { accessor: "revenue", label: "Revenue", width: 120 },
@@ -277,19 +277,19 @@ quickFilterGetter: ({ row }) =>
     example: `pinned: "left"`,
   },
   {
-    key: "isEssential",
-    name: "isEssential",
+    key: "essential",
+    name: "essential",
     required: false,
     description:
       "Marks the column as essential: not hideable in the column editor, not unpinable from its pinned side, and it stays in the leading essential group when reordering within each left / main / right section.",
     type: "boolean",
-    link: "/docs/api-reference#header-object",
+    link: "/docs/api-reference#column-def",
     example: `{
   accessor: "id",
   label: "ID",
   width: 72,
   pinned: "left",
-  isEssential: true,
+  essential: true,
 }`,
   },
   {
@@ -297,8 +297,8 @@ quickFilterGetter: ({ row }) =>
     name: "children",
     required: false,
     description: "Child columns for nested header structure.",
-    type: "HeaderObject[]",
-    link: "#header-object",
+    type: "ColumnDef[]",
+    link: "#column-def",
     example: `children: [
   { accessor: "firstName", label: "First", width: 100 },
   { accessor: "lastName", label: "Last", width: 100 }
@@ -453,7 +453,7 @@ comparator: ({ rowA, rowB, direction }) => {
     name: "headerRenderer",
     required: false,
     description: "Custom render function for header content.",
-    type: "({ accessor, colIndex, header }: { accessor: Accessor; colIndex: number; header: HeaderObject; }) => ReactNode | string",
+    type: "({ accessor, colIndex, header }: { accessor: Accessor; colIndex: number; header: ColumnDef; }) => ReactNode | string",
     example: `headerRenderer: ({ accessor, colIndex, header }) => (
   <strong>{header.label}</strong>
 )`,

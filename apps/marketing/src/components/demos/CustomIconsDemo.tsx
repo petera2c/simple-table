@@ -1,30 +1,30 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme, CellRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, Theme, CellRendererProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Define headers with various properties
-const headers: ReactHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
+const headers: ReactColumnDef[] = [
+  { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   {
     accessor: "product",
     label: "Product",
     minWidth: 100,
     width: "1fr",
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
     accessor: "category",
     label: "Category",
     width: 150,
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
     accessor: "price",
     label: "Price",
     width: 120,
-    isSortable: true,
+    sortable: true,
     align: "right",
     type: "number",
     cellRenderer: ({ row }: CellRendererProps) => {
@@ -36,7 +36,7 @@ const headers: ReactHeaderObject[] = [
     accessor: "stock",
     label: "Stock",
     width: 100,
-    isSortable: true,
+    sortable: true,
     align: "right",
     type: "number",
   },
@@ -44,7 +44,7 @@ const headers: ReactHeaderObject[] = [
     accessor: "rating",
     label: "Rating",
     width: 120,
-    isSortable: true,
+    sortable: true,
     align: "right",
     type: "number",
     cellRenderer: ({ row }: CellRendererProps) => {
@@ -163,12 +163,12 @@ const customIcons = {
 const CustomIconsDemo = ({ theme }: { theme?: Theme }) => {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       height={"auto"}
       icons={customIcons}
       rows={PRODUCT_DATA}
       rowsPerPage={7}
-      shouldPaginate
+      enablePagination
       theme={theme}
     />
   );

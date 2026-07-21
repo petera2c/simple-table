@@ -10,8 +10,8 @@ import PropTable, { type PropInfo } from "@/components/PropTable";
 
 const CELL_EDITING_PROPS: PropInfo[] = [
   {
-    key: "isEditable",
-    name: "HeaderObject.isEditable",
+    key: "editable",
+    name: "ColumnDef.editable",
     required: false,
     description:
       "Makes a column editable, allowing users to modify cell values directly within the table interface.",
@@ -19,12 +19,12 @@ const CELL_EDITING_PROPS: PropInfo[] = [
     example: `{ 
   accessor: "name", 
   label: "Full Name", 
-  isEditable: true 
+  editable: true 
 }`,
   },
   {
     key: "type",
-    name: "HeaderObject.type",
+    name: "ColumnDef.type",
     required: false,
     description:
       "Specifies the data type and editor for the column. Simple Table provides specialized editors for different data types.",
@@ -36,7 +36,7 @@ const CELL_EDITING_PROPS: PropInfo[] = [
   accessor: "firstName", 
   label: "First Name", 
   type: "string",
-  isEditable: true 
+  editable: true 
 }
 
 // Number editor (numeric input with validation)
@@ -44,7 +44,7 @@ const CELL_EDITING_PROPS: PropInfo[] = [
   accessor: "salary", 
   label: "Salary", 
   type: "number",
-  isEditable: true 
+  editable: true 
 }
 
 // Boolean editor (checkbox)
@@ -52,7 +52,7 @@ const CELL_EDITING_PROPS: PropInfo[] = [
   accessor: "isActive", 
   label: "Active", 
   type: "boolean",
-  isEditable: true 
+  editable: true 
 }
 
 // Date editor (date picker)
@@ -60,7 +60,7 @@ const CELL_EDITING_PROPS: PropInfo[] = [
   accessor: "hireDate", 
   label: "Hire Date", 
   type: "date",
-  isEditable: true 
+  editable: true 
 }
 
 // Enum editor (dropdown with options)
@@ -68,7 +68,7 @@ const CELL_EDITING_PROPS: PropInfo[] = [
   accessor: "role", 
   label: "Role", 
   type: "enum",
-  isEditable: true,
+  editable: true,
   enumOptions: [
     { label: "Developer", value: "Developer" },
     { label: "Designer", value: "Designer" },
@@ -171,7 +171,7 @@ export default function CellEditingContent() {
           <li>
             Add the{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-              isEditable: true
+              editable: true
             </code>{" "}
             property to the columns you want to make editable
           </li>
@@ -216,7 +216,7 @@ export default function CellEditingContent() {
             <li>
               <strong>Important:</strong> Pasting is only allowed into columns that have{" "}
               <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-                isEditable: true
+                editable: true
               </code>
             </li>
             <li>Non-editable columns will be skipped during paste operations</li>
@@ -229,7 +229,7 @@ export default function CellEditingContent() {
             <p className="text-gray-700 dark:text-gray-300">
               When pasting data, only columns marked with{" "}
               <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-                isEditable: true
+                editable: true
               </code>{" "}
               will accept the pasted values. This ensures data integrity and prevents accidental
               modification of read-only columns like IDs or calculated fields.

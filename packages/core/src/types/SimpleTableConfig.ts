@@ -27,6 +27,11 @@ import { AnimationsConfig } from "./AnimationsConfig";
 import type { FooterPosition } from "./FooterPosition";
 import type { PivotConfig } from "./PivotTypes";
 
+/**
+ * Canonical runtime config after {@link normalizeConfig}. Consumer-facing
+ * aliases (`columns`, `enableColumnEditor`, …) are accepted on
+ * {@link SimpleTableConfigInput} / {@link SimpleTableProps} and collapsed here.
+ */
 export interface SimpleTableConfig {
   animations?: AnimationsConfig;
   /**

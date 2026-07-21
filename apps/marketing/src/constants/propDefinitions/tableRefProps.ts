@@ -115,7 +115,7 @@ exportToJSON(rawData);`,
     required: false,
     description:
       "Returns the table's current header/column definitions. Includes all column configuration such as accessors, labels, types, and formatting options. Useful for dynamic table manipulation, export configurations, or building custom UI controls.",
-    type: "() => HeaderObject[]",
+    type: "() => ColumnDef[]",
     example: `// Get current headers
 const headers = tableRef.current?.getHeaders();
 console.log(\`Table has \${headers.length} columns\`);
@@ -127,7 +127,7 @@ console.log("Columns:", columnNames);
 
 // Validate column configuration
 const headers = tableRef.current?.getHeaders();
-const sortableColumns = headers.filter(h => h.isSortable);`,
+const sortableColumns = headers.filter(h => h.sortable);`,
   },
   {
     key: "getSortState",
@@ -571,7 +571,7 @@ if (targetDepth !== -1) {
     name: "toggleColumnEditor",
     required: false,
     description:
-      "Opens, closes, or toggles the column editor menu programmatically. When called without arguments, it toggles the current state (open if closed, close if open). Pass true to explicitly open the menu, or false to explicitly close it. Requires editColumns. Pair with columnEditorConfig.showToggle: false to hide the built-in Columns strip and drive the editor from your own toolbar button.",
+      "Opens, closes, or toggles the column editor menu programmatically. When called without arguments, it toggles the current state (open if closed, close if open). Pass true to explicitly open the menu, or false to explicitly close it. Requires enableColumnEditor. Pair with columnEditorConfig.showToggle: false to hide the built-in Columns strip and drive the editor from your own toolbar button.",
     type: "(open?: boolean) => void",
     example: `// Toggle the column editor (open if closed, close if open)
 tableRef.current?.toggleColumnEditor();
@@ -677,7 +677,7 @@ localStorage.setItem("tablePins", JSON.stringify({ left, main, right }));`,
     name: "applyPinnedState",
     required: false,
     description:
-      "Set column order and pin sides in one call. Each root accessor must appear exactly once across left, main, and right. Columns with isEssential keep required order within each section.",
+      "Set column order and pin sides in one call. Each root accessor must appear exactly once across left, main, and right. Columns with essential keep required order within each section.",
     type: "(state: { left: Accessor[]; main: Accessor[]; right: Accessor[] }) => Promise<void>",
     link: "#table-api",
     example: `await tableRef.current?.applyPinnedState({

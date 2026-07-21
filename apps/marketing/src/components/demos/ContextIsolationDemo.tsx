@@ -20,7 +20,7 @@ import type {
   FooterRendererProps,
   HeaderDropdownProps,
   HeaderRendererProps,
-  ReactHeaderObject,
+  ReactColumnDef,
   ReactIconsConfig,
   RowSelectionChangeProps,
   SortColumn,
@@ -850,7 +850,7 @@ function updateRegionTree(
 // layout (order / width / visibility / pinning / sort) is saved to localStorage
 // and restored on mount, while the *pristine* column config is kept in code as
 // the single source of truth for "reset to true defaults". The built-in
-// `resetColumns` resets to whatever `defaultHeaders` currently is (the persisted
+// `resetColumns` resets to whatever `columns` currently is (the persisted
 // snapshot); the custom reset clears storage and remounts from the originals.
 // ─────────────────────────────────────────────────────────────────────────────
 const SAVED_VIEW_STORAGE_KEY = "st-context-isolation-saved-view";
@@ -869,7 +869,7 @@ interface PersistedLayout {
 
 // Pristine, never-mutated column config. Rebuilt fresh so the table never
 // mutates the originals we reset back to.
-function buildSavedBaseHeaders(): ReactHeaderObject[] {
+function buildSavedBaseHeaders(): ReactColumnDef[] {
   return [
     {
       accessor: "rep",
@@ -877,7 +877,7 @@ function buildSavedBaseHeaders(): ReactHeaderObject[] {
       width: 220,
       type: "string",
       pinned: "left",
-      isSortable: true,
+      sortable: true,
       cellRenderer: RepCell,
       headerRenderer: makeHeader("🧑‍💼"),
     },
@@ -887,7 +887,7 @@ function buildSavedBaseHeaders(): ReactHeaderObject[] {
       width: 150,
       type: "enum",
       enumOptions: STATUS_OPTIONS,
-      isSortable: true,
+      sortable: true,
       cellRenderer: StatusBadgeCell,
       headerRenderer: makeHeader("🏷️"),
     },
@@ -896,7 +896,7 @@ function buildSavedBaseHeaders(): ReactHeaderObject[] {
       label: "Team",
       width: 140,
       type: "string",
-      isSortable: true,
+      sortable: true,
       headerRenderer: makeHeader("👥"),
     },
     {
@@ -905,7 +905,7 @@ function buildSavedBaseHeaders(): ReactHeaderObject[] {
       width: 150,
       type: "number",
       align: "right",
-      isSortable: true,
+      sortable: true,
       cellRenderer: CurrencyCell,
       headerRenderer: makeHeader("💰"),
     },
@@ -915,7 +915,7 @@ function buildSavedBaseHeaders(): ReactHeaderObject[] {
       width: 110,
       type: "number",
       align: "right",
-      isSortable: true,
+      sortable: true,
       headerRenderer: makeHeader("🤝"),
     },
     {
@@ -923,7 +923,7 @@ function buildSavedBaseHeaders(): ReactHeaderObject[] {
       label: "Quota",
       width: 160,
       type: "number",
-      isSortable: true,
+      sortable: true,
       cellRenderer: QuotaCell,
       headerRenderer: makeHeader("🎯"),
     },
@@ -932,7 +932,7 @@ function buildSavedBaseHeaders(): ReactHeaderObject[] {
       label: "Rating",
       width: 130,
       type: "number",
-      isSortable: true,
+      sortable: true,
       cellRenderer: RatingCell,
       headerRenderer: makeHeader("⭐"),
     },
@@ -941,7 +941,7 @@ function buildSavedBaseHeaders(): ReactHeaderObject[] {
       label: "Start Date",
       width: 140,
       type: "date",
-      isSortable: true,
+      sortable: true,
       headerRenderer: makeHeader("📅"),
     },
     {
@@ -954,7 +954,7 @@ function buildSavedBaseHeaders(): ReactHeaderObject[] {
   ];
 }
 
-function columnsFromHeaders(headers: ReadonlyArray<ReactHeaderObject>): PersistedColumn[] {
+function columnsFromHeaders(headers: ReadonlyArray<ReactColumnDef>): PersistedColumn[] {
   return headers.map((h) => {
     const col: PersistedColumn = { accessor: String(h.accessor) };
     if (h.hide) col.hide = true;
@@ -967,13 +967,13 @@ function columnsFromHeaders(headers: ReadonlyArray<ReactHeaderObject>): Persiste
 // Merge a persisted layout onto the pristine headers: reorder, then apply
 // hide/width/pinning. Columns added since the layout was saved are appended.
 function applyLayoutToHeaders(
-  base: ReactHeaderObject[],
+  base: ReactColumnDef[],
   layout: PersistedLayout | null,
-): ReactHeaderObject[] {
+): ReactColumnDef[] {
   if (!layout || layout.columns.length === 0) return base;
   const byAccessor = new Map(base.map((h) => [String(h.accessor), h]));
   const used = new Set<string>();
-  const ordered: ReactHeaderObject[] = [];
+  const ordered: ReactColumnDef[] = [];
   for (const col of layout.columns) {
     const header = byAccessor.get(col.accessor);
     if (!header) continue;
@@ -1058,7 +1058,7 @@ function SavedViewEditorPanel({
         </button>
         <span style={{ fontSize: 11, color: "#6b7280", lineHeight: 1.4 }}>
           “Saved snapshot” uses the built-in <code>resetColumns()</code> → restores the persisted{" "}
-          <code>defaultHeaders</code>. “True defaults” clears localStorage and remounts from the
+          <code>columns</code>. “True defaults” clears localStorage and remounts from the
           original column config.
         </span>
       </div>
@@ -1090,7 +1090,7 @@ function MegaTables() {
   const [savedStatus, setSavedStatus] = useState("");
   const savedLayoutRef = useRef<PersistedLayout | null>(null);
 
-  const savedHeaders = useMemo<ReactHeaderObject[]>(() => {
+  const savedHeaders = useMemo<ReactColumnDef[]>(() => {
     const layout = loadSavedLayout();
     savedLayoutRef.current = layout;
     return applyLayoutToHeaders(buildSavedBaseHeaders(), layout);
@@ -1111,7 +1111,7 @@ function MegaTables() {
   }, []);
 
   const handleSavedColumns = useCallback(
-    (headers: ReactHeaderObject[]) => {
+    (headers: ReactColumnDef[]) => {
       persistSavedLayout({
         columns: columnsFromHeaders(headers),
         sort: savedLayoutRef.current?.sort ?? null,
@@ -1173,7 +1173,7 @@ function MegaTables() {
     setSelectedCount(selectedRows.size);
   };
 
-  const opsHeaders: ReactHeaderObject[] = useMemo(
+  const opsHeaders: ReactColumnDef[] = useMemo(
     () => [
       {
         accessor: "rep",
@@ -1181,8 +1181,8 @@ function MegaTables() {
         width: 220,
         type: "string",
         pinned: "left",
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         cellRenderer: RepCell,
         headerRenderer: makeHeader("🧑‍💼"),
       },
@@ -1192,9 +1192,9 @@ function MegaTables() {
         width: 150,
         type: "enum",
         enumOptions: STATUS_OPTIONS,
-        isEditable: true,
+        editable: true,
         filterable: true,
-        isSortable: true,
+        sortable: true,
         cellRenderer: StatusBadgeCell,
         headerRenderer: makeHeader("🏷️"),
       },
@@ -1204,7 +1204,7 @@ function MegaTables() {
         width: 140,
         type: "string",
         filterable: true,
-        isSortable: true,
+        sortable: true,
         headerRenderer: makeHeader("👥"),
       },
       {
@@ -1221,8 +1221,8 @@ function MegaTables() {
             width: 140,
             type: "number",
             align: "right",
-            isSortable: true,
-            isEditable: true,
+            sortable: true,
+            editable: true,
             aggregation: { type: "sum" },
             cellRenderer: CurrencyCell,
             headerRenderer: makeHeader("💰"),
@@ -1233,8 +1233,8 @@ function MegaTables() {
             width: 110,
             type: "number",
             align: "right",
-            isSortable: true,
-            isEditable: true,
+            sortable: true,
+            editable: true,
             showWhen: "parentExpanded",
             aggregation: { type: "sum" },
             headerRenderer: makeHeader("🤝"),
@@ -1244,7 +1244,7 @@ function MegaTables() {
             label: "Quota",
             width: 160,
             type: "number",
-            isEditable: true,
+            editable: true,
             showWhen: "parentExpanded",
             cellRenderer: QuotaCell,
             headerRenderer: makeHeader("🎯"),
@@ -1266,8 +1266,8 @@ function MegaTables() {
         label: "Start Date",
         width: 140,
         type: "date",
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         headerRenderer: makeHeader("📅"),
       },
       {
@@ -1275,7 +1275,7 @@ function MegaTables() {
         label: "Active",
         width: 90,
         type: "boolean",
-        isEditable: true,
+        editable: true,
         headerRenderer: makeHeader("✅"),
       },
       {
@@ -1290,7 +1290,7 @@ function MegaTables() {
     [],
   );
 
-  const rollupHeaders: ReactHeaderObject[] = useMemo(
+  const rollupHeaders: ReactColumnDef[] = useMemo(
     () => [
       {
         accessor: "name",
@@ -1306,7 +1306,7 @@ function MegaTables() {
         width: 140,
         type: "enum",
         enumOptions: STATUS_OPTIONS,
-        isEditable: true,
+        editable: true,
         cellRenderer: StatusBadgeCell,
         headerRenderer: makeHeader("🏷️"),
       },
@@ -1316,7 +1316,7 @@ function MegaTables() {
         width: 110,
         type: "number",
         align: "right",
-        isEditable: true,
+        editable: true,
         aggregation: { type: "sum" },
         headerRenderer: makeHeader("🤝"),
       },
@@ -1326,7 +1326,7 @@ function MegaTables() {
         width: 150,
         type: "number",
         align: "right",
-        isEditable: true,
+        editable: true,
         aggregation: { type: "sum" },
         cellRenderer: CurrencyCell,
         headerRenderer: makeHeader("💰"),
@@ -1445,7 +1445,7 @@ function MegaTables() {
         <h3 style={{ fontWeight: 700, marginBottom: 8 }}>Operations Console</h3>
         <SimpleTable
           ref={opsTableRef}
-          defaultHeaders={opsHeaders}
+          columns={opsHeaders}
           rows={repRows}
           getRowId={({ row }) => String((row as { id?: number }).id)}
           theme="light"
@@ -1463,7 +1463,7 @@ function MegaTables() {
           selectableCells
           columnResizing
           columnReordering
-          editColumns
+          enableColumnEditor
           columnEditorConfig={{
             text: "Columns",
             searchEnabled: true,
@@ -1472,7 +1472,7 @@ function MegaTables() {
             customRenderer: EditorPanel,
           }}
           quickFilter={{ text: quickFilter, mode: "simple" }}
-          shouldPaginate
+          enablePagination
           rowsPerPage={pageSize}
           headerDropdown={MegaHeaderDropdown}
           footerRenderer={(props: FooterRendererProps) => (
@@ -1486,7 +1486,7 @@ function MegaTables() {
         <h3 style={{ fontWeight: 700, marginBottom: 8 }}>Regional Rollup (grouped + aggregated)</h3>
         <SimpleTable
           ref={rollupTableRef}
-          defaultHeaders={rollupHeaders}
+          columns={rollupHeaders}
           rows={regionRows}
           rowGrouping={["teams", "members"]}
           getRowId={({ row }) => String((row as { id?: string }).id)}
@@ -1536,7 +1536,7 @@ function MegaTables() {
         <SimpleTable
           key={`saved-view-${savedMountKey}`}
           ref={savedTableRef}
-          defaultHeaders={savedHeaders}
+          columns={savedHeaders}
           rows={repRows}
           getRowId={({ row }) => String((row as { id?: number }).id)}
           theme="light"
@@ -1546,7 +1546,7 @@ function MegaTables() {
           selectableCells
           columnResizing
           columnReordering
-          editColumns
+          enableColumnEditor
           initialSortColumn={savedInitialSort?.accessor}
           initialSortDirection={savedInitialSort?.direction}
           onCellEdit={handleRepEdit}

@@ -20,14 +20,14 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 const ROW_HEIGHT = 60;
 
 type CRMExampleWrapperProps = {
-  onGridReady?: () => void;
-  shouldPaginate?: boolean;
+  onTableReady?: () => void;
+  enablePagination?: boolean;
   theme?: Theme;
 };
 
 export default function CRMExampleWrapper({
-  onGridReady,
-  shouldPaginate = true,
+  onTableReady,
+  enablePagination = true,
   theme,
 }: CRMExampleWrapperProps) {
   const { currentTheme, currentIconLibrary } = useExamplesContext();
@@ -35,7 +35,7 @@ export default function CRMExampleWrapper({
   const tableIcons = getTableIcons(currentIconLibrary);
 
   const containerHeight = useExampleHeight({
-    isUsingPagination: shouldPaginate,
+    isUsingPagination: enablePagination,
     rowHeight: ROW_HEIGHT,
   });
 
@@ -58,7 +58,7 @@ export default function CRMExampleWrapper({
               key={currentIconLibrary}
               height={containerHeight}
               icons={tableIcons}
-              onGridReady={onGridReady}
+              onTableReady={onTableReady}
               theme={crmTheme}
             />
           </ExamplesWrapper>

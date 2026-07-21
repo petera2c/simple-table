@@ -249,15 +249,15 @@ export default function ReactGridFilteringPage() {
 
               <CodeBlock
                 className="mb-6"
-                code={`import { SimpleTable, HeaderObject } from "@simple-table/react";
+                code={`import { SimpleTable, ColumnDef } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
     width: 80,
-    isSortable: true,
+    sortable: true,
     type: "number",
     filterable: true, // Enable filtering with 10 operators
   },
@@ -265,7 +265,7 @@ const headers: HeaderObject[] = [
     accessor: "name",
     label: "Customer Name",
     width: 200,
-    isSortable: true,
+    sortable: true,
     filterable: true, // Enable filtering with 8 string operators
     type: "string",
   },
@@ -273,7 +273,7 @@ const headers: HeaderObject[] = [
     accessor: "company",
     label: "Company",
     width: 180,
-    isSortable: true,
+    sortable: true,
     filterable: true,
     type: "string",
   },
@@ -281,7 +281,7 @@ const headers: HeaderObject[] = [
     accessor: "status",
     label: "Status",
     width: 120,
-    isSortable: true,
+    sortable: true,
     filterable: true, // Enable enum filtering with 4 operators
     type: "enum",
     enumOptions: [
@@ -294,7 +294,7 @@ const headers: HeaderObject[] = [
     accessor: "revenue",
     label: "Revenue",
     width: 120,
-    isSortable: true,
+    sortable: true,
     filterable: true, // Number filtering with 10 operators
     type: "number",
     align: "right",
@@ -308,7 +308,7 @@ const headers: HeaderObject[] = [
     accessor: "signupDate",
     label: "Signup Date",
     width: 140,
-    isSortable: true,
+    sortable: true,
     filterable: true, // Date filtering with 8 operators
     type: "date",
   },
@@ -316,7 +316,7 @@ const headers: HeaderObject[] = [
     accessor: "isPremium",
     label: "Premium",
     width: 100,
-    isSortable: true,
+    sortable: true,
     filterable: true, // Boolean filtering with 3 operators
     type: "boolean",
   },
@@ -325,7 +325,7 @@ const headers: HeaderObject[] = [
 export default function CustomerTable({ data }) {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={data}
       
       height="600px"
@@ -461,7 +461,7 @@ export default function CustomerTable({ data }) {
 
               <CodeBlock
                 className="mb-6"
-                code={`import { SimpleTable, HeaderObject, TableFilterState } from "@simple-table/react";
+                code={`import { SimpleTable, ColumnDef, TableFilterState } from "@simple-table/react";
 import { useState, useEffect } from "react";
 
 export default function ServerSideFilterTable() {
@@ -469,7 +469,7 @@ export default function ServerSideFilterTable() {
   const [filters, setFilters] = useState<TableFilterState>({});
   const [loading, setLoading] = useState(false);
 
-  const headers: HeaderObject[] = [
+  const headers: ColumnDef[] = [
     {
       accessor: "name",
       label: "Customer Name",
@@ -527,7 +527,7 @@ export default function ServerSideFilterTable() {
       {loading && <div className="mb-2">Loading filtered results...</div>}
       
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         rows={data}
         
         height="600px"

@@ -13,7 +13,7 @@ import { CELL_RENDERER_PROPS as CELL_RENDERER_PARAMS_PROPS } from "@/constants/p
 const CELL_RENDERER_PROPS: PropInfo[] = [
   {
     key: "cellRenderer",
-    name: "HeaderObject.cellRenderer",
+    name: "ColumnDef.cellRenderer",
     required: false,
     description:
       "Custom function to render cell content with React components. Receives cell information and returns either a ReactNode or string for display. For simple text formatting (currency, dates, percentages), use valueFormatter instead for better performance.",

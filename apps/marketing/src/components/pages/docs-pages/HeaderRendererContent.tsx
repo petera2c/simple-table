@@ -12,7 +12,7 @@ import PropTable, { type PropInfo } from "@/components/PropTable";
 const HEADER_RENDERER_PROPS: PropInfo[] = [
   {
     key: "headerRenderer",
-    name: "HeaderObject.headerRenderer",
+    name: "ColumnDef.headerRenderer",
     required: false,
     description:
       "Custom function to render header content. Receives header information and returns either a ReactNode or string for display.",
@@ -65,9 +65,9 @@ const HEADER_RENDERER_PARAMS_PROPS: PropInfo[] = [
     name: "header",
     required: true,
     description:
-      "The complete HeaderObject containing all configuration for this column including label, width, and other properties.",
-    type: "HeaderObject",
-    link: "/docs/api-reference#header-object",
+      "The complete ColumnDef containing all configuration for this column including label, width, and other properties.",
+    type: "ColumnDef",
+    link: "/docs/api-reference#column-def",
     example: `// In headerRenderer function
 ({ header }) => {
   console.log(header.label); // "Name", "Status", etc.

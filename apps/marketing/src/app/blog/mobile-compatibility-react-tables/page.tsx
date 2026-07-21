@@ -453,7 +453,7 @@ const headers = [
 export default function MobileTable() {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={data}
       
     />

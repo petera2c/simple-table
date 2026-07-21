@@ -222,14 +222,14 @@ export default function NestedTablesReactPage() {
                     High-level overview: industry, headquarters, market cap, CEO, revenue, employees
                   </p>
                   <CodeBlock
-                    code={`const companyHeaders: HeaderObject[] = [
+                    code={`const companyHeaders: ColumnDef[] = [
   {
     accessor: "companyName",
     label: "Company",
     width: 200,
     expandable: true,
     nestedTable: {
-      defaultHeaders: divisionHeaders,  // Different columns!
+      columns: divisionHeaders,  // Different columns!
       autoExpandColumns: true,
       enableRowSelection: true,
     },
@@ -254,7 +254,7 @@ export default function NestedTablesReactPage() {
                     Division-level details with financial metrics and operational data
                   </p>
                   <CodeBlock
-                    code={`const divisionHeaders: HeaderObject[] = [
+                    code={`const divisionHeaders: ColumnDef[] = [
   { accessor: "divisionId", label: "Division ID", width: 120 },
   { accessor: "divisionName", label: "Division", width: 200 },
   { accessor: "revenue", label: "Revenue", width: 120 },
@@ -274,7 +274,7 @@ export default function NestedTablesReactPage() {
                     and more
                   </p>
                   <CodeBlock
-                    code={`const teamHeaders: HeaderObject[] = [
+                    code={`const teamHeaders: ColumnDef[] = [
   { accessor: "teamName", label: "Team", width: 200 },
   { accessor: "manager", label: "Manager", width: 150 },
   { accessor: "location", label: "Location", width: 130 },
@@ -337,7 +337,7 @@ export default function NestedTablesReactPage() {
                 <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-sm">
                   nestedTable
                 </code>{" "}
-                property on a HeaderObject that has{" "}
+                property on a ColumnDef that has{" "}
                 <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-sm">
                   expandable: true
                 </code>
@@ -351,7 +351,7 @@ export default function NestedTablesReactPage() {
   label: "Company",
   expandable: true,
   nestedTable: {
-    defaultHeaders: divisionHeaders,  // Column structure for nested level
+    columns: divisionHeaders,  // Column structure for nested level
     autoExpandColumns: true,           // Any SimpleTableProps work here
     enableRowSelection: true,
     // ... any other SimpleTableProps except 'rows'
@@ -385,7 +385,7 @@ export default function NestedTablesReactPage() {
               <CodeBlock
                 className="mb-6"
                 code={`<SimpleTable
-  defaultHeaders={companyHeaders}
+  columns={companyHeaders}
   rows={data}
   rowGrouping={["divisions", "teams"]}  // Hierarchy: companies → divisions → teams
   expandAll={false}
@@ -780,7 +780,7 @@ const finalHeight = Math.min(nestedTableHeight, maxNestedTableHeight);`}
               <CodeBlock
                 className="mb-6"
                 code={`// Level 2: Team headers (innermost level)
-const teamHeaders: HeaderObject[] = [
+const teamHeaders: ColumnDef[] = [
   { accessor: "teamName", label: "Team", width: 200 },
   { accessor: "manager", label: "Manager", width: 150 },
   { accessor: "budget", label: "Budget", width: 100 },
@@ -788,14 +788,14 @@ const teamHeaders: HeaderObject[] = [
 ];
 
 // Level 1: Division headers (middle level)
-const divisionHeaders: HeaderObject[] = [
+const divisionHeaders: ColumnDef[] = [
   {
     accessor: "divisionName",
     label: "Division",
     width: 250,
     expandable: true,
     nestedTable: {
-      defaultHeaders: teamHeaders,  // Point to next level
+      columns: teamHeaders,  // Point to next level
       autoExpandColumns: true,
       enableRowSelection: true,
     },
@@ -805,14 +805,14 @@ const divisionHeaders: HeaderObject[] = [
 ];
 
 // Level 0: Company headers (top level)
-const companyHeaders: HeaderObject[] = [
+const companyHeaders: ColumnDef[] = [
   {
     accessor: "companyName",
     label: "Company",
     width: 200,
     expandable: true,
     nestedTable: {
-      defaultHeaders: divisionHeaders,  // Point to next level
+      columns: divisionHeaders,  // Point to next level
       autoExpandColumns: true,
       enableRowSelection: true,
     },
@@ -835,7 +835,7 @@ import "@simple-table/react/styles.css";
 function CorporateHierarchy() {
   return (
     <SimpleTable
-      defaultHeaders={companyHeaders}
+      columns={companyHeaders}
       rows={data}
       
       // Define the hierarchy path

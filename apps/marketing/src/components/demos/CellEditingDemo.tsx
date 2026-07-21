@@ -1,25 +1,25 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, CellChangeProps, Theme } from "@simple-table/react";
+import type { ReactColumnDef, CellChangeProps, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Define headers with editable property and various types
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   {
     accessor: "firstName",
     label: "First Name",
     width: "1fr",
     minWidth: 100,
-    isEditable: true,
+    editable: true,
     type: "string",
   },
-  { accessor: "lastName", label: "Last Name", width: 120, isEditable: true, type: "string" },
+  { accessor: "lastName", label: "Last Name", width: 120, editable: true, type: "string" },
 
   {
     accessor: "role",
     label: "Role",
     width: 120,
-    isEditable: true,
+    editable: true,
     type: "enum",
     enumOptions: [
       { label: "Developer", value: "Developer" },
@@ -33,21 +33,21 @@ const headers: ReactHeaderObject[] = [
     accessor: "hireDate",
     label: "Hire Date",
     width: 120,
-    isEditable: true,
+    editable: true,
     type: "date",
   },
   {
     accessor: "isActive",
     label: "Active",
     width: 100,
-    isEditable: true,
+    editable: true,
     type: "boolean",
   },
   {
     accessor: "salary",
     label: "Salary",
     width: 120,
-    isEditable: true,
+    editable: true,
     type: "number",
   },
 ];
@@ -191,7 +191,7 @@ const CellEditingDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       height={height}
       onCellEdit={handleCellEdit}
       rows={data}

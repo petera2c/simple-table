@@ -83,12 +83,24 @@ function transformHeader(
   return transformed;
 }
 
+/** Resolve preferred `columns` or legacy `defaultHeaders`. */
+export function resolveSolidColumns(
+  config: Pick<SimpleTableSolidProps, "columns" | "defaultHeaders">,
+): ReadonlyArray<HeaderObject | SolidHeaderObject> {
+  const headers = config.columns ?? config.defaultHeaders;
+  if (!headers) {
+    throw new Error("SimpleTable requires `columns` or `defaultHeaders`");
+  }
+  return headers;
+}
+
 export function buildVanillaConfig(
   config: SimpleTableSolidProps,
   registry: MountRegistry,
 ): SimpleTableConfig {
   const {
-    defaultHeaders,
+    defaultHeaders: _defaultHeaders,
+    columns: _columns,
     rows,
     footerRenderer,
     emptyStateRenderer,
@@ -104,8 +116,24 @@ export function buildVanillaConfig(
     onColumnWidthChange,
     onHeaderEdit,
     onColumnSelect,
+    enableColumnEditor,
+    editColumns,
+    enableColumnEditorInitOpen,
+    editColumnsInitOpen,
+    enablePagination,
+    shouldPaginate,
+    onTableReady,
+    onGridReady,
+    hoverRowBackground,
+    useHoverRowBackground,
+    oddColumnBackground,
+    useOddColumnBackground,
+    oddEvenRowBackground,
+    useOddEvenRowBackground,
     ...rest
   } = config;
+
+  const defaultHeaders = resolveSolidColumns(config);
 
   registry.pruneRendererCaches(collectHeaderAccessors(defaultHeaders));
 
@@ -113,6 +141,13 @@ export function buildVanillaConfig(
     ...rest,
     rows: rows as Row[],
     defaultHeaders: defaultHeaders.map((header) => transformHeader(header, registry)),
+    editColumns: enableColumnEditor ?? editColumns,
+    editColumnsInitOpen: enableColumnEditorInitOpen ?? editColumnsInitOpen,
+    shouldPaginate: enablePagination ?? shouldPaginate,
+    onGridReady: onTableReady ?? onGridReady,
+    useHoverRowBackground: hoverRowBackground ?? useHoverRowBackground,
+    useOddColumnBackground: oddColumnBackground ?? useOddColumnBackground,
+    useOddEvenRowBackground: oddEvenRowBackground ?? useOddEvenRowBackground,
     // Authoritative mount teardown: core calls this before it permanently
     // discards any host element, so the registry disposes exactly the affected
     // Solid trees (including portals / floating UI).

@@ -11,12 +11,12 @@ import { useCRMData } from "./useCRMData";
 const CRMExampleComponent = ({
   height,
   icons,
-  onGridReady,
+  onTableReady,
   theme = "custom-light",
 }: {
   height?: number | null;
   icons?: ReactIconsConfig;
-  onGridReady?: () => void;
+  onTableReady?: () => void;
   theme?: "custom-light" | "custom-dark";
 }) => {
   const { data: fetchedData, isLoading } = useCRMData();
@@ -51,7 +51,7 @@ const CRMExampleComponent = ({
       <SimpleTable
         columnReordering
         columnResizing
-        defaultHeaders={getCRMHeaders(isDark)}
+        columns={getCRMHeaders(isDark)}
         enableRowSelection
         footerRenderer={(props: FooterRendererProps) => (
           <CRMCustomFooter {...props} isDark={isDark} setRowsPerPage={setRowsPerPage} />
@@ -64,10 +64,10 @@ const CRMExampleComponent = ({
         height={height ? `${height}px` : "70dvh"}
         icons={icons}
         onCellEdit={handleCellEdit}
-        onGridReady={onGridReady}
+        onTableReady={onTableReady}
         rows={data}
         rowsPerPage={rowsPerPage}
-        shouldPaginate
+        enablePagination
         theme="custom"
       />
     </div>

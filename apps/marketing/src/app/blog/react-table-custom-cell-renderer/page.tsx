@@ -199,18 +199,18 @@ export default function ReactCustomCellRendererPage() {
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                Add a <code>cellRenderer</code> function to any column in <code>defaultHeaders</code>
+                Add a <code>cellRenderer</code> function to any column in <code>columns</code>
                 . It receives the cell's data and returns a React node. In React, columns are typed{" "}
-                <code>ReactHeaderObject</code>.
+                <code>ReactColumnDef</code>.
               </p>
 
               <CodeBlock
                 className="mb-6"
                 code={`import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, CellRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, CellRendererProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "name", label: "Name", width: 200, type: "string" },
   {
     accessor: "status",
@@ -238,7 +238,7 @@ const headers: ReactHeaderObject[] = [
 ];
 
 export default function UsersTable({ rows }) {
-  return <SimpleTable defaultHeaders={headers} rows={rows} height="500px" />;
+  return <SimpleTable columns={headers} rows={rows} height="500px" />;
 }`}
               />
 

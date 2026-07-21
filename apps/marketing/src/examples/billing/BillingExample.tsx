@@ -7,12 +7,12 @@ import { useBillingData } from "./useBillingData";
 export default function BillingExample({
   height,
   icons,
-  onGridReady,
+  onTableReady,
   theme,
 }: {
   height: number | null;
   icons?: ReactIconsConfig;
-  onGridReady?: () => void;
+  onTableReady?: () => void;
   theme?: Theme;
 }) {
   const { data, isLoading } = useBillingData();
@@ -38,20 +38,20 @@ export default function BillingExample({
     <SimpleTable
       columnReordering
       columnResizing
-      defaultHeaders={HEADERS}
-      editColumns
+      columns={HEADERS}
+      enableColumnEditor
       enableStickyParents
       getRowId={({ row }) => String(row.id)}
       height={height ? `${height}px` : "70dvh"}
       icons={icons}
       initialSortColumn="amount"
       initialSortDirection="desc"
-      onGridReady={onGridReady}
+      onTableReady={onTableReady}
       rowGrouping={["invoices", "charges"]}
       rows={data}
       selectableCells
       theme={theme}
-      useOddColumnBackground
+      oddColumnBackground
     />
   );
 }

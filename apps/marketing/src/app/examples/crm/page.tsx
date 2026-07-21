@@ -25,5 +25,5 @@ export const metadata: Metadata = {
 };
 
 export default function CRMPage() {
-  return <CRMExampleWrapper shouldPaginate={false} />;
+  return <CRMExampleWrapper enablePagination={false} />;
 }

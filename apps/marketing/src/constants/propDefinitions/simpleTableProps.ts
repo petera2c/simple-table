@@ -2,12 +2,12 @@ import type { PropInfo } from "./types";
 
 export const SIMPLE_TABLE_PROPS: PropInfo[] = [
   {
-    key: "defaultHeaders",
-    name: "defaultHeaders",
+    key: "columns",
+    name: "columns",
     required: true,
     description: "Array of column definitions that specify the structure of your table.",
-    type: "HeaderObject[]",
-    link: "#header-object",
+    type: "ColumnDef[]",
+    link: "#column-def",
     example: `const headers = [
   { accessor: "id", label: "ID", width: 80 },
   { accessor: "name", label: "Name", width: "1fr" }
@@ -112,20 +112,20 @@ animations={{ enabled: false }}`,
     example: `columnResizing={true}`,
   },
   {
-    key: "editColumns",
-    name: "editColumns",
+    key: "enableColumnEditor",
+    name: "enableColumnEditor",
     required: false,
     description: "Flag for column editing via column editor panel.",
     type: "boolean",
-    example: `editColumns={true}`,
+    example: `enableColumnEditor={true}`,
   },
   {
-    key: "editColumnsInitOpen",
-    name: "editColumnsInitOpen",
+    key: "enableColumnEditorInitOpen",
+    name: "enableColumnEditorInitOpen",
     required: false,
     description: "Flag for opening the column editor when the table is loaded.",
     type: "boolean",
-    example: `editColumnsInitOpen={true}`,
+    example: `enableColumnEditorInitOpen={true}`,
   },
   {
     key: "expandAll",
@@ -330,7 +330,7 @@ quickFilter={{
     type: 'HTMLElement | "window" | (() => HTMLElement | null)',
     example: `// Page-level scroll (most common in real apps)
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={rows}
   scrollParent="window"
   onLoadMore={handleLoadMore}
@@ -338,7 +338,7 @@ quickFilter={{
 
 // Scroll inside a specific container (e.g. a side panel)
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={rows}
   scrollParent={() => containerRef.current}
   onLoadMore={handleLoadMore}
@@ -352,7 +352,7 @@ quickFilter={{
       "Pixel distance from the bottom of the scrollable area at which onLoadMore fires. Defaults to 200. Increase for earlier pre-fetching; decrease to fire only very close to the bottom.",
     type: "number",
     example: `<SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={rows}
   onLoadMore={handleLoadMore}
   infiniteScrollThreshold={400}
@@ -604,12 +604,12 @@ canExpandRowGroup={(row) => {
     example: `selectableColumns={true}`,
   },
   {
-    key: "shouldPaginate",
-    name: "shouldPaginate",
+    key: "enablePagination",
+    name: "enablePagination",
     required: false,
     description: "Flag for enabling pagination.",
     type: "boolean",
-    example: `shouldPaginate={true}`,
+    example: `enablePagination={true}`,
   },
   {
     key: "isLoading",
@@ -647,28 +647,28 @@ useEffect(() => {
 }}`,
   },
   {
-    key: "useOddColumnBackground",
-    name: "useOddColumnBackground",
+    key: "oddColumnBackground",
+    name: "oddColumnBackground",
     required: false,
     description: "Flag for using alternating column background colors.",
     type: "boolean",
-    example: `useOddColumnBackground={true}`,
+    example: `oddColumnBackground={true}`,
   },
   {
-    key: "useHoverRowBackground",
-    name: "useHoverRowBackground",
+    key: "hoverRowBackground",
+    name: "hoverRowBackground",
     required: false,
     description: "Flag for using hover row background highlighting.",
     type: "boolean",
-    example: `useHoverRowBackground={true}`,
+    example: `hoverRowBackground={true}`,
   },
   {
-    key: "useOddEvenRowBackground",
-    name: "useOddEvenRowBackground",
+    key: "oddEvenRowBackground",
+    name: "oddEvenRowBackground",
     required: false,
     description: "Flag for using odd/even row background colors.",
     type: "boolean",
-    example: `useOddEvenRowBackground={true}`,
+    example: `oddEvenRowBackground={true}`,
   },
   {
     key: "enableRowSelection",
@@ -750,9 +750,9 @@ useEffect(() => {
     name: "onColumnSelect",
     required: false,
     description:
-      "Callback when a column is selected/clicked. With `@simple-table/react`, receives `ReactHeaderObject`. Angular, Svelte, and Solid adapters use `AngularHeaderObject`, `SvelteHeaderObject`, and `SolidHeaderObject` respectively.",
-    type: "(header: ReactHeaderObject) => void",
-    link: "#header-object",
+      "Callback when a column is selected/clicked. With `@simple-table/react`, receives `ReactColumnDef`. Angular, Svelte, and Solid adapters use `AngularColumnDef`, `SvelteColumnDef`, and `SolidColumnDef` respectively.",
+    type: "(header: ReactColumnDef) => void",
+    link: "#column-def",
     example: `onColumnSelect={(header) => {
   console.log('Column selected:', header.label);
   console.log('Column accessor:', header.accessor);
@@ -773,9 +773,9 @@ useEffect(() => {
     name: "onHeaderEdit",
     required: false,
     description:
-      "Callback when a header is edited. With `@simple-table/react`, receives `ReactHeaderObject` and the new label. Angular, Svelte, and Solid adapters use `HeaderObject` from `simple-table-core`.",
-    type: "(header: ReactHeaderObject, newLabel: string) => void",
-    link: "#header-object",
+      "Callback when a header is edited. With `@simple-table/react`, receives `ReactColumnDef` and the new label. Angular, Svelte, and Solid adapters use `ColumnDef` from `simple-table-core`.",
+    type: "(header: ReactColumnDef, newLabel: string) => void",
+    link: "#column-def",
     example: `onHeaderEdit={(header, newLabel) => {
   console.log('Header edited:', { header, newLabel });
   // Update your headers state
@@ -791,9 +791,9 @@ useEffect(() => {
     name: "onColumnOrderChange",
     required: false,
     description:
-      "Callback when column order changes (through drag and drop reordering). With `@simple-table/react`, receives `ReactHeaderObject[]`. Angular, Svelte, and Solid adapters use `AngularHeaderObject[]`, `SvelteHeaderObject[]`, and `SolidHeaderObject[]` respectively.",
-    type: "(newHeaders: ReactHeaderObject[]) => void",
-    link: "#header-object",
+      "Callback when column order changes (through drag and drop reordering). With `@simple-table/react`, receives `ReactColumnDef[]`. Angular, Svelte, and Solid adapters use `AngularColumnDef[]`, `SvelteColumnDef[]`, and `SolidColumnDef[]` respectively.",
+    type: "(newHeaders: ReactColumnDef[]) => void",
+    link: "#column-def",
     example: `onColumnOrderChange={(newHeaders) => {
   console.log('Column order changed:', newHeaders);
   // Update your headers state with the new order
@@ -824,8 +824,8 @@ useEffect(() => {
     name: "onColumnWidthChange",
     required: false,
     description:
-      "Callback triggered when column widths change through user resizing or double-click auto-sizing. With `@simple-table/react`, receives `ReactHeaderObject[]`. Angular, Svelte, and Solid adapters use `AngularHeaderObject[]`, `SvelteHeaderObject[]`, and `SolidHeaderObject[]` respectively. Useful for persisting column width preferences.",
-    type: "(headers: ReactHeaderObject[]) => void",
+      "Callback triggered when column widths change through user resizing or double-click auto-sizing. With `@simple-table/react`, receives `ReactColumnDef[]`. Angular, Svelte, and Solid adapters use `AngularColumnDef[]`, `SvelteColumnDef[]`, and `SolidColumnDef[]` respectively. Useful for persisting column width preferences.",
+    type: "(headers: ReactColumnDef[]) => void",
     link: "/docs/column-resizing",
     example: `onColumnWidthChange={(headers) => {
   console.log('Column widths changed:', headers);
@@ -849,7 +849,7 @@ useEffect(() => {
     example: `// Columns will scale to fill container
 <SimpleTable
   autoExpandColumns={true}
-  defaultHeaders={[
+  columns={[
     { accessor: "id", label: "ID", width: 80 },
     { accessor: "name", label: "Name", width: 200 },
     { accessor: "email", label: "Email", width: 250 }
@@ -945,12 +945,12 @@ useEffect(() => {
 }}`,
   },
   {
-    key: "onGridReady",
-    name: "onGridReady",
+    key: "onTableReady",
+    name: "onTableReady",
     required: false,
     description: "Callback function triggered when the table grid is fully initialized and ready.",
     type: "() => void",
-    example: `onGridReady={() => {
+    example: `onTableReady={() => {
   console.log('Table is ready!');
   // Perform any initialization logic
 }}`,

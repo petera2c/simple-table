@@ -13,7 +13,7 @@ import PropTable, { type PropInfo } from "@/components/PropTable";
 const COLUMN_FILTERING_PROPS: PropInfo[] = [
   {
     key: "filterable",
-    name: "HeaderObject.filterable",
+    name: "ColumnDef.filterable",
     required: false,
     description:
       "Enable filtering for a specific column. Each column can be independently configured for filtering based on its data type. Simple Table provides intelligent filtering with different operators for each data type.",
@@ -75,7 +75,7 @@ const COLUMN_FILTERING_PROPS: PropInfo[] = [
   },
   {
     key: "filterOperators",
-    name: "HeaderObject.filterOperators",
+    name: "ColumnDef.filterOperators",
     required: false,
     description:
       "Restrict which filter operators appear in a column's filter dropdown. Only operators valid for the column's type are honored, and they appear in the order provided. When omitted, all operators for the column type are shown. Has no effect on enum columns, which use a checkbox value picker instead of an operator dropdown.",

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 const ROWS_PER_PAGE = 9;
-const HEADERS: ReactHeaderObject[] = [
+const HEADERS: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 100, type: "string" },
   { accessor: "email", label: "Email", width: 200, type: "string" },
@@ -442,13 +442,13 @@ const PaginationDemo = ({ theme }: { theme?: Theme }) => {
 
   return (
     <SimpleTable
-      defaultHeaders={HEADERS}
+      columns={HEADERS}
       height="auto"
       isLoading={isLoading}
       onNextPage={onNextPage}
       rows={rows}
       rowsPerPage={ROWS_PER_PAGE}
-      shouldPaginate
+      enablePagination
       theme={theme}
     />
   );

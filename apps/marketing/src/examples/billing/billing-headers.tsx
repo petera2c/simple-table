@@ -1,5 +1,5 @@
 import type {
-  ReactHeaderObject,
+  ReactColumnDef,
   CellRendererProps,
   ValueFormatterProps,
   ValueGetterProps,
@@ -10,7 +10,7 @@ const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 
 // Generate header configs for 2024 months
 const generateMonthHeaders = () => {
-  const headers: ReactHeaderObject[] = [];
+  const headers: ReactColumnDef[] = [];
   const year = 2024;
 
   // Add all months for 2024 in reverse chronological order (Dec to Jan)
@@ -21,8 +21,8 @@ const generateMonthHeaders = () => {
       accessor: `month_${months[monthIndex]}_${year}`,
       label: `${fullMonthName} ${year}`,
       width: 200,
-      isSortable: true,
-      isEditable: false,
+      sortable: true,
+      editable: false,
       align: "right",
       type: "number",
       children: [
@@ -31,8 +31,8 @@ const generateMonthHeaders = () => {
           label: "Balance",
           accessor: `balance_${months[monthIndex]}_${year}`,
           width: 200,
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           align: "right",
           type: "number",
           aggregation: { type: "sum" },
@@ -51,8 +51,8 @@ const generateMonthHeaders = () => {
           label: "Revenue",
           accessor: `revenue_${months[monthIndex]}_${year}`,
           width: 200,
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           align: "right",
           type: "number",
           aggregation: { type: "sum" },
@@ -74,14 +74,14 @@ const generateMonthHeaders = () => {
 };
 
 // Main headers
-export const HEADERS: ReactHeaderObject[] = [
+export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "name",
     label: "Name",
     width: 250,
     expandable: true,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "left",
     pinned: "left",
     type: "string",
@@ -95,8 +95,8 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "amount",
     label: "Total Amount",
     width: 130,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
@@ -114,8 +114,8 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "deferredRevenue",
     label: "Deferred Revenue",
     width: 180,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
@@ -133,8 +133,8 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "recognizedRevenue",
     label: "Recognized Revenue",
     width: 180,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
@@ -152,8 +152,8 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "recognizedPercent",
     label: "Recognized %",
     width: 190,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "left",
     type: "number",
     // Derived: share of total amount that has been recognized as revenue.

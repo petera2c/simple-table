@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Define headers for the demo
-const initialHeaders: ReactHeaderObject[] = [
+const initialHeaders: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", type: "string" },
   { accessor: "age", label: "Age", width: 80, align: "right", type: "number" },
@@ -125,12 +125,12 @@ const ColumnReorderingDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const [headers, setHeaders] = useState<ReactHeaderObject[]>(initialHeaders);
+  const [headers, setHeaders] = useState<ReactColumnDef[]>(initialHeaders);
   const [, setCurrentColumnOrder] = useState<string>(
     initialHeaders.map((header) => header.accessor).join(", "),
   );
 
-  const handleColumnOrderChange = (newHeaders: ReactHeaderObject[]) => {
+  const handleColumnOrderChange = (newHeaders: ReactColumnDef[]) => {
     setHeaders(newHeaders);
     setCurrentColumnOrder(newHeaders.map((header) => header.accessor).join(", "));
   };
@@ -138,7 +138,7 @@ const ColumnReorderingDemo = ({
   return (
     <SimpleTable
       columnReordering
-      defaultHeaders={headers}
+      columns={headers}
       height={height}
       rows={EMPLOYEE_DATA}
       onColumnOrderChange={handleColumnOrderChange}

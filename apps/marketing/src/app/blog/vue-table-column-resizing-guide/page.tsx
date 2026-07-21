@@ -65,7 +65,7 @@ export default function Page() {
         { title: "Widths aren't persisted", problem: "User layouts vanish on refresh.", solution: "Watch headers for changes and store widths in localStorage or your user-prefs API." },
       ]}
       faqs={[
-        { question: "Can I disable resizing per column?", answer: "Yes—set isResizable: false on individual HeaderObject entries." },
+        { question: "Can I disable resizing per column?", answer: "Yes—set isResizable: false on individual ColumnDef entries." },
         { question: "Does it work with virtualization?", answer: "Yes. Virtualized 1M-row tables resize columns at 60fps." },
         { question: "How do I sync widths to the server?", answer: "Watch headers in your component and PATCH user preferences on debounce." },
       ]}

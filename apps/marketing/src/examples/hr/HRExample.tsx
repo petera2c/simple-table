@@ -61,7 +61,7 @@ export default function HRExample({
     <SimpleTable
       columnReordering
       columnResizing
-      defaultHeaders={HEADERS}
+      columns={HEADERS}
       getRowId={({ row }) => String(row.id)}
       icons={icons}
       onCellEdit={handleCellEdit}
@@ -71,7 +71,7 @@ export default function HRExample({
       rows={data}
       rowsPerPage={howManyRowsCanFit}
       selectableCells
-      shouldPaginate
+      enablePagination
       theme={theme}
     />
   );

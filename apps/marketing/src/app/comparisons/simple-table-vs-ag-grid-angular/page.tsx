@@ -135,7 +135,7 @@ export default function SimpleTableVsAgGridAngularPage() {
       installCommand="npm install @simple-table/angular"
       migrationCallout={
         <>
-          The same data shape (<code>defaultHeaders</code> / <code>rows</code>) replaces AG Grid&apos;s
+          The same data shape (<code>columns</code> / <code>rows</code>) replaces AG Grid&apos;s
           <code> columnDefs</code> / <code>rowData</code>. Inputs match AG Grid&apos;s <code>[gridOptions]</code> philosophy but in idiomatic Angular signals.
         </>
       }

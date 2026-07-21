@@ -248,7 +248,7 @@ const CellHighlightingContent = () => {
           <p className="text-gray-700 dark:text-gray-300">
             When pasting data into your table, only columns marked with{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-              isEditable: true
+              editable: true
             </code>{" "}
             will accept the pasted values. Non-editable columns will be automatically skipped during
             paste operations, ensuring data integrity and preventing accidental modification of

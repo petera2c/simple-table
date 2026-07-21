@@ -15,7 +15,7 @@ import PropTable, { type PropInfo } from "@/components/PropTable";
 const ROW_GROUPING_PROPS: PropInfo[] = [
   {
     key: "expandable",
-    name: "HeaderObject.expandable",
+    name: "ColumnDef.expandable",
     required: false,
     description:
       "Makes a column expandable for grouping. This allows users to expand/collapse hierarchical data in that column.",

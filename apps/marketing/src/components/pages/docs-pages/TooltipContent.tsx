@@ -12,7 +12,7 @@ import PropTable, { type PropInfo } from "@/components/PropTable";
 const TOOLTIP_PROPS: PropInfo[] = [
   {
     key: "tooltip",
-    name: "HeaderObject.tooltip",
+    name: "ColumnDef.tooltip",
     required: false,
     description:
       "Tooltip text that appears when hovering over the column header. Provides helpful context about the column's purpose or data.",

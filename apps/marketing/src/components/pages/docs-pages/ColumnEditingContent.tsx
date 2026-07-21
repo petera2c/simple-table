@@ -43,9 +43,9 @@ const COLUMN_EDITING_PROPS: PropInfo[] = [
     name: "onHeaderEdit",
     required: false,
     description:
-      "Callback function triggered when a column header is edited. With `@simple-table/react`, receives `ReactHeaderObject` and the new label. Angular, Svelte, and Solid adapters use `AngularHeaderObject`, `SvelteHeaderObject`, and `SolidHeaderObject` respectively.",
-    type: "(header: ReactHeaderObject, newLabel: string) => void",
-    example: `const handleHeaderEdit = (header: ReactHeaderObject, newLabel: string) => {
+      "Callback function triggered when a column header is edited. With `@simple-table/react`, receives `ReactColumnDef` and the new label. Angular, Svelte, and Solid adapters use `AngularColumnDef`, `SvelteColumnDef`, and `SolidColumnDef` respectively.",
+    type: "(header: ReactColumnDef, newLabel: string) => void",
+    example: `const handleHeaderEdit = (header: ReactColumnDef, newLabel: string) => {
   console.log('Header edited:', { header, newLabel });
   // Update your headers state here
 };
@@ -56,20 +56,20 @@ const COLUMN_EDITING_PROPS: PropInfo[] = [
 />`,
   },
   {
-    key: "editColumns",
-    name: "editColumns",
+    key: "enableColumnEditor",
+    name: "enableColumnEditor",
     required: false,
     description:
       "General prop that enables column editing capabilities. This can include adding, removing, or modifying columns.",
     type: "boolean",
     example: `<SimpleTable
-  editColumns={true}
+  enableColumnEditor={true}
   // ... other props
 />`,
   },
   {
     key: "headerRenderer",
-    name: "HeaderObject.headerRenderer",
+    name: "ColumnDef.headerRenderer",
     required: false,
     description:
       "Custom renderer for column headers. Can be used to add buttons, dropdowns, or other interactive elements to column headers.",
@@ -157,7 +157,7 @@ const ColumnEditingContent = () => {
           <li>
             Enable the column editor with{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-              editColumns={true}
+              enableColumnEditor={true}
             </code>{" "}
             to show/hide columns and reorder them via drag-and-drop
           </li>
@@ -263,7 +263,7 @@ const ColumnEditingContent = () => {
             <strong className="text-green-700 dark:text-green-400">Note:</strong> Drag-and-drop in
             the column editor is automatically enabled when{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
-              editColumns={true}
+              enableColumnEditor={true}
             </code>
             . No additional configuration needed!
           </p>

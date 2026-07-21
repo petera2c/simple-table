@@ -1,34 +1,34 @@
 import { SimpleTable } from "@simple-table/react";
-import type { CellRendererProps, ReactHeaderObject, Theme } from "@simple-table/react";
+import type { CellRendererProps, ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
     width: 80,
-    isSortable: true,
+    sortable: true,
     type: "number",
   },
   {
     accessor: "name",
     label: "Name",
     width: "1fr",
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
     accessor: "score",
     label: "Test Scores",
     width: 300,
-    isSortable: false,
+    sortable: false,
     type: "number",
     children: [
       {
         accessor: "mathScore",
         label: "Math",
         width: 100,
-        isSortable: true,
+        sortable: true,
         type: "number",
         align: "right",
         cellRenderer: ({ row, accessor }: CellRendererProps) => {
@@ -40,7 +40,7 @@ const headers: ReactHeaderObject[] = [
         accessor: "scienceScore",
         label: "Science",
         width: 100,
-        isSortable: true,
+        sortable: true,
         type: "number",
         align: "right",
         cellRenderer: ({ row, accessor }: CellRendererProps) => {
@@ -52,7 +52,7 @@ const headers: ReactHeaderObject[] = [
         accessor: "historyScore",
         label: "History",
         width: 100,
-        isSortable: true,
+        sortable: true,
         type: "number",
         align: "right",
         cellRenderer: ({ row, accessor }: CellRendererProps) => {
@@ -66,7 +66,7 @@ const headers: ReactHeaderObject[] = [
     accessor: "grade",
     label: "Overall Grade",
     width: 120,
-    isSortable: true,
+    sortable: true,
     type: "string",
     align: "center",
   },
@@ -172,7 +172,7 @@ const NestedHeadersDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       height={height}
       rows={rows}
       columnResizing

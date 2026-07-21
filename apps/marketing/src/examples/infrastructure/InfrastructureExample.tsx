@@ -55,8 +55,8 @@ export default function InfrastructureExample({
       autoExpandColumns={!isMobile}
       columnReordering
       columnResizing
-      defaultHeaders={HEADERS}
-      editColumns
+      columns={HEADERS}
+      enableColumnEditor
       height={height ? height : "60dvh"}
       icons={icons}
       rows={data}

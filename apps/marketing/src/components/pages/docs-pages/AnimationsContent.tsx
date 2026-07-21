@@ -148,7 +148,7 @@ const AnimationsContent = () => {
           </li>
           <li>
             <strong>Programmatic column reorder.</strong> Updating{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">defaultHeaders</code>{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">columns</code>{" "}
             or calling{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
               tableRef.applyPinnedState
@@ -242,7 +242,7 @@ const AnimationsContent = () => {
         </p>
         <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-sm overflow-x-auto mb-6">
           <code className="text-gray-800 dark:text-gray-200">{`<SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={rows}
   animations={{ enabled: false }}
 />`}</code>
@@ -258,7 +258,7 @@ const AnimationsContent = () => {
         </p>
         <pre className="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg text-sm overflow-x-auto mb-6">
           <code className="text-gray-800 dark:text-gray-200">{`<SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={rows}
   animations={{
     duration: 320,

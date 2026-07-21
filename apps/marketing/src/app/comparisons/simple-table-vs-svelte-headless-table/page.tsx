@@ -65,7 +65,7 @@ export default function SimpleTableVsSvelteHeadlessTablePage() {
         { feature: "License", simpleTable: { verdict: "yes", note: "Community License." }, competitor: { verdict: "yes", note: "MIT." } },
       ]}
       installCommand="npm install @simple-table/svelte"
-      migrationCallout={<>svelte-headless-table&apos;s <code>createTable</code> + plugin pipeline becomes Simple Table&apos;s declarative <code>defaultHeaders</code> + <code>rows</code>. You give up some plugin extensibility in exchange for a working data grid out of the box.</>}
+      migrationCallout={<>svelte-headless-table&apos;s <code>createTable</code> + plugin pipeline becomes Simple Table&apos;s declarative <code>columns</code> + <code>rows</code>. You give up some plugin extensibility in exchange for a working data grid out of the box.</>}
       faqs={[
         { question: "Is Simple Table compatible with Svelte 5 and runes?", answer: "Yes. @simple-table/svelte exposes idiomatic props that work with $state, $derived, and SvelteKit's data-loading patterns." },
         { question: "Can I still customize the look of Simple Table?", answer: "Yes. Theming is via CSS variables, and you can pass Svelte components as cell, header, and footer renderers for total content control." },

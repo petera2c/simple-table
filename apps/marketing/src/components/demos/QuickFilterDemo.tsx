@@ -1,5 +1,5 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, QuickFilterMode, Theme } from "@simple-table/react";
+import type { ReactColumnDef, QuickFilterMode, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Sample data with variety for testing quick filter
@@ -114,7 +114,7 @@ const sampleData = [
   },
 ];
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   {
     accessor: "name",
     label: "Employee Name",
@@ -170,7 +170,7 @@ const QuickFilterDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={sampleData}
       quickFilter={{
         text: searchText,

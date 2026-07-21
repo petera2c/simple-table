@@ -215,9 +215,9 @@ export const SORT_CONFIG_PROPS: PropInfo[] = [
     key: "key",
     name: "key",
     required: true,
-    description: "The HeaderObject representing the column being sorted.",
-    type: "HeaderObject",
-    link: "#header-object",
+    description: "The ColumnDef representing the column being sorted.",
+    type: "ColumnDef",
+    link: "#column-def",
     example: `key: { accessor: "name", label: "Name", width: 150 }`,
   },
   {
@@ -392,7 +392,7 @@ export const COLUMN_EDITOR_CONFIG_PROPS: PropInfo[] = [
     name: "searchFunction",
     required: false,
     description: "Custom search function to override default search behavior.",
-    type: "(header: HeaderObject, searchTerm: string) => boolean",
+    type: "(header: ColumnDef, searchTerm: string) => boolean",
     example: `{
   searchFunction: (header, searchTerm) => 
     header.label.toLowerCase().includes(searchTerm.toLowerCase())
@@ -413,7 +413,7 @@ export const COLUMN_EDITOR_CONFIG_PROPS: PropInfo[] = [
     name: "rowRenderer",
     required: false,
     description:
-      "Custom per-row layout: components plus panelSection, isEssential, canToggleVisibility, allowColumnPinning, and optional pinControl.",
+      "Custom per-row layout: components plus panelSection, essential, canToggleVisibility, allowColumnPinning, and optional pinControl.",
     type: "ColumnEditorRowRenderer",
     link: "/docs/column-visibility#custom-row-renderer",
     example: `{

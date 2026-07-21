@@ -73,8 +73,9 @@ export interface AngularColumnEditorConfig
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
 /**
- * Column definition for `defaultHeaders`: core column metadata with Angular-only
- * renderer fields. `defaultHeaders` also accepts plain `HeaderObject[]` from shared configs.
+ * Column definition for `columns` / `defaultHeaders`: core column metadata with
+ * Angular-only renderer fields. `columns` / `defaultHeaders` also accept plain
+ * `HeaderObject[]` from shared configs.
  */
 export interface AngularHeaderObject
   extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
@@ -91,14 +92,21 @@ export interface AngularHeaderObject
   >;
 }
 
+/** Preferred name for Angular column definitions. Alias of {@link AngularHeaderObject}. */
+export type AngularColumnDef = AngularHeaderObject;
+
 // ─── Top-level props ──────────────────────────────────────────────────────────
 // Mirrors SimpleTableProps with Angular-specific overrides. Use @ViewChild on the
 // table component and `getAPI()` for the imperative TableAPI.
+//
+//   Overridden to Angular equivalents:
+//     - columns / defaultHeaders → ReadonlyArray<HeaderObject | AngularHeaderObject>
 export interface SimpleTableAngularProps
   extends Omit<
     SimpleTableProps,
     | "rows"
     | "defaultHeaders"
+    | "columns"
     | "footerRenderer"
     | "emptyStateRenderer"
     | "errorStateRenderer"
@@ -113,7 +121,13 @@ export interface SimpleTableAngularProps
     | "onHeaderEdit"
     | "onColumnSelect"
   > {
-  defaultHeaders: ReadonlyArray<HeaderObject | AngularHeaderObject>;
+  /**
+   * Column definitions.
+   * @deprecated Prefer {@link columns}
+   */
+  defaultHeaders?: ReadonlyArray<HeaderObject | AngularHeaderObject>;
+  /** Column definitions. Preferred over `defaultHeaders`. */
+  columns?: ReadonlyArray<HeaderObject | AngularHeaderObject>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   onColumnOrderChange?: (newHeaders: AngularHeaderObject[]) => void;

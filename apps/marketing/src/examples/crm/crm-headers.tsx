@@ -1,7 +1,7 @@
 import { useState } from "react";
-import type { ReactHeaderObject, CellRendererProps, ValueGetterProps } from "@simple-table/react";
+import type { ReactColumnDef, CellRendererProps, ValueGetterProps } from "@simple-table/react";
 
-export const getCRMHeaders = (isDark: boolean): ReactHeaderObject[] => {
+export const getCRMHeaders = (isDark: boolean): ReactColumnDef[] => {
   const colors = isDark
     ? {
         text: "#cbd5e1",
@@ -212,8 +212,8 @@ export const getCRMHeaders = (isDark: boolean): ReactHeaderObject[] => {
       label: "CONTACT",
       width: "2fr",
       minWidth: 290,
-      isSortable: true,
-      isEditable: true,
+      sortable: true,
+      editable: true,
       type: "string",
       cellRenderer: ({ row }: CellRendererProps) => {
         const initials = (row.name as string)
@@ -288,8 +288,8 @@ export const getCRMHeaders = (isDark: boolean): ReactHeaderObject[] => {
       label: "SIGNAL",
       width: "3fr",
       minWidth: 340,
-      isSortable: true,
-      isEditable: true,
+      sortable: true,
+      editable: true,
       type: "string",
       cellRenderer: ({ row }: CellRendererProps) => {
         return (
@@ -317,7 +317,7 @@ export const getCRMHeaders = (isDark: boolean): ReactHeaderObject[] => {
       label: "AI SCORE",
       width: "1fr",
       minWidth: 100,
-      isSortable: true,
+      sortable: true,
       align: "center",
       type: "number",
       cellRenderer: ({ row }: CellRendererProps) => {
@@ -332,7 +332,7 @@ export const getCRMHeaders = (isDark: boolean): ReactHeaderObject[] => {
       label: "EMAIL",
       width: "1.5fr",
       minWidth: 210,
-      isSortable: true,
+      sortable: true,
       align: "center",
       type: "enum",
       enumOptions: [
@@ -350,7 +350,7 @@ export const getCRMHeaders = (isDark: boolean): ReactHeaderObject[] => {
       label: "IMPORT",
       width: "1fr",
       minWidth: 100,
-      isSortable: true,
+      sortable: true,
       align: "center",
       type: "string",
       cellRenderer: ({ row }: CellRendererProps) => {
@@ -366,7 +366,7 @@ export const getCRMHeaders = (isDark: boolean): ReactHeaderObject[] => {
       label: "LIST",
       width: "1.2fr",
       minWidth: 160,
-      isSortable: true,
+      sortable: true,
       align: "center",
       type: "enum",
       enumOptions: [

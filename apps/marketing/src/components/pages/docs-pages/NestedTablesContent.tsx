@@ -14,7 +14,7 @@ import Link from "next/link";
 const NESTED_TABLE_PROPS: PropInfo[] = [
   {
     key: "nestedTable",
-    name: "HeaderObject.nestedTable",
+    name: "ColumnDef.nestedTable",
     required: false,
     description:
       "Configuration for nested tables that allows each level of row grouping to have its own independent grid structure with different columns and settings. When a row is expanded, its child data is displayed in a completely separate table with its own headers, column configuration, and features. The nested table config accepts all SimpleTable props, allowing complete customization at each nesting level.",
@@ -26,27 +26,27 @@ const NESTED_TABLE_PROPS: PropInfo[] = [
   expandable: true,
   nestedTable: {
     // Required: Column structure
-    defaultHeaders: divisionHeaders,
+    columns: divisionHeaders,
     
     // Optional: Any SimpleTable props
     autoExpandColumns: true,
     enableRowSelection: true,
     columnResizing: false,
     theme: "modern-dark",
-    shouldPaginate: true,
+    enablePagination: true,
     pageSize: 10,
     // ... any other SimpleTable prop
   }
 }`,
   },
   {
-    key: "defaultHeaders",
-    name: "NestedTableConfig.defaultHeaders",
+    key: "columns",
+    name: "NestedTableConfig.columns",
     required: true,
     description:
-      "Array of HeaderObject definitions that define the column structure for the nested table. This allows each nesting level to have completely different columns than its parent.",
-    type: "HeaderObject[]",
-    link: "/docs/api-reference#header-object",
+      "Array of ColumnDef definitions that define the column structure for the nested table. This allows each nesting level to have completely different columns than its parent.",
+    type: "ColumnDef[]",
+    link: "/docs/api-reference#column-def",
     example: `// Parent level: 9 columns
 const companyHeaders = [
     { accessor: "companyName", label: "Company", width: 200, expandable: true, nestedTable: {...} },
@@ -69,11 +69,11 @@ const divisionHeaders = [
     name: "NestedTableConfig.* (Most SimpleTable Props)",
     required: false,
     description:
-      "In addition to defaultHeaders, the nestedTable config accepts most props from the SimpleTable component. This includes autoExpandColumns, enableRowSelection, columnResizing, theme, customTheme, shouldPaginate, pageSize, defaultSortConfig, enableColumnFiltering, onCellClick, onCellChange, onRowGroupExpand, and more. Note: Some props are automatically inherited from the parent table (rows, loadingStateRenderer, errorStateRenderer, emptyStateRenderer, tableEmptyStateRenderer, and icon props) and cannot be overridden in nested tables. Each nested table can be configured independently with its own settings. See the API Reference for the complete list of available props.",
+      "In addition to columns, the nestedTable config accepts most props from the SimpleTable component. This includes autoExpandColumns, enableRowSelection, columnResizing, theme, customTheme, enablePagination, pageSize, defaultSortConfig, enableColumnFiltering, onCellClick, onCellChange, onRowGroupExpand, and more. Note: Some props are automatically inherited from the parent table (rows, loadingStateRenderer, errorStateRenderer, emptyStateRenderer, tableEmptyStateRenderer, and icon props) and cannot be overridden in nested tables. Each nested table can be configured independently with its own settings. See the API Reference for the complete list of available props.",
     type: "Most SimpleTable props (excludes inherited props)",
     link: "/docs/api-reference#simple-table-props",
     example: `nestedTable: {
-  defaultHeaders: divisionHeaders,
+  columns: divisionHeaders,
   
   // Examples of commonly used props:
   autoExpandColumns: true,
@@ -81,7 +81,7 @@ const divisionHeaders = [
   columnResizing: false,
   theme: "dark",
   customTheme: { rowHeight: 32 },
-  shouldPaginate: true,
+  enablePagination: true,
   pageSize: 10,
   defaultSortConfig: { accessor: "revenue", direction: "desc" },
   enableColumnFiltering: true,
@@ -225,7 +225,7 @@ const NestedTablesContent = () => {
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
             nestedTable
           </code>{" "}
-          property to your expandable column's HeaderObject. This property defines the column
+          property to your expandable column's ColumnDef. This property defines the column
           structure and configuration for the child table that appears when a row is expanded.
         </p>
 
@@ -558,7 +558,7 @@ const NestedTablesContent = () => {
           </li>
           <li>
             <strong>Pagination:</strong> Enable{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">shouldPaginate</code>{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">enablePagination</code>{" "}
             with custom{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">pageSize</code> for
             nested tables

@@ -66,7 +66,7 @@ export default function SimpleTableVsVuetifyPage() {
       ]}
       bundleSizeNote={<>v-data-table is bundled inside Vuetify; even with tree-shaking, expect 200–400 kB gzipped for a typical Vuetify install. Simple Table for Vue is ~70 kB gzipped, no extra design system.</>}
       installCommand="npm install @simple-table/vue"
-      migrationCallout={<>Vuetify&apos;s <code>:headers</code> + <code>:items</code> map to Simple Table&apos;s <code>:default-headers</code> + <code>:rows</code>. Slot templates (<code>#item.column</code>) become Vue components passed as renderers.</>}
+      migrationCallout={<>Vuetify&apos;s <code>:headers</code> + <code>:items</code> map to Simple Table&apos;s <code>:columns</code> + <code>:rows</code>. Slot templates (<code>#item.column</code>) become Vue components passed as renderers.</>}
       faqs={[
         { question: "Can I migrate just my data tables to Simple Table while keeping Vuetify everywhere else?", answer: "Yes. Simple Table works fine alongside Vuetify. Many teams move heavy data-grid screens to @simple-table/vue while keeping Vuetify for forms, dialogs, and navigation." },
         { question: "Does Simple Table support Vue 3.x and Nuxt 3/4?", answer: "Yes. @simple-table/vue is built for Vue 3+ and works seamlessly in Nuxt 3 and Nuxt 4 with auto-imports." },

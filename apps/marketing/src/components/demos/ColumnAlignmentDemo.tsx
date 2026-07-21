@@ -1,9 +1,9 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Initial headers with different alignments
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, align: "left", type: "number" },
   { accessor: "name", label: "Name", minWidth: 100, width: "1fr", align: "center", type: "string" },
   { accessor: "score", label: "Score", width: 120, align: "right", type: "number" },
@@ -107,14 +107,14 @@ const ColumnAlignmentDemo = ({
   theme?: Theme;
 }) => {
   // Change column alignment
-  const onColumnOrderChange = (newHeaders: ReactHeaderObject[]) => {
+  const onColumnOrderChange = (newHeaders: ReactColumnDef[]) => {
     void newHeaders;
     // Call api to change alignment in the database
   };
 
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       onColumnOrderChange={onColumnOrderChange}
       rows={EMPLOYEE_DATA}
       height={height}

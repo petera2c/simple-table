@@ -1,8 +1,8 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const HEADERS: ReactHeaderObject[] = [
+const HEADERS: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 150, type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },
@@ -49,7 +49,7 @@ const EmptyStateDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={HEADERS}
+      columns={HEADERS}
       height={height}
       rows={[]}
       tableEmptyStateRenderer={emptyState}

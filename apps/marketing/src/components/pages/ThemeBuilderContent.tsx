@@ -1412,7 +1412,7 @@ export default function ThemeBuilderContent() {
         <SalesExample
           rowHeight={rowHeight}
           headerHeight={headerHeight}
-          onGridReady={() => {
+          onTableReady={() => {
             setThemeToDocument(theme);
           }}
         />
@@ -1424,11 +1424,11 @@ export default function ThemeBuilderContent() {
 function SalesExample({
   rowHeight,
   headerHeight,
-  onGridReady,
+  onTableReady,
 }: {
   rowHeight: number;
   headerHeight: number;
-  onGridReady?: () => void;
+  onTableReady?: () => void;
 }) {
   const [data, setData] = useState<(Row & { closeDate: string; category: string })[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -1500,20 +1500,20 @@ function SalesExample({
     <SimpleTable
       columnReordering
       columnResizing
-      defaultHeaders={SALES_HEADERS}
-      editColumns
+      columns={SALES_HEADERS}
+      enableColumnEditor
       customTheme={{
         headerHeight: headerHeight,
         rowHeight: rowHeight,
       }}
       onCellEdit={handleCellEdit}
-      onGridReady={onGridReady}
+      onTableReady={onTableReady}
       rows={data}
       rowsPerPage={howManyRowsCanFit}
       selectableCells
-      shouldPaginate
+      enablePagination
       theme="custom"
-      useOddEvenRowBackground
+      oddEvenRowBackground
       selectableColumns
       height={containerHeight2 ? `${containerHeight2}px` : "60dvh"}
     />

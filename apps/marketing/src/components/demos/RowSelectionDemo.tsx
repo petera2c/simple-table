@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { CellRendererProps, ReactHeaderObject, TableAPI, Theme } from "@simple-table/react";
+import type { CellRendererProps, ReactColumnDef, TableAPI, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 type LibraryBook = {
@@ -17,27 +17,27 @@ type LibraryBook = {
   borrowedBy?: string;
 };
 
-const headers: ReactHeaderObject[] = [
-  { accessor: "id", label: "Book ID", width: 80, isSortable: true, type: "number" },
-  { accessor: "isbn", label: "ISBN", width: 120, isSortable: true, type: "string" },
+const headers: ReactColumnDef[] = [
+  { accessor: "id", label: "Book ID", width: 80, sortable: true, type: "number" },
+  { accessor: "isbn", label: "ISBN", width: 120, sortable: true, type: "string" },
   {
     accessor: "title",
     label: "Title",
     minWidth: 150,
     width: "1fr",
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
-  { accessor: "author", label: "Author", width: 140, isSortable: true, type: "string" },
-  { accessor: "genre", label: "Genre", width: 120, isSortable: true, type: "string" },
-  { accessor: "yearPublished", label: "Year", width: 80, isSortable: true, type: "number" },
-  { accessor: "pages", label: "Pages", width: 80, isSortable: true, type: "number" },
-  { accessor: "rating", label: "Rating", width: 80, isSortable: true, type: "number" },
+  { accessor: "author", label: "Author", width: 140, sortable: true, type: "string" },
+  { accessor: "genre", label: "Genre", width: 120, sortable: true, type: "string" },
+  { accessor: "yearPublished", label: "Year", width: 80, sortable: true, type: "number" },
+  { accessor: "pages", label: "Pages", width: 80, sortable: true, type: "number" },
+  { accessor: "rating", label: "Rating", width: 80, sortable: true, type: "number" },
   {
     accessor: "status",
     label: "Status",
     width: 100,
-    isSortable: true,
+    sortable: true,
     type: "string",
     cellRenderer: ({ row }: CellRendererProps) => (
       <span
@@ -51,7 +51,7 @@ const headers: ReactHeaderObject[] = [
       </span>
     ),
   },
-  { accessor: "librarySection", label: "Section", width: 120, isSortable: true, type: "string" },
+  { accessor: "librarySection", label: "Section", width: 120, sortable: true, type: "string" },
 ];
 
 const LIBRARY_BOOKS: LibraryBook[] = [
@@ -271,7 +271,7 @@ const RowSelectionDemo = ({
 
       <SimpleTable
         ref={tableRef}
-        defaultHeaders={headers}
+        columns={headers}
         rows={LIBRARY_BOOKS}
         enableRowSelection
         getRowId={({ row }) => String((row as LibraryBook).id)}

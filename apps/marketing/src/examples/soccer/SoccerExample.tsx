@@ -22,8 +22,8 @@ export default function SoccerExample({
       columnReordering
       columnResizing
       customTheme={{ headerHeight: 40, rowHeight: 60 }}
-      defaultHeaders={HEADERS}
-      editColumns
+      columns={HEADERS}
+      enableColumnEditor
       height={height ? height : "70dvh"}
       icons={icons}
       initialSortColumn="rating"

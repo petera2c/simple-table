@@ -46,13 +46,13 @@ export default function FromVuetifyDataTablePage() {
       ]}
       installCommand="npm install @simple-table/vue"
       mappingRows={[
-        { competitor: ":headers", simpleTable: ":default-headers", notes: "title → label; key → accessor." },
+        { competitor: ":headers", simpleTable: ":columns", notes: "title → label; key → accessor." },
         { competitor: ":items", simpleTable: ":rows", notes: "See the Simple Table docs for the row shape." },
         { competitor: "items-per-page + pagination", simpleTable: "Built-in pagination + virtualization", notes: "Decide between paginated and virtualized rendering." },
-        { competitor: "v-slot:item.<key>", simpleTable: "HeaderObject.cellRenderer", notes: "Pass a Vue component as the cell renderer." },
+        { competitor: "v-slot:item.<key>", simpleTable: "ColumnDef.cellRenderer", notes: "Pass a Vue component as the cell renderer." },
         { competitor: "fixed-header / fixed-footer", simpleTable: "Built-in", notes: "Headers and pinned columns are sticky by default." },
         { competitor: "loading + loading-text", simpleTable: "isLoading prop", notes: "Show a built-in loading state." },
-        { competitor: "Sort-by + sort-desc", simpleTable: "HeaderObject.sortDirection", notes: "Initial sort lives on the header definition." },
+        { competitor: "Sort-by + sort-desc", simpleTable: "ColumnDef.sortDirection", notes: "Initial sort lives on the header definition." },
       ]}
       migrationSteps={[
         {
@@ -65,7 +65,7 @@ import "@simple-table/vue/styles.css";`,
         },
         {
           title: "Translate headers",
-          body: <p>Convert Vuetify headers into Simple Table HeaderObjects. Keep widths explicit so the layout matches.</p>,
+          body: <p>Convert Vuetify headers into Simple Table ColumnDefs. Keep widths explicit so the layout matches.</p>,
         },
         {
           title: "Reshape your rows",
@@ -73,7 +73,7 @@ import "@simple-table/vue/styles.css";`,
         },
         {
           title: "Convert v-slot templates to renderers",
-          body: <p>Each v-slot:item.&lt;key&gt; template becomes a Vue component referenced via HeaderObject.cellRenderer.</p>,
+          body: <p>Each v-slot:item.&lt;key&gt; template becomes a Vue component referenced via ColumnDef.cellRenderer.</p>,
         },
         {
           title: "Adopt advanced features",

@@ -65,7 +65,7 @@ export default function Page() {
       ]}
       faqs={[
         { question: "Does this work with Svelte 4 stores?", answer: "Yes. Replace $state with writable() stores and bind:headers still works—Simple Table is store-compatible." },
-        { question: "Can I disable resizing per column?", answer: "Yes—set isResizable: false on individual HeaderObject entries." },
+        { question: "Can I disable resizing per column?", answer: "Yes—set isResizable: false on individual ColumnDef entries." },
         { question: "Does it work with virtualization?", answer: "Yes. Virtualized 1M-row tables resize columns at 60fps." },
       ]}
       conclusionParagraphs={[

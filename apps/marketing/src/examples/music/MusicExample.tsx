@@ -45,7 +45,7 @@ export default function MusicExample({
           headerHeight: 30,
           rowHeight: 85,
         }}
-        defaultHeaders={HEADERS}
+        columns={HEADERS}
         height={height ? height : "70dvh"}
         icons={icons}
         rows={data}

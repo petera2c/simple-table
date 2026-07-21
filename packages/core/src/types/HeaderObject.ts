@@ -123,13 +123,30 @@ type HeaderObject = {
   filterOperators?: FilterOperator[];
   headerRenderer?: HeaderRenderer;
   hide?: boolean;
-  isEditable?: boolean; // This is used to determine if the column is editable
+  /**
+   * Whether cells in this column are editable.
+   * @deprecated Prefer {@link editable}
+   */
+  isEditable?: boolean;
+  /** Whether cells in this column are editable. Preferred over `isEditable`. */
+  editable?: boolean;
   excludeFromRender?: boolean; // When true, excludes this column from the rendered table (e.g., use only for CSV export)
   excludeFromCsv?: boolean; // When true, excludes this column from the exported CSV file
   isSelectionColumn?: boolean; // This is a flag for the checkbox select row column
-  /** When true, column stays visible, cannot be unpinned from a pinned side, cannot reorder above non-essentials in its section */
+  /**
+   * When true, column stays visible, cannot be unpinned from a pinned side, cannot reorder above non-essentials in its section.
+   * @deprecated Prefer {@link essential}
+   */
   isEssential?: boolean;
+  /** When true, column stays visible and cannot be unpinned / reordered above non-essentials. Preferred over `isEssential`. */
+  essential?: boolean;
+  /**
+   * Whether this column is sortable.
+   * @deprecated Prefer {@link sortable}
+   */
   isSortable?: boolean;
+  /** Whether this column is sortable. Preferred over `isSortable`. */
+  sortable?: boolean;
   label: string;
   minWidth?: number | string;
   sortingOrder?: ("asc" | "desc" | null)[]; // Custom sorting cycle order for this column (e.g., ["desc", "asc", null] for numbers/dates)
@@ -167,3 +184,6 @@ type HeaderObject = {
 };
 
 export default HeaderObject;
+
+/** Preferred name for column definitions. Alias of {@link HeaderObject}. */
+export type ColumnDef = HeaderObject;

@@ -47,14 +47,14 @@ export default function Page() {
         { title: "Excel-like ergonomics", body: "Power users expect Freeze Panes; pinning delivers the same affordance." },
       ]}
       libraryRows={[
-        { library: "Simple Table for Svelte", support: { value: "Built-in (left + right)", tone: "good" }, notes: "pinned: 'left' | 'right' on HeaderObject; sticky on horizontal scroll." },
+        { library: "Simple Table for Svelte", support: { value: "Built-in (left + right)", tone: "good" }, notes: "pinned: 'left' | 'right' on ColumnDef; sticky on horizontal scroll." },
         { library: "svelte-headless-table", support: { value: "Manual", tone: "bad" }, notes: "Headless—you build sticky positioning with CSS yourself." },
         { library: "SVAR DataGrid (Svelte)", support: { value: "Built-in (commercial)", tone: "neutral" }, notes: "Pinning built-in but commercial license required." },
         { library: "Flowbite Svelte Table", support: { value: "Manual", tone: "bad" }, notes: "Markup-only utilities; sticky columns are DIY with CSS." },
       ]}
       simpleTableSection={{
         headline: "Implementation: Simple Table for Svelte",
-        intro: "Set pinned: 'left' or pinned: 'right' on individual HeaderObjects. Simple Table handles z-index, sticky positioning, and shadow indicators automatically.",
+        intro: "Set pinned: 'left' or pinned: 'right' on individual ColumnDefs. Simple Table handles z-index, sticky positioning, and shadow indicators automatically.",
                 notes: <>Keep pinned columns narrow (under ~30% of viewport) so the scrolling area stays usable. Combine with <code>columnResizing</code> if users should be able to resize pinned columns.</>,
       }}
       pitfalls={[

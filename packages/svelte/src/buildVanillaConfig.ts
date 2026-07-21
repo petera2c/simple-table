@@ -56,11 +56,13 @@ function transformHeader(
 
   if (cellRenderer) {
     if (typeof cellRenderer === "function" && cellRenderer.length >= 2) {
+      // Svelte Component<> is incompatible with core CellRenderer in the union;
+      // length>=2 is the runtime signal that this is a Svelte 5 component.
       transformed.cellRenderer = wrapCachedSvelteRenderer(
         registry,
         accessor,
         "cell",
-        cellRenderer,
+        cellRenderer as Component<Record<string, any>>,
       ) as any;
     } else {
       transformed.cellRenderer = cellRenderer as any;
@@ -73,7 +75,7 @@ function transformHeader(
         registry,
         accessor,
         "header",
-        headerRenderer,
+        headerRenderer as Component<Record<string, any>>,
       ) as any;
     } else {
       transformed.headerRenderer = headerRenderer as any;
@@ -92,12 +94,24 @@ function transformHeader(
   return transformed;
 }
 
+/** Resolve preferred `columns` or legacy `defaultHeaders`. */
+export function resolveSvelteColumns(
+  config: Pick<SimpleTableSvelteProps, "columns" | "defaultHeaders">,
+): ReadonlyArray<HeaderObject | SvelteHeaderObject> {
+  const headers = config.columns ?? config.defaultHeaders;
+  if (!headers) {
+    throw new Error("SimpleTable requires `columns` or `defaultHeaders`");
+  }
+  return headers;
+}
+
 export function buildVanillaConfig(
   config: SimpleTableSvelteProps,
   registry: MountRegistry,
 ): SimpleTableConfig {
   const {
-    defaultHeaders,
+    defaultHeaders: _defaultHeaders,
+    columns: _columns,
     rows,
     footerRenderer,
     emptyStateRenderer,
@@ -112,8 +126,24 @@ export function buildVanillaConfig(
     onColumnWidthChange,
     onHeaderEdit,
     onColumnSelect,
+    enableColumnEditor,
+    editColumns,
+    enableColumnEditorInitOpen,
+    editColumnsInitOpen,
+    enablePagination,
+    shouldPaginate,
+    onTableReady,
+    onGridReady,
+    hoverRowBackground,
+    useHoverRowBackground,
+    oddColumnBackground,
+    useOddColumnBackground,
+    oddEvenRowBackground,
+    useOddEvenRowBackground,
     ...rest
   } = config;
+
+  const defaultHeaders = resolveSvelteColumns(config);
 
   registry.pruneRendererCaches(collectHeaderAccessors(defaultHeaders));
 
@@ -121,6 +151,13 @@ export function buildVanillaConfig(
     ...rest,
     rows: rows as Row[],
     defaultHeaders: defaultHeaders.map((header) => transformHeader(header, registry)),
+    editColumns: enableColumnEditor ?? editColumns,
+    editColumnsInitOpen: enableColumnEditorInitOpen ?? editColumnsInitOpen,
+    shouldPaginate: enablePagination ?? shouldPaginate,
+    onGridReady: onTableReady ?? onGridReady,
+    useHoverRowBackground: hoverRowBackground ?? useHoverRowBackground,
+    useOddColumnBackground: oddColumnBackground ?? useOddColumnBackground,
+    useOddEvenRowBackground: oddEvenRowBackground ?? useOddEvenRowBackground,
     // Authoritative mount teardown: core calls this before it permanently
     // discards any host element, so the registry unmounts exactly the affected
     // Svelte instances (including teleport / floating UI).

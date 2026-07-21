@@ -1,15 +1,15 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme, CellRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, Theme, CellRendererProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Define headers with filterable property
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
     width: 80,
     type: "number",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -18,7 +18,7 @@ const headers: ReactHeaderObject[] = [
     width: "1fr",
     minWidth: 150,
     type: "string",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -27,7 +27,7 @@ const headers: ReactHeaderObject[] = [
     width: "1fr",
     minWidth: 120,
     type: "enum",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     enumOptions: [
       { label: "Editorial", value: "Editorial" },
@@ -49,7 +49,7 @@ const headers: ReactHeaderObject[] = [
     label: "Role",
     width: 140,
     type: "string",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -58,7 +58,7 @@ const headers: ReactHeaderObject[] = [
     width: 120,
     align: "right",
     type: "number",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     cellRenderer: ({ row }: CellRendererProps) => {
       const salary = row.salary as number;
@@ -70,7 +70,7 @@ const headers: ReactHeaderObject[] = [
     label: "Start Date",
     width: 130,
     type: "date",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -79,7 +79,7 @@ const headers: ReactHeaderObject[] = [
     width: 100,
     align: "center",
     type: "boolean",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
 ];
@@ -222,7 +222,7 @@ const ColumnFilteringDemo = ({
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable defaultHeaders={headers} rows={EMPLOYEE_DATA} height={height} theme={theme} />
+    <SimpleTable columns={headers} rows={EMPLOYEE_DATA} height={height} theme={theme} />
   );
 };
 

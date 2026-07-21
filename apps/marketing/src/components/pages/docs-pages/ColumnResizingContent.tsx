@@ -27,8 +27,8 @@ const COLUMN_RESIZING_PROPS: PropInfo[] = [
     name: "onColumnWidthChange",
     required: false,
     description:
-      "Callback triggered when column widths change through user resizing or double-click auto-sizing. With `@simple-table/react`, receives `ReactHeaderObject[]`. Angular, Svelte, and Solid adapters use `AngularHeaderObject[]`, `SvelteHeaderObject[]`, and `SolidHeaderObject[]` respectively.",
-    type: "(headers: ReactHeaderObject[]) => void",
+      "Callback triggered when column widths change through user resizing or double-click auto-sizing. With `@simple-table/react`, receives `ReactColumnDef[]`. Angular, Svelte, and Solid adapters use `AngularColumnDef[]`, `SvelteColumnDef[]`, and `SolidColumnDef[]` respectively.",
+    type: "(headers: ReactColumnDef[]) => void",
     link: "/docs/api-reference#simple-table-props",
     example: `<SimpleTable
   columnResizing={true}

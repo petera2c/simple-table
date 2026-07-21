@@ -1,10 +1,10 @@
 import { SimpleTable } from "@simple-table/react";
-import type { CellRendererProps, ReactHeaderObject } from "@simple-table/react";
+import type { CellRendererProps, ReactColumnDef } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 import "./CustomTheme.css";
 
 // Define headers
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 100, width: "1fr", type: "string" },
   { accessor: "email", label: "Email", minWidth: 100, width: "1fr", type: "string" },
@@ -142,7 +142,7 @@ const CustomThemeDemo = ({ height = "400px" }: { height?: string | number }) => 
     <div className="custom-theme-container">
       <SimpleTable
         columnResizing
-        defaultHeaders={headers}
+        columns={headers}
         height={height}
         rows={data}
         selectableCells

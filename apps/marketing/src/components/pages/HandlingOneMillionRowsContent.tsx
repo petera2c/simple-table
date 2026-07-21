@@ -206,17 +206,17 @@ export default function HandlingOneMillionRowsContent() {
             <pre className="bg-gray-900 dark:bg-gray-950 text-gray-100 p-4 rounded-lg overflow-auto mb-6 text-sm leading-relaxed">
               {`import React, { useState, useEffect } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { HeaderObject } from "@simple-table/react";
+import type { ColumnDef } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Define headers for the performance demo
-const PERFORMANCE_HEADERS: HeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-  { accessor: "repName", label: "Sales Rep", width: "1fr", isSortable: true, type: "string" },
-  { accessor: "dealSize", label: "Deal Size", width: 120, isSortable: true, type: "number" },
-  { accessor: "isWon", label: "Status", width: 100, isSortable: true, type: "boolean" },
-  { accessor: "dealProfit", label: "Profit", width: 120, isSortable: true, type: "number" },
-  { accessor: "dealValue", label: "Value", width: 120, isSortable: true, type: "number" },
+const PERFORMANCE_HEADERS: ColumnDef[] = [
+  { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+  { accessor: "repName", label: "Sales Rep", width: "1fr", sortable: true, type: "string" },
+  { accessor: "dealSize", label: "Deal Size", width: 120, sortable: true, type: "number" },
+  { accessor: "isWon", label: "Status", width: 100, sortable: true, type: "boolean" },
+  { accessor: "dealProfit", label: "Profit", width: 120, sortable: true, type: "number" },
+  { accessor: "dealValue", label: "Value", width: 120, sortable: true, type: "number" },
 ];
 
 // Generates a large dataset for demo purposes
@@ -267,11 +267,11 @@ export default function PerformanceDemo() {
 
   return (
     <SimpleTable
-      defaultHeaders={PERFORMANCE_HEADERS}
+      columns={PERFORMANCE_HEADERS}
       rows={data}
       
       height="500px"
-      editColumns
+      enableColumnEditor
       columnResizing
       selectableCells
     />

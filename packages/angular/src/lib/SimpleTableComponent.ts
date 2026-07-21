@@ -17,7 +17,7 @@ import {
   headersStructurallyEqual,
   rowsShallowUnchanged,
 } from "simple-table-core";
-import { buildVanillaConfig } from "../buildVanillaConfig";
+import { buildVanillaConfig, resolveAngularColumns } from "../buildVanillaConfig";
 import { MountRegistry } from "../MountRegistry";
 import type { SimpleTableAngularProps, TableInstance } from "../types";
 
@@ -41,7 +41,9 @@ import type { SimpleTableAngularProps, TableInstance } from "../types";
 })
 export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input({ required: true }) rows!: SimpleTableAngularProps["rows"];
-  @Input({ required: true }) defaultHeaders!: SimpleTableAngularProps["defaultHeaders"];
+  /** @deprecated Prefer {@link columns} */
+  @Input() defaultHeaders?: SimpleTableAngularProps["defaultHeaders"];
+  @Input() columns?: SimpleTableAngularProps["columns"];
 
   // All optional SimpleTableAngularProps inputs
   @Input() footerRenderer?: SimpleTableAngularProps["footerRenderer"];
@@ -63,6 +65,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() onPageChange?: SimpleTableAngularProps["onPageChange"];
   @Input() onLoadMore?: SimpleTableAngularProps["onLoadMore"];
   @Input() onGridReady?: SimpleTableAngularProps["onGridReady"];
+  @Input() onTableReady?: SimpleTableAngularProps["onTableReady"];
   @Input() rowGrouping?: SimpleTableAngularProps["rowGrouping"];
   @Input() pivot?: SimpleTableAngularProps["pivot"];
   @Input() onPivotChange?: SimpleTableAngularProps["onPivotChange"];
@@ -72,6 +75,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isLoading?: SimpleTableAngularProps["isLoading"];
   @Input() getRowId?: SimpleTableAngularProps["getRowId"];
   @Input() shouldPaginate?: SimpleTableAngularProps["shouldPaginate"];
+  @Input() enablePagination?: SimpleTableAngularProps["enablePagination"];
   @Input() rowsPerPage?: SimpleTableAngularProps["rowsPerPage"];
   @Input() serverSidePagination?: SimpleTableAngularProps["serverSidePagination"];
   @Input() totalRowCount?: SimpleTableAngularProps["totalRowCount"];
@@ -82,7 +86,9 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() columnResizing?: SimpleTableAngularProps["columnResizing"];
   @Input() columnReordering?: SimpleTableAngularProps["columnReordering"];
   @Input() editColumns?: SimpleTableAngularProps["editColumns"];
+  @Input() enableColumnEditor?: SimpleTableAngularProps["enableColumnEditor"];
   @Input() editColumnsInitOpen?: SimpleTableAngularProps["editColumnsInitOpen"];
+  @Input() enableColumnEditorInitOpen?: SimpleTableAngularProps["enableColumnEditorInitOpen"];
   @Input() selectableCells?: SimpleTableAngularProps["selectableCells"];
   @Input() selectableColumns?: SimpleTableAngularProps["selectableColumns"];
   @Input() enableHeaderEditing?: SimpleTableAngularProps["enableHeaderEditing"];
@@ -101,13 +107,21 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() autoExpandColumns?: SimpleTableAngularProps["autoExpandColumns"];
   @Input() animations?: SimpleTableAngularProps["animations"];
   @Input() enableVirtualization?: SimpleTableAngularProps["enableVirtualization"];
+  @Input() hoverRowBackground?: SimpleTableAngularProps["hoverRowBackground"];
+  @Input() useHoverRowBackground?: SimpleTableAngularProps["useHoverRowBackground"];
+  @Input() oddColumnBackground?: SimpleTableAngularProps["oddColumnBackground"];
+  @Input() useOddColumnBackground?: SimpleTableAngularProps["useOddColumnBackground"];
+  @Input() oddEvenRowBackground?: SimpleTableAngularProps["oddEvenRowBackground"];
+  @Input() useOddEvenRowBackground?: SimpleTableAngularProps["useOddEvenRowBackground"];
 
   /** Emits the TableAPI once the table has mounted. */
   @Output() tableReady = new EventEmitter<TableAPI>();
 
   private instance: TableInstance | null = null;
   private registry = new MountRegistry();
-  private syncedDefaultHeaders: SimpleTableAngularProps["defaultHeaders"] | undefined;
+  private syncedDefaultHeaders: ReadonlyArray<
+    NonNullable<SimpleTableAngularProps["columns"]>[number]
+  > | undefined;
   private syncedRows: SimpleTableAngularProps["rows"] | undefined;
   private hostEl = inject(ElementRef<HTMLElement>);
   private appRef = inject(ApplicationRef);
@@ -123,7 +137,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
       buildVanillaConfig(props, this.registry, this.appRef, this.envInjector),
     ) as unknown as TableInstance;
     this.instance.mount();
-    this.syncedDefaultHeaders = props.defaultHeaders;
+    this.syncedDefaultHeaders = resolveAngularColumns(props);
     this.syncedRows = props.rows;
 
     this.tableReady.emit(this.instance.getAPI());
@@ -135,12 +149,13 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     const props = this.getProps();
     const fullConfig = buildVanillaConfig(props, this.registry, this.appRef, this.envInjector);
     const patch: Partial<SimpleTableConfig> = { ...fullConfig };
+    const resolvedColumns = resolveAngularColumns(props);
 
     const headersUnchanged = headersStructurallyEqual(
       this.syncedDefaultHeaders,
-      props.defaultHeaders,
+      resolvedColumns,
     );
-    this.syncedDefaultHeaders = props.defaultHeaders;
+    this.syncedDefaultHeaders = resolvedColumns;
     if (headersUnchanged) {
       delete patch.defaultHeaders;
     }
@@ -174,9 +189,10 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   private getProps(): SimpleTableAngularProps {
     const props: SimpleTableAngularProps = {
       rows: this.rows,
-      defaultHeaders: this.defaultHeaders,
     };
 
+    if (this.defaultHeaders !== undefined) props.defaultHeaders = this.defaultHeaders;
+    if (this.columns !== undefined) props.columns = this.columns;
     if (this.footerRenderer !== undefined) props.footerRenderer = this.footerRenderer;
     if (this.loadingStateRenderer !== undefined)
       props.loadingStateRenderer = this.loadingStateRenderer;
@@ -202,6 +218,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     if (this.onPageChange !== undefined) props.onPageChange = this.onPageChange;
     if (this.onLoadMore !== undefined) props.onLoadMore = this.onLoadMore;
     if (this.onGridReady !== undefined) props.onGridReady = this.onGridReady;
+    if (this.onTableReady !== undefined) props.onTableReady = this.onTableReady;
     if (this.rowGrouping !== undefined) props.rowGrouping = this.rowGrouping;
     if (this.pivot !== undefined) props.pivot = this.pivot;
     if (this.onPivotChange !== undefined) props.onPivotChange = this.onPivotChange;
@@ -211,6 +228,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     if (this.isLoading !== undefined) props.isLoading = this.isLoading;
     if (this.getRowId !== undefined) props.getRowId = this.getRowId;
     if (this.shouldPaginate !== undefined) props.shouldPaginate = this.shouldPaginate;
+    if (this.enablePagination !== undefined) props.enablePagination = this.enablePagination;
     if (this.rowsPerPage !== undefined) props.rowsPerPage = this.rowsPerPage;
     if (this.serverSidePagination !== undefined)
       props.serverSidePagination = this.serverSidePagination;
@@ -223,8 +241,11 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     if (this.columnResizing !== undefined) props.columnResizing = this.columnResizing;
     if (this.columnReordering !== undefined) props.columnReordering = this.columnReordering;
     if (this.editColumns !== undefined) props.editColumns = this.editColumns;
+    if (this.enableColumnEditor !== undefined) props.enableColumnEditor = this.enableColumnEditor;
     if (this.editColumnsInitOpen !== undefined)
       props.editColumnsInitOpen = this.editColumnsInitOpen;
+    if (this.enableColumnEditorInitOpen !== undefined)
+      props.enableColumnEditorInitOpen = this.enableColumnEditorInitOpen;
     if (this.selectableCells !== undefined) props.selectableCells = this.selectableCells;
     if (this.selectableColumns !== undefined) props.selectableColumns = this.selectableColumns;
     if (this.enableHeaderEditing !== undefined)
@@ -248,6 +269,17 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     if (this.animations !== undefined) props.animations = this.animations;
     if (this.enableVirtualization !== undefined)
       props.enableVirtualization = this.enableVirtualization;
+    if (this.hoverRowBackground !== undefined) props.hoverRowBackground = this.hoverRowBackground;
+    if (this.useHoverRowBackground !== undefined)
+      props.useHoverRowBackground = this.useHoverRowBackground;
+    if (this.oddColumnBackground !== undefined)
+      props.oddColumnBackground = this.oddColumnBackground;
+    if (this.useOddColumnBackground !== undefined)
+      props.useOddColumnBackground = this.useOddColumnBackground;
+    if (this.oddEvenRowBackground !== undefined)
+      props.oddEvenRowBackground = this.oddEvenRowBackground;
+    if (this.useOddEvenRowBackground !== undefined)
+      props.useOddEvenRowBackground = this.useOddEvenRowBackground;
 
     return props;
   }

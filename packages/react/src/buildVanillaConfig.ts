@@ -101,12 +101,24 @@ function transformHeader(header: ReactHeaderObject, bridge: PortalBridge): Heade
   return transformed;
 }
 
+/** Resolve preferred `columns` or legacy `defaultHeaders`. */
+export function resolveReactColumns(
+  config: Pick<SimpleTableReactProps, "columns" | "defaultHeaders">,
+): ReadonlyArray<ReactHeaderObject> {
+  const headers = config.columns ?? config.defaultHeaders;
+  if (!headers) {
+    throw new Error("SimpleTable requires `columns` or `defaultHeaders`");
+  }
+  return headers;
+}
+
 export function buildVanillaConfig(
   config: SimpleTableReactProps,
   bridge: PortalBridge,
 ): SimpleTableConfig {
   const {
-    defaultHeaders,
+    defaultHeaders: _defaultHeaders,
+    columns: _columns,
     rows,
     footerRenderer,
     emptyStateRenderer,
@@ -121,8 +133,24 @@ export function buildVanillaConfig(
     onColumnWidthChange,
     onHeaderEdit,
     onColumnSelect,
+    enableColumnEditor,
+    editColumns,
+    enableColumnEditorInitOpen,
+    editColumnsInitOpen,
+    enablePagination,
+    shouldPaginate,
+    onTableReady,
+    onGridReady,
+    hoverRowBackground,
+    useHoverRowBackground,
+    oddColumnBackground,
+    useOddColumnBackground,
+    oddEvenRowBackground,
+    useOddEvenRowBackground,
     ...rest
   } = config;
+
+  const defaultHeaders = resolveReactColumns(config);
 
   bridge.pruneRendererCaches(collectHeaderAccessors(defaultHeaders));
 
@@ -130,6 +158,13 @@ export function buildVanillaConfig(
     ...rest,
     rows: rows as Row[],
     defaultHeaders: defaultHeaders.map((header) => transformHeader(header, bridge)),
+    editColumns: enableColumnEditor ?? editColumns,
+    editColumnsInitOpen: enableColumnEditorInitOpen ?? editColumnsInitOpen,
+    shouldPaginate: enablePagination ?? shouldPaginate,
+    onGridReady: onTableReady ?? onGridReady,
+    useHoverRowBackground: hoverRowBackground ?? useHoverRowBackground,
+    useOddColumnBackground: oddColumnBackground ?? useOddColumnBackground,
+    useOddEvenRowBackground: oddEvenRowBackground ?? useOddEvenRowBackground,
     // Authoritative portal teardown: core calls this before it permanently
     // discards any host element, so the bridge unmounts exactly the affected
     // portal subtrees (no DOM-inference / MutationObserver pruning needed).

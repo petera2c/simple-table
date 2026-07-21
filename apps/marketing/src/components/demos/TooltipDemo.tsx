@@ -1,5 +1,5 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme, CellRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, Theme, CellRendererProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 const EXAMPLE_DATA = [
@@ -140,19 +140,19 @@ const EXAMPLE_DATA = [
   },
 ];
 
-const HEADERS: ReactHeaderObject[] = [
+const HEADERS: ReactColumnDef[] = [
   {
     accessor: "productName",
     label: "Product",
     width: 200,
-    isSortable: true,
+    sortable: true,
     tooltip: "Complete product name including model specifications and key features",
   },
   {
     accessor: "category",
     label: "Category",
     width: 150,
-    isSortable: true,
+    sortable: true,
     filterable: true,
     tooltip: "Product classification: Laptops, Displays, or Peripherals for easy filtering",
   },
@@ -160,7 +160,7 @@ const HEADERS: ReactHeaderObject[] = [
     accessor: "price",
     label: "Price",
     width: 120,
-    isSortable: true,
+    sortable: true,
     align: "right",
     tooltip: "Current retail price in US dollars (USD) including all standard features",
     cellRenderer: ({ row }: CellRendererProps) => `$${(row.price as number).toFixed(2)}`,
@@ -169,7 +169,7 @@ const HEADERS: ReactHeaderObject[] = [
     accessor: "stock",
     label: "Stock",
     width: 100,
-    isSortable: true,
+    sortable: true,
     align: "right",
     tooltip: "Available inventory count - number of units currently in warehouse stock",
   },
@@ -177,7 +177,7 @@ const HEADERS: ReactHeaderObject[] = [
     accessor: "rating",
     label: "Rating",
     width: 100,
-    isSortable: true,
+    sortable: true,
     align: "center",
     tooltip: "Customer satisfaction rating based on verified purchase reviews (scale: 1-5 stars)",
     cellRenderer: ({ row }: CellRendererProps) => `${row.rating}/5`,
@@ -186,7 +186,7 @@ const HEADERS: ReactHeaderObject[] = [
     accessor: "lastUpdated",
     label: "Last Updated",
     width: 150,
-    isSortable: true,
+    sortable: true,
     tooltip: "Most recent inventory update date in YYYY-MM-DD format",
   },
 ];
@@ -194,7 +194,7 @@ const HEADERS: ReactHeaderObject[] = [
 const TooltipDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {
   return (
     <SimpleTable
-      defaultHeaders={HEADERS}
+      columns={HEADERS}
       rows={EXAMPLE_DATA}
       height={height}
       columnResizing

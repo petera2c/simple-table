@@ -8,12 +8,12 @@ import { useSalesData } from "./useSalesData";
 export default function SalesExample({
   height,
   icons,
-  onGridReady,
+  onTableReady,
   theme,
 }: {
   height?: string | number | null;
   icons?: ReactIconsConfig;
-  onGridReady?: () => void;
+  onTableReady?: () => void;
   theme?: Theme;
 }) {
   const { data: fetchedData, isLoading } = useSalesData();
@@ -71,14 +71,14 @@ export default function SalesExample({
       autoExpandColumns={!isMobile}
       columnResizing
       columnReordering
-      defaultHeaders={SALES_HEADERS}
-      editColumns
+      columns={SALES_HEADERS}
+      enableColumnEditor
       height={height ? `${height}px` : "70dvh"}
       icons={icons}
       initialSortColumn="dealValue"
       initialSortDirection="desc"
       onCellEdit={handleCellEdit}
-      onGridReady={onGridReady}
+      onTableReady={onTableReady}
       rows={data}
       selectableCells
       theme={theme}

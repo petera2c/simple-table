@@ -12,14 +12,14 @@ import ExampleControls from "@/components/ExampleControls";
 const ROW_HEIGHT = 32;
 
 type AnalyticsExampleWrapperProps = {
-  onGridReady?: () => void;
-  shouldPaginate?: boolean;
+  onTableReady?: () => void;
+  enablePagination?: boolean;
   theme?: Theme;
 };
 
 export default function AnalyticsExampleWrapper({
-  onGridReady,
-  shouldPaginate = false,
+  onTableReady,
+  enablePagination = false,
   theme,
 }: AnalyticsExampleWrapperProps) {
   const { currentTheme, currentIconLibrary } = useExamplesContext();
@@ -27,7 +27,7 @@ export default function AnalyticsExampleWrapper({
   const tableIcons = getTableIcons(currentIconLibrary);
 
   const containerHeight = useExampleHeight({
-    isUsingPagination: shouldPaginate,
+    isUsingPagination: enablePagination,
     rowHeight: ROW_HEIGHT,
   });
 
@@ -45,7 +45,7 @@ export default function AnalyticsExampleWrapper({
             key={currentIconLibrary}
             height={containerHeight}
             icons={tableIcons}
-            onGridReady={onGridReady}
+            onTableReady={onTableReady}
             theme={selectedTheme}
           />
         </ExamplesWrapper>

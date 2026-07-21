@@ -97,7 +97,7 @@ export default function Page() {
       ]}
       faqs={[
         { question: "Is Grid.js bad?", answer: "Not at all—it's a fine read-first table for content pages. It's the wrong tool for a data grid with virtualization, grouping, or inline editing." },
-        { question: "How big is the migration?", answer: "Hours per table. Map columns to HeaderObjects; replace formatters with cellRenderers; convert search/sort/paginate options to Simple Table's pagination + sorting + filtering options." },
+        { question: "How big is the migration?", answer: "Hours per table. Map columns to ColumnDefs; replace formatters with cellRenderers; convert search/sort/paginate options to Simple Table's pagination + sorting + filtering options." },
         { question: "Does simple-table-core have search?", answer: "Yes. Column filters are first-class; combine across columns for global-search-like behavior." },
       ]}
       conclusionParagraphs={[

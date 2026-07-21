@@ -1,9 +1,9 @@
 import { useRef } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, TableAPI, Theme } from "@simple-table/react";
+import type { ReactColumnDef, TableAPI, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "organization", label: "Organization", width: 200, expandable: true, type: "string" },
   { accessor: "employees", label: "Employees", width: 100, type: "number" },
   { accessor: "budget", label: "Annual Budget", width: 140, type: "string" },
@@ -538,7 +538,7 @@ const RowGroupingDemo = ({
         </button>
       </div>
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         enableStickyParents
         expandAll={expandAll}
         getRowId={({ row }) => row.id as string}

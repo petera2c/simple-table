@@ -105,7 +105,7 @@ columnEditorPosition="right"`,
   },
   {
     key: "type",
-    name: "HeaderObject.type",
+    name: "ColumnDef.type",
     required: false,
     description:
       "Data type for proper formatting and sorting behavior. Includes chart types for visualizing array data inline.",
@@ -135,12 +135,12 @@ await tableRef.current?.applySortState({ accessor: "name" });`,
     name: "SortColumn",
     required: false,
     description:
-      "Object representing the current sort state of the table. Contains the column being sorted (as a HeaderObject) and the sort direction. Returned by getSortState() method.",
-    type: "{ key: HeaderObject; direction: SortDirection }",
-    link: "#header-object",
-    example: `// The 'key' property is a full HeaderObject, not just the accessor
+      "Object representing the current sort state of the table. Contains the column being sorted (as a ColumnDef) and the sort direction. Returned by getSortState() method.",
+    type: "{ key: ColumnDef; direction: SortDirection }",
+    link: "#column-def",
+    example: `// The 'key' property is a full ColumnDef, not just the accessor
 interface SortColumn {
-  key: HeaderObject;           // Complete column definition
+  key: ColumnDef;           // Complete column definition
   direction: SortDirection;    // "asc" | "desc"
 }
 

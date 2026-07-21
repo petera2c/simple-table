@@ -96,7 +96,7 @@ export default function Page() {
       ]}
       faqs={[
         { question: "Is SVAR DataGrid free?", answer: "The Svelte DataGrid is open source under MIT. Some SVAR products (calendars, scheduler) have commercial editions; check each component's license." },
-        { question: "How big is the migration?", answer: "Hours per table. Map column definitions to HeaderObject entries and convert custom cell render functions to Svelte cellRenderer components." },
+        { question: "How big is the migration?", answer: "Hours per table. Map column definitions to ColumnDef entries and convert custom cell render functions to Svelte cellRenderer components." },
         { question: "Does Simple Table support tree data?", answer: "Yes—expandable / nested rows with virtualization are first-class." },
       ]}
       conclusionParagraphs={[

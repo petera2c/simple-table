@@ -36,7 +36,7 @@ export default function ManufacturingExample({
     <SimpleTable
       columnResizing
       columnReordering
-      defaultHeaders={HEADERS}
+      columns={HEADERS}
       getRowId={({ row }) => String(row.id)}
       height={height ? `${height}px` : "70dvh"}
       icons={icons}

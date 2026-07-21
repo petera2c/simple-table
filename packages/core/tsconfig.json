@@ -15,7 +15,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "declaration": false
+    "declaration": false,
+    "noUncheckedSideEffectImports": true
   },
   "include": ["src", "stories", ".storybook"],
   "exclude": ["node_modules", "dist", "rollup.config.js"]

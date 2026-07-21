@@ -107,7 +107,7 @@ export default function Page() {
       faqs={[
         { question: "Will I lose enterprise support switching to a source-available grid?", answer: "You give up a commercial support contract. You gain GitHub Issues, Discord, and the ability to read / patch the source. Many teams find that's enough; some prefer the commercial backstop. It depends on your org." },
         { question: "Does Simple Table for Angular cover everything Kendo Grid does?", answer: "It covers the headline features: virtualization, pinning, grouping with aggregations, tree data, inline editing, custom cells, multi-column sort, filtering. Kendo's PDF / Excel export and Reporting integrations are Kendo-specific—you'd need a separate solution if you depend on those." },
-        { question: "How long does the migration take?", answer: "Usually a few sprints depending on table count and customizations. The data shape is similar to Kendo's: column definitions become HeaderObjects, rows are adapted to Simple Table's row shape, and Kendo cell templates become Simple Table cellRenderers." },
+        { question: "How long does the migration take?", answer: "Usually a few sprints depending on table count and customizations. The data shape is similar to Kendo's: column definitions become ColumnDefs, rows are adapted to Simple Table's row shape, and Kendo cell templates become Simple Table cellRenderers." },
         { question: "Can I run them side by side during migration?", answer: "Yes. Simple Table and Kendo Grid coexist fine in the same app—migrate one route at a time and remove Kendo when the last consumer is gone." },
       ]}
       conclusionParagraphs={[

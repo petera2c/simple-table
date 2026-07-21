@@ -1,5 +1,5 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme, CellRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, Theme, CellRendererProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Sample student performance data
@@ -128,19 +128,19 @@ const STUDENT_DATA = [
 ];
 
 // Define headers with singleRowChildren feature
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   {
     accessor: "studentId",
     label: "Student ID",
     width: 160,
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
     accessor: "gradeLevel",
     label: "Grade Level",
     width: 150,
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   // Student Name - When collapsed, shows name and GPA. When expanded, shows individual grades
@@ -150,14 +150,14 @@ const headers: ReactHeaderObject[] = [
     width: 200,
     collapsible: true,
     type: "string",
-    isSortable: true,
+    sortable: true,
     singleRowChildren: true, // Parent appears beside children, not above
     children: [
       {
         accessor: "overallGPA",
         label: "GPA",
         width: 90,
-        isSortable: true,
+        sortable: true,
         type: "number",
         align: "right",
         showWhen: "parentCollapsed", // Show overall GPA when collapsed
@@ -167,7 +167,7 @@ const headers: ReactHeaderObject[] = [
         accessor: "mathGrade",
         label: "Math",
         width: 90,
-        isSortable: true,
+        sortable: true,
         type: "number",
         align: "right",
         showWhen: "parentExpanded", // Show individual grades when expanded
@@ -176,7 +176,7 @@ const headers: ReactHeaderObject[] = [
         accessor: "scienceGrade",
         label: "Science",
         width: 90,
-        isSortable: true,
+        sortable: true,
         type: "number",
         align: "right",
         showWhen: "parentExpanded",
@@ -185,7 +185,7 @@ const headers: ReactHeaderObject[] = [
         accessor: "englishGrade",
         label: "English",
         width: 90,
-        isSortable: true,
+        sortable: true,
         type: "number",
         align: "right",
         showWhen: "parentExpanded",
@@ -194,7 +194,7 @@ const headers: ReactHeaderObject[] = [
         accessor: "historyGrade",
         label: "History",
         width: 90,
-        isSortable: true,
+        sortable: true,
         type: "number",
         align: "right",
         showWhen: "parentExpanded",
@@ -214,7 +214,7 @@ const SingleRowChildrenDemo = ({
     <SimpleTable
       columnResizing
       selectableCells
-      defaultHeaders={headers}
+      columns={headers}
       rows={STUDENT_DATA}
       height={height}
       theme={theme}

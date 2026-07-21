@@ -65,7 +65,7 @@ export default function SimpleTableVsPrimeVueDataTablePage() {
       ]}
       bundleSizeNote={<>PrimeVue DataTable is bundled inside primevue. Including the table + a theme + PrimeIcons typically adds 200–400 kB gzipped. Simple Table for Vue is ~70 kB gzipped with no extra design system.</>}
       installCommand="npm install @simple-table/vue"
-      migrationCallout={<>PrimeVue&apos;s <code>:value</code> and <code>&lt;Column&gt;</code> children map to Simple Table&apos;s <code>:rows</code> + <code>:default-headers</code>. Body templates become Vue components passed as renderers.</>}
+      migrationCallout={<>PrimeVue&apos;s <code>:value</code> and <code>&lt;Column&gt;</code> children map to Simple Table&apos;s <code>:rows</code> + <code>:columns</code>. Body templates become Vue components passed as renderers.</>}
       faqs={[
         { question: "Should I drop PrimeVue entirely?", answer: "Not necessarily. Many teams keep PrimeVue for forms and dialogs while migrating the data grid to Simple Table for tighter bundles and grouping/editing in one library." },
         { question: "Does Simple Table support Nuxt 3/4?", answer: "Yes. @simple-table/vue works in Nuxt 3 and Nuxt 4 with auto-imports and SSR." },

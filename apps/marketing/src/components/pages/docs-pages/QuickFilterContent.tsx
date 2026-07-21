@@ -121,10 +121,10 @@ quickFilter={{
   },
 ];
 
-const HEADER_OBJECT_QUICK_FILTER_PROPS: PropInfo[] = [
+const COLUMN_DEF_QUICK_FILTER_PROPS: PropInfo[] = [
   {
     key: "quickFilterable",
-    name: "HeaderObject.quickFilterable",
+    name: "ColumnDef.quickFilterable",
     required: false,
     description:
       "Controls whether this column should be included in quick filter searches. Set to false to exclude a column from global search. Defaults to true.",
@@ -145,7 +145,7 @@ const HEADER_OBJECT_QUICK_FILTER_PROPS: PropInfo[] = [
   },
   {
     key: "quickFilterGetter",
-    name: "HeaderObject.quickFilterGetter",
+    name: "ColumnDef.quickFilterGetter",
     required: false,
     description:
       "Custom function to extract the searchable value for this column. Useful for complex data structures, computed values, or custom search logic. Receives the row and returns a string or string array to search.",
@@ -416,11 +416,11 @@ const QuickFilterContent = () => {
         transition={{ duration: 0.5, delay: 1.0 }}
       >
         <p className="text-gray-700 dark:text-gray-300 mb-4">
-          Customize how individual columns behave in quick filter searches using these HeaderObject
+          Customize how individual columns behave in quick filter searches using these ColumnDef
           properties:
         </p>
 
-        <PropTable props={HEADER_OBJECT_QUICK_FILTER_PROPS} title="Column Configuration" />
+        <PropTable props={COLUMN_DEF_QUICK_FILTER_PROPS} title="Column Configuration" />
       </motion.div>
 
       <motion.h2

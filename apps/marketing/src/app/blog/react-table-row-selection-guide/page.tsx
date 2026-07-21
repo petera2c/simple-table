@@ -419,7 +419,7 @@ export default function ReactTableRowSelectionPage() {
 
       <SimpleTable
         rows={users}
-        defaultHeaders={headers}
+        columns={headers}
         
         rowSelection={{
           enabled: true,
@@ -491,7 +491,7 @@ export default function ReactTableRowSelectionPage() {
 
       <SimpleTable
         rows={users}
-        defaultHeaders={headers}
+        columns={headers}
         
         rowSelection={{
           enabled: true,

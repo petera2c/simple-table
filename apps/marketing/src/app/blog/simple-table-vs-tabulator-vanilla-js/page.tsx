@@ -98,7 +98,7 @@ export default function Page() {
       ]}
       faqs={[
         { question: "Is Tabulator dead?", answer: "No—it's actively maintained and a fine choice for legacy and new projects alike. The trade-off is API style and TypeScript ergonomics, not maintenance." },
-        { question: "How big is the migration?", answer: "Hours to a few days per table. Map columns array to HeaderObject entries; convert formatters / mutators to cellRenderer / valueGetter functions." },
+        { question: "How big is the migration?", answer: "Hours to a few days per table. Map columns array to ColumnDef entries; convert formatters / mutators to cellRenderer / valueGetter functions." },
         { question: "Can simple-table-core export to CSV?", answer: "Built-in CSV export ships with the core; PDF export is an opt-in adapter in roadmap. Tabulator has more file-format breadth out of the box today." },
       ]}
       conclusionParagraphs={[

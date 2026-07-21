@@ -1,9 +1,9 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme, CellRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, Theme, CellRendererProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Define headers with custom cell renderers
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 180, type: "string" },
   {
@@ -380,7 +380,7 @@ const CellRendererDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       height={height}
       rows={EMPLOYEE_DATA}
       selectableCells

@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const HEADERS: ReactHeaderObject[] = [
+const HEADERS: ReactColumnDef[] = [
   { accessor: "id", label: "Project ID", width: 80, type: "number" },
   { accessor: "projectName", label: "Project Name", width: "1fr", minWidth: 120, type: "string" },
   { accessor: "client", label: "Client", width: 180, type: "string" },
@@ -127,7 +127,7 @@ const LoadingStateDemo = ({ theme }: { height?: string | number; theme?: Theme }
         </span>
       </div>
       <SimpleTable
-        defaultHeaders={HEADERS}
+        columns={HEADERS}
         height="380px"
         isLoading={isLoading}
         rows={data}

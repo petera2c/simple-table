@@ -105,7 +105,7 @@ export default function Page() {
       ]}
       faqs={[
         { question: "Is svelte-headless-table dead?", answer: "No—it's still maintained, but Svelte 5 / runes support has lagged the broader ecosystem. Simple Table for Svelte ships runes-friendly bindings now." },
-        { question: "Can I migrate gradually?", answer: "Yes. Replace one table at a time. Map your column models to HeaderObject entries; replace your virtualization wiring with rowsPerPage; convert your grouping plugin to Simple Table's built-in grouping." },
+        { question: "Can I migrate gradually?", answer: "Yes. Replace one table at a time. Map your column models to ColumnDef entries; replace your virtualization wiring with rowsPerPage; convert your grouping plugin to Simple Table's built-in grouping." },
         { question: "What about TanStack Table for Svelte?", answer: "TanStack is also headless. Simple Table for Svelte is batteries-included by design—same trade-off as headless vs batteries-included in React." },
       ]}
       conclusionParagraphs={[

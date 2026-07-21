@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Define headers
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 150, width: "1fr", type: "string" },
   { accessor: "email", label: "Email", minWidth: 200, width: "1fr", type: "string" },
@@ -185,7 +185,7 @@ const TableHeightDemo = ({
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">{selectedHeight}</code>
       </div>
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         height={selectedHeight}
         rows={EMPLOYEE_DATA}
         theme={theme}

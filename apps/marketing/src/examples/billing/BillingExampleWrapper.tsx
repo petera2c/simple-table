@@ -12,11 +12,11 @@ import ExampleControls from "@/components/ExampleControls";
 const ROW_HEIGHT = 40;
 
 type BillingExampleWrapperProps = {
-  onGridReady?: () => void;
+  onTableReady?: () => void;
   theme?: Theme;
 };
 
-export default function BillingExampleWrapper({ onGridReady, theme }: BillingExampleWrapperProps) {
+export default function BillingExampleWrapper({ onTableReady, theme }: BillingExampleWrapperProps) {
   const { currentTheme, currentIconLibrary } = useExamplesContext();
   const selectedTheme = (currentTheme as Theme) || theme;
   const tableIcons = getTableIcons(currentIconLibrary);
@@ -40,7 +40,7 @@ export default function BillingExampleWrapper({ onGridReady, theme }: BillingExa
             key={currentIconLibrary}
             height={containerHeight}
             icons={tableIcons}
-            onGridReady={onGridReady}
+            onTableReady={onTableReady}
             theme={selectedTheme}
           />
         </ExamplesWrapper>

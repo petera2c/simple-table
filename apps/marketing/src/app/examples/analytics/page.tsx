@@ -26,5 +26,5 @@ export const metadata: Metadata = {
 };
 
 export default function AnalyticsPage() {
-  return <AnalyticsExampleWrapper shouldPaginate={false} />;
+  return <AnalyticsExampleWrapper enablePagination={false} />;
 }

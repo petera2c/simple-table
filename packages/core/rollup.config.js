@@ -68,6 +68,10 @@ export default {
       exclude: ["node_modules/**"],
       rollupCommonJSResolveHack: false,
       clean: true,
+      // rpt2 forces importHelpers:true, which requires a resolvable `tslib`
+      // during typecheck. We do not depend on tslib; emit still inlines helpers
+      // via rpt2's own nested copy. Rely on IDE / tsc for typechecking.
+      check: false,
       tsconfigOverride: {
         compilerOptions: {
           declaration: true,

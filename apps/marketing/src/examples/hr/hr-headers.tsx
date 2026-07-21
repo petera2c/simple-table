@@ -1,4 +1,4 @@
-import type { ReactHeaderObject, CellRendererProps, ValueGetterProps } from "@simple-table/react";
+import type { ReactColumnDef, CellRendererProps, ValueGetterProps } from "@simple-table/react";
 
 // Theme-dependent color helper function
 const getThemeColors = (theme?: string) => {
@@ -339,13 +339,13 @@ const Progress = ({
 };
 
 // Define our table headers
-export const HEADERS: ReactHeaderObject[] = [
+export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "fullName",
     label: "Employee",
     width: 220,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "left",
     pinned: "left",
     type: "string",
@@ -375,8 +375,8 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "performanceScore",
     label: "Performance",
     width: "auto",
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "center",
     type: "number",
     cellRenderer: ({ row, theme }: CellRendererProps) => {
@@ -427,8 +427,8 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "department",
     label: "Department",
     width: "auto",
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
     type: "enum",
     enumOptions: [
@@ -445,8 +445,8 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "email",
     label: "Email",
     width: "auto",
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
     type: "string",
   },
@@ -454,8 +454,8 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "location",
     label: "Location",
     width: "auto",
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
     type: "enum",
     enumOptions: [
@@ -473,8 +473,8 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "hireDate",
     label: "Hire Date",
     width: 120,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
     type: "date",
     cellRenderer: ({ row, theme }: CellRendererProps) => {
@@ -499,8 +499,8 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "yearsOfService",
     label: "Service",
     width: 100,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "center",
     type: "number",
     cellRenderer: ({ row, theme }: CellRendererProps) => {
@@ -514,8 +514,8 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "salary",
     label: "Salary",
     width: 130,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "right",
     type: "number",
     cellRenderer: ({ row, theme }: CellRendererProps) => {
@@ -535,8 +535,8 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "status",
     label: "Status",
     width: 120,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "center",
     pinned: "right",
     type: "enum",
@@ -583,8 +583,8 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "isRemoteEligible",
     label: "Remote Eligible",
     width: "auto",
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "center",
     type: "boolean",
   },

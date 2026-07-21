@@ -21,19 +21,19 @@ const COLUMN_WIDTH_PROPS: PropInfo[] = [
     link: "/docs/api-reference#simple-table-props",
     example: `<SimpleTable
   autoExpandColumns={true}
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   
 />`,
   },
   {
     key: "width",
-    name: "HeaderObject.width",
+    name: "ColumnDef.width",
     required: true,
     description:
       "Defines the width of the column. Can be a fixed pixel value (number), '1fr' to share available space proportionally, or 'auto' to size the column to fit its content (header + sampled cells, clamped by minWidth/maxWidth).",
     type: "number | '1fr' | 'auto'",
-    link: "/docs/api-reference#header-object",
+    link: "/docs/api-reference#column-def",
     example: `// Fixed width in pixels
 { 
   accessor: "id", 
@@ -59,7 +59,7 @@ const COLUMN_WIDTH_PROPS: PropInfo[] = [
   },
   {
     key: "minWidth",
-    name: "HeaderObject.minWidth",
+    name: "ColumnDef.minWidth",
     required: false,
     description:
       "Sets the minimum width constraint for flexible ('1fr') and content-fit ('auto') columns. Prevents columns from becoming too narrow. Note: When autoExpandColumns is enabled, minWidth is NOT enforced during initial scaling.",
@@ -74,7 +74,7 @@ const COLUMN_WIDTH_PROPS: PropInfo[] = [
   },
   {
     key: "maxWidth",
-    name: "HeaderObject.maxWidth",
+    name: "ColumnDef.maxWidth",
     required: false,
     description:
       "Sets the maximum width constraint for columns. With width: 'auto', the column grows to fit its content but stops at maxWidth — content past the cap truncates. Note: When autoExpandColumns is enabled, maxWidth is NOT enforced - it is completely ignored during proportional scaling.",
