@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/simple-table-core.svg)](https://www.npmjs.com/package/simple-table-core)
 [![npm downloads](https://img.shields.io/npm/dm/simple-table-core.svg)](https://www.npmjs.com/package/simple-table-core)
 [![GitHub stars](https://img.shields.io/github/stars/petera2c/simple-table.svg)](https://github.com/petera2c/simple-table)
-[![License](https://img.shields.io/npm/l/simple-table-core.svg)](LICENSE)
+[![License](https://img.shields.io/npm/l/simple-table-core.svg)](packages/core/LICENSE)
 
 Simple Table is a **lightweight**, **high-performance**, **framework-agnostic** data grid and table component for building modern, scalable applications. With a **simple API**, **completely free features**, and a focus on developer experience, Simple Table works with any framework — or no framework at all.
 
@@ -70,7 +70,9 @@ npm install simple-table-core
 
 - **[Row Selection](https://www.simple-table.com/docs/row-selection)** - Select single or multiple rows with checkboxes
 - **[Row Grouping](https://www.simple-table.com/docs/row-grouping)** - Group and organize rows by any column
+- **[Nested Tables](https://www.simple-table.com/docs/nested-tables)** - Hierarchical data with independent columns per nesting level
 - **[Aggregate Functions](https://www.simple-table.com/docs/aggregate-functions)** - Calculate Sum, Average, Count, and more
+- **[Pivot Tables](https://www.simple-table.com/docs/pivot)** - Matrix pivots with row/column dimensions, aggregations, and totals
 - **[Row Height](https://www.simple-table.com/docs/row-height)** - Customize row height for optimal display
 
 ### Cell Features
@@ -78,13 +80,16 @@ npm install simple-table-core
 - **[Cell Editing](https://www.simple-table.com/docs/cell-editing)** - Edit cells inline with custom editors
 - **[Cell Highlighting](https://www.simple-table.com/docs/cell-highlighting)** - Highlight cells based on conditions
 - **[Cell Renderer](https://www.simple-table.com/docs/cell-renderer)** - Custom cell rendering for any data type
+- **[Chart Columns](https://www.simple-table.com/docs/chart-columns)** - Inline bar and line/area charts in cells
 - **[Cell Clicking](https://www.simple-table.com/docs/cell-clicking)** - Handle cell click events with ease
 
 ### Advanced Features
 
+- **[Quick Filter](https://www.simple-table.com/docs/quick-filter)** - Global search across all columns with simple or smart modes
 - **[Pagination](https://www.simple-table.com/docs/pagination)** - Server-side and client-side pagination support
 - **[Infinite Scroll](https://www.simple-table.com/docs/infinite-scroll)** - Fetch and display data as you scroll
 - **[Live Updates](https://www.simple-table.com/docs/live-updates)** - Real-time data updates and websocket integration
+- **[CSV Export](https://www.simple-table.com/docs/csv-export)** - One-click CSV download of grid data
 - **[Header Renderer](https://www.simple-table.com/docs/header-renderer)** - Custom header rendering for advanced layouts
 
 ### Customization
@@ -177,9 +182,9 @@ Join our growing community to ask questions or share feedback:
 
 **Dual Licensed:**
 
-- **Free Tier**: Simple Table Community License (source-available) for zero-revenue individuals, startups, and organizations — see [LICENSE](LICENSE)
-- **Pro and Enterprise**: Commercial EULA for revenue-generating companies — see [EULA.txt](EULA.txt)
+- **Free Tier**: Simple Table Community License (source-available) for zero-revenue individuals, startups, and organizations — see [LICENSE](packages/core/LICENSE)
+- **Pro and Enterprise**: Commercial EULA for revenue-generating companies — see [EULA.txt](packages/core/EULA.txt)
 
-By using Simple Table, you agree to the terms in [EULA.txt](EULA.txt) where applicable.
+By using Simple Table, you agree to the terms in [EULA.txt](packages/core/EULA.txt) where applicable.
 
 **[View Detailed Pricing & Licensing](https://www.simple-table.com/pricing)**
