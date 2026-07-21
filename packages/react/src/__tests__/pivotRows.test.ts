@@ -129,10 +129,10 @@ describe("pivotRows", () => {
       rows,
       fieldHeaders,
       pivot: {
-        rows: ["region"] as const,
-        columns: ["quarter"] as const,
-        showColumnTotals: false as const,
-        showRowTotals: false as const,
+        rows: ["region"],
+        columns: ["quarter"],
+        showColumnTotals: false,
+        showRowTotals: false,
       },
     };
 

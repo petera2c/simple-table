@@ -1,11 +1,7 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
   import type { TableAPI, Theme } from "@simple-table/svelte";
-  import {
-    analyticsDemoConfig,
-    analyticsPresets,
-    analyticsRows,
-  } from "./analytics.demo-data";
+  import { analyticsDemoConfig, analyticsPresets } from "./analytics.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "480px", theme }: { height?: string | number | null; theme?: Theme } = $props();
@@ -20,7 +16,6 @@
   const chromeBg = $derived(isDark ? "#0f172a" : "#f8fafc");
   const chromeBorder = $derived(isDark ? "#1e293b" : "#e2e8f0");
   const titleColor = $derived(isDark ? "#f1f5f9" : "#0f172a");
-  const mutedColor = $derived(isDark ? "#94a3b8" : "#64748b");
   const chipIdleBg = $derived(isDark ? "#1e293b" : "#e2e8f0");
   const chipIdleColor = $derived(isDark ? "#cbd5e1" : "#334155");
   const inputBg = $derived(isDark ? "#1e293b" : "#fff");
@@ -45,11 +40,6 @@
       >
         Revenue Analytics
       </h2>
-      <p style="margin: 4px 0 0; font-size: 13px; color: {mutedColor}">
-        {active.description} · {analyticsRows.length} fact rows{isPivoted
-          ? " → pivoted matrix"
-          : ""}
-      </p>
     </div>
     <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px">
       {#each analyticsPresets as preset}

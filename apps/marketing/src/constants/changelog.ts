@@ -11,6 +11,22 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_0_1: ChangelogEntry = {
+  version: "4.0.1",
+  date: "2026-07-20",
+  title: "Append loading skeletons",
+  description:
+    "When isLoading is true with rows already loaded, skeleton rows append below instead of blanking the whole table.",
+  changes: [
+    {
+      type: "improvement",
+      description:
+        "isLoading now keeps existing row content visible and appends skeleton placeholder rows underneath. An empty table still shows a full skeleton page; clear rows for a full-table reload. Ideal for pagination and infinite scroll.",
+      link: "/docs/loading-state",
+    },
+  ],
+};
+
 export const v4_0_0: ChangelogEntry = {
   version: "4.0.0",
   date: "2026-07-20",
@@ -2294,6 +2310,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_0_1,
   v4_0_0,
   v3_9_9,
   v3_9_8,

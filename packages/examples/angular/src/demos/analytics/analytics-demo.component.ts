@@ -5,7 +5,6 @@ import type { AngularHeaderObject, PivotConfig, Row, Theme } from "@simple-table
 import {
   analyticsDemoConfig,
   analyticsPresets,
-  analyticsRows,
   type AnalyticsPreset,
 } from "./analytics.demo-data";
 import "@simple-table/angular/styles.css";
@@ -40,11 +39,6 @@ import "@simple-table/angular/styles.css";
           >
             Revenue Analytics
           </h2>
-          <p [style.margin]="'4px 0 0'" [style.fontSize]="'13px'" [style.color]="mutedColor">
-            {{ activeDescription }} · {{ rowCount }} fact rows{{
-              isPivoted ? " → pivoted matrix" : ""
-            }}
-          </p>
         </div>
         <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px">
           @for (preset of presets; track preset.id) {
@@ -132,7 +126,6 @@ export class AnalyticsDemoComponent {
   readonly rows: Row[] = analyticsDemoConfig.rows;
   readonly headers: AngularHeaderObject[] = analyticsDemoConfig.headers;
   readonly presets = analyticsPresets;
-  readonly rowCount = analyticsRows.length;
   readonly getRowId = ({ row }: { row: Row }) =>
     row.id == null ? undefined : String(row.id);
 
@@ -140,7 +133,6 @@ export class AnalyticsDemoComponent {
   pivot: PivotConfig | null = analyticsPresets[0].pivot;
   nestedRows = (analyticsPresets[0].pivot?.rows.length ?? 0) > 1;
   isPivoted = analyticsPresets[0].pivot != null;
-  activeDescription = analyticsPresets[0].description;
   searchText = "";
 
   get formatHeight(): string {
@@ -163,10 +155,6 @@ export class AnalyticsDemoComponent {
 
   get titleColor(): string {
     return this.isDark ? "#f1f5f9" : "#0f172a";
-  }
-
-  get mutedColor(): string {
-    return this.isDark ? "#94a3b8" : "#64748b";
   }
 
   get chipIdleBg(): string {
@@ -194,7 +182,6 @@ export class AnalyticsDemoComponent {
     this.pivot = preset.pivot;
     this.nestedRows = (preset.pivot?.rows.length ?? 0) > 1;
     this.isPivoted = preset.pivot != null;
-    this.activeDescription = preset.description;
   }
 
   exportCsv(): void {

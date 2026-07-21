@@ -133,8 +133,8 @@ export function shallowEqualRow(a: object, b: object): boolean {
   return true;
 }
 
-/** Compatible with `GetRowId`; return may be undefined for sync helpers. */
-export type GetRowIdLike = (params: GetRowIdParams) => string | number | undefined;
+/** Compatible with `GetRowId`; return may be nullish for sync helpers. */
+export type GetRowIdLike = (params: GetRowIdParams) => string | number | null | undefined;
 
 /**
  * Above this length, skip per-field shallow compares when row object identity

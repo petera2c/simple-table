@@ -326,7 +326,7 @@ export const createBodyCellElement = (
       row: cell.row,
       value: getNestedValue(row, header.accessor),
       theme: context.theme,
-      skeleton: Boolean(context.isLoading || cell.tableRow.isLoadingSkeleton),
+      skeleton: Boolean(cell.tableRow.isLoadingSkeleton),
     });
   }
 
@@ -365,7 +365,7 @@ export const createBodyCellElement = (
                 row: liveRef.row,
                 value: getNestedValue(liveRef.row, header.accessor),
                 theme: liveContext.theme,
-                skeleton: Boolean(liveContext.isLoading || liveRef.tableRow.isLoadingSkeleton),
+                skeleton: Boolean(liveRef.tableRow.isLoadingSkeleton),
               });
             }
 
@@ -644,7 +644,7 @@ export const updateBodyCellElement = (
     // stuck (stale content while loading, or permanent skeleton after load).
     const contentSpan = cellElement.querySelector(".st-cell-content") as HTMLElement;
     if (contentSpan) {
-      const isSkeleton = Boolean(context.isLoading || cell.tableRow.isLoadingSkeleton);
+      const isSkeleton = Boolean(cell.tableRow.isLoadingSkeleton);
       const hasSkeleton = contentSpan.querySelector(".st-loading-skeleton") !== null;
       if (isSkeleton !== hasSkeleton) {
         context.onRendererHostDiscard?.(contentSpan);
@@ -668,7 +668,7 @@ export const updateBodyCellElement = (
       // never incorrectly skipped here.
       const prevKey = contentKeyMap.get(cellElement);
       const newValue = getNestedValue(cell.row, cell.header.accessor);
-      const isSkeleton = Boolean(context.isLoading || cell.tableRow.isLoadingSkeleton);
+      const isSkeleton = Boolean(cell.tableRow.isLoadingSkeleton);
       // Also rebuild when content was emptied out-of-band:
       // - childNodes wiped (innerHTML = "") without going through this path
       // - React portal host still present but disposeHost already unmounted its

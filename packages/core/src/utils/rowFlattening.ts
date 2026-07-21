@@ -15,6 +15,7 @@ import {
 import { HeightOffsets } from "./infiniteScrollUtils";
 import { CustomTheme } from "../types/CustomTheme";
 import { GetRowId } from "../types/GetRowId";
+import { isLoadingPlaceholderRow } from "./loadingPlaceholderUtils";
 
 export interface FlattenRowsConfig {
   rows: Row[];
@@ -94,6 +95,7 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
         absoluteRowIndex: index,
         isLastGroupRow: false,
         stableRowKey,
+        ...(isLoadingPlaceholderRow(row) ? { isLoadingSkeleton: true } : {}),
       };
     });
 
@@ -164,6 +166,7 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
         absoluteRowIndex: position,
         parentIndices: parentIndices.length > 0 ? [...parentIndices] : undefined,
         stableRowKey,
+        ...(isLoadingPlaceholderRow(row) ? { isLoadingSkeleton: true } : {}),
       };
       result.push(mainRow);
       paginatableRowsBuilder.push(mainRow);

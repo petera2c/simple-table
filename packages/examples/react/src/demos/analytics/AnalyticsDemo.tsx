@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { TableAPI, Theme } from "@simple-table/react";
-import {
-  analyticsDemoConfig,
-  analyticsPresets,
-  analyticsRows,
-} from "./analytics.demo-data";
+import { analyticsDemoConfig, analyticsPresets } from "./analytics.demo-data";
 import "@simple-table/react/styles.css";
 
 function formatHeight(height?: string | number | null): string {
@@ -52,7 +48,6 @@ const AnalyticsDemo = ({
   const chromeBg = isDark ? "#0f172a" : "#f8fafc";
   const chromeBorder = isDark ? "#1e293b" : "#e2e8f0";
   const titleColor = isDark ? "#f1f5f9" : "#0f172a";
-  const mutedColor = isDark ? "#94a3b8" : "#64748b";
   const chipIdleBg = isDark ? "#1e293b" : "#e2e8f0";
   const chipIdleColor = isDark ? "#cbd5e1" : "#334155";
   const inputBg = isDark ? "#1e293b" : "#fff";
@@ -91,10 +86,6 @@ const AnalyticsDemo = ({
           >
             Revenue Analytics
           </h2>
-          <p style={{ margin: "4px 0 0", fontSize: 13, color: mutedColor }}>
-            {active.description} · {analyticsRows.length} fact rows
-            {isPivoted ? " → pivoted matrix" : ""}
-          </p>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
           {analyticsPresets.map((preset) => {

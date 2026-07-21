@@ -135,28 +135,19 @@ const InfiniteScrollDemo = ({
 
   return (
     <div>
+      <div className="mb-2 text-sm text-gray-600 dark:text-gray-400">
+        {rows.length} rows loaded
+        {loading ? " · loading more…" : ""}
+        {!hasMore && rows.length > 20 ? " (all loaded)" : ""}
+      </div>
       <SimpleTable
         defaultHeaders={headers}
         rows={rows}
         height={height}
         onLoadMore={handleLoadMore}
+        isLoading={loading}
         theme={theme}
       />
-
-      {loading && (
-        <div className="text-center py-2 text-sm text-gray-600 dark:text-gray-400">
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-            Loading more data...
-          </div>
-        </div>
-      )}
-
-      {!hasMore && rows.length > 20 && (
-        <div className="text-center py-2 text-sm text-gray-500 dark:text-gray-500">
-          No more data to load (loaded {rows.length} records)
-        </div>
-      )}
     </div>
   );
 };

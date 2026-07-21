@@ -49,7 +49,7 @@ export function renderLoadingStateExample(args?: Partial<UniversalVanillaArgs>):
   });
   table.mount();
   const reload = () => {
-    table.update({ isLoading: true });
+    table.update({ rows: [], isLoading: true });
     setTimeout(() => table.update({ isLoading: false, rows: ROWS }), 2000);
   };
   btn.addEventListener("click", reload);

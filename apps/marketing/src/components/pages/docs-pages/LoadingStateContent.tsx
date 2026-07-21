@@ -15,7 +15,7 @@ const LOADING_STATE_PROPS: PropInfo[] = [
     name: "isLoading",
     required: false,
     description:
-      "When set to true, all table cells will render skeleton loaders instead of actual data. This provides visual feedback to users while data is being fetched.",
+      "When true with no rows, shows a full page of skeleton loaders. When true with existing rows, keeps that data visible and appends skeleton rows below (useful for pagination / infinite scroll). Clear rows for a full-table reload.",
     type: "boolean",
     example: `const [isLoading, setIsLoading] = useState(true);
 
@@ -62,9 +62,11 @@ const LoadingStateContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Simple Table provides a built-in loading state that displays skeleton loaders for all cells
-        while your data is being fetched. This gives users immediate visual feedback and improves
-        the perceived performance of your application.
+        Simple Table provides a built-in loading state with skeleton rows while data is fetched.
+        An empty table shows a full skeleton page; if rows are already loaded, those stay visible
+        and skeletons append below—ideal for pagination and infinite scroll. Clear rows when you
+        want a full-table reload. Scroll the demo above to load more and see skeletons append under
+        existing rows.
       </motion.p>
 
       {/* Basic Usage Section */}
@@ -148,19 +150,29 @@ const LoadingStateContent = () => {
         <div className="bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 dark:border-yellow-700 p-4 rounded-lg shadow-sm">
           <h4 className="font-bold text-gray-800 dark:text-white mb-2">💡 Pro Tip</h4>
           <p className="text-gray-700 dark:text-gray-300">
-            Combine the loading state with server-side pagination or infinite scroll to provide
-            feedback during data fetches. See the{" "}
+            Pass{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+              isLoading
+            </code>{" "}
+            together with{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+              onLoadMore
+            </code>{" "}
+            or pagination so loaded rows stay visible while skeleton rows append below. See the{" "}
+            <a
+              href="/docs/infinite-scroll"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+            >
+              Infinite Scroll
+            </a>{" "}
+            and{" "}
             <a
               href="/docs/pagination"
               className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
             >
               Pagination
             </a>{" "}
-            documentation for an example of using{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-              isLoading
-            </code>{" "}
-            with page changes.
+            docs for more.
           </p>
         </div>
       </motion.div>

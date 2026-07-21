@@ -47,32 +47,32 @@ const rows = [
   },
 ];
 
-function mount(isLoading: boolean): HTMLDivElement {
+function mount(options: { isLoading: boolean; rows?: typeof rows | [] }): HTMLDivElement {
   const host = document.createElement("div");
   document.body.appendChild(host);
   container = host;
   table = new SimpleTableVanilla(host, {
     defaultHeaders: headers,
-    rows,
+    rows: options.rows ?? rows,
     rowGrouping: ["teams"],
     getRowId: (p) => String((p.row as { id?: unknown })?.id),
     height: "300px",
-    isLoading,
+    isLoading: options.isLoading,
   });
   table.mount();
   return host;
 }
 
 describe("SimpleTableVanilla — isLoading-only update with expandable column", () => {
-  it("restores expandable content after update({ isLoading: false })", async () => {
-    const host = mount(true);
+  it("restores expandable content after empty+loading resolves to rows", async () => {
+    const host = mount({ isLoading: true, rows: [] });
     await wait(80);
 
     expect(
       host.querySelectorAll('.st-cell[data-accessor="name"] .st-loading-skeleton').length,
     ).toBeGreaterThan(0);
 
-    table!.update({ isLoading: false });
+    table!.update({ rows, isLoading: false });
     await wait(150);
 
     expect(host.textContent).toContain("Engineering");
@@ -85,18 +85,20 @@ describe("SimpleTableVanilla — isLoading-only update with expandable column", 
     expect(engineering?.querySelector(".st-expand-icon-container")).not.toBeNull();
   });
 
-  it("shows expandable skeletons after update({ isLoading: true })", async () => {
-    const host = mount(false);
+  it("keeps expandable rows and appends skeletons after update({ isLoading: true })", async () => {
+    const host = mount({ isLoading: false });
     await wait(80);
     expect(host.textContent).toContain("Engineering");
 
     table!.update({ isLoading: true });
     await wait(150);
 
-    const nameCells = host.querySelectorAll('.st-cell[data-accessor="name"]');
-    expect(nameCells.length).toBeGreaterThan(0);
-    nameCells.forEach((cell) => {
-      expect(cell.querySelector(".st-loading-skeleton")).not.toBeNull();
-    });
+    expect(host.textContent).toContain("Engineering");
+    const engineering = Array.from(
+      host.querySelectorAll<HTMLElement>('.st-cell[data-accessor="name"]'),
+    ).find((c) => c.textContent?.includes("Engineering"));
+    expect(engineering?.querySelector(".st-expand-icon-container")).not.toBeNull();
+    expect(engineering?.querySelector(".st-loading-skeleton")).toBeNull();
+    expect(host.querySelectorAll(".st-loading-skeleton").length).toBeGreaterThan(0);
   });
 });

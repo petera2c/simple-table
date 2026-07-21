@@ -6,6 +6,7 @@ import RowState from "../types/RowState";
 import { CustomTheme } from "../types/CustomTheme";
 import { GetRowId } from "../types/GetRowId";
 import { GenerateRowIdParams } from "../types/GenerateRowIdParams";
+import { isLoadingPlaceholderRow } from "./loadingPlaceholderUtils";
 
 /**
  * Calculate the height of a nested grid based on the number of child rows
@@ -574,6 +575,7 @@ export const flattenRowsWithGrouping = ({
         absoluteRowIndex: position,
         parentIndices: parentIndices.length > 0 ? [...parentIndices] : undefined,
         stableRowKey,
+        ...(isLoadingPlaceholderRow(row) ? { isLoadingSkeleton: true } : {}),
       };
 
       result.push(tableRow);

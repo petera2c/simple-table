@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactIconsConfig, Theme } from "@simple-table/react";
+import type { ReactIconsConfig, TableAPI, Theme } from "@simple-table/react";
 import {
   analyticsHeaders,
   analyticsPresets,
@@ -59,7 +59,6 @@ export default function AnalyticsExample({
   const chromeBg = isDark ? "#0f172a" : "#f8fafc";
   const chromeBorder = isDark ? "#1e293b" : "#e2e8f0";
   const titleColor = isDark ? "#f1f5f9" : "#0f172a";
-  const mutedColor = isDark ? "#94a3b8" : "#64748b";
   const chipActiveBg = "#2563eb";
   const chipIdleBg = isDark ? "#1e293b" : "#e2e8f0";
   const chipIdleColor = isDark ? "#cbd5e1" : "#334155";
@@ -87,38 +86,18 @@ export default function AnalyticsExample({
           flexShrink: 0,
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            justifyContent: "space-between",
-            gap: 12,
-            flexWrap: "wrap",
-            marginBottom: 10,
-          }}
-        >
-          <div>
-            <h2
-              style={{
-                margin: 0,
-                fontSize: 18,
-                fontWeight: 650,
-                color: titleColor,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              Revenue Analytics
-            </h2>
-            <p style={{ margin: "4px 0 0", fontSize: 13, color: mutedColor }}>
-              {active.description} · {analyticsRows.length} fact rows
-              {isPivoted ? " → pivoted matrix" : ""}
-            </p>
-          </div>
-          <p style={{ margin: 0, fontSize: 12, color: mutedColor, maxWidth: 300 }}>
-            {isPivoted
-              ? "One pivot prop reshapes the same source rows — no drag-and-drop panel."
-              : "Start with raw facts, then click a pivot view to aggregate them."}
-          </p>
+        <div style={{ marginBottom: 10 }}>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: 18,
+              fontWeight: 650,
+              color: titleColor,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Revenue Analytics
+          </h2>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
           {analyticsPresets.map((preset) => {

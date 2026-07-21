@@ -21,6 +21,7 @@ import { HeightOffsets } from "../utils/infiniteScrollUtils";
 import { CustomTheme } from "../types/CustomTheme";
 import { GetRowId } from "../types/GetRowId";
 import { aggregateValues } from "../utils/aggregationUtils";
+import { isLoadingPlaceholderRow } from "../utils/loadingPlaceholderUtils";
 
 export interface RowManagerConfig {
   rows: Row[];
@@ -195,6 +196,7 @@ export class RowManager {
           absoluteRowIndex: index,
           isLastGroupRow: false,
           stableRowKey,
+          ...(isLoadingPlaceholderRow(row) ? { isLoadingSkeleton: true } : {}),
         };
       });
       
@@ -267,6 +269,7 @@ export class RowManager {
           absoluteRowIndex: position,
           parentIndices: parentIndices.length > 0 ? [...parentIndices] : undefined,
           stableRowKey,
+          ...(isLoadingPlaceholderRow(row) ? { isLoadingSkeleton: true } : {}),
         };
         result.push(mainRow);
         paginatableRowsBuilder.push(mainRow);

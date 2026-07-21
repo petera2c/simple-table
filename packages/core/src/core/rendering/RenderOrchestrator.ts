@@ -33,6 +33,10 @@ import { applyAutoScaleToHeaders } from "../../managers/AutoScaleManager";
 import { getColumnEditorStripWidth } from "../../consts/general-consts";
 import { MergedColumnEditorConfig, ResolvedIcons } from "../initialization/TableInitializer";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
+import {
+  createLoadingPlaceholderRows,
+  wrapGetRowIdForLoadingPlaceholders,
+} from "../../utils/loadingPlaceholderUtils";
 
 export interface RenderContext {
   /**
@@ -128,6 +132,8 @@ interface FlattenedRowsCache {
   flattenResult: any;
   deps: {
     rowsRef: Row[];
+    /** When loading flips, flatten result gains/loses trailing skeleton placeholders. */
+    isLoading: boolean;
     /** Value-based key so cache only hits when quickFilter text/mode actually match (avoids stale 8-row cache when typing). */
     quickFilterKey: string;
     expandedRowsSize: number;
@@ -320,19 +326,7 @@ export class RenderOrchestrator {
       this.lastRowsRef = effectiveRows;
     }
 
-    // Synthetic empty `{}` placeholders have no real ids. If we still call the
-    // consumer's `getRowId`, every placeholder typically collapses to the same
-    // key (e.g. "undefined"), and cell dedupe only paints the first skeleton row.
-    // Skip `getRowId` for this batch so WeakMap identity keys stay unique.
-    let syntheticLoadingPlaceholders = false;
-    if (context.internalIsLoading && effectiveRows.length === 0) {
-      let rowsToShow = context.config.shouldPaginate ? (context.config.rowsPerPage ?? 10) : 10;
-      if (state.isMainSectionScrollable) {
-        rowsToShow += 1;
-      }
-      effectiveRows = Array.from({ length: rowsToShow }, () => ({}));
-      syntheticLoadingPlaceholders = true;
-    }
+    const isLoading = context.internalIsLoading;
 
     const sortState = context.sortManager?.getState();
     const filterState = context.filterManager?.getState();
@@ -348,6 +342,7 @@ export class RenderOrchestrator {
     const canUseCache =
       this.flattenedRowsCache &&
       this.flattenedRowsCache.deps.rowsRef === effectiveRows &&
+      this.flattenedRowsCache.deps.isLoading === isLoading &&
       this.flattenedRowsCache.deps.quickFilterKey === quickFilterKey &&
       this.flattenedRowsCache.deps.expandedRowsSize === context.expandedRows.size &&
       this.flattenedRowsCache.deps.collapsedRowsSize === context.collapsedRows.size &&
@@ -379,10 +374,27 @@ export class RenderOrchestrator {
         quickFilter: context.config.quickFilter,
       });
 
+      // Append after aggregate/filter so placeholders keep WeakSet identity and
+      // are not dropped by quick filter. Empty → full skeleton page; else append.
+      let rowsToFlatten = quickFilteredRows;
+      let hasLoadingPlaceholders = false;
+      if (isLoading) {
+        let rowsToShow = context.config.shouldPaginate ? (context.config.rowsPerPage ?? 10) : 10;
+        if (state.isMainSectionScrollable) {
+          rowsToShow += 1;
+        }
+        const placeholders = createLoadingPlaceholderRows(rowsToShow);
+        rowsToFlatten =
+          rowsToFlatten.length === 0 ? placeholders : [...rowsToFlatten, ...placeholders];
+        hasLoadingPlaceholders = true;
+      }
+
       flattenResult = flattenRows({
-        rows: quickFilteredRows,
+        rows: rowsToFlatten,
         rowGrouping: context.config.rowGrouping,
-        getRowId: syntheticLoadingPlaceholders ? undefined : context.config.getRowId,
+        getRowId: hasLoadingPlaceholders
+          ? wrapGetRowIdForLoadingPlaceholders(context.config.getRowId)
+          : context.config.getRowId,
         expandedRows: context.expandedRows,
         collapsedRows: context.collapsedRows,
         expandedDepths: context.expandedDepths,
@@ -402,6 +414,7 @@ export class RenderOrchestrator {
         flattenResult,
         deps: {
           rowsRef: effectiveRows,
+          isLoading,
           quickFilterKey,
           expandedRowsSize: context.expandedRows.size,
           collapsedRowsSize: context.collapsedRows.size,

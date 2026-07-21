@@ -30,11 +30,6 @@
         >
           Revenue Analytics
         </h2>
-        <p :style="{ margin: '4px 0 0', fontSize: '13px', color: mutedColor }">
-          {{ active.description }} · {{ analyticsRows.length }} fact rows{{
-            isPivoted ? " → pivoted matrix" : ""
-          }}
-        </p>
       </div>
       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px">
         <button
@@ -130,11 +125,7 @@
 import { computed, ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
 import type { TableAPI, Theme } from "@simple-table/vue";
-import {
-  analyticsDemoConfig,
-  analyticsPresets,
-  analyticsRows,
-} from "./analytics.demo-data";
+import { analyticsDemoConfig, analyticsPresets } from "./analytics.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number | null; theme?: Theme }>(), {
@@ -153,7 +144,6 @@ const isDark = computed(() => props.theme === "dark" || props.theme === "modern-
 const chromeBg = computed(() => (isDark.value ? "#0f172a" : "#f8fafc"));
 const chromeBorder = computed(() => (isDark.value ? "#1e293b" : "#e2e8f0"));
 const titleColor = computed(() => (isDark.value ? "#f1f5f9" : "#0f172a"));
-const mutedColor = computed(() => (isDark.value ? "#94a3b8" : "#64748b"));
 const chipIdleBg = computed(() => (isDark.value ? "#1e293b" : "#e2e8f0"));
 const chipIdleColor = computed(() => (isDark.value ? "#cbd5e1" : "#334155"));
 const inputBg = computed(() => (isDark.value ? "#1e293b" : "#fff"));

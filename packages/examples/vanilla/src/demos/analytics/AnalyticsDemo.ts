@@ -1,10 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme } from "simple-table-core";
-import {
-  analyticsDemoConfig,
-  analyticsPresets,
-  analyticsRows,
-} from "./analytics.demo-data";
+import { analyticsDemoConfig, analyticsPresets } from "./analytics.demo-data";
 import "simple-table-core/styles.css";
 
 function formatHeight(height?: string | number | null): string {
@@ -25,7 +21,6 @@ export function renderAnalyticsDemo(
   const chromeBg = isDark ? "#0f172a" : "#f8fafc";
   const chromeBorder = isDark ? "#1e293b" : "#e2e8f0";
   const titleColor = isDark ? "#f1f5f9" : "#0f172a";
-  const mutedColor = isDark ? "#94a3b8" : "#64748b";
   const chipIdleBg = isDark ? "#1e293b" : "#e2e8f0";
   const chipIdleColor = isDark ? "#cbd5e1" : "#334155";
   const inputBg = isDark ? "#1e293b" : "#fff";
@@ -46,9 +41,6 @@ export function renderAnalyticsDemo(
   const title = document.createElement("h2");
   title.textContent = "Revenue Analytics";
   title.style.cssText = `margin:0;font-size:18px;font-weight:650;color:${titleColor};letter-spacing:-0.02em`;
-
-  const subtitle = document.createElement("p");
-  subtitle.style.cssText = `margin:4px 0 0;font-size:13px;color:${mutedColor}`;
 
   const buttons = document.createElement("div");
   buttons.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px";
@@ -117,11 +109,6 @@ export function renderAnalyticsDemo(
   };
 
   const paint = () => {
-    const active = analyticsPresets.find((p) => p.id === activeId) ?? analyticsPresets[0];
-    const pivoted = active.pivot != null;
-    subtitle.textContent = `${active.description} · ${analyticsRows.length} fact rows${
-      pivoted ? " → pivoted matrix" : ""
-    }`;
     buttons.replaceChildren();
     for (const preset of analyticsPresets) {
       const btn = document.createElement("button");
@@ -141,7 +128,7 @@ export function renderAnalyticsDemo(
   };
 
   paint();
-  titleBlock.append(title, subtitle);
+  titleBlock.append(title);
   chrome.append(titleBlock, buttons, toolbar);
   root.append(chrome, tablePad);
   container.replaceChildren(root);

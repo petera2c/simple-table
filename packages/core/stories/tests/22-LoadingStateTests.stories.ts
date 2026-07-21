@@ -1,6 +1,6 @@
 /**
  * LOADING STATE TESTS
- * Tests for isLoading prop - skeleton loaders in cells when data is loading.
+ * Tests for isLoading prop - skeleton loaders when data is loading.
  */
 
 import type { Meta } from "@storybook/html";
@@ -15,7 +15,8 @@ const meta: Meta = {
     layout: "padded",
     docs: {
       description: {
-        component: "Tests for isLoading: table shows skeleton loaders in cells when loading.",
+        component:
+          "Tests for isLoading: empty tables show a skeleton page; loaded rows stay visible with skeletons appended below.",
       },
     },
   },
@@ -35,6 +36,9 @@ const headers: HeaderObject[] = [
   { accessor: "score", label: "Score", width: 100, type: "number" },
 ];
 
+/**
+ * Rows + isLoading: real data stays visible and skeleton rows are appended below.
+ */
 export const LoadingStateShowsSkeletons = {
   render: () => {
     const { wrapper } = renderVanillaTable(headers, createData(), {
@@ -46,12 +50,10 @@ export const LoadingStateShowsSkeletons = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
+    expect(canvasElement.textContent).toContain("Alice");
+    expect(canvasElement.textContent).toContain("85");
     const skeletons = canvasElement.querySelectorAll(".st-loading-skeleton");
     expect(skeletons.length).toBeGreaterThan(0);
-    const cells = canvasElement.querySelectorAll(".st-cell");
-    expect(cells.length).toBeGreaterThan(0);
-    const firstCell = cells[0];
-    expect(firstCell.querySelector(".st-loading-skeleton")).toBeTruthy();
   },
 };
 
@@ -86,7 +88,7 @@ export const LoadingStateWithEmptyRows = {
     const table = canvasElement.querySelector(".simple-table-root");
     expect(table).toBeTruthy();
     const skeletons = canvasElement.querySelectorAll(".st-loading-skeleton");
-    expect(skeletons.length).toBeGreaterThanOrEqual(0);
+    expect(skeletons.length).toBeGreaterThan(0);
   },
 };
 
@@ -96,6 +98,15 @@ const LOADING_TO_LOADED_REF_KEY = "__storybook_loading_to_loaded_table_ref";
 const getLoadingToLoadedTable = (): TableInstance => {
   const t = (globalThis as unknown as Record<string, TableInstance | undefined>)[
     LOADING_TO_LOADED_REF_KEY
+  ];
+  if (!t) throw new Error("Table ref not set (run render first)");
+  return t;
+};
+
+const APPEND_SKELETONS_REF_KEY = "__storybook_append_skeletons_table_ref";
+const getAppendSkeletonsTable = (): TableInstance => {
+  const t = (globalThis as unknown as Record<string, TableInstance | undefined>)[
+    APPEND_SKELETONS_REF_KEY
   ];
   if (!t) throw new Error("Table ref not set (run render first)");
   return t;
@@ -160,6 +171,49 @@ export const LoadingToLoadedRemovesStaleCells = {
   },
 };
 
+/**
+ * Pagination / infinite-scroll style: loaded rows stay put; skeletons append;
+ * clearing loading with more rows removes skeletons.
+ */
+export const LoadingAppendsSkeletonsUnderLoadedRows = {
+  render: () => {
+    const result = renderVanillaTable(headers, createData(), {
+      getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+      height: "300px",
+      isLoading: false,
+    });
+    (globalThis as unknown as Record<string, TableInstance>)[APPEND_SKELETONS_REF_KEY] =
+      result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    expect(canvasElement.textContent).toContain("Alice");
+    expect(canvasElement.querySelectorAll(".st-loading-skeleton").length).toBe(0);
+
+    getAppendSkeletonsTable().update({ isLoading: true });
+    await waitUntil(() => canvasElement.querySelectorAll(".st-loading-skeleton").length > 0);
+
+    expect(canvasElement.textContent).toContain("Alice");
+    expect(canvasElement.textContent).toContain("Bob");
+    const skeletonCountWhileLoading = canvasElement.querySelectorAll(
+      ".st-loading-skeleton",
+    ).length;
+    expect(skeletonCountWhileLoading).toBeGreaterThan(0);
+
+    getAppendSkeletonsTable().update({
+      isLoading: false,
+      rows: [
+        ...createData(),
+        { id: 4, name: "Dave", score: 88 },
+      ],
+    });
+    await waitUntil(() => canvasElement.textContent?.includes("Dave") ?? false);
+    expect(canvasElement.querySelectorAll(".st-loading-skeleton").length).toBe(0);
+    expect(canvasElement.textContent).toContain("Alice");
+  },
+};
+
 // ============================================================================
 // EXPANDABLE CELLS + LOADING STATE
 // ============================================================================
@@ -206,14 +260,8 @@ const getExpandableExitLoadingTable = (): TableInstance => {
 };
 
 /**
- * Repro: `updateBodyCellElement` skips content rebuilds for expandable cells
- * so the expand-icon DOM node survives for CSS transitions. That bypass also
- * skips loading-skeleton swaps, so toggling `isLoading` on already-rendered
- * row-grouped rows leaves the expandable column out of sync with every other
- * column.
- *
- * Entering loading: non-expandable columns show skeletons; expandable columns
- * keep their stale expand icon + value.
+ * Entering loading with existing expandable rows keeps their chevrons/content
+ * and only appends skeleton placeholder rows below.
  */
 export const ExpandableCellsShowSkeletonWhenEnteringLoading = {
   render: () => {
@@ -232,7 +280,6 @@ export const ExpandableCellsShowSkeletonWhenEnteringLoading = {
 
     const body = () => canvasElement.querySelector(".st-body-container") as HTMLElement;
     const nameCells = () => body().querySelectorAll<HTMLElement>('.st-cell[data-accessor="name"]');
-    const roleCells = () => body().querySelectorAll<HTMLElement>('.st-cell[data-accessor="role"]');
 
     await waitUntil(() => nameCells().length > 0);
     expect(canvasElement.textContent).toContain("Engineering");
@@ -240,34 +287,30 @@ export const ExpandableCellsShowSkeletonWhenEnteringLoading = {
     expect(body().querySelectorAll(".st-loading-skeleton").length).toBe(0);
 
     getExpandableEnterLoadingTable().update({ isLoading: true });
-    await waitUntil(() => roleCells()[0]?.querySelector(".st-loading-skeleton") !== null);
+    await waitUntil(() => body().querySelectorAll(".st-loading-skeleton").length > 0);
 
-    const nameWhileLoading = Array.from(nameCells());
-    const roleWhileLoading = Array.from(roleCells());
-    expect(nameWhileLoading.length).toBeGreaterThan(0);
-    expect(roleWhileLoading.length).toBeGreaterThan(0);
+    expect(canvasElement.textContent).toContain("Engineering");
+    const engineeringCell = Array.from(nameCells()).find((c) =>
+      c.textContent?.includes("Engineering"),
+    );
+    expect(engineeringCell).toBeTruthy();
+    expect(engineeringCell!.querySelector(".st-expand-icon-container")).toBeTruthy();
+    expect(engineeringCell!.querySelector(".st-loading-skeleton")).toBeNull();
 
-    roleWhileLoading.forEach((cell) => {
-      expect(cell.querySelector(".st-loading-skeleton")).toBeTruthy();
-    });
-    nameWhileLoading.forEach((cell) => {
-      expect(
-        cell.querySelector(".st-loading-skeleton"),
-        "expandable cell should show a loading skeleton when isLoading becomes true",
-      ).toBeTruthy();
-    });
+    const skeletonNameCells = Array.from(nameCells()).filter(
+      (c) => c.querySelector(".st-loading-skeleton") !== null,
+    );
+    expect(skeletonNameCells.length).toBeGreaterThan(0);
   },
 };
 
 /**
- * Repro (exit path): expandable cells created while `isLoading` is true render
- * as skeletons. When loading ends, content updates are still skipped for
- * expandable cells, so they stay stuck on the skeleton instead of restoring
- * the expand icon + value.
+ * Full-table skeleton (empty + loading) then resolve expandable rows: expandable
+ * cells must restore chevron + value instead of staying stuck on skeletons.
  */
 export const ExpandableCellsRestoreContentWhenLeavingLoading = {
   render: () => {
-    const result = renderVanillaTable(expandableLoadingHeaders, expandableLoadingRows, {
+    const result = renderVanillaTable(expandableLoadingHeaders, [], {
       getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
       rowGrouping: ["teams"],
       height: "300px",
@@ -283,12 +326,13 @@ export const ExpandableCellsRestoreContentWhenLeavingLoading = {
     const body = () => canvasElement.querySelector(".st-body-container") as HTMLElement;
     const nameCells = () => body().querySelectorAll<HTMLElement>('.st-cell[data-accessor="name"]');
 
-    await waitUntil(
-      () => nameCells()[0]?.querySelector(".st-loading-skeleton") !== null,
-    );
+    await waitUntil(() => nameCells()[0]?.querySelector(".st-loading-skeleton") !== null);
     expect(nameCells().length).toBeGreaterThan(0);
 
-    getExpandableExitLoadingTable().update({ isLoading: false });
+    getExpandableExitLoadingTable().update({
+      rows: expandableLoadingRows,
+      isLoading: false,
+    });
     await waitUntil(() => (canvasElement.textContent?.includes("Engineering") ?? false));
 
     const nameAfterLoad = Array.from(nameCells());

@@ -1027,11 +1027,10 @@ export const AutoSizeRefitsAfterLoadingWithMultilineRenderer = {
       };
     };
 
-    const data = makeRows(20, buildRow);
-
     // Wide column set (~4k+ px) so the table scrolls horizontally in a normal
     // Storybook canvas without constraining the wrapper width.
-    const { wrapper, table } = renderVanillaTable(headers, data, {
+    // Empty rows + isLoading → full skeleton page (auto-size skips skeleton cells).
+    const { wrapper, table } = renderVanillaTable(headers, [], {
       getRowId: (params: any) => String(params.row.id),
       height: "420px",
       isLoading: true,

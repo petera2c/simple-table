@@ -616,7 +616,7 @@ canExpandRowGroup={(row) => {
     name: "isLoading",
     required: false,
     description:
-      "When set to true, all table cells will render skeleton loaders instead of actual data. Provides visual feedback while data is being fetched from the server.",
+      "When true with no rows, the table shows a full page of skeleton loaders. When true with existing rows (e.g. pagination or infinite scroll), real rows stay visible and skeleton rows are appended below. Clear rows for a full-table reload.",
     type: "boolean",
     example: `const [isLoading, setIsLoading] = useState(true);
 

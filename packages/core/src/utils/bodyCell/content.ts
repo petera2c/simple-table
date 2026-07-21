@@ -75,7 +75,7 @@ export const createCellContent = (
 
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
 
-  if (context.isLoading || cell.tableRow.isLoadingSkeleton) {
+  if (cell.tableRow.isLoadingSkeleton) {
     // Show loading skeleton
     const skeleton = document.createElement("div");
     skeleton.className = "st-loading-skeleton";

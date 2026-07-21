@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { ReactHeaderObject, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
@@ -11,125 +11,127 @@ const HEADERS: ReactHeaderObject[] = [
   { accessor: "budget", label: "Budget", width: 110, type: "string" },
 ];
 
-const ROWS = [
-  {
-    id: 1001,
-    projectName: "Phoenix Analytics Platform",
-    client: "TechVenture Labs",
-    status: "In Progress",
-    budget: "$245K",
-  },
-  {
-    id: 1002,
-    projectName: "Quantum E-Commerce Rebuild",
-    client: "RetailMax Solutions",
-    status: "Planning",
-    budget: "$180K",
-  },
-  {
-    id: 1003,
-    projectName: "CloudSync Mobile App",
-    client: "DataFlow Systems",
-    status: "Testing",
-    budget: "$320K",
-  },
-  {
-    id: 1004,
-    projectName: "AI Dashboard Integration",
-    client: "SmartMetrics Inc",
-    status: "In Progress",
-    budget: "$425K",
-  },
-  {
-    id: 1005,
-    projectName: "SecureVault Authentication",
-    client: "CyberShield Corp",
-    status: "Completed",
-    budget: "$156K",
-  },
-  {
-    id: 1006,
-    projectName: "StreamLine Video Platform",
-    client: "MediaWave Digital",
-    status: "In Progress",
-    budget: "$390K",
-  },
-  {
-    id: 1007,
-    projectName: "BlockChain Payment Gateway",
-    client: "FinTech Innovations",
-    status: "Planning",
-    budget: "$520K",
-  },
-  {
-    id: 1008,
-    projectName: "Neural Network API",
-    client: "AI Dynamics Group",
-    status: "Testing",
-    budget: "$275K",
-  },
-  {
-    id: 1009,
-    projectName: "RealTime Chat Engine",
-    client: "ConnectHub Technologies",
-    status: "In Progress",
-    budget: "$198K",
-  },
-  {
-    id: 1010,
-    projectName: "Inventory Optimization Suite",
-    client: "LogiTrack Enterprises",
-    status: "Completed",
-    budget: "$340K",
-  },
-  {
-    id: 1011,
-    projectName: "HealthTrack Wellness App",
-    client: "MedTech Partners",
-    status: "Planning",
-    budget: "$285K",
-  },
-  {
-    id: 1012,
-    projectName: "AutoScale Cloud Migration",
-    client: "InfraCore Systems",
-    status: "In Progress",
-    budget: "$460K",
-  },
+const STATUSES = ["In Progress", "Planning", "Testing", "Completed"] as const;
+const CLIENTS = [
+  "TechVenture Labs",
+  "RetailMax Solutions",
+  "DataFlow Systems",
+  "SmartMetrics Inc",
+  "CyberShield Corp",
+  "MediaWave Digital",
+  "FinTech Innovations",
+  "AI Dynamics Group",
+];
+const PROJECT_NAMES = [
+  "Phoenix Analytics Platform",
+  "Quantum E-Commerce Rebuild",
+  "CloudSync Mobile App",
+  "AI Dashboard Integration",
+  "SecureVault Authentication",
+  "StreamLine Video Platform",
+  "BlockChain Payment Gateway",
+  "Neural Network API",
+  "RealTime Chat Engine",
+  "Inventory Optimization Suite",
+  "HealthTrack Wellness App",
+  "AutoScale Cloud Migration",
 ];
 
-const LoadingStateDemo = ({ height, theme }: { height?: string | number; theme?: Theme }) => {
+type ProjectRow = {
+  id: number;
+  projectName: string;
+  client: string;
+  status: (typeof STATUSES)[number];
+  budget: string;
+};
+
+const BATCH_SIZE = 12;
+const MAX_ROWS = 60;
+
+const createRows = (startId: number, count: number): ProjectRow[] =>
+  Array.from({ length: count }, (_, index) => {
+    const id = startId + index;
+    return {
+      id,
+      projectName: PROJECT_NAMES[id % PROJECT_NAMES.length],
+      client: CLIENTS[id % CLIENTS.length],
+      status: STATUSES[id % STATUSES.length],
+      budget: `$${150 + ((id * 17) % 400)}K`,
+    };
+  });
+
+const INITIAL_ROWS = createRows(1001, BATCH_SIZE);
+
+const LoadingStateDemo = ({ theme }: { height?: string | number; theme?: Theme }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<typeof ROWS>([]);
+  const [data, setData] = useState<ProjectRow[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const loadingRef = useRef(false);
+  const reloadTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const loadInitial = useCallback(() => {
+    if (reloadTimerRef.current) clearTimeout(reloadTimerRef.current);
+    loadingRef.current = true;
+    setHasMore(true);
+    setData([]);
+    setIsLoading(true);
+    reloadTimerRef.current = setTimeout(() => {
+      setData(INITIAL_ROWS);
+      setIsLoading(false);
+      loadingRef.current = false;
+    }, 2000);
+  }, []);
 
   useEffect(() => {
-    // Simulate API call
-    const timer = setTimeout(() => {
-      setData(ROWS);
-      setIsLoading(false);
-    }, 2000);
+    loadInitial();
+    return () => {
+      if (reloadTimerRef.current) clearTimeout(reloadTimerRef.current);
+    };
+  }, [loadInitial]);
 
-    return () => clearTimeout(timer);
-  }, []);
+  const handleLoadMore = useCallback(() => {
+    if (loadingRef.current || !hasMore) return;
+    loadingRef.current = true;
+    setIsLoading(true);
+
+    setTimeout(() => {
+      setData((prev) => {
+        if (prev.length >= MAX_ROWS) {
+          setHasMore(false);
+          return prev;
+        }
+        const nextStartId = (prev[prev.length - 1]?.id ?? 1000) + 1;
+        const nextBatch = createRows(nextStartId, BATCH_SIZE);
+        const updated = [...prev, ...nextBatch];
+        if (updated.length >= MAX_ROWS) setHasMore(false);
+        return updated;
+      });
+      setIsLoading(false);
+      loadingRef.current = false;
+    }, 1000);
+  }, [hasMore]);
 
   return (
     <div>
-      <div className="mb-4 flex gap-2">
+      <div className="mb-4 flex items-center gap-3">
         <button
-          onClick={() => {
-            setIsLoading(true);
-            setTimeout(() => setIsLoading(false), 2000);
-          }}
+          onClick={loadInitial}
           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Reload Data
         </button>
+        <span className="text-sm text-gray-600 dark:text-gray-400">
+          {data.length} rows loaded
+          {isLoading && data.length > 0 ? " · loading more…" : ""}
+          {!hasMore ? " (all loaded)" : ""}
+        </span>
       </div>
       <SimpleTable
         defaultHeaders={HEADERS}
         height="380px"
         isLoading={isLoading}
         rows={data}
+        onLoadMore={handleLoadMore}
         theme={theme}
       />
     </div>
