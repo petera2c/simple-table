@@ -450,6 +450,32 @@ export const SEO_STRINGS = {
         "react table filter tutorial",
       ],
     },
+    reactPivotTable: {
+      title: "React Pivot Table Tutorial: Matrix Aggregation Without AG Grid Enterprise (2026)",
+      description:
+        "Build a React pivot table with row/column dimensions, aggregations, and totals—without AG Grid Enterprise. Code examples, pivot vs row grouping, and Pivot Panel roadmap.",
+      keywords: [
+        "react pivot table",
+        "react pivot table tutorial",
+        "react pivot table library",
+        "pivot table react",
+        "how to build a pivot table in react",
+        "matrix pivot react",
+        "react data grid pivot",
+        "ag grid pivot alternative",
+        "ag grid pivot mode free alternative",
+        "declarative pivot table",
+        "react pivot aggregation",
+        "javascript pivot table",
+        "typescript pivot table",
+        "free react pivot table",
+        "react analytics pivot",
+        "pivot rows columns values",
+        "simple table pivot",
+        "react pivot panel",
+        "react cross tab table",
+      ],
+    },
     materialReactTableVsSimpleTable: {
       title: materialReactTableVsSimpleTablePost.title,
       description: materialReactTableVsSimpleTablePost.description,
@@ -1128,11 +1154,11 @@ export const SEO_STRINGS = {
       "simple-table, data-grid, datagrid, data table, aggregate functions, table aggregation, typescript table, data summary, javascript data grid",
   },
   pivot: {
-    title: "Pivot Tables in Simple Table Data Grid",
+    title: "Pivot Tables in Simple Table: Matrix Aggregation Data Grid",
     description:
-      "Build matrix pivot tables with Simple Table. Declarative row, column, and value fields with aggregations and totals in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
+      "Build matrix pivot tables with Simple Table. Declarative rows, columns, values, aggregations, and totals for React, Vue, Angular, Svelte, Solid, or vanilla TypeScript—AG Grid Enterprise pivot alternative.",
     keywords:
-      "simple-table, data-grid, datagrid, pivot table, matrix pivot, pivot mode, typescript table, data aggregation, javascript data grid",
+      "simple-table, data-grid, datagrid, pivot table, react pivot table, matrix pivot, pivot mode, pivot aggregation, typescript table, javascript data grid, ag grid pivot alternative, declarative pivot, cross tab table, vue pivot table, angular pivot table",
   },
   rowGrouping: {
     title: "Row Grouping in Simple Table Data Grid",
@@ -1234,11 +1260,11 @@ export const SEO_STRINGS = {
         "simple-table, data-grid, datagrid, data table, sales pipeline, sales dashboard, revenue table, sales metrics, responsive table, javascript data grid",
     },
     analytics: {
-      title: "Analytics Pivot Table with Simple Table",
+      title: "Analytics Pivot Table Demo: Revenue Matrix with Simple Table",
       description:
-        "Explore multi-dimension revenue analytics with Simple Table's declarative pivot. Region, product, channel, and quarter matrices with sum and average aggregations in a responsive JavaScript data grid.",
+        "Live analytics pivot table demo: region, product, channel, and quarter matrices with sum and average aggregations in a JavaScript data grid. Try declarative React pivot presets.",
       keywords:
-        "simple-table, data-grid, datagrid, pivot table, analytics table, revenue analytics, matrix pivot, aggregation table, javascript data grid",
+        "analytics pivot table, react pivot table demo, revenue analytics table, matrix pivot demo, region quarter pivot, data aggregation table, simple-table pivot, javascript data grid, react data grid pivot",
     },
     crypto: {
       title: "Crypto Markets Dashboard with Simple Table",

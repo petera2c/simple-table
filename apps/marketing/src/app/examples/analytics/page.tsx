@@ -5,6 +5,7 @@ import AnalyticsExampleWrapper from "@/examples/analytics/AnalyticsExampleWrappe
 export const metadata: Metadata = {
   title: SEO_STRINGS.examples.analytics.title,
   description: SEO_STRINGS.examples.analytics.description,
+  keywords: SEO_STRINGS.examples.analytics.keywords,
   openGraph: {
     title: SEO_STRINGS.examples.analytics.title,
     description: SEO_STRINGS.examples.analytics.description,

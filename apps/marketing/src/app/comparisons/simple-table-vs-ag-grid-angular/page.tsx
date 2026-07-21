@@ -163,7 +163,7 @@ export default function SimpleTableVsAgGridAngularPage() {
         {
           question: "Does Simple Table support pivoting and integrated charts?",
           answer:
-            "Simple Table includes declarative matrix pivoting (configure row/column/value fields via props or TableAPI). Interactive Pivot Panel UI and integrated charts remain AG Grid Enterprise strengths—if you need those in the same component, AG Grid Enterprise remains the right choice.",
+            "Simple Table includes declarative matrix pivoting (configure row/column/value fields via props or TableAPI). AG Grid Enterprise still leads today on interactive Pivot Panel UI and integrated charts; Simple Table’s drag-and-drop Pivot Panel is on the Enterprise roadmap.",
         },
       ]}
       conclusion={
@@ -175,7 +175,7 @@ export default function SimpleTableVsAgGridAngularPage() {
             and a fraction of the bundle.
           </p>
           <p>
-            AG Grid Enterprise stays the right call when you need its Pivot Panel UI, integrated charts, master/detail,
+            AG Grid Enterprise stays the right call today when you need its Pivot Panel UI immediately, integrated charts, master/detail,
             or the server-side row model are core to the product. For everything else, start with
             <code> @simple-table/angular</code> and keep your runtime cost predictable.
           </p>

@@ -774,8 +774,8 @@
   {
     "id": "pivot",
     "path": "/docs/pivot",
-    "title": "Pivot Tables in Simple Table React Grid",
-    "description": "Build matrix pivot tables with Simple Table. Declarative row, column, and value fields with aggregations and totals.",
+    "title": "Pivot Tables: Matrix Aggregation in Your Data Grid",
+    "description": "Build matrix pivot tables with Simple Table. Declarative rows, columns, values, aggregations, and totals—AG Grid Enterprise pivot alternative for React, Vue, Angular, and more.",
     "keywords": [
       "simple-table",
       "react-table",
@@ -783,14 +783,24 @@
       "data-grid",
       "datagrid",
       "pivot table",
+      "react pivot table",
       "matrix pivot",
+      "pivot mode",
+      "pivot aggregation",
       "typescript table",
-      "data aggregation"
+      "data aggregation",
+      "ag grid pivot alternative",
+      "cross tab",
+      "declarative pivot"
     ],
-    "content": "defaultHeaders is the field catalog (labels, types, formatters). Visible\n          columns are generated from the pivot result. Column filters apply to source rows before pivoting; sort and quick filter\n          apply to the pivoted view. While pivot is active, consumer rowGrouping is ignored. Multi-level row fields\n          use an expandable tree instead. Use TableAPI.setPivot / getPivot / getPivotedRows for\n          imperative control. ,\n    required: false,\n    description: ],\n  values: [{ accessor: , aggregation: { type: } }],\n  showRowTotals: true,\n  showColumnTotals: true,\n  showGrandTotal: true,\n}} ,\n    required: true,\n    description: ,\n  },\n  {\n    key: values: [\n  { accessor: } },\n  { accessor:",
+    "content": "Build matrix pivot tables with declarative row, column, and value fields. defaultHeaders is the field catalog (labels, types, formatters). Visible columns are generated from the pivot result. Column filters apply to source rows before pivoting; sort and quick filter apply to the pivoted view. While pivot is active, consumer rowGrouping is ignored. Multi-level row fields use an expandable tree instead. Use TableAPI.setPivot / getPivot / getPivotedRows for imperative control. Aggregations: sum, average, count, min, max. showRowTotals, showColumnTotals, showGrandTotal. Interactive drag-and-drop Pivot Panel coming for Enterprise. See React pivot table tutorial at /blog/react-pivot-table and analytics demo at /examples/analytics.",
     "section": "Row Features",
     "headings": [
-      "Pivot Tables"
+      "Pivot Tables: Matrix Aggregation in Your Data Grid",
+      "Basic pivot table usage",
+      "PivotConfig",
+      "TableAPI",
+      "Pivot behavior notes"
     ]
   },
   {

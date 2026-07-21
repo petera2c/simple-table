@@ -211,25 +211,6 @@ export default function BlogPageContent({
           </p>
         </div>
       )}
-
-      {/* All Tags Section */}
-      <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
-        <h3 className="text-gray-900 dark:text-gray-100 mb-4 text-xl font-semibold">
-          Browse by Tags
-        </h3>
-        <div className="flex flex-wrap gap-2">
-          {Array.from(new Set(sortedBlogPosts.flatMap((post) => post.tags))).map((tag) => (
-            <button
-              key={tag}
-              onClick={() => handleSearch(tag)}
-              className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-3 py-1 rounded-full text-sm font-medium hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors flex items-center gap-1"
-            >
-              <TagOutlined className="w-3 h-3" />
-              {tag}
-            </button>
-          ))}
-        </div>
-      </div>
     </PageWrapper>
   );
 }

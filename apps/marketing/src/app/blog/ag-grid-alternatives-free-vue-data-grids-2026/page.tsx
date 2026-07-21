@@ -107,7 +107,7 @@ export default function Page() {
           title: "Existing AG Grid Enterprise with pivoting",
           body: "Pivoting is core; renewal committed.",
           recommendation: "competitor",
-          recommendationLabel: "Stay with AG Grid Enterprise if you need its interactive Pivot Panel UI; Simple Table offers declarative matrix pivoting.",
+          recommendationLabel: "Need an interactive Pivot Panel today? AG Grid Enterprise has it now. Simple Table ships declarative matrix pivoting today, with a drag-and-drop Pivot Panel on the Enterprise roadmap.",
         },
       ]}
       faqs={[

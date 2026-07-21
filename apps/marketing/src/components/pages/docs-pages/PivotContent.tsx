@@ -138,7 +138,9 @@ const PivotContent = () => {
         <div className="p-2 bg-blue-100 rounded-lg">
           <FontAwesomeIcon icon={faTableCells} className="text-blue-600 text-2xl" />
         </div>
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Pivot Tables</h1>
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
+          Pivot Tables: Matrix Aggregation in Your Data Grid
+        </h1>
       </motion.div>
 
       <motion.p
@@ -147,11 +149,17 @@ const PivotContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.15 }}
       >
-        Pivot turns flat fact rows into a matrix: row fields stay on the left, column fields become
-        dynamic headers, and values are aggregated into each cell. Configure it with a{" "}
+        Build <strong>matrix pivot tables</strong> with Simple Table: row fields stay on the left,
+        column fields become dynamic headers, and values are aggregated into each cell. Works in
+        React, Vue, Angular, Svelte, Solid, and vanilla TypeScript. Configure with a{" "}
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">pivot</code>{" "}
-        prop or <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">TableAPI.setPivot</code>
-        — there is no built-in drag-and-drop Pivot Panel.
+        prop or{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
+          TableAPI.setPivot
+        </code>
+        —a practical AG Grid Enterprise pivot alternative for declarative analytics. An interactive
+        drag-and-drop Pivot Panel is coming for Enterprise; until then, drive dimensions from your
+        own UI or presets.
       </motion.p>
 
       <motion.p
@@ -160,7 +168,12 @@ const PivotContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Try the presets below to see nested rows, multiple measures, and value-only layouts.
+        Try the presets below to see nested rows, multiple measures, and value-only layouts. For a
+        step-by-step React walkthrough, see the{" "}
+        <a href="/blog/react-pivot-table" className="text-blue-600 dark:text-blue-400 hover:underline">
+          React pivot table tutorial
+        </a>
+        .
       </motion.p>
 
       <motion.div
@@ -178,7 +191,7 @@ const PivotContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        Basic usage
+        Basic pivot table usage
       </motion.h2>
 
       <motion.div
@@ -269,7 +282,7 @@ const PivotContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.7 }}
       >
-        Behavior notes
+        Pivot behavior notes
       </motion.h2>
 
       <motion.ul
@@ -314,6 +327,24 @@ const PivotContent = () => {
       >
         <h3 className="font-bold text-gray-800 dark:text-white mb-2">Related</h3>
         <ul className="list-disc pl-5 space-y-1 text-gray-700 dark:text-gray-300">
+          <li>
+            <a
+              href="/blog/react-pivot-table"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              React pivot table tutorial
+            </a>{" "}
+            — SEO guide with code examples and AG Grid comparison context.
+          </li>
+          <li>
+            <a
+              href="/examples/analytics"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Analytics pivot demo
+            </a>{" "}
+            — multi-dimension revenue presets.
+          </li>
           <li>
             For pre-nested trees without pivoting columns, use{" "}
             <a href="/docs/row-grouping" className="text-blue-600 dark:text-blue-400 hover:underline">

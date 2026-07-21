@@ -1,3 +1,5 @@
+import type { BlogTag } from "@/constants/blogTags";
+
 type BlogContentType =
   | "title"
   | "paragraph"
@@ -112,7 +114,7 @@ export type BlogPost = {
   title: string;
   description: string;
   slug: string;
-  tags: string[];
+  tags: BlogTag[];
   createdAt: string;
   updatedAt: string;
   metadata: {
