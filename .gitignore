@@ -19,6 +19,9 @@ package-lock.json
 **/storybook-static
 **/dist
 
+# Accidental tsc declaration emit next to sources (types belong in dist/)
+packages/core/src/**/*.d.ts
+
 # turbo
 .turbo
 
