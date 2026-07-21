@@ -11,6 +11,27 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_0_0: ChangelogEntry = {
+  version: "4.0.0",
+  date: "2026-07-20",
+  title: "Sticky parents after sort",
+  description: "Sticky parent rows stay in sync when grouped tables are sorted.",
+  changes: [
+    {
+      type: "feature",
+      description:
+        "Added declarative matrix pivot via the pivot prop and TableAPI (setPivot, getPivot, getPivotHeaders, getPivotedRows). Reshape flat rows into row/column dimensions with aggregations, nested headers, and totals — no drag-and-drop panel required.",
+      link: "/docs/pivot",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Sticky parent rows in row-grouped tables now update correctly after sorting (and other reorders). The sticky-parents cache no longer reuses stale row identities when the viewport band is unchanged.",
+      link: "/docs/row-grouping",
+    },
+  ],
+};
+
 export const v3_9_9: ChangelogEntry = {
   version: "3.9.9",
   date: "2026-07-15",
@@ -2273,6 +2294,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_0_0,
   v3_9_9,
   v3_9_8,
   v3_9_7,

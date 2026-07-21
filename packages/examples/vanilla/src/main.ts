@@ -91,6 +91,10 @@ const registry: Record<
     import("./demos/aggregate-functions/AggregateFunctionsDemo").then((m) => ({
       render: m.renderAggregateFunctionsDemo,
     })),
+  "pivot": () =>
+    import("./demos/pivot/PivotDemo").then((m) => ({
+      render: m.renderPivotDemo,
+    })),
   "collapsible-columns": () =>
     import("./demos/collapsible-columns/CollapsibleColumnsDemo").then((m) => ({
       render: m.renderCollapsibleColumnsDemo,
@@ -218,6 +222,10 @@ const registry: Record<
   hr: () =>
     import("./demos/hr/HRDemo").then((m) => ({
       render: m.renderHRDemo,
+    })),
+  analytics: () =>
+    import("./demos/analytics/AnalyticsDemo").then((m) => ({
+      render: m.renderAnalyticsDemo,
     })),
   sales: () =>
     import("./demos/sales/SalesDemo").then((m) => ({

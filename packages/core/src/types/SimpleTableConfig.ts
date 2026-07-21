@@ -25,6 +25,7 @@ import { VanillaIconsConfig } from "./IconsConfig";
 import { QuickFilterConfig } from "./QuickFilterTypes";
 import { AnimationsConfig } from "./AnimationsConfig";
 import type { FooterPosition } from "./FooterPosition";
+import type { PivotConfig } from "./PivotTypes";
 
 export interface SimpleTableConfig {
   animations?: AnimationsConfig;
@@ -104,6 +105,10 @@ export interface SimpleTableConfig {
    */
   onRendererHostDiscard?: (host: HTMLElement) => void;
   onSortChange?: (sort: SortColumn | null) => void;
+  /** @see SimpleTableProps.pivot */
+  pivot?: PivotConfig | null;
+  /** @see SimpleTableProps.onPivotChange */
+  onPivotChange?: (pivot: PivotConfig | null) => void;
   quickFilter?: QuickFilterConfig;
   rowButtons?: RowButton[];
   rowGrouping?: Accessor[];

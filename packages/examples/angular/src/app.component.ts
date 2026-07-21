@@ -26,6 +26,7 @@ import { TableHeightDemoComponent } from "./demos/table-height/table-height-demo
 import { QuickFilterDemoComponent } from "./demos/quick-filter/quick-filter-demo.component";
 import { NestedHeadersDemoComponent } from "./demos/nested-headers/nested-headers-demo.component";
 import { AggregateFunctionsDemoComponent } from "./demos/aggregate-functions/aggregate-functions-demo.component";
+import { PivotDemoComponent } from "./demos/pivot/pivot-demo.component";
 import { CollapsibleColumnsDemoComponent } from "./demos/collapsible-columns/collapsible-columns-demo.component";
 import { ExternalSortDemoComponent } from "./demos/external-sort/external-sort-demo.component";
 import { ExternalFilterDemoComponent } from "./demos/external-filter/external-filter-demo.component";
@@ -59,6 +60,7 @@ import { BillingDemoComponent } from "./demos/billing/billing-demo.component";
 import { ManufacturingDemoComponent } from "./demos/manufacturing/manufacturing-demo.component";
 import { HRDemoComponent } from "./demos/hr/hr-demo.component";
 import { SalesDemoComponent } from "./demos/sales/sales-demo.component";
+import { AnalyticsDemoComponent } from "./demos/analytics/analytics-demo.component";
 
 const REGISTRY: Record<string, any> = {
   "quick-start": QuickStartDemoComponent,
@@ -81,6 +83,7 @@ const REGISTRY: Record<string, any> = {
   "quick-filter": QuickFilterDemoComponent,
   "nested-headers": NestedHeadersDemoComponent,
   "aggregate-functions": AggregateFunctionsDemoComponent,
+  "pivot": PivotDemoComponent,
   "collapsible-columns": CollapsibleColumnsDemoComponent,
   "external-sort": ExternalSortDemoComponent,
   "external-filter": ExternalFilterDemoComponent,
@@ -114,6 +117,7 @@ const REGISTRY: Record<string, any> = {
   "manufacturing": ManufacturingDemoComponent,
   "hr": HRDemoComponent,
   "sales": SalesDemoComponent,
+  "analytics": AnalyticsDemoComponent,
 };
 
 @Component({
@@ -140,6 +144,8 @@ const REGISTRY: Record<string, any> = {
     QuickFilterDemoComponent,
     NestedHeadersDemoComponent,
     AggregateFunctionsDemoComponent,
+    PivotDemoComponent,
+    AnalyticsDemoComponent,
     CollapsibleColumnsDemoComponent,
     ExternalSortDemoComponent,
     ExternalFilterDemoComponent,

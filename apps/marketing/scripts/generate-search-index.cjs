@@ -125,6 +125,7 @@ function getSectionName(docPath) {
     "/docs/row-selection": "Row Features",
     "/docs/row-grouping": "Row Features",
     "/docs/aggregate-functions": "Row Features",
+    "/docs/pivot": "Row Features",
     "/docs/row-height": "Row Features",
     "/docs/cell-editing": "Cell Features",
     "/docs/cell-highlighting": "Cell Features",
@@ -282,6 +283,13 @@ function getSEOMetadata(docId) {
         "Add aggregate functions to your react-table with Simple Table. Sum, count, average, and more in your datagrid or data table with TypeScript support.",
       keywords:
         "simple-table, react-table, react-grid, data-grid, datagrid, data table, aggregate functions, table aggregation, typescript table, data summary",
+    },
+    pivot: {
+      title: "Pivot Tables in Simple Table React Grid",
+      description:
+        "Build matrix pivot tables with Simple Table. Declarative row, column, and value fields with aggregations and totals.",
+      keywords:
+        "simple-table, react-table, react-grid, data-grid, datagrid, pivot table, matrix pivot, typescript table, data aggregation",
     },
     "row-height": {
       title: "Row Height in Simple Table React Grid",

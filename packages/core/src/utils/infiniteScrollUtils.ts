@@ -480,6 +480,11 @@ interface StickyParentsCacheEntry {
 
 const stickyParentsCache = new Map<string, StickyParentsCacheEntry>();
 
+const stickyRowIdentity = (row: TableRow | undefined): string => {
+  if (!row) return "";
+  return row.stableRowKey ?? rowIdToString(row.rowId);
+};
+
 export const getStickyParents = (
   allTableRows: TableRow[],
   renderedRows: TableRow[],
@@ -487,12 +492,21 @@ export const getStickyParents = (
   partiallyVisibleRows: TableRow[],
   rowGrouping: Accessor[]
 ) => {
-  // Create cache key based on first visible row and rendered range
+  // Create cache key based on first visible row and rendered range.
+  // Include identities at those positions so sort/filter/reorder (same
+  // numeric band, different rows) cannot reuse a stale sticky parent set.
   const firstVisiblePosition = partiallyVisibleRows[0]?.position ?? -1;
   const renderedStartPosition = renderedRows[0]?.position ?? -1;
   const renderedEndPosition = renderedRows[renderedRows.length - 1]?.position ?? -1;
-  
-  const cacheKey = `${firstVisiblePosition}:${renderedStartPosition}:${renderedEndPosition}:${rowGrouping.join(',')}`;
+  const bandIdentity = [
+    stickyRowIdentity(allTableRows[firstVisiblePosition]),
+    stickyRowIdentity(allTableRows[renderedStartPosition]),
+    stickyRowIdentity(allTableRows[renderedEndPosition]),
+    stickyRowIdentity(allTableRows[0]),
+    String(allTableRows.length),
+  ].join("|");
+
+  const cacheKey = `${firstVisiblePosition}:${renderedStartPosition}:${renderedEndPosition}:${rowGrouping.join(",")}:${bandIdentity}`;
   
   // Check cache
   const cached = stickyParentsCache.get(cacheKey);
@@ -500,7 +514,25 @@ export const getStickyParents = (
       cached.firstVisiblePosition === firstVisiblePosition &&
       cached.renderedStartPosition === renderedStartPosition &&
       cached.renderedEndPosition === renderedEndPosition) {
-    return cached.result;
+    // Re-resolve sticky parents from the live flattened list so the overlay
+    // never paints with TableRow object refs from a previous flatten/sort.
+    const liveStickyParents: TableRow[] = [];
+    let cacheStillValid = true;
+    for (const cachedParent of cached.result.stickyParents) {
+      const live = allTableRows[cachedParent.position];
+      if (!live || stickyRowIdentity(live) !== stickyRowIdentity(cachedParent)) {
+        cacheStillValid = false;
+        break;
+      }
+      liveStickyParents.push(live);
+    }
+    if (cacheStillValid) {
+      return {
+        stickyParents: liveStickyParents,
+        regularRows: renderedRows,
+      };
+    }
+    stickyParentsCache.delete(cacheKey);
   }
   
   // Calculate sticky parents

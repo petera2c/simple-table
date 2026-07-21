@@ -64,6 +64,7 @@ const DEMO_LIST = [
   { id: "manufacturing", label: "Manufacturing" },
   { id: "hr", label: "HR" },
   { id: "sales", label: "Sales" },
+  { id: "analytics", label: "Analytics" },
 ];
 
 const ACRONYM_MAP = { crm: "CRM", hr: "HR" };

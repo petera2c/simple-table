@@ -23,6 +23,7 @@ const registry: Record<string, () => Promise<{ default: any }>> = {
   "quick-filter": () => import("./demos/quick-filter/QuickFilterDemo.vue"),
   "nested-headers": () => import("./demos/nested-headers/NestedHeadersDemo.vue"),
   "aggregate-functions": () => import("./demos/aggregate-functions/AggregateFunctionsDemo.vue"),
+  "pivot": () => import("./demos/pivot/PivotDemo.vue"),
   "collapsible-columns": () => import("./demos/collapsible-columns/CollapsibleColumnsDemo.vue"),
   "external-sort": () => import("./demos/external-sort/ExternalSortDemo.vue"),
   "external-filter": () => import("./demos/external-filter/ExternalFilterDemo.vue"),
@@ -56,6 +57,7 @@ const registry: Record<string, () => Promise<{ default: any }>> = {
   "manufacturing": () => import("./demos/manufacturing/ManufacturingDemo.vue"),
   "hr": () => import("./demos/hr/HRDemo.vue"),
   "sales": () => import("./demos/sales/SalesDemo.vue"),
+  "analytics": () => import("./demos/analytics/AnalyticsDemo.vue"),
 };
 
 const params = new URLSearchParams(window.location.search);

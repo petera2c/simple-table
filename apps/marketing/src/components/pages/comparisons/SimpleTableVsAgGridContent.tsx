@@ -104,8 +104,8 @@ const SimpleVsAgGrid = () => {
         >
           Community edition
         </Link>{" "}
-        is {AG_GRID_COMMUNITY_INFO.bundleSizeMinGzip} (minified + gzipped), but many advanced
-        features like pivot tables and tree data require the{" "}
+        is {AG_GRID_COMMUNITY_INFO.bundleSizeMinGzip} (minified + gzipped), but several advanced
+        features (for example tree data and interactive pivot UI) require the{" "}
         <Link
           className="text-[length:inherit]"
           href={AG_GRID_ENTERPRISE_INFO.bundlePhobiaUrl}
@@ -115,7 +115,8 @@ const SimpleVsAgGrid = () => {
         </Link>{" "}
         (additional {AG_GRID_ENTERPRISE_INFO.bundleSizeMinGzip}, totaling {AG_GRID_TOTAL_SIZE}) at{" "}
         {getPricingString(AG_GRID_ENTERPRISE_INFO)}. The combined bundle size and steeper learning
-        curve make it better suited for complex, enterprise-level applications.
+        curve make it better suited for complex, enterprise-level applications. Simple Table
+        includes declarative matrix pivoting in the free feature set.
       </Text>
       <Text className="text-lg block text-inherit mb-4">
         If you're looking for a free, lightweight solution with solid features,{" "}

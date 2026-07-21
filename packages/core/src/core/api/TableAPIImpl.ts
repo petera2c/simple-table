@@ -27,6 +27,7 @@ import {
 } from "../../utils/pinnedColumnUtils";
 import { PinnedSectionsState } from "../../types/PinnedSectionsState";
 import { deepClone } from "../../utils/generalUtils";
+import type { PivotConfig } from "../../types/PivotTypes";
 
 export interface TableAPIContext {
   config: SimpleTableConfig;
@@ -82,6 +83,11 @@ export interface TableAPIContext {
   setHeaders: (headers: HeaderObject[]) => void;
   setCurrentPage: (page: number) => void;
   setColumnEditorOpen: (open: boolean) => void;
+  getEffectiveRowGrouping: () => Accessor[] | undefined;
+  setPivot: (config: PivotConfig | null) => void;
+  getPivot: () => PivotConfig | null;
+  getPivotHeaders: () => HeaderObject[];
+  getPivotedRows: () => Row[];
 }
 
 export class TableAPIImpl {
@@ -90,8 +96,8 @@ export class TableAPIImpl {
       const cached = context.getCachedFlattenResult?.();
       if (cached) return cached;
       return flattenRows({
-        rows: context.localRows,
-        rowGrouping: context.config.rowGrouping,
+        rows: context.getPivotedRows(),
+        rowGrouping: context.getEffectiveRowGrouping(),
         getRowId: context.config.getRowId,
         expandedRows: context.expandedRows,
         collapsedRows: context.collapsedRows,
@@ -369,7 +375,12 @@ export class TableAPIImpl {
         // Restore the pristine column definitions — NOT config.defaultHeaders,
         // whose header objects are mutated in place by runtime visibility
         // changes (column editor) and so drift away from the configured state.
-        context.setHeaders(deepClone(context.getPristineDefaultHeaders()));
+        // While pivot is active, restore generated pivot headers (not the
+        // source field catalog).
+        const headers = context.getPivot()
+          ? deepClone(context.getPivotHeaders())
+          : deepClone(context.getPristineDefaultHeaders());
+        context.setHeaders(headers);
         context.onRender();
       },
 
@@ -451,7 +462,7 @@ export class TableAPIImpl {
         context.clearCollapsedRows();
         const mgr = context.expandedDepthsManager;
         if (mgr) {
-          const max = context.config.rowGrouping?.length ?? 0;
+          const max = context.getEffectiveRowGrouping()?.length ?? 0;
           const next =
             max === 0
               ? new Set<number>()
@@ -467,11 +478,27 @@ export class TableAPIImpl {
       },
 
       getGroupingProperty: (depth: number): Accessor | undefined => {
-        return context.config.rowGrouping?.[depth];
+        return context.getEffectiveRowGrouping()?.[depth];
       },
 
       getGroupingDepth: (property: Accessor): number => {
-        return context.config.rowGrouping?.indexOf(property) ?? -1;
+        return context.getEffectiveRowGrouping()?.indexOf(property) ?? -1;
+      },
+
+      setPivot: (config: PivotConfig | null) => {
+        context.setPivot(config);
+      },
+
+      getPivot: (): PivotConfig | null => {
+        return context.getPivot();
+      },
+
+      getPivotHeaders: (): HeaderObject[] => {
+        return context.getPivotHeaders();
+      },
+
+      getPivotedRows: (): Row[] => {
+        return context.getPivotedRows();
       },
 
       toggleColumnEditor: (open?: boolean) => {

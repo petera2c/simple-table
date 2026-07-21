@@ -55,7 +55,7 @@ export default function FAQSection() {
               {
                 icon: faTable,
                 question: "What is Simple Table?",
-                answer: `Simple Table is a lightweight JavaScript data grid library (only ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}) with adapters for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript. It provides cell editing, column management, sorting, filtering, row grouping, and full TypeScript support. Perfect for dashboards, admin panels, and data-heavy applications in any framework.`,
+                answer: `Simple Table is a lightweight JavaScript data grid library (only ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}) with adapters for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript. It provides cell editing, column management, sorting, filtering, row grouping, pivot tables, and full TypeScript support. Perfect for dashboards, admin panels, and data-heavy applications in any framework.`,
               },
               {
                 icon: faDownload,
@@ -133,9 +133,9 @@ export default function FAQSection() {
                   <>
                     Simple Table includes 30+ features: cell editing with validation, column
                     resizing/reordering/pinning/filtering/sorting, row selection and grouping,
-                    pagination and infinite scroll, nested headers, custom cell and header
-                    renderers, live data updates, aggregate functions, keyboard navigation, multiple
-                    built-in themes, and full customization via CSS variables. Check our{" "}
+                    pivot tables, pagination and infinite scroll, nested headers, custom cell and
+                    header renderers, live data updates, aggregate functions, keyboard navigation,
+                    multiple built-in themes, and full customization via CSS variables. Check our{" "}
                     <Link
                       href="/docs/installation"
                       className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium"

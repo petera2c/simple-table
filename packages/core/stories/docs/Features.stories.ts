@@ -105,6 +105,7 @@ import {
   renderPaginationAPIExample,
   paginationAPIExampleDefaults,
 } from "../examples/PaginationAPIExample";
+import { renderPivotExample, pivotExampleDefaults } from "../examples/PivotExample";
 import {
   renderPinnedColumnsExample,
   pinnedColumnsExampleDefaults,
@@ -445,6 +446,19 @@ export const PaginationAPI: StoryObj = {
     docs: {
       description: {
         story: "Pagination controlled via API (programmatic page change, page size).",
+      },
+    },
+  },
+};
+
+export const Pivot: StoryObj = {
+  ...storyArgs(pivotExampleDefaults),
+  render: (args) => renderPivotExample(args),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Declarative matrix pivot playground: toggle row/column/value fields, aggregations, and totals via TableAPI.setPivot.",
       },
     },
   },

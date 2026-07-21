@@ -2,7 +2,7 @@
  * Shared default args and argTypes for vanilla Docs & Examples stories.
  * Mirrors the React StoryWrapper pattern so Controls (theme, height, etc.) are consistent.
  */
-import type { Theme, CustomThemeProps } from "../src/index";
+import type { Theme, CustomThemeProps, PivotConfig } from "../src/index";
 
 export interface UniversalVanillaArgs {
   autoExpandColumns?: boolean;
@@ -17,6 +17,8 @@ export interface UniversalVanillaArgs {
   externalSortHandling?: boolean;
   height?: string;
   hideFooter?: boolean;
+  /** Declarative matrix pivot (passed through to SimpleTableConfig). */
+  pivot?: PivotConfig | null;
   rowsPerPage?: number;
   selectableCells?: boolean;
   selectableColumns?: boolean;

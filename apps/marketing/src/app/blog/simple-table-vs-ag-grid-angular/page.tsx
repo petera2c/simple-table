@@ -50,7 +50,7 @@ export default function Page() {
         { feature: "Signals-native API", competitor: { value: "Partial", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Row + column virtualization (1M+ rows)", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (built-in)", tone: "good" } },
         { feature: "Row grouping + aggregations", competitor: { value: "Enterprise-only", tone: "bad" }, simpleTable: { value: "Free / built-in", tone: "good" } },
-        { feature: "Pivoting", competitor: { value: "Enterprise-only", tone: "bad" }, simpleTable: { value: "Not bundled", tone: "neutral" } },
+        { feature: "Pivoting", competitor: { value: "Enterprise-only", tone: "bad" }, simpleTable: { value: "Declarative matrix pivot (free)", tone: "good" } },
         { feature: "Tree data", competitor: { value: "Enterprise-only", tone: "bad" }, simpleTable: { value: "Free / built-in", tone: "good" } },
         { feature: "Inline cell editing", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (built-in)", tone: "good" } },
         { feature: "Theme / styling", competitor: { value: "AG themes (Quartz / Alpine / Balham)", tone: "neutral" }, simpleTable: { value: "CSS variables, BYO design system", tone: "good" } },

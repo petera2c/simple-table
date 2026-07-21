@@ -1127,6 +1127,13 @@ export const SEO_STRINGS = {
     keywords:
       "simple-table, data-grid, datagrid, data table, aggregate functions, table aggregation, typescript table, data summary, javascript data grid",
   },
+  pivot: {
+    title: "Pivot Tables in Simple Table Data Grid",
+    description:
+      "Build matrix pivot tables with Simple Table. Declarative row, column, and value fields with aggregations and totals in React, Vue, Angular, Svelte, Solid, or vanilla TypeScript.",
+    keywords:
+      "simple-table, data-grid, datagrid, pivot table, matrix pivot, pivot mode, typescript table, data aggregation, javascript data grid",
+  },
   rowGrouping: {
     title: "Row Grouping in Simple Table Data Grid",
     description:
@@ -1225,6 +1232,13 @@ export const SEO_STRINGS = {
         "Build a sales pipeline table with Simple Table. A JavaScript data grid for reps, deals, quotas, and revenue metrics using a responsive datagrid.",
       keywords:
         "simple-table, data-grid, datagrid, data table, sales pipeline, sales dashboard, revenue table, sales metrics, responsive table, javascript data grid",
+    },
+    analytics: {
+      title: "Analytics Pivot Table with Simple Table",
+      description:
+        "Explore multi-dimension revenue analytics with Simple Table's declarative pivot. Region, product, channel, and quarter matrices with sum and average aggregations in a responsive JavaScript data grid.",
+      keywords:
+        "simple-table, data-grid, datagrid, pivot table, analytics table, revenue analytics, matrix pivot, aggregation table, javascript data grid",
     },
     crypto: {
       title: "Crypto Markets Dashboard with Simple Table",

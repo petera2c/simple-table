@@ -57,7 +57,7 @@ const RowSelectionDemo = ({
           Library Management Demo
         </div>
         <div style={{ fontSize: 13, color: "#475569", marginBottom: 6 }}>
-          Click rows to select books. Use the checkbox column to select multiple.
+          Use the checkbox column to select books for checkout or bulk actions.
         </div>
         <div style={{ fontSize: 13, color: "#334155" }}>
           <strong>Selected Books: </strong>

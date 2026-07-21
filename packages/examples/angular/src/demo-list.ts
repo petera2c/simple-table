@@ -28,6 +28,7 @@ export const DEMO_LIST = [
   { id: "programmatic-control", label: "Programmatic Control" },
   { id: "row-grouping", label: "Row Grouping" },
   { id: "aggregate-functions", label: "Aggregate Functions" },
+  { id: "pivot", label: "Pivot" },
   { id: "collapsible-columns", label: "Collapsible Columns" },
   { id: "cell-renderer", label: "Cell Renderer" },
   { id: "header-renderer", label: "Header Renderer" },
@@ -52,6 +53,7 @@ export const DEMO_LIST = [
   { id: "manufacturing", label: "Manufacturing" },
   { id: "hr", label: "HR" },
   { id: "sales", label: "Sales" },
+  { id: "analytics", label: "Analytics" },
 ] as const;
 
 export type DemoId = (typeof DEMO_LIST)[number]["id"];

@@ -39,6 +39,7 @@ export const registry: DemoRegistry = {
   "programmatic-control": () => import("./demos/programmatic-control/ProgrammaticControlDemo"),
   "row-grouping": () => import("./demos/row-grouping/RowGroupingDemo"),
   "aggregate-functions": () => import("./demos/aggregate-functions/AggregateFunctionsDemo"),
+  "pivot": () => import("./demos/pivot/PivotDemo"),
   "collapsible-columns": () => import("./demos/collapsible-columns/CollapsibleColumnsDemo"),
   // Phase 3
   "cell-renderer": () => import("./demos/cell-renderer/CellRendererDemo"),
@@ -68,4 +69,5 @@ export const registry: DemoRegistry = {
   manufacturing: () => import("./demos/manufacturing/ManufacturingDemo"),
   hr: () => import("./demos/hr/HRDemo"),
   sales: () => import("./demos/sales/SalesDemo"),
+  analytics: () => import("./demos/analytics/AnalyticsDemo"),
 };

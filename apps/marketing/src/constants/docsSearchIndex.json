@@ -772,6 +772,28 @@
     ]
   },
   {
+    "id": "pivot",
+    "path": "/docs/pivot",
+    "title": "Pivot Tables in Simple Table React Grid",
+    "description": "Build matrix pivot tables with Simple Table. Declarative row, column, and value fields with aggregations and totals.",
+    "keywords": [
+      "simple-table",
+      "react-table",
+      "react-grid",
+      "data-grid",
+      "datagrid",
+      "pivot table",
+      "matrix pivot",
+      "typescript table",
+      "data aggregation"
+    ],
+    "content": "defaultHeaders is the field catalog (labels, types, formatters). Visible\n          columns are generated from the pivot result. Column filters apply to source rows before pivoting; sort and quick filter\n          apply to the pivoted view. While pivot is active, consumer rowGrouping is ignored. Multi-level row fields\n          use an expandable tree instead. Use TableAPI.setPivot / getPivot / getPivotedRows for\n          imperative control. ,\n    required: false,\n    description: ],\n  values: [{ accessor: , aggregation: { type: } }],\n  showRowTotals: true,\n  showColumnTotals: true,\n  showGrandTotal: true,\n}} ,\n    required: true,\n    description: ,\n  },\n  {\n    key: values: [\n  { accessor: } },\n  { accessor:",
+    "section": "Row Features",
+    "headings": [
+      "Pivot Tables"
+    ]
+  },
+  {
     "id": "programmatic-control",
     "path": "/docs/programmatic-control",
     "title": "Simple Table Documentation",

@@ -7,13 +7,28 @@ import { SimpleTableVanilla } from "../../../src/index";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../../vanillaStoryConfig";
 
 const HEADERS: HeaderObject[] = [
-  { accessor: "organization", label: "Organization", width: 200, expandable: true, type: "string" },
-  { accessor: "employees", label: "Employees", width: 100, type: "number", aggregation: { type: "sum" } },
+  {
+    accessor: "organization",
+    label: "Organization",
+    width: 200,
+    expandable: true,
+    type: "string",
+    isSortable: true,
+  },
+  {
+    accessor: "employees",
+    label: "Employees",
+    width: 100,
+    type: "number",
+    isSortable: true,
+    aggregation: { type: "sum" },
+  },
   {
     accessor: "budget",
     label: "Annual Budget",
     width: 140,
     type: "string",
+    isSortable: true,
     aggregation: {
       type: "sum",
       parseValue: (value: CellValue) => {
@@ -29,18 +44,41 @@ const HEADERS: HeaderObject[] = [
     label: "Team Rating",
     width: 100,
     type: "number",
+    isSortable: true,
     aggregation: { type: "average" },
     valueFormatter: ({ value }: { value?: unknown }) =>
       typeof value === "number" ? `${value.toFixed(1)} ⭐` : typeof value === "string" ? `${value} ⭐` : "",
   },
-  { accessor: "projectCount", label: "Projects", width: 90, type: "number", aggregation: { type: "count" } },
-  { accessor: "minTeamSize", label: "Min Team", width: 90, type: "number", aggregation: { type: "min" } },
-  { accessor: "maxTeamSize", label: "Max Team", width: 90, type: "number", aggregation: { type: "max" } },
+  {
+    accessor: "projectCount",
+    label: "Projects",
+    width: 90,
+    type: "number",
+    isSortable: true,
+    aggregation: { type: "count" },
+  },
+  {
+    accessor: "minTeamSize",
+    label: "Min Team",
+    width: 90,
+    type: "number",
+    isSortable: true,
+    aggregation: { type: "min" },
+  },
+  {
+    accessor: "maxTeamSize",
+    label: "Max Team",
+    width: 90,
+    type: "number",
+    isSortable: true,
+    aggregation: { type: "max" },
+  },
   {
     accessor: "weightedScore",
     label: "Score",
     width: 100,
     type: "number",
+    isSortable: true,
     aggregation: {
       type: "custom",
       customFn: (values: unknown[]) => {
@@ -52,9 +90,9 @@ const HEADERS: HeaderObject[] = [
     valueFormatter: ({ value }: { value?: unknown }) =>
       typeof value === "number" || typeof value === "string" ? `${value}/100` : "",
   },
-  { accessor: "performance", label: "Performance", width: 120, type: "string" },
-  { accessor: "location", label: "Location", width: 130, type: "string" },
-  { accessor: "status", label: "Status", width: 110, type: "string" },
+  { accessor: "performance", label: "Performance", width: 120, type: "string", isSortable: true },
+  { accessor: "location", label: "Location", width: 130, type: "string", isSortable: true },
+  { accessor: "status", label: "Status", width: 110, type: "string", isSortable: true },
 ];
 
 function generateTeams(divisionId: number, count: number = 200): Row[] {

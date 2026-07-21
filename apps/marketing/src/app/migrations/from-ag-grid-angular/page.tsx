@@ -86,7 +86,7 @@ import "@simple-table/angular/styles.css";`,
       gotchas={[
         { title: "Stable row ids are required", body: "Simple Table needs a stable id per row. Use a database id or a generated uuid." },
         { title: "No CSR-specific zone tricks", body: "Simple Table for Angular plays well with the new signals API. If you used onGridReady or detectChanges hacks, you can usually delete them." },
-        { title: "AG Grid Enterprise features", body: "Pivoting, master/detail, and integrated charts are AG-specific. Open an issue if you have one of these workflows—Simple Table covers grouping/aggregations and most reporting needs in the source-available package." },
+        { title: "AG Grid Enterprise features", body: "Master/detail and integrated charts remain AG-specific. Simple Table includes declarative matrix pivoting plus grouping/aggregations for most reporting needs in the source-available package." },
       ]}
       faqs={[
         { question: "Does this work with Angular Material themes?", answer: "Yes. Simple Table doesn't ship its own design system—theme it via CSS variables to match Material, Tailwind, or your own design tokens." },

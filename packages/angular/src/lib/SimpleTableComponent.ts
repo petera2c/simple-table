@@ -64,6 +64,8 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() onLoadMore?: SimpleTableAngularProps["onLoadMore"];
   @Input() onGridReady?: SimpleTableAngularProps["onGridReady"];
   @Input() rowGrouping?: SimpleTableAngularProps["rowGrouping"];
+  @Input() pivot?: SimpleTableAngularProps["pivot"];
+  @Input() onPivotChange?: SimpleTableAngularProps["onPivotChange"];
   @Input() enableRowSelection?: SimpleTableAngularProps["enableRowSelection"];
   @Input() theme?: SimpleTableAngularProps["theme"];
   @Input() quickFilter?: SimpleTableAngularProps["quickFilter"];
@@ -201,6 +203,8 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     if (this.onLoadMore !== undefined) props.onLoadMore = this.onLoadMore;
     if (this.onGridReady !== undefined) props.onGridReady = this.onGridReady;
     if (this.rowGrouping !== undefined) props.rowGrouping = this.rowGrouping;
+    if (this.pivot !== undefined) props.pivot = this.pivot;
+    if (this.onPivotChange !== undefined) props.onPivotChange = this.onPivotChange;
     if (this.enableRowSelection !== undefined) props.enableRowSelection = this.enableRowSelection;
     if (this.theme !== undefined) props.theme = this.theme;
     if (this.quickFilter !== undefined) props.quickFilter = this.quickFilter;

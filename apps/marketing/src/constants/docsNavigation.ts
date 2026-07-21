@@ -168,6 +168,7 @@ export const docSections: DocSection[] = [
         path: "/docs/aggregate-functions",
         icon: faCalculator,
       },
+      { id: "pivot", label: "Pivot Tables", path: "/docs/pivot", icon: faTableCells },
       { id: "row-height", label: "Row Height", path: "/docs/row-height", icon: faArrowsUpDown },
     ],
   },

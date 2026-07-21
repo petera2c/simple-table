@@ -8,6 +8,7 @@ import { loadDemoCodeMap } from "@/utils/loadDemoCode";
  */
 const DOCS_DEMO_IDS: Record<string, string[]> = {
   "aggregate-functions": ["aggregate-functions"],
+  pivot: ["pivot"],
   animations: ["animations"],
   "cell-clicking": ["cell-clicking"],
   "cell-editing": ["cell-editing"],

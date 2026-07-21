@@ -26,6 +26,7 @@ import { IconsConfig } from "./IconsConfig";
 import { QuickFilterConfig } from "./QuickFilterTypes";
 import { AnimationsConfig } from "./AnimationsConfig";
 import type { FooterPosition } from "./FooterPosition";
+import type { PivotConfig } from "./PivotTypes";
 
 export interface SimpleTableProps {
   animations?: AnimationsConfig; // Cell animation configuration (FLIP-style on sort and programmatic column reorder). Defaults: enabled=true, duration=240ms, easing=cubic-bezier(0.2, 0.8, 0.2, 1).
@@ -103,10 +104,17 @@ export interface SimpleTableProps {
   onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>; // Callback when a row is expanded/collapsed
   onRowSelectionChange?: (props: RowSelectionChangeProps) => void; // Callback when row selection changes
   onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
+  /**
+   * Declarative matrix pivot. When set, flat `rows` are reshaped into a
+   * pivoted grid with dynamic columns. Ignores consumer `rowGrouping` while active.
+   */
+  pivot?: PivotConfig | null;
+  /** Fired when pivot config changes via TableAPI.setPivot. */
+  onPivotChange?: (pivot: PivotConfig | null) => void;
   quickFilter?: QuickFilterConfig; // Global search configuration across all columns
   rowButtons?: RowButton[]; // Array of buttons to show in each row
   rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
-  getRowId?: GetRowId; // Function to generate unique row IDs for stable row identification across data changes. Receives row data, depth, index, paths, and grouping key. If not provided, uses index-based IDs.
+  getRowId?: GetRowId; // Stable business id for a row. Return null/undefined when the row has no id (pivot aggregates, loading) to use reference-based identity.
   rows: Row[]; // Rows data
   rowsPerPage?: number; // Rows per page
   scrollParent?: HTMLElement | "window" | (() => HTMLElement | null); // External scroll container that drives virtualization and onLoadMore when neither height nor maxHeight is set. Accepts an element, the string "window", or a getter (useful for refs that resolve after first render).

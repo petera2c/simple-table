@@ -25,6 +25,7 @@ const registry: Record<string, ReturnType<typeof lazy>> = {
   "quick-filter": lazy(() => import("./demos/quick-filter/QuickFilterDemo")),
   "nested-headers": lazy(() => import("./demos/nested-headers/NestedHeadersDemo")),
   "aggregate-functions": lazy(() => import("./demos/aggregate-functions/AggregateFunctionsDemo")),
+  "pivot": lazy(() => import("./demos/pivot/PivotDemo")),
   "collapsible-columns": lazy(() => import("./demos/collapsible-columns/CollapsibleColumnsDemo")),
   "external-sort": lazy(() => import("./demos/external-sort/ExternalSortDemo")),
   "external-filter": lazy(() => import("./demos/external-filter/ExternalFilterDemo")),
@@ -66,6 +67,7 @@ const registry: Record<string, ReturnType<typeof lazy>> = {
   manufacturing: lazy(() => import("./demos/manufacturing/ManufacturingDemo")),
   hr: lazy(() => import("./demos/hr/HRDemo")),
   sales: lazy(() => import("./demos/sales/SalesDemo")),
+  analytics: lazy(() => import("./demos/analytics/AnalyticsDemo")),
 };
 
 function App() {

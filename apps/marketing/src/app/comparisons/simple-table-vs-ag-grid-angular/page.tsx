@@ -103,7 +103,7 @@ export default function SimpleTableVsAgGridAngularPage() {
         },
         {
           feature: "Pivoting",
-          simpleTable: { verdict: "no", note: "Not the focus today." },
+          simpleTable: { verdict: "yes", note: "Declarative matrix pivot via props / TableAPI." },
           competitor: { verdict: "yes", note: "Pivot mode is Enterprise." },
         },
         {
@@ -158,12 +158,12 @@ export default function SimpleTableVsAgGridAngularPage() {
         {
           question: "Can I migrate gradually from AG Grid to Simple Table?",
           answer:
-            "Yes. The data shape (headers / rows) maps cleanly from AG Grid's columnDefs / rowData. You can swap one screen at a time and keep AG Grid where pivoting or integrated charts are required.",
+            "Yes. The data shape (headers / rows) maps cleanly from AG Grid's columnDefs / rowData. You can swap one screen at a time and keep AG Grid where an interactive Pivot Panel or integrated charts are required.",
         },
         {
           question: "Does Simple Table support pivoting and integrated charts?",
           answer:
-            "Not today—those remain AG Grid Enterprise's strongest differentiators. If you need pivoting and charts in the same component, AG Grid Enterprise remains the right choice.",
+            "Simple Table includes declarative matrix pivoting (configure row/column/value fields via props or TableAPI). Interactive Pivot Panel UI and integrated charts remain AG Grid Enterprise strengths—if you need those in the same component, AG Grid Enterprise remains the right choice.",
         },
       ]}
       conclusion={
@@ -175,7 +175,7 @@ export default function SimpleTableVsAgGridAngularPage() {
             and a fraction of the bundle.
           </p>
           <p>
-            AG Grid Enterprise stays the right call when pivoting, integrated charts, master/detail,
+            AG Grid Enterprise stays the right call when you need its Pivot Panel UI, integrated charts, master/detail,
             or the server-side row model are core to the product. For everything else, start with
             <code> @simple-table/angular</code> and keep your runtime cost predictable.
           </p>

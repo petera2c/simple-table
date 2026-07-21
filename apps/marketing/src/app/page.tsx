@@ -69,7 +69,7 @@ const faqSchema = {
       name: "What features does Simple Table include?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Simple Table includes cell editing, column management (resizing, reordering, pinning, visibility), row grouping, pagination, sorting, filtering, custom themes, nested headers, custom renderers, and responsive design. It's designed to handle large datasets efficiently.",
+        text: "Simple Table includes cell editing, column management (resizing, reordering, pinning, visibility), row grouping, pivot tables, pagination, sorting, filtering, custom themes, nested headers, custom renderers, and responsive design. It's designed to handle large datasets efficiently.",
       },
     },
     {

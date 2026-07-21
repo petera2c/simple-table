@@ -21,6 +21,14 @@ import type {
   ValueGetterProps,
 } from "./types/HeaderObject";
 import type { AggregationConfig, AggregationType } from "./types/AggregationTypes";
+import type { PivotConfig, PivotValueConfig, PivotResult } from "./types/PivotTypes";
+import {
+  PIVOT_CHILDREN_KEY,
+  PIVOT_IS_TOTAL_KEY,
+  PIVOT_ACCESSOR_PREFIX,
+  PIVOT_BLANK_LABEL,
+} from "./types/PivotTypes";
+import { pivotRows, buildPivotAccessor, buildPivotRowTotalAccessor } from "./utils/pivot/pivotRows";
 import type OnSortProps from "./types/OnSortProps";
 import type OnRowGroupExpandProps from "./types/OnRowGroupExpandProps";
 import type Row from "./types/Row";
@@ -91,6 +99,15 @@ import type { PinnedSectionsState } from "./types/PinnedSectionsState";
 export { SimpleTableVanilla };
 export { asRows } from "./utils/asRows";
 export {
+  pivotRows,
+  buildPivotAccessor,
+  buildPivotRowTotalAccessor,
+  PIVOT_CHILDREN_KEY,
+  PIVOT_IS_TOTAL_KEY,
+  PIVOT_ACCESSOR_PREFIX,
+  PIVOT_BLANK_LABEL,
+};
+export {
   headersStructurallyEqual,
   collectHeaderAccessors,
   rowsShallowUnchanged,
@@ -156,6 +173,9 @@ export type {
   HeaderRendererComponents,
   OnRowGroupExpandProps,
   OnSortProps,
+  PivotConfig,
+  PivotValueConfig,
+  PivotResult,
   QuickFilterConfig,
   QuickFilterGetter,
   QuickFilterGetterProps,

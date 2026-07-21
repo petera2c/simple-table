@@ -148,7 +148,7 @@ export const simpleTableFeatures: FeatureMapping = {
   // Advanced Data Features
   advancedValueGettersSetters: "free",
   advancedCellRangeSelection: "free",
-  advancedPivotTables: "not-available",
+  advancedPivotTables: "free",
   advancedTreeData: "free",
   advancedRowSpanning: "not-available",
   advancedMasterDetailViews: "not-available",

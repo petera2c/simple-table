@@ -80,6 +80,7 @@ export default function FeaturesSection() {
             { icon: faCalculator, text: "Aggregate Functions", link: "/docs/aggregate-functions" },
             { icon: faFileCsv, text: "CSV Export", link: "/docs/csv-export" },
             { icon: faLayerGroup, text: "Row Grouping", link: "/docs/row-grouping" },
+            { icon: faTableCells, text: "Pivot Tables", link: "/docs/pivot" },
             { icon: faCheckSquare, text: "Row Selection", link: "/docs/row-selection" },
             { icon: faPager, text: "Pagination", link: "/docs/pagination" },
             { icon: faInfinity, text: "Infinite Scroll", link: "/docs/infinite-scroll" },

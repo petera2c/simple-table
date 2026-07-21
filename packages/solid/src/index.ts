@@ -79,6 +79,9 @@ export type {
   LoadingStateRendererProps,
   OnRowGroupExpandProps,
   OnSortProps,
+  PivotConfig,
+  PivotValueConfig,
+  PivotResult,
   QuickFilterConfig,
   QuickFilterGetter,
   QuickFilterGetterProps,
@@ -104,4 +107,14 @@ export type {
   ValueFormatterProps,
   ValueGetter,
   ValueGetterProps,
+} from "simple-table-core";
+
+export {
+  pivotRows,
+  buildPivotAccessor,
+  buildPivotRowTotalAccessor,
+  PIVOT_CHILDREN_KEY,
+  PIVOT_IS_TOTAL_KEY,
+  PIVOT_ACCESSOR_PREFIX,
+  PIVOT_BLANK_LABEL,
 } from "simple-table-core";

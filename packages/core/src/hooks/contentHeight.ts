@@ -21,6 +21,21 @@ export interface ContentHeightConfig {
  * parent height is unavailable), so callers can treat the whole expression as
  * unresolvable rather than silently substituting a wrong value.
  */
+const resolveViewportHeightUnit = (token: string): number | null => {
+  // Check longer units before `vh` — `70dvh`.endsWith("vh") is true.
+  // dvh/svh/lvh approximate to innerHeight for virtualization math (same as vh).
+  if (
+    token.endsWith("dvh") ||
+    token.endsWith("svh") ||
+    token.endsWith("lvh") ||
+    token.endsWith("vh")
+  ) {
+    const value = parseFloat(token);
+    return Number.isFinite(value) ? (window.innerHeight * value) / 100 : null;
+  }
+  return null;
+};
+
 const resolveLengthToken = (token: string, container: Element | null): number | null => {
   const trimmed = token.trim();
   if (trimmed === "") return null;
@@ -29,9 +44,9 @@ const resolveLengthToken = (token: string, container: Element | null): number | 
     const value = parseFloat(trimmed);
     return Number.isFinite(value) ? value : null;
   }
-  if (trimmed.endsWith("vh")) {
-    const value = parseFloat(trimmed);
-    return Number.isFinite(value) ? (window.innerHeight * value) / 100 : null;
+  const viewportHeight = resolveViewportHeightUnit(trimmed);
+  if (viewportHeight !== null) {
+    return viewportHeight;
   }
   if (trimmed.endsWith("vw")) {
     const value = parseFloat(trimmed);
@@ -75,7 +90,8 @@ const evaluateCalc = (expression: string, container: Element | null): number | n
       i++;
       continue;
     }
-    const match = /^\d*\.?\d+(px|vh|vw|%)?/.exec(expression.slice(i));
+    // Longer viewport units (dvh/svh/lvh) must precede `vh` in the alternation.
+    const match = /^\d*\.?\d+(px|dvh|svh|lvh|vh|vw|%)?/.exec(expression.slice(i));
     if (!match) return null; // Unexpected character
     tokens.push(match[0]);
     i += match[0].length;
@@ -163,20 +179,21 @@ export const convertHeightToPixels = (
 
     if (trimmed.endsWith("px")) {
       return parseInt(trimmed, 10);
-    } else if (trimmed.endsWith("vh")) {
-      const vh = parseInt(trimmed, 10);
-      return (window.innerHeight * vh) / 100;
-    } else if (trimmed.endsWith("%")) {
+    }
+    const viewportHeight = resolveViewportHeightUnit(trimmed);
+    if (viewportHeight !== null) {
+      return viewportHeight;
+    }
+    if (trimmed.endsWith("%")) {
       const percentage = parseInt(trimmed, 10);
       const parentHeight = container?.parentElement?.clientHeight;
       if (!parentHeight || parentHeight < 50) {
         return 0; // Invalid parent height
       }
       return (parentHeight * percentage) / 100;
-    } else {
-      // Fall back to inner height if format is unknown
-      return window.innerHeight;
     }
+    // Fall back to inner height if format is unknown
+    return window.innerHeight;
   } else {
     return heightValue as number;
   }

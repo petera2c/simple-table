@@ -93,7 +93,7 @@ export default function Page() {
           title: "Existing AG Grid Enterprise with pivoting",
           body: "Pivoting and master/detail are core; renewal is committed.",
           recommendation: "competitor",
-          recommendationLabel: "Stay with AG Grid Enterprise—Simple Table doesn't bundle pivoting.",
+          recommendationLabel: "Stay with AG Grid Enterprise if you need its interactive Pivot Panel UI; Simple Table offers declarative matrix pivoting.",
         },
         {
           emoji: "📈",

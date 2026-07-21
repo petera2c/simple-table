@@ -11,6 +11,7 @@ type SeoStringKey = keyof typeof SEO_STRINGS;
 
 const DOC_SLUG_TO_SEO_KEY: Record<string, SeoStringKey> = {
   "aggregate-functions": "aggregateFunctions",
+  pivot: "pivot",
   animations: "animations",
   "api-reference": "apiReference",
   "cell-clicking": "cellClicking",

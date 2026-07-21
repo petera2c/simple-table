@@ -110,6 +110,7 @@ export default function AIVisibilityEnhancer(props: AIVisibilityEnhancerProps) {
     "Column Sorting (asc/desc)",
     "Column Filtering (text, number, date)",
     "Row Grouping with expand/collapse",
+    "Pivot Tables with declarative matrix aggregation",
     "Row Selection (single/multiple)",
     "Row Height customization",
     "Pagination with customizable page sizes",

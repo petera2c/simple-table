@@ -6,6 +6,7 @@ import SortColumn, { SortDirection } from "./SortColumn";
 import { TableFilterState, FilterCondition } from "./FilterTypes";
 import Cell from "./Cell";
 import type { PinnedSectionsState } from "./PinnedSectionsState";
+import type { PivotConfig } from "./PivotTypes";
 
 export interface SetHeaderRenameProps {
   accessor: Accessor;
@@ -69,4 +70,11 @@ export type TableAPI = {
   toggleRowSelection: (rowId: string) => void;
   /** Clears row selection only (does not clear cell selection). */
   clearRowSelection: () => void;
+  /** Enable, update, or clear matrix pivot (`null` disables). */
+  setPivot: (config: PivotConfig | null) => void;
+  getPivot: () => PivotConfig | null;
+  /** Generated headers while pivot is active; otherwise current headers. */
+  getPivotHeaders: () => HeaderObject[];
+  /** Post-pivot rows (pre-flatten) while pivot is active; otherwise source rows. */
+  getPivotedRows: () => Row[];
 };

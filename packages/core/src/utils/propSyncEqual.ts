@@ -4,6 +4,9 @@
  * column configs or shallow-clone rows every render.
  */
 
+import type { GetRowIdParams } from "../types/GetRowId";
+import type Row from "../types/Row";
+
 /** Minimal header shape for structural comparison (renderers ignored). */
 export type HeaderStructureLike = {
   accessor: string | number | symbol;
@@ -130,14 +133,8 @@ export function shallowEqualRow(a: object, b: object): boolean {
   return true;
 }
 
-export type GetRowIdLike = (params: {
-  row: unknown;
-  depth?: number;
-  index?: number;
-  rowPath?: (string | number)[];
-  rowIndexPath?: number[];
-  groupingKey?: string;
-}) => string | number | undefined;
+/** Compatible with `GetRowId`; return may be undefined for sync helpers. */
+export type GetRowIdLike = (params: GetRowIdParams) => string | number | undefined;
 
 /**
  * Above this length, skip per-field shallow compares when row object identity
@@ -169,14 +166,14 @@ export function rowsShallowUnchanged(
 
     if (getRowId) {
       const prevId = getRowId({
-        row: prevRow,
+        row: prevRow as Row,
         depth: 0,
         index: i,
         rowPath: [],
         rowIndexPath: [i],
       });
       const nextId = getRowId({
-        row: nextRow,
+        row: nextRow as Row,
         depth: 0,
         index: i,
         rowPath: [],

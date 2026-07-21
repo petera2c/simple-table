@@ -12,8 +12,10 @@ import { ScrollManager } from "../managers/ScrollManager";
 import { SectionScrollController } from "../managers/SectionScrollController";
 import { SortManager } from "../managers/SortManager";
 import { FilterManager } from "../managers/FilterManager";
+import { PivotManager } from "../managers/PivotManager";
 import { SelectionManager } from "../managers/SelectionManager";
 import { RowSelectionManager } from "../managers/RowSelectionManager";
+import type { PivotConfig } from "../types/PivotTypes";
 import { shouldShowRowSelectionColumn } from "../utils/rowSelectionUtils";
 import WindowResizeManager from "../hooks/windowResize";
 import HandleOutsideClickManager from "../hooks/handleOutsideClick";
@@ -162,6 +164,7 @@ export class SimpleTableVanilla {
   private sectionScrollController: SectionScrollController | null = null;
   private sortManager: SortManager | null = null;
   private filterManager: FilterManager | null = null;
+  private pivotManager: PivotManager | null = null;
   private selectionManager: SelectionManager | null = null;
   private rowSelectionManager: RowSelectionManager | null = null;
   private windowResizeManager: WindowResizeManager | null = null;
@@ -251,12 +254,27 @@ export class SimpleTableVanilla {
     this.localRows = [...config.rows];
     this.headers = [...config.defaultHeaders];
     this.pristineDefaultHeaders = deepClone(config.defaultHeaders);
-    this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
     this.columnEditorOpen = config.editColumnsInitOpen ?? false;
     this.internalIsLoading = config.isLoading ?? false;
 
-    this.collapsedHeaders = TableInitializer.getInitialCollapsedHeaders(config.defaultHeaders);
-    this.expandedDepths = TableInitializer.getInitialExpandedDepths(config);
+    // Apply pivot before measuring headers / collapsed state so the first paint
+    // uses generated columns when `pivot` is configured at mount.
+    this.pivotManager = new PivotManager({
+      sourceRows: this.localRows,
+      fieldHeaders: this.pristineDefaultHeaders,
+      pivot: config.pivot ?? null,
+    });
+    const initialPivot = this.pivotManager.getState();
+    if (initialPivot.active) {
+      this.headers = initialPivot.headers;
+    }
+
+    this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
+    this.collapsedHeaders = TableInitializer.getInitialCollapsedHeaders(this.headers);
+    this.expandedDepths = TableInitializer.getInitialExpandedDepths({
+      ...config,
+      rowGrouping: this.getEffectiveRowGrouping(),
+    });
 
     this.autoSizeAccessors = this.computeAutoSizeAccessors();
     this.pendingAutoSize = new Set(this.autoSizeAccessors);
@@ -469,7 +487,7 @@ export class SimpleTableVanilla {
   private beginAccordionAnimation(axis: AccordionAxis): void {
     if (!this.animationCoordinator.isEnabled()) return;
     if (axis === null) return;
-    if (axis === "vertical" && (this.config.rowGrouping?.length ?? 0) > 0) return;
+    if (axis === "vertical" && (this.getEffectiveRowGrouping()?.length ?? 0) > 0) return;
     this.captureAnimationSnapshot();
     // Record which columns are renderable in the current (pre-change) layout so
     // the grow-from-zero gate can tell a freshly-expanded column apart from one
@@ -509,7 +527,7 @@ export class SimpleTableVanilla {
 
     this.expandedDepthsManager = new ExpandedDepthsManager(
       this.config.expandAll ?? true,
-      this.config.rowGrouping,
+      this.getEffectiveRowGrouping(),
     );
     this.expandedDepthsManager.subscribe((depths) => {
       this.beginAccordionAnimation("vertical");
@@ -523,20 +541,26 @@ export class SimpleTableVanilla {
       }
     };
 
+    const pivotState = this.pivotManager?.getState();
+    const initialSortRows =
+      pivotState?.active ? pivotState.pivotedRows : this.localRows;
+    const initialSortGrouping =
+      pivotState?.active ? pivotState.rowGrouping : this.config.rowGrouping;
+
     this.sortManager = new SortManager({
       headers: this.headers,
-      tableRows: this.localRows,
+      tableRows: initialSortRows,
       externalSortHandling: this.config.externalSortHandling || false,
       // Read from live config at invocation time so callback props updated via
       // update() (e.g. a React re-render with a fresh closure) aren't stale.
       onSortChange: (sort) => this.config.onSortChange?.(sort),
-      rowGrouping: this.config.rowGrouping,
+      rowGrouping: initialSortGrouping,
       initialSortColumn: this.config.initialSortColumn,
       initialSortDirection: this.config.initialSortDirection,
       announce,
     });
 
-    this.sortManager.subscribe((state) => {
+    this.sortManager.subscribe(() => {
       if (this.suppressNextAnimationSnapshot) {
         // Live-driven reorder: skip FLIP play so we don't thrash retained cells
         // or interrupt a user-initiated sort animation.
@@ -547,18 +571,18 @@ export class SimpleTableVanilla {
       this.render("sortManager");
     });
 
+    // Filters always run against source rows / field catalog. Pivot reshapes
+    // the filtered result before sort + render.
     this.filterManager = new FilterManager({
       rows: this.localRows,
-      headers: this.headers,
+      headers: this.pristineDefaultHeaders,
       externalFilterHandling: this.config.externalFilterHandling || false,
       onFilterChange: (filters) => this.config.onFilterChange?.(filters),
       announce,
     });
 
     this.filterManager.subscribe((filterState) => {
-      if (this.sortManager) {
-        this.sortManager.updateConfig({ tableRows: filterState.filteredRows });
-      }
+      this.syncPivotPipeline(filterState.filteredRows);
       this.render("filterManager");
     });
 
@@ -1153,17 +1177,100 @@ export class SimpleTableVanilla {
     }
   }
 
+  /** Row grouping used for flatten/expand while pivot is active (overrides consumer). */
+  private getEffectiveRowGrouping(): Accessor[] | undefined {
+    const pivotState = this.pivotManager?.getState();
+    if (pivotState?.active) {
+      return pivotState.rowGrouping;
+    }
+    return this.config.rowGrouping;
+  }
+
+  /**
+   * Recompute pivot from filtered source rows and feed sort/selection managers.
+   * When pivot is inactive, sort sees the filtered source rows directly.
+   */
+  private syncPivotPipeline(filteredSourceRows?: Row[]): void {
+    if (!this.pivotManager) return;
+
+    const sourceRows =
+      filteredSourceRows ?? this.filterManager?.getFilteredRows() ?? this.localRows;
+    const wasActive = this.pivotManager.isActive();
+
+    this.pivotManager.updateConfig({
+      sourceRows,
+      fieldHeaders: this.pristineDefaultHeaders,
+      pivot: this.config.pivot ?? null,
+    });
+
+    const state = this.pivotManager.getState();
+
+    if (state.active) {
+      this.headers = state.headers;
+      this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
+      this.sortManager?.updateConfig({
+        tableRows: state.pivotedRows,
+        headers: state.headers,
+        rowGrouping: state.rowGrouping,
+      });
+      this.selectionManager?.updateConfig({ headers: state.headers });
+      if (!wasActive) {
+        this.expandedDepthsManager?.updateRowGrouping(state.rowGrouping);
+        this.collapsedHeaders = TableInitializer.getInitialCollapsedHeaders(state.headers);
+      } else {
+        this.expandedDepthsManager?.updateRowGrouping(state.rowGrouping);
+      }
+      if (this.dimensionManager) {
+        const effectiveHeaders = this.renderOrchestrator.computeEffectiveHeaders(
+          this.headers,
+          this.config,
+          this.customTheme,
+        );
+        this.dimensionManager.updateConfig({ effectiveHeaders });
+      }
+    } else {
+      if (wasActive) {
+        this.headers = deepClone(this.pristineDefaultHeaders);
+        this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
+        this.collapsedHeaders = TableInitializer.getInitialCollapsedHeaders(this.headers);
+        this.expandedDepthsManager?.updateRowGrouping(this.config.rowGrouping);
+        if (this.dimensionManager) {
+          const effectiveHeaders = this.renderOrchestrator.computeEffectiveHeaders(
+            this.headers,
+            this.config,
+            this.customTheme,
+          );
+          this.dimensionManager.updateConfig({ effectiveHeaders });
+        }
+      }
+      this.sortManager?.updateConfig({
+        tableRows: sourceRows,
+        headers: this.headers,
+        rowGrouping: this.config.rowGrouping,
+      });
+      this.selectionManager?.updateConfig({ headers: this.headers });
+    }
+  }
+
   private getRenderContext(): RenderContext {
     const refs = this.domManager.getRefs();
+    const pivotState = this.pivotManager?.getState();
+    const effectiveConfig =
+      pivotState?.active
+        ? { ...this.config, rowGrouping: pivotState.rowGrouping }
+        : this.config;
+    const effectiveLocalRows =
+      pivotState?.active ? pivotState.pivotedRows : this.localRows;
+
     return {
       accordionAxis: this.pendingAccordionAxis,
-      config: this.config,
+      config: effectiveConfig,
       customTheme: this.customTheme,
       resolvedIcons: this.resolvedIcons,
       effectiveHeaders: [],
       essentialAccessors: this.essentialAccessors,
       headers: this.headers,
-      localRows: this.localRows,
+      localRows: effectiveLocalRows,
       collapsedHeaders: this.collapsedHeaders,
       collapsedRows: this.collapsedRows,
       expandedRows: this.expandedRows,
@@ -1679,13 +1786,18 @@ export class SimpleTableVanilla {
       if (this.filterManager) {
         this.filterManager.updateConfig({ rows: this.localRows });
       }
-      if (this.sortManager) {
-        this.sortManager.updateConfig({ tableRows: this.localRows });
-      }
+      // Pivot + sort are synced from filtered source rows (filter subscribe also
+      // fires when rows change if FilterManager notifies; call explicitly too).
+      this.syncPivotPipeline(this.filterManager?.getFilteredRows() ?? this.localRows);
       // SelectionManager will be updated with processed rows during render
 
       // Re-fit auto-size columns against the new data (content width may change).
       this.autoSizeAccessors.forEach((accessor) => this.pendingAutoSize.add(accessor));
+    }
+
+    if (config.pivot !== undefined && config.rows === undefined) {
+      // Rows update already synced the pipeline; pivot-only updates recompute here.
+      this.syncPivotPipeline(this.filterManager?.getFilteredRows() ?? this.localRows);
     }
 
     if (config.rows !== undefined || config.totalRowCount !== undefined) {
@@ -1711,36 +1823,35 @@ export class SimpleTableVanilla {
       // a fresh defaultHeaders tree with stale widths, which would replace
       // this.headers, clear naturalWidths, and fight the in-progress resize.
       this.captureAnimationSnapshot();
-      this.headers = [...config.defaultHeaders];
       this.pristineDefaultHeaders = deepClone(config.defaultHeaders);
-      this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
+      // Field catalog drives filters; visible headers come from pivot when active.
+      if (this.filterManager) {
+        this.filterManager.updateConfig({ headers: this.pristineDefaultHeaders });
+      }
+      if (this.pivotManager?.isActive()) {
+        this.syncPivotPipeline(this.filterManager?.getFilteredRows() ?? this.localRows);
+      } else {
+        this.headers = [...config.defaultHeaders];
+        this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
+        if (this.sortManager) {
+          this.sortManager.updateConfig({ headers: this.headers });
+        }
+        if (this.selectionManager) {
+          this.selectionManager.updateConfig({ headers: this.headers });
+        }
+        if (this.dimensionManager) {
+          const effectiveHeaders = this.renderOrchestrator.computeEffectiveHeaders(
+            this.headers,
+            this.config,
+            this.customTheme,
+          );
+          this.dimensionManager.updateConfig({ effectiveHeaders });
+        }
+      }
       this.autoSizeAccessors = this.computeAutoSizeAccessors();
       this.pendingAutoSize = new Set(this.autoSizeAccessors);
       // New column definitions supersede measured / user-set natural widths.
       this.naturalWidths.clear();
-
-      if (this.filterManager) {
-        this.filterManager.updateConfig({ headers: this.headers });
-      }
-      if (this.sortManager) {
-        this.sortManager.updateConfig({ headers: this.headers });
-      }
-      if (this.selectionManager) {
-        this.selectionManager.updateConfig({ headers: this.headers });
-      }
-      // Recompute header depth/height for the new columns. Without this, a
-      // table that mounted with an empty `defaultHeaders` keeps the
-      // DimensionManager's maxHeaderDepth/calculatedHeaderHeight at 0, so the
-      // header band renders at 0px (the header row never appears) even though
-      // the columns and body now exist.
-      if (this.dimensionManager) {
-        const effectiveHeaders = this.renderOrchestrator.computeEffectiveHeaders(
-          this.headers,
-          this.config,
-          this.customTheme,
-        );
-        this.dimensionManager.updateConfig({ effectiveHeaders });
-      }
     }
 
     if (config.isLoading !== undefined) {
@@ -1953,6 +2064,8 @@ export class SimpleTableVanilla {
     this.sectionScrollController?.destroy();
     this.sortManager?.destroy();
     this.filterManager?.destroy();
+    this.pivotManager?.destroy();
+    this.pivotManager = null;
     this.rowSelectionManager?.destroy();
     this.selectionManager?.destroy();
     this.autoScaleManager?.destroy();
@@ -2064,6 +2177,26 @@ export class SimpleTableVanilla {
       },
       get filterManager() {
         return thiz.filterManager;
+      },
+      getEffectiveRowGrouping: () => this.getEffectiveRowGrouping(),
+      setPivot: (pivotConfig: PivotConfig | null) => {
+        this.config = { ...this.config, pivot: pivotConfig };
+        this.syncPivotPipeline(this.filterManager?.getFilteredRows() ?? this.localRows);
+        this.config.onPivotChange?.(pivotConfig);
+        this.renderOrchestrator.invalidateCache("header");
+        this.renderOrchestrator.invalidateCache("body");
+        this.render("setPivot");
+      },
+      getPivot: () => this.pivotManager?.getPivot() ?? this.config.pivot ?? null,
+      getPivotHeaders: () => {
+        const state = this.pivotManager?.getState();
+        if (state?.active) return state.headers;
+        return this.headers;
+      },
+      getPivotedRows: () => {
+        const state = this.pivotManager?.getState();
+        if (state?.active) return state.pivotedRows;
+        return this.localRows;
       },
       onRender: () => this.render("columnEditor-onRender"),
       invalidateRowsCache: () => {

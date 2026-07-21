@@ -280,7 +280,7 @@ export const generateRowId = (params: GenerateRowIdParams): (string | number)[] 
   // Start with the full row path (already contains indices and grouping keys)
   const result: (string | number)[] = [...rowPath];
 
-  // If custom getRowId is provided, append its value to the path
+  // If custom getRowId is provided, append its value to the path (skip nullish).
   if (getRowId) {
     const customId = getRowId({
       row: params.row,
@@ -290,7 +290,9 @@ export const generateRowId = (params: GenerateRowIdParams): (string | number)[] 
       rowIndexPath: params.rowIndexPath,
       groupingKey: params.groupingKey,
     });
-    result.push(customId);
+    if (customId !== undefined && customId !== null && customId !== "") {
+      result.push(customId);
+    }
   }
 
   return result;
@@ -360,18 +362,22 @@ export const generateStableRowKey = (params: {
 }): string => {
   const { getRowId } = params;
 
-  const baseKey = getRowId
-    ? String(
-        getRowId({
-          row: params.row,
-          depth: params.depth,
-          index: params.index,
-          rowPath: params.rowPath,
-          rowIndexPath: params.rowIndexPath,
-          groupingKey: params.groupingKey,
-        }),
-      )
-    : getFallbackStableKey(params.row);
+  const customId = getRowId
+    ? getRowId({
+        row: params.row,
+        depth: params.depth,
+        index: params.index,
+        rowPath: params.rowPath,
+        rowIndexPath: params.rowIndexPath,
+        groupingKey: params.groupingKey,
+      })
+    : undefined;
+
+  // Nullish / empty custom ids must not become the shared key "undefined".
+  const baseKey =
+    customId !== undefined && customId !== null && customId !== ""
+      ? String(customId)
+      : getFallbackStableKey(params.row);
 
   const parts: string[] = [];
   if (params.parentStableKey) parts.push(params.parentStableKey);

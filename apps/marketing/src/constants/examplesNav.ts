@@ -1,5 +1,6 @@
 import {
   faChartLine,
+  faChartPie,
   faIndustry,
   faUsers,
   faFileInvoiceDollar,
@@ -44,4 +45,5 @@ export const EXAMPLE_NAV_ITEMS: ExampleNavItem[] = [
   },
   { id: "hr", label: "HR", path: "/examples/hr", icon: faUsers },
   { id: "sales", label: "Sales", path: "/examples/sales", icon: faChartLine },
+  { id: "analytics", label: "Analytics", path: "/examples/analytics", icon: faChartPie },
 ];

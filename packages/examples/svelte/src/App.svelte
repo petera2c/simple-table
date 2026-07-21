@@ -29,6 +29,7 @@
     "quick-filter": () => import("./demos/quick-filter/QuickFilterDemo.svelte"),
     "nested-headers": () => import("./demos/nested-headers/NestedHeadersDemo.svelte"),
     "aggregate-functions": () => import("./demos/aggregate-functions/AggregateFunctionsDemo.svelte"),
+  "pivot": () => import("./demos/pivot/PivotDemo.svelte"),
     "collapsible-columns": () => import("./demos/collapsible-columns/CollapsibleColumnsDemo.svelte"),
     "external-sort": () => import("./demos/external-sort/ExternalSortDemo.svelte"),
     "external-filter": () => import("./demos/external-filter/ExternalFilterDemo.svelte"),
@@ -62,6 +63,7 @@
     "manufacturing": () => import("./demos/manufacturing/ManufacturingDemo.svelte"),
     "hr": () => import("./demos/hr/HRDemo.svelte"),
     "sales": () => import("./demos/sales/SalesDemo.svelte"),
+    "analytics": () => import("./demos/analytics/AnalyticsDemo.svelte"),
   };
 
   let loader = $derived(registry[activeDemo]);
