@@ -10,6 +10,7 @@
     "open-browser": "open http://localhost:3000",
     "postinstall": "pnpm run generate-all-data",
     "build": "next build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "analyze": "ANALYZE=true next build --webpack",
     "start": "next start",
     "lint": "eslint .",

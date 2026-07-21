@@ -5,7 +5,9 @@ import type {
   HeaderObject,
   Row,
   TableAPI,
+  CellRenderer,
   CellRendererProps,
+  HeaderRenderer,
   HeaderRendererProps,
   FooterRendererProps,
   LoadingStateRendererProps,
@@ -34,8 +36,9 @@ export interface TableInstance {
  * input contract for each slot remains the matching `*RendererProps` type from
  * `simple-table-core` (re-exported below).
  */
-export type AngularCellRenderer = Type<unknown>;
-export type AngularHeaderRenderer = Type<unknown>;
+/** Angular component class, or a core vanilla renderer (non-`ɵcmp` values pass through). */
+export type AngularCellRenderer = Type<unknown> | CellRenderer;
+export type AngularHeaderRenderer = Type<unknown> | HeaderRenderer;
 export type AngularFooterRenderer = Type<unknown>;
 export type AngularHeaderDropdown = Type<unknown>;
 export type AngularColumnEditorRowRenderer = Type<unknown>;
@@ -65,8 +68,10 @@ export interface AngularIconsConfig {
 }
 
 // ─── Column editor config override ───────────────────────────────────────────
-export interface AngularColumnEditorConfig
-  extends Omit<ColumnEditorConfig, "rowRenderer" | "customRenderer"> {
+export interface AngularColumnEditorConfig extends Omit<
+  ColumnEditorConfig,
+  "rowRenderer" | "customRenderer"
+> {
   rowRenderer?: AngularColumnEditorRowRenderer;
   customRenderer?: AngularColumnEditorCustomRenderer;
 }
@@ -77,8 +82,10 @@ export interface AngularColumnEditorConfig
  * Angular-only renderer fields. `columns` / `defaultHeaders` also accept plain
  * `HeaderObject[]` from shared configs.
  */
-export interface AngularHeaderObject
-  extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
+export interface AngularHeaderObject extends Omit<
+  HeaderObject,
+  "cellRenderer" | "headerRenderer" | "children" | "nestedTable"
+> {
   cellRenderer?: AngularCellRenderer;
   headerRenderer?: AngularHeaderRenderer;
   children?: AngularHeaderObject[];
@@ -101,26 +108,25 @@ export type AngularColumnDef = AngularHeaderObject;
 //
 //   Overridden to Angular equivalents:
 //     - columns / defaultHeaders → ReadonlyArray<HeaderObject | AngularHeaderObject>
-export interface SimpleTableAngularProps
-  extends Omit<
-    SimpleTableProps,
-    | "rows"
-    | "defaultHeaders"
-    | "columns"
-    | "footerRenderer"
-    | "emptyStateRenderer"
-    | "errorStateRenderer"
-    | "loadingStateRenderer"
-    | "tableEmptyStateRenderer"
-    | "headerDropdown"
-    | "columnEditorConfig"
-    | "icons"
-    | "rowButtons"
-    | "onColumnOrderChange"
-    | "onColumnWidthChange"
-    | "onHeaderEdit"
-    | "onColumnSelect"
-  > {
+export interface SimpleTableAngularProps extends Omit<
+  SimpleTableProps,
+  | "rows"
+  | "defaultHeaders"
+  | "columns"
+  | "footerRenderer"
+  | "emptyStateRenderer"
+  | "errorStateRenderer"
+  | "loadingStateRenderer"
+  | "tableEmptyStateRenderer"
+  | "headerDropdown"
+  | "columnEditorConfig"
+  | "icons"
+  | "rowButtons"
+  | "onColumnOrderChange"
+  | "onColumnWidthChange"
+  | "onHeaderEdit"
+  | "onColumnSelect"
+> {
   /**
    * Column definitions.
    * @deprecated Prefer {@link columns}

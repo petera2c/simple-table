@@ -35,6 +35,7 @@
     "generate-stackblitz:test": "node scripts/generate-stackblitz.mjs --demos quick-start,live-update,crm",
     "start:core": "turbo run start --filter=simple-table-core",
     "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
     "heroku-postbuild": "pnpm run build:marketing"
   },
   "devDependencies": {

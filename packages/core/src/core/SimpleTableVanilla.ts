@@ -71,7 +71,8 @@ import "../styles/all-themes.css";
  */
 const isDevEnvironment = (): boolean => {
   try {
-    return typeof process !== "undefined" && !!process.env && process.env.NODE_ENV !== "production";
+    const proc = (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process;
+    return !!proc?.env && proc.env.NODE_ENV !== "production";
   } catch {
     return false;
   }

@@ -5,7 +5,9 @@ import type {
   HeaderObject,
   Row,
   TableAPI,
+  CellRenderer,
   CellRendererProps,
+  HeaderRenderer,
   HeaderRendererProps,
   FooterRendererProps,
   LoadingStateRendererProps,
@@ -27,9 +29,9 @@ export interface TableInstance {
 }
 
 // ─── Renderer overrides ───────────────────────────────────────────────────────
-// Svelte components are typed as Component<Props> from 'svelte'.
-export type SvelteCellRenderer = Component<CellRendererProps>;
-export type SvelteHeaderRenderer = Component<HeaderRendererProps>;
+// Svelte components or core vanilla renderers (arity-1 functions pass through at runtime).
+export type SvelteCellRenderer = Component<CellRendererProps> | CellRenderer;
+export type SvelteHeaderRenderer = Component<HeaderRendererProps> | HeaderRenderer;
 export type SvelteFooterRenderer = Component<FooterRendererProps>;
 export type SvelteHeaderDropdown = Component<HeaderDropdownProps>;
 export type SvelteColumnEditorRowRenderer = Component<ColumnEditorRowRendererProps>;
@@ -37,9 +39,7 @@ export type SvelteColumnEditorCustomRenderer = Component<ColumnEditorCustomRende
 // Per-row action buttons. Each entry is a Svelte component receiving RowButtonProps.
 export type SvelteRowButton = Component<RowButtonProps>;
 
-// State renderers are always components (Svelte has no static "node" concept
-// outside of a component — consumers wanting static markup should use a wrapper
-// component or supply an HTMLElement via the vanilla API directly).
+// State renderers: Svelte components (static markup via a wrapper component or HTMLElement).
 export type SvelteLoadingStateRenderer = Component<LoadingStateRendererProps>;
 export type SvelteErrorStateRenderer = Component<ErrorStateRendererProps>;
 export type SvelteEmptyStateRenderer = Component<EmptyStateRendererProps>;
@@ -62,8 +62,10 @@ export interface SvelteIconsConfig {
 }
 
 // ─── Column editor config override ───────────────────────────────────────────
-export interface SvelteColumnEditorConfig
-  extends Omit<ColumnEditorConfig, "rowRenderer" | "customRenderer"> {
+export interface SvelteColumnEditorConfig extends Omit<
+  ColumnEditorConfig,
+  "rowRenderer" | "customRenderer"
+> {
   rowRenderer?: SvelteColumnEditorRowRenderer;
   customRenderer?: SvelteColumnEditorCustomRenderer;
 }
@@ -74,8 +76,10 @@ export interface SvelteColumnEditorConfig
  * Svelte-only renderer fields. `columns` / `defaultHeaders` also accept plain
  * `HeaderObject[]` from shared configs.
  */
-export interface SvelteHeaderObject
-  extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
+export interface SvelteHeaderObject extends Omit<
+  HeaderObject,
+  "cellRenderer" | "headerRenderer" | "children" | "nestedTable"
+> {
   cellRenderer?: SvelteCellRenderer;
   headerRenderer?: SvelteHeaderRenderer;
   children?: SvelteHeaderObject[];
@@ -98,26 +102,25 @@ export type SvelteColumnDef = SvelteHeaderObject;
 //
 //   Overridden to Svelte equivalents:
 //     - columns / defaultHeaders → ReadonlyArray<HeaderObject | SvelteHeaderObject>
-export interface SimpleTableSvelteProps
-  extends Omit<
-    SimpleTableProps,
-    | "rows"
-    | "defaultHeaders"
-    | "columns"
-    | "footerRenderer"
-    | "emptyStateRenderer"
-    | "errorStateRenderer"
-    | "loadingStateRenderer"
-    | "tableEmptyStateRenderer"
-    | "headerDropdown"
-    | "columnEditorConfig"
-    | "icons"
-    | "rowButtons"
-    | "onColumnOrderChange"
-    | "onColumnWidthChange"
-    | "onHeaderEdit"
-    | "onColumnSelect"
-  > {
+export interface SimpleTableSvelteProps extends Omit<
+  SimpleTableProps,
+  | "rows"
+  | "defaultHeaders"
+  | "columns"
+  | "footerRenderer"
+  | "emptyStateRenderer"
+  | "errorStateRenderer"
+  | "loadingStateRenderer"
+  | "tableEmptyStateRenderer"
+  | "headerDropdown"
+  | "columnEditorConfig"
+  | "icons"
+  | "rowButtons"
+  | "onColumnOrderChange"
+  | "onColumnWidthChange"
+  | "onHeaderEdit"
+  | "onColumnSelect"
+> {
   /**
    * Column definitions.
    * @deprecated Prefer {@link columns}

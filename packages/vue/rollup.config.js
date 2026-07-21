@@ -75,10 +75,10 @@ export default {
       tsconfig: "tsconfig.build.json",
       exclude: ["node_modules/**"],
       clean: true,
-      // rpt2 forces importHelpers:true, which requires a resolvable `tslib`
-      // during typecheck. We do not depend on tslib; emit still inlines helpers
-      // via rpt2's own nested copy. Rely on IDE / tsc for typechecking.
-      check: false,
+      // rpt2 forces importHelpers:true; tslib is a devDependency so typecheck
+      // works. Emit still inlines helpers — consumers do not need tslib.
+      // Watch aliases core source; typechecking that graph is brittle.
+      check: !isDev,
       useTsconfigDeclarationDir: !isDev,
       tsconfigOverride: {
         compilerOptions: {
