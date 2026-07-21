@@ -82,29 +82,40 @@ export default function AnalyticsExample({
           flexShrink: 0,
         }}
       >
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-          {analyticsPresets.map((preset) => {
-            const selected = preset.id === activeId;
-            return (
-              <button
-                key={preset.id}
-                type="button"
-                onClick={() => setActiveId(preset.id)}
-                style={{
-                  padding: "7px 12px",
-                  borderRadius: 6,
-                  border: "none",
-                  cursor: "pointer",
-                  fontSize: 13,
-                  fontWeight: 550,
-                  background: selected ? chipActiveBg : chipIdleBg,
-                  color: selected ? "#fff" : chipIdleColor,
-                }}
-              >
-                {preset.label}
-              </button>
-            );
-          })}
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 8,
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+            {analyticsPresets.map((preset) => {
+              const selected = preset.id === activeId;
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => setActiveId(preset.id)}
+                  style={{
+                    padding: "7px 12px",
+                    borderRadius: 6,
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: 13,
+                    fontWeight: 550,
+                    background: selected ? chipActiveBg : chipIdleBg,
+                    color: selected ? "#fff" : chipIdleColor,
+                  }}
+                >
+                  {preset.label}
+                </button>
+              );
+            })}
+          </div>
           <button
             type="button"
             onClick={() => tableRef.current?.exportToCSV()}

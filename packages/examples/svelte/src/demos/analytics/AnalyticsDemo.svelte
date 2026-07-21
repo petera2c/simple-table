@@ -38,19 +38,23 @@
         Revenue Analytics
       </h2>
     </div>
-    <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
-      {#each analyticsPresets as preset}
-        <button
-          type="button"
-          onclick={() => (activeId = preset.id)}
-          style="padding: 7px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 550; background: {preset.id ===
-          activeId
-            ? '#2563eb'
-            : chipIdleBg}; color: {preset.id === activeId ? '#fff' : chipIdleColor}"
-        >
-          {preset.label}
-        </button>
-      {/each}
+    <div
+      style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; width: 100%"
+    >
+      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+        {#each analyticsPresets as preset}
+          <button
+            type="button"
+            onclick={() => (activeId = preset.id)}
+            style="padding: 7px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 550; background: {preset.id ===
+            activeId
+              ? '#2563eb'
+              : chipIdleBg}; color: {preset.id === activeId ? '#fff' : chipIdleColor}"
+          >
+            {preset.label}
+          </button>
+        {/each}
+      </div>
       <button
         type="button"
         onclick={() => tableRef?.getAPI()?.exportToCSV()}

@@ -39,6 +39,10 @@ export function renderAnalyticsDemo(
   title.textContent = "Revenue Analytics";
   title.style.cssText = `margin:0;font-size:18px;font-weight:650;color:${titleColor};letter-spacing:-0.02em`;
 
+  const toolbar = document.createElement("div");
+  toolbar.style.cssText =
+    "display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;width:100%";
+
   const buttons = document.createElement("div");
   buttons.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;align-items:center";
 
@@ -104,12 +108,12 @@ export function renderAnalyticsDemo(
       });
       buttons.appendChild(btn);
     }
-    buttons.appendChild(exportBtn);
   };
 
   paint();
   titleBlock.append(title);
-  chrome.append(titleBlock, buttons);
+  toolbar.append(buttons, exportBtn);
+  chrome.append(titleBlock, toolbar);
   root.append(chrome, tablePad);
   container.replaceChildren(root);
   remountTable();

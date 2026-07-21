@@ -31,25 +31,29 @@
           Revenue Analytics
         </h2>
       </div>
-      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
-        <button
-          v-for="preset in analyticsPresets"
-          :key="preset.id"
-          type="button"
-          @click="activeId = preset.id"
-          :style="{
-            padding: '7px 12px',
-            borderRadius: '6px',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: '13px',
-            fontWeight: 550,
-            background: preset.id === activeId ? '#2563eb' : chipIdleBg,
-            color: preset.id === activeId ? '#fff' : chipIdleColor,
-          }"
-        >
-          {{ preset.label }}
-        </button>
+      <div
+        style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; width: 100%"
+      >
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+          <button
+            v-for="preset in analyticsPresets"
+            :key="preset.id"
+            type="button"
+            @click="activeId = preset.id"
+            :style="{
+              padding: '7px 12px',
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 550,
+              background: preset.id === activeId ? '#2563eb' : chipIdleBg,
+              color: preset.id === activeId ? '#fff' : chipIdleColor,
+            }"
+          >
+            {{ preset.label }}
+          </button>
+        </div>
         <button
           type="button"
           @click="exportCsv"

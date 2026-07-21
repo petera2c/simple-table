@@ -39,23 +39,27 @@ import "@simple-table/angular/styles.css";
             Revenue Analytics
           </h2>
         </div>
-        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
-          @for (preset of presets; track preset.id) {
-            <button
-              type="button"
-              (click)="selectPreset(preset)"
-              [style.padding]="'7px 12px'"
-              [style.borderRadius]="'6px'"
-              [style.border]="'none'"
-              [style.cursor]="'pointer'"
-              [style.fontSize]="'13px'"
-              [style.fontWeight]="550"
-              [style.background]="preset.id === activeId ? '#2563eb' : chipIdleBg"
-              [style.color]="preset.id === activeId ? '#fff' : chipIdleColor"
-            >
-              {{ preset.label }}
-            </button>
-          }
+        <div
+          style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; width: 100%"
+        >
+          <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+            @for (preset of presets; track preset.id) {
+              <button
+                type="button"
+                (click)="selectPreset(preset)"
+                [style.padding]="'7px 12px'"
+                [style.borderRadius]="'6px'"
+                [style.border]="'none'"
+                [style.cursor]="'pointer'"
+                [style.fontSize]="'13px'"
+                [style.fontWeight]="550"
+                [style.background]="preset.id === activeId ? '#2563eb' : chipIdleBg"
+                [style.color]="preset.id === activeId ? '#fff' : chipIdleColor"
+              >
+                {{ preset.label }}
+              </button>
+            }
+          </div>
           <button
             type="button"
             (click)="exportCsv()"

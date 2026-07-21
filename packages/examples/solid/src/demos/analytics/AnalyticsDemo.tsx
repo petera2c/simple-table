@@ -82,30 +82,41 @@ export default function AnalyticsDemo(props: {
             Revenue Analytics
           </h2>
         </div>
-        <div style={{ display: "flex", "flex-wrap": "wrap", gap: "8px", "align-items": "center" }}>
-          <For each={analyticsPresets}>
-            {(preset) => {
-              const selected = () => preset.id === activeId();
-              return (
-                <button
-                  type="button"
-                  onClick={() => setActiveId(preset.id)}
-                  style={{
-                    padding: "7px 12px",
-                    "border-radius": "6px",
-                    border: "none",
-                    cursor: "pointer",
-                    "font-size": "13px",
-                    "font-weight": 550,
-                    background: selected() ? "#2563eb" : chipIdleBg(),
-                    color: selected() ? "#fff" : chipIdleColor(),
-                  }}
-                >
-                  {preset.label}
-                </button>
-              );
-            }}
-          </For>
+        <div
+          style={{
+            display: "flex",
+            "flex-wrap": "wrap",
+            gap: "8px",
+            "align-items": "center",
+            "justify-content": "space-between",
+            width: "100%",
+          }}
+        >
+          <div style={{ display: "flex", "flex-wrap": "wrap", gap: "8px", "align-items": "center" }}>
+            <For each={analyticsPresets}>
+              {(preset) => {
+                const selected = () => preset.id === activeId();
+                return (
+                  <button
+                    type="button"
+                    onClick={() => setActiveId(preset.id)}
+                    style={{
+                      padding: "7px 12px",
+                      "border-radius": "6px",
+                      border: "none",
+                      cursor: "pointer",
+                      "font-size": "13px",
+                      "font-weight": 550,
+                      background: selected() ? "#2563eb" : chipIdleBg(),
+                      color: selected() ? "#fff" : chipIdleColor(),
+                    }}
+                  >
+                    {preset.label}
+                  </button>
+                );
+              }}
+            </For>
+          </div>
           <button
             type="button"
             onClick={() => tableApi?.exportToCSV()}
