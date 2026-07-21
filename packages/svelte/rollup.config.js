@@ -103,19 +103,17 @@ export default {
       tsconfig: "tsconfig.build.json",
       exclude: ["node_modules/**", "**/*.svelte"],
       clean: true,
-      check: isDev,
+      // Watch aliases core source into this package; typechecking that graph
+      // here is brittle. Prod keeps core external — typecheck that graph.
+      check: !isDev,
       verbosity: isDev ? 3 : 0,
       useTsconfigDeclarationDir: !isDev,
       tsconfigOverride: {
         compilerOptions: {
           declaration: !isDev,
           declarationDir: isDev ? undefined : "dist/types",
-          ...(isDev
-            ? {
-                paths: { "simple-table-core": ["../core/src/index.ts"] },
-                verbatimModuleSyntax: false,
-              }
-            : {}),
+          rootDir: isDev ? ".." : "src",
+          ...(isDev ? { verbatimModuleSyntax: false } : {}),
         },
       },
     }),

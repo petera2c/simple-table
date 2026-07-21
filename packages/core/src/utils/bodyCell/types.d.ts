@@ -1,0 +1,170 @@
+import HeaderObject, { Accessor } from "../../types/HeaderObject";
+import CellValue from "../../types/CellValue";
+import { IconsConfig } from "../../types/IconsConfig";
+import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
+import type Row from "../../types/Row";
+import type TableRow from "../../types/TableRow";
+import type RowState from "../../types/RowState";
+import type { RowButton } from "../../types/RowButton";
+import type { CustomTheme } from "../../types/CustomTheme";
+import type { HeightOffsets } from "../infiniteScrollUtils";
+import type { AccordionAxis } from "../accordionAnimation";
+import type { VanillaEmptyStateRenderer, VanillaErrorStateRenderer, VanillaLoadingStateRenderer } from "../../types/RowStateRendererProps";
+import type { NestedTableFactory } from "../nestedGridRowRenderer";
+type SetStateAction<T> = T | ((prevState: T) => T);
+type Dispatch<A> = (value: A) => void;
+export interface AbsoluteBodyCell {
+    header: HeaderObject;
+    row: Row;
+    rowIndex: number;
+    colIndex: number;
+    rowId: string;
+    /**
+     * Position-independent stable key (mirror of `tableRow.stableRowKey`),
+     * used to compute the cell DOM `id` and the animation snapshot key when
+     * `getRowId` is provided. Falls back to `rowId` (positional) when absent.
+     */
+    stableRowKey?: string;
+    displayRowNumber: number;
+    depth: number;
+    isOdd: boolean;
+    tableRow: TableRow;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+}
+export interface CellData {
+    rowIndex: number;
+    colIndex: number;
+    rowId: string;
+}
+export interface CellEditParams {
+    accessor: Accessor;
+    newValue: CellValue;
+    row: Row;
+    rowIndex: number;
+}
+export interface CellClickParams {
+    accessor: Accessor;
+    colIndex: number;
+    row: Row;
+    rowIndex: number;
+    value: CellValue;
+}
+export interface CellRegistryEntry {
+    updateContent: (newValue: CellValue) => void;
+}
+export interface CellRenderContext {
+    collapsedHeaders: Set<Accessor>;
+    collapsedRows: Map<string, number>;
+    expandedRows: Map<string, number>;
+    expandedDepths: number[];
+    selectedColumns: Set<number>;
+    rowsWithSelectedCells: Set<string>;
+    columnBorders: boolean;
+    enableRowSelection?: boolean;
+    /** When true, clicking a data cell selects/toggles the row. */
+    selectRowOnClick?: boolean;
+    rowSelectionMode?: "single" | "multiple";
+    /** Used for context cache invalidation when row selection changes */
+    selectedRowCount?: number;
+    /** Keyboard active row id for focus styling */
+    activeRowId?: string | null;
+    cellUpdateFlash?: boolean;
+    useOddColumnBackground?: boolean;
+    useHoverRowBackground?: boolean;
+    /**
+     * Unique id for this table instance. Scopes the module-level row-hover cell
+     * map so multiple tables on one page with overlapping rowIds don't cross-hover.
+     */
+    hoverScopeId: string;
+    useOddEvenRowBackground?: boolean;
+    rowGrouping?: string[];
+    headers: HeaderObject[];
+    /**
+     * Accessor of the column whose body cells identify the row and should carry
+     * `role="rowheader"` (the first non-selection leaf column). Other data cells
+     * remain `role="gridcell"`.
+     */
+    rowHeaderAccessor?: Accessor;
+    rowHeight: number;
+    /** Number of header rows (for aria-rowindex: position + maxHeaderDepth + 1) */
+    maxHeaderDepth?: number;
+    heightOffsets?: HeightOffsets;
+    customTheme?: CustomTheme;
+    containerWidth?: number;
+    /**
+     * Main section *content* width (sum of all non-pinned column widths). Drives
+     * the body section / row-separator width so the body is as wide as its
+     * content and scrolls horizontally. NOT the virtualization viewport — use
+     * `mainSectionViewportWidth` for getVisibleBodyCells.
+     */
+    mainSectionContainerWidth?: number;
+    /**
+     * Main section *visible* viewport width (container minus pinned sections).
+     * Used by getVisibleBodyCells to decide which cells intersect the viewport
+     * (column virtualization). NOT the content width — using the content width
+     * here makes every column count as visible, disabling virtualization.
+     */
+    mainSectionViewportWidth?: number;
+    /**
+     * When false, skip column virtualization and render every body cell in the
+     * main section. Default true. Mirrors {@link SimpleTableProps.enableVirtualization}.
+     */
+    enableVirtualization?: boolean;
+    onCellEdit?: (params: CellEditParams) => void;
+    onCellClick?: (params: CellClickParams) => void;
+    onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>;
+    handleRowSelect?: (rowId: string, checked: boolean) => void;
+    /** Click-to-select / keyboard toggle entry point (mode-aware). */
+    handleToggleRow?: (rowId: string) => void;
+    handleMouseDown: (cell: CellData) => void;
+    handleMouseOver: (cell: CellData, clientX: number, clientY: number) => void;
+    /**
+     * Called immediately BEFORE the renderer permanently discards a host element
+     * (e.g. `innerHTML = ""` on cell rebuild/edit, or a plain `element.remove()`).
+     * Framework adapters use this to tear down any renderer subtree (React
+     * portal, etc.) mounted into `host` or one of its descendants. Reuse paths
+     * never call it, so a reused node keeps its content.
+     */
+    onRendererHostDiscard?: (host: HTMLElement) => void;
+    cellRegistry?: Map<string, CellRegistryEntry>;
+    setCollapsedRows: Dispatch<SetStateAction<Map<string, number>>>;
+    setExpandedRows: Dispatch<SetStateAction<Map<string, number>>>;
+    setRowStateMap: Dispatch<SetStateAction<Map<string | number, RowState>>>;
+    getCollapsedRows?: () => Map<string, number>;
+    getExpandedRows?: () => Map<string, number>;
+    icons: IconsConfig;
+    theme: string;
+    rowButtons?: RowButton[];
+    loadingStateRenderer?: VanillaLoadingStateRenderer;
+    errorStateRenderer?: VanillaErrorStateRenderer;
+    emptyStateRenderer?: VanillaEmptyStateRenderer;
+    /**
+     * Factory used to instantiate nested grid tables. Injected by the host table
+     * so {@link nestedGridRowRenderer} never has to import the concrete
+     * `SimpleTableVanilla` class (which would create a render-module import cycle).
+     */
+    createNestedTable?: NestedTableFactory;
+    getBorderClass: (cell: CellData) => string;
+    isSelected: (cell: CellData) => boolean;
+    isInitialFocusedCell: (cell: CellData) => boolean;
+    isCopyFlashing: (cell: CellData) => boolean;
+    isWarningFlashing: (cell: CellData) => boolean;
+    isRowSelected?: (rowId: string) => boolean;
+    canExpandRowGroup?: (row: Row) => boolean;
+    isLoading?: boolean;
+    pinned?: "left" | "right";
+    /** Pinned section viewport width (px); used for row separators so they match the section, not the full table. */
+    pinnedSectionWidthPx?: number;
+    /**
+     * When set, this render is the post-state pass of a row-grouping (vertical)
+     * or nested-column (horizontal) expand/collapse. Newly-created cells whose
+     * cellId has no entry in the animation snapshot start at zero size in the
+     * named axis so the CSS transition can grow them to their final size while
+     * sibling rows/cells FLIP into their new positions.
+     */
+    accordionAxis?: AccordionAxis;
+}
+export {};

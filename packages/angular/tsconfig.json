@@ -3,16 +3,10 @@
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2022", "dom"],
+    "moduleResolution": "bundler",
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
-    "noEmit": false,
-    "declaration": true,
-    "declarationDir": "dist/types",
-    "outDir": "dist",
-    "baseUrl": ".",
-    "paths": {
-      "simple-table-core": ["../core/src/index.ts"]
-    }
+    "noEmit": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "src/**/__tests__/**"]

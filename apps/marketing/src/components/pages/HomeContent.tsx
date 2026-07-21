@@ -23,23 +23,33 @@ import FrameworkIcon from "@/components/FrameworkIcon";
 import { DEFAULT_EXAMPLE_PATH } from "@/constants/global";
 import { mapWebsiteThemeToTableTheme } from "@/utils/themeMapper";
 
-// Dynamically import heavy components that are below the fold or conditional
+// Dynamically import heavy components that are below the fold or conditional.
+// `loading` is required with `ssr: true` so Next wraps React.lazy in Suspense;
+// without it, HMR/chunk reload can throw "async Client Component".
 const CodeBlock = dynamic(() => import("@/components/CodeBlock"), { ssr: false });
 const FeaturesSection = dynamic(() => import("@/components/sections/FeaturesSection"), {
   ssr: true,
+  loading: () => null,
 });
 const ProductionSection = dynamic(() => import("@/components/sections/ProductionSection"), {
   ssr: true,
+  loading: () => null,
 });
 const InstallationSection = dynamic(() => import("@/components/sections/InstallationSection"), {
   ssr: true,
+  loading: () => null,
 });
-const FAQSection = dynamic(() => import("@/components/sections/FAQSection"), { ssr: true });
+const FAQSection = dynamic(() => import("@/components/sections/FAQSection"), {
+  ssr: true,
+  loading: () => null,
+});
 const ComparisonsSection = dynamic(() => import("@/components/sections/ComparisonsSection"), {
   ssr: true,
+  loading: () => null,
 });
 const CaseStudySection = dynamic(() => import("@/components/sections/CaseStudySection"), {
   ssr: true,
+  loading: () => null,
 });
 
 export default function HomeContent() {

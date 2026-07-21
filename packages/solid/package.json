@@ -3,7 +3,7 @@
   "version": "4.0.1",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
-  "types": "dist/types/solid/src/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "scripts": {
     "build": "rollup -c",
     "preview": "rollup -c -w",
@@ -20,7 +20,7 @@
     ".": {
       "import": "./dist/index.es.js",
       "require": "./dist/cjs/index.js",
-      "types": "./dist/types/solid/src/index.d.ts"
+      "types": "./dist/types/index.d.ts"
     },
     "./styles.css": "./dist/styles.css"
   },
@@ -51,7 +51,7 @@
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.37.0",
     "solid-js": "^1.8.0",
-    "typescript": "^4.9.5",
+    "typescript": "^5.0.0",
     "vitest": "^2.1.9"
   },
   "description": "Solid.js adapter for simple-table-core — use the Simple Table data grid with full Solid component support for renderers.",

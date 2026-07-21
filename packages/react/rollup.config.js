@@ -93,15 +93,18 @@ export default {
     resolve(),
 
     typescript({
+      tsconfig: "tsconfig.build.json",
       exclude: ["node_modules/**", "src/**/__tests__/**"],
       clean: true,
-      check: isDev,
+      // Watch aliases core source into this package; typechecking that graph
+      // here is brittle. Prod keeps core external — typecheck that graph.
+      check: !isDev,
       useTsconfigDeclarationDir: !isDev,
       tsconfigOverride: {
         compilerOptions: {
           declaration: !isDev,
           declarationDir: isDev ? undefined : "dist/types",
-          ...(isDev ? {} : { paths: {} }),
+          rootDir: isDev ? ".." : "src",
         },
       },
     }),

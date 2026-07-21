@@ -11,7 +11,6 @@
     "resolveJsonModule": true,
     "noEmit": true,
     "types": ["node", "@playwright/test"],
-    "baseUrl": ".",
     "paths": {
       "simple-table-core": ["../../packages/core/src/index.ts"],
       "@simple-table/react": ["../../packages/react/src/index.ts"]
