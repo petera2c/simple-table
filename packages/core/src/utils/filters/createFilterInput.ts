@@ -34,7 +34,13 @@ export const createFilterInput = (options: CreateFilterInputOptions) => {
   if (step !== undefined) input.step = step;
 
   if (autoFocus) {
-    setTimeout(() => input.focus(), 0);
+    // Wait two frames so portaled filter dropdowns can finish their
+    // visibility:hidden → visible positioning pass before focusing.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        input.focus();
+      });
+    });
   }
 
   const handleInput = (e: Event) => {

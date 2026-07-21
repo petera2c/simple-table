@@ -96,7 +96,10 @@ export const createDropdown = (options: CreateDropdownOptions) => {
     dropdownElement.style.visibility = "hidden";
 
     const anchorEl = effectiveAnchor();
-    if (!anchorEl) return;
+    if (!anchorEl) {
+      dropdownElement.style.visibility = "visible";
+      return;
+    }
 
     requestAnimationFrame(() => {
       const anchorRect = anchorEl.getBoundingClientRect();
@@ -157,7 +160,10 @@ export const createDropdown = (options: CreateDropdownOptions) => {
         }
       } else {
         const positionParent = dropdownElement.parentElement;
-        if (!positionParent) return;
+        if (!positionParent) {
+          dropdownElement.style.visibility = "visible";
+          return;
+        }
         const pRect = positionParent.getBoundingClientRect();
 
         if (verticalPosition === "bottom") {
