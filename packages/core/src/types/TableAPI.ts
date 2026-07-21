@@ -7,6 +7,8 @@ import { TableFilterState, FilterCondition } from "./FilterTypes";
 import Cell from "./Cell";
 import type { PinnedSectionsState } from "./PinnedSectionsState";
 import type { PivotConfig } from "./PivotTypes";
+import type { ColumnVisibilityState } from "./ColumnVisibilityTypes";
+import type { RowId } from "./RowId";
 
 export interface SetHeaderRenameProps {
   accessor: Accessor;
@@ -46,7 +48,7 @@ export type TableAPI = {
   getGroupingProperty: (depth: number) => Accessor | undefined;
   getGroupingDepth: (property: Accessor) => number;
   toggleColumnEditor: (open?: boolean) => void;
-  applyColumnVisibility: (visibility: { [accessor: string]: boolean }) => Promise<void>;
+  applyColumnVisibility: (visibility: ColumnVisibilityState) => Promise<void>;
   /**
    * Reset columns to the configured definitions: default order, widths, and
    * visibility. All columns become visible again except those explicitly
@@ -59,15 +61,18 @@ export type TableAPI = {
   clearSelection: () => void;
   selectCell: (cell: Cell) => void;
   selectCellRange: (startCell: Cell, endCell: Cell) => void;
-  /** Selected row IDs when row selection is enabled. */
-  getSelectedRows: () => Set<string>;
+  /**
+   * Selected row IDs when row selection is enabled.
+   * Values are the string form of each row id (via `String` / `getRowId`).
+   */
+  getSelectedRows: () => Set<RowId>;
   /** Row data objects for currently selected rows (resolved from visible/current table rows). */
   getSelectedRowsData: () => Row[];
-  /** Look up a row by its string row id in the current table rows. */
-  getRow: (rowId: string) => Row | undefined;
-  selectRow: (rowId: string) => void;
-  deselectRow: (rowId: string) => void;
-  toggleRowSelection: (rowId: string) => void;
+  /** Look up a row by row id in the current table rows. */
+  getRow: (rowId: RowId) => Row | undefined;
+  selectRow: (rowId: RowId) => void;
+  deselectRow: (rowId: RowId) => void;
+  toggleRowSelection: (rowId: RowId) => void;
   /** Clears row selection only (does not clear cell selection). */
   clearRowSelection: () => void;
   /** Enable, update, or clear matrix pivot (`null` disables). */

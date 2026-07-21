@@ -79,8 +79,8 @@ const ProgrammaticControlDemo = ({
     const sortState = api.getSortState();
     const filterState = api.getFilterState();
     const totalValue = allRows.reduce((sum, r) => {
-      const row = r as Record<string, unknown>;
-      return sum + (Number(row.price) || 0) * (Number(row.stock) || 0);
+      const data = r.row as { price?: number; stock?: number };
+      return sum + (Number(data.price) || 0) * (Number(data.stock) || 0);
     }, 0);
     const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
     alert(

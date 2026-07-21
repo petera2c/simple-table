@@ -50,7 +50,10 @@
     const hdrs = api.getHeaders();
     const sortState = api.getSortState();
     const filterState = api.getFilterState();
-    const totalValue = allRows.reduce((sum: number, r: Record<string, unknown>) => sum + (r.price as number) * (r.stock as number), 0);
+    const totalValue = allRows.reduce(
+      (sum: number, r) => sum + (Number(r.row.price) || 0) * (Number(r.row.stock) || 0),
+      0,
+    );
     const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
     alert(
       `Table Info:\n• Rows: ${allRows.length}\n• Columns: ${hdrs.length}\n• Active filters: ${Object.keys(filterState).length}\n• Sort: ${sortInfo}\n• Total inventory value: $${totalValue.toFixed(2)}`,
