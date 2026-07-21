@@ -16,7 +16,7 @@ export class HrSalaryCellComponent {
     return this.row as unknown as HREmployee;
   }
 
-  get c(): Record<string, string> {
+  get c() {
     return getHRThemeColors(this.theme);
   }
 

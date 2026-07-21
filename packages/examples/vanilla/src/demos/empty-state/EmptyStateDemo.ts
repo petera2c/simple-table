@@ -8,7 +8,7 @@ export function renderEmptyStateDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: [...emptyStateConfig.headers],
+    columns: [...emptyStateConfig.headers],
     rows: emptyStateConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

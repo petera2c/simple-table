@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { VueHeaderObject } from "@simple-table/vue";
+import type { VueColumnDef } from "@simple-table/vue";
 
 export interface HREmployee {
   id: number;
@@ -55,16 +55,16 @@ export function generateHRData(count: number = 100): HREmployee[] {
 
 export const hrData = generateHRData(100);
 
-export const hrHeaders: VueHeaderObject[] = [
-  { accessor: "fullName", label: "Employee", width: 220, isSortable: true, isEditable: false, align: "left", pinned: "left", type: "string" },
+export const hrHeaders: VueColumnDef[] = [
+  { accessor: "fullName", label: "Employee", width: 220, sortable: true, editable: false, align: "left", pinned: "left", type: "string" },
   {
-    accessor: "performanceScore", label: "Performance", width: 160, isSortable: true, isEditable: true, align: "center", type: "number",
+    accessor: "performanceScore", label: "Performance", width: 160, sortable: true, editable: true, align: "center", type: "number",
     valueFormatter: ({ value }) => `${value}/100`,
     useFormattedValueForClipboard: true,
     exportValueGetter: ({ value }) => `${value}%`,
   },
   {
-    accessor: "department", label: "Department", width: 150, isSortable: true, isEditable: true, align: "left", type: "enum",
+    accessor: "department", label: "Department", width: 150, sortable: true, editable: true, align: "left", type: "enum",
     enumOptions: [
       { label: "Engineering", value: "Engineering" }, { label: "Marketing", value: "Marketing" },
       { label: "Sales", value: "Sales" }, { label: "Finance", value: "Finance" },
@@ -72,16 +72,16 @@ export const hrHeaders: VueHeaderObject[] = [
       { label: "Customer Support", value: "Customer Support" },
     ],
   },
-  { accessor: "email", label: "Email", width: "auto", minWidth: 180, isSortable: true, isEditable: true, align: "left", type: "string" },
+  { accessor: "email", label: "Email", width: "auto", minWidth: 180, sortable: true, editable: true, align: "left", type: "string" },
   {
-    accessor: "location", label: "Location", width: 130, isSortable: true, isEditable: true, align: "left", type: "enum",
+    accessor: "location", label: "Location", width: 130, sortable: true, editable: true, align: "left", type: "enum",
     enumOptions: LOCATIONS.map((l) => ({ label: l, value: l })),
   },
-  { accessor: "hireDate", label: "Hire Date", width: 120, isSortable: true, isEditable: true, align: "left", type: "date" },
-  { accessor: "yearsOfService", label: "Service", width: 100, isSortable: true, isEditable: false, align: "center", type: "number" },
-  { accessor: "salary", label: "Salary", width: 130, isSortable: true, isEditable: true, align: "right", type: "number", valueFormatter: ({ value }) => { if (typeof value !== "number") return ""; return `$${value.toLocaleString()}`; }, useFormattedValueForClipboard: true, useFormattedValueForCSV: true },
+  { accessor: "hireDate", label: "Hire Date", width: 120, sortable: true, editable: true, align: "left", type: "date" },
+  { accessor: "yearsOfService", label: "Service", width: 100, sortable: true, editable: false, align: "center", type: "number" },
+  { accessor: "salary", label: "Salary", width: 130, sortable: true, editable: true, align: "right", type: "number", valueFormatter: ({ value }) => { if (typeof value !== "number") return ""; return `$${value.toLocaleString()}`; }, useFormattedValueForClipboard: true, useFormattedValueForCSV: true },
   {
-    accessor: "status", label: "Status", width: 120, isSortable: true, isEditable: true, align: "center", pinned: "right", type: "enum",
+    accessor: "status", label: "Status", width: 120, sortable: true, editable: true, align: "center", pinned: "right", type: "enum",
     enumOptions: [
       { label: "Active", value: "Active" }, { label: "On Leave", value: "On Leave" },
       { label: "Probation", value: "Probation" }, { label: "Contract", value: "Contract" },
@@ -92,7 +92,7 @@ export const hrHeaders: VueHeaderObject[] = [
       return priorityMap[String(row.status)] || 999;
     },
   },
-  { accessor: "isRemoteEligible", label: "Remote Eligible", width: 140, isSortable: true, isEditable: true, align: "center", type: "boolean" },
+  { accessor: "isRemoteEligible", label: "Remote Eligible", width: 140, sortable: true, editable: true, align: "center", type: "boolean" },
 ];
 
 export function getHRThemeColors(theme?: string) {

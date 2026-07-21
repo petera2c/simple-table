@@ -1,6 +1,6 @@
 // Self-contained demo table setup for this example.
 import type { Row } from "@simple-table/svelte";
-import type { SvelteHeaderObject } from "@simple-table/svelte";
+import type { SvelteColumnDef } from "@simple-table/svelte";
 
 
 export const QUICK_START_DATA: Row[] = [
@@ -103,27 +103,27 @@ export const QUICK_START_DATA: Row[] = [
 ];
 
 
-export const quickStartHeaders: SvelteHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
+export const quickStartHeaders: SvelteColumnDef[] = [
+  { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   {
     accessor: "name",
     label: "Name",
     minWidth: 80,
     width: "1fr",
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
-  { accessor: "age", label: "Age", width: 100, isSortable: true, type: "number" },
-  { accessor: "role", label: "Role", width: 150, isSortable: true, type: "string" },
-  { accessor: "department", label: "Department", width: 150, isSortable: true, type: "string" },
-  { accessor: "startDate", label: "Start Date", width: 150, isSortable: true, type: "date" },
+  { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },
+  { accessor: "role", label: "Role", width: 150, sortable: true, type: "string" },
+  { accessor: "department", label: "Department", width: 150, sortable: true, type: "string" },
+  { accessor: "startDate", label: "Start Date", width: 150, sortable: true, type: "date" },
 ];
 
 export const quickStartConfig = {
   headers: quickStartHeaders,
   rows: QUICK_START_DATA,
   tableProps: {
-    editColumns: true,
+    enableColumnEditor: true,
     selectableCells: true,
     customTheme: { rowHeight: 32 },
   },

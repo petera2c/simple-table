@@ -1,7 +1,7 @@
 <template>
   <SimpleTable
     :auto-expand-columns="nestedTablesConfig.tableProps.autoExpandColumns"
-    :default-headers="nestedTablesConfig.headers"
+    :columns="nestedTablesConfig.headers"
     :rows="sampleData"
     :row-grouping="nestedTablesConfig.tableProps.rowGrouping"
     :get-row-id="nestedTablesConfig.tableProps.getRowId"

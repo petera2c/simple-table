@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteHeaderObject } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef } from "@simple-table/svelte";
   import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
   import "@simple-table/svelte/styles.css";
 
@@ -8,7 +8,7 @@
 
   let tableRef: any;
 
-  const headers: SvelteHeaderObject[] = csvExportHeaders.map((h) => {
+  const headers: SvelteColumnDef[] = csvExportHeaders.map((h) => {
     if (h.accessor === "actions") {
       return {
         ...h,
@@ -42,9 +42,9 @@
   </div>
   <SimpleTable
     bind:this={tableRef}
-    defaultHeaders={headers}
+    columns={headers}
     rows={csvExportData}
-    editColumns={csvExportConfig.tableProps.editColumns}
+    enableColumnEditor={csvExportConfig.tableProps.enableColumnEditor}
     selectableCells={csvExportConfig.tableProps.selectableCells}
     customTheme={csvExportConfig.tableProps.customTheme}
     {height}

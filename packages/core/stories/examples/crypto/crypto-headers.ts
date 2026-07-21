@@ -1,7 +1,7 @@
 /**
  * Crypto example headers – vanilla port of the marketing crypto-headers.
  */
-import type { CellRenderer, HeaderObject } from "../../../src/index";
+import type { CellRenderer, ColumnDef } from "../../../src/index";
 import {
   formatCompactUsd,
   formatPrice,
@@ -106,7 +106,7 @@ function assetRenderer(): CellRenderer {
   };
 }
 
-export function getCryptoHeaders(): HeaderObject[] {
+export function getCryptoHeaders(): ColumnDef[] {
   return [
     {
       accessor: "rank",
@@ -115,8 +115,8 @@ export function getCryptoHeaders(): HeaderObject[] {
       align: "center",
       type: "number",
       pinned: "left",
-      isSortable: true,
-      isEditable: false,
+      sortable: true,
+      editable: false,
       cellRenderer: ({ row }) => {
         const span = document.createElement("span");
         Object.assign(span.style, { color: MUTED, fontWeight: "600" });
@@ -131,8 +131,8 @@ export function getCryptoHeaders(): HeaderObject[] {
       align: "left",
       type: "string",
       pinned: "left",
-      isSortable: true,
-      isEditable: false,
+      sortable: true,
+      editable: false,
       valueGetter: ({ row }) => row.name as string,
       cellRenderer: assetRenderer(),
     },
@@ -142,8 +142,8 @@ export function getCryptoHeaders(): HeaderObject[] {
       width: 130,
       align: "right",
       type: "number",
-      isSortable: true,
-      isEditable: false,
+      sortable: true,
+      editable: false,
       cellRenderer: ({ row }) => {
         const span = document.createElement("span");
         Object.assign(span.style, {
@@ -161,8 +161,8 @@ export function getCryptoHeaders(): HeaderObject[] {
       width: 160,
       align: "center",
       type: "lineAreaChart",
-      isSortable: false,
-      isEditable: false,
+      sortable: false,
+      editable: false,
       filterable: false,
       tooltip: "Price trend over the last 30 intervals",
       chartOptions: {
@@ -175,7 +175,7 @@ export function getCryptoHeaders(): HeaderObject[] {
       accessor: "performance",
       label: "Performance",
       width: 480,
-      isSortable: false,
+      sortable: false,
       collapsible: true,
       children: [
         {
@@ -184,8 +184,8 @@ export function getCryptoHeaders(): HeaderObject[] {
           width: 120,
           align: "right",
           type: "number",
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           showWhen: "always",
           cellRenderer: changeRenderer("change24h"),
         },
@@ -195,8 +195,8 @@ export function getCryptoHeaders(): HeaderObject[] {
           width: 110,
           align: "right",
           type: "number",
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           showWhen: "parentExpanded",
           cellRenderer: changeRenderer("change1h"),
         },
@@ -206,8 +206,8 @@ export function getCryptoHeaders(): HeaderObject[] {
           width: 110,
           align: "right",
           type: "number",
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           showWhen: "parentExpanded",
           cellRenderer: changeRenderer("change7d"),
         },
@@ -217,8 +217,8 @@ export function getCryptoHeaders(): HeaderObject[] {
           width: 120,
           align: "right",
           type: "number",
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           showWhen: "parentExpanded",
           cellRenderer: changeRenderer("change30d"),
         },
@@ -228,7 +228,7 @@ export function getCryptoHeaders(): HeaderObject[] {
       accessor: "market",
       label: "Market",
       width: 560,
-      isSortable: false,
+      sortable: false,
       collapsible: true,
       children: [
         {
@@ -237,8 +237,8 @@ export function getCryptoHeaders(): HeaderObject[] {
           width: 150,
           align: "right",
           type: "number",
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           showWhen: "always",
           cellRenderer: ({ row }) => {
             const span = document.createElement("span");
@@ -253,8 +253,8 @@ export function getCryptoHeaders(): HeaderObject[] {
           width: 150,
           align: "right",
           type: "number",
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           showWhen: "parentExpanded",
           cellRenderer: ({ row }) => {
             const span = document.createElement("span");
@@ -269,8 +269,8 @@ export function getCryptoHeaders(): HeaderObject[] {
           width: 220,
           align: "left",
           type: "number",
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           showWhen: "parentExpanded",
           cellRenderer: ({ row }) => {
             const symbol = row.symbol as string;
@@ -320,8 +320,8 @@ export function getCryptoHeaders(): HeaderObject[] {
           width: 120,
           align: "right",
           type: "number",
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           showWhen: "parentExpanded",
           cellRenderer: changeRenderer("athChangePercent"),
         },

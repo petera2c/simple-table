@@ -9,7 +9,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import type Cell from "../../src/types/Cell";
 import { rowIdToString } from "../../src/utils/rowUtils";
 import { waitForTable, waitUntil } from "./testUtils";
@@ -39,9 +39,9 @@ const getTable = (_canvasElement: HTMLElement): TableInstance => {
   return t;
 };
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
-  { accessor: "name", label: "Name", width: 150, type: "string", isSortable: true },
+  { accessor: "name", label: "Name", width: 150, type: "string", sortable: true },
 ];
 const data = () => [
   { id: 1, name: "Alice" },
@@ -101,7 +101,7 @@ export const GetSortStateApplySortState = {
 
 export const GetFilterStateApplyFilterClearFilter = {
   render: () => {
-    const filterHeaders: HeaderObject[] = [
+    const filterHeaders: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number", filterable: true },
       { accessor: "name", label: "Name", width: 150, type: "string", filterable: true },
     ];
@@ -134,7 +134,7 @@ export const GetCurrentPageSetPage = {
     const result = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 2,
     });
     (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
@@ -183,7 +183,7 @@ export const ToggleColumnEditorApplyColumnVisibility = {
     const result = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
-      editColumns: true,
+      enableColumnEditor: true,
     });
     (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
@@ -209,7 +209,7 @@ export const ToggleColumnEditorNoArgsRepeated = {
     const result = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
-      editColumns: true,
+      enableColumnEditor: true,
     });
     (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
@@ -241,7 +241,7 @@ export const ToggleColumnEditorNoArgsRepeated = {
 
 export const ExpandAllCollapseAllGetExpandedDepths = {
   render: () => {
-    const groupHeaders: HeaderObject[] = [
+    const groupHeaders: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
       { accessor: "id", label: "ID", width: 80, type: "number" },
     ];
@@ -306,7 +306,7 @@ export const SetHeaderRename = {
 
 export const ClearAllFilters = {
   render: () => {
-    const filterHeaders: HeaderObject[] = [
+    const filterHeaders: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number", filterable: true },
       { accessor: "name", label: "Name", width: 150, type: "string", filterable: true },
     ];
@@ -343,7 +343,7 @@ export const ClearAllFilters = {
 
 export const GetAndApplyPinnedState = {
   render: () => {
-    const pinnedHeaders: HeaderObject[] = [
+    const pinnedHeaders: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60, type: "number", pinned: "left" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
     ];
@@ -379,7 +379,7 @@ export const GetAndApplyPinnedState = {
 // TOGGLE DEPTH / SET EXPANDED DEPTHS
 // ============================================================================
 
-const groupHeaders: HeaderObject[] = [
+const groupHeaders: ColumnDef[] = [
   { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
   { accessor: "id", label: "ID", width: 80, type: "number" },
 ];
@@ -482,7 +482,7 @@ export const GetTotalPagesViaAPI = {
     const result = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 2,
     });
     (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
@@ -506,7 +506,7 @@ export const ResetColumnsViaAPI = {
     const result = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
-      editColumns: true,
+      enableColumnEditor: true,
     });
     (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
@@ -561,7 +561,7 @@ export const SelectionViaTableAPI = {
   },
 };
 
-const nestedGroupingHeaders: HeaderObject[] = [
+const nestedGroupingHeaders: ColumnDef[] = [
   { accessor: "label", label: "Label", width: 120, expandable: true, type: "string" },
   { accessor: "n", label: "N", width: 40, type: "number" },
 ];

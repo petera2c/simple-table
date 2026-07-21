@@ -7,7 +7,7 @@
  * - API Reference (Basic Props)
  *
  * Features tested:
- * 1. Basic table rendering with required props (defaultHeaders, rows)
+ * 1. Basic table rendering with required props (columns, rows)
  * 2. Table with height prop (fixed height, internal scrolling)
  * 3. Table with maxHeight prop (adaptive height)
  * 4. Table without height (overflow parent)
@@ -19,7 +19,7 @@
  * 10. Data type handling (string, number, boolean, date)
  */
 
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { expect } from "@storybook/test";
 import {
   validateBasicTableStructure,
@@ -100,7 +100,7 @@ const createArrayAccessorData = (count) => {
 
 export const MinimalTableWithRequiredProps = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "age", label: "Age", width: 100 },
@@ -128,7 +128,7 @@ export const MinimalTableWithRequiredProps = {
 
 export const TableWithFixedHeight = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
@@ -163,7 +163,7 @@ export const TableWithFixedHeight = {
 
 export const TableWithMaxHeight = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "age", label: "Age", width: 100 },
@@ -200,7 +200,7 @@ export const TableWithMaxHeight = {
 
 export const TableWithoutHeight = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "age", label: "Age", width: 100 },
@@ -241,7 +241,7 @@ export const TableWithoutHeight = {
 
 export const TableWithGetRowId = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
@@ -273,7 +273,7 @@ export const TableWithGetRowId = {
 
 export const NestedDataAccessors = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "user.name", label: "Name", width: 150 },
       { accessor: "user.email", label: "Email", width: 200 },
@@ -317,7 +317,7 @@ export const NestedDataAccessors = {
 
 export const ArrayIndexAccessors = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Artist", width: 150 },
       { accessor: "awards[0]", label: "First Award", width: 150 },
@@ -361,7 +361,7 @@ export const ArrayIndexAccessors = {
 
 export const ColumnWidthConfigurations = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "Fixed 80px", width: 80 },
       { accessor: "name", label: "Fixed 200px", width: 200 },
       { accessor: "email", label: "Flexible 1fr", width: "1fr" },
@@ -409,7 +409,7 @@ export const ColumnWidthConfigurations = {
 
 export const DataTypesRendering = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID (number)", width: 120, type: "number" },
       { accessor: "name", label: "Name (string)", width: 200, type: "string" },
       { accessor: "age", label: "Age (number)", width: 120, type: "number" },
@@ -453,7 +453,7 @@ export const DataTypesRendering = {
 
 export const ViewportRelativeHeight = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
@@ -488,7 +488,7 @@ export const ViewportRelativeHeight = {
 
 export const ComprehensiveStructureValidation = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "age", label: "Age", width: 100 },
@@ -546,7 +546,7 @@ export const ComprehensiveStructureValidation = {
 // When both height and maxHeight are set, height is ignored and maxHeight governs sizing.
 export const HeightIgnoredWhenMaxHeightSet = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
     ];

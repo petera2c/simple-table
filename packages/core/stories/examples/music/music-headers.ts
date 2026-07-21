@@ -1,15 +1,15 @@
 /**
  * Music example headers – ported from React music-headers (vanilla-compatible).
  */
-import type { HeaderObject } from "../../../src/index";
+import type { ColumnDef } from "../../../src/index";
 
-export const MUSIC_HEADERS: HeaderObject[] = [
+export const MUSIC_HEADERS: ColumnDef[] = [
   {
     accessor: "rank",
     label: "#",
     width: 60,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "center",
     type: "number",
     pinned: "left",
@@ -18,8 +18,8 @@ export const MUSIC_HEADERS: HeaderObject[] = [
     accessor: "artistName",
     label: "Artist",
     width: 320,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "left",
     type: "string",
     pinned: "left",
@@ -30,8 +30,8 @@ export const MUSIC_HEADERS: HeaderObject[] = [
     accessor: "artistType",
     label: "Identity",
     width: 280,
-    isSortable: false,
-    isEditable: false,
+    sortable: false,
+    editable: false,
     align: "left",
     type: "string",
     cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
@@ -48,8 +48,8 @@ export const MUSIC_HEADERS: HeaderObject[] = [
         label: "Total Followers",
         width: 180,
         showWhen: "always",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         type: "number",
         cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
           `${row.followersFormatted ?? ""} (↑ ${row.followersGrowthFormatted ?? ""} ${row.followersGrowthPercent ?? 0}%)`.trim(),
@@ -58,8 +58,8 @@ export const MUSIC_HEADERS: HeaderObject[] = [
         accessor: "followers7DayGrowth",
         label: "7-Day Growth",
         width: 160,
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         align: "right",
         type: "number",
         showWhen: "parentExpanded",
@@ -70,8 +70,8 @@ export const MUSIC_HEADERS: HeaderObject[] = [
         accessor: "followers28DayGrowth",
         label: "28-Day Growth",
         width: 160,
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         align: "right",
         type: "number",
         showWhen: "parentExpanded",
@@ -82,8 +82,8 @@ export const MUSIC_HEADERS: HeaderObject[] = [
         accessor: "followers60DayGrowth",
         label: "60-Day Growth",
         width: 160,
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         align: "right",
         type: "number",
         showWhen: "parentExpanded",
@@ -96,8 +96,8 @@ export const MUSIC_HEADERS: HeaderObject[] = [
     accessor: "popularity",
     label: "Popularity",
     width: 180,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "center",
     type: "number",
     cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
@@ -113,7 +113,7 @@ export const MUSIC_HEADERS: HeaderObject[] = [
         accessor: "playlistReach",
         label: "Reach",
         width: 180,
-        isSortable: true,
+        sortable: true,
         type: "number",
         valueFormatter: ({ value }: { value?: unknown }) =>
           value != null ? Number(value).toLocaleString() : "—",
@@ -130,7 +130,7 @@ export const MUSIC_HEADERS: HeaderObject[] = [
         accessor: "monthlyListeners",
         label: "Listeners",
         width: 180,
-        isSortable: true,
+        sortable: true,
         type: "number",
         valueFormatter: ({ value }: { value?: unknown }) =>
           value != null ? Number(value).toLocaleString() : "—",

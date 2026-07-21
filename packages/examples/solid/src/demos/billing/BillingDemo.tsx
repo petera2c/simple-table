@@ -1,10 +1,10 @@
-import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidColumnDef, CellRendererProps } from "@simple-table/solid";
 import { billingConfig } from "./billing.demo-data";
 import type { BillingRow } from "./billing.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function BillingDemo(props: { height?: string | number; theme?: Theme }) {
-  const headers: SolidHeaderObject[] = billingConfig.headers.map((h) => {
+  const headers: SolidColumnDef[] = billingConfig.headers.map((h) => {
     if (h.accessor === "name") {
       return {
         ...h,
@@ -21,8 +21,8 @@ export default function BillingDemo(props: { height?: string | number; theme?: T
     <SimpleTable
       columnReordering
       columnResizing
-      defaultHeaders={headers}
-      editColumns
+      columns={headers}
+      enableColumnEditor
       height={props.height ?? "400px"}
       initialSortColumn="amount"
       initialSortDirection="desc"
@@ -30,7 +30,7 @@ export default function BillingDemo(props: { height?: string | number; theme?: T
       rows={billingConfig.rows}
       selectableCells
       theme={props.theme}
-      useOddColumnBackground
+      oddColumnBackground
     />
   );
 }

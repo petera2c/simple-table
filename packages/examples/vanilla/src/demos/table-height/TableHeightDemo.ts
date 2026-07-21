@@ -21,7 +21,7 @@ export function renderTableHeightDemo(
   container.appendChild(wrapper);
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: tableHeightConfig.headers,
+    columns: tableHeightConfig.headers,
     rows: tableHeightConfig.rows,
     height: selectedHeight,
     theme: options?.theme,

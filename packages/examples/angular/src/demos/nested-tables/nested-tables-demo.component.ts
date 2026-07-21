@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Theme } from "@simple-table/angular";
 import { nestedTablesConfig, generateNestedTablesData } from "./nested-tables.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -10,7 +10,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [autoExpandColumns]="true"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rows]="sampleData"
       [rowGrouping]="grouping"
       [getRowId]="getRowId"
@@ -25,7 +25,7 @@ export class NestedTablesDemoComponent {
   @Input() height: string | number = "500px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = nestedTablesConfig.headers;
+  readonly headers: AngularColumnDef[] = nestedTablesConfig.headers;
   readonly sampleData = generateNestedTablesData(25);
   readonly grouping = ["divisions"];
   readonly getRowId = ({ row }: { row: Record<string, unknown> }) => row["id"] as string;

@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { valueFormatterConfig } from "./value-formatter.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -10,7 +10,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
       [selectableCells]="selectableCellsProp"
@@ -22,6 +22,6 @@ export class ValueFormatterDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = valueFormatterConfig.rows;
-  readonly headers: AngularHeaderObject[] = valueFormatterConfig.headers;
+  readonly headers: AngularColumnDef[] = valueFormatterConfig.headers;
   readonly selectableCellsProp = valueFormatterConfig.tableProps.selectableCells;
 }

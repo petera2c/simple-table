@@ -1,6 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, CellChangeProps, ValueGetterProps } from "@simple-table/angular";
+import type { AngularColumnDef, CellChangeProps, ValueGetterProps } from "@simple-table/angular";
 import { crmData } from "./crm.demo-data";
 import type { CrmShellTheme } from "./crm.demo-data";
 import { CrmAiScoreCellComponent } from "./crm-ai-score-cell.component";
@@ -16,14 +16,14 @@ import { CrmTimeAgoCellComponent } from "./crm-time-ago-cell.component";
 import "@simple-table/angular/styles.css";
 import "./crm-custom-theme.css";
 
-const CRM_HEADERS: AngularHeaderObject[] = [
+const CRM_HEADERS: AngularColumnDef[] = [
   {
     accessor: "name",
     label: "CONTACT",
     width: "2fr",
     minWidth: 290,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     type: "string",
     cellRenderer: CrmContactCellComponent,
   },
@@ -32,8 +32,8 @@ const CRM_HEADERS: AngularHeaderObject[] = [
     label: "SIGNAL",
     width: "3fr",
     minWidth: 340,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     type: "string",
     cellRenderer: CrmSignalCellComponent,
   },
@@ -42,7 +42,7 @@ const CRM_HEADERS: AngularHeaderObject[] = [
     label: "AI SCORE",
     width: "1fr",
     minWidth: 100,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "number",
     cellRenderer: CrmAiScoreCellComponent,
@@ -52,7 +52,7 @@ const CRM_HEADERS: AngularHeaderObject[] = [
     label: "EMAIL",
     width: "1.5fr",
     minWidth: 210,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "enum",
     enumOptions: [
@@ -68,7 +68,7 @@ const CRM_HEADERS: AngularHeaderObject[] = [
     label: "IMPORT",
     width: "1fr",
     minWidth: 100,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "string",
     cellRenderer: CrmTimeAgoCellComponent,
@@ -78,7 +78,7 @@ const CRM_HEADERS: AngularHeaderObject[] = [
     label: "LIST",
     width: "1.2fr",
     minWidth: 160,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "enum",
     enumOptions: [
@@ -131,13 +131,13 @@ const CRM_HEADERS: AngularHeaderObject[] = [
         #simpleTable
         [columnReordering]="true"
         [columnResizing]="true"
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [enableRowSelection]="true"
         [customTheme]="{ headerHeight: 48, rowHeight: 92 }"
         [height]="height"
         [rows]="data"
         [rowsPerPage]="rowsPerPage()"
-        [shouldPaginate]="true"
+        [enablePagination]="true"
         [theme]="'custom'"
         [footerRenderer]="footerRenderer"
         (cellEdit)="onCellEdit($event)"
@@ -151,7 +151,7 @@ export class CRMDemoComponent implements OnInit, OnChanges {
 
   isDark = false;
   data = [...crmData];
-  readonly headers: AngularHeaderObject[] = CRM_HEADERS;
+  readonly headers: AngularColumnDef[] = CRM_HEADERS;
   readonly footerRenderer = CrmFooterComponent;
   readonly rowsPerPage = crmRowsPerPageSignal;
 

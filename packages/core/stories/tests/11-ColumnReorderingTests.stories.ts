@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { expect } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -88,7 +88,7 @@ const performDragAndDrop = async (sourceElement: Element, targetElement: Element
 
 export const ColumnReorderingEnabled = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -109,7 +109,7 @@ export const ColumnReorderingEnabled = {
 
 export const ColumnReorderingDisabled = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -130,7 +130,7 @@ export const ColumnReorderingDisabled = {
 
 export const DisableReorderOnSpecificColumn = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, disableReorder: true, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, disableReorder: true, type: "string" },
@@ -164,7 +164,7 @@ export const OnColumnOrderChangeCallback = {
     wrapper.appendChild(tableContainer);
     wrapper.appendChild(countEl);
     wrapper.appendChild(orderEl);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -173,7 +173,7 @@ export const OnColumnOrderChangeCallback = {
     let orderChangeCount = 0;
     const table = new SimpleTableVanilla(tableContainer, {
       columnReordering: true,
-      defaultHeaders: headers,
+      columns: headers,
       rows: createEmployeeData(),
       getRowId: (params) => String(params.row?.id),
       height: "400px",
@@ -198,11 +198,11 @@ export const OnColumnOrderChangeCallback = {
 
 export const ColumnReorderingWithSorting = {
   render: () => {
-    const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-      { accessor: "name", label: "Name", width: 200, isSortable: true, type: "string" },
-      { accessor: "department", label: "Department", width: 150, isSortable: true, type: "string" },
-      { accessor: "salary", label: "Salary", width: 120, isSortable: true, type: "number" },
+    const headers: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+      { accessor: "name", label: "Name", width: 200, sortable: true, type: "string" },
+      { accessor: "department", label: "Department", width: 150, sortable: true, type: "string" },
+      { accessor: "salary", label: "Salary", width: 120, sortable: true, type: "number" },
     ];
     const { wrapper } = renderVanillaTable(headers, createEmployeeData(), { columnReordering: true, getRowId: (params) => String(params.row?.id), height: "400px" });
     return wrapper;
@@ -220,7 +220,7 @@ export const ColumnReorderingWithSorting = {
 
 export const ColumnReorderingWithFiltering = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, filterable: true, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true, type: "string" },
       { accessor: "department", label: "Department", width: 150, filterable: true, type: "string" },
@@ -241,7 +241,7 @@ export const ColumnReorderingWithFiltering = {
 
 export const ColumnReorderingWithPinnedColumns = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, pinned: "left", type: "number" },
       { accessor: "name", label: "Name", width: 200, pinned: "left", type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -269,7 +269,7 @@ export const ColumnReorderingWithPinnedColumns = {
 
 export const DraggableAttributeOnHeaderLabels = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -289,7 +289,7 @@ export const DraggableAttributeOnHeaderLabels = {
 
 export const MixedDraggableAndNonDraggable = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, disableReorder: true, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
@@ -312,7 +312,7 @@ export const MixedDraggableAndNonDraggable = {
 
 export const InitialColumnOrder = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "salary", label: "Salary", width: 120, type: "number" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
@@ -330,7 +330,7 @@ export const InitialColumnOrder = {
 
 export const ActualDragAndDropReordering = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -365,7 +365,7 @@ export const ActualDragAndDropReordering = {
 
 export const DragAndDropWithPinnedColumns = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, pinned: "left", type: "number" },
       { accessor: "name", label: "Name", width: 150, pinned: "left", type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
@@ -379,7 +379,7 @@ export const DragAndDropWithPinnedColumns = {
     wrapper.appendChild(tableContainer);
     const table = new SimpleTableVanilla(tableContainer, {
       columnReordering: true,
-      defaultHeaders: headers,
+      columns: headers,
       rows: createEmployeeData(),
       getRowId: (params) => String(params.row?.id),
       height: "400px",
@@ -414,7 +414,7 @@ export const DragAndDropWithPinnedColumns = {
 
 export const ColumnReorderingWithResizing = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -449,19 +449,19 @@ export const OnColumnOrderChangeCallbackFires = {
     const capturedOrders: string[][] = [];
     (window as unknown as { __colOrderCapture?: string[][] }).__colOrderCapture = capturedOrders;
 
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
     ];
     const tableContainer = document.createElement("div");
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createEmployeeData(),
       getRowId: (params) => String(params.row?.id),
       height: "400px",
       columnReordering: true,
-      onColumnOrderChange: (newHeaders: HeaderObject[]) => {
+      onColumnOrderChange: (newHeaders: ColumnDef[]) => {
         capturedOrders.push(newHeaders.map((h) => h.accessor as string));
       },
     });
@@ -499,7 +499,7 @@ export const OnColumnOrderChangeCallbackFires = {
 
 export const ColumnEditorSearchFunction = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -508,11 +508,11 @@ export const ColumnEditorSearchFunction = {
     const { wrapper } = renderVanillaTable(headers, createEmployeeData(), {
       getRowId: (params) => String(params.row?.id),
       height: "400px",
-      editColumns: true,
+      enableColumnEditor: true,
       selectableColumns: true,
       columnEditorConfig: {
         searchEnabled: true,
-        searchFunction: (header: HeaderObject, searchTerm: string) =>
+        searchFunction: (header: ColumnDef, searchTerm: string) =>
           (header.label as string).toLowerCase().startsWith(searchTerm.toLowerCase()),
       },
     });

@@ -104,7 +104,7 @@
 
 <SimpleTable
   bind:this={tableRef}
-  defaultHeaders={liveUpdateConfig.headers}
+  columns={liveUpdateConfig.headers}
   rows={liveUpdateConfig.rows}
   {height}
   {theme}

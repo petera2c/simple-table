@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject, Row } from "@simple-table/angular";
+import type { AngularColumnDef, Row } from "@simple-table/angular";
 
 
-export const footerRendererHeaders: AngularHeaderObject[] = [
+export const footerRendererHeaders: AngularColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "product", label: "Product Name", width: 220, type: "string" },
   { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -63,7 +63,7 @@ export const footerRendererConfig = {
   headers: footerRendererHeaders,
   rows: footerRendererData,
   tableProps: {
-    shouldPaginate: true,
+    enablePagination: true,
     rowsPerPage: 10,
   },
 } as const;

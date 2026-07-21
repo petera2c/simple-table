@@ -1,9 +1,9 @@
-import {SimpleTable, asRows} from "@simple-table/solid";import type { Theme, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
+import {SimpleTable, asRows} from "@simple-table/solid";import type { Theme, SolidColumnDef, CellRendererProps } from "@simple-table/solid";
 import { manufacturingConfig, getManufacturingStatusColors } from "./manufacturing.demo-data";
 import type { ManufacturingRow } from "./manufacturing.demo-data";
 import "@simple-table/solid/styles.css";
 
-function getHeaders(): SolidHeaderObject[] {
+function getHeaders(): SolidColumnDef[] {
   const baseHeaders = [...manufacturingConfig.headers];
   return baseHeaders.map((h) => {
     if (h.accessor === "productLine") {
@@ -153,6 +153,6 @@ function getHeaders(): SolidHeaderObject[] {
 
 export default function ManufacturingDemo(props: { height?: string | number; theme?: Theme }) {
   return (
-    <SimpleTable columnResizing columnReordering defaultHeaders={getHeaders()} height={props.height ?? "400px"} rowGrouping={["stations"]} rows={asRows(manufacturingConfig.rows)} selectableCells theme={props.theme} />
+    <SimpleTable columnResizing columnReordering columns={getHeaders()} height={props.height ?? "400px"} rowGrouping={["stations"]} rows={asRows(manufacturingConfig.rows)} selectableCells theme={props.theme} />
   );
 }

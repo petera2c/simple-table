@@ -2,13 +2,13 @@
  * Shared helpers for vanilla stories (examples and tests).
  */
 import { SimpleTableVanilla } from "../src/index";
-import type { HeaderObject, Row, SimpleTableConfig } from "../src/index";
+import type { ColumnDef, Row, SimpleTableConfig } from "../src/index";
 
 /** Instance type of the table (class is a value; use InstanceType<typeof C> for the type of instances). */
 type TableInstance = InstanceType<typeof SimpleTableVanilla>;
 
 /**
- * Config passed through to {@link SimpleTableVanilla}, minus `defaultHeaders` /
+ * Config passed through to {@link SimpleTableVanilla}, minus `columns` /
  * `rows` which are supplied as the first two arguments of
  * {@link renderVanillaTable}.
  *
@@ -18,7 +18,7 @@ type TableInstance = InstanceType<typeof SimpleTableVanilla>;
  * slightly narrower than the public types still typecheck.
  */
 export type RenderVanillaTableOptions = {
-  [K in keyof Omit<SimpleTableConfig, "defaultHeaders" | "rows">]?: unknown;
+  [K in keyof Omit<SimpleTableConfig, "columns" | "rows">]?: unknown;
 };
 
 export interface RenderVanillaTableResult {
@@ -29,7 +29,7 @@ export interface RenderVanillaTableResult {
 }
 
 export function renderVanillaTable(
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   data: Row[],
   options: RenderVanillaTableOptions = {},
 ): RenderVanillaTableResult {
@@ -48,7 +48,7 @@ export function renderVanillaTable(
   // Keys are already constrained by RenderVanillaTableOptions; cast values
   // through to the constructor (stories often use slightly narrower callbacks).
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: headers,
+    columns: headers,
     rows: data,
     ...options,
   } as SimpleTableConfig);

@@ -8,13 +8,13 @@ export function renderAnimationsDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: animationsConfig.headers,
+    columns: animationsConfig.headers,
     rows: animationsConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
     columnReordering: true,
-    editColumns: true,
-    editColumnsInitOpen: true,
+    enableColumnEditor: true,
+    enableColumnEditorInitOpen: true,
   });
   return table;
 }

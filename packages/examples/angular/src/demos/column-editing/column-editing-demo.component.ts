@@ -1,7 +1,7 @@
 import { NgIf } from "@angular/common";
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -24,7 +24,7 @@ import "@simple-table/angular/styles.css";
       </div>
       <simple-table
         [rows]="rows"
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [height]="height"
         [theme]="theme"
         [enableHeaderEditing]="true"
@@ -39,21 +39,21 @@ export class ColumnEditingDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnEditingData;
-  additionalColumns: AngularHeaderObject[] = [];
+  additionalColumns: AngularColumnDef[] = [];
   lastAdded = "";
 
-  get headers(): AngularHeaderObject[] {
+  get headers(): AngularColumnDef[] {
     return [...columnEditingHeaders, ...this.additionalColumns];
   }
 
   addColumn() {
     const n = this.additionalColumns.length + 1;
-    const col: AngularHeaderObject = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
+    const col: AngularColumnDef = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
     this.additionalColumns = [...this.additionalColumns, col];
     this.lastAdded = col.label;
   }
 
-  handleHeaderEdit = (_header: AngularHeaderObject, newLabel: string) => {
+  handleHeaderEdit = (_header: AngularColumnDef, newLabel: string) => {
     this.lastAdded = `Renamed to: ${newLabel}`;
   };
 }

@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type {
   Theme,
-  ReactHeaderObject,
+  ReactColumnDef,
   CellRendererProps,
   RowSelectionChangeProps,
 } from "@simple-table/react";
@@ -19,7 +19,7 @@ const RowSelectionDemo = ({
 }) => {
   const [selectedBooks, setSelectedBooks] = useState<LibraryBook[]>([]);
 
-  const headers: ReactHeaderObject[] = useMemo(
+  const headers: ReactColumnDef[] = useMemo(
     () =>
       rowSelectionConfig.headers.map((h) => {
         if (h.accessor === "status") {
@@ -66,7 +66,7 @@ const RowSelectionDemo = ({
       </div>
 
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         rows={rowSelectionConfig.rows}
         enableRowSelection
         columnResizing

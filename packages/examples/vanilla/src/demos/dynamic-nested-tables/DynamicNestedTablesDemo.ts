@@ -45,7 +45,7 @@ export function renderDynamicNestedTablesDemo(
 
   const table = new SimpleTableVanilla(container, {
     autoExpandColumns: dynamicNestedTablesConfig.tableProps.autoExpandColumns,
-    defaultHeaders: dynamicNestedTablesConfig.headers,
+    columns: dynamicNestedTablesConfig.headers,
     expandAll: dynamicNestedTablesConfig.tableProps.expandAll,
     height: options?.height ?? "500px",
     rowGrouping: dynamicNestedTablesConfig.tableProps.rowGrouping,

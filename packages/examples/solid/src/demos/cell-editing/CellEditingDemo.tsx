@@ -14,7 +14,7 @@ export default function CellEditingDemo(props: { height?: string | number; theme
 
   return (
     <SimpleTable
-      defaultHeaders={cellEditingConfig.headers}
+      columns={cellEditingConfig.headers}
       rows={data()}
       height={props.height ?? "400px"}
       theme={props.theme}

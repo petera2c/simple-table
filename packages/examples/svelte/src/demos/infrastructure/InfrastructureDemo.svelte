@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteHeaderObject, TableAPI, Row, CellValue } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef, TableAPI, Row, CellValue } from "@simple-table/svelte";
   import { onMount } from "svelte";
   import { infrastructureData } from "./infrastructure.demo-data";
   import InfraServerIdCell from "./InfraServerIdCell.svelte";
@@ -127,13 +127,13 @@
   let tableRef: any;
 
   const headers = $derived.by(
-    (): SvelteHeaderObject[] => [
+    (): SvelteColumnDef[] => [
       {
         accessor: "serverId",
         align: "left",
         filterable: true,
-        isEditable: false,
-        isSortable: true,
+        editable: false,
+        sortable: true,
         label: "Server ID",
         minWidth: 180,
         pinned: "left",
@@ -145,8 +145,8 @@
         accessor: "serverName",
         align: "left",
         filterable: true,
-        isEditable: false,
-        isSortable: true,
+        editable: false,
+        sortable: true,
         label: "Name",
         minWidth: 200,
         type: "string",
@@ -156,15 +156,15 @@
         accessor: "performance",
         label: "Performance Metrics",
         width: 690,
-        isSortable: false,
+        sortable: false,
         children: [
           {
             accessor: "cpuHistory",
             label: "CPU History",
             width: 150,
-            isSortable: false,
+            sortable: false,
             filterable: false,
-            isEditable: false,
+            editable: false,
             align: "center",
             type: "lineAreaChart",
             tooltip: "CPU usage over the last 30 intervals",
@@ -173,9 +173,9 @@
             accessor: "cpuUsage",
             label: "CPU %",
             width: 120,
-            isSortable: true,
+            sortable: true,
             filterable: true,
-            isEditable: true,
+            editable: true,
             align: "right",
             type: "number",
             cellRenderer: InfraCpuCell,
@@ -184,9 +184,9 @@
             accessor: "memoryUsage",
             label: "Memory %",
             width: 130,
-            isSortable: true,
+            sortable: true,
             filterable: true,
-            isEditable: true,
+            editable: true,
             align: "right",
             type: "number",
             cellRenderer: InfraMemoryCell,
@@ -195,9 +195,9 @@
             accessor: "diskUsage",
             label: "Disk %",
             width: 120,
-            isSortable: true,
+            sortable: true,
             filterable: true,
-            isEditable: true,
+            editable: true,
             align: "right",
             type: "number",
             cellRenderer: InfraDiskCell,
@@ -206,9 +206,9 @@
             accessor: "responseTime",
             label: "Response (ms)",
             width: 120,
-            isSortable: true,
+            sortable: true,
             filterable: true,
-            isEditable: true,
+            editable: true,
             align: "right",
             type: "number",
             cellRenderer: InfraResponseCell,
@@ -219,9 +219,9 @@
         accessor: "status",
         label: "Status",
         width: 130,
-        isSortable: true,
+        sortable: true,
         filterable: true,
-        isEditable: false,
+        editable: false,
         align: "center",
         type: "enum",
         enumOptions: [
@@ -251,8 +251,8 @@
   autoExpandColumns={true}
   columnReordering={true}
   columnResizing={true}
-  defaultHeaders={headers}
-  editColumns={true}
+  columns={headers}
+  enableColumnEditor={true}
   {height}
   rows={infrastructureData}
   selectableCells={true}

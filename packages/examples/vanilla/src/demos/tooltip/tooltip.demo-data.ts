@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "simple-table-core";
+import type { ColumnDef, Row } from "simple-table-core";
 
 
 export const tooltipData: Row[] = [
@@ -20,29 +20,29 @@ export const tooltipData: Row[] = [
   { id: 15, productName: "Corsair K95 RGB Platinum", category: "Peripherals", price: 199.99, stock: 16, rating: 4.5, lastUpdated: "2024-02-18" },
 ];
 
-export const tooltipHeaders: HeaderObject[] = [
-  { accessor: "productName", label: "Product", width: 200, isSortable: true, tooltip: "Complete product name including model specifications and key features" },
-  { accessor: "category", label: "Category", width: 150, isSortable: true, filterable: true, tooltip: "Product classification: Laptops, Displays, or Peripherals for easy filtering" },
+export const tooltipHeaders: ColumnDef[] = [
+  { accessor: "productName", label: "Product", width: 200, sortable: true, tooltip: "Complete product name including model specifications and key features" },
+  { accessor: "category", label: "Category", width: 150, sortable: true, filterable: true, tooltip: "Product classification: Laptops, Displays, or Peripherals for easy filtering" },
   {
     accessor: "price",
     label: "Price",
     width: 120,
     align: "right",
-    isSortable: true,
+    sortable: true,
     tooltip: "Current retail price in US dollars (USD) including all standard features",
     valueFormatter: ({ value }) => `$${(value as number).toFixed(2)}`,
   },
-  { accessor: "stock", label: "Stock", width: 100, align: "right", isSortable: true, tooltip: "Available inventory count - number of units currently in warehouse stock" },
+  { accessor: "stock", label: "Stock", width: 100, align: "right", sortable: true, tooltip: "Available inventory count - number of units currently in warehouse stock" },
   {
     accessor: "rating",
     label: "Rating",
     width: 100,
     align: "center",
-    isSortable: true,
+    sortable: true,
     tooltip: "Customer satisfaction rating based on verified purchase reviews (scale: 1-5 stars)",
     valueFormatter: ({ value }) => `${value}/5`,
   },
-  { accessor: "lastUpdated", label: "Last Updated", width: 150, isSortable: true, tooltip: "Most recent inventory update date in YYYY-MM-DD format" },
+  { accessor: "lastUpdated", label: "Last Updated", width: 150, sortable: true, tooltip: "Most recent inventory update date in YYYY-MM-DD format" },
 ];
 
 export const tooltipConfig = {

@@ -1,16 +1,16 @@
 /**
  * ProgrammaticSort Example – vanilla port of React ProgrammaticSortExample.
  */
-import type { HeaderObject } from "../../src/index";
+import type { ColumnDef } from "../../src/index";
 import { renderVanillaTable, addParagraph } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 import { createBasicData } from "./BasicExample";
 
-const HEADERS: HeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80, isSortable: true },
-  { accessor: "name", label: "Name", width: 150, isSortable: true },
-  { accessor: "age", label: "Age", width: 100, isSortable: true },
-  { accessor: "role", label: "Role", width: 150, isSortable: true },
+const HEADERS: ColumnDef[] = [
+  { accessor: "id", label: "ID", width: 80, sortable: true },
+  { accessor: "name", label: "Name", width: 150, sortable: true },
+  { accessor: "age", label: "Age", width: 100, sortable: true },
+  { accessor: "role", label: "Role", width: 150, sortable: true },
 ];
 
 export const programmaticSortExampleDefaults = { height: "400px" };

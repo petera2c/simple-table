@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { ReactHeaderObject } from "@simple-table/react";
+import type { ReactColumnDef } from "@simple-table/react";
 
 
-export const aggregateFunctionsHeaders: ReactHeaderObject[] = [
+export const aggregateFunctionsHeaders: ReactColumnDef[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   {
     accessor: "followers",

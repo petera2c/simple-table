@@ -10,7 +10,7 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
 
 <template>
   <SimpleTable
-    :default-headers="tooltipConfig.headers"
+    :columns="tooltipConfig.headers"
     :rows="tooltipConfig.rows"
     :height="height"
     :theme="theme"

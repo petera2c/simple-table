@@ -5,7 +5,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -30,7 +30,7 @@ const createData = () => [
   { id: 3, name: "Charlie", department: "Engineering", salary: 140000 },
 ];
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 150, type: "string" },
   { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -52,7 +52,7 @@ export const OnColumnSelectCallback = {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
       selectableColumns: true,
-      onColumnSelect: (header: HeaderObject) => {
+      onColumnSelect: (header: ColumnDef) => {
         captured.push({ accessor: header.accessor });
       },
     });
@@ -87,7 +87,7 @@ export const OnColumnSelectDifferentColumns = {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
       selectableColumns: true,
-      onColumnSelect: (header: HeaderObject) => {
+      onColumnSelect: (header: ColumnDef) => {
         captured.push(header.accessor as string);
       },
     });

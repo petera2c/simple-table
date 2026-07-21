@@ -105,7 +105,7 @@ const LiveUpdateDemo = ({ height = "400px", theme }: { height?: string | number;
 
   return (
     <SimpleTable
-      defaultHeaders={liveUpdateConfig.headers}
+      columns={liveUpdateConfig.headers}
       rows={liveUpdateConfig.rows}
       ref={tableRef}
       height={height}

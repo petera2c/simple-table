@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { animationsConfig } from "./animations.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -11,12 +11,12 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
       [columnReordering]="true"
-      [editColumns]="true"
-      [editColumnsInitOpen]="true"
+      [enableColumnEditor]="true"
+      [enableColumnEditorInitOpen]="true"
       (columnOrderChange)="onColumnOrderChange($event)"
     ></simple-table>
   `,
@@ -26,9 +26,9 @@ export class AnimationsDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = animationsConfig.rows;
-  headers: AngularHeaderObject[] = [...animationsConfig.headers];
+  headers: AngularColumnDef[] = [...animationsConfig.headers];
 
-  onColumnOrderChange(newHeaders: AngularHeaderObject[]): void {
+  onColumnOrderChange(newHeaders: AngularColumnDef[]): void {
     this.headers = newHeaders;
   }
 }

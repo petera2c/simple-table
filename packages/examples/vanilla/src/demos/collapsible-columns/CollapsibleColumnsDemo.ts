@@ -8,10 +8,10 @@ export function renderCollapsibleColumnsDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: collapsibleColumnsConfig.headers,
+    columns: collapsibleColumnsConfig.headers,
     rows: collapsibleColumnsConfig.rows,
     columnResizing: true,
-    editColumns: true,
+    enableColumnEditor: true,
     selectableCells: true,
     columnReordering: true,
     height: options?.height ?? "400px",

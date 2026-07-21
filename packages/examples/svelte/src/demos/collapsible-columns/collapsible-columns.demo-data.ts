@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject } from "@simple-table/svelte";
+import type { SvelteColumnDef } from "@simple-table/svelte";
 
 
 export const collapsibleColumnsData = [
@@ -20,21 +20,21 @@ export const collapsibleColumnsData = [
 const fmt = (accessor: string) => ({ row }: { row: Record<string, unknown> }) =>
   `$${((row[accessor] as number) || 0).toLocaleString()}`;
 
-const monthCol = (accessor: string, label: string): SvelteHeaderObject => ({
+const monthCol = (accessor: string, label: string): SvelteColumnDef => ({
   accessor,
   label,
   width: 100,
   showWhen: "parentExpanded" as const,
-  isSortable: true,
+  sortable: true,
   align: "right",
   type: "number",
   cellRenderer: fmt(accessor),
 });
 
-export const collapsibleColumnsHeaders: SvelteHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 60, isSortable: true },
-  { accessor: "name", label: "Sales Rep", minWidth: 150, width: "1fr", isSortable: true },
-  { accessor: "region", label: "Region", width: 140, isSortable: true },
+export const collapsibleColumnsHeaders: SvelteColumnDef[] = [
+  { accessor: "id", label: "ID", width: 60, sortable: true },
+  { accessor: "name", label: "Sales Rep", minWidth: 150, width: "1fr", sortable: true },
+  { accessor: "region", label: "Region", width: 140, sortable: true },
   {
     accessor: "quarterlySales",
     label: "Quarterly Sales",
@@ -42,11 +42,11 @@ export const collapsibleColumnsHeaders: SvelteHeaderObject[] = [
     collapsible: true,
     collapseDefault: true,
     children: [
-      { accessor: "totalSales", label: "Total Sales", width: 140, showWhen: "parentCollapsed" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("totalSales") },
-      { accessor: "q1Sales", label: "Q1", width: 120, showWhen: "parentExpanded" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("q1Sales") },
-      { accessor: "q2Sales", label: "Q2", width: 120, showWhen: "parentExpanded" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("q2Sales") },
-      { accessor: "q3Sales", label: "Q3", width: 120, showWhen: "parentExpanded" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("q3Sales") },
-      { accessor: "q4Sales", label: "Q4", width: 120, showWhen: "parentExpanded" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("q4Sales") },
+      { accessor: "totalSales", label: "Total Sales", width: 140, showWhen: "parentCollapsed" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("totalSales") },
+      { accessor: "q1Sales", label: "Q1", width: 120, showWhen: "parentExpanded" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("q1Sales") },
+      { accessor: "q2Sales", label: "Q2", width: 120, showWhen: "parentExpanded" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("q2Sales") },
+      { accessor: "q3Sales", label: "Q3", width: 120, showWhen: "parentExpanded" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("q3Sales") },
+      { accessor: "q4Sales", label: "Q4", width: 120, showWhen: "parentExpanded" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("q4Sales") },
     ],
   },
   {
@@ -56,8 +56,8 @@ export const collapsibleColumnsHeaders: SvelteHeaderObject[] = [
     collapsible: true,
     collapseDefault: true,
     children: [
-      { accessor: "avgMonthly", label: "Avg Monthly", width: 130, showWhen: "parentCollapsed" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("avgMonthly") },
-      { accessor: "bestMonth", label: "Best Month", width: 130, showWhen: "parentCollapsed" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("bestMonth") },
+      { accessor: "avgMonthly", label: "Avg Monthly", width: 130, showWhen: "parentCollapsed" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("avgMonthly") },
+      { accessor: "bestMonth", label: "Best Month", width: 130, showWhen: "parentCollapsed" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("bestMonth") },
       monthCol("jan", "Jan"), monthCol("feb", "Feb"), monthCol("mar", "Mar"),
       monthCol("apr", "Apr"), monthCol("may", "May"), monthCol("jun", "Jun"),
       monthCol("jul", "Jul"), monthCol("aug", "Aug"), monthCol("sep", "Sep"),
@@ -71,10 +71,10 @@ export const collapsibleColumnsHeaders: SvelteHeaderObject[] = [
     collapsible: true,
     collapseDefault: true,
     children: [
-      { accessor: "topCategory", label: "Top Category", width: 140, showWhen: "parentCollapsed" as const, isSortable: true, type: "string" },
-      { accessor: "softwareSales", label: "Software", width: 130, showWhen: "parentExpanded" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("softwareSales") },
-      { accessor: "hardwareSales", label: "Hardware", width: 130, showWhen: "parentExpanded" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("hardwareSales") },
-      { accessor: "servicesSales", label: "Services", width: 130, showWhen: "parentExpanded" as const, isSortable: true, align: "right", type: "number", cellRenderer: fmt("servicesSales") },
+      { accessor: "topCategory", label: "Top Category", width: 140, showWhen: "parentCollapsed" as const, sortable: true, type: "string" },
+      { accessor: "softwareSales", label: "Software", width: 130, showWhen: "parentExpanded" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("softwareSales") },
+      { accessor: "hardwareSales", label: "Hardware", width: 130, showWhen: "parentExpanded" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("hardwareSales") },
+      { accessor: "servicesSales", label: "Services", width: 130, showWhen: "parentExpanded" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("servicesSales") },
     ],
   },
 ];
@@ -84,7 +84,7 @@ export const collapsibleColumnsConfig = {
   rows: collapsibleColumnsData,
   tableProps: {
     columnResizing: true,
-    editColumns: true,
+    enableColumnEditor: true,
     selectableCells: true,
     columnReordering: true,
   },

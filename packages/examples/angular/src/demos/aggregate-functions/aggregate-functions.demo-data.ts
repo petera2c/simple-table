@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
 
-export const aggregateFunctionsHeaders: AngularHeaderObject[] = [
+export const aggregateFunctionsHeaders: AngularColumnDef[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   {
     accessor: "followers",

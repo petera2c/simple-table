@@ -5,7 +5,7 @@ import "@simple-table/solid/styles.css";
 export default function SingleRowChildrenDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
-      defaultHeaders={singleRowChildrenConfig.headers}
+      columns={singleRowChildrenConfig.headers}
       rows={singleRowChildrenConfig.rows}
       columnResizing={singleRowChildrenConfig.tableProps.columnResizing}
       selectableCells={singleRowChildrenConfig.tableProps.selectableCells}

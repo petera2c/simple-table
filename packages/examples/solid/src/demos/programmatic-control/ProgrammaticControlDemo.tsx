@@ -1,5 +1,5 @@
 import { createSignal } from "solid-js";
-import {SimpleTable} from "@simple-table/solid";import type { Theme, TableAPI, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, TableAPI, SolidColumnDef, CellRendererProps } from "@simple-table/solid";
 import {
   programmaticControlConfig,
   PROGRAMMATIC_CONTROL_STATUS_COLORS,
@@ -13,7 +13,7 @@ export default function ProgrammaticControlDemo(props: {
   let tableRef: TableAPI | undefined;
   const [statusMessage, setStatusMessage] = createSignal("No status message");
 
-  const headers: SolidHeaderObject[] = programmaticControlConfig.headers.map((h) => {
+  const headers: SolidColumnDef[] = programmaticControlConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
@@ -104,7 +104,7 @@ export default function ProgrammaticControlDemo(props: {
       </div>
       <SimpleTable
         ref={(api) => (tableRef = api)}
-        defaultHeaders={headers}
+        columns={headers}
         rows={programmaticControlConfig.rows}
         height={props.height ?? "400px"}
         theme={props.theme}

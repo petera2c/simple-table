@@ -24,7 +24,7 @@ export function renderRowGroupingDemo(
   container.appendChild(wrapper);
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: rowGroupingConfig.headers,
+    columns: rowGroupingConfig.headers,
     rows: rowGroupingConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

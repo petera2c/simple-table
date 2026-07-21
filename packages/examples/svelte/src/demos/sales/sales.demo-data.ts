@@ -1,4 +1,4 @@
-import type { SvelteHeaderObject, ValueGetterProps } from "@simple-table/svelte";
+import type { SvelteColumnDef, ValueGetterProps } from "@simple-table/svelte";
 
 type SuccessHighStyle = { color: string; fontWeight: "bold" };
 type ThemePalette = {
@@ -143,14 +143,14 @@ const SALES_SAMPLE_INBOUND: SalesInboundRow[] = [
 
 export const salesSampleRows: SalesRow[] = processSalesData(SALES_SAMPLE_INBOUND);
 
-export const salesHeadersCore: SvelteHeaderObject[] = [
+export const salesHeadersCore: SvelteColumnDef[] = [
   {
     accessor: "repName",
     label: "Sales Representative",
     width: "2fr",
     minWidth: 200,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     type: "string",
     tooltip: "Name of the sales representative",
   },
@@ -158,15 +158,15 @@ export const salesHeadersCore: SvelteHeaderObject[] = [
     accessor: "salesMetrics",
     label: "Sales Metrics",
     width: 600,
-    isSortable: false,
+    sortable: false,
     children: [
       {
         accessor: "dealSize",
         label: "Deal Size",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "right",
         type: "number",
         tooltip: "The size of the deal in dollars",
@@ -185,8 +185,8 @@ export const salesHeadersCore: SvelteHeaderObject[] = [
         label: "Deal Value",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "right",
         type: "number",
         tooltip: "The value of the deal in dollars",
@@ -196,8 +196,8 @@ export const salesHeadersCore: SvelteHeaderObject[] = [
         label: "Status",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "center",
         type: "boolean",
         tooltip: "Whether the deal was won or lost",
@@ -207,8 +207,8 @@ export const salesHeadersCore: SvelteHeaderObject[] = [
         label: "Close Date",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "center",
         type: "date",
         tooltip: "The date the deal was closed",
@@ -230,15 +230,15 @@ export const salesHeadersCore: SvelteHeaderObject[] = [
     label: "Financial Metrics",
     width: "1fr",
     minWidth: 140,
-    isSortable: false,
+    sortable: false,
     children: [
       {
         accessor: "commission",
         label: "Commission",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "right",
         type: "number",
         tooltip: "The commission earned from the deal in dollars",
@@ -248,8 +248,8 @@ export const salesHeadersCore: SvelteHeaderObject[] = [
         label: "Profit Margin",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "right",
         type: "number",
         tooltip: "The profit margin of the deal",
@@ -268,8 +268,8 @@ export const salesHeadersCore: SvelteHeaderObject[] = [
         label: "Deal Profit",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "right",
         type: "number",
         tooltip: "The profit of the deal in dollars",
@@ -279,8 +279,8 @@ export const salesHeadersCore: SvelteHeaderObject[] = [
         label: "Category",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "center",
         type: "enum",
         tooltip: "The category of the deal",

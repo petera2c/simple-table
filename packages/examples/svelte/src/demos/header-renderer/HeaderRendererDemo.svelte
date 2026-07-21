@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteHeaderObject } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef } from "@simple-table/svelte";
   import { headerRendererConfig } from "./header-renderer.demo-data";
   import HeaderSortableHeader from "./HeaderSortableHeader.svelte";
   import { headerDemoSortAccessor, headerDemoSortDirection } from "./header-sort-store";
@@ -27,10 +27,10 @@
   const headers = $derived(
     headerRendererConfig.headers.map((h) => ({
       ...h,
-      isSortable: false,
+      sortable: false,
       headerRenderer: HeaderSortableHeader,
     })),
   );
 </script>
 
-<SimpleTable defaultHeaders={headers} rows={sortedData} {height} {theme} />
+<SimpleTable columns={headers} rows={sortedData} {height} {theme} />

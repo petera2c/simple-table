@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { billingConfig } from "./billing.demo-data";
 import { BillingNameCellComponent } from "./billing-name-cell.component";
 import "@simple-table/angular/styles.css";
@@ -13,8 +13,8 @@ import "@simple-table/angular/styles.css";
     <simple-table
       [columnReordering]="true"
       [columnResizing]="true"
-      [defaultHeaders]="headers"
-      [editColumns]="true"
+      [columns]="headers"
+      [enableColumnEditor]="true"
       [height]="height"
       [initialSortColumn]="'amount'"
       [initialSortDirection]="'desc'"
@@ -22,7 +22,7 @@ import "@simple-table/angular/styles.css";
       [rows]="rows"
       [selectableCells]="true"
       [theme]="theme"
-      [useOddColumnBackground]="true"
+      [oddColumnBackground]="true"
     ></simple-table>
   `,
 })
@@ -33,7 +33,7 @@ export class BillingDemoComponent {
   readonly grouping = ["invoices", "charges"];
   readonly rows: Row[] = billingConfig.rows as unknown as Row[];
 
-  readonly headers: AngularHeaderObject[] = billingConfig.headers.map((h) =>
+  readonly headers: AngularColumnDef[] = billingConfig.headers.map((h) =>
     h.accessor === "name" ? { ...h, cellRenderer: BillingNameCellComponent } : h,
   );
 }

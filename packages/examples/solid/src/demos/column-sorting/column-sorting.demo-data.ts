@@ -1,6 +1,6 @@
 // Self-contained demo table setup for this example.
 import type { Row } from "@simple-table/solid";
-import type { SolidHeaderObject } from "@simple-table/solid";
+import type { SolidColumnDef } from "@simple-table/solid";
 
 
 export const COLUMN_SORTING_DATA: Row[] = [
@@ -103,16 +103,16 @@ export const COLUMN_SORTING_DATA: Row[] = [
 ];
 
 
-export const columnSortingHeaders: SolidHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-  { accessor: "name", label: "Name", width: 180, isSortable: true, type: "string" },
-  { accessor: "age", label: "Age", width: 80, isSortable: true, type: "number" },
-  { accessor: "role", label: "Role", width: 200, isSortable: true, type: "string" },
+export const columnSortingHeaders: SolidColumnDef[] = [
+  { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+  { accessor: "name", label: "Name", width: 180, sortable: true, type: "string" },
+  { accessor: "age", label: "Age", width: 80, sortable: true, type: "number" },
+  { accessor: "role", label: "Role", width: 200, sortable: true, type: "string" },
   {
     accessor: "department",
     label: "Department",
     width: 180,
-    isSortable: true,
+    sortable: true,
     type: "string",
     valueFormatter: ({ value }) => {
       return (value as string).charAt(0).toUpperCase() + (value as string).slice(1);
@@ -122,7 +122,7 @@ export const columnSortingHeaders: SolidHeaderObject[] = [
     accessor: "startDate",
     label: "Start Date",
     width: 140,
-    isSortable: true,
+    sortable: true,
     type: "date",
     valueFormatter: ({ value }) => {
       if (typeof value === "string") {

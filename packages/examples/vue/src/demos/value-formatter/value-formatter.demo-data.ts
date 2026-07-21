@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { VueHeaderObject, Row } from "@simple-table/vue";
+import type { VueColumnDef, Row } from "@simple-table/vue";
 
 
 export const valueFormatterData: Row[] = [
@@ -26,7 +26,7 @@ const DEPARTMENT_CODES: Record<string, string> = {
   operations: "OPS",
 };
 
-export const valueFormatterHeaders: VueHeaderObject[] = [
+export const valueFormatterHeaders: VueColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   {
     accessor: "firstName",

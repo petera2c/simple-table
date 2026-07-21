@@ -1,5 +1,5 @@
 import { SimpleTableVanilla, asRows } from "simple-table-core";
-import type { Theme, HeaderObject, CellRenderer, CellChangeProps, CellRendererProps } from "simple-table-core";
+import type { Theme, ColumnDef, CellRenderer, CellChangeProps, CellRendererProps } from "simple-table-core";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
 import type { HREmployee, HRTagColorKey } from "./hr.demo-data";
 import "simple-table-core/styles.css";
@@ -15,7 +15,7 @@ function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node
   return e;
 }
 
-function buildHRHeaders(): HeaderObject[] {
+function buildHRHeaders(): ColumnDef[] {
   const renderers: Record<string, CellRenderer> = {
     fullName: ({ row, theme }: CellRendererProps) => {
       const c = getHRThemeColors(theme);
@@ -111,14 +111,14 @@ export function renderHRDemo(
   const rowsPerPage = Math.floor(heightNum / rowHeight);
 
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: buildHRHeaders(),
+    columns: buildHRHeaders(),
     rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
     columnReordering: true,
     columnResizing: true,
     selectableCells: true,
-    shouldPaginate: true,
+    enablePagination: true,
     rowsPerPage,
     customTheme: { rowHeight },
     onCellEdit: ({ accessor, newValue, row }: CellChangeProps) => {

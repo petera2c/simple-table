@@ -31,7 +31,7 @@ export function renderInfiniteScrollDemo(
   updateStatus();
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: infiniteScrollConfig.headers,
+    columns: infiniteScrollConfig.headers,
     rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

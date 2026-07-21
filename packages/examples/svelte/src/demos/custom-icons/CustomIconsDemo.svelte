@@ -23,7 +23,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={customIconsConfig.headers}
+  columns={customIconsConfig.headers}
   rows={customIconsConfig.rows}
   {icons}
   {height}

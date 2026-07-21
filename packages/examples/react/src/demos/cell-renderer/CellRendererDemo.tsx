@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, CellRendererProps, ReactHeaderObject } from "@simple-table/react";
+import type { Theme, CellRendererProps, ReactColumnDef } from "@simple-table/react";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "@simple-table/react/styles.css";
@@ -170,13 +170,13 @@ const CellRendererDemo = ({
         };
         const cellRenderer = renderers[h.accessor as string];
         return cellRenderer ? { ...h, cellRenderer } : h;
-      }) as ReactHeaderObject[],
+      }) as ReactColumnDef[],
     [],
   );
 
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={cellRendererConfig.rows}
       height={height}
       theme={theme}

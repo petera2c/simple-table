@@ -6,7 +6,7 @@
  * is below VIRTUALIZATION_THRESHOLD (20).
  */
 
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { expect } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -22,7 +22,7 @@ const meta: Meta = {
 
 export default meta;
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80 },
   { accessor: "name", label: "Name", width: 200 },
   { accessor: "description", label: "Description", width: 300 },

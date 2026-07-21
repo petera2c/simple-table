@@ -5,7 +5,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -58,7 +58,7 @@ const data = () => [
 
 export const NestedHeadersMultipleRows = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       {
         accessor: "group1",
@@ -90,7 +90,7 @@ export const NestedHeadersMultipleRows = {
 
 export const NestedHeadersColumnSpan = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       {
         accessor: "parent",

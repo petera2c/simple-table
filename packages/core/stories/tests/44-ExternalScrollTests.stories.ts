@@ -9,7 +9,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { SimpleTableVanilla, HeaderObject } from "../../src/index";
+import { SimpleTableVanilla, ColumnDef } from "../../src/index";
 import { waitForTable, getRowCount } from "./testUtils";
 
 const meta: Meta = {
@@ -22,7 +22,7 @@ const meta: Meta = {
 
 export default meta;
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 200, type: "string" },
   { accessor: "description", label: "Description", width: 300, type: "string" },
@@ -56,7 +56,7 @@ export const ExternalElementVirtualizes = {
     scrollContainer.appendChild(tableContainer);
 
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createRows(2000),
       getRowId: (p) => String((p.row as { id?: number })?.id),
       scrollParent: scrollContainer,
@@ -114,7 +114,7 @@ export const ExternalScrollFiresOnLoadMore = {
     scrollContainer.appendChild(tableContainer);
 
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createRows(500),
       getRowId: (p) => String((p.row as { id?: number })?.id),
       scrollParent: scrollContainer,
@@ -162,7 +162,7 @@ export const NoScrollParentRendersAll = {
     wrapper.appendChild(tableContainer);
 
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createRows(50),
       getRowId: (p) => String((p.row as { id?: number })?.id),
     });
@@ -198,7 +198,7 @@ export const HeightOverridesScrollParent = {
     scrollContainer.appendChild(tableContainer);
 
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createRows(500),
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
@@ -247,7 +247,7 @@ export const StickyHeaderInExternalScroll = {
     scrollContainer.appendChild(tableContainer);
 
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createRows(2000),
       getRowId: (p) => String((p.row as { id?: number })?.id),
       scrollParent: scrollContainer,
@@ -304,7 +304,7 @@ export const StickyHeaderInExternalScroll = {
 // so grouped parent rows pin under the sticky header instead of scrolling away.
 // ============================================================================
 
-const groupedHeaders: HeaderObject[] = [
+const groupedHeaders: ColumnDef[] = [
   // `expandable: true` is required for the column to render the
   // expand/collapse chevron next to grouped parent rows.
   { accessor: "name", label: "Name", width: 240, expandable: true },
@@ -343,7 +343,7 @@ export const RowGroupingInExternalScroll = {
     // 50 groups × 20 children fully expanded = 1050 visible rows — plenty for
     // virtualization to kick in inside a 400px viewport.
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: groupedHeaders,
+      columns: groupedHeaders,
       rows: createGroupedRows(50, 20),
       getRowId: ({ row }) => String((row as { id?: string }).id),
       rowGrouping: ["children"],

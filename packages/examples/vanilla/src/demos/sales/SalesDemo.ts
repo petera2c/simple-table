@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject, CellRenderer, CellChangeProps, Row } from "simple-table-core";
+import type { Theme, ColumnDef, CellRenderer, CellChangeProps, Row } from "simple-table-core";
 import { getThemeColors, salesHeadersCore, salesSampleRows, type SalesRow } from "./sales.demo-data";
 import "simple-table-core/styles.css";
 
@@ -121,15 +121,15 @@ function buildSalesRenderers(): Record<string, CellRenderer> {
   };
 }
 
-function buildSalesHeaders(): HeaderObject[] {
+function buildSalesHeaders(): ColumnDef[] {
   const renderers = buildSalesRenderers();
-  const headers: HeaderObject[] = JSON.parse(JSON.stringify(salesHeadersCore));
+  const headers: ColumnDef[] = JSON.parse(JSON.stringify(salesHeadersCore));
 
-  const applyRenderers = (hdrs: HeaderObject[]) => {
+  const applyRenderers = (hdrs: ColumnDef[]) => {
     for (const h of hdrs) {
       const renderer = renderers[String(h.accessor)];
       if (renderer) h.cellRenderer = renderer;
-      if (h.children) applyRenderers(h.children as HeaderObject[]);
+      if (h.children) applyRenderers(h.children as ColumnDef[]);
     }
   };
   applyRenderers(headers);
@@ -155,12 +155,12 @@ export function renderSalesDemo(
   window.addEventListener("resize", onResize);
 
   table = new SimpleTableVanilla(container, {
-    defaultHeaders: buildSalesHeaders(),
+    columns: buildSalesHeaders(),
     rows,
     height: formatTableHeight(options?.height),
     theme: options?.theme,
     autoExpandColumns: !isMobile,
-    editColumns: true,
+    enableColumnEditor: true,
     selectableCells: true,
     columnResizing: true,
     columnReordering: true,

@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, PivotConfig, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, PivotConfig, Row, Theme } from "@simple-table/angular";
 import { pivotDemoConfig, pivotPresets, type PivotPreset } from "./pivot.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -30,7 +30,7 @@ import "@simple-table/angular/styles.css";
       </div>
       <simple-table
         [rows]="rows"
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [pivot]="pivot"
         [columnResizing]="true"
         [expandAll]="nestedRows"
@@ -46,7 +46,7 @@ export class PivotDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = pivotDemoConfig.rows;
-  readonly headers: AngularHeaderObject[] = pivotDemoConfig.headers;
+  readonly headers: AngularColumnDef[] = pivotDemoConfig.headers;
   readonly presets = pivotPresets;
 
   activeId = pivotPresets[0].id;

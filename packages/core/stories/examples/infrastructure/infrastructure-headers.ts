@@ -1,7 +1,7 @@
 /**
  * Infrastructure example headers – ported from React infrastructure-headers (vanilla-compatible).
  */
-import type { HeaderObject } from "../../../src/index";
+import type { ColumnDef } from "../../../src/index";
 import type Theme from "../../../src/types/Theme";
 
 type ColorStyles = {
@@ -200,13 +200,13 @@ function createMetricBadge(text: string, styles: ColorStyles): HTMLElement {
   return wrapper;
 }
 
-export const INFRASTRUCTURE_HEADERS: HeaderObject[] = [
+export const INFRASTRUCTURE_HEADERS: ColumnDef[] = [
   {
     accessor: "serverId",
     align: "left",
     filterable: true,
-    isEditable: false,
-    isSortable: true,
+    editable: false,
+    sortable: true,
     label: "Server ID",
     minWidth: 180,
     pinned: "left",
@@ -224,8 +224,8 @@ export const INFRASTRUCTURE_HEADERS: HeaderObject[] = [
     accessor: "serverName",
     align: "left",
     filterable: true,
-    isEditable: false,
-    isSortable: true,
+    editable: false,
+    sortable: true,
     label: "Name",
     minWidth: 200,
     type: "string",
@@ -235,15 +235,15 @@ export const INFRASTRUCTURE_HEADERS: HeaderObject[] = [
     accessor: "performance",
     label: "Performance Metrics",
     width: 690,
-    isSortable: false,
+    sortable: false,
     children: [
       {
         accessor: "cpuHistory",
         label: "CPU History",
         width: 150,
-        isSortable: false,
+        sortable: false,
         filterable: false,
-        isEditable: false,
+        editable: false,
         align: "center",
         type: "lineAreaChart",
         tooltip: "CPU usage over the last 30 intervals",
@@ -252,9 +252,9 @@ export const INFRASTRUCTURE_HEADERS: HeaderObject[] = [
         accessor: "cpuUsage",
         label: "CPU %",
         width: 120,
-        isSortable: true,
+        sortable: true,
         filterable: true,
-        isEditable: true,
+        editable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row, theme }) => {
@@ -271,9 +271,9 @@ export const INFRASTRUCTURE_HEADERS: HeaderObject[] = [
         accessor: "memoryUsage",
         label: "Memory %",
         width: 130,
-        isSortable: true,
+        sortable: true,
         filterable: true,
-        isEditable: true,
+        editable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row, theme }) => {
@@ -290,9 +290,9 @@ export const INFRASTRUCTURE_HEADERS: HeaderObject[] = [
         accessor: "diskUsage",
         label: "Disk %",
         width: 120,
-        isSortable: true,
+        sortable: true,
         filterable: true,
-        isEditable: true,
+        editable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }) => {
@@ -304,9 +304,9 @@ export const INFRASTRUCTURE_HEADERS: HeaderObject[] = [
         accessor: "responseTime",
         label: "Response (ms)",
         width: 120,
-        isSortable: true,
+        sortable: true,
         filterable: true,
-        isEditable: true,
+        editable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row, theme }) => {
@@ -325,9 +325,9 @@ export const INFRASTRUCTURE_HEADERS: HeaderObject[] = [
     accessor: "status",
     label: "Status",
     width: 130,
-    isSortable: true,
+    sortable: true,
     filterable: true,
-    isEditable: false,
+    editable: false,
     align: "center",
     type: "enum",
     enumOptions: [

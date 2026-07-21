@@ -105,7 +105,7 @@ export function renderWindowInfiniteScrollDemo(
   updateStatus();
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: windowScrollHeaders,
+    columns: windowScrollHeaders,
     rows,
     theme: options?.theme,
     getRowId: (p) => String((p.row as { id?: number })?.id),

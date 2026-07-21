@@ -28,7 +28,7 @@ function handleFilterChange(newFilters: TableFilterState) {
 
 <template>
   <SimpleTable
-    :default-headers="externalFilterConfig.headers"
+    :columns="externalFilterConfig.headers"
     :rows="filteredRows"
     :external-filter-handling="true"
     :column-resizing="true"

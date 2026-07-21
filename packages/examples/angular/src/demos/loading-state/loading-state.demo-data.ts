@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
 
 export const loadingStateData = [
@@ -13,7 +13,7 @@ export const loadingStateData = [
   { id: 8, name: "Luca Rossi", age: 26, department: "Marketing", salary: 75000, status: "Active" },
 ];
 
-export const loadingStateHeaders: AngularHeaderObject[] = [
+export const loadingStateHeaders: AngularColumnDef[] = [
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120 },
   { accessor: "age", label: "Age", width: 80, type: "number" },
   { accessor: "department", label: "Department", width: 150 },

@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable, addParagraph, type RenderVanillaTableResult } from "../utils";
@@ -88,8 +88,8 @@ const clickColumnHeader = async (canvasElement: HTMLElement, label: string) => {
   const header = findHeaderByLabel(canvasElement, label);
   if (!header) throw new Error(`Header with label "${label}" not found`);
   expect(header).toBeTruthy();
-  const isSortable = header.classList.contains("clickable");
-  if (!isSortable) throw new Error(`Header "${label}" is not sortable (missing clickable class)`);
+  const sortable = header.classList.contains("clickable");
+  if (!sortable) throw new Error(`Header "${label}" is not sortable (missing clickable class)`);
   const headerLabel = header.querySelector(".st-header-label");
   if (!headerLabel) throw new Error(`Header label not found for "${label}"`);
   const user = userEvent.setup();
@@ -166,11 +166,11 @@ const verifySortByData = async (canvasElement: HTMLElement, accessor: string, ex
 
 export const BasicStringSorting = {
   render: () => {
-    const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
-      { accessor: "age", label: "Age", width: 100, isSortable: true, type: "number" },
-      { accessor: "revenue", label: "Revenue", width: 150, isSortable: true, type: "number" },
+    const headers: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
+      { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },
+      { accessor: "revenue", label: "Revenue", width: 150, sortable: true, type: "number" },
     ];
     const { wrapper, h2 } = renderVanillaTable(headers, createSortableData(), { height: "400px" });
     h2.textContent = "Basic String Column Sorting";
@@ -189,11 +189,11 @@ export const BasicStringSorting = {
 
 export const BasicNumberSorting = {
   render: () => {
-    const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
-      { accessor: "age", label: "Age", width: 100, isSortable: true, type: "number" },
-      { accessor: "revenue", label: "Revenue", width: 150, isSortable: true, type: "number" },
+    const headers: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
+      { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },
+      { accessor: "revenue", label: "Revenue", width: 150, sortable: true, type: "number" },
     ];
     const { wrapper, h2 } = renderVanillaTable(headers, createSortableData(), { height: "400px" });
     h2.textContent = "Basic Number Column Sorting";
@@ -211,10 +211,10 @@ export const BasicNumberSorting = {
 
 export const CustomSortingOrderDescFirst = {
   render: () => {
-    const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
-      { accessor: "revenue", label: "Revenue", width: 150, isSortable: true, type: "number", sortingOrder: ["desc", "asc", null] },
+    const headers: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
+      { accessor: "revenue", label: "Revenue", width: 150, sortable: true, type: "number", sortingOrder: ["desc", "asc", null] },
     ];
     const { wrapper, h2 } = renderVanillaTable(headers, createSortableData(), { height: "400px" });
     h2.textContent = "Custom Sort Order - Descending First";
@@ -233,10 +233,10 @@ export const CustomSortingOrderDescFirst = {
 
 export const CustomSortingOrderAlwaysSorted = {
   render: () => {
-    const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
-      { accessor: "priority", label: "Priority", width: 150, isSortable: true, type: "number", sortingOrder: ["asc", "desc"] },
+    const headers: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
+      { accessor: "priority", label: "Priority", width: 150, sortable: true, type: "number", sortingOrder: ["asc", "desc"] },
     ];
     const { wrapper, h2 } = renderVanillaTable(headers, createSortableData(), { height: "400px" });
     h2.textContent = "Custom Sort Order - Always Sorted";
@@ -256,10 +256,10 @@ export const CustomSortingOrderAlwaysSorted = {
 
 export const DateSorting = {
   render: () => {
-    const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
-      { accessor: "joinDate", label: "Join Date", width: 150, isSortable: true, type: "date", sortingOrder: ["desc", "asc", null] },
+    const headers: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
+      { accessor: "joinDate", label: "Join Date", width: 150, sortable: true, type: "date", sortingOrder: ["desc", "asc", null] },
     ];
     const { wrapper, h2 } = renderVanillaTable(headers, createSortableData(), { height: "400px" });
     h2.textContent = "Date Column Sorting";
@@ -289,11 +289,11 @@ export const DateSorting = {
 
 export const NestedAccessorSorting = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
-      { accessor: "user.name", label: "Name", width: 150, isSortable: true },
-      { accessor: "user.profile.score", label: "Score", width: 120, isSortable: true, type: "number" },
-      { accessor: "user.profile.level", label: "Level", width: 120, isSortable: true },
+      { accessor: "user.name", label: "Name", width: 150, sortable: true },
+      { accessor: "user.profile.score", label: "Score", width: 120, sortable: true, type: "number" },
+      { accessor: "user.profile.level", label: "Level", width: 120, sortable: true },
     ];
     const { wrapper, h2 } = renderVanillaTable(headers, createNestedSortData(), { height: "400px" });
     h2.textContent = "Nested Accessor Sorting";
@@ -311,12 +311,12 @@ export const NestedAccessorSorting = {
 
 export const ArrayIndexAccessorSorting = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Artist", width: 150 },
-      { accessor: "awards[0]", label: "First Award", width: 150, isSortable: true },
-      { accessor: "albums[0].title", label: "First Album", width: 180, isSortable: true },
-      { accessor: "albums[0].year", label: "Album Year", width: 120, isSortable: true, type: "number" },
+      { accessor: "awards[0]", label: "First Award", width: 150, sortable: true },
+      { accessor: "albums[0].title", label: "First Album", width: 180, sortable: true },
+      { accessor: "albums[0].year", label: "Album Year", width: 120, sortable: true, type: "number" },
     ];
     const { wrapper, h2 } = renderVanillaTable(headers, createArraySortData(), { height: "400px" });
     h2.textContent = "Array Index Accessor Sorting (v1.9.4+)";
@@ -334,14 +334,14 @@ export const ArrayIndexAccessorSorting = {
 
 export const CustomComparatorMultiField = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       {
         accessor: "priority",
         label: "Priority + Revenue",
         width: 200,
-        isSortable: true,
+        sortable: true,
         comparator: ({ rowA, rowB, direction }) => {
           const a = rowA as unknown as SortableTestRow;
           const b = rowB as unknown as SortableTestRow;
@@ -370,14 +370,14 @@ export const CustomComparatorMultiField = {
 
 export const ValueGetterSorting = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "user.name", label: "Name", width: 150 },
       {
         accessor: "metadata.seniorityLevel",
         label: "Seniority",
         width: 150,
-        isSortable: true,
+        sortable: true,
         type: "number",
         valueGetter: ({ row }) => (row as unknown as NestedSortTestRow).metadata?.seniorityLevel ?? 0,
         valueFormatter: ({ row }) => {
@@ -403,10 +403,10 @@ export const ValueGetterSorting = {
 
 export const InitialSortState = {
   render: () => {
-    const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
-      { accessor: "revenue", label: "Revenue", width: 150, isSortable: true, type: "number" },
+    const headers: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
+      { accessor: "revenue", label: "Revenue", width: 150, sortable: true, type: "number" },
     ];
     const { wrapper, h2 } = renderVanillaTable(headers, createSortableData(), {
       height: "400px",
@@ -447,13 +447,13 @@ export const OnSortChangeCallback = {
     wrapper.appendChild(sortStateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
-      { accessor: "age", label: "Age", width: 100, isSortable: true, type: "number" },
+    const headers:ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
+      { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createSortableData(),
       height: "400px",
       onSortChange: (sortConfig) => {
@@ -494,13 +494,13 @@ export const ExternalSortHandling = {
     wrapper.appendChild(stateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers:ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
-      { accessor: "age", label: "Age", width: 100, isSortable: true, type: "number" },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
+      { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: sortedData,
       height: "400px",
       externalSortHandling: true,
@@ -590,13 +590,13 @@ export const ProgrammaticSortControl = {
     wrapper.appendChild(stateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[]     = [
-      { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
-      { accessor: "age", label: "Age", width: 100, isSortable: true, type: "number" },
-      { accessor: "revenue", label: "Revenue", width: 150, isSortable: true, type: "number" },
+    const headers:ColumnDef[]     = [
+      { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
+      { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },
+      { accessor: "revenue", label: "Revenue", width: 150, sortable: true, type: "number" },
     ];
-    const table = new SimpleTableVanilla(tableContainer, { defaultHeaders: headers, rows: createSortableData(), height: "400px" });
+    const table = new SimpleTableVanilla(tableContainer, { columns: headers, rows: createSortableData(), height: "400px" });
     table.mount();
     (wrapper as RenderVanillaTableResult["wrapper"])._table = table;
     const updateState = () => {
@@ -635,11 +635,11 @@ export const ProgrammaticSortControl = {
 
 export const MultipleColumnsSorting = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
-      { accessor: "name", label: "Name (Asc First)", width: 180, isSortable: true, sortingOrder: ["asc", "desc", null] },
-      { accessor: "revenue", label: "Revenue (Desc First)", width: 180, isSortable: true, type: "number", sortingOrder: ["desc", "asc", null] },
-      { accessor: "priority", label: "Priority (Always)", width: 150, isSortable: true, type: "number", sortingOrder: ["asc", "desc"] },
+      { accessor: "name", label: "Name (Asc First)", width: 180, sortable: true, sortingOrder: ["asc", "desc", null] },
+      { accessor: "revenue", label: "Revenue (Desc First)", width: 180, sortable: true, type: "number", sortingOrder: ["desc", "asc", null] },
+      { accessor: "priority", label: "Priority (Always)", width: 150, sortable: true, type: "number", sortingOrder: ["asc", "desc"] },
     ];
     const { wrapper, h2 } = renderVanillaTable(headers, createSortableData(), { height: "400px" });
     h2.textContent = "Multiple Columns with Different Sort Orders";

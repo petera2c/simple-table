@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, CellChangeProps, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, CellChangeProps, Theme } from "@simple-table/angular";
 import { cellEditingConfig } from "./cell-editing.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -10,7 +10,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="data"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
       (cellEdit)="onCellEdit($event)"
@@ -21,7 +21,7 @@ export class CellEditingDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = cellEditingConfig.headers;
+  readonly headers: AngularColumnDef[] = cellEditingConfig.headers;
   data = [...cellEditingConfig.rows];
 
   onCellEdit({ accessor, newValue, row }: CellChangeProps): void {

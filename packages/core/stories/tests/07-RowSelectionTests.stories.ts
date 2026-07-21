@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent, fireEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable, addParagraph } from "../utils";
@@ -97,7 +97,7 @@ const getSelectedRowCount = async (canvasElement: HTMLElement) => {
 
 export const BasicRowSelection = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -148,7 +148,7 @@ export const BasicRowSelection = {
 export const SelectAllFunctionality = {
   tags: ["row-selection-select-all-only"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -185,7 +185,7 @@ export const SelectAllFunctionality = {
 
 export const PartialSelectionState = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -240,13 +240,13 @@ export const OnRowSelectionChangeCallback = {
     wrapper.appendChild(infoDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createEmployeeData(),
       height: "400px",
       enableRowSelection: true,
@@ -294,7 +294,7 @@ export const SelectionWithPagination = {
       { id: 7, name: "Grace Lee", department: "Engineering", salary: 115000 },
       { id: 8, name: "Henry Wilson", department: "Design", salary: 92000 },
     ];
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -302,7 +302,7 @@ export const SelectionWithPagination = {
     const { wrapper, h2 } = renderVanillaTable(headers, data, {
       height: "400px",
       enableRowSelection: true,
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 5,
     });
     h2.textContent = "Selection with Pagination";
@@ -351,7 +351,7 @@ export const SelectionWithPagination = {
 
 export const NoSelectionWithoutProp = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -384,9 +384,9 @@ export const NoSelectionWithoutProp = {
 
 export const SelectionPersistsThroughSort = {
   render: () => {
-    const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 80, type: "number", isSortable: true },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
+    const headers: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number", sortable: true },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
       { accessor: "department", label: "Department", width: 150 },
     ];
     const { wrapper, h2 } = renderVanillaTable(headers, createEmployeeData(), {
@@ -433,14 +433,14 @@ export const SelectionPersistsThroughSort = {
 export const SelectionPersistsThroughFilter = {
   render: () => {
     const { SimpleTableVanilla: SVanilla } = require("../../src/index") as typeof import("../../src/index");
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
     ];
     const tableContainer = document.createElement("div");
     const table = new SVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createEmployeeData(),
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "400px",
@@ -529,7 +529,7 @@ const countSelectedRowsViaClass = (canvasElement: HTMLElement): number => {
 
 export const SingleSelectionMode = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -583,7 +583,7 @@ export const SingleSelectionMode = {
 
 export const ClickToSelectWithoutCheckboxColumn = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -632,7 +632,7 @@ export const ClickToSelectWithoutCheckboxColumn = {
 
 export const KeyboardRowSelection = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -684,7 +684,7 @@ export const KeyboardRowSelection = {
 
 export const TableAPIRowSelection = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },

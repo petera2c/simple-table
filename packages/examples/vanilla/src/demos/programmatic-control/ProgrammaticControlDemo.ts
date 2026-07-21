@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject } from "simple-table-core";
+import type { Theme, ColumnDef } from "simple-table-core";
 import {
   programmaticControlConfig,
   PROGRAMMATIC_CONTROL_STATUS_COLORS,
@@ -21,7 +21,7 @@ export function renderProgrammaticControlDemo(
   const controls = document.createElement("div");
   controls.style.cssText = "margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap";
 
-  const headers: HeaderObject[] = programmaticControlConfig.headers.map((h) => {
+  const headers: ColumnDef[] = programmaticControlConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
@@ -108,7 +108,7 @@ export function renderProgrammaticControlDemo(
   container.appendChild(wrapper);
 
   table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: headers,
+    columns: headers,
     rows: programmaticControlConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

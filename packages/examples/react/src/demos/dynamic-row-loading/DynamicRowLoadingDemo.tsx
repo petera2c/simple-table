@@ -55,8 +55,8 @@ const DynamicRowLoadingDemo = ({ height = "400px", theme }: { height?: string | 
   return (
     <SimpleTable
       columnResizing={dynamicRowLoadingConfig.tableProps.columnResizing}
-      defaultHeaders={dynamicRowLoadingConfig.headers}
-      editColumns={dynamicRowLoadingConfig.tableProps.editColumns}
+      columns={dynamicRowLoadingConfig.headers}
+      enableColumnEditor={dynamicRowLoadingConfig.tableProps.enableColumnEditor}
       expandAll={dynamicRowLoadingConfig.tableProps.expandAll}
       height={height}
       onRowGroupExpand={handleRowExpand}
@@ -65,7 +65,7 @@ const DynamicRowLoadingDemo = ({ height = "400px", theme }: { height?: string | 
       rows={rows}
       selectableCells={dynamicRowLoadingConfig.tableProps.selectableCells}
       theme={theme}
-      useOddEvenRowBackground={dynamicRowLoadingConfig.tableProps.useOddEvenRowBackground}
+      oddEvenRowBackground={dynamicRowLoadingConfig.tableProps.oddEvenRowBackground}
     />
   );
 };

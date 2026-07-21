@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { VueHeaderObject } from "@simple-table/vue";
+import type { VueColumnDef } from "@simple-table/vue";
 
 
 export const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
@@ -23,26 +23,26 @@ export const programmaticControlData = [
   { id: 12, name: "Desk Lamp LED", category: "Appliances", price: 44.99, stock: 0, status: "Out of Stock" },
 ];
 
-export const programmaticControlHeaders: VueHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 70, type: "number", isSortable: true, filterable: true },
-  { accessor: "name", label: "Product Name", width: "1fr", minWidth: 150, type: "string", isSortable: true, filterable: true },
+export const programmaticControlHeaders: VueColumnDef[] = [
+  { accessor: "id", label: "ID", width: 70, type: "number", sortable: true, filterable: true },
+  { accessor: "name", label: "Product Name", width: "1fr", minWidth: 150, type: "string", sortable: true, filterable: true },
   {
     accessor: "category",
     label: "Category",
     width: 140,
     type: "enum",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     enumOptions: ["Electronics", "Furniture", "Stationery", "Appliances"].map((v) => ({ label: v, value: v })),
   },
-  { accessor: "price", label: "Price", width: 110, align: "right", type: "number", isSortable: true, filterable: true, valueFormatter: ({ value }) => `$${(value as number).toFixed(2)}` },
-  { accessor: "stock", label: "Stock", width: 100, align: "right", type: "number", isSortable: true, filterable: true },
+  { accessor: "price", label: "Price", width: 110, align: "right", type: "number", sortable: true, filterable: true, valueFormatter: ({ value }) => `$${(value as number).toFixed(2)}` },
+  { accessor: "stock", label: "Stock", width: 100, align: "right", type: "number", sortable: true, filterable: true },
   {
     accessor: "status",
     label: "Status",
     width: 110,
     type: "enum",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     enumOptions: ["Available", "Low Stock", "Out of Stock"].map((v) => ({ label: v, value: v })),
   },

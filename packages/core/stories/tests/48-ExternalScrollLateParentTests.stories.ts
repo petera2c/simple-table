@@ -22,7 +22,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { SimpleTableVanilla, HeaderObject } from "../../src/index";
+import { SimpleTableVanilla, ColumnDef } from "../../src/index";
 import { waitForTable, getRowCount } from "./testUtils";
 
 const meta: Meta = {
@@ -35,7 +35,7 @@ const meta: Meta = {
 
 export default meta;
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 200, type: "string" },
   { accessor: "description", label: "Description", width: 300, type: "string" },
@@ -84,7 +84,7 @@ export const LateResolvingParentGetsWired = {
     let resolvable = false;
 
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createRows(2000),
       getRowId: (p) => String((p.row as { id?: number })?.id),
       scrollParent: () => (resolvable ? scrollContainer : null),
@@ -154,7 +154,7 @@ export const UnresolvedParentStaysVirtualized = {
     // Getter NEVER resolves — we stay in the provisional phase for the whole
     // test, isolating the provisional-viewport behavior.
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createRows(2000),
       getRowId: (p) => String((p.row as { id?: number })?.id),
       scrollParent: () => null,
@@ -199,7 +199,7 @@ export const ProvisionalViewportFeedsRenderWindow = {
     scrollContainer.appendChild(tableContainer);
 
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createRows(2000),
       getRowId: (p) => String((p.row as { id?: number })?.id),
       scrollParent: () => null,

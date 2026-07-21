@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="columnSortingConfig.headers"
+    :columns="columnSortingConfig.headers"
     :rows="columnSortingConfig.rows"
     :height="height"
     :theme="theme"

@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject, Row } from "@simple-table/svelte";
+import type { SvelteColumnDef, Row } from "@simple-table/svelte";
 
 
 export interface DynamicRegion extends Row {
@@ -37,7 +37,7 @@ export interface DynamicProduct extends Row {
   lastUpdate: string;
 }
 
-export const dynamicRowLoadingHeaders: SvelteHeaderObject[] = [
+export const dynamicRowLoadingHeaders: SvelteColumnDef[] = [
   { accessor: "name", label: "Name", width: 280, expandable: true, type: "string", pinned: "left" },
   { accessor: "type", label: "Type", width: 100, type: "string" },
   {
@@ -199,7 +199,7 @@ export const dynamicRowLoadingConfig = {
     expandAll: false,
     columnResizing: true,
     selectableCells: true,
-    useOddEvenRowBackground: true,
-    editColumns: true,
+    oddEvenRowBackground: true,
+    enableColumnEditor: true,
   },
 } as const;

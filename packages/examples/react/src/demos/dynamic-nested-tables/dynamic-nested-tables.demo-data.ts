@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { ReactHeaderObject, Row } from "@simple-table/react";
+import type { ReactColumnDef, Row } from "@simple-table/react";
 
 
 export interface DynamicCompany extends Row {
@@ -56,7 +56,7 @@ export const dynamicNestedTablesData: DynamicCompany[] = [
   { id: "comp-15", companyName: "EnergyFlow Systems", industry: "Energy", revenue: "$560M", employees: 1800 },
 ];
 
-export const dynamicNestedTablesDivisionHeaders: ReactHeaderObject[] = [
+export const dynamicNestedTablesDivisionHeaders: ReactColumnDef[] = [
   { accessor: "divisionName", label: "Division", width: 200 },
   { accessor: "revenue", label: "Revenue", width: 120 },
   { accessor: "profitMargin", label: "Profit Margin", width: 130 },
@@ -64,14 +64,14 @@ export const dynamicNestedTablesDivisionHeaders: ReactHeaderObject[] = [
   { accessor: "location", label: "Location", width: 180 },
 ];
 
-export const dynamicNestedTablesCompanyHeaders: ReactHeaderObject[] = [
+export const dynamicNestedTablesCompanyHeaders: ReactColumnDef[] = [
   {
     accessor: "companyName",
     label: "Company",
     width: 200,
     expandable: true,
     nestedTable: {
-      defaultHeaders: dynamicNestedTablesDivisionHeaders,
+      columns: dynamicNestedTablesDivisionHeaders,
       expandAll: false,
       autoExpandColumns: true,
     },

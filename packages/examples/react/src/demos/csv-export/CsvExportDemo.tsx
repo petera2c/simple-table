@@ -1,6 +1,6 @@
 import { useRef, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, TableAPI, ReactHeaderObject } from "@simple-table/react";
+import type { Theme, TableAPI, ReactColumnDef } from "@simple-table/react";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -13,7 +13,7 @@ const CsvExportDemo = ({
 }) => {
   const tableRef = useRef<TableAPI>(null);
 
-  const headers: ReactHeaderObject[] = useMemo(
+  const headers: ReactColumnDef[] = useMemo(
     () =>
       csvExportHeaders.map((h) => {
         if (h.accessor === "actions") {
@@ -72,9 +72,9 @@ const CsvExportDemo = ({
       </div>
       <SimpleTable
         ref={tableRef}
-        defaultHeaders={headers}
+        columns={headers}
         rows={csvExportData}
-        editColumns={csvExportConfig.tableProps.editColumns}
+        enableColumnEditor={csvExportConfig.tableProps.enableColumnEditor}
         selectableCells={csvExportConfig.tableProps.selectableCells}
         customTheme={csvExportConfig.tableProps.customTheme}
         height={height}

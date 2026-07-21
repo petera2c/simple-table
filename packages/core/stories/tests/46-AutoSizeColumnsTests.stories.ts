@@ -15,7 +15,7 @@
  * test-runner (Playwright). The helper unit block is layout-independent.
  */
 
-import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import {
   buildHybridSampleIndices,
   percentileOf,
@@ -94,7 +94,7 @@ let loadingIdentityFill: (() => void) | null = null;
 export const AutoWidthShrinksNarrowColumn = {
   parameters: { tags: ["auto-size-shrink"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: "auto", type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
     ];
@@ -116,7 +116,7 @@ export const AutoWidthShrinksNarrowColumn = {
 export const AutoWidthGrowsForLongContent = {
   parameters: { tags: ["auto-size-grow"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "notes", label: "Notes", width: "auto", type: "string" },
     ];
@@ -138,7 +138,7 @@ export const AutoWidthGrowsForLongContent = {
 export const AutoWidthRespectsMaxWidth = {
   parameters: { tags: ["auto-size-maxwidth"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "comment", label: "Comment", width: "auto", maxWidth: 160, type: "string" },
     ];
@@ -160,7 +160,7 @@ export const AutoWidthRespectsMaxWidth = {
 export const AutoWidthRespectsMinWidth = {
   parameters: { tags: ["auto-size-minwidth"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "x", label: "X", width: "auto", minWidth: 180, type: "number" },
       { accessor: "name", label: "Name", width: 160, type: "string" },
     ];
@@ -182,7 +182,7 @@ export const AutoWidthRespectsMinWidth = {
 export const AutoSizeHeaderModeIgnoresCells = {
   parameters: { tags: ["auto-size-header-mode"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "description",
@@ -214,7 +214,7 @@ export const AutoSizeHeaderModeIgnoresCells = {
 export const AutoSizeMeasuresCustomRenderer = {
   parameters: { tags: ["auto-size-custom-renderer"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "status",
@@ -248,7 +248,7 @@ export const AutoSizeMeasuresCustomRenderer = {
 export const AutoSizeMeasuresCustomHeaderRenderer = {
   parameters: { tags: ["auto-size-custom-header-renderer"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "state",
@@ -288,14 +288,14 @@ export const AutoSizeMeasuresCustomHeaderRenderer = {
 export const AutoSizeSortIconDoesNotTruncateLabel = {
   parameters: { tags: ["auto-size-sort-icon-reserve"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "name",
         label: "Employee Full Name",
         width: "auto",
         type: "string",
-        isSortable: true,
+        sortable: true,
       },
     ];
     // Short cells so the header label (plus reserved sort icon space) defines
@@ -330,7 +330,7 @@ export const AutoSizeSortIconDoesNotTruncateLabel = {
 export const AutoSizeMeasuresFormattedValue = {
   parameters: { tags: ["auto-size-formatter"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "amount",
@@ -370,7 +370,7 @@ export const AutoSizeMultilineFormattedValueUsesLongestLine = {
     // Concatenated single-line width is much larger than the longest line alone.
     const multiline = [shortLine, longestLine, "Floor 3", "Suite 400"].join("\n");
 
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       {
         accessor: "address",
@@ -441,7 +441,7 @@ export const AutoSizeMultilineFormattedValueUsesLongestLine = {
 export const AutoSizeMeasuresValueGetter = {
   parameters: { tags: ["auto-size-valuegetter"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "score",
@@ -470,7 +470,7 @@ export const AutoSizeMeasuresValueGetter = {
 export const AutoSizeChartColumnUsesChartMinimum = {
   parameters: { tags: ["auto-size-chart"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "trend", label: "Trend", width: "auto", type: "lineAreaChart" },
     ];
@@ -498,7 +498,7 @@ export const AutoSizeChartColumnUsesChartMinimum = {
 export const AutoSizeClipsSingleOutlier = {
   parameters: { tags: ["auto-size-outlier-single"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "amount", label: "Amount", width: "auto", type: "string" },
     ];
@@ -525,7 +525,7 @@ export const AutoSizeClipsSingleOutlier = {
 export const AutoSizeKeepsLegitimateWideMinority = {
   parameters: { tags: ["auto-size-outlier-minority"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "label", label: "Label", width: "auto", type: "string" },
     ];
@@ -552,7 +552,7 @@ export const AutoSizeKeepsLegitimateWideMinority = {
 export const AutoSizeClipsFewOutliers = {
   parameters: { tags: ["auto-size-outlier-few"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "value", label: "Value", width: "auto", type: "string" },
     ];
@@ -583,7 +583,7 @@ export const AutoSizeClipsFewOutliers = {
 export const AutoSize50kUniformShort = {
   parameters: { tags: ["auto-size-50k-short"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: "auto", type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
     ];
@@ -615,7 +615,7 @@ export const AutoSize50kUniformShort = {
 export const AutoSize50kDeepOutlierStaysCompact = {
   parameters: { tags: ["auto-size-50k-deep-outlier"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "value", label: "Value", width: "auto", type: "string" },
     ];
@@ -644,7 +644,7 @@ export const AutoSize50kDeepOutlierStaysCompact = {
 export const AutoSize50kWidespreadLongGrows = {
   parameters: { tags: ["auto-size-50k-long"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "blurb", label: "Blurb", width: "auto", maxWidth: 360, type: "string" },
     ];
@@ -680,7 +680,7 @@ export const AutoSize50kWidespreadLongGrows = {
 export const AutoSizeRefitsOnDataChange = {
   parameters: { tags: ["auto-size-refit"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "text", label: "Text", width: "auto", type: "string" },
     ];
@@ -815,7 +815,7 @@ export const AutoSizeRefitsAfterLoadingWithMultilineRenderer = {
       pendingHosts.length = 0;
     };
 
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       {
         accessor: "rank",
         label: "#",
@@ -1140,9 +1140,9 @@ export const AutoSizeRefitsAfterLoadingWithMultilineRenderer = {
 export const AutoSizeStableAcrossSort = {
   parameters: { tags: ["auto-size-sort-stable"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
-      { accessor: "name", label: "Name", width: "auto", type: "string", isSortable: true },
+      { accessor: "name", label: "Name", width: "auto", type: "string", sortable: true },
     ];
     const data = makeRows(40, (i) => ({ id: i + 1, name: `Person ${String(i).padStart(2, "0")}` }));
     const { wrapper, table } = renderVanillaTable(headers, data, {
@@ -1174,7 +1174,7 @@ export const AutoSizeStableAcrossSort = {
 export const AutoSizeEmptyDataFitsHeader = {
   parameters: { tags: ["auto-size-empty"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "description", label: "Description", width: "auto", type: "string" },
     ];
@@ -1196,7 +1196,7 @@ export const AutoSizeEmptyDataFitsHeader = {
 export const AutoSizeMixedColumnsLayout = {
   parameters: { tags: ["auto-size-mixed"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: "auto", type: "number" },
       { accessor: "name", label: "Name", width: "auto", type: "string" },
       { accessor: "score", label: "Score", width: 120, type: "number" },
@@ -1239,7 +1239,7 @@ export const AutoSizeMixedColumnsLayout = {
 export const AutoSizePinnedColumn = {
   parameters: { tags: ["auto-size-pinned"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "code", label: "Code", width: "auto", pinned: "left", type: "string" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 200, type: "string" },
@@ -1275,7 +1275,7 @@ export const AutoSizePinnedColumn = {
 export const AutoSizeNoFlicker = {
   parameters: { tags: ["auto-size-no-flicker"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "notes", label: "Notes", width: "auto", type: "string" },
     ];
@@ -1381,7 +1381,7 @@ export const AutoSizeAsyncRendererInternalTruncation = {
     const { cellRenderer, fill } = makeAsyncRenderer(buildContent);
     truncationFill = fill;
 
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "status",
@@ -1464,7 +1464,7 @@ export const AutoSizeConsistentAcrossContainerWidths = {
     const outer = document.createElement("div");
 
     const build = (suffix: string, containerWidth: string) => {
-      const headers: HeaderObject[] = [
+      const headers: ColumnDef[] = [
         { accessor: `id${suffix}`, label: "ID", width: "auto", type: "number" },
         { accessor: `name${suffix}`, label: "Name", width: 200, type: "string" },
         { accessor: `city${suffix}`, label: "City", width: 200, type: "string" },
@@ -1550,7 +1550,7 @@ export const AutoSizeEmptyStateAsyncHeaderRenderer = {
       }
     };
 
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "description",
@@ -1607,7 +1607,7 @@ export const AutoSizeCollapsibleHeaderReservesIconWidth = {
     // its header cell (and collapse icon) are not in the DOM during the first
     // measure. Sort icons are reserved without a rendered cell; collapse icons
     // must be too, or the label truncates once the column scrolls into view.
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "pad1", label: "Pad One", width: 200, type: "string" },
       { accessor: "pad2", label: "Pad Two", width: 200, type: "string" },
       { accessor: "pad3", label: "Pad Three", width: 200, type: "string" },
@@ -1677,7 +1677,7 @@ export const AutoSizeLongHeaderConsistentAcrossContainerWidths = {
     const longLabel = "Employee Department Assignment Code";
 
     const build = (suffix: string, containerWidth: string) => {
-      const headers: HeaderObject[] = [
+      const headers: ColumnDef[] = [
         {
           accessor: `a${suffix}`,
           label: "Alpha Column One",
@@ -1705,7 +1705,7 @@ export const AutoSizeLongHeaderConsistentAcrossContainerWidths = {
           width: "auto",
           autoSizeMode: "header",
           type: "string",
-          isSortable: true,
+          sortable: true,
           collapsible: true,
           singleRowChildren: true,
           children: [
@@ -1814,7 +1814,7 @@ export const HorizontalScrollbarShowsWhenHeaderOverflowsEmptyState = {
     // Empty table: body is a full-width non-scrolling empty message, but
     // headers are still wider than the container. Scrollbar visibility must
     // use content/header width, not body scrollWidth.
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 120, type: "number" },
       { accessor: "name", label: "Full Legal Name", width: 220, type: "string" },
       { accessor: "email", label: "Work Email Address", width: 260, type: "string" },
@@ -1832,7 +1832,7 @@ export const HorizontalScrollbarShowsWhenHeaderOverflowsEmptyState = {
     tableContainer.style.width = "360px";
     wrapper.appendChild(tableContainer);
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: [],
       getRowId: (params: any) => String(params.row.id),
       height: "280px",

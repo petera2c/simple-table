@@ -15,7 +15,7 @@ export const cryptoExampleDefaults = {
   columnResizing: true,
   columnReordering: true,
   selectableCells: true,
-  editColumns: true,
+  enableColumnEditor: true,
   cellUpdateFlash: true,
   height: "70dvh",
   customTheme: { headerHeight: 40, rowHeight: 64 },

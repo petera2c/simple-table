@@ -8,7 +8,7 @@ export function renderColumnAlignmentDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: columnAlignmentConfig.headers,
+    columns: columnAlignmentConfig.headers,
     rows: columnAlignmentConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

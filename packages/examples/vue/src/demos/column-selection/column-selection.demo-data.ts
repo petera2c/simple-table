@@ -1,14 +1,14 @@
 // Self-contained demo table setup for this example.
-import type { VueHeaderObject } from "@simple-table/vue";
+import type { VueColumnDef } from "@simple-table/vue";
 
 
-export const columnSelectionHeaders: VueHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-  { accessor: "name", label: "Name", minWidth: 120, width: "1fr", isSortable: true, type: "string" },
-  { accessor: "age", label: "Age", width: 100, isSortable: true, type: "number" },
-  { accessor: "role", label: "Role", width: 150, isSortable: true, type: "string" },
-  { accessor: "department", label: "Department", width: 150, isSortable: true, type: "string" },
-  { accessor: "email", label: "Email", width: 200, isSortable: true, type: "string" },
+export const columnSelectionHeaders: VueColumnDef[] = [
+  { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+  { accessor: "name", label: "Name", minWidth: 120, width: "1fr", sortable: true, type: "string" },
+  { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },
+  { accessor: "role", label: "Role", width: 150, sortable: true, type: "string" },
+  { accessor: "department", label: "Department", width: 150, sortable: true, type: "string" },
+  { accessor: "email", label: "Email", width: 200, sortable: true, type: "string" },
 ];
 
 export const columnSelectionData = [

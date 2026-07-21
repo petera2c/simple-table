@@ -1,11 +1,11 @@
 /**
  * ExternalFilter Example – vanilla port of React ExternalFilterExample.
  */
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
-const HEADERS: HeaderObject[] = [
+const HEADERS: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80 },
   { accessor: "name", label: "Name", width: 150 },
   { accessor: "department", label: "Department", width: 140 },

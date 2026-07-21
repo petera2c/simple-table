@@ -8,7 +8,7 @@ export function renderRowHeightDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: rowHeightConfig.headers,
+    columns: rowHeightConfig.headers,
     rows: rowHeightConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

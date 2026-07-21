@@ -1,12 +1,12 @@
 /**
  * Billing example headers – ported from React billing-headers (vanilla-compatible).
  */
-import type { HeaderObject } from "../../../src/index";
+import type { ColumnDef } from "../../../src/index";
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-function generateMonthHeaders(): HeaderObject[] {
-  const headers: HeaderObject[] = [];
+function generateMonthHeaders(): ColumnDef[] {
+  const headers: ColumnDef[] = [];
   const year = 2024;
 
   for (let monthIndex = 11; monthIndex >= 0; monthIndex--) {
@@ -16,8 +16,8 @@ function generateMonthHeaders(): HeaderObject[] {
       accessor: `month_${months[monthIndex]}_${year}`,
       label: `${fullMonthName} ${year}`,
       width: 200,
-      isSortable: true,
-      isEditable: false,
+      sortable: true,
+      editable: false,
       align: "right",
       type: "number",
       children: [
@@ -26,8 +26,8 @@ function generateMonthHeaders(): HeaderObject[] {
           label: "Balance",
           accessor: `balance_${months[monthIndex]}_${year}`,
           width: 200,
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           align: "right",
           type: "number",
           aggregation: { type: "sum" },
@@ -45,8 +45,8 @@ function generateMonthHeaders(): HeaderObject[] {
           label: "Revenue",
           accessor: `revenue_${months[monthIndex]}_${year}`,
           width: 200,
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           align: "right",
           type: "number",
           aggregation: { type: "sum" },
@@ -66,14 +66,14 @@ function generateMonthHeaders(): HeaderObject[] {
   return headers;
 }
 
-export const BILLING_HEADERS: HeaderObject[] = [
+export const BILLING_HEADERS: ColumnDef[] = [
   {
     accessor: "name",
     label: "Name",
     width: 250,
     expandable: true,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "left",
     pinned: "left",
     type: "string",
@@ -83,8 +83,8 @@ export const BILLING_HEADERS: HeaderObject[] = [
     accessor: "amount",
     label: "Total Amount",
     width: 130,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
@@ -101,8 +101,8 @@ export const BILLING_HEADERS: HeaderObject[] = [
     accessor: "deferredRevenue",
     label: "Deferred Revenue",
     width: 180,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
@@ -119,8 +119,8 @@ export const BILLING_HEADERS: HeaderObject[] = [
     accessor: "recognizedRevenue",
     label: "Recognized Revenue",
     width: 180,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },

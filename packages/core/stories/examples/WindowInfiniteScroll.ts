@@ -9,7 +9,7 @@
  * `<div>` so the behavior is visible inside the Storybook iframe.
  */
 import { SimpleTableVanilla } from "../../src/index";
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 const INITIAL_ROWS = 50;
@@ -81,7 +81,7 @@ function generateRows(startIndex: number, count: number): Row[] {
   return rows;
 }
 
-const HEADERS: HeaderObject[] = [
+const HEADERS: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number", align: "right" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 160 },
   { accessor: "email", label: "Email", width: 260 },
@@ -207,7 +207,7 @@ export function renderWindowInfiniteScrollExample(
   updateStatus();
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: HEADERS,
+    columns: HEADERS,
     rows,
     theme: options.theme,
     customTheme: options.customTheme,

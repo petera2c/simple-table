@@ -2,12 +2,12 @@
  * CellHighlighting Example – vanilla port of React CellHighlighting.
  * Aligns with main-branch schema and demonstrates value-based cell highlighting via cellRenderer.
  */
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
 // Define headers with conditional cell styling (growth, status, risk)
-const HEADERS: HeaderObject[] = [
+const HEADERS: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "product", label: "Product", minWidth: 100, width: "1fr", type: "string" },
   {

@@ -8,7 +8,7 @@ export function renderCellHighlightingDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: cellHighlightingConfig.headers,
+    columns: cellHighlightingConfig.headers,
     rows: cellHighlightingConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

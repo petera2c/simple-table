@@ -28,7 +28,7 @@ export function renderExternalSortDemo(
   }
 
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: externalSortConfig.headers,
+    columns: externalSortConfig.headers,
     rows: asRows(externalSortConfig.rows),
     height: options?.height ?? "400px",
     theme: options?.theme,

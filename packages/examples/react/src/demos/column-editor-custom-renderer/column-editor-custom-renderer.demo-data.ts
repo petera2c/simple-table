@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { ReactHeaderObject, Row } from "@simple-table/react";
+import type { ReactColumnDef, Row } from "@simple-table/react";
 
 export const columnEditorCustomRendererData: Row[] = [
   {
@@ -76,20 +76,20 @@ export const columnEditorCustomRendererData: Row[] = [
   },
 ];
 
-export const columnEditorCustomRendererHeaders: ReactHeaderObject[] = [
+export const columnEditorCustomRendererHeaders: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
-  { accessor: "name", label: "Name", width: 170, type: "string", isSortable: true },
+  { accessor: "name", label: "Name", width: 170, type: "string", sortable: true },
   { accessor: "email", label: "Email", width: 200, type: "string" },
-  { accessor: "role", label: "Role", width: 130, type: "string", isSortable: true },
+  { accessor: "role", label: "Role", width: 130, type: "string", sortable: true },
   {
     accessor: "salary",
     label: "Salary",
     width: 130,
     type: "number",
-    isSortable: true,
+    sortable: true,
     valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
   },
-  { accessor: "department", label: "Department", width: 140, type: "string", isSortable: true },
+  { accessor: "department", label: "Department", width: 140, type: "string", sortable: true },
   { accessor: "status", label: "Status", width: 100, type: "string" },
 ];
 
@@ -97,7 +97,7 @@ export const columnEditorCustomRendererConfig = {
   headers: columnEditorCustomRendererHeaders,
   rows: columnEditorCustomRendererData,
   tableProps: {
-    editColumns: true,
+    enableColumnEditor: true,
   },
 } as const;
 

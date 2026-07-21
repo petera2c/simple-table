@@ -122,10 +122,10 @@ const FooterBar = defineComponent({
 
 <template>
   <SimpleTable
-    :default-headers="footerRendererConfig.headers"
+    :columns="footerRendererConfig.headers"
     :rows="footerRendererConfig.rows"
     :footer-renderer="FooterBar"
-    :should-paginate="true"
+    :enable-pagination="true"
     :rows-per-page="10"
     :hide-footer="false"
     :height="props.height"

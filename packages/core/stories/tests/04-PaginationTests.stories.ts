@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable, addParagraph, type RenderVanillaTableResult } from "../utils";
@@ -82,14 +82,14 @@ const clickPreviousPageButton = async (canvasElement: HTMLElement) => {
 
 export const BasicPagination = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
       { accessor: "department", label: "Department", width: 150 },
     ];
     const data = createPaginatedData(50);
-    const { wrapper, h2 } = renderVanillaTable(headers, data, { height: "400px", shouldPaginate: true });
+    const { wrapper, h2 } = renderVanillaTable(headers, data, { height: "400px", enablePagination: true });
     h2.textContent = "Basic Pagination";
     addParagraph(wrapper, "50 rows with default pagination (10 rows per page)");
     return wrapper;
@@ -110,7 +110,7 @@ export const BasicPagination = {
 
 export const CustomRowsPerPage = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
@@ -118,7 +118,7 @@ export const CustomRowsPerPage = {
     const data = createPaginatedData(50);
     const { wrapper, h2 } = renderVanillaTable(headers, data, {
       height: "400px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 20,
     });
     h2.textContent = "Custom Rows Per Page";
@@ -140,7 +140,7 @@ export const CustomRowsPerPage = {
 
 export const PageNavigation = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
@@ -148,7 +148,7 @@ export const PageNavigation = {
     const data = createPaginatedData(50);
     const { wrapper, h2 } = renderVanillaTable(headers, data, {
       height: "400px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 10,
     });
     h2.textContent = "Page Navigation";
@@ -199,16 +199,16 @@ export const OnPageChangeCallback = {
     let pageChangeCount = 0;
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers:ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createPaginatedData(50),
       height: "400px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 10,
       onPageChange: (page) => {
         currentPageEl.textContent = `Current Page: ${page}`;
@@ -284,16 +284,16 @@ export const ProgrammaticPageControl = {
     wrapper.appendChild(stateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers:ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createPaginatedData(50),
       height: "400px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 10,
     });
     table.mount();
@@ -368,17 +368,17 @@ export const ServerSidePagination = {
     wrapper.appendChild(stateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers:ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
       { accessor: "department", label: "Department", width: 150 },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: currentPageData,
       height: "400px",
-      shouldPaginate: true,
+      enablePagination: true,
       serverSidePagination: true,
       totalRowCount: totalRows,
       rowsPerPage,
@@ -448,16 +448,16 @@ export const PaginationWithFiltering = {
     wrapper.appendChild(btnContainer);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers:ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createPaginatedData(50),
       height: "400px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 10,
     });
     table.mount();
@@ -499,16 +499,16 @@ export const PaginationWithFiltering = {
 
 export const PaginationWithSorting = {
   render: () => {
-    const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 80, type: "number", isSortable: true },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
-      { accessor: "age", label: "Age", width: 100, type: "number", isSortable: true },
-      { accessor: "department", label: "Department", width: 150, isSortable: true },
+    const headers: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number", sortable: true },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
+      { accessor: "age", label: "Age", width: 100, type: "number", sortable: true },
+      { accessor: "department", label: "Department", width: 150, sortable: true },
     ];
     const data = createPaginatedData(50);
     const { wrapper, h2 } = renderVanillaTable(headers, data, {
       height: "400px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 10,
     });
     h2.textContent = "Pagination with Sorting";
@@ -534,14 +534,14 @@ export const PaginationWithSorting = {
 
 export const PaginationWithoutHeight = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
     ];
     const data = createPaginatedData(50);
     const { wrapper, h2 } = renderVanillaTable(headers, data, {
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 10,
     });
     h2.textContent = "Pagination Without Height";
@@ -567,7 +567,7 @@ export const OnPageChangeCallbackFires = {
   render: () => {
     let pageChangeCallCount = 0;
     (window as unknown as { __pageChangeCallCount2?: number }).__pageChangeCallCount2 = 0;
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
     ];
@@ -575,7 +575,7 @@ export const OnPageChangeCallbackFires = {
     const { wrapper } = renderVanillaTable(headers, data, {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 10,
       onPageChange: () => {
         pageChangeCallCount++;
@@ -604,7 +604,7 @@ export const OnPageChangeCallbackFires = {
 
 export const ServerSidePaginationWithLoadingState = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
     ];
@@ -612,10 +612,10 @@ export const ServerSidePaginationWithLoadingState = {
 
     const tableContainer = document.createElement("div");
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: pageData,
       height: "300px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 10,
       serverSidePagination: true,
       totalRowCount: 50,
@@ -659,14 +659,14 @@ export const ServerSidePaginationWithLoadingState = {
 
 export const TotalRowCountDrivesPageCount = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
     ];
     const { wrapper } = renderVanillaTable(headers, createPaginatedData(10), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 10,
       serverSidePagination: true,
       totalRowCount: 100,

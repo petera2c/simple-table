@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { HeaderObject, CellRenderer, FooterRendererProps } from "simple-table-core";
+import type { ColumnDef, CellRenderer, FooterRendererProps } from "simple-table-core";
 import {
   crmData,
   CRM_THEME_COLORS_LIGHT,
@@ -134,7 +134,7 @@ function createFitButtons(colors: typeof CRM_THEME_COLORS_LIGHT): HTMLElement {
   return container;
 }
 
-function getCRMHeaders(isDark: boolean): HeaderObject[] {
+function getCRMHeaders(isDark: boolean): ColumnDef[] {
   const colors = isDark ? CRM_THEME_COLORS_DARK : CRM_THEME_COLORS_LIGHT;
 
   const contactRenderer: CellRenderer = ({ row }) => {
@@ -261,8 +261,8 @@ function getCRMHeaders(isDark: boolean): HeaderObject[] {
       label: "CONTACT",
       width: "2fr",
       minWidth: 290,
-      isSortable: true,
-      isEditable: true,
+      sortable: true,
+      editable: true,
       type: "string",
       cellRenderer: contactRenderer,
     },
@@ -271,8 +271,8 @@ function getCRMHeaders(isDark: boolean): HeaderObject[] {
       label: "SIGNAL",
       width: "3fr",
       minWidth: 340,
-      isSortable: true,
-      isEditable: true,
+      sortable: true,
+      editable: true,
       type: "string",
       cellRenderer: signalRenderer,
     },
@@ -281,7 +281,7 @@ function getCRMHeaders(isDark: boolean): HeaderObject[] {
       label: "AI SCORE",
       width: "1fr",
       minWidth: 100,
-      isSortable: true,
+      sortable: true,
       align: "center",
       type: "number",
       cellRenderer: aiScoreRenderer,
@@ -291,7 +291,7 @@ function getCRMHeaders(isDark: boolean): HeaderObject[] {
       label: "EMAIL",
       width: "1.5fr",
       minWidth: 210,
-      isSortable: true,
+      sortable: true,
       align: "center",
       type: "enum",
       enumOptions: [
@@ -307,7 +307,7 @@ function getCRMHeaders(isDark: boolean): HeaderObject[] {
       label: "IMPORT",
       width: "1fr",
       minWidth: 100,
-      isSortable: true,
+      sortable: true,
       align: "center",
       type: "string",
       cellRenderer: timeAgoRenderer,
@@ -317,7 +317,7 @@ function getCRMHeaders(isDark: boolean): HeaderObject[] {
       label: "LIST",
       width: "1.2fr",
       minWidth: 160,
-      isSortable: true,
+      sortable: true,
       align: "center",
       type: "enum",
       enumOptions: [
@@ -487,13 +487,13 @@ export function renderCRMDemo(
   const table = new SimpleTableVanilla(themeContainer, {
     columnReordering: true,
     columnResizing: true,
-    defaultHeaders: getCRMHeaders(isDark),
+    columns: getCRMHeaders(isDark),
     enableRowSelection: true,
     customTheme: { headerHeight: 48, rowHeight: 92 },
     height: options?.height ?? "400px",
     rows: [...crmData],
     rowsPerPage,
-    shouldPaginate: true,
+    enablePagination: true,
     theme: "custom",
     footerRenderer: (props) =>
       createCRMFooter(props, footerColors, rowsPerPage, (newVal) => {

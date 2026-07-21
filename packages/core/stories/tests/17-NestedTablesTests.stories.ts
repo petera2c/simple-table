@@ -6,7 +6,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect, userEvent } from "@storybook/test";
-import type { HeaderObject, OnRowGroupExpandProps, Row } from "../../src/index";
+import type { ColumnDef, OnRowGroupExpandProps, Row } from "../../src/index";
 import { SimpleTableVanilla } from "../../src/index";
 import { waitForTable, waitUntil } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -406,7 +406,7 @@ const createThreeLevelCompanyData = (): NestedCompany[] => [
   withDivisions(acmeCompanyBase(), ACME_DIVISIONS_WITH_TEAMS),
 ];
 
-const divisionHeadersFull: HeaderObject[] = [
+const divisionHeadersFull: ColumnDef[] = [
   { accessor: "divisionId", label: "Division ID", width: 120, type: "string" },
   { accessor: "divisionName", label: "Division Name", width: 180, type: "string" },
   { accessor: "revenue", label: "Revenue", width: 120, type: "string" },
@@ -415,7 +415,7 @@ const divisionHeadersFull: HeaderObject[] = [
   { accessor: "location", label: "Location", width: 160, type: "string" },
 ];
 
-const parentHeadersFull = (nestedTableExtras: Record<string, unknown> = {}): HeaderObject[] => [
+const parentHeadersFull = (nestedTableExtras: Record<string, unknown> = {}): ColumnDef[] => [
   { accessor: "id", label: "ID", width: 72, type: "number" },
   {
     accessor: "companyName",
@@ -424,7 +424,7 @@ const parentHeadersFull = (nestedTableExtras: Record<string, unknown> = {}): Hea
     type: "string",
     expandable: true,
     nestedTable: {
-      defaultHeaders: divisionHeadersFull,
+      columns: divisionHeadersFull,
       ...nestedTableExtras,
     },
   },
@@ -616,11 +616,11 @@ export const BasicNestedTable = {
 export const NestedTableWithIndependentColumns = {
   render: () => {
     const data = createNestedTableCompanies();
-    const narrowDivisionHeaders: HeaderObject[] = [
+    const narrowDivisionHeaders: ColumnDef[] = [
       { accessor: "divisionName", label: "Division", width: 180, type: "string" },
       { accessor: "headcount", label: "Headcount", width: 100, type: "number" },
     ];
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 72, type: "number" },
       {
         accessor: "companyName",
@@ -628,7 +628,7 @@ export const NestedTableWithIndependentColumns = {
         width: 200,
         type: "string",
         expandable: true,
-        nestedTable: { defaultHeaders: narrowDivisionHeaders },
+        nestedTable: { columns: narrowDivisionHeaders },
       },
       { accessor: "revenue", label: "Revenue", width: 110, type: "string" },
     ];
@@ -657,13 +657,13 @@ export const NestedTableWithIndependentColumns = {
 export const NestedTableWithColumnResizing = {
   render: () => {
     const data = createNestedTableCompanies();
-    const divisionHeaders: HeaderObject[] = [
+    const divisionHeaders: ColumnDef[] = [
       { accessor: "divisionId", label: "Division ID", width: 120, type: "string" },
       { accessor: "divisionName", label: "Division", width: 180, type: "string" },
       { accessor: "headcount", label: "Headcount", width: 100, type: "number" },
       { accessor: "revenue", label: "Revenue", width: 120, type: "string" },
     ];
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 72, type: "number" },
       {
         accessor: "companyName",
@@ -672,7 +672,7 @@ export const NestedTableWithColumnResizing = {
         type: "string",
         expandable: true,
         nestedTable: {
-          defaultHeaders: divisionHeaders,
+          columns: divisionHeaders,
           columnResizing: true,
         },
       },
@@ -704,11 +704,11 @@ export const NestedTableWithColumnResizing = {
 export const NestedTableWithPagination = {
   render: () => {
     const data = createNestedTableCompanies();
-    const divisionHeaders: HeaderObject[] = [
+    const divisionHeaders: ColumnDef[] = [
       { accessor: "divisionName", label: "Division", width: 180, type: "string" },
       { accessor: "headcount", label: "Headcount", width: 100, type: "number" },
     ];
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 72, type: "number" },
       {
         accessor: "companyName",
@@ -717,8 +717,8 @@ export const NestedTableWithPagination = {
         type: "string",
         expandable: true,
         nestedTable: {
-          defaultHeaders: divisionHeaders,
-          shouldPaginate: true,
+          columns: divisionHeaders,
+          enablePagination: true,
           rowsPerPage: 1,
         },
       },
@@ -752,11 +752,11 @@ export const NestedTableWithPagination = {
 export const NestedTableWithFiltering = {
   render: () => {
     const data = createNestedTableCompanies();
-    const divisionHeaders: HeaderObject[] = [
+    const divisionHeaders: ColumnDef[] = [
       { accessor: "divisionName", label: "Division", width: 180, type: "string", filterable: true },
       { accessor: "headcount", label: "Headcount", width: 100, type: "number" },
     ];
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 72, type: "number" },
       {
         accessor: "companyName",
@@ -765,7 +765,7 @@ export const NestedTableWithFiltering = {
         type: "string",
         expandable: true,
         nestedTable: {
-          defaultHeaders: divisionHeaders,
+          columns: divisionHeaders,
         },
       },
       { accessor: "revenue", label: "Revenue", width: 110, type: "string" },
@@ -855,7 +855,7 @@ export const NestedTableLazyLoadDivisions = {
   render: () => {
     const initialRows: LazyCompany[] = [{ ...LAZY_CORP_ROW }];
 
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 88, type: "string" },
       {
         accessor: "companyName",
@@ -864,7 +864,7 @@ export const NestedTableLazyLoadDivisions = {
         type: "string",
         expandable: true,
         nestedTable: {
-          defaultHeaders: divisionHeadersFull,
+          columns: divisionHeadersFull,
           expandAll: false,
         },
       },
@@ -937,12 +937,12 @@ export const NestedTableLazyLoadDivisions = {
 
 export const NestedTableThreeLevels = {
   render: () => {
-    const teamHeaders: HeaderObject[] = [
+    const teamHeaders: ColumnDef[] = [
       { accessor: "memberName", label: "Member", width: 180, type: "string" },
       { accessor: "role", label: "Role", width: 160, type: "string" },
     ];
 
-    const divisionHeaders: HeaderObject[] = [
+    const divisionHeaders: ColumnDef[] = [
       {
         accessor: "divisionName",
         label: "Division",
@@ -950,7 +950,7 @@ export const NestedTableThreeLevels = {
         type: "string",
         expandable: true,
         nestedTable: {
-          defaultHeaders: teamHeaders,
+          columns: teamHeaders,
           expandAll: false,
         },
       },
@@ -958,7 +958,7 @@ export const NestedTableThreeLevels = {
       { accessor: "headcount", label: "Headcount", width: 100, type: "number" },
     ];
 
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 72, type: "number" },
       {
         accessor: "companyName",
@@ -967,7 +967,7 @@ export const NestedTableThreeLevels = {
         type: "string",
         expandable: true,
         nestedTable: {
-          defaultHeaders: divisionHeaders,
+          columns: divisionHeaders,
           expandAll: false,
         },
       },

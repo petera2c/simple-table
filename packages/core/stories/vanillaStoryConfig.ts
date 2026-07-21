@@ -10,8 +10,8 @@ export interface UniversalVanillaArgs {
   columnReordering?: boolean;
   columnResizing?: boolean;
   customTheme?: CustomThemeProps;
-  editColumns?: boolean;
-  editColumnsInitOpen?: boolean;
+  enableColumnEditor?: boolean;
+  enableColumnEditorInitOpen?: boolean;
   expandAll?: boolean;
   externalFilterHandling?: boolean;
   externalSortHandling?: boolean;
@@ -22,11 +22,11 @@ export interface UniversalVanillaArgs {
   rowsPerPage?: number;
   selectableCells?: boolean;
   selectableColumns?: boolean;
-  shouldPaginate?: boolean;
+  enablePagination?: boolean;
   theme?: Theme;
-  useHoverRowBackground?: boolean;
-  useOddColumnBackground?: boolean;
-  useOddEvenRowBackground?: boolean;
+  hoverRowBackground?: boolean;
+  oddColumnBackground?: boolean;
+  oddEvenRowBackground?: boolean;
 }
 
 export const defaultVanillaArgs: UniversalVanillaArgs = {
@@ -34,8 +34,8 @@ export const defaultVanillaArgs: UniversalVanillaArgs = {
   columnReordering: false,
   columnResizing: false,
   customTheme: undefined,
-  editColumns: false,
-  editColumnsInitOpen: false,
+  enableColumnEditor: false,
+  enableColumnEditorInitOpen: false,
   expandAll: true,
   externalFilterHandling: false,
   externalSortHandling: false,
@@ -44,11 +44,11 @@ export const defaultVanillaArgs: UniversalVanillaArgs = {
   rowsPerPage: 10,
   selectableCells: false,
   selectableColumns: false,
-  shouldPaginate: false,
+  enablePagination: false,
   theme: "modern-light" as Theme,
-  useHoverRowBackground: true,
-  useOddColumnBackground: false,
-  useOddEvenRowBackground: false,
+  hoverRowBackground: true,
+  oddColumnBackground: false,
+  oddEvenRowBackground: false,
 };
 
 export const vanillaArgTypes = {
@@ -57,15 +57,15 @@ export const vanillaArgTypes = {
     options: ["modern-light", "modern-dark", "light", "dark", "neutral"],
     description: "Select the theme for the table",
   },
-  useOddColumnBackground: {
+  oddColumnBackground: {
     control: { type: "boolean" as const },
     description: "Enable alternating column background colors",
   },
-  useHoverRowBackground: {
+  hoverRowBackground: {
     control: { type: "boolean" as const },
     description: "Enable row hover background effect",
   },
-  useOddEvenRowBackground: {
+  oddEvenRowBackground: {
     control: { type: "boolean" as const },
     description: "Enable alternating row background colors",
   },
@@ -98,11 +98,11 @@ export const vanillaArgTypes = {
     control: { type: "boolean" as const },
     description: "Enable column resizing",
   },
-  editColumns: {
+  enableColumnEditor: {
     control: { type: "boolean" as const },
     description: "Enable column visibility editor",
   },
-  editColumnsInitOpen: {
+  enableColumnEditorInitOpen: {
     control: { type: "boolean" as const },
     description: "Open column editor on initial load",
   },
@@ -114,7 +114,7 @@ export const vanillaArgTypes = {
     control: { type: "boolean" as const },
     description: "Enable column header selection",
   },
-  shouldPaginate: {
+  enablePagination: {
     control: { type: "boolean" as const },
     description: "Enable pagination",
   },

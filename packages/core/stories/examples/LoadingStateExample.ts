@@ -1,11 +1,11 @@
 /**
  * LoadingState Example – vanilla port of React LoadingStateExample.
  */
-import type { HeaderObject } from "../../src/index";
+import type { ColumnDef } from "../../src/index";
 import { SimpleTableVanilla } from "../../src/index";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
-const HEADERS: HeaderObject[] = [
+const HEADERS: ColumnDef[] = [
   { accessor: "id", label: "Project ID", width: 80, type: "number" },
   { accessor: "projectName", label: "Project Name", width: "1fr", minWidth: 120, type: "string" },
   { accessor: "client", label: "Client", width: 180, type: "string" },
@@ -40,7 +40,7 @@ export function renderLoadingStateExample(args?: Partial<UniversalVanillaArgs>):
   wrapper.appendChild(tableContainer);
   const options = { ...defaultVanillaArgs, ...args };
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: HEADERS,
+    columns: HEADERS,
     height: "380px",
     isLoading: true,
     rows: [],

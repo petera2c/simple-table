@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example (aligned with simple-table-marketing column visibility demo).
-import type { ColumnVisibilityState, ReactHeaderObject, Row } from "@simple-table/react";
+import type { ColumnVisibilityState, ReactColumnDef, Row } from "@simple-table/react";
 
 export const COLUMN_VISIBILITY_DEMO_STORAGE_KEY = "columnVisibilityDemo";
 
@@ -33,7 +33,7 @@ export const columnVisibilityData: Row[] = [
   { id: 8, firstName: "Henry", lastName: "Patel", email: "henry@example.com", phone: "555-0108", role: "Lead", department: "Engineering", location: "DEN", startDate: "2018-05-20" },
 ];
 
-export const columnVisibilityHeaders: ReactHeaderObject[] = [
+export const columnVisibilityHeaders: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "firstName", label: "First Name", width: 120, type: "string" },
   { accessor: "lastName", label: "Last Name", width: 120, type: "string" },
@@ -54,7 +54,7 @@ export const columnVisibilityHeaders: ReactHeaderObject[] = [
 /** Applies saved visibility + marketing-style defaults (email hidden when unset). */
 export function getColumnVisibilityDemoHeaders(
   savedVisibility: ColumnVisibilityState = loadColumnVisibilityDemoSaved(),
-): ReactHeaderObject[] {
+): ReactColumnDef[] {
   return columnVisibilityHeaders.map((header) => ({
     ...header,
     hide:
@@ -68,8 +68,8 @@ export const columnVisibilityConfig = {
   headers: columnVisibilityHeaders,
   rows: columnVisibilityData,
   tableProps: {
-    editColumns: true as const,
-    editColumnsInitOpen: true as const,
+    enableColumnEditor: true as const,
+    enableColumnEditorInitOpen: true as const,
     columnEditorConfig: {
       text: "Manage Columns",
       searchEnabled: true,

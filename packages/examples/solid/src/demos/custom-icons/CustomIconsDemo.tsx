@@ -38,7 +38,7 @@ const customIcons = {
 export default function CustomIconsDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
-      defaultHeaders={customIconsConfig.headers}
+      columns={customIconsConfig.headers}
       rows={customIconsConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

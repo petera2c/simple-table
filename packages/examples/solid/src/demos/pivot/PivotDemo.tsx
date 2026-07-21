@@ -42,7 +42,7 @@ export default function PivotDemo(props: {
         </For>
       </div>
       <SimpleTable
-        defaultHeaders={pivotDemoConfig.headers}
+        columns={pivotDemoConfig.headers}
         rows={pivotDemoConfig.rows}
         pivot={active().pivot}
         columnResizing

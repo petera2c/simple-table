@@ -1,7 +1,7 @@
 /**
  * ProgrammaticFilter Example – vanilla port of React ProgrammaticFilterExample.
  */
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { renderVanillaTable, addParagraph, addControlPanel } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
@@ -18,7 +18,7 @@ const SAMPLE_DATA: Row[] = [
   { id: 10, name: "Julia Martinez", age: 27, department: "Marketing", salary: 72000, status: "Active" },
 ];
 
-const HEADERS: HeaderObject[] = [
+const HEADERS: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80 },
   { accessor: "name", label: "Name", width: 150 },
   { accessor: "age", label: "Age", width: 100 },

@@ -12,7 +12,7 @@ const CustomThemeDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={customThemeConfig.headers}
+      columns={customThemeConfig.headers}
       rows={customThemeConfig.rows}
       theme={theme ?? "custom"}
       customTheme={customThemeConfig.tableProps.customTheme}

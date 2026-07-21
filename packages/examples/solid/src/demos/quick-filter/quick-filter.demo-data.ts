@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { SolidHeaderObject } from "@simple-table/solid";
+import type { SolidColumnDef } from "@simple-table/solid";
 
 
-export const quickFilterHeaders: SolidHeaderObject[] = [
+export const quickFilterHeaders: SolidColumnDef[] = [
   { accessor: "name", label: "Employee Name", width: 180, type: "string" },
   { accessor: "age", label: "Age", width: 80, type: "number" },
   { accessor: "department", label: "Department", width: 140, type: "string" },

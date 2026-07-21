@@ -1,11 +1,11 @@
 /**
  * COLUMN VISIBILITY / COLUMN EDITING TESTS
- * Column editing is the same feature as column visibility (editColumns, column editor, show/hide).
+ * Column editing is the same feature as column visibility (enableColumnEditor, column editor, show/hide).
  */
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -16,7 +16,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Comprehensive tests for column visibility (column editing): show/hide, editColumnsInitOpen, columnEditorConfig, onColumnVisibilityChange.",
+          "Comprehensive tests for column visibility (column editing): show/hide, enableColumnEditorInitOpen, columnEditorConfig, onColumnVisibilityChange.",
       },
     },
   },
@@ -93,7 +93,7 @@ const isColumnVisible = (canvasElement: HTMLElement, columnLabel: string): boole
 
 export const ColumnEditorStructure = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string" },
@@ -101,7 +101,7 @@ export const ColumnEditorStructure = {
       { accessor: "openingDate", label: "Opening Date", width: 150, type: "string" },
       { accessor: "customerRating", label: "Customer Rating", width: 150, type: "number" },
     ];
-    const { wrapper } = renderVanillaTable(headers, createStoreData(), { getRowId: (p) => String(p.row?.id), height: "400px", editColumns: true });
+    const { wrapper } = renderVanillaTable(headers, createStoreData(), { getRowId: (p) => String(p.row?.id), height: "400px", enableColumnEditor: true });
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -123,13 +123,13 @@ export const ColumnEditorStructure = {
 
 export const HideSingleColumn = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string" },
       { accessor: "squareFootage", label: "Square Footage", width: 150, type: "number" },
     ];
-    const { wrapper } = renderVanillaTable(headers, createStoreData(), { getRowId: (p) => String(p.row?.id), height: "400px", editColumns: true });
+    const { wrapper } = renderVanillaTable(headers, createStoreData(), { getRowId: (p) => String(p.row?.id), height: "400px", enableColumnEditor: true });
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -151,7 +151,7 @@ export const HideSingleColumn = {
 
 export const HideMultipleColumns = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string" },
@@ -159,7 +159,7 @@ export const HideMultipleColumns = {
       { accessor: "openingDate", label: "Opening Date", width: 150, type: "string" },
       { accessor: "customerRating", label: "Customer Rating", width: 150, type: "number" },
     ];
-    const { wrapper } = renderVanillaTable(headers, createStoreData(), { getRowId: (p) => String(p.row?.id), height: "400px", editColumns: true });
+    const { wrapper } = renderVanillaTable(headers, createStoreData(), { getRowId: (p) => String(p.row?.id), height: "400px", enableColumnEditor: true });
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -185,13 +185,13 @@ export const HideMultipleColumns = {
 
 export const ShowHiddenColumn = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string", hide: true },
       { accessor: "squareFootage", label: "Square Footage", width: 150, type: "number" },
     ];
-    const { wrapper } = renderVanillaTable(headers, createStoreData(), { getRowId: (p) => String(p.row?.id), height: "400px", editColumns: true });
+    const { wrapper } = renderVanillaTable(headers, createStoreData(), { getRowId: (p) => String(p.row?.id), height: "400px", enableColumnEditor: true });
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -210,12 +210,12 @@ export const ShowHiddenColumn = {
 
 export const ToggleColumnMultipleTimes = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string" },
     ];
-    const { wrapper } = renderVanillaTable(headers, createStoreData(), { getRowId: (p) => String(p.row?.id), height: "400px", editColumns: true });
+    const { wrapper } = renderVanillaTable(headers, createStoreData(), { getRowId: (p) => String(p.row?.id), height: "400px", enableColumnEditor: true });
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -237,14 +237,14 @@ export const ToggleColumnMultipleTimes = {
 
 export const ColumnCountChanges = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string" },
       { accessor: "squareFootage", label: "Square Footage", width: 150, type: "number" },
       { accessor: "openingDate", label: "Opening Date", width: 150, type: "string" },
     ];
-    const { wrapper } = renderVanillaTable(headers, createStoreData(), { getRowId: (p) => String(p.row?.id), height: "400px", editColumns: true });
+    const { wrapper } = renderVanillaTable(headers, createStoreData(), { getRowId: (p) => String(p.row?.id), height: "400px", enableColumnEditor: true });
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -274,7 +274,7 @@ export const ColumnCountChanges = {
 
 export const EditColumnsInitOpen = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "role", label: "Role", width: 120, type: "string" },
@@ -282,8 +282,8 @@ export const EditColumnsInitOpen = {
     const { wrapper } = renderVanillaTable(headers, createData(), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      editColumns: true,
-      editColumnsInitOpen: true,
+      enableColumnEditor: true,
+      enableColumnEditorInitOpen: true,
     });
     return wrapper;
   },
@@ -299,14 +299,14 @@ export const EditColumnsInitOpen = {
 
 export const ColumnEditorConfigCustomText = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
     ];
     const { wrapper } = renderVanillaTable(headers, createData(), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      editColumns: true,
+      enableColumnEditor: true,
       columnEditorConfig: { text: "Choose columns" },
     });
     return wrapper;
@@ -320,7 +320,7 @@ export const ColumnEditorConfigCustomText = {
 
 export const ColumnEditorConfigSearchEnabled = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "role", label: "Role", width: 120, type: "string" },
@@ -328,7 +328,7 @@ export const ColumnEditorConfigSearchEnabled = {
     const { wrapper } = renderVanillaTable(headers, createData(), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      editColumns: true,
+      enableColumnEditor: true,
       columnEditorConfig: { searchEnabled: true, searchPlaceholder: "Filter columns..." },
     });
     return wrapper;
@@ -344,14 +344,14 @@ export const ColumnEditorConfigSearchEnabled = {
 
 export const ColumnEditorConfigSearchDisabled = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
     ];
     const { wrapper } = renderVanillaTable(headers, createData(), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      editColumns: true,
+      enableColumnEditor: true,
       columnEditorConfig: { searchEnabled: false },
     });
     return wrapper;
@@ -369,7 +369,7 @@ export const OnColumnVisibilityChangeCallback = {
     const captured: { calls: Record<string, boolean>[] } = { calls: [] };
     (window as unknown as { __columnVisibilityCapture?: typeof captured }).__columnVisibilityCapture =
       captured;
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "role", label: "Role", width: 120, type: "string" },
@@ -377,7 +377,7 @@ export const OnColumnVisibilityChangeCallback = {
     const { wrapper } = renderVanillaTable(headers, createData(), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      editColumns: true,
+      enableColumnEditor: true,
       onColumnVisibilityChange: (state) => {
         captured.calls.push({ ...state });
       },
@@ -408,14 +408,14 @@ export const OnColumnVisibilityChangeCallback = {
 
 export const ColumnEditorOpenClose = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
     ];
     const { wrapper } = renderVanillaTable(headers, createData(), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      editColumns: true,
+      enableColumnEditor: true,
     });
     return wrapper;
   },
@@ -437,7 +437,7 @@ export const ColumnEditorOpenClose = {
 
 export const ExcludeFromRenderNotInColumnEditor = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "secret", label: "Secret", width: 100, type: "string", excludeFromRender: true },
       { accessor: "name", label: "Name", width: 150, type: "string" },
@@ -445,7 +445,7 @@ export const ExcludeFromRenderNotInColumnEditor = {
     const { wrapper } = renderVanillaTable(headers, createData(), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      editColumns: true,
+      enableColumnEditor: true,
     });
     return wrapper;
   },
@@ -476,7 +476,7 @@ export const ExcludeFromRenderDoesNotInflateRowWidth = {
     // shows up as scrollable empty space past the last visible column. When the
     // content fits the viewport the separator legitimately spans the full
     // viewport, which would mask the bug.
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 500, type: "number" },
       { accessor: "name", label: "Name", width: 600, type: "string" },
       { accessor: "role", label: "Role", width: 700, type: "string" },
@@ -533,7 +533,7 @@ export const ExcludeFromRenderDoesNotInflateRowWidth = {
 
 export const ColumnEditorCustomText = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "role", label: "Role", width: 120, type: "string" },
@@ -541,7 +541,7 @@ export const ColumnEditorCustomText = {
     const { wrapper } = renderVanillaTable(headers, createData(), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      editColumns: true,
+      enableColumnEditor: true,
       columnEditorConfig: {
         text: "Manage Columns",
       },
@@ -562,7 +562,7 @@ export const ColumnEditorCustomText = {
 
 export const ColumnEditorRowRenderer = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "role", label: "Role", width: 120, type: "string" },
@@ -570,7 +570,7 @@ export const ColumnEditorRowRenderer = {
     const { wrapper } = renderVanillaTable(headers, createData(), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      editColumns: true,
+      enableColumnEditor: true,
       columnEditorConfig: {
         rowRenderer: ({
           components,
@@ -612,7 +612,7 @@ export const ColumnEditorRowRenderer = {
 
 export const ColumnEditorConfigShowToggleFalse = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "role", label: "Role", width: 120, type: "string" },
@@ -620,7 +620,7 @@ export const ColumnEditorConfigShowToggleFalse = {
     const { wrapper } = renderVanillaTable(headers, createData(), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      editColumns: true,
+      enableColumnEditor: true,
       columnEditorConfig: { showToggle: false },
     });
     return wrapper;

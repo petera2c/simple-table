@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, h, type VNodeChild } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueHeaderObject, CellRendererProps } from "@simple-table/vue";
+import type { Theme, VueColumnDef, CellRendererProps } from "@simple-table/vue";
 import { musicConfig, getMusicThemeColors } from "./music.demo-data";
 import type { MusicArtist } from "./music.demo-data";
 import "@simple-table/vue/styles.css";
@@ -68,12 +68,12 @@ function growthMetric(
 }
 
 function applyRenderers(
-  hdrs: readonly VueHeaderObject[],
+  hdrs: readonly VueColumnDef[],
   map: Record<string, (p: CellRendererProps) => VNodeChild>,
-): VueHeaderObject[] {
+): VueColumnDef[] {
   return hdrs.map((h) => {
     const renderer = map[h.accessor as string];
-    const clone: VueHeaderObject = renderer ? { ...h, cellRenderer: renderer } : { ...h };
+    const clone: VueColumnDef = renderer ? { ...h, cellRenderer: renderer } : { ...h };
     if (h.children) {
       clone.children = applyRenderers(h.children, map);
     }
@@ -216,7 +216,7 @@ const headers = computed(() => {
 <template>
   <div class="music-theme-container" style="font-family: Inter">
     <SimpleTable
-      :default-headers="headers"
+      :columns="headers"
       :rows="[...musicConfig.rows]"
       :height="props.height"
       :theme="props.theme"

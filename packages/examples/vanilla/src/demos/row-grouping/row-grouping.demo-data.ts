@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
-export const rowGroupingHeaders: HeaderObject[] = [
+export const rowGroupingHeaders: ColumnDef[] = [
   { accessor: "organization", label: "Organization", width: 200, expandable: true, type: "string" },
   { accessor: "employees", label: "Employees", width: 100, type: "number" },
   { accessor: "budget", label: "Annual Budget", width: 140, type: "string" },

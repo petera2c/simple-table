@@ -1,20 +1,20 @@
 // Self-contained demo table setup for this example.
-import type { SolidHeaderObject } from "@simple-table/solid";
+import type { SolidColumnDef } from "@simple-table/solid";
 
 
-export const cellEditingHeaders: SolidHeaderObject[] = [
-  { accessor: "firstName", label: "First Name", width: "1fr", minWidth: 100, isEditable: true, type: "string" },
-  { accessor: "lastName", label: "Last Name", width: 120, isEditable: true, type: "string" },
-  { accessor: "role", label: "Role", width: 120, isEditable: true, type: "enum", enumOptions: [
+export const cellEditingHeaders: SolidColumnDef[] = [
+  { accessor: "firstName", label: "First Name", width: "1fr", minWidth: 100, editable: true, type: "string" },
+  { accessor: "lastName", label: "Last Name", width: 120, editable: true, type: "string" },
+  { accessor: "role", label: "Role", width: 120, editable: true, type: "enum", enumOptions: [
     { label: "Developer", value: "Developer" },
     { label: "Designer", value: "Designer" },
     { label: "Manager", value: "Manager" },
     { label: "Marketing", value: "Marketing" },
     { label: "QA", value: "QA" },
   ]},
-  { accessor: "hireDate", label: "Hire Date", width: 120, isEditable: true, type: "date" },
-  { accessor: "isActive", label: "Active", width: 100, isEditable: true, type: "boolean" },
-  { accessor: "salary", label: "Salary", width: 120, isEditable: true, type: "number" },
+  { accessor: "hireDate", label: "Hire Date", width: 120, editable: true, type: "date" },
+  { accessor: "isActive", label: "Active", width: 100, editable: true, type: "boolean" },
+  { accessor: "salary", label: "Salary", width: 120, editable: true, type: "number" },
 ];
 
 export const cellEditingData = [

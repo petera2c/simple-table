@@ -16,7 +16,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { renderVanillaTable, addParagraph } from "../utils";
 import { waitForTable } from "./testUtils";
 
@@ -80,7 +80,7 @@ const SALES_DATA: Row[] = [
   { id: 2, name: "Bob", q1: 90, q2: 95, q3: 100, q4: 105, total: 390 },
 ];
 
-const buildCollapsibleColumnsHeaders = (): HeaderObject[] => [
+const buildCollapsibleColumnsHeaders = (): ColumnDef[] => [
   { accessor: "id", label: "ID", width: 60 },
   { accessor: "name", label: "Name", width: 120 },
   {
@@ -213,7 +213,7 @@ const GROUPED_DATA: Row[] = [
   },
 ];
 
-const ROW_GROUPING_HEADERS: HeaderObject[] = [
+const ROW_GROUPING_HEADERS: ColumnDef[] = [
   { accessor: "name", label: "Name", width: 250, expandable: true },
   { accessor: "size", label: "Size", width: 100, type: "number" },
   { accessor: "salary", label: "Salary", width: 140, type: "number" },

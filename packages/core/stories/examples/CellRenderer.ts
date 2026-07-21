@@ -1,7 +1,7 @@
 /**
  * CellRenderer Example – vanilla port of React CellRenderer.
  */
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
@@ -27,12 +27,12 @@ const headerStyles: Record<string, Record<string, string>> = {
   role: { backgroundColor: "rgb(255, 165, 0)", color: "rgb(255, 255, 255)", padding: "4px 8px", borderRadius: "4px", border: "2px solid rgb(255, 140, 0)" },
 };
 
-const HEADERS: HeaderObject[] = [
+const HEADERS: ColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
     width: 80,
-    isSortable: true,
+    sortable: true,
     cellRenderer: ({ accessor, row }: { accessor: string; row: Record<string, unknown> }) => {
       const div = document.createElement("div");
       div.textContent = String(row[accessor] ?? "");
@@ -50,7 +50,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "name",
     label: "Name",
     width: 100,
-    isSortable: true,
+    sortable: true,
     cellRenderer: ({ accessor, row }: { accessor: string; row: Record<string, unknown> }) => {
       const div = document.createElement("div");
       div.textContent = String(row[accessor] ?? "");
@@ -68,7 +68,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "age",
     label: "Age",
     width: 100,
-    isSortable: true,
+    sortable: true,
     cellRenderer: ({ accessor, row }: { accessor: string; row: Record<string, unknown> }) => {
       const div = document.createElement("div");
       div.textContent = String(row[accessor] ?? "");
@@ -86,7 +86,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "role",
     label: "Role",
     width: 150,
-    isSortable: true,
+    sortable: true,
     cellRenderer: ({ accessor, row }: { accessor: string; row: Record<string, unknown> }) => {
       const div = document.createElement("div");
       div.textContent = String(row[accessor] ?? "");

@@ -1,10 +1,10 @@
 // Self-contained demo table setup for this example.
-import type { ReactHeaderObject, Row } from "@simple-table/react";
+import type { ReactColumnDef, Row } from "@simple-table/react";
 
 
 export const emptyStateData: Row[] = [];
 
-export const emptyStateHeaders: ReactHeaderObject[] = [
+export const emptyStateHeaders: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 180, type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },

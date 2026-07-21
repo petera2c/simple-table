@@ -6,7 +6,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable, addParagraph } from "../utils";
 
@@ -130,7 +130,7 @@ const currency = ({ value }: { value?: unknown }) =>
 export const SingleRowChildren_HeaderIsOneRow = {
   tags: ["single-row-children", "header-layout"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60 },
       {
         accessor: "totalSales",
@@ -193,7 +193,7 @@ export const SingleRowChildren_HeaderIsOneRow = {
 export const SingleRowChildren_CollapseHidesChildren = {
   tags: ["single-row-children", "collapse-expand"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60 },
       {
         accessor: "totalSales",
@@ -257,7 +257,7 @@ export const SingleRowChildren_CollapseHidesChildren = {
 export const SingleRowChildren_CollapseIconToggles = {
   tags: ["single-row-children", "icon-state"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60 },
       {
         accessor: "totalSales",
@@ -315,7 +315,7 @@ export const SingleRowChildren_CollapseIconToggles = {
 export const MultiRowHeader_TwoRows = {
   tags: ["multi-row-header", "header-layout"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60 },
       {
         accessor: "totalSales",
@@ -373,7 +373,7 @@ export const MultiRowHeader_TwoRows = {
 export const MultiRowHeader_CollapseShowsOneColumn = {
   tags: ["multi-row-header", "collapse-expand"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60 },
       {
         accessor: "totalSales",
@@ -434,7 +434,7 @@ export const MultiRowHeader_CollapseShowsOneColumn = {
 export const CollapseDefault_StartsCollapsed = {
   tags: ["collapse-default", "initial-state"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60 },
       {
         accessor: "totalSales",
@@ -498,7 +498,7 @@ export const CollapseDefault_StartsCollapsed = {
 export const ShowWhenParentCollapsed_SummaryVisibleWhenCollapsed = {
   tags: ["show-when", "parent-collapsed"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60 },
       {
         accessor: "perfGroup",
@@ -557,7 +557,7 @@ export const ShowWhenParentCollapsed_SummaryVisibleWhenCollapsed = {
 export const MultipleCollapsibleGroups = {
   tags: ["multiple-groups", "collapse-expand"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60 },
       {
         accessor: "totalSales",
@@ -610,7 +610,7 @@ export const MultipleCollapsibleGroups = {
 
 export const ShowWhenAlwaysVisibleBothStates = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60 },
       {
         accessor: "salesGroup",
@@ -655,7 +655,7 @@ export const ShowWhenAlwaysVisibleBothStates = {
 
 export const ShowWhenParentExpandedColumnHiddenWhenCollapsed = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60 },
       {
         accessor: "totalSales",
@@ -699,7 +699,7 @@ export const ShowWhenParentExpandedColumnHiddenWhenCollapsed = {
 
 export const CustomHeaderExpandCollapseIcons = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60 },
       {
         accessor: "totalSales",

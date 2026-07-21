@@ -5,7 +5,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -23,7 +23,7 @@ const meta: Meta = {
 
 export default meta;
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 150, type: "string" },
 ];

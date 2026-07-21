@@ -1,5 +1,5 @@
 import { createEffect, createSignal, onCleanup } from "solid-js";
-import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidHeaderObject, CellChangeProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidColumnDef, CellChangeProps } from "@simple-table/solid";
 import { getThemeColors, salesHeadersCore, salesSampleRows, type SalesRow } from "./sales.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -9,10 +9,10 @@ function formatTableHeight(height?: string | number | null): string {
   return height;
 }
 
-function getHeaders(): SolidHeaderObject[] {
+function getHeaders(): SolidColumnDef[] {
   const headers = JSON.parse(JSON.stringify(salesHeadersCore));
 
-  const addRenderers = (hdrs: SolidHeaderObject[]) => {
+  const addRenderers = (hdrs: SolidColumnDef[]) => {
     for (const h of hdrs) {
       if (h.accessor === "dealValue") {
         h.cellRenderer = ({ row, theme }) => {
@@ -126,7 +126,7 @@ function getHeaders(): SolidHeaderObject[] {
           );
         };
       }
-      if (h.children) addRenderers(h.children as SolidHeaderObject[]);
+      if (h.children) addRenderers(h.children as SolidColumnDef[]);
     }
   };
   addRenderers(headers);
@@ -157,8 +157,8 @@ export default function SalesDemo(props: { height?: string | number | null; them
       autoExpandColumns={!isMobile()}
       columnResizing
       columnReordering
-      defaultHeaders={HEADERS}
-      editColumns
+      columns={HEADERS}
+      enableColumnEditor
       height={formatTableHeight(props.height ?? null)}
       initialSortColumn="dealValue"
       initialSortDirection="desc"

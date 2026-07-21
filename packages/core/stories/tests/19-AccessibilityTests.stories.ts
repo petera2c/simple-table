@@ -5,7 +5,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -36,7 +36,7 @@ const createBasicData = (count: number) =>
 
 export const TableStructureAriaAttributes = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "age", label: "Age", width: 100 },
@@ -100,10 +100,10 @@ export const TableStructureAriaAttributes = {
 
 export const ScreenReaderLiveRegion = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
-      { accessor: "age", label: "Age", width: 100, isSortable: true },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
+      { accessor: "age", label: "Age", width: 100, sortable: true },
     ];
     const data = createBasicData(5);
     const { wrapper } = renderVanillaTable(headers, data, { height: "400px" });
@@ -120,9 +120,9 @@ export const ScreenReaderLiveRegion = {
 
 export const ScreenReaderOnlyTextVisibility = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
     ];
     const data = createBasicData(3);
     const { wrapper } = renderVanillaTable(headers, data, { height: "300px" });
@@ -147,10 +147,10 @@ export const ScreenReaderOnlyTextVisibility = {
 
 export const SortButtonAriaAttributes = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
-      { accessor: "age", label: "Age", width: 100, isSortable: true },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
+      { accessor: "age", label: "Age", width: 100, sortable: true },
       { accessor: "department", label: "Department", width: 150 },
     ];
     const data = createBasicData(5);

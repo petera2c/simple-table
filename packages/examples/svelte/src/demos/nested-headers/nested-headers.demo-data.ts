@@ -1,23 +1,23 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject } from "@simple-table/svelte";
+import type { SvelteColumnDef } from "@simple-table/svelte";
 
 
-export const nestedHeadersHeaders: SvelteHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-  { accessor: "name", label: "Name", width: "1fr", isSortable: true, type: "string" },
+export const nestedHeadersHeaders: SvelteColumnDef[] = [
+  { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+  { accessor: "name", label: "Name", width: "1fr", sortable: true, type: "string" },
   {
     accessor: "score",
     label: "Test Scores",
     width: 300,
-    isSortable: false,
+    sortable: false,
     type: "number",
     children: [
-      { accessor: "mathScore", label: "Math", width: 100, isSortable: true, type: "number", align: "right" },
-      { accessor: "scienceScore", label: "Science", width: 100, isSortable: true, type: "number", align: "right" },
-      { accessor: "historyScore", label: "History", width: 100, isSortable: true, type: "number", align: "right" },
+      { accessor: "mathScore", label: "Math", width: 100, sortable: true, type: "number", align: "right" },
+      { accessor: "scienceScore", label: "Science", width: 100, sortable: true, type: "number", align: "right" },
+      { accessor: "historyScore", label: "History", width: 100, sortable: true, type: "number", align: "right" },
     ],
   },
-  { accessor: "grade", label: "Overall Grade", width: 120, isSortable: true, type: "string", align: "center" },
+  { accessor: "grade", label: "Overall Grade", width: 120, sortable: true, type: "string", align: "center" },
 ];
 
 export const nestedHeadersData = [

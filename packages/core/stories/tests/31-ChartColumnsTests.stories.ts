@@ -5,7 +5,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -30,7 +30,7 @@ const chartData = () => [
 
 export const LineAreaChartRenders = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: 80, type: "string" },
       {
@@ -57,7 +57,7 @@ export const LineAreaChartRenders = {
 
 export const BarChartRenders = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: 80, type: "string" },
       {
@@ -84,7 +84,7 @@ export const BarChartRenders = {
 
 export const ChartOptionsDimensions = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       {
         accessor: "trend",
@@ -115,7 +115,7 @@ export const ChartOptionsDimensions = {
 
 export const ChartOptionsColor = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       {
         accessor: "trend",
@@ -153,7 +153,7 @@ export const ChartOptionsColor = {
 
 export const BarChartOptionsGap = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       {
         accessor: "bars",
@@ -185,7 +185,7 @@ export const BarChartOptionsGap = {
 
 export const ChartLiveUpdate = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: 80, type: "string" },
       {
@@ -197,7 +197,7 @@ export const ChartLiveUpdate = {
     ];
     const tableContainer = document.createElement("div");
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: chartData(),
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",

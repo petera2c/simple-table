@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
   height: "400px",
 });
 
-const defaultHeaders = getColumnVisibilityDemoHeaders(loadColumnVisibilityDemoSaved());
+const columns = getColumnVisibilityDemoHeaders(loadColumnVisibilityDemoSaved());
 
 const columnEditorConfig = {
   ...columnVisibilityConfig.tableProps.columnEditorConfig,
@@ -27,10 +27,10 @@ function onColumnVisibilityChange(state: ColumnVisibilityState) {
 
 <template>
   <SimpleTable
-    :default-headers="defaultHeaders"
+    :columns="columns"
     :rows="columnVisibilityConfig.rows"
-    :edit-columns="columnVisibilityConfig.tableProps.editColumns"
-    :edit-columns-init-open="columnVisibilityConfig.tableProps.editColumnsInitOpen"
+    :enable-column-editor="columnVisibilityConfig.tableProps.enableColumnEditor"
+    :enable-column-editor-init-open="columnVisibilityConfig.tableProps.enableColumnEditorInitOpen"
     :column-editor-config="columnEditorConfig"
     :height="props.height"
     :theme="props.theme"

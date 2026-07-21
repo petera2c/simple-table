@@ -8,7 +8,7 @@ export function renderColumnFilteringDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: columnFilteringConfig.headers,
+    columns: columnFilteringConfig.headers,
     rows: columnFilteringConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

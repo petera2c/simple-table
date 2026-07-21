@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject } from "@simple-table/svelte";
+import type { SvelteColumnDef } from "@simple-table/svelte";
 
 
-export const quickFilterHeaders: SvelteHeaderObject[] = [
+export const quickFilterHeaders: SvelteColumnDef[] = [
   { accessor: "name", label: "Employee Name", width: 180, type: "string" },
   { accessor: "age", label: "Age", width: 80, type: "number" },
   { accessor: "department", label: "Department", width: 140, type: "string" },

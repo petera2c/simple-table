@@ -1,9 +1,9 @@
 <template>
   <SimpleTable
     :column-reordering="animationsConfig.tableProps.columnReordering"
-    :default-headers="headers"
-    :edit-columns="animationsConfig.tableProps.editColumns"
-    :edit-columns-init-open="animationsConfig.tableProps.editColumnsInitOpen"
+    :columns="headers"
+    :enable-column-editor="animationsConfig.tableProps.enableColumnEditor"
+    :enable-column-editor-init-open="animationsConfig.tableProps.enableColumnEditorInitOpen"
     :rows="animationsConfig.rows"
     :height="height"
     :theme="theme"
@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueHeaderObject } from "@simple-table/vue";
+import type { Theme, VueColumnDef } from "@simple-table/vue";
 import { animationsConfig } from "./animations.demo-data";
 import "@simple-table/vue/styles.css";
 
@@ -22,9 +22,9 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
 
-const headers = ref<VueHeaderObject[]>([...animationsConfig.headers]);
+const headers = ref<VueColumnDef[]>([...animationsConfig.headers]);
 
-const handleColumnOrderChange = (newHeaders: VueHeaderObject[]) => {
+const handleColumnOrderChange = (newHeaders: VueColumnDef[]) => {
   headers.value = newHeaders;
 };
 </script>

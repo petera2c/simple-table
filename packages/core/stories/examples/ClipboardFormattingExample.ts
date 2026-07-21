@@ -2,7 +2,7 @@
  * ClipboardFormatting Example – vanilla port of React ClipboardFormattingExample.
  * Same financial data, headers, valueFormatters, and useFormattedValueForClipboard as React.
  */
-import type { HeaderObject, Row, Theme } from "../../src/index";
+import type { ColumnDef, Row, Theme } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
@@ -15,13 +15,13 @@ const ROWS: Row[] = [
   { id: 6, product: "Premium Pack", unitPrice: 149.99, quantity: 72, revenue: 10799.28, margin: 0.45, category: "premium", lastUpdate: "2024-01-20T13:30:00Z" },
 ];
 
-const HEADERS: HeaderObject[] = [
-  { accessor: "product", label: "Product Name", width: 160, isSortable: true, type: "string" },
+const HEADERS: ColumnDef[] = [
+  { accessor: "product", label: "Product Name", width: 160, sortable: true, type: "string" },
   {
     accessor: "unitPrice",
     label: "Unit Price (Formatted Copy)",
     width: 200,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueFormatter: ({ value }: { value?: unknown }) => {
       if (typeof value === "number") return `$${value.toFixed(2)}`;
@@ -34,7 +34,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "quantity",
     label: "Quantity (Raw Copy)",
     width: 180,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueFormatter: ({ value }: { value?: unknown }) => {
       if (typeof value === "number") return `${value} units`;
@@ -47,7 +47,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "revenue",
     label: "Revenue (Formatted Copy)",
     width: 200,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueFormatter: ({ value }: { value?: unknown }) => {
       if (typeof value === "number") {
@@ -62,7 +62,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "margin",
     label: "Profit Margin (Formatted Copy)",
     width: 210,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueFormatter: ({ value }: { value?: unknown }) => {
       if (typeof value === "number") return `${(value * 100).toFixed(1)}%`;
@@ -75,7 +75,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "category",
     label: "Category",
     width: 130,
-    isSortable: true,
+    sortable: true,
     type: "string",
     valueFormatter: ({ value }: { value?: unknown }) => {
       const str = String(value);
@@ -87,7 +87,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "lastUpdate",
     label: "Last Update (Formatted Copy)",
     width: 220,
-    isSortable: true,
+    sortable: true,
     type: "date",
     valueFormatter: ({ value }: { value?: unknown }) => {
       if (typeof value === "string") {

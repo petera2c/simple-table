@@ -6,7 +6,7 @@
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  const defaultHeaders = columnVisibilityConfig.headers;
+  const columns = columnVisibilityConfig.headers;
 
   const columnEditorConfig = {
     ...columnVisibilityConfig.tableProps.columnEditorConfig,
@@ -15,10 +15,10 @@
 </script>
 
 <SimpleTable
-  {defaultHeaders}
+  {columns}
   rows={columnVisibilityConfig.rows}
-  editColumns={columnVisibilityConfig.tableProps.editColumns}
-  editColumnsInitOpen={columnVisibilityConfig.tableProps.editColumnsInitOpen}
+  enableColumnEditor={columnVisibilityConfig.tableProps.enableColumnEditor}
+  enableColumnEditorInitOpen={columnVisibilityConfig.tableProps.enableColumnEditorInitOpen}
   columnEditorConfig={columnEditorConfig}
   {height}
   {theme}

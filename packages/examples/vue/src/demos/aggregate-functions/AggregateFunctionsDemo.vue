@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="aggregateFunctionsConfig.headers"
+    :columns="aggregateFunctionsConfig.headers"
     :rows="aggregateFunctionsConfig.rows"
     :row-grouping="aggregateFunctionsConfig.tableProps.rowGrouping"
     :column-resizing="true"

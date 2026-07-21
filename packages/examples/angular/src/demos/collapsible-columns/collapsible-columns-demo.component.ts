@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { collapsibleColumnsConfig } from "./collapsible-columns.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -10,9 +10,9 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [columnResizing]="true"
-      [editColumns]="true"
+      [enableColumnEditor]="true"
       [selectableCells]="true"
       [columnReordering]="true"
       [height]="height"
@@ -25,5 +25,5 @@ export class CollapsibleColumnsDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = collapsibleColumnsConfig.rows;
-  readonly headers: AngularHeaderObject[] = collapsibleColumnsConfig.headers;
+  readonly headers: AngularColumnDef[] = collapsibleColumnsConfig.headers;
 }

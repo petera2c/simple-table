@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { Row, SvelteHeaderObject } from "@simple-table/svelte";
+import type { CellRendererProps, Row, SvelteColumnDef } from "@simple-table/svelte";
 
 
 export const COLUMN_FILTERING_DATA: Row[] = [
@@ -147,13 +147,13 @@ export const DEPARTMENT_OPTIONS = [
   { label: "Quality Assurance", value: "Quality Assurance" },
 ];
 
-export const columnFilteringHeaders: SvelteHeaderObject[] = [
+export const columnFilteringHeaders: SvelteColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
     width: 80,
     type: "number",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -162,7 +162,7 @@ export const columnFilteringHeaders: SvelteHeaderObject[] = [
     width: "1fr",
     minWidth: 150,
     type: "string",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -171,7 +171,7 @@ export const columnFilteringHeaders: SvelteHeaderObject[] = [
     width: "1fr",
     minWidth: 120,
     type: "enum",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     enumOptions: DEPARTMENT_OPTIONS,
   },
@@ -180,7 +180,7 @@ export const columnFilteringHeaders: SvelteHeaderObject[] = [
     label: "Role",
     width: 140,
     type: "string",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -189,9 +189,9 @@ export const columnFilteringHeaders: SvelteHeaderObject[] = [
     width: 120,
     align: "right",
     type: "number",
-    isSortable: true,
+    sortable: true,
     filterable: true,
-    cellRenderer: ({ row }) => {
+    cellRenderer: ({ row }: CellRendererProps) => {
       const salary = row.salary as number;
       return `$${salary.toLocaleString()}`;
     },
@@ -201,7 +201,7 @@ export const columnFilteringHeaders: SvelteHeaderObject[] = [
     label: "Start Date",
     width: 130,
     type: "date",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -210,7 +210,7 @@ export const columnFilteringHeaders: SvelteHeaderObject[] = [
     width: 100,
     align: "center",
     type: "boolean",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
 ];

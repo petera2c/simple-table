@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject, CellRenderer } from "simple-table-core";
+import type { Theme, ColumnDef, CellRenderer } from "simple-table-core";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "simple-table-core/styles.css";
@@ -89,13 +89,13 @@ export function renderCellRendererDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
 ): SimpleTableVanilla {
-  const headers: HeaderObject[] = cellRendererConfig.headers.map((h) => {
+  const headers: ColumnDef[] = cellRendererConfig.headers.map((h) => {
     const renderer = RENDERERS[h.accessor as string];
     return renderer ? { ...h, cellRenderer: renderer } : { ...h };
   });
 
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: headers,
+    columns: headers,
     rows: cellRendererConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

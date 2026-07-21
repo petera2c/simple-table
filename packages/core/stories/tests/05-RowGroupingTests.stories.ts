@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import {
@@ -194,7 +194,7 @@ const getRowDepth = (rowCells: Element[]) => {
 
 export const BasicSingleLevelGrouping = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -223,7 +223,7 @@ export const BasicSingleLevelGrouping = {
 
 export const MultiLevelGrouping = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -275,7 +275,7 @@ export const MultiLevelGrouping = {
 
 export const StartCollapsed = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -301,7 +301,7 @@ export const StartCollapsed = {
 
 export const ExpandCollapseInteraction = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -361,13 +361,13 @@ export const ProgrammaticExpandCollapseAll = {
     wrapper.appendChild(btnContainer);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createGroupedData(),
       height: "400px",
       rowGrouping: ["teams"],
@@ -454,14 +454,14 @@ export const ProgrammaticDepthControl = {
     wrapper.appendChild(stateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
       { accessor: "role", label: "Role", width: 150 },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createGroupedData(),
       height: "400px",
       rowGrouping: ["teams", "members"],
@@ -513,7 +513,7 @@ export const ProgrammaticDepthControl = {
 export const ApiCollapseAllThenExpandDepth0 = {
   tags: ["table-api-regression"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -566,7 +566,7 @@ export const ApiCollapseAllThenExpandDepth0 = {
 export const ApiSetExpandedDepthsTwoLevels = {
   tags: ["table-api-regression"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -617,7 +617,7 @@ export const ApiSetExpandedDepthsTwoLevels = {
 export const ApiToggleDepthAfterSetExpandedDepths = {
   tags: ["table-api-regression"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -671,7 +671,7 @@ export const ApiToggleDepthAfterSetExpandedDepths = {
 export const ApiExpandAllAfterManualCollapse = {
   tags: ["table-api-regression"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -706,7 +706,7 @@ export const ApiExpandAllAfterManualCollapse = {
 export const ApiCollapseAllAfterManualExpand = {
   tags: ["table-api-regression"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -742,7 +742,7 @@ export const ApiCollapseAllAfterManualExpand = {
 export const ApiSetExpandedDepthsAfterManualToggle = {
   tags: ["table-api-regression"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -779,7 +779,7 @@ export const ApiSetExpandedDepthsAfterManualToggle = {
 export const ApiOnlyDivisionsAfterManualExpand = {
   tags: ["table-api-regression"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -838,13 +838,13 @@ export const OnRowGroupExpandCallback = {
     wrapper.appendChild(eventsDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createGroupedData(),
       height: "400px",
       rowGrouping: ["teams"],
@@ -890,13 +890,13 @@ export const DynamicRowLoading = {
     );
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows,
       height: "400px",
       rowGrouping: ["teams"],
@@ -952,7 +952,7 @@ export const DynamicRowLoading = {
 
 export const CanExpandRowGroupConditional = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -993,7 +993,7 @@ export const CanExpandRowGroupConditional = {
 
 export const RowGroupingWithGetRowId = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -1020,7 +1020,7 @@ export const RowGroupingWithGetRowId = {
 
 export const EnableStickyParents = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
@@ -1075,13 +1075,13 @@ export const GetGroupingPropertyAndDepth = {
     wrapper.appendChild(infoDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Size", width: 100, type: "number" },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createGroupedData(),
       height: "400px",
       rowGrouping: ["teams", "members"],
@@ -1135,7 +1135,7 @@ const getFirstExpandIcon = (canvasElement: HTMLElement): HTMLElement | null => {
 
 export const ExpandIconPositionAndAnimation = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -1182,7 +1182,7 @@ export const ExpandIconPositionAndAnimation = {
 
 export const LastGroupRowSeparatorLogic = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
       { accessor: "size", label: "Team Size", width: 120, type: "number" },
@@ -1252,7 +1252,7 @@ export const LastGroupRowSeparatorLogic = {
 
 export const LoadingStateRendererPerGroup = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
     ];
@@ -1286,7 +1286,7 @@ export const LoadingStateRendererPerGroup = {
 
 export const ErrorStateRendererPerGroup = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
     ];
@@ -1317,7 +1317,7 @@ export const ErrorStateRendererPerGroup = {
 
 export const EmptyStateRendererPerGroup = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 250, expandable: true },
       { accessor: "budget", label: "Budget", width: 150, type: "number" },
     ];

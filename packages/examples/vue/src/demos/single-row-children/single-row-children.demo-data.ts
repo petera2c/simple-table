@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { VueHeaderObject } from "@simple-table/vue";
+import type { VueColumnDef } from "@simple-table/vue";
 
 
 export const singleRowChildrenData = [
@@ -16,23 +16,23 @@ export const singleRowChildrenData = [
   { id: 11, studentId: "STU-2024-011", studentName: "Keiko Tanaka", gradeLevel: "12th Grade", overallGPA: 3.9, mathGrade: 94, scienceGrade: 93, englishGrade: 96, historyGrade: 92 },
 ];
 
-export const singleRowChildrenHeaders: VueHeaderObject[] = [
-  { accessor: "studentId", label: "Student ID", width: 160, isSortable: true, type: "string" },
-  { accessor: "gradeLevel", label: "Grade Level", width: 150, isSortable: true, type: "string" },
+export const singleRowChildrenHeaders: VueColumnDef[] = [
+  { accessor: "studentId", label: "Student ID", width: 160, sortable: true, type: "string" },
+  { accessor: "gradeLevel", label: "Grade Level", width: 150, sortable: true, type: "string" },
   {
     accessor: "studentName",
     label: "Student Name",
     width: 200,
     collapsible: true,
     type: "string",
-    isSortable: true,
+    sortable: true,
     singleRowChildren: true,
     children: [
-      { accessor: "overallGPA", label: "GPA", width: 90, isSortable: true, type: "number", align: "right", showWhen: "parentCollapsed", valueFormatter: ({ value }) => (value as number).toFixed(2) },
-      { accessor: "mathGrade", label: "Math", width: 90, isSortable: true, type: "number", align: "right", showWhen: "parentExpanded" },
-      { accessor: "scienceGrade", label: "Science", width: 90, isSortable: true, type: "number", align: "right", showWhen: "parentExpanded" },
-      { accessor: "englishGrade", label: "English", width: 90, isSortable: true, type: "number", align: "right", showWhen: "parentExpanded" },
-      { accessor: "historyGrade", label: "History", width: 90, isSortable: true, type: "number", align: "right", showWhen: "parentExpanded" },
+      { accessor: "overallGPA", label: "GPA", width: 90, sortable: true, type: "number", align: "right", showWhen: "parentCollapsed", valueFormatter: ({ value }) => (value as number).toFixed(2) },
+      { accessor: "mathGrade", label: "Math", width: 90, sortable: true, type: "number", align: "right", showWhen: "parentExpanded" },
+      { accessor: "scienceGrade", label: "Science", width: 90, sortable: true, type: "number", align: "right", showWhen: "parentExpanded" },
+      { accessor: "englishGrade", label: "English", width: 90, sortable: true, type: "number", align: "right", showWhen: "parentExpanded" },
+      { accessor: "historyGrade", label: "History", width: 90, sortable: true, type: "number", align: "right", showWhen: "parentExpanded" },
     ],
   },
 ];

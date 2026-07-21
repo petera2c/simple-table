@@ -5,7 +5,7 @@ import "@simple-table/solid/styles.css";
 export default function TooltipDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
-      defaultHeaders={tooltipConfig.headers}
+      columns={tooltipConfig.headers}
       rows={tooltipConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

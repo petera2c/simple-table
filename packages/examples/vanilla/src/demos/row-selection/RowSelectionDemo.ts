@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject } from "simple-table-core";
+import type { Theme, ColumnDef } from "simple-table-core";
 import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
 import type { LibraryBook } from "./row-selection.demo-data";
 import "simple-table-core/styles.css";
@@ -27,7 +27,7 @@ export function renderRowSelectionDemo(
 
   const titlesSpan = infoPanel.querySelector("#selected-titles")!;
 
-  const headers: HeaderObject[] = rowSelectionConfig.headers.map((h) => {
+  const headers: ColumnDef[] = rowSelectionConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
@@ -42,7 +42,7 @@ export function renderRowSelectionDemo(
   });
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: headers,
+    columns: headers,
     rows: rowSelectionConfig.rows,
     height: options?.height ?? "348px",
     theme: options?.theme,

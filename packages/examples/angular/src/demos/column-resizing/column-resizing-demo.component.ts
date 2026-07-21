@@ -1,7 +1,7 @@
 import { NgIf } from "@angular/common";
 import { Component, Input, OnInit } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -20,7 +20,7 @@ import "@simple-table/angular/styles.css";
       <simple-table
         [columnResizing]="true"
         [rows]="rows"
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [height]="height"
         [theme]="theme"
         [onColumnWidthChange]="handleColumnWidthChange"
@@ -33,10 +33,10 @@ export class ColumnResizingDemoComponent implements OnInit {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnResizingData;
-  headers: AngularHeaderObject[] = [...columnResizingHeaders];
+  headers: AngularColumnDef[] = [...columnResizingHeaders];
   saveMessage = "";
 
-  handleColumnWidthChange = (updatedHeaders: AngularHeaderObject[]) => {
+  handleColumnWidthChange = (updatedHeaders: AngularColumnDef[]) => {
     try {
       const widthMap: Record<string, unknown> = {};
       for (const h of updatedHeaders) widthMap[h.accessor] = h.width;

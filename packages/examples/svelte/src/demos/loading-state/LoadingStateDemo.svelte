@@ -34,7 +34,7 @@
     </button>
   </div>
   <SimpleTable
-    defaultHeaders={loadingStateConfig.headers}
+    columns={loadingStateConfig.headers}
     rows={data}
     {isLoading}
     {height}

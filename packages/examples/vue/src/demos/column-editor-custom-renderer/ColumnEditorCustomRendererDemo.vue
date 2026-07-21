@@ -23,9 +23,9 @@ const editorConfig = {
 
 <template>
   <SimpleTable
-    :default-headers="columnEditorCustomRendererConfig.headers"
+    :columns="columnEditorCustomRendererConfig.headers"
     :rows="columnEditorCustomRendererConfig.rows"
-    :edit-columns="true"
+    :enable-column-editor="true"
     :column-editor-config="editorConfig"
     :height="props.height"
     :theme="props.theme"

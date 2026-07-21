@@ -32,7 +32,7 @@ export function renderQuickFilterDemo(
   container.appendChild(wrapper);
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: quickFilterConfig.headers,
+    columns: quickFilterConfig.headers,
     rows: quickFilterConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

@@ -11,7 +11,7 @@ const ValueFormatterDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={valueFormatterConfig.headers}
+      columns={valueFormatterConfig.headers}
       rows={valueFormatterConfig.rows}
       height={height}
       theme={theme}

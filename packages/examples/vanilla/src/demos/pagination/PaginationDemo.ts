@@ -10,11 +10,11 @@ export function renderPaginationDemo(
   let rows = paginationData.slice(0, PAGINATION_ROWS_PER_PAGE);
 
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: paginationConfig.headers,
+    columns: paginationConfig.headers,
     rows,
     height: options?.height ?? "auto",
     theme: options?.theme,
-    shouldPaginate: true,
+    enablePagination: true,
     rowsPerPage: PAGINATION_ROWS_PER_PAGE,
     onNextPage: async (pageIndex: number) => {
       const startIndex = pageIndex * PAGINATION_ROWS_PER_PAGE;

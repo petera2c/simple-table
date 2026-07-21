@@ -8,7 +8,7 @@ export function renderLiveUpdateDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla & { _cleanup?: () => void } {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: liveUpdateConfig.headers,
+    columns: liveUpdateConfig.headers,
     rows: liveUpdateConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

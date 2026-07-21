@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, Theme } from "@simple-table/angular";
 
 /** Shell/wrapper theme from the demo app (not the same as the table's `theme` input). */
 export type CrmShellTheme = Theme | "custom-light" | "custom-dark";
@@ -43,14 +43,14 @@ export function generateCRMData(count: number = 100): CRMLead[] {
 
 export const crmData = generateCRMData(100);
 
-export const crmHeaders: AngularHeaderObject[] = [
+export const crmHeaders: AngularColumnDef[] = [
   {
     accessor: "name",
     label: "CONTACT",
     width: "2fr",
     minWidth: 290,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     type: "string",
   },
   {
@@ -58,8 +58,8 @@ export const crmHeaders: AngularHeaderObject[] = [
     label: "SIGNAL",
     width: "3fr",
     minWidth: 340,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     type: "string",
   },
   {
@@ -67,7 +67,7 @@ export const crmHeaders: AngularHeaderObject[] = [
     label: "AI SCORE",
     width: "1fr",
     minWidth: 100,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "number",
   },
@@ -76,7 +76,7 @@ export const crmHeaders: AngularHeaderObject[] = [
     label: "EMAIL",
     width: "1.5fr",
     minWidth: 210,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "enum",
     enumOptions: [
@@ -91,7 +91,7 @@ export const crmHeaders: AngularHeaderObject[] = [
     label: "IMPORT",
     width: "1fr",
     minWidth: 100,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "string",
   },
@@ -100,7 +100,7 @@ export const crmHeaders: AngularHeaderObject[] = [
     label: "LIST",
     width: "1.2fr",
     minWidth: 160,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "enum",
     enumOptions: [

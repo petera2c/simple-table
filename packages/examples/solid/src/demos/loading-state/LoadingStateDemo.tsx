@@ -33,7 +33,7 @@ export default function LoadingStateDemo(props: { height?: string | number; them
         </button>
       </div>
       <SimpleTable
-        defaultHeaders={loadingStateConfig.headers}
+        columns={loadingStateConfig.headers}
         rows={data()}
         isLoading={isLoading()}
         height={props.height ?? "400px"}

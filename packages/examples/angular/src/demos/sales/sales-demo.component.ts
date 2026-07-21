@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
 import type {
   AngularCellRenderer,
-  AngularHeaderObject,
+  AngularColumnDef,
   CellChangeProps,
   Row,
   Theme,
@@ -29,8 +29,8 @@ const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   dealProfit: SalesDealProfitCellComponent,
 };
 
-function applyCellComponents(hdrs: AngularHeaderObject[]): AngularHeaderObject[] {
-  return hdrs.map((h): AngularHeaderObject => {
+function applyCellComponents(hdrs: AngularColumnDef[]): AngularColumnDef[] {
+  return hdrs.map((h): AngularColumnDef => {
     const cellRenderer = RENDERERS[String(h.accessor)];
     return {
       ...h,
@@ -46,12 +46,12 @@ function applyCellComponents(hdrs: AngularHeaderObject[]): AngularHeaderObject[]
   imports: [SimpleTableComponent],
   template: `
     <simple-table
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rows]="data"
       [height]="formatHeight()"
       [theme]="theme"
       [autoExpandColumns]="!isMobile"
-      [editColumns]="true"
+      [enableColumnEditor]="true"
       [selectableCells]="true"
       [columnResizing]="true"
       [columnReordering]="true"
@@ -65,8 +65,8 @@ export class SalesDemoComponent implements OnInit, OnDestroy {
   @Input() height: string | number | null | undefined;
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = applyCellComponents(
-    structuredClone(salesHeadersCore) as AngularHeaderObject[],
+  readonly headers: AngularColumnDef[] = applyCellComponents(
+    structuredClone(salesHeadersCore) as AngularColumnDef[],
   );
   data: Row[] = salesSampleRows.map((r) => ({ ...r })) as Row[];
   isMobile = false;

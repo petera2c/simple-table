@@ -20,9 +20,9 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={columnEditorCustomRendererConfig.headers}
+  columns={columnEditorCustomRendererConfig.headers}
   rows={columnEditorCustomRendererConfig.rows}
-  editColumns={true}
+  enableColumnEditor={true}
   columnEditorConfig={editorConfig}
   {height}
   {theme}

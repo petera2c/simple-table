@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "./pagination.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -10,10 +10,10 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
-      [shouldPaginate]="true"
+      [enablePagination]="true"
       [rowsPerPage]="rowsPerPage"
       [isLoading]="isLoading"
       [onNextPage]="onNextPage"
@@ -24,7 +24,7 @@ export class PaginationDemoComponent {
   @Input() height: string | number = "auto";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = paginationConfig.headers;
+  readonly headers: AngularColumnDef[] = paginationConfig.headers;
   readonly rowsPerPage = PAGINATION_ROWS_PER_PAGE;
   rows: Row[] = paginationData.slice(0, PAGINATION_ROWS_PER_PAGE);
   isLoading = false;

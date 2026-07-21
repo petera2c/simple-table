@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, TableFilterState, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, TableFilterState, Theme } from "@simple-table/angular";
 import { externalFilterConfig, matchesFilter } from "./external-filter.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -10,7 +10,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="filteredRows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [externalFilterHandling]="true"
       [columnResizing]="true"
       [height]="height"
@@ -23,7 +23,7 @@ export class ExternalFilterDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = externalFilterConfig.headers;
+  readonly headers: AngularColumnDef[] = externalFilterConfig.headers;
   private filters: TableFilterState = {};
 
   handleFilterChange = (newFilters: TableFilterState) => {

@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { ReactHeaderObject } from "@simple-table/react";
+import type { ReactColumnDef } from "@simple-table/react";
 
 export type ProjectTask = {
   id: number;
@@ -106,22 +106,22 @@ export const cellClickingData: ProjectTask[] = [
   },
 ];
 
-export const cellClickingHeaders: ReactHeaderObject[] = [
-  { accessor: "id", label: "Task ID", width: 80, isSortable: true, type: "number" },
+export const cellClickingHeaders: ReactColumnDef[] = [
+  { accessor: "id", label: "Task ID", width: 80, sortable: true, type: "number" },
   {
     accessor: "task",
     label: "Task Name",
     minWidth: 150,
     width: "1fr",
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
-  { accessor: "assignee", label: "Assignee", width: 120, isSortable: true, type: "string" },
-  { accessor: "priority", label: "Priority", width: 100, isSortable: true, type: "string" },
-  { accessor: "status", label: "Status", width: 120, isSortable: true, type: "string" },
-  { accessor: "dueDate", label: "Due Date", width: 120, isSortable: true, type: "date" },
-  { accessor: "estimatedHours", label: "Est. Hours", width: 100, isSortable: true, type: "number" },
-  { accessor: "completedHours", label: "Done Hours", width: 100, isSortable: true, type: "number" },
+  { accessor: "assignee", label: "Assignee", width: 120, sortable: true, type: "string" },
+  { accessor: "priority", label: "Priority", width: 100, sortable: true, type: "string" },
+  { accessor: "status", label: "Status", width: 120, sortable: true, type: "string" },
+  { accessor: "dueDate", label: "Due Date", width: 120, sortable: true, type: "date" },
+  { accessor: "estimatedHours", label: "Est. Hours", width: 100, sortable: true, type: "number" },
+  { accessor: "completedHours", label: "Done Hours", width: 100, sortable: true, type: "number" },
   { accessor: "details", label: "View Details", width: 120, type: "other" },
 ];
 

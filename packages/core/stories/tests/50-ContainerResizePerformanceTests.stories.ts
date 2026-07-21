@@ -15,7 +15,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect, userEvent } from "@storybook/test";
-import { SimpleTableVanilla, type HeaderObject, type Row } from "../../src/index";
+import { SimpleTableVanilla, type ColumnDef, type Row } from "../../src/index";
 import { waitForTable, waitUntil } from "./testUtils";
 
 const meta: Meta = {
@@ -106,7 +106,7 @@ const createPlatformRows = (count: number): Row[] =>
     return row;
   });
 
-const createPlatformHeaders = (): HeaderObject[] => [
+const createPlatformHeaders = (): ColumnDef[] => [
   { accessor: "id", label: "ID", width: 64, pinned: "left", type: "number" },
   { accessor: "platform", label: "Platform", width: 140, pinned: "left", type: "string" },
   { accessor: "territory", label: "Territory", width: 100, type: "string" },
@@ -116,7 +116,7 @@ const createPlatformHeaders = (): HeaderObject[] => [
     width: 120,
     align: "right" as const,
     type: "number" as const,
-    isSortable: true,
+    sortable: true,
   })),
 ];
 
@@ -258,7 +258,7 @@ function buildCollapsibleNavLayout({
     main.appendChild(tableHost);
 
     tableInstance = new SimpleTableVanilla(tableHost, {
-      defaultHeaders: createPlatformHeaders(),
+      columns: createPlatformHeaders(),
       rows: createPlatformRows(rowCount),
       getRowId: (p) => String((p.row as { id?: number }).id),
       maxHeight: "calc(100vh - 180px)",

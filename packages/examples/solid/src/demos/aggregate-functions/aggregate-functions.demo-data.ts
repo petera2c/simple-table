@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { SolidHeaderObject } from "@simple-table/solid";
+import type { SolidColumnDef } from "@simple-table/solid";
 
 
-export const aggregateFunctionsHeaders: SolidHeaderObject[] = [
+export const aggregateFunctionsHeaders: SolidColumnDef[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   {
     accessor: "followers",

@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { expect } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -87,7 +87,7 @@ const resizeColumn = async (
 
 export const BasicColumnResize = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string" },
@@ -113,7 +113,7 @@ export const BasicColumnResize = {
 
 export const ResizeMultipleColumns = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string" },
@@ -153,7 +153,7 @@ export const ResizeMultipleColumns = {
 
 export const ResizeToSmallerWidth = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 150, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 300, type: "string" },
       { accessor: "city", label: "City", width: 200, type: "string" },
@@ -179,7 +179,7 @@ export const ResizeToSmallerWidth = {
 
 export const ResizeWithMinWidth = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 150, minWidth: 100, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 300, minWidth: 200, type: "string" },
       { accessor: "city", label: "City", width: 200, minWidth: 150, type: "string" },
@@ -202,7 +202,7 @@ export const ResizeWithMinWidth = {
 
 export const ResizeAllColumns = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string" },
@@ -236,22 +236,22 @@ export const ResizeAllColumns = {
 
 export const OnColumnWidthChangeCallbackFires = {
   render: () => {
-    const captured: HeaderObject[][] = [];
-    (window as unknown as { __widthChangeCapture?: HeaderObject[][] }).__widthChangeCapture = captured;
+    const captured: ColumnDef[][] = [];
+    (window as unknown as { __widthChangeCapture?: ColumnDef[][] }).__widthChangeCapture = captured;
 
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 250, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string" },
     ];
     const tableContainer = document.createElement("div");
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createStoreData(),
       getRowId: (params) => String(params.row.id),
       height: "400px",
       columnResizing: true,
-      onColumnWidthChange: (newHeaders: HeaderObject[]) => {
+      onColumnWidthChange: (newHeaders: ColumnDef[]) => {
         captured.push(newHeaders);
       },
     });
@@ -263,7 +263,7 @@ export const OnColumnWidthChangeCallbackFires = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    const captured = (window as unknown as { __widthChangeCapture?: HeaderObject[][] }).__widthChangeCapture;
+    const captured = (window as unknown as { __widthChangeCapture?: ColumnDef[][] }).__widthChangeCapture;
     expect(captured).toBeTruthy();
 
     const storeNameHeader = findHeaderCellByLabel(canvasElement, "Store Name");
@@ -283,7 +283,7 @@ export const OnColumnWidthChangeCallbackFires = {
 export const DoubleClickResizeHandleAutoFit = {
   parameters: { tags: ["column-resize-double-click-autofit"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 300, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 100, type: "string" },
     ];
@@ -362,7 +362,7 @@ const createEmployeeData = () => [
 export const PinnedResizeSyncsHorizontalScrollbar = {
   parameters: { tags: ["pinned-resize-h-scrollbar"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 160, pinned: "left", type: "string" },
       { accessor: "email", label: "Email", width: 280, type: "string" },
       { accessor: "department", label: "Department", width: 200, type: "string" },
@@ -409,7 +409,7 @@ export const PinnedResizeSyncsHorizontalScrollbar = {
 
 export const ResizeLeftPinnedColumn = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 200, pinned: "left", type: "string" },
       { accessor: "email", label: "Email", width: 250, type: "string" },
       { accessor: "department", label: "Department", width: 180, type: "string" },
@@ -444,7 +444,7 @@ export const ResizeLeftPinnedColumn = {
 
 export const ResizeRightPinnedColumn = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "email", label: "Email", width: 250, type: "string" },
       { accessor: "salary", label: "Salary", width: 150, pinned: "right", type: "number" },
@@ -485,7 +485,7 @@ export const ResizeRightPinnedColumn = {
 
 export const ResizeWithBothPinnedSections = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 180, pinned: "left", type: "string" },
       { accessor: "email", label: "Email", width: 220, type: "string" },
       { accessor: "department", label: "Department", width: 160, type: "string" },

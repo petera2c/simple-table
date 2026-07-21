@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
 
-export const columnPinningHeaders: AngularHeaderObject[] = [
+export const columnPinningHeaders: AngularColumnDef[] = [
   { accessor: "name", label: "Name", width: 132, pinned: "left", type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },
   { accessor: "role", label: "Role", width: 150, type: "string" },

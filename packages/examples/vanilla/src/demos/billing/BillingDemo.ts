@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject, CellRenderer, Row } from "simple-table-core";
+import type { Theme, ColumnDef, CellRenderer, Row } from "simple-table-core";
 import { billingConfig } from "./billing.demo-data";
 import type { BillingRow } from "./billing.demo-data";
 import "simple-table-core/styles.css";
@@ -20,7 +20,7 @@ export function renderBillingDemo(
     return name;
   };
 
-  const headers: HeaderObject[] = billingConfig.headers.map((h) => {
+  const headers: ColumnDef[] = billingConfig.headers.map((h) => {
     if (h.accessor === "name") {
       return { ...h, cellRenderer: nameRenderer };
     }
@@ -30,8 +30,8 @@ export function renderBillingDemo(
   const table = new SimpleTableVanilla(container, {
     columnReordering: true,
     columnResizing: true,
-    defaultHeaders: headers,
-    editColumns: true,
+    columns: headers,
+    enableColumnEditor: true,
     height: options?.height ?? "400px",
     initialSortColumn: "amount",
     initialSortDirection: "desc",
@@ -39,7 +39,7 @@ export function renderBillingDemo(
     rows: billingConfig.rows as unknown as Row[],
     selectableCells: true,
     theme: options?.theme,
-    useOddColumnBackground: true,
+    oddColumnBackground: true,
   });
 
   return table;

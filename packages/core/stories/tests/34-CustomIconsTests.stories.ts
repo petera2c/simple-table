@@ -5,7 +5,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -23,9 +23,9 @@ const meta: Meta = {
 
 export default meta;
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
-  { accessor: "name", label: "Name", width: 150, type: "string", isSortable: true },
+  { accessor: "name", label: "Name", width: 150, type: "string", sortable: true },
 ];
 const data = () => [
   { id: 1, name: "Alice" },
@@ -68,7 +68,7 @@ export const CustomExpandIcon = {
     expandEl.setAttribute("data-testid", "expand");
     expandEl.textContent = "▶";
     expandEl.title = "Expand";
-    const groupHeaders: HeaderObject[] = [
+    const groupHeaders: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
       { accessor: "id", label: "ID", width: 80, type: "number" },
     ];
@@ -106,7 +106,7 @@ export const CustomPaginationIcons = {
     const { wrapper } = renderVanillaTable(headers, [...data(), { id: 3, name: "Carol" }], {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 2,
       icons: { prev: prevEl, next: nextEl },
     });
@@ -131,7 +131,7 @@ export const CustomFilterIcon = {
     filterEl.setAttribute("data-testid", "custom-filter");
     filterEl.textContent = "⊿";
 
-    const filterHeaders: HeaderObject[] = [
+    const filterHeaders: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string", filterable: true },
     ];
@@ -161,7 +161,7 @@ export const CustomHeaderExpandCollapseIcons = {
     expandEl.setAttribute("data-testid", "custom-expand-icon");
     expandEl.textContent = "▼";
 
-    const collapsibleHeaders: HeaderObject[] = [
+    const collapsibleHeaders: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60 },
       {
         accessor: "salesGroup",
@@ -204,7 +204,7 @@ export const CustomDragIcon = {
     const { wrapper } = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",
-      editColumns: true,
+      enableColumnEditor: true,
       icons: { drag: "⋮⋮" },
       columnEditorConfig: {
         rowRenderer: ({
@@ -256,14 +256,14 @@ export const CustomPinnedLeftRightIcons = {
     pinnedRightEl.setAttribute("data-testid", "custom-pinned-right");
     pinnedRightEl.textContent = "→";
 
-    const pinnedHeaders: HeaderObject[] = [
+    const pinnedHeaders: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number", pinned: "left" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
     ];
     const { wrapper } = renderVanillaTable(pinnedHeaders, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",
-      editColumns: true,
+      enableColumnEditor: true,
       icons: { pinnedLeftIcon: pinnedLeftEl, pinnedRightIcon: pinnedRightEl },
     });
     return wrapper;

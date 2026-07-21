@@ -2,17 +2,17 @@
  * Sales example headers – ported from React sales-headers (vanilla-compatible).
  * Cell renderers return strings; no React components.
  */
-import type { HeaderObject } from "../../../src/index";
+import type { ColumnDef } from "../../../src/index";
 
-export const SALES_HEADERS: HeaderObject[] = [
+export const SALES_HEADERS: ColumnDef[] = [
   {
     pinned: "left",
     accessor: "repName",
     label: "Sales Representative",
     width: "2fr",
     minWidth: 200,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     type: "string",
     headerRenderer: ({ header, components }) => {
       const wrap = document.createElement("div");
@@ -47,15 +47,15 @@ export const SALES_HEADERS: HeaderObject[] = [
     accessor: "salesMetrics",
     label: "Sales Metrics",
     width: 600,
-    isSortable: false,
+    sortable: false,
     children: [
       {
         accessor: "dealSize",
         label: "Deal Size",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "right",
         type: "number",
         valueFormatter: ({ value }: { value?: unknown }) => {
@@ -71,8 +71,8 @@ export const SALES_HEADERS: HeaderObject[] = [
         label: "Deal Value",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "right",
         type: "number",
         valueFormatter: ({ value }: { value?: unknown }) => {
@@ -88,8 +88,8 @@ export const SALES_HEADERS: HeaderObject[] = [
         label: "Status",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "center",
         type: "boolean",
         cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
@@ -100,8 +100,8 @@ export const SALES_HEADERS: HeaderObject[] = [
         label: "Close Date",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "center",
         type: "date",
         valueFormatter: ({ value }: { value?: unknown }) => {
@@ -123,15 +123,15 @@ export const SALES_HEADERS: HeaderObject[] = [
     label: "Financial Metrics",
     width: "1fr",
     minWidth: 140,
-    isSortable: false,
+    sortable: false,
     children: [
       {
         accessor: "commission",
         label: "Commission",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "right",
         type: "number",
         valueFormatter: ({ value }: { value?: unknown }) => {
@@ -147,8 +147,8 @@ export const SALES_HEADERS: HeaderObject[] = [
         label: "Profit Margin",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "right",
         type: "number",
         valueFormatter: ({ value }: { value?: unknown }) => {
@@ -161,8 +161,8 @@ export const SALES_HEADERS: HeaderObject[] = [
         label: "Deal Profit",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "right",
         type: "number",
         valueFormatter: ({ value }: { value?: unknown }) => {
@@ -178,8 +178,8 @@ export const SALES_HEADERS: HeaderObject[] = [
         label: "Category",
         width: "1fr",
         minWidth: 140,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "center",
         type: "enum",
         enumOptions: [

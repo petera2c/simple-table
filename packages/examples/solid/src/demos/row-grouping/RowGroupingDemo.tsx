@@ -28,7 +28,7 @@ export default function RowGroupingDemo(props: { height?: string | number; theme
       </div>
       <SimpleTable
         ref={(api) => (tableRef = api)}
-        defaultHeaders={rowGroupingConfig.headers}
+        columns={rowGroupingConfig.headers}
         rows={rowGroupingConfig.rows}
         rowGrouping={rowGroupingConfig.tableProps.rowGrouping}
         enableStickyParents={true}

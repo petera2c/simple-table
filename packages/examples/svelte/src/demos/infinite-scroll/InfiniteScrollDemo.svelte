@@ -29,7 +29,7 @@
     {rows.length} rows loaded{hasMore ? "" : " (all loaded)"}
   </div>
   <SimpleTable
-    defaultHeaders={infiniteScrollConfig.headers}
+    columns={infiniteScrollConfig.headers}
     {rows}
     isLoading={loading}
     onLoadMore={handleLoadMore}

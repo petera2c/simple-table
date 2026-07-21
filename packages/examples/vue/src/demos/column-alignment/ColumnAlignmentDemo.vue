@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="columnAlignmentConfig.headers"
+    :columns="columnAlignmentConfig.headers"
     :rows="columnAlignmentConfig.rows"
     :height="height"
     :theme="theme"

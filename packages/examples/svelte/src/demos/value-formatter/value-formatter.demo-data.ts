@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject, Row } from "@simple-table/svelte";
+import type { SvelteColumnDef, Row } from "@simple-table/svelte";
 
 
 export const valueFormatterData: Row[] = [
@@ -26,7 +26,7 @@ const DEPARTMENT_CODES: Record<string, string> = {
   operations: "OPS",
 };
 
-export const valueFormatterHeaders: SvelteHeaderObject[] = [
+export const valueFormatterHeaders: SvelteColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   {
     accessor: "firstName",

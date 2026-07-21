@@ -5,7 +5,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { waitForTable, waitUntil } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -30,7 +30,7 @@ const createData = () => [
   { id: 3, name: "Carol", score: 78 },
 ];
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 150, type: "string" },
   { accessor: "score", label: "Score", width: 100, type: "number" },
@@ -218,7 +218,7 @@ export const LoadingAppendsSkeletonsUnderLoadedRows = {
 // EXPANDABLE CELLS + LOADING STATE
 // ============================================================================
 
-const expandableLoadingHeaders: HeaderObject[] = [
+const expandableLoadingHeaders: ColumnDef[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   { accessor: "role", label: "Role", width: 120, type: "string" },
 ];

@@ -13,12 +13,12 @@ export function renderColumnVisibilityDemo(
   options?: { height?: string | number; theme?: Theme },
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: getColumnVisibilityDemoHeaders(),
+    columns: getColumnVisibilityDemoHeaders(),
     rows: columnVisibilityConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
-    editColumns: columnVisibilityConfig.tableProps.editColumns,
-    editColumnsInitOpen: columnVisibilityConfig.tableProps.editColumnsInitOpen,
+    enableColumnEditor: columnVisibilityConfig.tableProps.enableColumnEditor,
+    enableColumnEditorInitOpen: columnVisibilityConfig.tableProps.enableColumnEditorInitOpen,
     onColumnVisibilityChange: saveColumnVisibilityDemoState,
     columnEditorConfig: {
       ...columnVisibilityConfig.tableProps.columnEditorConfig,

@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { ReactHeaderObject, Row } from "@simple-table/react";
+import type { ReactColumnDef, Row } from "@simple-table/react";
 
 
 const FIRST_NAMES = ["Elena", "Kai", "Amara", "Santiago", "Priya", "Magnus", "Zara", "Luca", "Sarah", "Olumide", "Isabella", "Dmitri"];
@@ -23,7 +23,7 @@ export function generateInfiniteScrollData(startIndex: number, count: number): R
   return rows;
 }
 
-export const infiniteScrollHeaders: ReactHeaderObject[] = [
+export const infiniteScrollHeaders: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120 },
   { accessor: "email", label: "Email", width: 250 },

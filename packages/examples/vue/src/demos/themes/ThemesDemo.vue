@@ -20,7 +20,7 @@
       </button>
     </div>
     <SimpleTable
-      :default-headers="themesConfig.headers"
+      :columns="themesConfig.headers"
       :rows="themesConfig.rows"
       :height="height"
       :theme="selectedTheme"

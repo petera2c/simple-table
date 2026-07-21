@@ -4,7 +4,7 @@ import type {
   CellRendererProps,
   FooterRendererProps,
   HeaderRendererProps,
-  ReactHeaderObject,
+  ReactColumnDef,
   Row,
   Theme,
 } from "@simple-table/react";
@@ -135,8 +135,8 @@ const HeaderWithMenu = ({ header }: HeaderRendererProps): ReactNode => {
   );
 };
 
-function buildHeaders(): ReactHeaderObject[] {
-  const withMenu = (header: ReactHeaderObject): ReactHeaderObject => ({
+function buildHeaders(): ReactColumnDef[] {
+  const withMenu = (header: ReactColumnDef): ReactColumnDef => ({
     ...header,
     headerRenderer: HeaderWithMenu,
   });
@@ -149,7 +149,7 @@ function buildHeaders(): ReactHeaderObject[] {
       type: "number",
       align: "center",
       pinned: "left",
-      isSortable: false,
+      sortable: false,
     }),
     withMenu({
       accessor: "name",
@@ -158,7 +158,7 @@ function buildHeaders(): ReactHeaderObject[] {
       type: "string",
       align: "left",
       pinned: "left",
-      isSortable: true,
+      sortable: true,
       cellRenderer: StationCell,
     }),
     withMenu({
@@ -168,7 +168,7 @@ function buildHeaders(): ReactHeaderObject[] {
       type: "string",
       align: "left",
       pinned: "left",
-      isSortable: true,
+      sortable: true,
     }),
     withMenu({
       accessor: "broadcast_area",
@@ -177,7 +177,7 @@ function buildHeaders(): ReactHeaderObject[] {
       type: "string",
       align: "left",
       pinned: "left",
-      isSortable: true,
+      sortable: true,
     }),
     withMenu({
       accessor: "country",
@@ -186,7 +186,7 @@ function buildHeaders(): ReactHeaderObject[] {
       type: "string",
       align: "left",
       pinned: "left",
-      isSortable: true,
+      sortable: true,
       cellRenderer: CountryCell,
     }),
     withMenu({
@@ -196,7 +196,7 @@ function buildHeaders(): ReactHeaderObject[] {
       minWidth: 120,
       type: "number",
       align: "right",
-      isSortable: true,
+      sortable: true,
       valueFormatter: ({ value }) => formatNumber(value),
     }),
     withMenu({
@@ -206,7 +206,7 @@ function buildHeaders(): ReactHeaderObject[] {
       minWidth: 120,
       type: "number",
       align: "right",
-      isSortable: true,
+      sortable: true,
       valueFormatter: ({ value }) => formatNumber(value),
     }),
   ];
@@ -220,14 +220,14 @@ const RadioStationsDemo = ({
   theme?: Theme;
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [headers, setHeaders] = useState<ReactHeaderObject[]>(() => buildHeaders());
+  const [headers, setHeaders] = useState<ReactColumnDef[]>(() => buildHeaders());
 
   const rows = useMemo(() => radioStationRows as unknown as Row[], []);
 
   // Merge widths onto the React header definitions. Core's callback returns
   // vanilla-wrapped renderers; putting those into React state and back through
   // buildVanillaConfig can nest wraps. Width-only merge keeps React components.
-  const handleColumnWidthChange = useCallback((next: ReactHeaderObject[]) => {
+  const handleColumnWidthChange = useCallback((next: ReactColumnDef[]) => {
     const widthByAccessor = new Map(next.map((h) => [h.accessor, h.width]));
     setHeaders((prev) =>
       prev.map((h) => {
@@ -268,7 +268,7 @@ const RadioStationsDemo = ({
       </p>
 
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         rows={rows}
         getRowId={(p) => String((p.row as unknown as RadioStationRow | undefined)?.id)}
         theme={theme}
@@ -276,7 +276,7 @@ const RadioStationsDemo = ({
         columnReordering
         columnResizing
         autoExpandColumns
-        editColumns
+        enableColumnEditor
         columnEditorConfig={{
           text: "All Columns",
           searchEnabled: true,
@@ -284,7 +284,7 @@ const RadioStationsDemo = ({
         }}
         footerPosition="top"
         footerRenderer={renderFooter}
-        shouldPaginate={false}
+        enablePagination={false}
         initialSortColumn="aqh"
         initialSortDirection="desc"
         // Examples shell scrolls `.examples-content`, not `window`. In a real app

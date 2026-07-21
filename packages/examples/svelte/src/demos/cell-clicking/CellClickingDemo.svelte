@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteHeaderObject, CellClickProps } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef, CellClickProps } from "@simple-table/svelte";
   import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
   import type { ProjectTask } from "./cell-clicking.demo-data";
   import CellClickPriorityCell from "./CellClickPriorityCell.svelte";
@@ -14,7 +14,7 @@
   let selectedTask: ProjectTask | null = $state(null);
   let rows: ProjectTask[] = $state([...cellClickingData]);
 
-  const headers: SvelteHeaderObject[] = cellClickingHeaders.map((h) => {
+  const headers: SvelteColumnDef[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") return { ...h, cellRenderer: CellClickPriorityCell };
     if (h.accessor === "status") return { ...h, cellRenderer: CellClickStatusCell };
     if (h.accessor === "details") return { ...h, cellRenderer: CellClickDetailsCell };
@@ -86,7 +86,7 @@
 
   <SimpleTable
     columnResizing={true}
-    defaultHeaders={headers}
+    columns={headers}
     {height}
     onCellClick={handleCellClick}
     rows={rows}

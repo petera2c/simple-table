@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { SolidHeaderObject } from "@simple-table/solid";
+import type { SolidColumnDef } from "@simple-table/solid";
 
 
-export const rowHeightHeaders: SolidHeaderObject[] = [
+export const rowHeightHeaders: SolidColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 150, width: "1fr", type: "string" },
   { accessor: "age", label: "Age", width: 100, type: "string" },

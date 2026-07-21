@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject } from "@simple-table/react";
+import type { Theme, ReactColumnDef } from "@simple-table/react";
 import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -11,17 +11,17 @@ const ColumnEditingDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const [additionalColumns, setAdditionalColumns] = useState<ReactHeaderObject[]>([]);
+  const [additionalColumns, setAdditionalColumns] = useState<ReactColumnDef[]>([]);
   const [lastAdded, setLastAdded] = useState("");
 
-  const headers: ReactHeaderObject[] = useMemo(
+  const headers: ReactColumnDef[] = useMemo(
     () => [...columnEditingHeaders, ...additionalColumns],
     [additionalColumns],
   );
 
   const addColumn = () => {
     const n = additionalColumns.length + 1;
-    const col: ReactHeaderObject = {
+    const col: ReactColumnDef = {
       accessor: `custom-${n}`,
       label: `Custom ${n}`,
       width: 120,
@@ -31,7 +31,7 @@ const ColumnEditingDemo = ({
     setLastAdded(col.label);
   };
 
-  const handleHeaderEdit = (_header: ReactHeaderObject, newLabel: string) => {
+  const handleHeaderEdit = (_header: ReactColumnDef, newLabel: string) => {
     setLastAdded(`Renamed to: ${newLabel}`);
   };
 
@@ -57,7 +57,7 @@ const ColumnEditingDemo = ({
         )}
       </div>
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         rows={columnEditingData}
         enableHeaderEditing
         selectableColumns

@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent, asRows } from "@simple-table/angular";
-import type { AngularCellRenderer, AngularHeaderObject, Theme } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularColumnDef, Theme } from "@simple-table/angular";
 import { manufacturingConfig } from "./manufacturing.demo-data";
 import {
   MfgCycletimeCellComponent,
@@ -31,8 +31,8 @@ const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   maintenanceDate: MfgMaintenanceDateCellComponent,
 };
 
-function getHeaders(): AngularHeaderObject[] {
-  return manufacturingConfig.headers.map((h): AngularHeaderObject => {
+function getHeaders(): AngularColumnDef[] {
+  return manufacturingConfig.headers.map((h): AngularColumnDef => {
     const cellRenderer = RENDERERS[String(h.accessor)];
     return cellRenderer ? { ...h, cellRenderer } : { ...h };
   });
@@ -46,7 +46,7 @@ function getHeaders(): AngularHeaderObject[] {
     <simple-table
       [columnResizing]="true"
       [columnReordering]="true"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [rowGrouping]="grouping"
       [rows]="rows"
@@ -61,5 +61,5 @@ export class ManufacturingDemoComponent {
 
   readonly grouping = ["stations"];
   readonly rows = asRows(manufacturingConfig.rows);
-  readonly headers: AngularHeaderObject[] = getHeaders();
+  readonly headers: AngularColumnDef[] = getHeaders();
 }

@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject } from "@simple-table/svelte";
+import type { SvelteColumnDef } from "@simple-table/svelte";
 
 
-export const aggregateFunctionsHeaders: SvelteHeaderObject[] = [
+export const aggregateFunctionsHeaders: SvelteColumnDef[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   {
     accessor: "followers",

@@ -1,6 +1,6 @@
-import type { PivotConfig, VueHeaderObject, Row } from "@simple-table/vue";
+import type { PivotConfig, VueColumnDef, Row } from "@simple-table/vue";
 
-export const pivotHeaders: VueHeaderObject[] = [
+export const pivotHeaders: VueColumnDef[] = [
   { accessor: "region", label: "Region", width: 110, type: "string" },
   { accessor: "country", label: "Country", width: 100, type: "string" },
   { accessor: "category", label: "Category", width: 110, type: "string" },

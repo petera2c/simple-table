@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SolidHeaderObject } from "@simple-table/solid";
+import type { SolidColumnDef } from "@simple-table/solid";
 
 
 export const externalSortData = [
@@ -17,16 +17,16 @@ export const externalSortData = [
   { id: 12, name: "Dmitri Volkov", age: 39, email: "dmitri.volkov@techcorp.com", salary: 135000, department: "DevOps" },
 ];
 
-export const externalSortHeaders: SolidHeaderObject[] = [
-  { accessor: "name", label: "Name", width: "1fr", minWidth: 120, isSortable: true, type: "string" },
-  { accessor: "age", label: "Age", width: 120, isSortable: true, type: "number" },
-  { accessor: "department", label: "Department", width: 150, isSortable: true, type: "string" },
-  { accessor: "email", label: "Email", width: 200, isSortable: true, type: "string" },
+export const externalSortHeaders: SolidColumnDef[] = [
+  { accessor: "name", label: "Name", width: "1fr", minWidth: 120, sortable: true, type: "string" },
+  { accessor: "age", label: "Age", width: 120, sortable: true, type: "number" },
+  { accessor: "department", label: "Department", width: 150, sortable: true, type: "string" },
+  { accessor: "email", label: "Email", width: 200, sortable: true, type: "string" },
   {
     accessor: "salary",
     label: "Salary",
     width: 120,
-    isSortable: true,
+    sortable: true,
     type: "number",
     align: "right",
     valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,

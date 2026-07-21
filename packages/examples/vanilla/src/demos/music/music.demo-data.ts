@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 export interface MusicArtist {
   id: number;
@@ -153,49 +153,49 @@ export function generateMusicData(count: number = 50): MusicArtist[] {
 
 export const musicData = generateMusicData(50);
 
-export const musicHeaders: HeaderObject[] = [
-  { accessor: "rank", label: "#", width: 60, isSortable: true, isEditable: false, align: "center", type: "number", pinned: "left" },
-  { accessor: "artistName", label: "Artist", width: 330, isSortable: true, isEditable: false, align: "left", type: "string", pinned: "left" },
-  { accessor: "artistType", label: "Identity", width: 280, isSortable: false, isEditable: false, align: "left", type: "string" },
+export const musicHeaders: ColumnDef[] = [
+  { accessor: "rank", label: "#", width: 60, sortable: true, editable: false, align: "center", type: "number", pinned: "left" },
+  { accessor: "artistName", label: "Artist", width: 330, sortable: true, editable: false, align: "left", type: "string", pinned: "left" },
+  { accessor: "artistType", label: "Identity", width: 280, sortable: false, editable: false, align: "left", type: "string" },
   {
     accessor: "followersGroup", label: "Followers", width: 700, collapsible: true,
     children: [
-      { accessor: "followers", label: "Total Followers", width: 180, showWhen: "always", isSortable: true, isEditable: false, type: "number" },
-      { accessor: "followers7DayGrowth", label: "7-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded" },
-      { accessor: "followers28DayGrowth", label: "28-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded" },
-      { accessor: "followers60DayGrowth", label: "60-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded" },
+      { accessor: "followers", label: "Total Followers", width: 180, showWhen: "always", sortable: true, editable: false, type: "number" },
+      { accessor: "followers7DayGrowth", label: "7-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded" },
+      { accessor: "followers28DayGrowth", label: "28-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded" },
+      { accessor: "followers60DayGrowth", label: "60-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded" },
     ],
   },
-  { accessor: "popularity", label: "Popularity", width: 180, isSortable: true, isEditable: false, align: "center", type: "number" },
+  { accessor: "popularity", label: "Popularity", width: 180, sortable: true, editable: false, align: "center", type: "number" },
   {
     accessor: "playlistReachGroup", label: "Playlist Reach", width: 700, collapsible: true,
     children: [
-      { accessor: "playlistReach", label: "Total Reach", width: 180, showWhen: "always", isSortable: true, isEditable: false, type: "number" },
-      { accessor: "playlistReach7DayGrowth", label: "7-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded" },
-      { accessor: "playlistReach28DayGrowth", label: "28-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded" },
-      { accessor: "playlistReach60DayGrowth", label: "60-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded" },
+      { accessor: "playlistReach", label: "Total Reach", width: 180, showWhen: "always", sortable: true, editable: false, type: "number" },
+      { accessor: "playlistReach7DayGrowth", label: "7-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded" },
+      { accessor: "playlistReach28DayGrowth", label: "28-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded" },
+      { accessor: "playlistReach60DayGrowth", label: "60-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded" },
     ],
   },
   {
     accessor: "playlistCountGroup", label: "Playlist Count", width: 700, collapsible: true,
     children: [
-      { accessor: "playlistCount", label: "Total Count", width: 180, showWhen: "always", isSortable: true, isEditable: false, type: "number" },
-      { accessor: "playlistCount7DayGrowth", label: "7-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded" },
-      { accessor: "playlistCount28DayGrowth", label: "28-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded" },
-      { accessor: "playlistCount60DayGrowth", label: "60-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded" },
+      { accessor: "playlistCount", label: "Total Count", width: 180, showWhen: "always", sortable: true, editable: false, type: "number" },
+      { accessor: "playlistCount7DayGrowth", label: "7-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded" },
+      { accessor: "playlistCount28DayGrowth", label: "28-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded" },
+      { accessor: "playlistCount60DayGrowth", label: "60-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded" },
     ],
   },
   {
     accessor: "monthlyListenersGroup", label: "Monthly Listeners", width: 700, collapsible: true,
     children: [
-      { accessor: "monthlyListeners", label: "Total Listeners", width: 180, showWhen: "always", isSortable: true, isEditable: false, type: "number" },
-      { accessor: "monthlyListeners7DayGrowth", label: "7-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded" },
-      { accessor: "monthlyListeners28DayGrowth", label: "28-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded" },
-      { accessor: "monthlyListeners60DayGrowth", label: "60-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded" },
+      { accessor: "monthlyListeners", label: "Total Listeners", width: 180, showWhen: "always", sortable: true, editable: false, type: "number" },
+      { accessor: "monthlyListeners7DayGrowth", label: "7-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded" },
+      { accessor: "monthlyListeners28DayGrowth", label: "28-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded" },
+      { accessor: "monthlyListeners60DayGrowth", label: "60-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded" },
     ],
   },
-  { accessor: "conversionRate", label: "Conversion Rate", width: 150, isSortable: true, isEditable: false, align: "right", type: "number" },
-  { accessor: "reachFollowersRatio", label: "Reach/Followers Ratio", width: 220, isSortable: true, isEditable: false, align: "right", type: "number" },
+  { accessor: "conversionRate", label: "Conversion Rate", width: 150, sortable: true, editable: false, align: "right", type: "number" },
+  { accessor: "reachFollowersRatio", label: "Reach/Followers Ratio", width: 220, sortable: true, editable: false, align: "right", type: "number" },
 ];
 
 export const MUSIC_THEME_COLORS: Record<string, Record<string, string>> = {

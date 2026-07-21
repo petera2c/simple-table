@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteHeaderObject, CellChangeProps, Row } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef, CellChangeProps, Row } from "@simple-table/svelte";
   import { salesHeadersCore, salesSampleRows } from "./sales.demo-data";
   import SalesDealValueCell from "./SalesDealValueCell.svelte";
   import SalesIsWonCell from "./SalesIsWonCell.svelte";
@@ -26,16 +26,16 @@
     dealProfit: SalesDealProfitCell,
   };
 
-  function applyCellComponents(hdrs: SvelteHeaderObject[]): SvelteHeaderObject[] {
+  function applyCellComponents(hdrs: SvelteColumnDef[]): SvelteColumnDef[] {
     return hdrs.map((h) => ({
       ...h,
       ...(renderers[h.accessor as string] ? { cellRenderer: renderers[h.accessor as string] } : {}),
-      ...(h.children ? { children: applyCellComponents(h.children as SvelteHeaderObject[]) } : {}),
+      ...(h.children ? { children: applyCellComponents(h.children as SvelteColumnDef[]) } : {}),
     }));
   }
 
   const headers = $derived(
-    applyCellComponents(JSON.parse(JSON.stringify(salesHeadersCore)) as SvelteHeaderObject[]),
+    applyCellComponents(JSON.parse(JSON.stringify(salesHeadersCore)) as SvelteColumnDef[]),
   );
 
   let data = $state<Row[]>(salesSampleRows.map((r) => ({ ...r })) as Row[]);
@@ -60,12 +60,12 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   height={formatTableHeight(height)}
   {theme}
   autoExpandColumns={!isMobile}
-  editColumns={true}
+  enableColumnEditor={true}
   selectableCells={true}
   columnResizing={true}
   columnReordering={true}

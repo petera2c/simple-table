@@ -1,11 +1,11 @@
 /**
  * CELL RENDERER TESTS
- * Tests for HeaderObject.cellRenderer - custom cell content.
+ * Tests for ColumnDef.cellRenderer - custom cell content.
  */
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { CellRendererProps, HeaderObject } from "../../src/index";
+import { CellRendererProps, ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -30,7 +30,7 @@ const createData = () => [
 
 export const CustomCellRendererElement = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "name",
@@ -65,7 +65,7 @@ export const CustomCellRendererElement = {
 
 export const CustomCellRendererString = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "score",
@@ -90,7 +90,7 @@ export const CustomCellRendererString = {
 
 export const DefaultCellWithoutRenderer = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
     ];
@@ -116,7 +116,7 @@ export const CellRendererColIndexParam = {
   render: () => {
     const capturedIndices: number[] = [];
     (window as unknown as { __colIndexCapture?: number[] }).__colIndexCapture = capturedIndices;
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "name",
@@ -165,7 +165,7 @@ export const CellRendererFormattedValueParam = {
     (
       window as unknown as { __formattedValueCapture?: (string | undefined)[] }
     ).__formattedValueCapture = capturedFormattedValues;
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "score",
@@ -208,7 +208,7 @@ export const CellRendererThemeParam = {
   render: () => {
     const capturedThemes: string[] = [];
     (window as unknown as { __themeCapture?: string[] }).__themeCapture = capturedThemes;
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "name",

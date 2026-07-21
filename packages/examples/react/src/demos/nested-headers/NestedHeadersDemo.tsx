@@ -11,7 +11,7 @@ const NestedHeadersDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={nestedHeadersConfig.headers}
+      columns={nestedHeadersConfig.headers}
       rows={nestedHeadersConfig.rows}
       height={height}
       theme={theme}

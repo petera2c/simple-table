@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { VueHeaderObject } from "@simple-table/vue";
+import type { VueColumnDef } from "@simple-table/vue";
 
 
-export const liveUpdateHeaders: VueHeaderObject[] = [
+export const liveUpdateHeaders: VueColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "product", label: "Product", width: 180, type: "string" },
   {

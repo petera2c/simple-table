@@ -2,25 +2,25 @@
  * RowGrouping Example – vanilla port of React row-grouping/RowGrouping.
  * Same headers, data (generateTeams/generateDivisions), and props as React version.
  */
-import type { Accessor, CellValue, HeaderObject, Row } from "../../../src/index";
+import type { Accessor, CellValue, ColumnDef, Row } from "../../../src/index";
 import { SimpleTableVanilla } from "../../../src/index";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../../vanillaStoryConfig";
 
-const HEADERS: HeaderObject[] = [
+const HEADERS: ColumnDef[] = [
   {
     accessor: "organization",
     label: "Organization",
     width: 200,
     expandable: true,
     type: "string",
-    isSortable: true,
+    sortable: true,
   },
   {
     accessor: "employees",
     label: "Employees",
     width: 100,
     type: "number",
-    isSortable: true,
+    sortable: true,
     aggregation: { type: "sum" },
   },
   {
@@ -28,7 +28,7 @@ const HEADERS: HeaderObject[] = [
     label: "Annual Budget",
     width: 140,
     type: "string",
-    isSortable: true,
+    sortable: true,
     aggregation: {
       type: "sum",
       parseValue: (value: CellValue) => {
@@ -44,7 +44,7 @@ const HEADERS: HeaderObject[] = [
     label: "Team Rating",
     width: 100,
     type: "number",
-    isSortable: true,
+    sortable: true,
     aggregation: { type: "average" },
     valueFormatter: ({ value }: { value?: unknown }) =>
       typeof value === "number" ? `${value.toFixed(1)} ⭐` : typeof value === "string" ? `${value} ⭐` : "",
@@ -54,7 +54,7 @@ const HEADERS: HeaderObject[] = [
     label: "Projects",
     width: 90,
     type: "number",
-    isSortable: true,
+    sortable: true,
     aggregation: { type: "count" },
   },
   {
@@ -62,7 +62,7 @@ const HEADERS: HeaderObject[] = [
     label: "Min Team",
     width: 90,
     type: "number",
-    isSortable: true,
+    sortable: true,
     aggregation: { type: "min" },
   },
   {
@@ -70,7 +70,7 @@ const HEADERS: HeaderObject[] = [
     label: "Max Team",
     width: 90,
     type: "number",
-    isSortable: true,
+    sortable: true,
     aggregation: { type: "max" },
   },
   {
@@ -78,7 +78,7 @@ const HEADERS: HeaderObject[] = [
     label: "Score",
     width: 100,
     type: "number",
-    isSortable: true,
+    sortable: true,
     aggregation: {
       type: "custom",
       customFn: (values: unknown[]) => {
@@ -90,9 +90,9 @@ const HEADERS: HeaderObject[] = [
     valueFormatter: ({ value }: { value?: unknown }) =>
       typeof value === "number" || typeof value === "string" ? `${value}/100` : "",
   },
-  { accessor: "performance", label: "Performance", width: 120, type: "string", isSortable: true },
-  { accessor: "location", label: "Location", width: 130, type: "string", isSortable: true },
-  { accessor: "status", label: "Status", width: 110, type: "string", isSortable: true },
+  { accessor: "performance", label: "Performance", width: 120, type: "string", sortable: true },
+  { accessor: "location", label: "Location", width: 130, type: "string", sortable: true },
+  { accessor: "status", label: "Status", width: 110, type: "string", sortable: true },
 ];
 
 function generateTeams(divisionId: number, count: number = 200): Row[] {
@@ -191,7 +191,7 @@ export function renderRowGroupingExample(args?: Partial<UniversalVanillaArgs>): 
   wrapper.appendChild(tableContainer);
   const options = { ...defaultVanillaArgs, ...rowGroupingExampleDefaults, ...args };
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: HEADERS as never,
+    columns: HEADERS as never,
     rows: ROWS as never,
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
     ...options,

@@ -14,7 +14,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={cellEditingConfig.headers}
+  columns={cellEditingConfig.headers}
   rows={data}
   {height}
   {theme}

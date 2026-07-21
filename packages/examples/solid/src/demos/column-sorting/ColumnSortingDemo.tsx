@@ -8,7 +8,7 @@ export default function ColumnSortingDemo(props: {
 }) {
   return (
     <SimpleTable
-      defaultHeaders={columnSortingConfig.headers}
+      columns={columnSortingConfig.headers}
       rows={columnSortingConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

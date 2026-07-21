@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { addParagraph } from "../utils";
@@ -85,14 +85,14 @@ export const BasicStringEditing = {
     wrapper.appendChild(editInfoDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[]   = [
+    const headers:ColumnDef[]   = [
       { accessor: "id", label: "ID", width: 80 },
-      { accessor: "firstName", label: "First Name", width: 150, isEditable: true, type: "string" },
-      { accessor: "lastName", label: "Last Name", width: 150, isEditable: true, type: "string" },
+      { accessor: "firstName", label: "First Name", width: 150, editable: true, type: "string" },
+      { accessor: "lastName", label: "Last Name", width: 150, editable: true, type: "string" },
       { accessor: "email", label: "Email", width: 200 },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: data,
       height: "300px",
       onCellEdit: (props) => {
@@ -141,13 +141,13 @@ export const NumberEditing = {
     addParagraph(wrapper, "Double-click on Salary cells to edit them (numeric input only)");
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[]   = [
+    const headers:ColumnDef[]   = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "firstName", label: "First Name", width: 150 },
-      { accessor: "salary", label: "Salary", width: 150, isEditable: true, type: "number" },
+      { accessor: "salary", label: "Salary", width: 150, editable: true, type: "number" },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: data,
       height: "300px",
       onCellEdit: (props) => {
@@ -191,13 +191,13 @@ export const BooleanEditing = {
     addParagraph(wrapper, "Double-click on Active cells to select True/False from dropdown");
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[]   = [
+    const headers:ColumnDef[]   = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "firstName", label: "First Name", width: 150 },
-      { accessor: "isActive", label: "Active", width: 100, isEditable: true, type: "boolean" },
+      { accessor: "isActive", label: "Active", width: 100, editable: true, type: "boolean" },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: data,
       height: "300px",
       onCellEdit: (props) => {
@@ -243,14 +243,14 @@ export const EnumEditing = {
     addParagraph(wrapper, "Double-click on Role cells to select from dropdown options");
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[]   = [
+    const headers:ColumnDef[]   = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "firstName", label: "First Name", width: 150 },
       {
         accessor: "role",
         label: "Role",
         width: 150,
-        isEditable: true,
+        editable: true,
         type: "enum",
         enumOptions: [
           { label: "Developer", value: "Developer" },
@@ -261,7 +261,7 @@ export const EnumEditing = {
       },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: data,
       height: "300px",
       onCellEdit: (props) => {
@@ -305,13 +305,13 @@ export const DateEditing = {
     addParagraph(wrapper, "Double-click on Hire Date cells to edit with date picker");
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[]   = [
+    const headers:ColumnDef[]   = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "firstName", label: "First Name", width: 150 },
-      { accessor: "hireDate", label: "Hire Date", width: 150, isEditable: true, type: "date" },
+      { accessor: "hireDate", label: "Hire Date", width: 150, editable: true, type: "date" },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: data,
       height: "300px",
       onCellEdit: (props) => {
@@ -347,13 +347,13 @@ export const NonEditableColumns = {
     addParagraph(wrapper, "Only First Name is editable. ID and Email should not respond to double-click");
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[]   = [
+    const headers:ColumnDef[]   = [
       { accessor: "id", label: "ID", width: 80 },
-      { accessor: "firstName", label: "First Name", width: 150, isEditable: true },
+      { accessor: "firstName", label: "First Name", width: 150, editable: true },
       { accessor: "email", label: "Email", width: 200 },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: data,
       height: "300px",
       onCellEdit: (props) => {
@@ -397,12 +397,12 @@ export const EscapeKeyCancelsEdit = {
     addParagraph(wrapper, "Edit a cell and press Escape to cancel changes");
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[]   = [
+    const headers:ColumnDef[]   = [
       { accessor: "id", label: "ID", width: 80 },
-      { accessor: "firstName", label: "First Name", width: 150, isEditable: true },
+      { accessor: "firstName", label: "First Name", width: 150, editable: true },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: data,
       height: "300px",
       onCellEdit: (props) => {
@@ -453,13 +453,13 @@ export const OnCellEditCallback = {
     wrapper.appendChild(callbackInfoDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[]     = [
+    const headers:ColumnDef[]     = [
       { accessor: "id", label: "ID", width: 80 },
-      { accessor: "firstName", label: "First Name", width: 150, isEditable: true },
-      { accessor: "salary", label: "Salary", width: 150, isEditable: true, type: "number" },
+      { accessor: "firstName", label: "First Name", width: 150, editable: true },
+      { accessor: "salary", label: "Salary", width: 150, editable: true, type: "number" },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: data,
       height: "300px",
       onCellEdit: (props) => {
@@ -508,7 +508,7 @@ export const EnableHeaderEditing = {
     const capturedRenames: { accessor: string | undefined; newLabel: string }[] = [];
     (window as unknown as { __headerRenameCapture?: typeof capturedRenames }).__headerRenameCapture = capturedRenames;
 
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "firstName", label: "First Name", width: 150, type: "string" },
       { accessor: "salary", label: "Salary", width: 120, type: "number" },
@@ -520,12 +520,12 @@ export const EnableHeaderEditing = {
 
     const tableContainer = document.createElement("div");
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: editData,
       height: "300px",
       selectableColumns: true,
       enableHeaderEditing: true,
-      onHeaderEdit: (header: HeaderObject, newLabel: string) => {
+      onHeaderEdit: (header: ColumnDef, newLabel: string) => {
         capturedRenames.push({ accessor: header.accessor as string, newLabel });
       },
     });

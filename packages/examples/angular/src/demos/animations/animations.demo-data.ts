@@ -1,16 +1,16 @@
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
 
-export const animationsHeaders: AngularHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 60, isSortable: true, type: "number" },
-  { accessor: "name", label: "Name", minWidth: 140, width: "1fr", isSortable: true, type: "string" },
-  { accessor: "age", label: "Age", width: 80, align: "right", isSortable: true, type: "number" },
-  { accessor: "role", label: "Role", minWidth: 140, width: "1fr", isSortable: true, type: "string" },
+export const animationsHeaders: AngularColumnDef[] = [
+  { accessor: "id", label: "ID", width: 60, sortable: true, type: "number" },
+  { accessor: "name", label: "Name", minWidth: 140, width: "1fr", sortable: true, type: "string" },
+  { accessor: "age", label: "Age", width: 80, align: "right", sortable: true, type: "number" },
+  { accessor: "role", label: "Role", minWidth: 140, width: "1fr", sortable: true, type: "string" },
   {
     accessor: "department",
     disableReorder: true,
-    isSortable: true,
+    sortable: true,
     label: "Department",
     minWidth: 140,
     width: "1fr",
@@ -36,5 +36,5 @@ export const animationsData = [
 export const animationsConfig = {
   headers: animationsHeaders,
   rows: animationsData,
-  tableProps: { columnReordering: true, editColumns: true, editColumnsInitOpen: true },
+  tableProps: { columnReordering: true, enableColumnEditor: true, enableColumnEditorInitOpen: true },
 } as const;

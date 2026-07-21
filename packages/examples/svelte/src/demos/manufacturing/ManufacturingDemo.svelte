@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteHeaderObject } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef } from "@simple-table/svelte";
   import { manufacturingConfig } from "./manufacturing.demo-data";
   import MfgProductLineCell from "./MfgProductLineCell.svelte";
   import MfgStationCell from "./MfgStationCell.svelte";
@@ -31,7 +31,7 @@
     maintenanceDate: MfgMaintenanceDateCell,
   };
 
-  const headers = $derived.by((): SvelteHeaderObject[] =>
+  const headers = $derived.by((): SvelteColumnDef[] =>
     manufacturingConfig.headers.map((h) => {
       const cellRenderer = rendererMap[h.accessor as string];
       return cellRenderer ? { ...h, cellRenderer } : { ...h };
@@ -42,7 +42,7 @@
 <SimpleTable
   columnResizing={true}
   columnReordering={true}
-  defaultHeaders={headers}
+  columns={headers}
   {height}
   rowGrouping={["stations"]}
   rows={manufacturingConfig.rows}

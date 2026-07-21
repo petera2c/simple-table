@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 
 
 export const AVAILABLE_THEMES: { value: Theme; label: string }[] = [
@@ -10,7 +10,7 @@ export const AVAILABLE_THEMES: { value: Theme; label: string }[] = [
   { value: "neutral", label: "Neutral" },
 ];
 
-export const themesHeaders: ReactHeaderObject[] = [
+export const themesHeaders: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 100, width: "1fr", type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },

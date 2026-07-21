@@ -13,11 +13,11 @@ export function renderColumnEditorCustomRendererDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: [...columnEditorCustomRendererConfig.headers],
+    columns: [...columnEditorCustomRendererConfig.headers],
     rows: columnEditorCustomRendererConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
-    editColumns: true,
+    enableColumnEditor: true,
     columnEditorConfig: {
       text: COLUMN_EDITOR_TEXT,
       searchEnabled: true,

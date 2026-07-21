@@ -2,7 +2,7 @@
  * AdvancedSorting Example – vanilla port of React AdvancedSortingExample.
  * Same columns, valueFormatters, custom comparator, and valueGetter as React.
  */
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
@@ -17,26 +17,26 @@ const ROWS: Row[] = [
   { id: 8, name: "Henry Wilson", department: "Engineering", salary: 88000, experience: 7, rating: 4.5, hireDate: "2017-06-20", status: "active", priority: 2, metadata: { seniorityLevel: 3, performanceScore: 85 } },
 ];
 
-const HEADERS: HeaderObject[] = [
-  { accessor: "name", label: "Name", width: 180, isSortable: true, type: "string" },
-  { accessor: "department", label: "Department", width: 150, isSortable: true, type: "string" },
+const HEADERS: ColumnDef[] = [
+  { accessor: "name", label: "Name", width: 180, sortable: true, type: "string" },
+  { accessor: "department", label: "Department", width: 150, sortable: true, type: "string" },
   {
     accessor: "salary",
     label: "Salary",
     width: 120,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueFormatter: ({ value }: { value?: unknown }) => {
       if (typeof value === "number") return `$${value.toLocaleString()}`;
       return String(value);
     },
   },
-  { accessor: "experience", label: "Years Experience", width: 140, isSortable: true, type: "number" },
+  { accessor: "experience", label: "Years Experience", width: 140, sortable: true, type: "number" },
   {
     accessor: "rating",
     label: "Rating",
     width: 100,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueFormatter: ({ value }: { value?: unknown }) => {
       if (typeof value === "number") return `⭐ ${value.toFixed(1)}`;
@@ -47,7 +47,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "hireDate",
     label: "Hire Date",
     width: 130,
-    isSortable: true,
+    sortable: true,
     type: "date",
     valueFormatter: ({ value }: { value?: unknown }) => {
       if (typeof value === "string") {
@@ -64,7 +64,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "status",
     label: "Status",
     width: 120,
-    isSortable: true,
+    sortable: true,
     type: "string",
     valueFormatter: ({ value }: { value?: unknown }) => {
       const status = String(value);
@@ -75,7 +75,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "priority",
     label: "Priority (Custom Sort)",
     width: 180,
-    isSortable: true,
+    sortable: true,
     type: "number",
     comparator: ({ rowA, rowB, direction }: { rowA: Row; rowB: Row; direction: string }) => {
       const priorityA = (rowA as Record<string, unknown>).priority as number;
@@ -101,7 +101,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "metadata",
     label: "Seniority Level (ValueGetter)",
     width: 220,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueGetter: ({ row }: { row: Row }) => {
       const metadata = (row as Record<string, unknown>).metadata as Record<string, unknown> | undefined;

@@ -7,7 +7,7 @@ import { generateSaaSData } from "../data/saas-data";
 import { SAAS_HEADERS } from "../data/saas-data";
 
 export const paginationAPIExampleDefaults = {
-  shouldPaginate: true,
+  enablePagination: true,
   rowsPerPage: 10,
   height: "400px",
   theme: "modern-dark" as const,

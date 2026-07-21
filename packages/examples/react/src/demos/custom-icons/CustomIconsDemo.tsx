@@ -44,7 +44,7 @@ const CustomIconsDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={customIconsConfig.headers}
+      columns={customIconsConfig.headers}
       rows={customIconsConfig.rows}
       icons={customIcons}
       height={height}

@@ -1,11 +1,11 @@
-import {SimpleTable} from "@simple-table/solid";import type { Theme, TableAPI, SolidHeaderObject } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, TableAPI, SolidColumnDef } from "@simple-table/solid";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function CsvExportDemo(props: { height?: string | number; theme?: Theme }) {
   let tableRef: TableAPI | undefined;
 
-  const headers: SolidHeaderObject[] = csvExportHeaders.map((h) => {
+  const headers: SolidColumnDef[] = csvExportHeaders.map((h) => {
     if (h.accessor === "actions") {
       return {
         ...h,
@@ -60,9 +60,9 @@ export default function CsvExportDemo(props: { height?: string | number; theme?:
       </div>
       <SimpleTable
         ref={(api) => (tableRef = api)}
-        defaultHeaders={headers}
+        columns={headers}
         rows={csvExportData}
-        editColumns={csvExportConfig.tableProps.editColumns}
+        enableColumnEditor={csvExportConfig.tableProps.enableColumnEditor}
         selectableCells={csvExportConfig.tableProps.selectableCells}
         customTheme={csvExportConfig.tableProps.customTheme}
         height={props.height ?? "400px"}

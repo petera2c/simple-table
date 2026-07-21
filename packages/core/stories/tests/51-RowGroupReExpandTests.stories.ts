@@ -16,7 +16,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect, userEvent } from "@storybook/test";
-import type { HeaderObject, OnRowGroupExpandProps, Row } from "../../src/index";
+import type { ColumnDef, OnRowGroupExpandProps, Row } from "../../src/index";
 import { SimpleTableVanilla } from "../../src/index";
 import { addParagraph } from "../utils";
 import { waitForTable, waitUntil } from "./testUtils";
@@ -71,7 +71,7 @@ const LAZY_TEAMS: TeamRow[] = [
   { id: "team-2", name: "Backend Team" },
 ];
 
-const LAZY_HEADERS: HeaderObject[] = [
+const LAZY_HEADERS: ColumnDef[] = [
   { accessor: "name", label: "Name", width: 220, expandable: true },
   { accessor: "budget", label: "Budget", width: 120, type: "number" },
 ];
@@ -259,7 +259,7 @@ const renderLazyReExpandTable = (options?: { showStatusPanel?: boolean }): HTMLD
   };
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: LAZY_HEADERS,
+    columns: LAZY_HEADERS,
     rows,
     height: "320px",
     rowGrouping: ["teams"],

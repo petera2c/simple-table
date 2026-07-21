@@ -1,6 +1,6 @@
 import { ApplicationRef, Component, EnvironmentInjector, Input, inject } from "@angular/core";
 import { SimpleTableComponent, wrapAngularRenderer } from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { emptyStateConfig } from "./empty-state.demo-data";
 import { TableEmptyStateComponent } from "./table-empty-state.component";
 import "@simple-table/angular/styles.css";
@@ -12,7 +12,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
       [tableEmptyStateRenderer]="emptyStateEl"
@@ -27,7 +27,7 @@ export class EmptyStateDemoComponent {
   private readonly envInjector = inject(EnvironmentInjector);
 
   readonly rows: Row[] = emptyStateConfig.rows;
-  readonly headers: AngularHeaderObject[] = emptyStateConfig.headers;
+  readonly headers: AngularColumnDef[] = emptyStateConfig.headers;
   readonly emptyStateEl = wrapAngularRenderer(
     TableEmptyStateComponent,
     this.appRef,

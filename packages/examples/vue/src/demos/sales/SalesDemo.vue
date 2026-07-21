@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, h, type VNodeChild } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueHeaderObject, CellRendererProps, CellChangeProps, Row } from "@simple-table/vue";
+import type { Theme, VueColumnDef, CellRendererProps, CellChangeProps, Row } from "@simple-table/vue";
 import { getThemeColors, salesHeadersCore, salesSampleRows, type SalesRow } from "./sales.demo-data";
 import "@simple-table/vue/styles.css";
 
@@ -126,12 +126,12 @@ const salesRenderers: Record<string, (p: CellRendererProps) => VNodeChild> = {
 };
 
 function applyRenderers(
-  hdrs: readonly VueHeaderObject[],
+  hdrs: readonly VueColumnDef[],
   map: Record<string, (p: CellRendererProps) => VNodeChild>,
-): VueHeaderObject[] {
+): VueColumnDef[] {
   return hdrs.map((h) => {
     const renderer = map[h.accessor as string];
-    const clone: VueHeaderObject = renderer ? { ...h, cellRenderer: renderer } : { ...h };
+    const clone: VueColumnDef = renderer ? { ...h, cellRenderer: renderer } : { ...h };
     if (h.children) {
       clone.children = applyRenderers(h.children, map);
     }
@@ -166,12 +166,12 @@ const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
 
 <template>
   <SimpleTable
-    :default-headers="headers"
+    :columns="headers"
     :rows="data"
     :height="formatTableHeight(props.height)"
     :theme="props.theme"
     :auto-expand-columns="!isMobile"
-    :edit-columns="true"
+    :enable-column-editor="true"
     :selectable-cells="true"
     :column-resizing="true"
     :column-reordering="true"

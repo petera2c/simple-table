@@ -2,12 +2,12 @@
  * AggregateExample – vanilla port of React AggregateExample.
  * Same headers, data, and props as React version.
  */
-import type { CellValue, HeaderObject } from "../../src/index";
+import type { CellValue, ColumnDef } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 import { AGGREGATE_ROWS } from "../data/aggregate-data";
 
-const HEADERS: HeaderObject[] = [
+const HEADERS: ColumnDef[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   {
     accessor: "followers",

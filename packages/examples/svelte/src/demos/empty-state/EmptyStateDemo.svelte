@@ -9,7 +9,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={emptyStateConfig.headers}
+  columns={emptyStateConfig.headers}
   rows={emptyStateConfig.rows}
   tableEmptyStateRenderer={TableEmptyState}
   {height}

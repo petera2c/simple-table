@@ -15,8 +15,8 @@ export const salesExampleDefaults = {
   autoExpandColumns: true,
   theme: "modern-dark" as const,
   height: "70dvh",
-  editColumns: true,
-  shouldPaginate: true,
+  enableColumnEditor: true,
+  enablePagination: true,
   rowsPerPage: 40,
   footerPosition: "top" as const,
 };

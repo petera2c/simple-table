@@ -1,11 +1,11 @@
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject, CellRendererProps } from "@simple-table/react";
+import type { Theme, ReactColumnDef, CellRendererProps } from "@simple-table/react";
 import { billingConfig } from "./billing.demo-data";
 import type { BillingRow } from "./billing.demo-data";
 import "@simple-table/react/styles.css";
 
 const BillingDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {
-  const headers: ReactHeaderObject[] = billingConfig.headers.map((h) => {
+  const headers: ReactColumnDef[] = billingConfig.headers.map((h) => {
     if (h.accessor === "name") {
       return {
         ...h,
@@ -22,8 +22,8 @@ const BillingDemo = ({ height = "400px", theme }: { height?: string | number; th
     <SimpleTable
       columnReordering
       columnResizing
-      defaultHeaders={headers}
-      editColumns
+      columns={headers}
+      enableColumnEditor
       height={height}
       initialSortColumn="amount"
       initialSortDirection="desc"
@@ -31,7 +31,7 @@ const BillingDemo = ({ height = "400px", theme }: { height?: string | number; th
       rows={billingConfig.rows}
       selectableCells
       theme={theme}
-      useOddColumnBackground
+      oddColumnBackground
     />
   );
 };

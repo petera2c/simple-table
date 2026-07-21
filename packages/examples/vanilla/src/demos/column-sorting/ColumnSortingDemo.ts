@@ -8,7 +8,7 @@ export function renderColumnSortingDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: columnSortingConfig.headers,
+    columns: columnSortingConfig.headers,
     rows: columnSortingConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

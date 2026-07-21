@@ -1,7 +1,7 @@
 /**
  * Vanilla-friendly SaaS data (no JSX). Use this from Storybook examples.
  */
-import type { Row, HeaderObject } from "../../src/index";
+import type { Row, ColumnDef } from "../../src/index";
 
 export const generateSaaSData = (): Row[] => {
   const segments = ["Freelancers", "Small Business", "Startups", "Corporations", "Nonprofits"];
@@ -44,13 +44,13 @@ export const generateSaaSData = (): Row[] => {
   });
 };
 
-export const SAAS_HEADERS: HeaderObject[] = [
+export const SAAS_HEADERS: ColumnDef[] = [
   {
     accessor: "tier",
     label: "Tier",
     width: 120,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
     pinned: "left",
     cellRenderer: ({ row, rowIndex, value }: { row: Row; rowIndex: number; value: unknown }) => {
@@ -61,8 +61,8 @@ export const SAAS_HEADERS: HeaderObject[] = [
     accessor: "segment",
     label: "Customer Segment",
     width: 250,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     filterable: true,
     align: "left",
   },
@@ -70,8 +70,8 @@ export const SAAS_HEADERS: HeaderObject[] = [
     accessor: "monthlyRevenue",
     label: "Monthly Revenue",
     width: 200,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "right",
     cellRenderer: ({ row }: { row: Row }) => `$${(row.monthlyRevenue as number).toLocaleString("en-US")}`,
   },
@@ -79,16 +79,16 @@ export const SAAS_HEADERS: HeaderObject[] = [
     accessor: "activeUsers",
     label: "Active Users",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "right",
   },
   {
     accessor: "churnRate",
     label: "Churn Rate",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "right",
     cellRenderer: ({ row }: { row: Row }) => `${(row.churnRate as number).toFixed(1)}%`,
   },
@@ -96,8 +96,8 @@ export const SAAS_HEADERS: HeaderObject[] = [
     accessor: "avgSessionTime",
     label: "Avg Session Time",
     width: 180,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "right",
     cellRenderer: ({ row }: { row: Row }) => `${row.avgSessionTime}m`,
   },
@@ -105,8 +105,8 @@ export const SAAS_HEADERS: HeaderObject[] = [
     accessor: "renewalDate",
     label: "Renewal Date",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
     cellRenderer: ({ row }: { row: Row }) => {
       const date = new Date(row.renewalDate as string);
@@ -117,16 +117,16 @@ export const SAAS_HEADERS: HeaderObject[] = [
     accessor: "supportTickets",
     label: "Support Tickets",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "right",
   },
   {
     accessor: "signUpDate",
     label: "Sign-Up Date",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
     cellRenderer: ({ row }: { row: Row }) => {
       const date = new Date(row.signUpDate as string);
@@ -137,8 +137,8 @@ export const SAAS_HEADERS: HeaderObject[] = [
     accessor: "lastLogin",
     label: "Last Login",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
     cellRenderer: ({ row }: { row: Row }) => {
       const date = new Date(row.lastLogin as string);
@@ -149,16 +149,16 @@ export const SAAS_HEADERS: HeaderObject[] = [
     accessor: "featureUsage",
     label: "Top Feature",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
   },
   {
     accessor: "customerSatisfaction",
     label: "Satisfaction",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "right",
     cellRenderer: ({ row }: { row: Row }) => `${(row.customerSatisfaction as number).toFixed(1)}/5`,
   },
@@ -166,8 +166,8 @@ export const SAAS_HEADERS: HeaderObject[] = [
     accessor: "paymentMethod",
     label: "Payment Method",
     width: 180,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
   },
 ];

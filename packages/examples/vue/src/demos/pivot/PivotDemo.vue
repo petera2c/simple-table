@@ -21,7 +21,7 @@
       </button>
     </div>
     <SimpleTable
-      :default-headers="pivotDemoConfig.headers"
+      :columns="pivotDemoConfig.headers"
       :rows="pivotDemoConfig.rows"
       :pivot="active.pivot"
       :column-resizing="true"

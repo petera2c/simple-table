@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
-export const aggregateFunctionsHeaders: HeaderObject[] = [
+export const aggregateFunctionsHeaders: ColumnDef[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   {
     accessor: "followers",

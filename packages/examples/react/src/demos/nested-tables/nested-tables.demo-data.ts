@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { ReactHeaderObject } from "@simple-table/react";
+import type { ReactColumnDef } from "@simple-table/react";
 
 
 const industries = ["Technology", "Financial Services", "Healthcare", "Manufacturing", "Retail", "Energy", "Telecommunications", "Pharmaceuticals", "Automotive", "Aerospace", "Biotechnology", "E-commerce"];
@@ -41,7 +41,7 @@ const generateCompany = (companyIndex: number) => {
 
 export const generateNestedTablesData = (count: number = 25) => Array.from({ length: count }, (_, i) => generateCompany(i));
 
-export const nestedTablesDivisionHeaders: ReactHeaderObject[] = [
+export const nestedTablesDivisionHeaders: ReactColumnDef[] = [
   { accessor: "divisionId", label: "Division ID", width: 120 },
   { accessor: "revenue", label: "Revenue", width: 120 },
   { accessor: "profitMargin", label: "Profit Margin", width: 130 },
@@ -49,13 +49,13 @@ export const nestedTablesDivisionHeaders: ReactHeaderObject[] = [
   { accessor: "location", label: "Location", width: "1fr" },
 ];
 
-export const nestedTablesHeaders: ReactHeaderObject[] = [
+export const nestedTablesHeaders: ReactColumnDef[] = [
   {
     accessor: "companyName",
     label: "Company",
     width: 200,
     expandable: true,
-    nestedTable: { defaultHeaders: nestedTablesDivisionHeaders },
+    nestedTable: { columns: nestedTablesDivisionHeaders },
   },
   { accessor: "stockSymbol", label: "Symbol", width: 100 },
   { accessor: "marketCap", label: "Market Cap", width: 120 },

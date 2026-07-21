@@ -30,7 +30,7 @@ export default function ThemesDemo(props: { height?: string | number; theme?: Th
         </For>
       </div>
       <SimpleTable
-        defaultHeaders={themesConfig.headers}
+        columns={themesConfig.headers}
         rows={themesConfig.rows}
         height={props.height ?? "400px"}
         theme={selectedTheme()}

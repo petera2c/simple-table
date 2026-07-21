@@ -19,7 +19,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -123,7 +123,7 @@ let exportTableApi: { exportToCSV: (opts?: { filename?: string }) => void } | nu
 export const BasicCsvExport = {
   render: () => {
     const data = createSalesData(5);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "product", label: "Product", width: 150, type: "string" },
       { accessor: "price", label: "Price", width: 100, type: "number" },
@@ -167,7 +167,7 @@ export const BasicCsvExport = {
 export const CsvExportWithCustomFilename = {
   render: () => {
     const data = createSalesData(3);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "product", label: "Product", width: 150 },
     ];
@@ -201,14 +201,14 @@ export const CsvExportWithCustomFilename = {
 export const CsvExportIncludesAllPages = {
   render: () => {
     const data = createSalesData(25);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "product", label: "Product", width: 150 },
     ];
     const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
       getRowId: (p) => String(p.row?.id),
       height: "400px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 10,
     });
     exportTableApi = table.getAPI();
@@ -243,7 +243,7 @@ export const CsvExportIncludesAllPages = {
 export const CsvExportWithoutHeaders = {
   render: () => {
     const data = createSalesData(5);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "product", label: "Product", width: 150 },
       { accessor: "price", label: "Price", width: 100 },
@@ -284,7 +284,7 @@ export const CsvExportWithoutHeaders = {
 export const ExcludeColumnFromCsv = {
   render: () => {
     const data = createSalesData(5);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "product", label: "Product", width: 150 },
       { accessor: "price", label: "Price", width: 100, excludeFromCsv: true },
@@ -330,7 +330,7 @@ export const ExcludeColumnFromCsv = {
 export const CsvExportWithValueFormatter = {
   render: () => {
     const data = createSalesData(5);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "product", label: "Product", width: 150 },
       {
@@ -380,7 +380,7 @@ export const CsvExportWithValueFormatter = {
 export const CsvExportWithExportValueGetter = {
   render: () => {
     const data = createSalesData(5);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "product", label: "Product", width: 150 },
       {
@@ -430,7 +430,7 @@ export const CsvExportWithExportValueGetter = {
 export const CsvExportWithFiltering = {
   render: () => {
     const data = createSalesData(10);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "product", label: "Product", width: 150, filterable: true },
       { accessor: "price", label: "Price", width: 100, type: "number" },
@@ -470,10 +470,10 @@ export const CsvExportWithFiltering = {
 export const CsvExportWithSorting = {
   render: () => {
     const data = createSalesData(10);
-    const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 80, isSortable: true },
-      { accessor: "product", label: "Product", width: 150, isSortable: true },
-      { accessor: "price", label: "Price", width: 100, type: "number", isSortable: true },
+    const headers: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, sortable: true },
+      { accessor: "product", label: "Product", width: 150, sortable: true },
+      { accessor: "price", label: "Price", width: 100, type: "number", sortable: true },
     ];
     const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
       getRowId: (p) => String(p.row?.id),
@@ -510,7 +510,7 @@ export const CsvExportWithSorting = {
 export const CsvExportWithNestedData = {
   render: () => {
     const data = createNestedData(5);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "user.name", label: "Name", width: 150 },
       { accessor: "user.email", label: "Email", width: 200 },
@@ -556,7 +556,7 @@ export const CsvExportWithNestedData = {
 export const CsvExportWithArrayAccessors = {
   render: () => {
     const data = createArrayData(5);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "name", label: "Artist", width: 150 },
       { accessor: "awards[0]", label: "First Award", width: 150 },
@@ -602,7 +602,7 @@ export const CsvExportWithArrayAccessors = {
 export const MultipleCsvExports = {
   render: () => {
     const data = createSalesData(5);
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80 },
       { accessor: "product", label: "Product", width: 150 },
     ];
@@ -659,7 +659,7 @@ const excludeFromRenderData = () => [
 
 export const ExcludeFromRenderNotInDOM = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "secret", label: "Secret", width: 100, type: "string", excludeFromRender: true },
       { accessor: "name", label: "Name", width: 120, type: "string" },
@@ -683,7 +683,7 @@ export const ExcludeFromRenderNotInDOM = {
 
 export const ExcludeFromRenderIncludedInCSV = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "secret", label: "Secret", width: 100, type: "string", excludeFromRender: true },
       { accessor: "name", label: "Name", width: 120, type: "string" },

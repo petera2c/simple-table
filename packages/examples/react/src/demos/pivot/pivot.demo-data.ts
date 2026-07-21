@@ -1,6 +1,6 @@
-import type { PivotConfig, ReactHeaderObject, Row } from "@simple-table/react";
+import type { PivotConfig, ReactColumnDef, Row } from "@simple-table/react";
 
-export const pivotHeaders: ReactHeaderObject[] = [
+export const pivotHeaders: ReactColumnDef[] = [
   { accessor: "region", label: "Region", width: 110, type: "string" },
   { accessor: "country", label: "Country", width: 100, type: "string" },
   { accessor: "category", label: "Category", width: 110, type: "string" },

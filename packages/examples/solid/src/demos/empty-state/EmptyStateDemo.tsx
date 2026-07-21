@@ -13,7 +13,7 @@ const EmptyIcon = () => (
 export default function EmptyStateDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
-      defaultHeaders={emptyStateConfig.headers}
+      columns={emptyStateConfig.headers}
       rows={emptyStateConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

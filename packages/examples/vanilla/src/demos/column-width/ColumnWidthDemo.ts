@@ -10,7 +10,7 @@ export function renderColumnWidthDemo(
   const isMobile = window.innerWidth < 768;
 
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: columnWidthConfig.headers,
+    columns: columnWidthConfig.headers,
     rows: columnWidthConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

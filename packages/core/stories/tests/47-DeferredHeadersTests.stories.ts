@@ -1,7 +1,7 @@
 /**
  * DEFERRED HEADERS TESTS
- * Regression tests for populating `defaultHeaders` after mount (the table
- * mounts with an empty header array, then `update({ defaultHeaders })` supplies
+ * Regression tests for populating `columns` after mount (the table
+ * mounts with an empty header array, then `update({ columns })` supplies
  * the real columns — e.g. from an async fetch / useEffect).
  *
  * The header band must become visible once the columns arrive. Previously the
@@ -12,7 +12,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { waitForTable, waitUntil } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -23,7 +23,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Tests for populating defaultHeaders after mount: the header row must appear (with non-zero height) once columns are supplied.",
+          "Tests for populating columns after mount: the header row must appear (with non-zero height) once columns are supplied.",
       },
     },
   },
@@ -40,7 +40,7 @@ const getTable = (): TableInstance => {
   return t;
 };
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 160, type: "string" },
 ];
@@ -69,7 +69,7 @@ export const PopulateHeadersAfterMount = {
     expect(canvasElement.querySelectorAll(".st-header-cell").length).toBe(0);
 
     // Populate the columns after mount, mimicking an async assignment.
-    getTable().update({ defaultHeaders: headers });
+    getTable().update({ columns: headers });
 
     // The header cells must appear...
     await waitUntil(() => canvasElement.querySelectorAll(".st-header-cell").length >= 2);

@@ -155,8 +155,8 @@ export default function AnalyticsDemo(props: {
               columnReordering
               columnResizing
               copyHeadersToClipboard
-              defaultHeaders={analyticsDemoConfig.headers}
-              editColumns
+              columns={analyticsDemoConfig.headers}
+              enableColumnEditor
               enableStickyParents={nestedRows()}
               expandAll={nestedRows()}
               getRowId={({ row }) => {
@@ -171,8 +171,8 @@ export default function AnalyticsDemo(props: {
               rows={analyticsDemoConfig.rows}
               selectableCells
               theme={props.theme}
-              useHoverRowBackground
-              useOddEvenRowBackground
+              hoverRowBackground
+              oddEvenRowBackground
             />
           </Show>
         </div>

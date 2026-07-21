@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject } from "@simple-table/svelte";
+import type { SvelteColumnDef } from "@simple-table/svelte";
 
 export interface BillingRow {
   id: string | number;
@@ -85,8 +85,8 @@ export function generateBillingData(count: number = 30): BillingRow[] {
 
 export const billingData = generateBillingData(30);
 
-function generateMonthHeaders(): SvelteHeaderObject[] {
-  const headers: SvelteHeaderObject[] = [];
+function generateMonthHeaders(): SvelteColumnDef[] {
+  const headers: SvelteColumnDef[] = [];
   const year = 2024;
   for (let monthIndex = 11; monthIndex >= 0; monthIndex--) {
     const fullMonthName = new Date(year, monthIndex).toLocaleString("default", { month: "long" });
@@ -95,8 +95,8 @@ function generateMonthHeaders(): SvelteHeaderObject[] {
       accessor: `month_${mo}_${year}`,
       label: `${fullMonthName} ${year}`,
       width: 200,
-      isSortable: true,
-      isEditable: false,
+      sortable: true,
+      editable: false,
       align: "right",
       type: "number",
       children: [
@@ -105,8 +105,8 @@ function generateMonthHeaders(): SvelteHeaderObject[] {
           label: "Balance",
           accessor: `balance_${mo}_${year}`,
           width: 200,
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           align: "right",
           type: "number",
           aggregation: { type: "sum" },
@@ -120,8 +120,8 @@ function generateMonthHeaders(): SvelteHeaderObject[] {
           label: "Revenue",
           accessor: `revenue_${mo}_${year}`,
           width: 200,
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           align: "right",
           type: "number",
           aggregation: { type: "sum" },
@@ -136,14 +136,14 @@ function generateMonthHeaders(): SvelteHeaderObject[] {
   return headers;
 }
 
-export const billingHeaders: SvelteHeaderObject[] = [
+export const billingHeaders: SvelteColumnDef[] = [
   {
     accessor: "name",
     label: "Name",
     width: 250,
     expandable: true,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "left",
     pinned: "left",
     type: "string",
@@ -152,8 +152,8 @@ export const billingHeaders: SvelteHeaderObject[] = [
     accessor: "amount",
     label: "Total Amount",
     width: 130,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
@@ -166,8 +166,8 @@ export const billingHeaders: SvelteHeaderObject[] = [
     accessor: "deferredRevenue",
     label: "Deferred Revenue",
     width: 180,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
@@ -180,8 +180,8 @@ export const billingHeaders: SvelteHeaderObject[] = [
     accessor: "recognizedRevenue",
     label: "Recognized Revenue",
     width: 180,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },

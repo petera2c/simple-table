@@ -14,10 +14,10 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={footerRendererConfig.headers}
+  columns={footerRendererConfig.headers}
   rows={footerRendererConfig.rows}
   footerRenderer={FooterDemoBar}
-  shouldPaginate={true}
+  enablePagination={true}
   rowsPerPage={10}
   hideFooter={false}
   {height}

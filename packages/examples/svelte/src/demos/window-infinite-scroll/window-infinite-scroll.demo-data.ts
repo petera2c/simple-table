@@ -1,5 +1,5 @@
 // Self-contained data + headers for the window-scroll infinite scroll example.
-import type { SvelteHeaderObject, Row } from "@simple-table/svelte";
+import type { SvelteColumnDef, Row } from "@simple-table/svelte";
 
 const FIRST_NAMES = [
   "Elena",
@@ -73,7 +73,7 @@ export function generateWindowScrollRows(startIndex: number, count: number): Row
   return rows;
 }
 
-export const windowScrollHeaders: SvelteHeaderObject[] = [
+export const windowScrollHeaders: SvelteColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number", align: "right" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 160 },
   { accessor: "email", label: "Email", width: 260 },

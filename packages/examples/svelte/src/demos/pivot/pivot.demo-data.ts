@@ -1,6 +1,6 @@
-import type { PivotConfig, SvelteHeaderObject, Row } from "@simple-table/svelte";
+import type { PivotConfig, SvelteColumnDef, Row } from "@simple-table/svelte";
 
-export const pivotHeaders: SvelteHeaderObject[] = [
+export const pivotHeaders: SvelteColumnDef[] = [
   { accessor: "region", label: "Region", width: 110, type: "string" },
   { accessor: "country", label: "Country", width: 100, type: "string" },
   { accessor: "category", label: "Category", width: 110, type: "string" },

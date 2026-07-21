@@ -99,7 +99,7 @@ export default function LiveUpdateDemo(props: { height?: string | number; theme?
   return (
     <SimpleTable
       ref={(api) => (tableRef = api)}
-      defaultHeaders={liveUpdateConfig.headers}
+      columns={liveUpdateConfig.headers}
       rows={liveUpdateConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

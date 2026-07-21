@@ -11,7 +11,7 @@ const ColumnFilteringDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={columnFilteringConfig.headers}
+      columns={columnFilteringConfig.headers}
       rows={columnFilteringConfig.rows}
       height={height}
       theme={theme}

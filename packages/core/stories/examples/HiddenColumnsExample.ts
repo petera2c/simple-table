@@ -9,8 +9,8 @@ import { SPACE_HEADERS } from "../data/space-data";
 export const hiddenColumnsExampleDefaults = {
   columnResizing: true,
   columnReordering: true,
-  editColumns: true,
-  editColumnsInitOpen: true,
+  enableColumnEditor: true,
+  enableColumnEditorInitOpen: true,
   height: "80vh",
 };
 

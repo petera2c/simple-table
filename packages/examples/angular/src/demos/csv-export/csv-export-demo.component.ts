@@ -1,5 +1,5 @@
 import { Component, Input, ViewChild } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -16,8 +16,8 @@ import "@simple-table/angular/styles.css";
       <simple-table
         #simpleTable
         [rows]="rows"
-        [defaultHeaders]="headers"
-        [editColumns]="true"
+        [columns]="headers"
+        [enableColumnEditor]="true"
         [selectableCells]="true"
         [customTheme]="{ rowHeight: 32 }"
         [height]="height"
@@ -32,7 +32,7 @@ export class CsvExportDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = csvExportData;
-  readonly headers: AngularHeaderObject[] = csvExportHeaders.map((h) => {
+  readonly headers: AngularColumnDef[] = csvExportHeaders.map((h) => {
     if (h.accessor === "actions") {
       return {
         ...h,
