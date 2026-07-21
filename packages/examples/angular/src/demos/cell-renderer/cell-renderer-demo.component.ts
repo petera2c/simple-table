@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularCellRenderer, AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import { CrProgressCellComponent } from "./cr-progress-cell.component";
 import { CrRatingCellComponent } from "./cr-rating-cell.component";
@@ -28,7 +28,7 @@ const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
       [selectableCells]="true"
@@ -41,7 +41,7 @@ export class CellRendererDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = cellRendererConfig.rows;
-  readonly headers: AngularHeaderObject[] = cellRendererConfig.headers.map((h): AngularHeaderObject => {
+  readonly headers: AngularColumnDef[] = cellRendererConfig.headers.map((h): AngularColumnDef => {
     const cellRenderer = RENDERERS[String(h.accessor)];
     return cellRenderer ? { ...h, cellRenderer } : { ...h };
   });

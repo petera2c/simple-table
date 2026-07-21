@@ -1,12 +1,13 @@
 {
   "name": "simple-table-core",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
-  "types": "dist/src/index.d.ts",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c",
     "preview": "rollup -c -w",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "start": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "version:patch": "npm version patch && git push && git push --tags",
@@ -22,9 +23,12 @@
     ".": {
       "import": "./dist/index.es.js",
       "require": "./dist/cjs/index.js",
-      "types": "./dist/src/index.d.ts"
+      "types": "./dist/index.d.ts"
     },
-    "./styles.css": "./dist/styles.css",
+    "./styles.css": {
+      "types": "./styles.css.d.ts",
+      "default": "./dist/styles.css"
+    },
     "./styles/base.css": "./src/styles/base.css",
     "./styles/themes/*.css": "./src/styles/themes/*.css"
   },
@@ -34,7 +38,8 @@
     "src/styles",
     "LICENSE",
     "EULA.txt",
-    "README.md"
+    "README.md",
+    "styles.css.d.ts"
   ],
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.3.0",
@@ -62,6 +67,7 @@
     "size-limit": "^11.2.0",
     "storybook": "^8.6.14",
     "ts-loader": "^9.5.4",
+    "tslib": "^2.8.1",
     "typescript": "^5.0.0"
   },
   "browserslist": {

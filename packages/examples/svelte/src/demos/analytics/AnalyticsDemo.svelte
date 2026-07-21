@@ -76,8 +76,8 @@
           columnReordering={true}
           columnResizing={true}
           copyHeadersToClipboard={true}
-          defaultHeaders={analyticsDemoConfig.headers}
-          editColumns={true}
+          columns={analyticsDemoConfig.headers}
+          enableColumnEditor={true}
           enableStickyParents={nestedRows}
           expandAll={nestedRows}
           {getRowId}
@@ -89,8 +89,8 @@
           rows={analyticsDemoConfig.rows}
           selectableCells={true}
           {theme}
-          useHoverRowBackground={true}
-          useOddEvenRowBackground={true}
+          hoverRowBackground={true}
+          oddEvenRowBackground={true}
         />
       {/key}
     </div>

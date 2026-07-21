@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, asRows} from "@simple-table/angular";import type { AngularHeaderObject, Row, SortColumn, Theme } from "@simple-table/angular";
+import {SimpleTableComponent, asRows} from "@simple-table/angular";import type { AngularColumnDef, Row, SortColumn, Theme } from "@simple-table/angular";
 import { externalSortConfig } from "./external-sort.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -10,7 +10,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="sortedRows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
       [externalSortHandling]="true"
@@ -23,7 +23,7 @@ export class ExternalSortDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = externalSortConfig.headers;
+  readonly headers: AngularColumnDef[] = externalSortConfig.headers;
   private sortState: SortColumn | null = null;
 
   handleSortChange = (sort: SortColumn | null): void => {

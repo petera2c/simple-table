@@ -1,11 +1,11 @@
 /**
  * CustomHeaderRendering Example – vanilla port of React CustomHeaderRenderingExample.
  */
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
-const HEADERS: HeaderObject[] = [
+const HEADERS: ColumnDef[] = [
   {
     accessor: "id",
     label: "ID",

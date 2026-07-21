@@ -20,7 +20,7 @@ export function renderThemesDemo(
   container.appendChild(wrapper);
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: themesConfig.headers,
+    columns: themesConfig.headers,
     rows: themesConfig.rows,
     height: options?.height ?? "400px",
     theme: selectedTheme,

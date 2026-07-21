@@ -51,7 +51,7 @@ const tableEmptyStateRenderer = h(
 
 <template>
   <SimpleTable
-    :default-headers="emptyStateConfig.headers"
+    :columns="emptyStateConfig.headers"
     :rows="emptyStateConfig.rows"
     :table-empty-state-renderer="tableEmptyStateRenderer"
     :height="props.height"

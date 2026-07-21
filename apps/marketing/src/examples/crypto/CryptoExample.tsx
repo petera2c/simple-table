@@ -31,8 +31,8 @@ export default function CryptoExample({
       columnReordering
       columnResizing
       customTheme={{ headerHeight: 40, rowHeight: 64 }}
-      defaultHeaders={HEADERS}
-      editColumns
+      columns={HEADERS}
+      enableColumnEditor
       icons={icons}
       rows={data}
       selectableCells

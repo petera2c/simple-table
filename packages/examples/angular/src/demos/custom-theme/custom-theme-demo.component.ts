@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { customThemeConfig } from "./custom-theme.demo-data";
 import "@simple-table/angular/styles.css";
 import "./custom-theme.css";
@@ -11,7 +11,7 @@ import "./custom-theme.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="resolvedTheme"
       [customTheme]="customThemeOverrides"
@@ -25,7 +25,7 @@ export class CustomThemeDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = customThemeConfig.rows;
-  readonly headers: AngularHeaderObject[] = customThemeConfig.headers;
+  readonly headers: AngularColumnDef[] = customThemeConfig.headers;
   readonly customThemeOverrides = customThemeConfig.tableProps.customTheme;
 
   get resolvedTheme(): Theme {

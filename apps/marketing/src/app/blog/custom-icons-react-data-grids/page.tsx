@@ -327,7 +327,7 @@ import {
 export default function CustomIconTable({ data, headers }) {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={data}
       height="500px"
       icons={{
@@ -377,7 +377,7 @@ const FilterIcon = () => (
 export default function CustomSVGTable({ data, headers }) {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={data}
       icons={{
         sortUp: <SortUpIcon />,
@@ -408,7 +408,7 @@ import {
 export default function LucideIconTable({ data, headers }) {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={data}
       icons={{
         sortUp: <ChevronUp size={16} className="text-indigo-600" />,
@@ -626,7 +626,7 @@ export default function ThemedTable({ theme = "modern", data, headers }) {
   return (
     <SimpleTable
       icons={iconThemes[theme]}
-      defaultHeaders={headers}
+      columns={headers}
       rows={data}
     />
   );

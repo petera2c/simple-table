@@ -1,10 +1,10 @@
 import { useRef } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, TableAPI, Theme } from "@simple-table/react";
+import type { ReactColumnDef, TableAPI, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Define headers with new CSV formatting features
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   {
     accessor: "id",
     label: "Internal ID",
@@ -12,20 +12,20 @@ const headers: ReactHeaderObject[] = [
     type: "string",
     excludeFromRender: true, // Hide from table, but include in CSV exports
   },
-  { accessor: "sku", label: "SKU", width: 100, isSortable: true, type: "string" },
+  { accessor: "sku", label: "SKU", width: 100, sortable: true, type: "string" },
   {
     accessor: "product",
     label: "Product Name",
     minWidth: 120,
     width: "1fr",
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
     accessor: "category",
     label: "Category",
     width: 130,
-    isSortable: true,
+    sortable: true,
     type: "string",
     valueFormatter: ({ value }) => {
       return (value as string).charAt(0).toUpperCase() + (value as string).slice(1);
@@ -47,7 +47,7 @@ const headers: ReactHeaderObject[] = [
     accessor: "price",
     label: "Price",
     width: 100,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueFormatter: ({ value }) => {
       return `$${(value as number).toFixed(2)}`;
@@ -55,13 +55,13 @@ const headers: ReactHeaderObject[] = [
     useFormattedValueForCSV: true, // Export formatted price
     useFormattedValueForClipboard: true, // Copy formatted price
   },
-  { accessor: "stock", label: "In Stock", width: 100, isSortable: true, type: "number" },
-  { accessor: "sold", label: "Units Sold", width: 110, isSortable: true, type: "number" },
+  { accessor: "stock", label: "In Stock", width: 100, sortable: true, type: "number" },
+  { accessor: "sold", label: "Units Sold", width: 110, sortable: true, type: "number" },
   {
     accessor: "revenue",
     label: "Revenue",
     width: 120,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueFormatter: ({ value }) => {
       return `$${(value as number).toLocaleString("en-US", {
@@ -272,8 +272,8 @@ const CSVExportDemo = ({
         </button>
       </div>
       <SimpleTable
-        defaultHeaders={headers}
-        editColumns
+        columns={headers}
+        enableColumnEditor
         height={typeof height === "number" ? `${height - 60}px` : height}
         rows={SALES_DATA}
         customTheme={{

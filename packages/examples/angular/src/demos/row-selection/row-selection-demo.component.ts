@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, RowSelectionChangeProps, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, RowSelectionChangeProps, Theme } from "@simple-table/angular";
 import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
 import type { LibraryBook } from "./row-selection.demo-data";
 import "@simple-table/angular/styles.css";
@@ -24,7 +24,7 @@ import "@simple-table/angular/styles.css";
 
       <simple-table
         [rows]="rows"
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [height]="height"
         [theme]="theme"
         [enableRowSelection]="true"
@@ -41,7 +41,7 @@ export class RowSelectionDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = rowSelectionConfig.rows;
-  readonly headers: AngularHeaderObject[] = rowSelectionConfig.headers.map((h) => {
+  readonly headers: AngularColumnDef[] = rowSelectionConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,

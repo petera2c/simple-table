@@ -356,10 +356,10 @@ const data = [
 
               <CodeBlock
                 className="mb-6"
-                code={`import { SimpleTable, HeaderObject } from "@simple-table/react";
+                code={`import { SimpleTable, ColumnDef } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   {
     accessor: "name",
     label: "Organization Name",
@@ -398,7 +398,7 @@ const headers: HeaderObject[] = [
                 className="mb-6"
                 code={`// Two levels: Companies → Departments
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   
   rowGrouping={["departments"]} // Array property name for children
@@ -406,7 +406,7 @@ const headers: HeaderObject[] = [
 
 // Three levels: Companies → Divisions → Departments
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   
   rowGrouping={["divisions", "departments"]} // Order = nesting depth
@@ -414,7 +414,7 @@ const headers: HeaderObject[] = [
 
 // Four levels: Companies → Divisions → Departments → Teams
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   
   rowGrouping={["divisions", "departments", "teams"]}
@@ -474,10 +474,10 @@ const headers: HeaderObject[] = [
 
               <CodeBlock
                 className="mb-6"
-                code={`import { SimpleTable, HeaderObject } from "@simple-table/react";
+                code={`import { SimpleTable, ColumnDef } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { 
     accessor: "organization", 
     label: "Organization", 
@@ -544,7 +544,7 @@ const data = [
 export default function OrgChartTable() {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={data}
       
       rowGrouping={["divisions", "departments"]}
@@ -586,7 +586,7 @@ export default function OrgChartTable() {
 
               <CodeBlock
                 className="mb-6"
-                code={`import { SimpleTable, HeaderObject, OnRowGroupExpandProps } from "@simple-table/react";
+                code={`import { SimpleTable, ColumnDef, OnRowGroupExpandProps } from "@simple-table/react";
 import { useState } from "react";
 
 export default function LazyTreeTable() {
@@ -647,7 +647,7 @@ export default function LazyTreeTable() {
 
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={data}
       
       rowGrouping={["stores", "products"]}

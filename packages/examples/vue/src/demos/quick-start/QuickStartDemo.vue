@@ -1,10 +1,10 @@
 <template>
   <SimpleTable
-    :default-headers="quickStartConfig.headers"
+    :columns="quickStartConfig.headers"
     :rows="quickStartConfig.rows"
     :height="height"
     :theme="theme"
-    :edit-columns="quickStartConfig.tableProps.editColumns"
+    :enable-column-editor="quickStartConfig.tableProps.enableColumnEditor"
     :selectable-cells="quickStartConfig.tableProps.selectableCells"
     :custom-theme="quickStartConfig.tableProps.customTheme"
   />

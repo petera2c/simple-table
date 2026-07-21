@@ -7,7 +7,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={aggregateFunctionsConfig.headers}
+  columns={aggregateFunctionsConfig.headers}
   rows={aggregateFunctionsConfig.rows}
   rowGrouping={aggregateFunctionsConfig.tableProps.rowGrouping}
   columnResizing={true}

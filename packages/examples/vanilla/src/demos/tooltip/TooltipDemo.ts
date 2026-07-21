@@ -8,7 +8,7 @@ export function renderTooltipDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: [...tooltipConfig.headers],
+    columns: [...tooltipConfig.headers],
     rows: tooltipConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

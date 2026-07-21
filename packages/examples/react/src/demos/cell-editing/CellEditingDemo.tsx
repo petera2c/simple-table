@@ -22,7 +22,7 @@ const CellEditingDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={cellEditingConfig.headers}
+      columns={cellEditingConfig.headers}
       rows={data}
       height={height}
       theme={theme}

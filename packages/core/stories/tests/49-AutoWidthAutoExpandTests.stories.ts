@@ -14,7 +14,7 @@
  * - double-click auto-fit under the expand-or-scroll model
  */
 
-import { HeaderObject, Row, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, Row, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -167,7 +167,7 @@ let resizeWrapper: HTMLElement | null = null;
 export const AutoWidthSurplusStretchesToFill = {
   parameters: { tags: ["auto-width-expand-surplus"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: "auto", type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
@@ -207,7 +207,7 @@ export const AutoWidthSurplusStretchesToFill = {
 export const AutoWidthDeficitScrollsNoSqueeze = {
   parameters: { tags: ["auto-width-expand-deficit"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "notes", label: "Notes", width: "auto", type: "string" },
       { accessor: "name", label: "Name", width: 300, type: "string" },
       { accessor: "department", label: "Department", width: 300, type: "string" },
@@ -253,7 +253,7 @@ export const AutoWidthDeficitScrollsNoSqueeze = {
 export const AutoWidthContainerResizeNoCompounding = {
   parameters: { tags: ["auto-width-expand-container-resize"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: "auto", type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string" },
@@ -317,7 +317,7 @@ export const AutoWidthContainerResizeNoCompounding = {
 export const AutoExpandDragIntoOverflowAndBack = {
   parameters: { tags: ["auto-width-expand-drag-overflow-back"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "a", label: "Alpha", width: 100, type: "string" },
       { accessor: "b", label: "Beta", width: 150, type: "string" },
       { accessor: "c", label: "Gamma", width: 150, type: "string" },
@@ -374,7 +374,7 @@ export const AutoExpandDragIntoOverflowAndBack = {
 export const AutoWidthNeighborFloorsAtMeasuredWidth = {
   parameters: { tags: ["auto-width-expand-neighbor-floor"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "notes", label: "Notes", width: "auto", type: "string" },
       { accessor: "tail", label: "Tail", width: 100, type: "string" },
@@ -430,7 +430,7 @@ export const AutoWidthNeighborFloorsAtMeasuredWidth = {
 export const AutoWidthMaxWidthCapsExpansion = {
   parameters: { tags: ["auto-width-expand-maxwidth"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 100, maxWidth: 120, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "notes", label: "Notes", width: "auto", maxWidth: 160, type: "string" },
@@ -480,7 +480,7 @@ export const AutoWidthMaxWidthCapsExpansion = {
 export const AutoWidthPinnedAutoColumn = {
   parameters: { tags: ["auto-width-expand-pinned"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "code", label: "Code", width: "auto", pinned: "left", type: "string" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       { accessor: "city", label: "City", width: 200, type: "string" },
@@ -526,7 +526,7 @@ export const AutoWidthPinnedAutoColumn = {
 export const AutoWidthDataUpdateGrowsPastThreshold = {
   parameters: { tags: ["auto-width-expand-data-update"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "text", label: "Text", width: "auto", type: "string" },
       { accessor: "name", label: "Name", width: 250, type: "string" },
       { accessor: "city", label: "City", width: 250, type: "string" },
@@ -586,7 +586,7 @@ export const AutoWidthDataUpdateGrowsPastThreshold = {
 export const AutoWidthPaginationRemeasuresPerPage = {
   parameters: { tags: ["auto-width-expand-pagination"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "text", label: "Text", width: "auto", type: "string" },
       { accessor: "name", label: "Name", width: 250, type: "string" },
       { accessor: "city", label: "City", width: 250, type: "string" },
@@ -602,7 +602,7 @@ export const AutoWidthPaginationRemeasuresPerPage = {
       getRowId: (params: any) => String(params.row.id),
       height: "400px",
       autoExpandColumns: true,
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 5,
     });
     wrapper.style.width = "800px";
@@ -646,7 +646,7 @@ export const AutoWidthPaginationRemeasuresPerPage = {
 export const AutoWidthDoubleClickAutoFit = {
   parameters: { tags: ["auto-width-expand-double-click"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "notes", label: "Notes", width: 400, type: "string" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
     ];

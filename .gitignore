@@ -21,6 +21,9 @@ package-lock.json
 
 # Accidental tsc declaration emit next to sources (types belong in dist/)
 packages/core/src/**/*.d.ts
+# Keep intentional ambient module shims (TS2882 / noUncheckedSideEffectImports)
+!packages/core/src/css-modules.d.ts
+
 
 # turbo
 .turbo

@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
 const CATEGORY_CODES: Record<string, string> = {
@@ -24,15 +24,15 @@ export const csvExportData = [
   { id: "db-4003", sku: "PRD-4003", product: "Desk Lamp LED", category: "Appliances", price: 44.99, stock: 201, sold: 198, revenue: 8908.02, actions: "" },
 ];
 
-export const csvExportHeaders: HeaderObject[] = [
+export const csvExportHeaders: ColumnDef[] = [
   { accessor: "id", label: "Internal ID", width: 80, type: "string", excludeFromRender: true },
-  { accessor: "sku", label: "SKU", width: 100, isSortable: true, type: "string" },
-  { accessor: "product", label: "Product Name", minWidth: 120, width: "1fr", isSortable: true, type: "string" },
+  { accessor: "sku", label: "SKU", width: 100, sortable: true, type: "string" },
+  { accessor: "product", label: "Product Name", minWidth: 120, width: "1fr", sortable: true, type: "string" },
   {
     accessor: "category",
     label: "Category",
     width: 130,
-    isSortable: true,
+    sortable: true,
     type: "string",
     valueFormatter: ({ value }) => {
       const s = String(value);
@@ -47,19 +47,19 @@ export const csvExportHeaders: HeaderObject[] = [
     accessor: "price",
     label: "Price",
     width: 100,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueFormatter: ({ value }) => `$${(value as number).toFixed(2)}`,
     useFormattedValueForCSV: true,
     useFormattedValueForClipboard: true,
   },
-  { accessor: "stock", label: "In Stock", width: 100, isSortable: true, type: "number" },
-  { accessor: "sold", label: "Units Sold", width: 110, isSortable: true, type: "number" },
+  { accessor: "stock", label: "In Stock", width: 100, sortable: true, type: "number" },
+  { accessor: "sold", label: "Units Sold", width: 110, sortable: true, type: "number" },
   {
     accessor: "revenue",
     label: "Revenue",
     width: 120,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueFormatter: ({ value }) =>
       `$${(value as number).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
@@ -72,5 +72,5 @@ export const csvExportHeaders: HeaderObject[] = [
 export const csvExportConfig = {
   headers: csvExportHeaders,
   rows: csvExportData,
-  tableProps: { editColumns: true, selectableCells: true, customTheme: { rowHeight: 32 } },
+  tableProps: { enableColumnEditor: true, selectableCells: true, customTheme: { rowHeight: 32 } },
 } as const;

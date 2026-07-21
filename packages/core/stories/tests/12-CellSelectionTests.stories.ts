@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { expect } from "@storybook/test";
 import { waitForTable, getCellsForRow, getUniqueRowIndices } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -236,7 +236,7 @@ const isColumnSelected = (canvasElement: HTMLElement, colIndex: number) => {
 
 export const SingleCellSelection = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -260,7 +260,7 @@ export const SingleCellSelection = {
 
 export const RangeSelection = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -287,7 +287,7 @@ export const RangeSelection = {
 
 export const SelectionReplacement = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -313,7 +313,7 @@ export const SelectionReplacement = {
 
 export const ColumnHeaderSelection = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -337,7 +337,7 @@ export const ColumnHeaderSelection = {
 
 export const ClearSelection = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -360,7 +360,7 @@ export const ClearSelection = {
 
 export const LargeRangeSelection = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -389,7 +389,7 @@ export const LargeRangeSelection = {
 
 export const MultipleColumnHeaderSelections = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -420,7 +420,7 @@ export const MultipleColumnHeaderSelections = {
  */
 export const OutsideClickClearsSelection = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -451,7 +451,7 @@ export const OutsideClickClearsSelection = {
  */
 export const ColumnHeaderClickClearsCellSelection = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -482,7 +482,7 @@ export const ColumnHeaderClickClearsCellSelection = {
 export const SelectionDragScroll = {
   tags: ["selection-drag-scroll-only"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -560,7 +560,7 @@ export const SelectionDragScroll = {
 export const SelectionFirstCellAfterScroll = {
   tags: ["selection-first-cell-after-scroll"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Product Name", width: 200, type: "string" },
       { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -632,7 +632,7 @@ const simpleData = () => [
 export const CopySelectionWithHeaders = {
   parameters: { tags: ["fail-copy-selection-with-headers"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 120, type: "string" },
       { accessor: "score", label: "Score", width: 80, type: "number" },
@@ -681,7 +681,7 @@ export const CopySelectionWithHeaders = {
 
 export const CopySelectionWithoutHeaders = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 120, type: "string" },
     ];
@@ -737,7 +737,7 @@ export const CopySelectionWithoutHeaders = {
  */
 export const LinkInsideCellStaysClickable = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "name",
@@ -815,7 +815,7 @@ const dispatchKey = (key: string, opts: Partial<KeyboardEventInit> = {}) => {
 
 export const ShiftArrowExtendsSelection = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 120, type: "string" },
       { accessor: "price", label: "Price", width: 100, type: "number" },
@@ -852,7 +852,7 @@ export const ShiftArrowExtendsSelection = {
 export const ShiftArrowContractsSelection = {
   tags: ["shift-arrow-range"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 120, type: "string" },
       { accessor: "price", label: "Price", width: 100, type: "number" },
@@ -903,7 +903,7 @@ export const ShiftArrowContractsSelection = {
 export const ShiftArrowContractsAfterMouseDrag = {
   tags: ["shift-arrow-range"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 120, type: "string" },
       { accessor: "price", label: "Price", width: 100, type: "number" },
@@ -945,7 +945,7 @@ export const ShiftArrowContractsAfterMouseDrag = {
 export const ShiftArrowContractsHorizontalSelection = {
   tags: ["shift-arrow-range"],
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 120, type: "string" },
       { accessor: "category", label: "Category", width: 120, type: "string" },
@@ -980,7 +980,7 @@ export const ShiftArrowContractsHorizontalSelection = {
 
 export const CtrlASelectsAllCells = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 120, type: "string" },
     ];
@@ -1009,7 +1009,7 @@ export const CtrlASelectsAllCells = {
 
 export const HomeEndMovesWithinRow = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 120, type: "string" },
       { accessor: "category", label: "Category", width: 120, type: "string" },

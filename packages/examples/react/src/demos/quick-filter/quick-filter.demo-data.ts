@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { ReactHeaderObject } from "@simple-table/react";
+import type { ReactColumnDef } from "@simple-table/react";
 
 
-export const quickFilterHeaders: ReactHeaderObject[] = [
+export const quickFilterHeaders: ReactColumnDef[] = [
   { accessor: "name", label: "Employee Name", width: 180, type: "string" },
   { accessor: "age", label: "Age", width: 80, type: "number" },
   { accessor: "department", label: "Department", width: 140, type: "string" },

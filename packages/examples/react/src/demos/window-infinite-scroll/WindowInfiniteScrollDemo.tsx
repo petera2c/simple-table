@@ -114,7 +114,7 @@ const WindowInfiniteScrollDemo = ({
       </div>
 
       <SimpleTable
-        defaultHeaders={windowScrollHeaders}
+        columns={windowScrollHeaders}
         rows={rows}
         theme={theme}
         getRowId={(p) => String((p.row as { id?: number })?.id)}

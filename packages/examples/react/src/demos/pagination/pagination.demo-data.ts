@@ -1,10 +1,10 @@
 // Self-contained demo table setup for this example.
-import type { ReactHeaderObject, Row } from "@simple-table/react";
+import type { ReactColumnDef, Row } from "@simple-table/react";
 
 
 export const PAGINATION_ROWS_PER_PAGE = 9;
 
-export const paginationHeaders: ReactHeaderObject[] = [
+export const paginationHeaders: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 100, type: "string" },
   { accessor: "email", label: "Email", width: 200, type: "string" },
@@ -48,6 +48,6 @@ export const paginationConfig = {
   rows: paginationData,
   tableProps: {
     rowsPerPage: PAGINATION_ROWS_PER_PAGE,
-    shouldPaginate: true,
+    enablePagination: true,
   },
 } as const;

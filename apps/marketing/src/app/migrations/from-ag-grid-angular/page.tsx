@@ -47,10 +47,10 @@ export default function FromAgGridAngularPage() {
       installCommand="npm install @simple-table/angular"
       mappingRows={[
         { competitor: "[rowData]", simpleTable: "[rows]", notes: "See the Simple Table docs for the row shape." },
-        { competitor: "[columnDefs]", simpleTable: "[defaultHeaders]", notes: "field → accessor; headerName → label; width unchanged." },
-        { competitor: "ColDef.cellRenderer", simpleTable: "HeaderObject.cellRenderer", notes: "Pass an Angular component or a function returning a TemplateRef." },
+        { competitor: "[columnDefs]", simpleTable: "[columns]", notes: "field → accessor; headerName → label; width unchanged." },
+        { competitor: "ColDef.cellRenderer", simpleTable: "ColumnDef.cellRenderer", notes: "Pass an Angular component or a function returning a TemplateRef." },
         { competitor: "rowSelection: 'multiple'", simpleTable: "selectableCells / selectableColumns", notes: "Configure on the table, not on each column." },
-        { competitor: "pinned: 'left' | 'right'", simpleTable: "HeaderObject.pinned", notes: "Same values; pinning is built-in." },
+        { competitor: "pinned: 'left' | 'right'", simpleTable: "ColumnDef.pinned", notes: "Same values; pinning is built-in." },
         { competitor: "rowGroup + aggFunc (Enterprise)", simpleTable: "rowGrouping + aggregation", notes: "Free in Simple Table—no Enterprise license required." },
         { competitor: "valueFormatter", simpleTable: "Custom cell renderer", notes: "Format inside the renderer or pre-format your data." },
         { competitor: "domLayout: 'autoHeight'", simpleTable: "height='auto'", notes: "Or pass a fixed height like '480px'." },
@@ -68,7 +68,7 @@ import "@simple-table/angular/styles.css";`,
         },
         {
           title: "Convert column definitions",
-          body: <p>Map each ColDef to a Simple Table HeaderObject. The shape is similar; field becomes accessor, headerName becomes label.</p>,
+          body: <p>Map each ColDef to a Simple Table ColumnDef. The shape is similar; field becomes accessor, headerName becomes label.</p>,
         },
         {
           title: "Reshape your row data",
@@ -85,7 +85,7 @@ import "@simple-table/angular/styles.css";`,
       ]}
       gotchas={[
         { title: "Stable row ids are required", body: "Simple Table needs a stable id per row. Use a database id or a generated uuid." },
-        { title: "No CSR-specific zone tricks", body: "Simple Table for Angular plays well with the new signals API. If you used onGridReady or detectChanges hacks, you can usually delete them." },
+        { title: "No CSR-specific zone tricks", body: "Simple Table for Angular plays well with the new signals API. If you used onTableReady or detectChanges hacks, you can usually delete them." },
         { title: "AG Grid Enterprise features", body: "Master/detail and integrated charts remain AG-specific. Simple Table includes declarative matrix pivoting plus grouping/aggregations for most reporting needs in the source-available package." },
       ]}
       faqs={[

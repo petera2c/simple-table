@@ -13,8 +13,8 @@ import PropTable, { type PropInfo } from "@/components/PropTable";
 
 const COLUMN_SORTING_PROPS: PropInfo[] = [
   {
-    key: "isSortable",
-    name: "HeaderObject.isSortable",
+    key: "sortable",
+    name: "ColumnDef.sortable",
     required: false,
     description:
       "Enables sorting functionality for the column. When true, users can click the column header to sort data.",
@@ -22,12 +22,12 @@ const COLUMN_SORTING_PROPS: PropInfo[] = [
     example: `{ 
   accessor: "name", 
   label: "Full Name", 
-  isSortable: true 
+  sortable: true 
 }`,
   },
   {
     key: "sortingOrder",
-    name: "HeaderObject.sortingOrder",
+    name: "ColumnDef.sortingOrder",
     required: false,
     description:
       "Custom sort order cycle for this column. Defines the sequence of sort states when clicking the column header. Default is ['asc', 'desc', null] which cycles through ascending → descending → no sort. Customize per column based on data type - use ['desc', 'asc', null] for numbers/dates where descending is more common.",
@@ -36,7 +36,7 @@ const COLUMN_SORTING_PROPS: PropInfo[] = [
 { 
   accessor: "revenue", 
   label: "Revenue", 
-  isSortable: true,
+  sortable: true,
   sortingOrder: ['desc', 'asc', null]
 }
 
@@ -44,7 +44,7 @@ const COLUMN_SORTING_PROPS: PropInfo[] = [
 { 
   accessor: "name", 
   label: "Name", 
-  isSortable: true,
+  sortable: true,
   sortingOrder: ['asc', 'desc', null]
 }
 
@@ -52,13 +52,13 @@ const COLUMN_SORTING_PROPS: PropInfo[] = [
 { 
   accessor: "priority", 
   label: "Priority", 
-  isSortable: true,
+  sortable: true,
   sortingOrder: ['asc', 'desc']
 }`,
   },
   {
     key: "comparator",
-    name: "HeaderObject.comparator",
+    name: "ColumnDef.comparator",
     required: false,
     description:
       "Custom sorting function based on row-level metadata or complex logic. Receives full row objects and sort direction, allowing you to sort by multiple fields, nested properties, or domain-specific rules.",
@@ -80,7 +80,7 @@ const COLUMN_SORTING_PROPS: PropInfo[] = [
   },
   {
     key: "valueGetter",
-    name: "HeaderObject.valueGetter",
+    name: "ColumnDef.valueGetter",
     required: false,
     description:
       "Function to extract values from nested objects or compute values dynamically for sorting operations. Useful when the displayed value differs from the sorting value, or when sorting by deeply nested properties.",
@@ -207,7 +207,7 @@ const ColumnSortingContent = () => {
         <p className="text-gray-700 dark:text-gray-300 mb-4">
           To enable sorting for a column, add the{" "}
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            isSortable: true
+            sortable: true
           </code>{" "}
           property to your column definition.
         </p>

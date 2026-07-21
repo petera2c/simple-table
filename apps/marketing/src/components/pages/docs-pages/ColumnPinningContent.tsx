@@ -12,7 +12,7 @@ import PropTable, { type PropInfo } from "@/components/PropTable";
 const COLUMN_PINNING_PROPS: PropInfo[] = [
   {
     key: "pinned",
-    name: "HeaderObject.pinned",
+    name: "ColumnDef.pinned",
     required: false,
     description:
       "Pins the column to the left or right side of the table, keeping it visible during horizontal scrolling.",
@@ -119,11 +119,11 @@ const ColumnPinningContent = () => {
         To lock columns so users cannot hide them or unpin them from an edge, and to keep them in
         a fixed leading group when reordering inside each pin section, set{" "}
         <Link
-          href="/docs/api-reference#header-object"
+          href="/docs/api-reference#column-def"
           className="text-blue-600 dark:text-blue-400 hover:underline"
         >
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            isEssential
+            essential
           </code>
         </Link>{" "}
         on the column&apos;s header object.

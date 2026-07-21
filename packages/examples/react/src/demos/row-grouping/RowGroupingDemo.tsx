@@ -53,7 +53,7 @@ const RowGroupingDemo = ({
       </div>
       <SimpleTable
         ref={tableRef}
-        defaultHeaders={rowGroupingConfig.headers}
+        columns={rowGroupingConfig.headers}
         rows={rowGroupingConfig.rows}
         rowGrouping={rowGroupingConfig.tableProps.rowGrouping}
         enableStickyParents={rowGroupingConfig.tableProps.enableStickyParents}

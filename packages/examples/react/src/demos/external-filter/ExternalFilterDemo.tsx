@@ -25,7 +25,7 @@ const ExternalFilterDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={externalFilterConfig.headers}
+      columns={externalFilterConfig.headers}
       rows={filteredData}
       onFilterChange={setFilters}
       externalFilterHandling

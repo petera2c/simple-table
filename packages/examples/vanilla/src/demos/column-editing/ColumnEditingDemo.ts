@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject } from "simple-table-core";
+import type { Theme, ColumnDef } from "simple-table-core";
 import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
 import "simple-table-core/styles.css";
 
@@ -27,26 +27,26 @@ export function renderColumnEditingDemo(
   wrapper.appendChild(tableContainer);
   container.appendChild(wrapper);
 
-  let additionalColumns: HeaderObject[] = [];
+  let additionalColumns: ColumnDef[] = [];
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: [...columnEditingHeaders],
+    columns: [...columnEditingHeaders],
     rows: columnEditingData,
     height: options?.height ?? "400px",
     theme: options?.theme,
     enableHeaderEditing: true,
     selectableColumns: true,
-    onHeaderEdit: (_header: HeaderObject, newLabel: string) => {
+    onHeaderEdit: (_header: ColumnDef, newLabel: string) => {
       info.textContent = `Renamed to: ${newLabel}`;
     },
   });
 
   btn.addEventListener("click", () => {
     const n = additionalColumns.length + 1;
-    const col: HeaderObject = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
+    const col: ColumnDef = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
     additionalColumns = [...additionalColumns, col];
     info.textContent = `Added: ${col.label}`;
-    table.update({ defaultHeaders: [...columnEditingHeaders, ...additionalColumns] });
+    table.update({ columns: [...columnEditingHeaders, ...additionalColumns] });
   });
 
   return table;

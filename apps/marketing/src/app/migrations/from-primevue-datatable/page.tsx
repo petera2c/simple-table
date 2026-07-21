@@ -47,11 +47,11 @@ export default function FromPrimeVueDataTablePage() {
       installCommand="npm install @simple-table/vue"
       mappingRows={[
         { competitor: ":value", simpleTable: ":rows", notes: "See the Simple Table docs for the row shape." },
-        { competitor: "<Column field='x' header='Y'>", simpleTable: ":default-headers entry", notes: "field → accessor; header → label." },
+        { competitor: "<Column field='x' header='Y'>", simpleTable: ":columns entry", notes: "field → accessor; header → label." },
         { competitor: "rowGroupMode='subheader'", simpleTable: "Built-in row grouping + aggregations", notes: "No manual aggregator wiring needed." },
-        { competitor: "frozenColumns", simpleTable: "HeaderObject.pinned", notes: "Same concept, declarative on the header." },
+        { competitor: "frozenColumns", simpleTable: "ColumnDef.pinned", notes: "Same concept, declarative on the header." },
         { competitor: "virtualScrollerOptions", simpleTable: "Built-in virtualization", notes: "Set a height; row + column virtualization auto-engages." },
-        { competitor: "Editor templates", simpleTable: "isEditable + cell editor renderer", notes: "Define editor renderers per column." },
+        { competitor: "Editor templates", simpleTable: "editable + cell editor renderer", notes: "Define editor renderers per column." },
         { competitor: "PrimeVue theme + PrimeIcons", simpleTable: "@simple-table/vue/styles.css", notes: "Theme via CSS variables." },
       ]}
       migrationSteps={[
@@ -65,7 +65,7 @@ import "@simple-table/vue/styles.css";`,
         },
         {
           title: "Convert Column children to header objects",
-          body: <p>Replace <code>&lt;Column field=&quot;x&quot; header=&quot;Y&quot; /&gt;</code> with HeaderObject entries containing accessor + label + width.</p>,
+          body: <p>Replace <code>&lt;Column field=&quot;x&quot; header=&quot;Y&quot; /&gt;</code> with ColumnDef entries containing accessor + label + width.</p>,
         },
         {
           title: "Reshape rows",
@@ -73,7 +73,7 @@ import "@simple-table/vue/styles.css";`,
         },
         {
           title: "Port body templates to cell renderers",
-          body: <p>PrimeVue uses <code>#body</code> slots for custom rendering. In Simple Table, pass a Vue component via HeaderObject.cellRenderer.</p>,
+          body: <p>PrimeVue uses <code>#body</code> slots for custom rendering. In Simple Table, pass a Vue component via ColumnDef.cellRenderer.</p>,
         },
         {
           title: "Adopt grouping + virtualization",

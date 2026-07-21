@@ -1,6 +1,6 @@
 import { createSignal, For } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { SolidHeaderObject, FooterRendererProps, CellChangeProps } from "@simple-table/solid";
+import type { SolidColumnDef, FooterRendererProps, CellChangeProps } from "@simple-table/solid";
 import {
   crmData,
   CRM_THEME_COLORS_LIGHT,
@@ -60,11 +60,11 @@ const FitButtons = (props: { colors: typeof CRM_THEME_COLORS_LIGHT }) => {
   );
 };
 
-function getCRMHeaders(isDark: boolean): SolidHeaderObject[] {
+function getCRMHeaders(isDark: boolean): SolidColumnDef[] {
   const colors = isDark ? CRM_THEME_COLORS_DARK : CRM_THEME_COLORS_LIGHT;
   return [
     {
-      accessor: "name", label: "CONTACT", width: "2fr", minWidth: 290, isSortable: true, isEditable: true, type: "string",
+      accessor: "name", label: "CONTACT", width: "2fr", minWidth: 290, sortable: true, editable: true, type: "string",
       cellRenderer: ({ row }) => {
         const d = row as unknown as CRMLead;
         const initials = d.name.split(" ").map((n) => n[0]).join("").toUpperCase();
@@ -81,7 +81,7 @@ function getCRMHeaders(isDark: boolean): SolidHeaderObject[] {
       },
     },
     {
-      accessor: "signal", label: "SIGNAL", width: "3fr", minWidth: 340, isSortable: true, isEditable: true, type: "string",
+      accessor: "signal", label: "SIGNAL", width: "3fr", minWidth: 340, sortable: true, editable: true, type: "string",
       cellRenderer: ({ row }) => (
         <div>
           <div style={{ color: colors.textSecondary, "margin-bottom": "4px", "font-size": "0.875rem" }}>🧠 Just engaged with a <a href="#" onClick={(e) => e.preventDefault()} style={{ color: "#0077b5", "text-decoration": "underline" }}>post</a></div>
@@ -90,20 +90,20 @@ function getCRMHeaders(isDark: boolean): SolidHeaderObject[] {
       ),
     },
     {
-      accessor: "aiScore", label: "AI SCORE", width: "1fr", minWidth: 100, isSortable: true, align: "center", type: "number",
+      accessor: "aiScore", label: "AI SCORE", width: "1fr", minWidth: 100, sortable: true, align: "center", type: "number",
       cellRenderer: ({ row }) => <div style={{ "font-size": "0.875rem" }}>{"🔥".repeat((row as unknown as CRMLead).aiScore)}</div>,
     },
     {
-      accessor: "emailStatus", label: "EMAIL", width: "1.5fr", minWidth: 210, isSortable: true, align: "center", type: "enum",
+      accessor: "emailStatus", label: "EMAIL", width: "1.5fr", minWidth: 210, sortable: true, align: "center", type: "enum",
       enumOptions: [{ label: "Enrich", value: "Enrich" }, { label: "Verified", value: "Verified" }, { label: "Pending", value: "Pending" }, { label: "Bounced", value: "Bounced" }],
       cellRenderer: () => <EmailEnrich colors={colors} />,
     },
     {
-      accessor: "timeAgo", label: "IMPORT", width: "1fr", minWidth: 100, isSortable: true, align: "center", type: "string",
+      accessor: "timeAgo", label: "IMPORT", width: "1fr", minWidth: 100, sortable: true, align: "center", type: "string",
       cellRenderer: ({ row }) => <div style={{ "font-size": "13px", color: colors.textSecondary }}>{(row as unknown as CRMLead).timeAgo}</div>,
     },
     {
-      accessor: "list", label: "LIST", width: "1.2fr", minWidth: 160, isSortable: true, align: "center", type: "enum",
+      accessor: "list", label: "LIST", width: "1.2fr", minWidth: 160, sortable: true, align: "center", type: "enum",
       enumOptions: [{ label: "Leads", value: "Leads" }, { label: "Hot Leads", value: "Hot Leads" }, { label: "Warm Leads", value: "Warm Leads" }, { label: "Cold Leads", value: "Cold Leads" }, { label: "Enterprise", value: "Enterprise" }, { label: "SMB", value: "SMB" }, { label: "Nurture", value: "Nurture" }],
       valueGetter: ({ row }) => { const list = String(row.list); const m: Record<string, number> = { "Hot Leads": 1, "Warm Leads": 2, Enterprise: 3, Leads: 4, SMB: 5, "Cold Leads": 6, Nurture: 7 }; return m[list] || 999; },
       cellRenderer: ({ row }) => <a href="#" onClick={(e) => e.preventDefault()} style={{ cursor: "pointer", "font-size": "0.875rem", color: colors.link, "text-decoration": "none", "font-weight": "600" }}>{(row as unknown as CRMLead).list}</a>,
@@ -128,14 +128,14 @@ export default function CRMDemo(props: { height?: string | number; theme?: CrmSh
       <SimpleTable
         columnReordering
         columnResizing
-        defaultHeaders={getCRMHeaders(isDark())}
+        columns={getCRMHeaders(isDark())}
         enableRowSelection
         customTheme={{ headerHeight: 48, rowHeight: 92 }}
         height={props.height ?? "400px"}
         onCellEdit={handleCellEdit}
         rows={data()}
         rowsPerPage={rowsPerPage()}
-        shouldPaginate
+        enablePagination
         theme="custom"
         footerRenderer={(fp: FooterRendererProps) => {
           const c = footerColors();

@@ -1,5 +1,5 @@
 // Self-contained demo data for the window-scroll infinite scroll example.
-import type { HeaderObject, Row } from "simple-table-core";
+import type { ColumnDef, Row } from "simple-table-core";
 
 const FIRST_NAMES = [
   "Elena",
@@ -73,7 +73,7 @@ export function generateWindowScrollRows(startIndex: number, count: number): Row
   return rows;
 }
 
-export const windowScrollHeaders: HeaderObject[] = [
+export const windowScrollHeaders: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number", align: "right" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 160 },
   { accessor: "email", label: "Email", width: 260 },

@@ -5,7 +5,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect, userEvent } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -58,7 +58,7 @@ let quickFilterTableInstance: InstanceType<typeof import("../../src/index").Simp
 export const BasicQuickFilterSimpleMode = {
   render: () => {
     const data = createTestData();
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "age", label: "Age", width: 80 },
       { accessor: "department", label: "Department", width: 140 },
@@ -109,7 +109,7 @@ export const BasicQuickFilterSimpleMode = {
 export const SmartModeMultiWord = {
   render: () => {
     const data = createTestData();
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
       { accessor: "status", label: "Status", width: 100 },
@@ -155,7 +155,7 @@ export const QuickFilterColumns = {
   parameters: { tags: ["fail-quick-filter-columns"] },
   render: () => {
     const data = createTestData();
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
       { accessor: "email", label: "Email", width: 220 },
@@ -190,7 +190,7 @@ export const QuickFilterUseFormattedValue = {
       { id: 1, name: "Alice", price: 50 },
       { id: 2, name: "Bob", price: 100 },
     ];
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 120 },
       {
         accessor: "price",
@@ -241,7 +241,7 @@ export const QuickFilterOnChange = {
     const captured: string[] = [];
     (window as unknown as { __qfOnChangeCapture?: string[] }).__qfOnChangeCapture = captured;
     const data = createTestData();
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
     ];
@@ -290,7 +290,7 @@ export const QuickFilterGetter = {
       { id: 1, name: "Alice", customField: "secret-alpha" },
       { id: 2, name: "Bob", customField: "secret-beta" },
     ];
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
       {
         accessor: "customField",
@@ -322,7 +322,7 @@ export const QuickFilterGetter = {
 export const QuickFilterCaseSensitive = {
   render: () => {
     const data = createTestData();
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
     ];
@@ -372,7 +372,7 @@ export const QuickFilterCaseSensitive = {
 export const SmartModeQuotedPhrase = {
   render: () => {
     const data = createTestData();
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
       { accessor: "location", label: "Location", width: 140 },
@@ -421,7 +421,7 @@ export const SmartModeNegation = {
   parameters: { tags: ["quick-filter-smart-negation"] },
   render: () => {
     const data = createTestData();
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
     ];
@@ -473,7 +473,7 @@ export const QuickFilterRecoversAfterEmptyState = {
   parameters: { tags: ["quick-filter-recover-after-empty"] },
   render: () => {
     const data = createTestData();
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
     ];
@@ -525,7 +525,7 @@ export const QuickFilterRecoversAfterEmptyState = {
 export const SmartModeColumnValueSyntax = {
   render: () => {
     const data = createTestData();
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
       { accessor: "status", label: "Status", width: 100 },
@@ -575,7 +575,7 @@ export const QuickFilterableColumnExcluded = {
       { id: 1, name: "Alice", hiddenField: "secret-alice", department: "Engineering" },
       { id: 2, name: "Bob", hiddenField: "secret-bob", department: "Sales" },
     ];
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
       { accessor: "department", label: "Department", width: 140, type: "string" },
       { accessor: "hiddenField", label: "Hidden", width: 120, type: "string", quickFilterable: false },

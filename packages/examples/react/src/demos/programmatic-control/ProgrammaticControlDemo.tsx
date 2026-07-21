@@ -1,6 +1,6 @@
 import { useRef, useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, TableAPI, ReactHeaderObject, CellRendererProps } from "@simple-table/react";
+import type { Theme, TableAPI, ReactColumnDef, CellRendererProps } from "@simple-table/react";
 import {
   programmaticControlConfig,
   PROGRAMMATIC_CONTROL_STATUS_COLORS,
@@ -17,7 +17,7 @@ const ProgrammaticControlDemo = ({
   const tableRef = useRef<TableAPI>(null);
   const [statusMessage, setStatusMessage] = useState("No status message");
 
-  const headers: ReactHeaderObject[] = useMemo(
+  const headers: ReactColumnDef[] = useMemo(
     () =>
       programmaticControlConfig.headers.map((h) => {
         if (h.accessor === "status") {
@@ -79,8 +79,8 @@ const ProgrammaticControlDemo = ({
     const sortState = api.getSortState();
     const filterState = api.getFilterState();
     const totalValue = allRows.reduce((sum, r) => {
-      const row = r as Record<string, unknown>;
-      return sum + (Number(row.price) || 0) * (Number(row.stock) || 0);
+      const data = r.row as { price?: number; stock?: number };
+      return sum + (Number(data.price) || 0) * (Number(data.stock) || 0);
     }, 0);
     const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
     alert(
@@ -123,7 +123,7 @@ const ProgrammaticControlDemo = ({
       </div>
       <SimpleTable
         ref={tableRef}
-        defaultHeaders={headers}
+        columns={headers}
         rows={programmaticControlConfig.rows}
         height={height}
         theme={theme}

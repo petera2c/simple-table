@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="cellEditingConfig.headers"
+    :columns="cellEditingConfig.headers"
     :rows="data"
     :height="height"
     :theme="theme"

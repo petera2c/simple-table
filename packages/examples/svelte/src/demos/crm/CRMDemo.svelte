@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { SvelteHeaderObject, CellChangeProps } from "@simple-table/svelte";
+  import type { SvelteColumnDef, CellChangeProps } from "@simple-table/svelte";
   import { crmData } from "./crm.demo-data";
   import type { CrmShellTheme } from "./crm.demo-data";
   import { syncCrmDemoPalette, crmRowsPerPage } from "./crm-demo-stores";
@@ -29,14 +29,14 @@
   });
 
   const headers = $derived.by(
-    (): SvelteHeaderObject[] => [
+    (): SvelteColumnDef[] => [
       {
         accessor: "name",
         label: "CONTACT",
         width: "2fr",
         minWidth: 290,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         type: "string",
         cellRenderer: CrmContactCell,
       },
@@ -45,8 +45,8 @@
         label: "SIGNAL",
         width: "3fr",
         minWidth: 340,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         type: "string",
         cellRenderer: CrmSignalCell,
       },
@@ -55,7 +55,7 @@
         label: "AI SCORE",
         width: "1fr",
         minWidth: 100,
-        isSortable: true,
+        sortable: true,
         align: "center",
         type: "number",
         cellRenderer: CrmAiScoreCell,
@@ -65,7 +65,7 @@
         label: "EMAIL",
         width: "1.5fr",
         minWidth: 210,
-        isSortable: true,
+        sortable: true,
         align: "center",
         type: "enum",
         enumOptions: [
@@ -81,7 +81,7 @@
         label: "IMPORT",
         width: "1fr",
         minWidth: 100,
-        isSortable: true,
+        sortable: true,
         align: "center",
         type: "string",
         cellRenderer: CrmTimeAgoCell,
@@ -91,7 +91,7 @@
         label: "LIST",
         width: "1.2fr",
         minWidth: 160,
-        isSortable: true,
+        sortable: true,
         align: "center",
         type: "enum",
         enumOptions: [
@@ -146,14 +146,14 @@
     columnReordering={true}
     columnResizing={true}
     customTheme={{ headerHeight: 48, rowHeight: 92 }}
-    defaultHeaders={headers}
+    columns={headers}
     enableRowSelection={true}
     footerRenderer={CrmFooter}
     {height}
     onCellEdit={handleCellEdit}
     rows={data}
     rowsPerPage={$crmRowsPerPage}
-    shouldPaginate={true}
+    enablePagination={true}
     theme="custom"
   />
 </div>

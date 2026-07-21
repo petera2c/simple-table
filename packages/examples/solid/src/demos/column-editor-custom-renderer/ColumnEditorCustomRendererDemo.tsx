@@ -4,7 +4,7 @@ import {
   type SolidColumnEditorConfig,
   type Theme,
 } from "@simple-table/solid";
-import { createEffect } from "solid-js";
+import { createEffect, type JSX } from "solid-js";
 import {
   columnEditorCustomRendererConfig,
   COLUMN_EDITOR_TEXT,
@@ -23,7 +23,7 @@ function attach(slot: unknown, host: HTMLElement | undefined): void {
   }
 }
 
-function SlotHost(props: { slot: () => unknown; style?: string }) {
+function SlotHost(props: { slot: () => unknown; style?: JSX.CSSProperties | string }) {
   let host: HTMLSpanElement | undefined;
   createEffect(() => {
     attach(props.slot(), host);
@@ -66,12 +66,15 @@ const columnEditorConfig: SolidColumnEditorConfig = {
   rowRenderer: CustomRowRenderer,
 };
 
-export default function ColumnEditorCustomRendererDemo(props: { height?: string | number; theme?: Theme }) {
+export default function ColumnEditorCustomRendererDemo(props: {
+  height?: string | number;
+  theme?: Theme;
+}) {
   return (
     <SimpleTable
-      defaultHeaders={columnEditorCustomRendererConfig.headers}
+      columns={columnEditorCustomRendererConfig.headers}
       rows={columnEditorCustomRendererConfig.rows}
-      editColumns
+      enableColumnEditor
       columnEditorConfig={columnEditorConfig}
       height={props.height ?? "400px"}
       theme={props.theme}

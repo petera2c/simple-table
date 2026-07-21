@@ -7,7 +7,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={columnSortingConfig.headers}
+  columns={columnSortingConfig.headers}
   rows={columnSortingConfig.rows}
   {height}
   {theme}

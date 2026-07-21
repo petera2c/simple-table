@@ -9,7 +9,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect, fireEvent, userEvent } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -53,7 +53,7 @@ const createGroupedData = () => [
   },
 ];
 
-const auditHeaders = (): HeaderObject[] => [
+const auditHeaders = (): ColumnDef[] => [
   { accessor: "name", label: "Name", width: 240, expandable: true },
   {
     accessor: "info",
@@ -201,14 +201,14 @@ export const IdentityColumnExposesRowHeader = {
 
 // #1 — A row whose expandable column hosts a nested grid.
 const renderNestedTableTable = () => {
-  const headers: HeaderObject[] = [
+  const headers: ColumnDef[] = [
     {
       accessor: "name",
       label: "Company",
       width: 240,
       expandable: true,
       nestedTable: {
-        defaultHeaders: [
+        columns: [
           { accessor: "divisionName", label: "Division", width: 200 },
           { accessor: "headcount", label: "Headcount", width: 120, type: "number" },
         ],
@@ -261,7 +261,7 @@ export const NestedTableRowsAreInRowHierarchy = {
 
 // #2 — A leaf column standing beside a grouped column spans every header row.
 const renderNestedHeaderTable = () => {
-  const headers: HeaderObject[] = [
+  const headers: ColumnDef[] = [
     { accessor: "id", label: "ID", width: 80, type: "number" },
     {
       accessor: "group",
@@ -298,7 +298,7 @@ export const LeafHeadersExposeRowSpan = {
 
 // #3 — Collapsible column header exposes its expanded state on the cell.
 const renderCollapsibleHeaderTable = () => {
-  const headers: HeaderObject[] = [
+  const headers: ColumnDef[] = [
     { accessor: "id", label: "ID", width: 80, type: "number" },
     {
       accessor: "group",

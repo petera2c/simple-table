@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { aggregateFunctionsConfig } from "./aggregate-functions.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -10,7 +10,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rowGrouping]="grouping"
       [columnResizing]="true"
       [height]="height"
@@ -23,6 +23,6 @@ export class AggregateFunctionsDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = aggregateFunctionsConfig.rows;
-  readonly headers: AngularHeaderObject[] = aggregateFunctionsConfig.headers;
+  readonly headers: AngularColumnDef[] = aggregateFunctionsConfig.headers;
   readonly grouping = aggregateFunctionsConfig.tableProps.rowGrouping;
 }

@@ -1,6 +1,6 @@
 import { Component, Input, ViewChild } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, PivotConfig, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, PivotConfig, Row, Theme } from "@simple-table/angular";
 import {
   analyticsDemoConfig,
   analyticsPresets,
@@ -87,8 +87,8 @@ import "@simple-table/angular/styles.css";
             [columnReordering]="true"
             [columnResizing]="true"
             [rows]="rows"
-            [defaultHeaders]="headers"
-            [editColumns]="true"
+            [columns]="headers"
+            [enableColumnEditor]="true"
             [expandAll]="nestedRows"
             [getRowId]="getRowId"
             height="100%"
@@ -109,7 +109,7 @@ export class AnalyticsDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = analyticsDemoConfig.rows;
-  readonly headers: AngularHeaderObject[] = analyticsDemoConfig.headers;
+  readonly headers: AngularColumnDef[] = analyticsDemoConfig.headers;
   readonly presets = analyticsPresets;
   readonly getRowId = ({ row }: { row: Row }) =>
     row.id == null ? undefined : String(row.id);

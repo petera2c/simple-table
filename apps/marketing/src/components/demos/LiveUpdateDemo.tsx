@@ -1,10 +1,10 @@
 import { SimpleTable } from "@simple-table/react";
-import type { TableAPI, ReactHeaderObject, Theme, CellRendererProps } from "@simple-table/react";
+import type { TableAPI, ReactColumnDef, Theme, CellRendererProps } from "@simple-table/react";
 import { useRef, useEffect } from "react";
 import "@simple-table/react/styles.css";
 
 // Define headers
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "product", label: "Product", width: 180, type: "string" },
   {
@@ -374,7 +374,7 @@ const LiveUpdateDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={initialData}
       ref={tableRef}
       height={height}

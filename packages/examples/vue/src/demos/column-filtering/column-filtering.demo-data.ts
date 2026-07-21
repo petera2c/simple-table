@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { Row, VueHeaderObject } from "@simple-table/vue";
+import type { Row, VueColumnDef } from "@simple-table/vue";
 
 
 export const COLUMN_FILTERING_DATA: Row[] = [
@@ -147,13 +147,13 @@ export const DEPARTMENT_OPTIONS = [
   { label: "Quality Assurance", value: "Quality Assurance" },
 ];
 
-export const columnFilteringHeaders: VueHeaderObject[] = [
+export const columnFilteringHeaders: VueColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
     width: 80,
     type: "number",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -162,7 +162,7 @@ export const columnFilteringHeaders: VueHeaderObject[] = [
     width: "1fr",
     minWidth: 150,
     type: "string",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -171,7 +171,7 @@ export const columnFilteringHeaders: VueHeaderObject[] = [
     width: "1fr",
     minWidth: 120,
     type: "enum",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     enumOptions: DEPARTMENT_OPTIONS,
   },
@@ -180,7 +180,7 @@ export const columnFilteringHeaders: VueHeaderObject[] = [
     label: "Role",
     width: 140,
     type: "string",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -189,7 +189,7 @@ export const columnFilteringHeaders: VueHeaderObject[] = [
     width: 120,
     align: "right",
     type: "number",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     cellRenderer: ({ row }) => {
       const salary = row.salary as number;
@@ -201,7 +201,7 @@ export const columnFilteringHeaders: VueHeaderObject[] = [
     label: "Start Date",
     width: 130,
     type: "date",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -210,7 +210,7 @@ export const columnFilteringHeaders: VueHeaderObject[] = [
     width: 100,
     align: "center",
     type: "boolean",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
 ];

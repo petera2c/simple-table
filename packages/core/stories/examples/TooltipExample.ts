@@ -2,7 +2,7 @@
  * Tooltip Example – vanilla port of React TooltipExample.
  * Same data, headers, and props as React version.
  */
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
@@ -14,29 +14,29 @@ const EXAMPLE_DATA: Row[] = [
   { id: 5, productName: "Monitor 27in", category: "Electronics", price: 349.99, stock: 32, rating: 4.6, lastUpdated: "2024-01-25" },
 ];
 
-const HEADERS: HeaderObject[] = [
-  { accessor: "productName", label: "Product", width: 200, isSortable: true, tooltip: "The name of the product in our inventory" },
-  { accessor: "category", label: "Category", width: 150, isSortable: true, filterable: true, tooltip: "Product category classification" },
+const HEADERS: ColumnDef[] = [
+  { accessor: "productName", label: "Product", width: 200, sortable: true, tooltip: "The name of the product in our inventory" },
+  { accessor: "category", label: "Category", width: 150, sortable: true, filterable: true, tooltip: "Product category classification" },
   {
     accessor: "price",
     label: "Price",
     width: 120,
-    isSortable: true,
+    sortable: true,
     align: "right",
     tooltip: "Current retail price in USD",
     valueFormatter: ({ value }: { value?: unknown }) => `$${Number(value).toFixed(2)}`,
   },
-  { accessor: "stock", label: "Stock", width: 100, isSortable: true, align: "right", tooltip: "Available inventory units in warehouse" },
+  { accessor: "stock", label: "Stock", width: 100, sortable: true, align: "right", tooltip: "Available inventory units in warehouse" },
   {
     accessor: "rating",
     label: "Rating",
     width: 100,
-    isSortable: true,
+    sortable: true,
     align: "center",
     tooltip: "Average customer rating (1-5 stars)",
     valueFormatter: ({ value }: { value?: unknown }) => `${value}/5`,
   },
-  { accessor: "lastUpdated", label: "Last Updated", width: 150, isSortable: true, tooltip: "Date of last inventory update" },
+  { accessor: "lastUpdated", label: "Last Updated", width: 150, sortable: true, tooltip: "Date of last inventory update" },
 ];
 
 export const tooltipExampleDefaults = {

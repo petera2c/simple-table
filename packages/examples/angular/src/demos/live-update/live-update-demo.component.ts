@@ -1,5 +1,5 @@
 import { Component, Input, ViewChild, AfterViewInit, OnDestroy } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -10,7 +10,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       #simpleTable
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rows]="rows"
       [height]="height"
       [theme]="theme"
@@ -22,7 +22,7 @@ export class LiveUpdateDemoComponent implements AfterViewInit, OnDestroy {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = liveUpdateConfig.headers;
+  readonly headers: AngularColumnDef[] = liveUpdateConfig.headers;
   readonly rows: Row[] = liveUpdateConfig.rows;
 
   private cleanupFn?: () => void;

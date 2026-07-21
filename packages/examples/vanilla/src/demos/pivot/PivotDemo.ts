@@ -48,7 +48,7 @@ export function renderPivotDemo(
 
   const active = pivotPresets.find((p) => p.id === activeId) ?? pivotPresets[0];
   table = new SimpleTableVanilla(tableHost, {
-    defaultHeaders: pivotDemoConfig.headers,
+    columns: pivotDemoConfig.headers,
     rows: pivotDemoConfig.rows,
     pivot: active.pivot,
     columnResizing: true,

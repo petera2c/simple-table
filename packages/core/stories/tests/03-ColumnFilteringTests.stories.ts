@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable, addParagraph, type RenderVanillaTableResult } from "../utils";
@@ -81,7 +81,7 @@ const getColumnData = (canvasElement: HTMLElement, accessor: string) => {
 
 export const BasicFilterableColumns = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
@@ -168,14 +168,14 @@ export const ProgrammaticApplyFilter = {
     wrapper.appendChild(filterStatusDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers:ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createFilterableData(),
       height: "400px",
     });
@@ -283,14 +283,14 @@ export const ProgrammaticClearFilter = {
     wrapper.appendChild(filterStatusDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers:ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createFilterableData(),
       height: "400px",
     });
@@ -368,14 +368,14 @@ export const OnFilterChangeCallback = {
     wrapper.appendChild(callbackDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers:ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createFilterableData(),
       height: "400px",
       onFilterChange: (filters) => {
@@ -425,7 +425,7 @@ export const ExternalFilterHandling = {
     wrapper.appendChild(stateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers:ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
@@ -433,7 +433,7 @@ export const ExternalFilterHandling = {
     ];
     let filterAppliedRef = false;
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: filteredData,
       height: "400px",
       externalFilterHandling: true,
@@ -488,7 +488,7 @@ export const ExternalFilterHandling = {
 
 export const FilterDifferentDataTypes = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number", filterable: true },
       { accessor: "name", label: "Name (String)", width: 200, type: "string", filterable: true },
       { accessor: "age", label: "Age (Number)", width: 120, type: "number", filterable: true },
@@ -553,14 +553,14 @@ export const GetFilterState = {
     wrapper.appendChild(preEl);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:HeaderObject[] = [
+    const headers:ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
     ];
     const table = new SimpleTableVanilla(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createFilterableData(),
       height: "400px",
     });
@@ -600,7 +600,7 @@ export const OnFilterChangeCallbackFires = {
     const capturedFilters: unknown[] = [];
     (window as unknown as { __filterChangeCapture?: unknown[] }).__filterChangeCapture = capturedFilters;
 
-    const filterHeaders: HeaderObject[] = [
+    const filterHeaders: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
@@ -647,7 +647,7 @@ export const EnumFilterMoreThan10OptionsShowsSearch = {
       name: `Item ${i + 1}`,
       category: `Category ${i + 1}`,
     }));
-    const enumHeaders: HeaderObject[] = [
+    const enumHeaders: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
       {
@@ -691,7 +691,7 @@ export const EnumFilterMoreThan10OptionsShowsSearch = {
 
 export const LimitFilterOperators = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "name",
@@ -752,7 +752,7 @@ export const LimitFilterOperators = {
 
 export const LimitFilterOperatorsFallbackDefault = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "name",

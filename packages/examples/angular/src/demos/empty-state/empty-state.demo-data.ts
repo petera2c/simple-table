@@ -1,10 +1,10 @@
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject, Row } from "@simple-table/angular";
+import type { AngularColumnDef, Row } from "@simple-table/angular";
 
 
 export const emptyStateData: Row[] = [];
 
-export const emptyStateHeaders: AngularHeaderObject[] = [
+export const emptyStateHeaders: AngularColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 180, type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },

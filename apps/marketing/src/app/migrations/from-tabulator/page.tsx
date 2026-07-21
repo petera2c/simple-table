@@ -48,8 +48,8 @@ export default function FromTabulatorPage() {
       mappingRows={[
         { competitor: "new Tabulator(el, opts)", simpleTable: "new SimpleTableVanilla(el, opts)", notes: "Constructor signature is similar." },
         { competitor: "data: Record<string, unknown>[]", simpleTable: "rows: Row[]", notes: "See the Simple Table docs for the row shape." },
-        { competitor: "columns[]", simpleTable: "defaultHeaders[]", notes: "title → label; field → accessor; width unchanged." },
-        { competitor: "frozen: true", simpleTable: "HeaderObject.pinned", notes: "Built-in pinning, declarative on the header." },
+        { competitor: "columns[]", simpleTable: "columns[]", notes: "title → label; field → accessor; width unchanged." },
+        { competitor: "frozen: true", simpleTable: "ColumnDef.pinned", notes: "Built-in pinning, declarative on the header." },
         { competitor: "groupBy + groupHeader", simpleTable: "Row grouping + aggregations", notes: "Built-in source-available grouping with aggregators." },
         { competitor: "formatter / mutator", simpleTable: "cellRenderer", notes: "Return a DOM node or a string from a render function." },
         { competitor: "Tabulator theme CSS", simpleTable: "simple-table-core/styles.css", notes: "Theme via CSS variables." },
@@ -70,7 +70,7 @@ import "simple-table-core/styles.css";`,
         },
         {
           title: "Translate column definitions",
-          body: <p>Map each Tabulator column to a HeaderObject. <code>title → label</code>, <code>field → accessor</code>, widths and pinning carry over directly.</p>,
+          body: <p>Map each Tabulator column to a ColumnDef. <code>title → label</code>, <code>field → accessor</code>, widths and pinning carry over directly.</p>,
         },
         {
           title: "Reshape rows",

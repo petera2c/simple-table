@@ -63,7 +63,7 @@ export default function Page() {
         { title: "Reactive overhead", problem: "Recreating the entire headers array on each resize triggers excess updates.", solution: "Simple Table batches resize updates and uses fine-grained reactive primitives—only affected cells rerender." },
       ]}
       faqs={[
-        { question: "Can I disable resizing per column?", answer: "Yes—set isResizable: false on individual HeaderObject entries." },
+        { question: "Can I disable resizing per column?", answer: "Yes—set isResizable: false on individual ColumnDef entries." },
         { question: "Does it work with virtualization?", answer: "Yes. Virtualized 1M-row tables resize columns at 60fps." },
         { question: "Does it pair with createStore?", answer: "Yes. Pass a store as the rows source; Solid's fine-grained reactivity makes updates smooth." },
       ]}

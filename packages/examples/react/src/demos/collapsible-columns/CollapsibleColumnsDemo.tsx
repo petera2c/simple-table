@@ -11,10 +11,10 @@ const CollapsibleColumnsDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={collapsibleColumnsConfig.headers}
+      columns={collapsibleColumnsConfig.headers}
       rows={collapsibleColumnsConfig.rows}
       columnResizing
-      editColumns
+      enableColumnEditor
       selectableCells
       columnReordering
       height={height}

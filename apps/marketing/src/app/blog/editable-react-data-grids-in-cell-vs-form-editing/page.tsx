@@ -169,7 +169,7 @@ export default function EditableReactDataGridsPage() {
 
               <CodeBlock
                 className="mb-6"
-                code={`import { SimpleTable, HeaderObject, CellChangeProps } from "@simple-table/react";
+                code={`import { SimpleTable, ColumnDef, CellChangeProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 import { useState } from "react";
 
@@ -182,33 +182,33 @@ interface Product {
   lastUpdated: string;
 }
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   {
     accessor: "name",
     label: "Product Name",
     type: "string",
-    isEditable: true, // Enable editing
+    editable: true, // Enable editing
     width: 200,
   },
   {
     accessor: "price",
     label: "Price",
     type: "number", // Number editor with validation
-    isEditable: true,
+    editable: true,
     width: 120,
   },
   {
     accessor: "stock",
     label: "Stock",
     type: "number",
-    isEditable: true,
+    editable: true,
     width: 100,
   },
   {
     accessor: "status",
     label: "Status",
     type: "enum", // Dropdown editor
-    isEditable: true,
+    editable: true,
     enumOptions: [
       { label: "In Stock", value: "in_stock" },
       { label: "Low Stock", value: "low_stock" },
@@ -220,7 +220,7 @@ const headers: HeaderObject[] = [
     accessor: "lastUpdated",
     label: "Last Updated",
     type: "date", // Date picker
-    isEditable: true,
+    editable: true,
     width: 150,
   },
 ];
@@ -246,7 +246,7 @@ export default function ProductTable() {
 
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={products}
       
       onCellEdit={handleCellEdit}
@@ -294,11 +294,11 @@ export default function ProductTable() {
 // 3. Select starting cell in your table
 // 4. Paste (Ctrl+V / ⌘+V)
 
-// Only columns with isEditable: true accept pasted data
+// Only columns with editable: true accept pasted data
 // Non-editable columns (like IDs) are automatically skipped
 
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   
   onCellEdit={handleCellEdit}
@@ -313,7 +313,7 @@ export default function ProductTable() {
                 </h4>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   Simple Table's copy-paste feature respects your{" "}
-                  <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">isEditable</code>{" "}
+                  <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">editable</code>{" "}
                   settings. If a column is read-only (like an ID or calculated field), pasted values
                   are skipped for that column. This prevents accidental data corruption while still
                   allowing bulk edits.
@@ -459,7 +459,7 @@ export default function ProductTable() {
 
               <CodeBlock
                 className="mb-6"
-                code={`import { SimpleTable, HeaderObject, CellClickProps } from "@simple-table/react";
+                code={`import { SimpleTable, ColumnDef, CellClickProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 import { useState } from "react";
 import { Modal, Form, Input, Select, DatePicker, Button } from "antd"; // or any UI library
@@ -481,7 +481,7 @@ export default function EmployeeTable() {
   const [form] = Form.useForm();
 
   // Define headers with an "Actions" column
-  const headers: HeaderObject[] = [
+  const headers: ColumnDef[] = [
     {
       accessor: "name",
       label: "Name",
@@ -554,7 +554,7 @@ export default function EmployeeTable() {
   return (
     <>
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         rows={employees}
         
         height="600px"
@@ -636,7 +636,7 @@ export default function EmployeeTable() {
                 <CodeBlock
                   className="mb-0"
                   code={`<SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={employees}
   
   onCellClick={({ row }) => {
@@ -883,33 +883,33 @@ export default function EmployeeTable() {
 
               <CodeBlock
                 className="mb-6"
-                code={`const headers: HeaderObject[] = [
+                code={`const headers: ColumnDef[] = [
   {
     accessor: "name",
     label: "Product Name",
     type: "string",
-    isEditable: true, // Quick in-cell edit
+    editable: true, // Quick in-cell edit
     width: 200,
   },
   {
     accessor: "price",
     label: "Price",
     type: "number",
-    isEditable: true, // Quick in-cell edit
+    editable: true, // Quick in-cell edit
     width: 120,
   },
   {
     accessor: "stock",
     label: "Stock",
     type: "number",
-    isEditable: true, // Quick in-cell edit
+    editable: true, // Quick in-cell edit
     width: 100,
   },
   {
     accessor: "status",
     label: "Status",
     type: "enum",
-    isEditable: true, // Quick in-cell edit
+    editable: true, // Quick in-cell edit
     enumOptions: [/* ... */],
     width: 150,
   },
@@ -937,7 +937,7 @@ export default function EmployeeTable() {
 ];
 
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={products}
   
   onCellEdit={handleQuickEdit} // For in-cell edits
@@ -977,14 +977,14 @@ export default function ResponsiveEditingTable() {
   }, []);
 
   // Desktop: in-cell editing
-  const desktopHeaders: HeaderObject[] = [
-    { accessor: "name", label: "Name", isEditable: true },
-    { accessor: "email", label: "Email", isEditable: true },
-    { accessor: "status", label: "Status", type: "enum", isEditable: true },
+  const desktopHeaders: ColumnDef[] = [
+    { accessor: "name", label: "Name", editable: true },
+    { accessor: "email", label: "Email", editable: true },
+    { accessor: "status", label: "Status", type: "enum", editable: true },
   ];
 
   // Mobile: form-based editing
-  const mobileHeaders: HeaderObject[] = [
+  const mobileHeaders: ColumnDef[] = [
     { accessor: "name", label: "Name" },
     { accessor: "email", label: "Email" },
     {
@@ -998,7 +998,7 @@ export default function ResponsiveEditingTable() {
 
   return (
     <SimpleTable
-      defaultHeaders={isMobile ? mobileHeaders : desktopHeaders}
+      columns={isMobile ? mobileHeaders : desktopHeaders}
       rows={data}
       
       onCellEdit={isMobile ? undefined : handleCellEdit}
@@ -1141,7 +1141,7 @@ export default function ResponsiveEditingTable() {
 // Apply the custom theme
 <SimpleTable
   theme="custom"
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   
 />`}
@@ -1294,7 +1294,7 @@ const handleSave = async () => {
                         ✅ Easy via <code>onCellClick</code> or custom cell renderers
                       </td>
                       <td className="border border-gray-300 dark:border-gray-600 p-3 text-sm">
-                        ✅ Built-in, respects <code>isEditable</code> settings
+                        ✅ Built-in, respects <code>editable</code> settings
                       </td>
                     </tr>
                     <tr>

@@ -26,7 +26,7 @@ export function renderLoadingStateDemo(
   let timer: ReturnType<typeof setTimeout> | null = null;
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: loadingStateConfig.headers,
+    columns: loadingStateConfig.headers,
     rows: [] as Row[],
     height: options?.height ?? "400px",
     theme: options?.theme,

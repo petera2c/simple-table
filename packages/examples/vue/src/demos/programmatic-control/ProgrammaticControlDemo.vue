@@ -22,7 +22,7 @@
     </div>
     <SimpleTable
       ref="tableRef"
-      :default-headers="headers"
+      :columns="headers"
       :rows="programmaticControlConfig.rows"
       :height="height"
       :theme="theme"
@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, VueHeaderObject } from "@simple-table/vue";
+import type { Theme, TableAPI, VueColumnDef } from "@simple-table/vue";
 import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
 import "@simple-table/vue/styles.css";
 
@@ -44,7 +44,7 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
 const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
 const statusMessage = ref("No status message");
 
-const headers: VueHeaderObject[] = programmaticControlConfig.headers.map((h) => {
+const headers: VueColumnDef[] = programmaticControlConfig.headers.map((h) => {
   if (h.accessor === "status") {
     return {
       ...h,
@@ -85,7 +85,10 @@ function handleGetInfo() {
   const hdrs = api.getHeaders();
   const sortState = api.getSortState();
   const filterState = api.getFilterState();
-  const totalValue = allRows.reduce((sum, r) => sum + (r.price as number) * (r.stock as number), 0);
+  const totalValue = allRows.reduce(
+    (sum, r) => sum + (Number(r.row.price) || 0) * (Number(r.row.stock) || 0),
+    0,
+  );
   const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
   alert(
     `Table Info:\n• Rows: ${allRows.length}\n• Columns: ${hdrs.length}\n• Active filters: ${Object.keys(filterState).length}\n• Sort: ${sortInfo}\n• Total inventory value: $${totalValue.toFixed(2)}`,

@@ -5,7 +5,7 @@ import {
   rowsShallowUnchanged,
 } from "simple-table-core";
 import type { SimpleTableConfig, TableAPI } from "simple-table-core";
-import { buildVanillaConfig } from "./buildVanillaConfig";
+import { buildVanillaConfig, resolveVueColumns } from "./buildVanillaConfig";
 import { MountRegistry } from "./MountRegistry";
 import type { SimpleTableVueProps, TableInstance } from "./types";
 
@@ -19,7 +19,7 @@ import type { SimpleTableVueProps, TableInstance } from "./types";
  *
  * @example
  * <template>
- *   <SimpleTable ref="tableRef" :rows="rows" :default-headers="headers" />
+ *   <SimpleTable ref="tableRef" :rows="rows" :columns="headers" />
  * </template>
  *
  * <script setup lang="ts">
@@ -59,7 +59,9 @@ const SimpleTable = defineComponent({
     const containerRef = ref<HTMLDivElement | null>(null);
     let instance: TableInstance | null = null;
     const registry = new MountRegistry();
-    let syncedDefaultHeaders: SimpleTableVueProps["defaultHeaders"] | undefined;
+    let syncedDefaultHeaders: ReadonlyArray<
+      NonNullable<SimpleTableVueProps["columns"]>[number]
+    > | undefined;
     let syncedRows: SimpleTableVueProps["rows"] | undefined;
 
     function syncFromAttrs() {
@@ -67,12 +69,13 @@ const SimpleTable = defineComponent({
       const props = camelizeAttrs(attrs) as unknown as SimpleTableVueProps;
       const fullConfig = buildVanillaConfig(props, registry);
       const patch: Partial<SimpleTableConfig> = { ...fullConfig };
+      const resolvedColumns = resolveVueColumns(props);
 
       const headersUnchanged = headersStructurallyEqual(
         syncedDefaultHeaders,
-        props.defaultHeaders,
+        resolvedColumns,
       );
-      syncedDefaultHeaders = props.defaultHeaders;
+      syncedDefaultHeaders = resolvedColumns;
       if (headersUnchanged) {
         delete patch.defaultHeaders;
       }
@@ -99,7 +102,7 @@ const SimpleTable = defineComponent({
         buildVanillaConfig(props, registry),
       ) as unknown as TableInstance;
       instance.mount();
-      syncedDefaultHeaders = props.defaultHeaders;
+      syncedDefaultHeaders = resolveVueColumns(props);
       syncedRows = props.rows;
     });
 

@@ -98,7 +98,7 @@ export default function Page() {
       faqs={[
         { question: "Can I use Handsontable's free version commercially?", answer: "Handsontable's non-commercial license is restrictive. Most SaaS or for-profit uses require a commercial license. Always check the current license text before relying on free terms." },
         { question: "How does simple-table-core compare to a real spreadsheet?", answer: "simple-table-core is a data grid, not a spreadsheet. If you need formulas and Excel-like cell mechanics, pair it with HyperFormula or use Handsontable. For tabular data with a column schema, simple-table-core is lighter and source-available (free for pre-revenue teams)." },
-        { question: "How big is the migration?", answer: "Hours to a few days per table. Map columns to HeaderObjects; convert renderer / editor functions to cellRenderer / cellEditor; replace afterChange hooks with onCellEdit handlers." },
+        { question: "How big is the migration?", answer: "Hours to a few days per table. Map columns to ColumnDefs; convert renderer / editor functions to cellRenderer / cellEditor; replace afterChange hooks with onCellEdit handlers." },
       ]}
       conclusionParagraphs={[
         "Handsontable is the right pick if you genuinely need a spreadsheet UI and either pay for the license or qualify as non-commercial. simple-table-core is the right pick for data grids, and it's free for pre-revenue teams (source-available, with Pro/Enterprise for revenue-generating use).",

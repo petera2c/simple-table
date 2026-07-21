@@ -25,5 +25,5 @@ export const metadata: Metadata = {
 };
 
 export default function SalesPage() {
-  return <SalesExampleWrapper shouldPaginate={false} />;
+  return <SalesExampleWrapper enablePagination={false} />;
 }

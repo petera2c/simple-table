@@ -21,10 +21,10 @@ export default function ColumnVisibilityDemo(props: { height?: string | number; 
 
   return (
     <SimpleTable
-      defaultHeaders={headers()}
+      columns={headers()}
       rows={columnVisibilityConfig.rows}
-      editColumns
-      editColumnsInitOpen
+      enableColumnEditor
+      enableColumnEditorInitOpen
       height={props.height ?? "400px"}
       theme={props.theme}
       onColumnVisibilityChange={onColumnVisibilityChange}

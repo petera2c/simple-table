@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject, Row } from "@simple-table/svelte";
+import type { SvelteColumnDef, Row } from "@simple-table/svelte";
 
 
 export interface DynamicCompany extends Row {
@@ -56,7 +56,7 @@ export const dynamicNestedTablesData: DynamicCompany[] = [
   { id: "comp-15", companyName: "EnergyFlow Systems", industry: "Energy", revenue: "$560M", employees: 1800 },
 ];
 
-export const dynamicNestedTablesDivisionHeaders: SvelteHeaderObject[] = [
+export const dynamicNestedTablesDivisionHeaders: SvelteColumnDef[] = [
   { accessor: "divisionName", label: "Division", width: 200 },
   { accessor: "revenue", label: "Revenue", width: 120 },
   { accessor: "profitMargin", label: "Profit Margin", width: 130 },
@@ -64,14 +64,14 @@ export const dynamicNestedTablesDivisionHeaders: SvelteHeaderObject[] = [
   { accessor: "location", label: "Location", width: 180 },
 ];
 
-export const dynamicNestedTablesCompanyHeaders: SvelteHeaderObject[] = [
+export const dynamicNestedTablesCompanyHeaders: SvelteColumnDef[] = [
   {
     accessor: "companyName",
     label: "Company",
     width: 200,
     expandable: true,
     nestedTable: {
-      defaultHeaders: dynamicNestedTablesDivisionHeaders,
+      columns: dynamicNestedTablesDivisionHeaders,
       expandAll: false,
       autoExpandColumns: true,
     },

@@ -11,14 +11,14 @@ import PropTable, { type PropInfo } from "@/components/PropTable";
 
 const PAGINATION_PROPS: PropInfo[] = [
   {
-    key: "shouldPaginate",
-    name: "shouldPaginate",
+    key: "enablePagination",
+    name: "enablePagination",
     required: false,
     description:
       "Enables pagination functionality for the table. When true, the table will display pagination controls and divide data into pages.",
     type: "boolean",
     example: `<SimpleTable
-  shouldPaginate={true}
+  enablePagination={true}
   // ... other props
 />`,
   },
@@ -29,7 +29,7 @@ const PAGINATION_PROPS: PropInfo[] = [
     description: "Number of rows to display per page. Default is 10.",
     type: "number",
     example: `<SimpleTable
-  shouldPaginate={true}
+  enablePagination={true}
   rowsPerPage={20}
   // ... other props
 />`,
@@ -42,7 +42,7 @@ const PAGINATION_PROPS: PropInfo[] = [
       "Callback function triggered when page changes, either through user interaction (clicking pagination buttons) or programmatically via tableRef.setPage(). Useful for server-side pagination to fetch data for the new page.",
     type: "(page: number) => void | Promise<void>",
     example: `<SimpleTable
-  shouldPaginate={true}
+  enablePagination={true}
   onPageChange={async (page) => {
     const data = await fetchPageData(page);
     setRows(data);
@@ -58,7 +58,7 @@ const PAGINATION_PROPS: PropInfo[] = [
       "Flag to disable internal pagination slicing. When true, the table expects you to provide pre-paginated data via the rows prop.",
     type: "boolean",
     example: `<SimpleTable
-  shouldPaginate={true}
+  enablePagination={true}
   serverSidePagination={true}
   // ... other props
 />`,
@@ -71,7 +71,7 @@ const PAGINATION_PROPS: PropInfo[] = [
       "Total number of rows available on the server (for server-side pagination). Used to calculate total pages.",
     type: "number",
     example: `<SimpleTable
-  shouldPaginate={true}
+  enablePagination={true}
   serverSidePagination={true}
   totalRowCount={1000}
   // ... other props
@@ -86,7 +86,7 @@ const PAGINATION_PROPS: PropInfo[] = [
     example: `const [currentPage, setCurrentPage] = useState(1);
 
 <SimpleTable
-  shouldPaginate={true}
+  enablePagination={true}
   onNextPage={() => setCurrentPage(prev => prev + 1)}
   // ... other props
 />`,
@@ -101,7 +101,7 @@ const PAGINATION_PROPS: PropInfo[] = [
     example: `const [isLoading, setIsLoading] = useState(false);
 
 <SimpleTable
-  shouldPaginate={true}
+  enablePagination={true}
   isLoading={isLoading}
   onPageChange={async (page) => {
     setIsLoading(true);
@@ -171,7 +171,7 @@ const PaginationContent = () => {
         <p className="text-gray-700 dark:text-gray-300 mb-4">
           To enable pagination in Simple Table, you need to add the{" "}
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            shouldPaginate
+            enablePagination
           </code>{" "}
           prop to your SimpleTable component. This will automatically handle pagination of your
           data.

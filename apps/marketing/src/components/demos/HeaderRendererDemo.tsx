@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, HeaderRendererProps, Theme } from "@simple-table/react";
+import type { ReactColumnDef, HeaderRendererProps, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Initial astronomical data
@@ -255,7 +255,7 @@ const HeaderRendererDemo = ({
     return HeaderCell;
   };
 
-  const headers: ReactHeaderObject[] = useMemo(
+  const headers: ReactColumnDef[] = useMemo(
     () => [
       {
         accessor: "id",
@@ -263,7 +263,7 @@ const HeaderRendererDemo = ({
         width: 120,
         type: "number",
         headerRenderer: createHeaderRenderer("id", "ID", "#", "Catalog"),
-        isSortable: true,
+        sortable: true,
       },
       {
         accessor: "starName",
@@ -271,7 +271,7 @@ const HeaderRendererDemo = ({
         width: 140,
         type: "string",
         headerRenderer: createHeaderRenderer("starName", "Star Name", "⭐", "Designation"),
-        isSortable: true,
+        sortable: true,
       },
       {
         accessor: "constellation",
@@ -279,14 +279,14 @@ const HeaderRendererDemo = ({
         width: 170,
         type: "string",
         headerRenderer: createHeaderRenderer("constellation", "Constellation", "✦", "Region"),
-        isSortable: true,
+        sortable: true,
       },
       {
         accessor: "magnitude",
         label: "Magnitude",
         width: 140,
         type: "number",
-        isSortable: true,
+        sortable: true,
         filterable: true,
         headerRenderer: createHeaderRenderer("magnitude", "Magnitude", "✨", "Brightness"),
         align: "right",
@@ -297,7 +297,7 @@ const HeaderRendererDemo = ({
         width: 150,
         type: "string",
         headerRenderer: createHeaderRenderer("spectralClass", "Class", "🌡️", "Spectral"),
-        isSortable: true,
+        sortable: true,
       },
       {
         accessor: "distanceLY",
@@ -305,7 +305,7 @@ const HeaderRendererDemo = ({
         width: 150,
         type: "number",
         headerRenderer: createHeaderRenderer("distanceLY", "Distance", "📡", "Light Years"),
-        isSortable: true,
+        sortable: true,
       },
     ],
     [theme],
@@ -314,7 +314,7 @@ const HeaderRendererDemo = ({
   return (
     <SimpleTable
       columnResizing
-      defaultHeaders={headers}
+      columns={headers}
       height={height}
       rows={INITIAL_STAR_DATA}
       selectableCells

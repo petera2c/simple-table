@@ -1,5 +1,5 @@
 import { createSignal, createMemo, Show, For } from "solid-js";
-import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidHeaderObject, CellRendererProps, CellClickProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidColumnDef, CellRendererProps, CellClickProps } from "@simple-table/solid";
 import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
 import type { ProjectTask } from "./cell-clicking.demo-data";
 import "@simple-table/solid/styles.css";
@@ -11,7 +11,7 @@ export default function CellClickingDemo(props: { height?: string | number; them
   const [selectedTask, setSelectedTask] = createSignal<ProjectTask | null>(null);
   const [rows, setRows] = createSignal<ProjectTask[]>([...cellClickingData]);
 
-  const headers: SolidHeaderObject[] = cellClickingHeaders.map((h) => {
+  const headers: SolidColumnDef[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") {
       return {
         ...h,
@@ -186,7 +186,7 @@ export default function CellClickingDemo(props: { height?: string | number; them
 
       <SimpleTable
         columnResizing
-        defaultHeaders={headers}
+        columns={headers}
         height={props.height ?? "320px"}
         onCellClick={handleCellClick}
         rows={rows()}

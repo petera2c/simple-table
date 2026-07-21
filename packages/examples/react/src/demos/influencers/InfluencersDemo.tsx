@@ -1,4 +1,5 @@
 import {
+  createElement,
   useCallback,
   useEffect,
   useRef,
@@ -10,7 +11,8 @@ import { SimpleTable } from "@simple-table/react";
 import type {
   Theme,
   CellRendererProps,
-  ReactHeaderObject,
+  ReactCellRenderer,
+  ReactColumnDef,
   HeaderRendererProps,
 } from "@simple-table/react";
 import {
@@ -40,7 +42,7 @@ import "@simple-table/react/styles.css";
  * on every parent update, which can flicker header menus and fight column resize.
  */
 type UnstableReproFlags = {
-  /** Rebuild defaultHeaders from scratch each render (new object + renderer refs). */
+  /** Rebuild columns from scratch each render (new object + renderer refs). */
   unstableColumns: boolean;
   /** Pass a freshly mapped/cloned rows array each render. */
   unstableRows: boolean;
@@ -64,11 +66,7 @@ function formatTableHeight(height?: string | number | null): string {
 
 const GENDER_COLORS = { f: "#7E84FA", m: "#0FB5AE" };
 
-function SegmentedBar({
-  segments,
-}: {
-  segments: Array<{ value: number; color: string }>;
-}) {
+function SegmentedBar({ segments }: { segments: Array<{ value: number; color: string }> }) {
   const total = segments.reduce((sum, s) => sum + s.value, 0) || 1;
   return (
     <div
@@ -97,7 +95,11 @@ function SegmentedBar({
   );
 }
 
-function PlatformIcon({ platform }: { platform: "tiktok" | "instagram" | "youtube" | "chartmetric" }) {
+function PlatformIcon({
+  platform,
+}: {
+  platform: "tiktok" | "instagram" | "youtube" | "chartmetric";
+}) {
   if (platform === "tiktok") {
     return (
       <span
@@ -198,7 +200,8 @@ function HeaderChrome({
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: align === "center" ? "center" : align === "end" ? "flex-end" : "flex-start",
+          justifyContent:
+            align === "center" ? "center" : align === "end" ? "flex-end" : "flex-start",
           gap: 6,
           flex: 1,
           minWidth: 0,
@@ -411,7 +414,15 @@ function TopVideoThumb({
   colors: ReturnType<typeof getInfluencerThemeColors>;
 }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, minWidth: 44 }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 4,
+        minWidth: 44,
+      }}
+    >
       <div
         style={{
           width: 42,
@@ -469,10 +480,7 @@ function TopVideosCell({ row, theme }: CellRendererProps) {
   return (
     <div style={{ display: "flex", gap: 10, alignItems: "center", width: "100%" }}>
       {videos.map((video, idx) => (
-        <CmTooltip
-          key={idx}
-          content={`${video.platform} · ${video.metricLabel} ${video.metric}`}
-        >
+        <CmTooltip key={idx} content={`${video.platform} · ${video.metricLabel} ${video.metric}`}>
           <button
             type="button"
             onClick={(e) => e.stopPropagation()}
@@ -596,7 +604,15 @@ function FeaturedEntityCell({
   );
 }
 
-function BreakdownCell({ item, theme, title }: { item: BreakdownItem; theme?: string; title: string }) {
+function BreakdownCell({
+  item,
+  theme,
+  title,
+}: {
+  item: BreakdownItem;
+  theme?: string;
+  title: string;
+}) {
   const colors = getInfluencerThemeColors(theme);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "100%" }}>
@@ -674,7 +690,12 @@ function AudienceGenderCell({ row, theme }: CellRendererProps) {
               }}
             >
               <span
-                style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: GENDER_COLORS.f }}
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  backgroundColor: GENDER_COLORS.f,
+                }}
               />
               F: <span style={{ color: colors.text, fontWeight: 600 }}>{gender.f}%</span>
             </div>
@@ -688,7 +709,12 @@ function AudienceGenderCell({ row, theme }: CellRendererProps) {
               }}
             >
               <span
-                style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: GENDER_COLORS.m }}
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  backgroundColor: GENDER_COLORS.m,
+                }}
               />
               M: <span style={{ color: colors.text, fontWeight: 600 }}>{gender.m}%</span>
             </div>
@@ -785,7 +811,10 @@ type InfluencerRow = Influencer | SkeletonInfluencer;
 
 function isSkeletonRow(row: unknown): row is SkeletonInfluencer {
   return Boolean(
-    row && typeof row === "object" && "__skeleton__" in row && (row as SkeletonInfluencer).__skeleton__,
+    row &&
+    typeof row === "object" &&
+    "__skeleton__" in row &&
+    (row as SkeletonInfluencer).__skeleton__,
   );
 }
 
@@ -866,7 +895,12 @@ function skeletonForAccessor(accessor: string, align?: string): ReactNode {
   if (accessor === "tracksFeatured" || accessor === "artistsFeatured") {
     return (
       <div style={{ display: "flex", alignItems: "center", gap: 10, width: "100%" }}>
-        <SkeletonBar width={36} height={36} radius={accessor === "artistsFeatured" ? 18 : 6} style={{ flexShrink: 0 }} />
+        <SkeletonBar
+          width={36}
+          height={36}
+          radius={accessor === "artistsFeatured" ? 18 : 6}
+          style={{ flexShrink: 0 }}
+        />
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
           <SkeletonBar width="70%" height={12} />
           <SkeletonBar width="45%" height={10} />
@@ -874,7 +908,11 @@ function skeletonForAccessor(accessor: string, align?: string): ReactNode {
       </div>
     );
   }
-  if (accessor === "audienceStats.gender" || accessor === "audienceStats.code2" || accessor === "audienceStats.language") {
+  if (
+    accessor === "audienceStats.gender" ||
+    accessor === "audienceStats.code2" ||
+    accessor === "audienceStats.language"
+  ) {
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%" }}>
         <SkeletonBar width="50%" height={12} />
@@ -888,18 +926,18 @@ function skeletonForAccessor(accessor: string, align?: string): ReactNode {
 function withSkeletonCell(
   accessor: string,
   align: string | undefined,
-  Renderer: (props: CellRendererProps) => ReactNode,
-): (props: CellRendererProps) => ReactNode {
-  return (props) => {
+  Renderer: ReactCellRenderer,
+): ReactCellRenderer {
+  return (props: CellRendererProps) => {
     if (isSkeletonRow(props.row)) {
       return skeletonForAccessor(accessor, align);
     }
-    return Renderer(props);
+    return createElement(Renderer, props);
   };
 }
 
 /** Ensure every header gets a React headerRenderer (portal), matching Chartmetric density. */
-function withHeaderMenus(headers: readonly ReactHeaderObject[]): ReactHeaderObject[] {
+function withHeaderMenus(headers: readonly ReactColumnDef[]): ReactColumnDef[] {
   return headers.map((header) => {
     const children = header.children ? withHeaderMenus(header.children) : undefined;
     const cellRenderer = header.cellRenderer
@@ -922,8 +960,8 @@ function withHeaderMenus(headers: readonly ReactHeaderObject[]): ReactHeaderObje
 }
 
 function collectWidths(
-  headers: readonly ReactHeaderObject[],
-  into: Map<string, ReactHeaderObject["width"]>,
+  headers: readonly ReactColumnDef[],
+  into: Map<string, ReactColumnDef["width"]>,
 ) {
   for (const h of headers) {
     into.set(String(h.accessor), h.width);
@@ -933,13 +971,13 @@ function collectWidths(
 
 /** Width-only merge so controlled resize doesn't re-wrap React renderers. */
 function mergeHeaderWidths(
-  prev: readonly ReactHeaderObject[],
-  next: readonly ReactHeaderObject[],
-): ReactHeaderObject[] {
-  const widthByAccessor = new Map<string, ReactHeaderObject["width"]>();
+  prev: readonly ReactColumnDef[],
+  next: readonly ReactColumnDef[],
+): ReactColumnDef[] {
+  const widthByAccessor = new Map<string, ReactColumnDef["width"]>();
   collectWidths(next, widthByAccessor);
 
-  const apply = (headers: readonly ReactHeaderObject[]): ReactHeaderObject[] =>
+  const apply = (headers: readonly ReactColumnDef[]): ReactColumnDef[] =>
     headers.map((h) => {
       const width = widthByAccessor.get(String(h.accessor));
       const children = h.children?.length ? apply(h.children) : undefined;
@@ -961,8 +999,8 @@ function mergeHeaderWidths(
  * accessors, widths, nested groups, collapsed top videos, no audience age.
  * Main scroll width ≈ 150+390+280+500+900+1010+1030+1010 = 5270–5560px.
  */
-function buildHeaders(): ReactHeaderObject[] {
-  const topVideoChildren: ReactHeaderObject[] = [
+function buildHeaders(): ReactColumnDef[] {
+  const topVideoChildren: ReactColumnDef[] = [
     {
       accessor: "topContentsSummary",
       label: "Top Videos",
@@ -987,18 +1025,18 @@ function buildHeaders(): ReactHeaderObject[] {
       label: "#",
       width: 70,
       type: "number",
-      isSortable: true,
+      sortable: true,
       align: "center",
       pinned: "left",
       cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("#", String((row as Influencer).__index__)),
+        metricCell("#", String((row as Influencer).__index__)),
     },
     {
       accessor: "name",
       label: "Influencer",
       width: 400,
       type: "string",
-      isSortable: true,
+      sortable: true,
       pinned: "left",
       cellRenderer: InfluencerCell,
     },
@@ -1007,7 +1045,7 @@ function buildHeaders(): ReactHeaderObject[] {
       label: "Chartmetric Score",
       width: 150,
       type: "number",
-      isSortable: true,
+      sortable: true,
       align: "right",
       headerRenderer: (props: HeaderRendererProps) => (
         <IconLabelHeader {...props} platform="chartmetric" />
@@ -1025,39 +1063,48 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "TikTok",
           width: 130,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconOnlyHeader {...props} platform="tiktok" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("TikTok Followers", formatCompact((row as Influencer).profiles.tiktok_followers)),
+            metricCell(
+              "TikTok Followers",
+              formatCompact((row as Influencer).profiles.tiktok_followers),
+            ),
         },
         {
           accessor: "profiles.youtube_followers",
           label: "YouTube",
           width: 130,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconOnlyHeader {...props} platform="youtube" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("YouTube Followers", formatCompact((row as Influencer).profiles.youtube_followers)),
+            metricCell(
+              "YouTube Followers",
+              formatCompact((row as Influencer).profiles.youtube_followers),
+            ),
         },
         {
           accessor: "profiles.instagram_followers",
           label: "Instagram",
           width: 130,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconOnlyHeader {...props} platform="instagram" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("Instagram Followers", formatCompact((row as Influencer).profiles.instagram_followers)),
+            metricCell(
+              "Instagram Followers",
+              formatCompact((row as Influencer).profiles.instagram_followers),
+            ),
         },
       ],
     },
@@ -1082,7 +1129,11 @@ function buildHeaders(): ReactHeaderObject[] {
           width: 300,
           type: "string",
           cellRenderer: ({ row, theme }: CellRendererProps) => (
-            <FeaturedEntityCell entity={(row as Influencer).tracksFeatured} theme={theme} kind="Tracks Featured" />
+            <FeaturedEntityCell
+              entity={(row as Influencer).tracksFeatured}
+              theme={theme}
+              kind="Tracks Featured"
+            />
           ),
         },
         {
@@ -1091,7 +1142,12 @@ function buildHeaders(): ReactHeaderObject[] {
           width: 200,
           type: "string",
           cellRenderer: ({ row, theme }: CellRendererProps) => (
-            <FeaturedEntityCell entity={(row as Influencer).artistsFeatured} theme={theme} round kind="Artists Featured" />
+            <FeaturedEntityCell
+              entity={(row as Influencer).artistsFeatured}
+              theme={theme}
+              round
+              kind="Artists Featured"
+            />
           ),
         },
       ],
@@ -1108,7 +1164,11 @@ function buildHeaders(): ReactHeaderObject[] {
           width: 300,
           type: "string",
           cellRenderer: ({ row, theme }: CellRendererProps) => (
-            <BreakdownCell item={(row as Influencer).audienceLocation} theme={theme} title="Audience Location" />
+            <BreakdownCell
+              item={(row as Influencer).audienceLocation}
+              theme={theme}
+              title="Audience Location"
+            />
           ),
         },
         {
@@ -1117,7 +1177,11 @@ function buildHeaders(): ReactHeaderObject[] {
           width: 300,
           type: "string",
           cellRenderer: ({ row, theme }: CellRendererProps) => (
-            <BreakdownCell item={(row as Influencer).audienceLanguage} theme={theme} title="Audience Language" />
+            <BreakdownCell
+              item={(row as Influencer).audienceLanguage}
+              theme={theme}
+              title="Audience Language"
+            />
           ),
         },
         {
@@ -1143,65 +1207,80 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Video Count",
           width: 150,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="tiktok" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("TikTok Video Count", formatCompact((row as Influencer).profiles.tiktok_posts_count)),
+            metricCell(
+              "TikTok Video Count",
+              formatCompact((row as Influencer).profiles.tiktok_posts_count),
+            ),
         },
         {
           accessor: "audienceStats.tiktok_engagement_rate",
           label: "Engagement Rate (%)",
           width: 240,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="tiktok" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("TikTok Engagement Rate", formatRate((row as Influencer).audienceStats.tiktok_engagement_rate)),
+            metricCell(
+              "TikTok Engagement Rate",
+              formatRate((row as Influencer).audienceStats.tiktok_engagement_rate),
+            ),
         },
         {
           accessor: "audienceStats.tiktok_avg_views",
           label: "Views (Average)",
           width: 200,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="tiktok" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("TikTok Views (Average)", formatCompact((row as Influencer).audienceStats.tiktok_avg_views)),
+            metricCell(
+              "TikTok Views (Average)",
+              formatCompact((row as Influencer).audienceStats.tiktok_avg_views),
+            ),
         },
         {
           accessor: "audienceStats.tiktok_avg_likes",
           label: "Likes (Average)",
           width: 200,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="tiktok" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("TikTok Likes (Average)", formatCompact((row as Influencer).audienceStats.tiktok_avg_likes)),
+            metricCell(
+              "TikTok Likes (Average)",
+              formatCompact((row as Influencer).audienceStats.tiktok_avg_likes),
+            ),
         },
         {
           accessor: "audienceStats.tiktok_avg_comments",
           label: "Comments (Average)",
           width: 220,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="tiktok" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("TikTok Comments (Average)", formatCompact((row as Influencer).audienceStats.tiktok_avg_comments)),
+            metricCell(
+              "TikTok Comments (Average)",
+              formatCompact((row as Influencer).audienceStats.tiktok_avg_comments),
+            ),
         },
       ],
     },
@@ -1219,65 +1298,80 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Post Count",
           width: 150,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="instagram" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("Instagram Post Count", formatCompact((row as Influencer).profiles.instagram_posts_count)),
+            metricCell(
+              "Instagram Post Count",
+              formatCompact((row as Influencer).profiles.instagram_posts_count),
+            ),
         },
         {
           accessor: "audienceStats.instagram_engagement_rate",
           label: "Engagement Rate (%)",
           width: 260,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="instagram" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("Instagram Engagement Rate", formatRate((row as Influencer).audienceStats.instagram_engagement_rate)),
+            metricCell(
+              "Instagram Engagement Rate",
+              formatRate((row as Influencer).audienceStats.instagram_engagement_rate),
+            ),
         },
         {
           accessor: "audienceStats.instagram_avg_reels_plays",
           label: "Reels Plays (Average)",
           width: 220,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="instagram" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("Instagram Reels Plays", formatCompact((row as Influencer).audienceStats.instagram_avg_reels_plays)),
+            metricCell(
+              "Instagram Reels Plays",
+              formatCompact((row as Influencer).audienceStats.instagram_avg_reels_plays),
+            ),
         },
         {
           accessor: "audienceStats.instagram_avg_likes",
           label: "Likes (Average)",
           width: 180,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="instagram" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("Instagram Likes (Average)", formatCompact((row as Influencer).audienceStats.instagram_avg_likes)),
+            metricCell(
+              "Instagram Likes (Average)",
+              formatCompact((row as Influencer).audienceStats.instagram_avg_likes),
+            ),
         },
         {
           accessor: "audienceStats.instagram_avg_comments",
           label: "Comments (Average)",
           width: 220,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="instagram" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("Instagram Comments (Average)", formatCompact((row as Influencer).audienceStats.instagram_avg_comments)),
+            metricCell(
+              "Instagram Comments (Average)",
+              formatCompact((row as Influencer).audienceStats.instagram_avg_comments),
+            ),
         },
       ],
     },
@@ -1295,65 +1389,80 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Video Count",
           width: 150,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="youtube" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("YouTube Video Count", formatCompact((row as Influencer).profiles.youtube_posts_count)),
+            metricCell(
+              "YouTube Video Count",
+              formatCompact((row as Influencer).profiles.youtube_posts_count),
+            ),
         },
         {
           accessor: "audienceStats.youtube_engagement_rate",
           label: "Engagement Rate (%)",
           width: 240,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="youtube" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("YouTube Engagement Rate", formatRate((row as Influencer).audienceStats.youtube_engagement_rate)),
+            metricCell(
+              "YouTube Engagement Rate",
+              formatRate((row as Influencer).audienceStats.youtube_engagement_rate),
+            ),
         },
         {
           accessor: "audienceStats.youtube_avg_views",
           label: "Views (Average)",
           width: 200,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="youtube" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("YouTube Views (Average)", formatCompact((row as Influencer).audienceStats.youtube_avg_views)),
+            metricCell(
+              "YouTube Views (Average)",
+              formatCompact((row as Influencer).audienceStats.youtube_avg_views),
+            ),
         },
         {
           accessor: "audienceStats.youtube_avg_likes",
           label: "Likes (Average)",
           width: 200,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="youtube" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("YouTube Likes (Average)", formatCompact((row as Influencer).audienceStats.youtube_avg_likes)),
+            metricCell(
+              "YouTube Likes (Average)",
+              formatCompact((row as Influencer).audienceStats.youtube_avg_likes),
+            ),
         },
         {
           accessor: "audienceStats.youtube_avg_comments",
           label: "Comments (Average)",
           width: 220,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="youtube" />
           ),
           cellRenderer: ({ row }: CellRendererProps) =>
-            metricCell("YouTube Comments (Average)", formatCompact((row as Influencer).audienceStats.youtube_avg_comments)),
+            metricCell(
+              "YouTube Comments (Average)",
+              formatCompact((row as Influencer).audienceStats.youtube_avg_comments),
+            ),
         },
       ],
     },
@@ -1411,8 +1520,7 @@ function UnstableReproToolbar({
   renderCount: number;
 }) {
   const anyOn = flags.unstableColumns || flags.unstableRows || flags.forceParentRerenders;
-  const toggle = (key: keyof UnstableReproFlags) =>
-    onChange({ ...flags, [key]: !flags[key] });
+  const toggle = (key: keyof UnstableReproFlags) => onChange({ ...flags, [key]: !flags[key] });
 
   return (
     <div
@@ -1429,9 +1537,7 @@ function UnstableReproToolbar({
         flexShrink: 0,
       }}
     >
-      <span style={{ fontWeight: 700, color: anyOn ? "#9a3412" : "#0f172a" }}>
-        Client repro
-      </span>
+      <span style={{ fontWeight: 700, color: anyOn ? "#9a3412" : "#0f172a" }}>Client repro</span>
       <label style={{ display: "inline-flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
         <input
           type="checkbox"
@@ -1484,8 +1590,8 @@ function UnstableReproToolbar({
  * "columns defined inline / rebuilt from config every render" anti-pattern.
  */
 function rebuildHeadersPreservingWidths(
-  widthSource: readonly ReactHeaderObject[],
-): ReactHeaderObject[] {
+  widthSource: readonly ReactColumnDef[],
+): ReactColumnDef[] {
   const next = buildHeaders();
   return mergeHeaderWidths(next, widthSource);
 }
@@ -1501,7 +1607,7 @@ function cloneRowsUnstable(rows: readonly InfluencerRow[]): InfluencerRow[] {
  * - React portals on every header + body cell
  * - Controlled headers via onColumnWidthChange
  * - autoExpandColumns
- * - editColumns + column reordering/resizing
+ * - enableColumnEditor + column reordering/resizing
  * - footerPosition top (49px)
  * - Infinite scroll: initial 26 rows, fetch +26 near bottom (onLoadMore)
  * - Skeleton placeholder rows at the bottom while the next page loads
@@ -1511,7 +1617,7 @@ function cloneRowsUnstable(rows: readonly InfluencerRow[]): InfluencerRow[] {
 const InfluencersDemo = ({ height, theme }: { height?: string | number | null; theme?: Theme }) => {
   const [rows, setRows] = useState<InfluencerRow[]>(() => generateInfluencerData(0, INITIAL_BATCH));
   const [loading, setLoading] = useState(false);
-  const [headers, setHeaders] = useState<ReactHeaderObject[]>(() => buildHeaders());
+  const [headers, setHeaders] = useState<ReactColumnDef[]>(() => buildHeaders());
   const [repro, setRepro] = useState<UnstableReproFlags>(DEFAULT_REPRO_FLAGS);
   const [, setParentTick] = useState(0);
   const renderCountRef = useRef(0);
@@ -1530,7 +1636,7 @@ const InfluencersDemo = ({ height, theme }: { height?: string | number | null; t
     return () => window.clearInterval(id);
   }, [repro.forceParentRerenders]);
 
-  const handleColumnWidthChange = useCallback((next: ReactHeaderObject[]) => {
+  const handleColumnWidthChange = useCallback((next: ReactColumnDef[]) => {
     setHeaders((prev) => mergeHeaderWidths(prev, next));
   }, []);
 
@@ -1568,9 +1674,7 @@ const InfluencersDemo = ({ height, theme }: { height?: string | number | null; t
   );
 
   // --- Client-style unstable props (only when toggles are on) ---
-  const tableHeaders = repro.unstableColumns
-    ? rebuildHeadersPreservingWidths(headers)
-    : headers;
+  const tableHeaders = repro.unstableColumns ? rebuildHeadersPreservingWidths(headers) : headers;
   const tableRows = repro.unstableRows ? cloneRowsUnstable(rows) : rows;
   // Inline object/fn props: new identity every render (always), amplified by forceParentRerenders.
   const columnEditorConfig = {
@@ -1589,7 +1693,7 @@ const InfluencersDemo = ({ height, theme }: { height?: string | number | null; t
       />
       <div style={{ flex: 1, minHeight: 0 }}>
         <SimpleTable
-          defaultHeaders={tableHeaders}
+          columns={tableHeaders}
           rows={tableRows}
           getRowId={(p) => String((p.row as InfluencerRow | undefined)?.id)}
           height="100%"
@@ -1598,7 +1702,7 @@ const InfluencersDemo = ({ height, theme }: { height?: string | number | null; t
           columnResizing
           columnReordering
           autoExpandColumns
-          editColumns
+          enableColumnEditor
           columnEditorConfig={columnEditorConfig}
           onLoadMore={handleLoadMore}
           infiniteScrollThreshold={200}

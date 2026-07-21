@@ -279,11 +279,11 @@ export default function ReactTableInfiniteScrollPage() {
 
               <CodeBlock
                 className="mb-6"
-                code={`import { SimpleTable, HeaderObject } from "@simple-table/react";
+                code={`import { SimpleTable, ColumnDef } from "@simple-table/react";
 import { useState, useRef, useCallback } from "react";
 import "@simple-table/react/styles.css";
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", type: "string" },
   { accessor: "email", label: "Email", width: "1fr", type: "string" },
@@ -323,7 +323,7 @@ export default function OrdersTable() {
   return (
     <div>
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         rows={rows}
         height="600px"            // scroll container + virtualization
         onLoadMore={handleLoadMore}
@@ -393,7 +393,7 @@ export default function OrdersTable() {
                 className="mb-6"
                 code={`// Page-level scroll (most common in real apps)
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={rows}
   scrollParent="window"
   onLoadMore={handleLoadMore}
@@ -401,7 +401,7 @@ export default function OrdersTable() {
 
 // Or a custom overflow container (e.g. a side panel)
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={rows}
   scrollParent={() => containerRef.current}
   onLoadMore={handleLoadMore}
@@ -470,7 +470,7 @@ export default function OrdersTable() {
 
               <CodeBlock
                 className="mb-6"
-                code={`import { SimpleTable, HeaderObject } from "@simple-table/react";
+                code={`import { SimpleTable, ColumnDef } from "@simple-table/react";
 import { useState, useEffect } from "react";
 import "@simple-table/react/styles.css";
 
@@ -500,10 +500,10 @@ export default function ServerPaginatedTable() {
 
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={rows}
       height="600px"
-      shouldPaginate
+      enablePagination
       serverSidePagination          // don't slice rows internally
       rowsPerPage={PAGE_SIZE}
       totalRowCount={total}         // lets the footer compute page count

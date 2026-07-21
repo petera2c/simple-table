@@ -1,14 +1,14 @@
-import type { PivotConfig, ReactHeaderObject, Row } from "@simple-table/react";
+import type { PivotConfig, ReactColumnDef, Row } from "@simple-table/react";
 
 export type { PivotConfig };
 
-export const analyticsHeaders: ReactHeaderObject[] = [
+export const analyticsHeaders: ReactColumnDef[] = [
   {
     accessor: "region",
     label: "Region",
     width: 110,
     type: "string",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     tooltip: "Geographic sales region",
   },
@@ -17,7 +17,7 @@ export const analyticsHeaders: ReactHeaderObject[] = [
     label: "Country",
     width: 100,
     type: "string",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     tooltip: "Country within the region",
   },
@@ -26,7 +26,7 @@ export const analyticsHeaders: ReactHeaderObject[] = [
     label: "Category",
     width: 110,
     type: "string",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     tooltip: "Product category",
   },
@@ -35,7 +35,7 @@ export const analyticsHeaders: ReactHeaderObject[] = [
     label: "Product",
     width: 120,
     type: "string",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     tooltip: "SKU / product name",
   },
@@ -44,7 +44,7 @@ export const analyticsHeaders: ReactHeaderObject[] = [
     label: "Channel",
     width: 100,
     type: "string",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     tooltip: "Go-to-market channel",
   },
@@ -53,7 +53,7 @@ export const analyticsHeaders: ReactHeaderObject[] = [
     label: "Year",
     width: 80,
     type: "number",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     tooltip: "Fiscal year",
   },
@@ -62,7 +62,7 @@ export const analyticsHeaders: ReactHeaderObject[] = [
     label: "Quarter",
     width: 80,
     type: "string",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     tooltip: "Fiscal quarter",
   },
@@ -72,7 +72,7 @@ export const analyticsHeaders: ReactHeaderObject[] = [
     width: 100,
     type: "number",
     align: "right",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     tooltip: "Gross sales revenue",
     valueFormatter: ({ value }: { value: unknown }) =>
@@ -84,7 +84,7 @@ export const analyticsHeaders: ReactHeaderObject[] = [
     width: 80,
     type: "number",
     align: "right",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     tooltip: "Units sold",
   },
@@ -94,7 +94,7 @@ export const analyticsHeaders: ReactHeaderObject[] = [
     width: 100,
     type: "number",
     align: "right",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     tooltip: "Cost of goods sold",
     valueFormatter: ({ value }: { value: unknown }) =>

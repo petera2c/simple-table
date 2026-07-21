@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject, Theme } from "@simple-table/svelte";
+import type { SvelteColumnDef, Theme } from "@simple-table/svelte";
 
 
 export const AVAILABLE_THEMES: { value: Theme; label: string }[] = [
@@ -10,7 +10,7 @@ export const AVAILABLE_THEMES: { value: Theme; label: string }[] = [
   { value: "neutral", label: "Neutral" },
 ];
 
-export const themesHeaders: SvelteHeaderObject[] = [
+export const themesHeaders: SvelteColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 100, width: "1fr", type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },

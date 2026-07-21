@@ -11,6 +11,29 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_0_2: ChangelogEntry = {
+  version: "4.0.2",
+  date: "2026-07-21",
+  title: "Clearer public API names",
+  titleLink: "/migrations/v4-0-2",
+  description:
+    "Preferred names for columns, feature flags, and column options — with full backward-compatible aliases.",
+  changes: [
+    {
+      type: "improvement",
+      description:
+        "Renamed consumer-facing APIs for clarity (e.g. columns, ColumnDef, enableColumnEditor, enablePagination, onTableReady). Legacy names remain supported as aliases — see the migration guide for the full list.",
+      link: "/migrations/v4-0-2",
+    },
+    {
+      type: "improvement",
+      description:
+        "Exported TableRow, Pinned, and AutoSizeMode; aligned TableAPI row-id typing; removed leaked internal types from package barrels.",
+      link: "/docs/api-reference",
+    },
+  ],
+};
+
 export const v4_0_1: ChangelogEntry = {
   version: "4.0.1",
   date: "2026-07-20",
@@ -831,8 +854,8 @@ export const v2_6_2: ChangelogEntry = {
     },
     {
       type: "feature",
-      description: "HeaderObject.isEssential",
-      link: "/docs/api-reference#header-object",
+      description: "ColumnDef.essential",
+      link: "/docs/api-reference#column-def",
     },
     {
       type: "feature",
@@ -853,7 +876,7 @@ export const v2_6_2: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "rowRenderer: panelSection, isEssential, canToggleVisibility, allowColumnPinning, pinControl",
+        "rowRenderer: panelSection, essential, canToggleVisibility, allowColumnPinning, pinControl",
       link: "/docs/api-reference#column-editor-row-renderer-props",
     },
     {
@@ -902,7 +925,7 @@ export const v2_5_6: ChangelogEntry = {
     },
     {
       type: "improvement",
-      description: "defaultHeaders is never mutated; table clones internally",
+      description: "columns is never mutated; table clones internally",
       link: "/docs/column-visibility",
     },
   ],
@@ -1054,8 +1077,8 @@ export const v2_4_3: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "Added quickFilterable and quickFilterGetter properties to HeaderObject for customizing column behavior in quick filter",
-      link: "/docs/api-reference#header-object",
+        "Added quickFilterable and quickFilterGetter properties to ColumnDef for customizing column behavior in quick filter",
+      link: "/docs/api-reference#column-def",
     },
     {
       type: "feature",
@@ -1242,7 +1265,7 @@ export const v2_2_7: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "Added sortingOrder property to HeaderObject for customizing the sort cycle per column. Define custom sort sequences like ['desc', 'asc', null] for numbers/dates or ['asc', 'desc', null] for text. This allows different columns to have different sort behaviors based on their data type.",
+        "Added sortingOrder property to ColumnDef for customizing the sort cycle per column. Define custom sort sequences like ['desc', 'asc', null] for numbers/dates or ['asc', 'desc', null] for text. This allows different columns to have different sort behaviors based on their data type.",
       link: "/docs/column-sorting",
     },
     {
@@ -1276,7 +1299,7 @@ export const v2_2_6: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "Added nested tables feature that allows each level of row grouping to have its own independent grid structure with completely different columns. Configure via the nestedTable property on expandable HeaderObjects to define custom column layouts for child levels.",
+        "Added nested tables feature that allows each level of row grouping to have its own independent grid structure with completely different columns. Configure via the nestedTable property on expandable ColumnDefs to define custom column layouts for child levels.",
       link: "/docs/nested-tables",
     },
     {
@@ -1940,7 +1963,7 @@ export const v1_8_4: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "Added comparator attribute to HeaderObject for custom sorting based on row-level metadata or complex logic",
+        "Added comparator attribute to ColumnDef for custom sorting based on row-level metadata or complex logic",
       link: "/docs/column-sorting",
     },
     {
@@ -2038,12 +2061,12 @@ export const v1_7_9: ChangelogEntry = {
   date: "2025-11-22",
   title: "Value Formatter Support",
   description:
-    "Added valueFormatter attribute to HeaderObject for simple cell value formatting. This provides a more performant and streamlined way to format cell values for display (currency, dates, percentages) without using cellRenderer.",
+    "Added valueFormatter attribute to ColumnDef for simple cell value formatting. This provides a more performant and streamlined way to format cell values for display (currency, dates, percentages) without using cellRenderer.",
   changes: [
     {
       type: "feature",
       description:
-        "Added valueFormatter attribute to HeaderObject for formatting cell values without React components",
+        "Added valueFormatter attribute to ColumnDef for formatting cell values without React components",
       link: "/docs/value-formatter",
     },
     {
@@ -2310,6 +2333,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_0_2,
   v4_0_1,
   v4_0_0,
   v3_9_9,

@@ -8,7 +8,7 @@ export function renderColumnSelectionDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: columnSelectionConfig.headers,
+    columns: columnSelectionConfig.headers,
     rows: columnSelectionConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

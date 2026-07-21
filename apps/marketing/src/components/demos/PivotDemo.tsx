@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { PivotConfig, ReactHeaderObject, Row, Theme } from "@simple-table/react";
+import type { PivotConfig, ReactColumnDef, Row, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "region", label: "Region", width: 110, type: "string" },
   { accessor: "country", label: "Country", width: 100, type: "string" },
   { accessor: "category", label: "Category", width: 110, type: "string" },
@@ -207,7 +207,7 @@ const PivotDemo = ({
         </code>
       </p>
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         rows={rows}
         columnResizing
         expandAll={nestedRows}

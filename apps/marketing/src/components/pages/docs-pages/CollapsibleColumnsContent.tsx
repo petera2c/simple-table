@@ -19,7 +19,7 @@ const COLLAPSIBLE_COLUMNS_PROPS: PropInfo[] = [
       "Enables collapsible functionality for a column group. When true, users can click the collapse arrow in the header to hide/show child columns.",
     type: "boolean",
     example: `<SimpleTable
-  defaultHeaders={[
+  columns={[
     {
       accessor: "groupName",
       label: "Group Header",

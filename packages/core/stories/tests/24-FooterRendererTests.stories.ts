@@ -5,7 +5,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -27,9 +27,9 @@ export default meta;
 const createData = (n: number) =>
   Array.from({ length: n }, (_, i) => ({ id: i + 1, name: `Item ${i + 1}` }));
 
-const headers: HeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80, type: "number", isSortable: true },
-  { accessor: "name", label: "Name", width: 150, type: "string", isSortable: true },
+const headers: ColumnDef[] = [
+  { accessor: "id", label: "ID", width: 80, type: "number", sortable: true },
+  { accessor: "name", label: "Name", width: 150, type: "string", sortable: true },
 ];
 
 export const DefaultFooterWithPagination = {
@@ -37,7 +37,7 @@ export const DefaultFooterWithPagination = {
     const { wrapper } = renderVanillaTable(headers, createData(25), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 7,
     });
     return wrapper;
@@ -59,7 +59,7 @@ export const FooterShowsCorrectRange = {
     const { wrapper } = renderVanillaTable(headers, createData(15), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 5,
     });
     return wrapper;
@@ -76,7 +76,7 @@ export const FooterPositionTop = {
     const { wrapper } = renderVanillaTable(headers, createData(25), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 10,
       footerPosition: "top",
     });
@@ -107,7 +107,7 @@ export const HideFooterHidesFooter = {
     const { wrapper } = renderVanillaTable(headers, createData(10), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 5,
       hideFooter: true,
     });
@@ -125,7 +125,7 @@ export const NoPaginationNoFooter = {
     const { wrapper } = renderVanillaTable(headers, createData(10), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
-      shouldPaginate: false,
+      enablePagination: false,
     });
     return wrapper;
   },
@@ -145,7 +145,7 @@ export const FooterShowsCorrectPageCount = {
     const { wrapper } = renderVanillaTable(headers, createData(25), {
       getRowId: (p) => String(p.row?.id),
       height: "350px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 10,
     });
     return wrapper;
@@ -164,7 +164,7 @@ export const FooterPrevDisabledOnFirstPage = {
     const { wrapper } = renderVanillaTable(headers, createData(20), {
       getRowId: (p) => String(p.row?.id),
       height: "350px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 10,
     });
     return wrapper;

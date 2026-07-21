@@ -1,7 +1,7 @@
 import { NgIf } from "@angular/common";
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, CellClickProps, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, CellClickProps, Theme } from "@simple-table/angular";
 import { cellClickingData, cellClickingHeaders, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
 import type { ProjectTask } from "./cell-clicking.demo-data";
 import { CellClickDetailsCellComponent } from "./cell-click-details-cell.component";
@@ -34,7 +34,7 @@ import "@simple-table/angular/styles.css";
 
       <simple-table
         [columnResizing]="true"
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [height]="height"
         [onCellClick]="handleCellClick"
         [rows]="rows"
@@ -55,7 +55,7 @@ export class CellClickingDemoComponent {
     return this.theme === "modern-dark" || this.theme === "dark";
   }
 
-  readonly headers: AngularHeaderObject[] = cellClickingHeaders.map((h) => {
+  readonly headers: AngularColumnDef[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") {
       return { ...h, cellRenderer: CellClickPriorityCellComponent };
     }

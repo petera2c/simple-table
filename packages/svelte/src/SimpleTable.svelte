@@ -6,7 +6,7 @@
     rowsShallowUnchanged,
   } from "simple-table-core";
   import type { SimpleTableConfig, TableAPI } from "simple-table-core";
-  import { buildVanillaConfig } from "./buildVanillaConfig";
+  import { buildVanillaConfig, resolveSvelteColumns } from "./buildVanillaConfig";
   import { MountRegistry } from "./MountRegistry";
   import type { SimpleTableSvelteProps, TableInstance } from "./types";
 
@@ -17,7 +17,8 @@
   type $$Props = SimpleTableSvelteProps;
 
   export let rows: $$Props["rows"];
-  export let defaultHeaders: $$Props["defaultHeaders"];
+  export let defaultHeaders: $$Props["defaultHeaders"] = undefined;
+  export let columns: $$Props["columns"] = undefined;
 
   // All remaining optional props — spread via $$restProps
   let container: HTMLDivElement;
@@ -25,17 +26,19 @@
   const registry = new MountRegistry();
 
   /** Last headers/rows whose structure/content was applied via update. */
-  let syncedDefaultHeaders: $$Props["defaultHeaders"] | undefined = undefined;
+  let syncedDefaultHeaders: ReadonlyArray<
+    NonNullable<$$Props["columns"]>[number]
+  > | undefined = undefined;
   let syncedRows: $$Props["rows"] | undefined = undefined;
 
   onMount(() => {
-    const props = { rows, defaultHeaders, ...$$restProps } as SimpleTableSvelteProps;
+    const props = { rows, defaultHeaders, columns, ...$$restProps } as SimpleTableSvelteProps;
     instance = new SimpleTableVanilla(
       container,
       buildVanillaConfig(props, registry),
     ) as unknown as TableInstance;
     instance.mount();
-    syncedDefaultHeaders = defaultHeaders;
+    syncedDefaultHeaders = resolveSvelteColumns(props);
     syncedRows = rows;
   });
 
@@ -47,14 +50,15 @@
     registry.clear();
   });
 
-  // Reactive update: skip no-op defaultHeaders/rows when structure/content is unchanged.
+  // Reactive update: skip no-op columns/rows when structure/content is unchanged.
   $: if (instance) {
-    const props = { rows, defaultHeaders, ...$$restProps } as SimpleTableSvelteProps;
+    const props = { rows, defaultHeaders, columns, ...$$restProps } as SimpleTableSvelteProps;
     const fullConfig = buildVanillaConfig(props, registry);
     const patch: Partial<SimpleTableConfig> = { ...fullConfig };
+    const resolvedColumns = resolveSvelteColumns(props);
 
-    const headersUnchanged = headersStructurallyEqual(syncedDefaultHeaders, defaultHeaders);
-    syncedDefaultHeaders = defaultHeaders;
+    const headersUnchanged = headersStructurallyEqual(syncedDefaultHeaders, resolvedColumns);
+    syncedDefaultHeaders = resolvedColumns;
     if (headersUnchanged) {
       delete patch.defaultHeaders;
     }

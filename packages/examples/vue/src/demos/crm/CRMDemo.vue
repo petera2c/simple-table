@@ -2,7 +2,7 @@
 import { ref, computed, h, defineComponent } from "vue";
 import type { Component } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { VueHeaderObject, CellChangeProps, CellRendererProps, FooterRendererProps } from "@simple-table/vue";
+import type { VueColumnDef, CellChangeProps, CellRendererProps, FooterRendererProps } from "@simple-table/vue";
 import {
   crmData,
   CRM_THEME_COLORS_LIGHT,
@@ -347,7 +347,7 @@ const CrmFooter = defineComponent({
   },
 });
 
-const headers = computed((): VueHeaderObject[] => {
+const headers = computed((): VueColumnDef[] => {
   const colors = isDark.value ? CRM_THEME_COLORS_DARK : CRM_THEME_COLORS_LIGHT;
 
   return [
@@ -356,8 +356,8 @@ const headers = computed((): VueHeaderObject[] => {
       label: "CONTACT",
       width: "2fr",
       minWidth: 290,
-      isSortable: true,
-      isEditable: true,
+      sortable: true,
+      editable: true,
       type: "string",
       cellRenderer: makeContactCell(colors),
     },
@@ -366,8 +366,8 @@ const headers = computed((): VueHeaderObject[] => {
       label: "SIGNAL",
       width: "3fr",
       minWidth: 340,
-      isSortable: true,
-      isEditable: true,
+      sortable: true,
+      editable: true,
       type: "string",
       cellRenderer: makeSignalCell(colors),
     },
@@ -376,7 +376,7 @@ const headers = computed((): VueHeaderObject[] => {
       label: "AI SCORE",
       width: "1fr",
       minWidth: 100,
-      isSortable: true,
+      sortable: true,
       align: "center",
       type: "number",
       cellRenderer: makeAiScoreCell(),
@@ -386,7 +386,7 @@ const headers = computed((): VueHeaderObject[] => {
       label: "EMAIL",
       width: "1.5fr",
       minWidth: 210,
-      isSortable: true,
+      sortable: true,
       align: "center",
       type: "enum",
       enumOptions: [
@@ -402,7 +402,7 @@ const headers = computed((): VueHeaderObject[] => {
       label: "IMPORT",
       width: "1fr",
       minWidth: 100,
-      isSortable: true,
+      sortable: true,
       align: "center",
       type: "string",
       cellRenderer: makeTimeAgoCell(colors),
@@ -412,7 +412,7 @@ const headers = computed((): VueHeaderObject[] => {
       label: "LIST",
       width: "1.2fr",
       minWidth: 160,
-      isSortable: true,
+      sortable: true,
       align: "center",
       type: "enum",
       enumOptions: [
@@ -460,14 +460,14 @@ const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
 <template>
   <div :class="`custom-theme-container theme-${isDark ? 'custom-dark' : 'custom-light'}`">
     <SimpleTable
-      :default-headers="headers"
+      :columns="headers"
       :rows="data"
       :height="height"
       theme="custom"
       :column-reordering="true"
       :column-resizing="true"
       :enable-row-selection="true"
-      :should-paginate="true"
+      :enable-pagination="true"
       :rows-per-page="rowsPerPage"
       :custom-theme="{ headerHeight: 48, rowHeight: 92 }"
       :footer-renderer="CrmFooter"

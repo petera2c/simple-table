@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject } from "@simple-table/react";
+import type { Theme, ReactColumnDef } from "@simple-table/react";
 import { animationsConfig } from "./animations.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -13,16 +13,16 @@ const AnimationsDemo = ({
 }) => {
   const [headers, setHeaders] = useState(() => [...animationsConfig.headers]);
 
-  const handleColumnOrderChange = (newHeaders: ReactHeaderObject[]) => {
+  const handleColumnOrderChange = (newHeaders: ReactColumnDef[]) => {
     setHeaders(newHeaders);
   };
 
   return (
     <SimpleTable
       columnReordering={animationsConfig.tableProps.columnReordering}
-      defaultHeaders={headers}
-      editColumns={animationsConfig.tableProps.editColumns}
-      editColumnsInitOpen={animationsConfig.tableProps.editColumnsInitOpen}
+      columns={headers}
+      enableColumnEditor={animationsConfig.tableProps.enableColumnEditor}
+      enableColumnEditorInitOpen={animationsConfig.tableProps.enableColumnEditorInitOpen}
       rows={animationsConfig.rows}
       height={height}
       theme={theme}

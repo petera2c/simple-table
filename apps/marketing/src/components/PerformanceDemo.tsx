@@ -230,8 +230,8 @@ export default function PerformanceDemo({
           ) : (
             <SimpleTable
               columnResizing
-              defaultHeaders={headers}
-              editColumns
+              columns={headers}
+              enableColumnEditor
               height={height}
               onCellEdit={handleCellEdit}
               rows={data}

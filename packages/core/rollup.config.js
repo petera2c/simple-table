@@ -68,10 +68,16 @@ export default {
       exclude: ["node_modules/**"],
       rollupCommonJSResolveHack: false,
       clean: true,
+      // rpt2 forces importHelpers:true; tslib is a devDependency so typecheck
+      // works. Emit still inlines helpers — consumers do not need tslib.
+      check: true,
+      tsconfig: "tsconfig.build.json",
+      useTsconfigDeclarationDir: true,
       tsconfigOverride: {
         compilerOptions: {
           declaration: true,
           declarationDir: "dist",
+          rootDir: "src",
         },
       },
     }),

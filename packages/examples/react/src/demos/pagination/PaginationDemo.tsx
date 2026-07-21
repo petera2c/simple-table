@@ -33,13 +33,13 @@ const PaginationDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={paginationConfig.headers}
+      columns={paginationConfig.headers}
       height={height ?? "auto"}
       isLoading={isLoading}
       onNextPage={onNextPage}
       rows={rows}
       rowsPerPage={PAGINATION_ROWS_PER_PAGE}
-      shouldPaginate
+      enablePagination
       theme={theme}
     />
   );

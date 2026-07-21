@@ -1,6 +1,6 @@
 import { createSignal, createEffect, onMount, onCleanup } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { Theme, TableAPI, Row, CellValue, SolidHeaderObject } from "@simple-table/solid";
+import type { Theme, TableAPI, Row, CellValue, SolidColumnDef } from "@simple-table/solid";
 import { infrastructureData, getInfraMetricColorStyles, getInfraStatusColors } from "./infrastructure.demo-data";
 import type { InfrastructureServer } from "./infrastructure.demo-data";
 import "@simple-table/solid/styles.css";
@@ -116,32 +116,32 @@ function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined, ro
   };
 }
 
-function getHeaders(currentTheme?: Theme): SolidHeaderObject[] {
+function getHeaders(currentTheme?: Theme): SolidColumnDef[] {
   const t = currentTheme || "light";
   return [
-    { accessor: "serverId", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Server ID", minWidth: 180, pinned: "left", type: "string", width: "1.2fr", cellRenderer: ({ row }) => <span style={{ "font-family": "monospace", "font-size": "0.85rem" }}>{(row as unknown as InfrastructureServer).serverId}</span> },
-    { accessor: "serverName", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Name", minWidth: 200, type: "string", width: "1.5fr" },
+    { accessor: "serverId", align: "left", filterable: true, editable: false, sortable: true, label: "Server ID", minWidth: 180, pinned: "left", type: "string", width: "1.2fr", cellRenderer: ({ row }) => <span style={{ "font-family": "monospace", "font-size": "0.85rem" }}>{(row as unknown as InfrastructureServer).serverId}</span> },
+    { accessor: "serverName", align: "left", filterable: true, editable: false, sortable: true, label: "Name", minWidth: 200, type: "string", width: "1.5fr" },
     {
-      accessor: "performance", label: "Performance Metrics", width: 690, isSortable: false,
+      accessor: "performance", label: "Performance Metrics", width: 690, sortable: false,
       children: [
-        { accessor: "cpuHistory", label: "CPU History", width: 150, isSortable: false, filterable: false, isEditable: false, align: "center", type: "lineAreaChart", tooltip: "CPU usage over the last 30 intervals" },
+        { accessor: "cpuHistory", label: "CPU History", width: 150, sortable: false, filterable: false, editable: false, align: "center", type: "lineAreaChart", tooltip: "CPU usage over the last 30 intervals" },
         {
-          accessor: "cpuUsage", label: "CPU %", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number",
+          accessor: "cpuUsage", label: "CPU %", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number",
           cellRenderer: ({ row, theme }) => { const d = row as unknown as InfrastructureServer; const s = getInfraMetricColorStyles(d.cpuUsage, theme || t, "cpu"); return <div style={{ display: "flex", "justify-content": "end" }}><div style={{ padding: "3px 6px", "border-radius": "3px", "font-weight": "600", "font-size": "0.8rem", ...s }}>{d.cpuUsage.toFixed(1)}%</div></div>; },
         },
         {
-          accessor: "memoryUsage", label: "Memory %", width: 130, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number",
+          accessor: "memoryUsage", label: "Memory %", width: 130, sortable: true, filterable: true, editable: true, align: "right", type: "number",
           cellRenderer: ({ row, theme }) => { const d = row as unknown as InfrastructureServer; const s = getInfraMetricColorStyles(d.memoryUsage, theme || t, "memory"); return <div style={{ display: "flex", "justify-content": "end" }}><div style={{ padding: "3px 6px", "border-radius": "3px", "font-weight": "600", "font-size": "0.8rem", ...s }}>{d.memoryUsage.toFixed(1)}%</div></div>; },
         },
-        { accessor: "diskUsage", label: "Disk %", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: ({ row }) => `${(row as unknown as InfrastructureServer).diskUsage.toFixed(1)}%` },
+        { accessor: "diskUsage", label: "Disk %", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number", cellRenderer: ({ row }) => `${(row as unknown as InfrastructureServer).diskUsage.toFixed(1)}%` },
         {
-          accessor: "responseTime", label: "Response (ms)", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number",
+          accessor: "responseTime", label: "Response (ms)", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number",
           cellRenderer: ({ row, theme }) => { const d = row as unknown as InfrastructureServer; const s = getInfraMetricColorStyles(d.responseTime, theme || t, "response"); return <span style={{ "font-weight": "500", ...s }}>{d.responseTime.toFixed(1)}</span>; },
         },
       ],
     },
     {
-      accessor: "status", label: "Status", width: 130, isSortable: true, filterable: true, isEditable: false, align: "center", type: "enum",
+      accessor: "status", label: "Status", width: 130, sortable: true, filterable: true, editable: false, align: "center", type: "enum",
       enumOptions: [{ label: "Online", value: "online" }, { label: "Warning", value: "warning" }, { label: "Critical", value: "critical" }, { label: "Maintenance", value: "maintenance" }, { label: "Offline", value: "offline" }],
       valueGetter: ({ row }) => { const s = String(row.status); const m: Record<string, number> = { critical: 1, offline: 2, warning: 3, maintenance: 4, online: 5 }; return m[s] || 999; },
       cellRenderer: ({ row, theme }) => { const d = row as unknown as InfrastructureServer; const s = getInfraStatusColors(d.status, theme || t); return <div style={{ ...s, padding: "4px 8px", "border-radius": "4px", "font-size": "0.75rem" }}>{d.status.charAt(0).toUpperCase() + d.status.slice(1)}</div>; },
@@ -173,8 +173,8 @@ export default function InfrastructureDemo(props: { height?: string | number; th
       autoExpandColumns={!isMobile()}
       columnReordering
       columnResizing
-      defaultHeaders={getHeaders(props.theme)}
-      editColumns
+      columns={getHeaders(props.theme)}
+      enableColumnEditor
       height={props.height ?? "400px"}
       ref={(api) => (tableRef = api)}
       rows={data}

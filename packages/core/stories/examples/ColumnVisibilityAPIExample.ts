@@ -1,7 +1,7 @@
 /**
  * ColumnVisibilityAPI Example – vanilla port of React ColumnVisibilityAPIExample.
  */
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { renderVanillaTable, addParagraph, addControlPanel } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
@@ -13,7 +13,7 @@ const SAMPLE_DATA: Row[] = [
   { id: 5, name: "Ethan Hunt", age: 29, department: "Sales", salary: 78000, status: "Active" },
 ];
 
-const HEADERS: HeaderObject[] = [
+const HEADERS: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 60 },
   { accessor: "name", label: "Name", width: 140 },
   { accessor: "age", label: "Age", width: 80 },
@@ -23,7 +23,7 @@ const HEADERS: HeaderObject[] = [
 ];
 
 export const columnVisibilityAPIExampleDefaults = {
-  editColumns: true,
+  enableColumnEditor: true,
   columnResizing: true,
   height: "400px",
 };

@@ -97,7 +97,7 @@ export default function Page() {
       ]}
       faqs={[
         { question: "Is Naive UI a good Vue library?", answer: "Yes—TypeScript-first, well-themed, and pleasant. The question isn't quality but scope: do you need the whole suite or just the grid?" },
-        { question: "How big is the migration?", answer: "A few hours per table. Map column definitions to HeaderObjects and convert render functions to cellRenderers." },
+        { question: "How big is the migration?", answer: "A few hours per table. Map column definitions to ColumnDefs and convert render functions to cellRenderers." },
         { question: "Does Simple Table support tree data?", answer: "Yes. Expandable / nested rows with virtualization are built in." },
       ]}
       conclusionParagraphs={[

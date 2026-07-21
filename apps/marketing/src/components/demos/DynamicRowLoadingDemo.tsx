@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Row, OnRowGroupExpandProps, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Row, OnRowGroupExpandProps, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // ============================================================================
@@ -48,7 +48,7 @@ type TableRow = Region | Store | Product;
 // HEADERS CONFIGURATION
 // ============================================================================
 
-const HEADERS: ReactHeaderObject[] = [
+const HEADERS: ReactColumnDef[] = [
   {
     accessor: "name",
     label: "Name",
@@ -469,8 +469,8 @@ const DynamicRowLoadingDemo = ({
   return (
     <SimpleTable
       columnResizing
-      defaultHeaders={HEADERS}
-      editColumns
+      columns={HEADERS}
+      enableColumnEditor
       expandAll={false}
       height={height}
       onRowGroupExpand={handleRowExpand}
@@ -479,7 +479,7 @@ const DynamicRowLoadingDemo = ({
       rows={rows}
       selectableCells
       theme={theme}
-      useOddEvenRowBackground
+      oddEvenRowBackground
       loadingStateRenderer={<div style={{ paddingLeft: "16px" }}>Loading...</div>}
       errorStateRenderer={<div style={{ paddingLeft: "16px" }}>Error loading data</div>}
       emptyStateRenderer={<div style={{ paddingLeft: "16px" }}>No data found</div>}

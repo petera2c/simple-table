@@ -14,7 +14,7 @@ import Link from "next/link";
 import {
   UNION_TYPE_DEFINITIONS,
   SIMPLE_TABLE_PROPS,
-  HEADER_OBJECT_PROPS,
+  COLUMN_DEF_PROPS,
   ROW_SELECTION_CHANGE_PROPS,
   CELL_CHANGE_PROPS,
   VALUE_FORMATTER_PROPS,
@@ -66,7 +66,7 @@ const ApiReferenceContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Complete reference for all SimpleTable component props and HeaderObject configuration
+        Complete reference for all SimpleTable component props and ColumnDef configuration
         options.
       </motion.p>
 
@@ -99,9 +99,9 @@ const ApiReferenceContent = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.5 }}
-        id="header-object"
+        id="column-def"
       >
-        HeaderObject Configuration
+        ColumnDef Configuration
       </motion.h2>
 
       <motion.p
@@ -111,10 +111,10 @@ const ApiReferenceContent = () => {
         transition={{ duration: 0.5, delay: 0.6 }}
       >
         These are all the properties available when defining column headers in the{" "}
-        <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">defaultHeaders</code> array.
+        <code className="bg-gray-100 dark:bg-gray-800 px-1 rounded">columns</code> array.
       </motion.p>
 
-      <PropTable props={HEADER_OBJECT_PROPS} title="Header Object Properties" />
+      <PropTable props={COLUMN_DEF_PROPS} title="Column Def Properties" />
 
       <motion.h2
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700 mt-12"

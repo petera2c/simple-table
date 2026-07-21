@@ -13,7 +13,7 @@ import ExampleLink from "@/components/ExampleLink";
 const CHART_COLUMN_PROPS: PropInfo[] = [
   {
     key: "type-lineAreaChart",
-    name: 'HeaderObject.type = "lineAreaChart"',
+    name: 'ColumnDef.type = "lineAreaChart"',
     required: false,
     description:
       "Renders an inline line/area chart for visualizing trends over time. The cell value must be an array of numbers. Perfect for displaying time-series data like daily views, monthly sales, or historical metrics.",
@@ -30,7 +30,7 @@ const CHART_COLUMN_PROPS: PropInfo[] = [
   },
   {
     key: "type-barChart",
-    name: 'HeaderObject.type = "barChart"',
+    name: 'ColumnDef.type = "barChart"',
     required: false,
     description:
       "Renders an inline bar chart for comparing values across categories. The cell value must be an array of numbers. Ideal for quarterly data, weekly metrics, or any discrete comparison data.",
@@ -47,7 +47,7 @@ const CHART_COLUMN_PROPS: PropInfo[] = [
   },
   {
     key: "chartOptions",
-    name: "HeaderObject.chartOptions",
+    name: "ColumnDef.chartOptions",
     required: false,
     description:
       "Customize the appearance and behavior of chart columns (lineAreaChart and barChart). Configure dimensions, colors, scaling, and rendering options.",

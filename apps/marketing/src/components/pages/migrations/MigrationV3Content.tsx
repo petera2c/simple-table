@@ -111,7 +111,7 @@ export default function MigrationV3Content() {
             </p>
             <CodeBlock
               code={`import { SimpleTable } from "simple-table-core";
-import type { HeaderObject, Row, CellRendererProps } from "simple-table-core";
+import type { ColumnDef, Row, CellRendererProps } from "simple-table-core";
 import "simple-table-core/styles.css";`}
               language="tsx"
             />
@@ -123,7 +123,7 @@ import "simple-table-core/styles.css";`}
             </p>
             <CodeBlock
               code={`import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Row, CellRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, Row, CellRendererProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";`}
               language="tsx"
             />
@@ -151,12 +151,12 @@ import "@simple-table/react/styles.css";`}
                 <tr className="border-b border-gray-100 dark:border-gray-700/50">
                   <td className="py-2">
                     <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
-                      HeaderObject
+                      ColumnDef
                     </code>
                   </td>
                   <td className="py-2">
                     <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
-                      ReactHeaderObject
+                      ReactColumnDef
                     </code>
                   </td>
                 </tr>
@@ -178,11 +178,11 @@ import "@simple-table/react/styles.css";`}
           <p className="text-gray-600 dark:text-gray-400 text-sm mt-3">
             Other frameworks follow the same pattern (e.g.{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
-              VueHeaderObject
+              VueColumnDef
             </code>
             ,{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
-              AngularHeaderObject
+              AngularColumnDef
             </code>
             ). Types like{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">Row</code> and{" "}
@@ -396,10 +396,10 @@ const tableRef = useRef<TableAPI>(null);
           </h3>
           <p className="text-gray-700 dark:text-gray-300 mb-3">
             Rename{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">HeaderObject</code>{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">ColumnDef</code>{" "}
             to{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
-              ReactHeaderObject
+              ReactColumnDef
             </code>{" "}
             (or your framework's equivalent), and rename{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">TableRefType</code>{" "}
@@ -407,11 +407,11 @@ const tableRef = useRef<TableAPI>(null);
           </p>
           <CodeBlock
             code={`// v2
-const headers: HeaderObject[] = [...]
+const headers: ColumnDef[] = [...]
 const tableRef = useRef<TableRefType>(null);
 
 // v3
-const headers: ReactHeaderObject[] = [...]
+const headers: ReactColumnDef[] = [...]
 const tableRef = useRef<TableAPI>(null);`}
             language="tsx"
           />
@@ -474,10 +474,10 @@ const tableRef = useRef<TableAPI>(null);`}
           <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">v2:</p>
           <CodeBlock
             code={`import { SimpleTable } from "simple-table-core";
-import type { HeaderObject, Row } from "simple-table-core";
+import type { ColumnDef, Row } from "simple-table-core";
 import "simple-table-core/styles.css";
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "name", label: "Name", width: 200 },
   { accessor: "age", label: "Age", width: 100 },
 ];
@@ -488,7 +488,7 @@ const rows: Row[] = [
 ];
 
 export default function MyTable() {
-  return <SimpleTable defaultHeaders={headers} rows={rows} />;
+  return <SimpleTable columns={headers} rows={rows} />;
 }`}
             language="tsx"
           />
@@ -498,10 +498,10 @@ export default function MyTable() {
           <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">v3:</p>
           <CodeBlock
             code={`import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Row } from "@simple-table/react";
+import type { ReactColumnDef, Row } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "name", label: "Name", width: 200 },
   { accessor: "age", label: "Age", width: 100 },
 ];
@@ -512,7 +512,7 @@ const rows: Row[] = [
 ];
 
 export default function MyTable() {
-  return <SimpleTable defaultHeaders={headers} rows={rows} />;
+  return <SimpleTable columns={headers} rows={rows} />;
 }`}
             language="tsx"
           />
@@ -520,9 +520,9 @@ export default function MyTable() {
 
         <p className="text-gray-700 dark:text-gray-300 mt-4">
           That's it — update the import path, rename{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">HeaderObject</code> to{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">ColumnDef</code> to{" "}
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
-            ReactHeaderObject
+            ReactColumnDef
           </code>
           , <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">TableRefType</code>{" "}
           to <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">TableAPI</code>, and{" "}
@@ -603,10 +603,10 @@ export default function MyTable() {
             <span className="text-blue-600 dark:text-blue-400 mt-1">&#9744;</span>
             <span>
               Rename{" "}
-              <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">HeaderObject</code>{" "}
+              <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">ColumnDef</code>{" "}
               to{" "}
               <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
-                ReactHeaderObject
+                ReactColumnDef
               </code>
             </span>
           </li>

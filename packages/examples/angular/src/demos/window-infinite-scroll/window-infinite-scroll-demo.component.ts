@@ -1,6 +1,6 @@
 import { Component, ElementRef, Input, ViewChild } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import {
   generateWindowScrollRows,
   windowScrollHeaders,
@@ -53,7 +53,7 @@ const LOAD_DELAY_MS = 350;
       </div>
 
       <simple-table
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [rows]="rows"
         [theme]="theme"
         [getRowId]="getRowId"
@@ -81,7 +81,7 @@ export class WindowInfiniteScrollDemoComponent {
   @ViewChild("wrapper", { static: true })
   wrapperRef!: ElementRef<HTMLDivElement>;
 
-  readonly headers: AngularHeaderObject[] = windowScrollHeaders;
+  readonly headers: AngularColumnDef[] = windowScrollHeaders;
   rows: Row[] = generateWindowScrollRows(0, INITIAL_ROWS);
   loading = false;
   hasMore = true;

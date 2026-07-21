@@ -2,7 +2,7 @@
   <SimpleTable
     :column-reordering="chartsConfig.tableProps.columnReordering"
     :column-resizing="chartsConfig.tableProps.columnResizing"
-    :default-headers="chartsConfig.headers"
+    :columns="chartsConfig.headers"
     :rows="chartsConfig.rows"
     :selectable-cells="chartsConfig.tableProps.selectableCells"
     :height="height"

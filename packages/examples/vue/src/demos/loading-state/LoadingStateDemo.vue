@@ -37,7 +37,7 @@ onMounted(() => {
       </button>
     </div>
     <SimpleTable
-      :default-headers="loadingStateConfig.headers"
+      :columns="loadingStateConfig.headers"
       :rows="data"
       :is-loading="isLoading"
       :height="props.height"

@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const INITIAL_HEADERS: ReactHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 60, isSortable: true, type: "number" },
-  { accessor: "name", label: "Name", minWidth: 140, width: "1fr", isSortable: true, type: "string" },
-  { accessor: "age", label: "Age", width: 80, align: "right", isSortable: true, type: "number" },
-  { accessor: "role", label: "Role", minWidth: 140, width: "1fr", isSortable: true, type: "string" },
+const INITIAL_HEADERS: ReactColumnDef[] = [
+  { accessor: "id", label: "ID", width: 60, sortable: true, type: "number" },
+  { accessor: "name", label: "Name", minWidth: 140, width: "1fr", sortable: true, type: "string" },
+  { accessor: "age", label: "Age", width: 80, align: "right", sortable: true, type: "number" },
+  { accessor: "role", label: "Role", minWidth: 140, width: "1fr", sortable: true, type: "string" },
   {
     accessor: "department",
     disableReorder: true,
-    isSortable: true,
+    sortable: true,
     label: "Department",
     minWidth: 140,
     width: "1fr",
@@ -41,18 +41,18 @@ const AnimationsDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const [headers, setHeaders] = useState<ReactHeaderObject[]>(INITIAL_HEADERS);
+  const [headers, setHeaders] = useState<ReactColumnDef[]>(INITIAL_HEADERS);
 
-  const handleColumnOrderChange = (newHeaders: ReactHeaderObject[]) => {
+  const handleColumnOrderChange = (newHeaders: ReactColumnDef[]) => {
     setHeaders(newHeaders);
   };
 
   return (
     <SimpleTable
       columnReordering
-      defaultHeaders={headers}
-      editColumns
-      editColumnsInitOpen
+      columns={headers}
+      enableColumnEditor
+      enableColumnEditorInitOpen
       height={height}
       onColumnOrderChange={handleColumnOrderChange}
       rows={EMPLOYEES}

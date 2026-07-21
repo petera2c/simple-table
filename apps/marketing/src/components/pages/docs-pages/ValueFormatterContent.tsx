@@ -13,7 +13,7 @@ import { VALUE_FORMATTER_PROPS as VALUE_FORMATTER_PARAMS_PROPS } from "@/constan
 const VALUE_FORMATTER_PROPS: PropInfo[] = [
   {
     key: "valueFormatter",
-    name: "HeaderObject.valueFormatter",
+    name: "ColumnDef.valueFormatter",
     required: false,
     description:
       "Function to format the cell value for display without affecting the underlying data. Returns a string or number that will be displayed in the cell. Useful for currency, dates, percentages, and other formatted text.",
@@ -29,7 +29,7 @@ const VALUE_FORMATTER_PROPS: PropInfo[] = [
   },
   {
     key: "useFormattedValueForClipboard",
-    name: "HeaderObject.useFormattedValueForClipboard",
+    name: "ColumnDef.useFormattedValueForClipboard",
     required: false,
     description:
       "When true, cells copy the formatted value (with symbols, formatting) when users press Ctrl+C/Cmd+C. Defaults to true when valueFormatter exists (v1.8.6+), or false if no valueFormatter. Useful for copying currency with $ symbols, percentages with %, or formatted dates.",
@@ -44,7 +44,7 @@ const VALUE_FORMATTER_PROPS: PropInfo[] = [
   },
   {
     key: "useFormattedValueForCSV",
-    name: "HeaderObject.useFormattedValueForCSV",
+    name: "ColumnDef.useFormattedValueForCSV",
     required: false,
     description:
       "When true, CSV exports use the formatted value from valueFormatter instead of raw data. Defaults to true when valueFormatter exists (v1.8.6+), or false if no valueFormatter. Perfect for human-readable reports and spreadsheets. Note: exportValueGetter takes precedence if provided.",
@@ -59,7 +59,7 @@ const VALUE_FORMATTER_PROPS: PropInfo[] = [
   },
   {
     key: "exportValueGetter",
-    name: "HeaderObject.exportValueGetter",
+    name: "ColumnDef.exportValueGetter",
     required: false,
     description:
       "Custom function to provide completely different values for CSV export. Takes precedence over useFormattedValueForCSV. Useful for adding codes, identifiers, or transforming data specifically for spreadsheet compatibility.",

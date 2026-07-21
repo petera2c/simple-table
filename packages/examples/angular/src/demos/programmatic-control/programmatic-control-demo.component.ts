@@ -1,5 +1,5 @@
 import { Component, Input, ViewChild } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -22,7 +22,7 @@ import "@simple-table/angular/styles.css";
       <simple-table
         #simpleTable
         [rows]="rows"
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [height]="height"
         [theme]="theme"
       ></simple-table>
@@ -36,7 +36,7 @@ export class ProgrammaticControlDemoComponent {
 
   statusMessage = "No status message";
   readonly rows: Row[] = programmaticControlConfig.rows;
-  readonly headers: AngularHeaderObject[] = programmaticControlConfig.headers.map((h) => {
+  readonly headers: AngularColumnDef[] = programmaticControlConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,

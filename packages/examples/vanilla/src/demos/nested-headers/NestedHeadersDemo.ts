@@ -8,7 +8,7 @@ export function renderNestedHeadersDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: nestedHeadersConfig.headers,
+    columns: nestedHeadersConfig.headers,
     rows: nestedHeadersConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

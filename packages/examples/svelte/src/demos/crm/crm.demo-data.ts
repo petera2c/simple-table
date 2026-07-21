@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject, Theme } from "@simple-table/svelte";
+import type { SvelteColumnDef, Theme } from "@simple-table/svelte";
 
 export type CrmShellTheme = Theme | "custom-light" | "custom-dark";
 
@@ -42,14 +42,14 @@ export function generateCRMData(count: number = 100): CRMLead[] {
 
 export const crmData = generateCRMData(100);
 
-export const crmHeaders: SvelteHeaderObject[] = [
+export const crmHeaders: SvelteColumnDef[] = [
   {
     accessor: "name",
     label: "CONTACT",
     width: "2fr",
     minWidth: 290,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     type: "string",
   },
   {
@@ -57,8 +57,8 @@ export const crmHeaders: SvelteHeaderObject[] = [
     label: "SIGNAL",
     width: "3fr",
     minWidth: 340,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     type: "string",
   },
   {
@@ -66,7 +66,7 @@ export const crmHeaders: SvelteHeaderObject[] = [
     label: "AI SCORE",
     width: "1fr",
     minWidth: 100,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "number",
   },
@@ -75,7 +75,7 @@ export const crmHeaders: SvelteHeaderObject[] = [
     label: "EMAIL",
     width: "1.5fr",
     minWidth: 210,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "enum",
     enumOptions: [
@@ -90,7 +90,7 @@ export const crmHeaders: SvelteHeaderObject[] = [
     label: "IMPORT",
     width: "1fr",
     minWidth: 100,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "string",
   },
@@ -99,7 +99,7 @@ export const crmHeaders: SvelteHeaderObject[] = [
     label: "LIST",
     width: "1.2fr",
     minWidth: 160,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "enum",
     enumOptions: [

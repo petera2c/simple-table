@@ -2,7 +2,7 @@
  * CSVExportFormatting Example – vanilla port of React CSVExportFormattingExample.
  * Same employee data, headers, valueFormatters, useFormattedValueForCSV, and exportValueGetter as React.
  */
-import type { ExportValueProps, HeaderObject, Row, Theme } from "../../src/index";
+import type { ExportValueProps, ColumnDef, Row, Theme } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
@@ -14,14 +14,14 @@ const ROWS: Row[] = [
   { id: 5, employeeName: "Charlie Brown", email: "charlie.brown@company.com", annualSalary: 68000, monthlyBonus: 1500, completionRate: 0.87, startDate: "2022-05-20", department: "marketing", level: 2 },
 ];
 
-const HEADERS: HeaderObject[] = [
-  { accessor: "employeeName", label: "Employee", width: 150, isSortable: true, type: "string" },
-  { accessor: "email", label: "Email", width: 200, isSortable: true, type: "string" },
+const HEADERS: ColumnDef[] = [
+  { accessor: "employeeName", label: "Employee", width: 150, sortable: true, type: "string" },
+  { accessor: "email", label: "Email", width: 200, sortable: true, type: "string" },
   {
     accessor: "annualSalary",
     label: "Annual Salary",
     width: 150,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueFormatter: ({ value }: { value?: unknown }) => {
       if (typeof value === "number") return `$${(value / 1000).toFixed(0)}K`;
@@ -34,7 +34,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "monthlyBonus",
     label: "Monthly Bonus",
     width: 150,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueFormatter: ({ value }: { value?: unknown }) => {
       if (typeof value === "number") return `$${value.toLocaleString()}`;
@@ -47,7 +47,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "completionRate",
     label: "Completion Rate",
     width: 150,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueFormatter: ({ value }: { value?: unknown }) => {
       if (typeof value === "number") return `${(value * 100).toFixed(1)}%`;
@@ -63,7 +63,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "startDate",
     label: "Start Date",
     width: 140,
-    isSortable: true,
+    sortable: true,
     type: "date",
     valueFormatter: ({ value }: { value?: unknown }) => {
       if (typeof value === "string") {
@@ -78,7 +78,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "department",
     label: "Department",
     width: 130,
-    isSortable: true,
+    sortable: true,
     type: "string",
     valueFormatter: ({ value }: { value?: unknown }) => {
       const str = String(value);
@@ -102,7 +102,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "level",
     label: "Level",
     width: 100,
-    isSortable: true,
+    sortable: true,
     type: "number",
     valueFormatter: ({ value }: { value?: unknown }) => {
       const levels = ["Intern", "Junior", "Mid", "Senior", "Lead", "Principal"];

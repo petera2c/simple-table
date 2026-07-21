@@ -1,5 +1,5 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Generate sample data with trends
@@ -143,26 +143,26 @@ const CHARTS_DATA = [
 ];
 
 // Headers with chart types
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
     width: 70,
-    isSortable: true,
+    sortable: true,
     type: "number",
   },
   {
     accessor: "product",
     label: "Product",
     width: 180,
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
     accessor: "category",
     label: "Category",
     width: 120,
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
@@ -201,7 +201,7 @@ const headers: ReactHeaderObject[] = [
     accessor: "rating",
     label: "Rating",
     width: 80,
-    isSortable: true,
+    sortable: true,
     type: "number",
     align: "center",
   },
@@ -212,7 +212,7 @@ const ChartsDemo = ({ height = "400px", theme }: { height?: string | number; the
     <SimpleTable
       columnReordering
       columnResizing
-      defaultHeaders={headers}
+      columns={headers}
       rows={CHARTS_DATA}
       selectableCells
       height={height}

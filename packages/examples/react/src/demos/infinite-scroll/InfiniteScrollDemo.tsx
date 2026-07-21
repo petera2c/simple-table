@@ -45,7 +45,7 @@ const InfiniteScrollDemo = ({
         {rows.length} rows loaded{hasMore ? "" : " (all loaded)"}
       </div>
       <SimpleTable
-        defaultHeaders={infiniteScrollConfig.headers}
+        columns={infiniteScrollConfig.headers}
         rows={rows}
         onLoadMore={handleLoadMore}
         isLoading={loading}

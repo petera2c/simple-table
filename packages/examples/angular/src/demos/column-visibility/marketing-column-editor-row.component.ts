@@ -41,7 +41,7 @@ export class MarketingColumnEditorRowComponent implements AfterViewInit, OnChang
   @Input({ required: true }) header!: ColumnEditorRowRendererProps["header"];
   @Input({ required: true }) components!: ColumnEditorRowRendererProps["components"];
   @Input() panelSection?: ColumnEditorRowRendererProps["panelSection"];
-  @Input() isEssential?: ColumnEditorRowRendererProps["isEssential"];
+  @Input() essential?: ColumnEditorRowRendererProps["essential"];
   @Input() canToggleVisibility?: ColumnEditorRowRendererProps["canToggleVisibility"];
   @Input() allowColumnPinning?: ColumnEditorRowRendererProps["allowColumnPinning"];
   @Input() pinControl?: ColumnEditorRowRendererProps["pinControl"];

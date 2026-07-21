@@ -1,5 +1,5 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme, CellRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, Theme, CellRendererProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Sample data showcasing quarterly sales performance - perfect for collapsible columns
@@ -403,25 +403,25 @@ const SALES_DATA = [
 ];
 
 // Define headers showcasing meaningful collapsible scenarios
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
     width: 60,
-    isSortable: true,
+    sortable: true,
   },
   {
     accessor: "name",
     label: "Sales Rep",
     minWidth: 150,
     width: "1fr",
-    isSortable: true,
+    sortable: true,
   },
   {
     accessor: "region",
     label: "Region",
     width: 140,
-    isSortable: true,
+    sortable: true,
   },
 
   // Quarterly Sales - Show total when collapsed, breakdown when expanded
@@ -437,7 +437,7 @@ const headers: ReactHeaderObject[] = [
         label: "Total Sales",
         width: 140,
         showWhen: "parentCollapsed", // Only visible when collapsed
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.totalSales as number).toLocaleString()}`,
@@ -447,7 +447,7 @@ const headers: ReactHeaderObject[] = [
         label: "Q1",
         width: 120,
         showWhen: "parentExpanded", // Only visible when expanded
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.q1Sales as number).toLocaleString()}`,
@@ -457,7 +457,7 @@ const headers: ReactHeaderObject[] = [
         label: "Q2",
         width: 120,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.q2Sales as number).toLocaleString()}`,
@@ -467,7 +467,7 @@ const headers: ReactHeaderObject[] = [
         label: "Q3",
         width: 120,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.q3Sales as number).toLocaleString()}`,
@@ -477,7 +477,7 @@ const headers: ReactHeaderObject[] = [
         label: "Q4",
         width: 120,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.q4Sales as number).toLocaleString()}`,
@@ -498,7 +498,7 @@ const headers: ReactHeaderObject[] = [
         label: "Avg Monthly",
         width: 130,
         showWhen: "parentCollapsed", // Only visible when collapsed
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.avgMonthly as number).toLocaleString()}`,
@@ -508,7 +508,7 @@ const headers: ReactHeaderObject[] = [
         label: "Best Month",
         width: 130,
         showWhen: "parentCollapsed", // Only visible when collapsed
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.bestMonth as number).toLocaleString()}`,
@@ -518,7 +518,7 @@ const headers: ReactHeaderObject[] = [
         label: "Jan",
         width: 100,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.jan as number).toLocaleString()}`,
@@ -528,7 +528,7 @@ const headers: ReactHeaderObject[] = [
         label: "Feb",
         width: 100,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.feb as number).toLocaleString()}`,
@@ -538,7 +538,7 @@ const headers: ReactHeaderObject[] = [
         label: "Mar",
         width: 100,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.mar as number).toLocaleString()}`,
@@ -548,7 +548,7 @@ const headers: ReactHeaderObject[] = [
         label: "Apr",
         width: 100,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.apr as number).toLocaleString()}`,
@@ -558,7 +558,7 @@ const headers: ReactHeaderObject[] = [
         label: "May",
         width: 100,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.may as number).toLocaleString()}`,
@@ -568,7 +568,7 @@ const headers: ReactHeaderObject[] = [
         label: "Jun",
         width: 100,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.jun as number).toLocaleString()}`,
@@ -578,7 +578,7 @@ const headers: ReactHeaderObject[] = [
         label: "Jul",
         width: 100,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.jul as number).toLocaleString()}`,
@@ -588,7 +588,7 @@ const headers: ReactHeaderObject[] = [
         label: "Aug",
         width: 100,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.aug as number).toLocaleString()}`,
@@ -598,7 +598,7 @@ const headers: ReactHeaderObject[] = [
         label: "Sep",
         width: 100,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.sep as number).toLocaleString()}`,
@@ -608,7 +608,7 @@ const headers: ReactHeaderObject[] = [
         label: "Oct",
         width: 100,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.oct as number).toLocaleString()}`,
@@ -618,7 +618,7 @@ const headers: ReactHeaderObject[] = [
         label: "Nov",
         width: 100,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.nov as number).toLocaleString()}`,
@@ -628,7 +628,7 @@ const headers: ReactHeaderObject[] = [
         label: "Dec",
         width: 100,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.dec as number).toLocaleString()}`,
@@ -649,7 +649,7 @@ const headers: ReactHeaderObject[] = [
         label: "Top Category",
         width: 140,
         showWhen: "parentCollapsed", // Only visible when collapsed
-        isSortable: true,
+        sortable: true,
         type: "string",
       },
       {
@@ -657,7 +657,7 @@ const headers: ReactHeaderObject[] = [
         label: "Software",
         width: 130,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.softwareSales as number).toLocaleString()}`,
@@ -667,7 +667,7 @@ const headers: ReactHeaderObject[] = [
         label: "Hardware",
         width: 130,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.hardwareSales as number).toLocaleString()}`,
@@ -677,7 +677,7 @@ const headers: ReactHeaderObject[] = [
         label: "Services",
         width: 130,
         showWhen: "parentExpanded",
-        isSortable: true,
+        sortable: true,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: CellRendererProps) => `$${(row.servicesSales as number).toLocaleString()}`,
@@ -696,10 +696,10 @@ const CollapsibleColumnsDemo = ({
   return (
     <SimpleTable
       columnResizing
-      editColumns
+      enableColumnEditor
       selectableCells
       columnReordering
-      defaultHeaders={headers}
+      columns={headers}
       rows={SALES_DATA}
       height={height}
       theme={theme}

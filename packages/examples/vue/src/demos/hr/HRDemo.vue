@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, h, type VNodeChild } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueHeaderObject, CellRendererProps, CellChangeProps } from "@simple-table/vue";
+import type { Theme, VueColumnDef, CellRendererProps, CellChangeProps } from "@simple-table/vue";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
 import type { HREmployee } from "./hr.demo-data";
 import "@simple-table/vue/styles.css";
@@ -132,7 +132,7 @@ const renderers: Record<string, (p: CellRendererProps) => VNodeChild> = {
   },
 };
 
-const headers: VueHeaderObject[] = hrConfig.headers.map((col) => {
+const headers: VueColumnDef[] = hrConfig.headers.map((col) => {
   const renderer = renderers[col.accessor as string];
   return renderer ? { ...col, cellRenderer: renderer } : { ...col };
 });
@@ -151,14 +151,14 @@ const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
 
 <template>
   <SimpleTable
-    :default-headers="headers"
+    :columns="headers"
     :rows="data"
     :height="props.height"
     :theme="props.theme"
     :column-reordering="true"
     :column-resizing="true"
     :selectable-cells="true"
-    :should-paginate="true"
+    :enable-pagination="true"
     :rows-per-page="rowsPerPage"
     :custom-theme="{ rowHeight }"
     @cell-edit="handleCellEdit"

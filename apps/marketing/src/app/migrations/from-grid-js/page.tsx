@@ -45,7 +45,7 @@ export default function FromGridJsPage() {
       ]}
       installCommand="npm install simple-table-core"
       mappingRows={[
-        { competitor: "columns: ['Name', ...]", simpleTable: "defaultHeaders: HeaderObject[]", notes: "Move from tuple columns to declarative headers with accessor + label + width." },
+        { competitor: "columns: ['Name', ...]", simpleTable: "columns: ColumnDef[]", notes: "Move from tuple columns to declarative headers with accessor + label + width." },
         { competitor: "data: any[][]", simpleTable: "rows: Row[]", notes: "See the Simple Table docs for the row shape." },
         { competitor: "pagination: true", simpleTable: "Built-in pagination + virtualization", notes: "Choose paginated or virtualized rendering—both are first-class." },
         { competitor: "search: true", simpleTable: "Filtering / column filters", notes: "Built-in column filters; combine for global search if needed." },
@@ -64,7 +64,7 @@ import "simple-table-core/styles.css";`,
         },
         {
           title: "Convert tuple columns to header objects",
-          body: <p>Replace Grid.js's <code>columns: [&apos;Name&apos;, &apos;Email&apos;]</code> with HeaderObject entries containing accessor + label + width.</p>,
+          body: <p>Replace Grid.js's <code>columns: [&apos;Name&apos;, &apos;Email&apos;]</code> with ColumnDef entries containing accessor + label + width.</p>,
         },
         {
           title: "Convert tuple rows to objects",

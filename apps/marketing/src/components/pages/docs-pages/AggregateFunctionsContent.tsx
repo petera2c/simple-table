@@ -12,7 +12,7 @@ import PropTable, { type PropInfo } from "@/components/PropTable";
 const AGGREGATION_SETUP_PROPS: PropInfo[] = [
   {
     key: "aggregation",
-    name: "HeaderObject.aggregation",
+    name: "ColumnDef.aggregation",
     required: false,
     description:
       "Configuration object for aggregation functions that automatically calculate summary values for grouped data. Supports built-in types (sum, average, count, min, max) and custom functions.",

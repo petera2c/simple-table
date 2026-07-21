@@ -1,4 +1,4 @@
-import type { Row, HeaderObject } from "../../src/index";
+import type { Row, ColumnDef } from "../../src/index";
 
 export const generateSpaceData = (): Row[] => {
   const agencies = ["NASA", "ESA", "SpaceX", "Roscosmos", "ISRO"];
@@ -44,21 +44,21 @@ export const generateSpaceData = (): Row[] => {
   });
 };
 
-export const SPACE_HEADERS: HeaderObject[] = [
+export const SPACE_HEADERS: ColumnDef[] = [
   {
     accessor: "agency",
     label: "Agency",
     width: 120,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
   },
   {
     accessor: "missionName",
     label: "Mission Name",
     width: 250,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
     hide: true,
   },
@@ -67,8 +67,8 @@ export const SPACE_HEADERS: HeaderObject[] = [
     label: "Launch Date",
     type: "date",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
     cellRenderer: ({ row }) => {
       const date = new Date(row.launchDate as string);
@@ -83,8 +83,8 @@ export const SPACE_HEADERS: HeaderObject[] = [
     accessor: "destination",
     label: "Destination",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
     type: "enum",
     enumOptions: [
@@ -100,53 +100,53 @@ export const SPACE_HEADERS: HeaderObject[] = [
     accessor: "status",
     label: "Status",
     width: 120,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
   },
   {
     accessor: "crewSize",
     label: "Crew Size",
     width: 120,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
   },
   {
     accessor: "budget",
     label: "Budget",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     children: [
       {
         accessor: "q1",
         label: "Q1",
         width: 150,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "right",
       },
       {
         accessor: "q2",
         label: "Q2",
         width: 150,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "right",
       },
       {
         accessor: "q3",
         label: "Q3",
         width: 150,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
       },
       {
         accessor: "q4",
         label: "Q4",
         width: 150,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
       },
     ],
   },
@@ -154,8 +154,8 @@ export const SPACE_HEADERS: HeaderObject[] = [
     accessor: "duration",
     label: "Duration",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "right",
     cellRenderer: ({ row }) => {
       if (row.duration === "Ongoing") return "Ongoing";
@@ -166,8 +166,8 @@ export const SPACE_HEADERS: HeaderObject[] = [
     accessor: "payloadWeight",
     label: "Payload Weight",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "right",
     cellRenderer: ({ row }) => `${row.payloadWeight as number}kg`,
   },
@@ -175,16 +175,16 @@ export const SPACE_HEADERS: HeaderObject[] = [
     accessor: "launchSite",
     label: "Launch Site",
     width: 180,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "left",
   },
   {
     accessor: "missionCostPerKg",
     label: "Cost per Kg",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "right",
     cellRenderer: ({ row }) => {
       return `$${(row.missionCostPerKg as number).toLocaleString("en-US", {
@@ -197,8 +197,8 @@ export const SPACE_HEADERS: HeaderObject[] = [
     accessor: "successRate",
     label: "Success Rate",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "right",
     cellRenderer: ({ row }) => `${row.successRate}%`,
   },
@@ -206,8 +206,8 @@ export const SPACE_HEADERS: HeaderObject[] = [
     accessor: "scientificYield",
     label: "Scientific Yield",
     width: 150,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     align: "right",
     cellRenderer: ({ row }) => `${row.scientificYield}TB`,
   },

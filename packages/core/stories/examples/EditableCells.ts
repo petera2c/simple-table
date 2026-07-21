@@ -2,16 +2,16 @@
  * EditableCells Example – vanilla port of React EditableCells.
  * Same headers, data, and props as React version.
  */
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
-const HEADERS: HeaderObject[] = [
+const HEADERS: ColumnDef[] = [
   {
     accessor: "status",
     label: "Status",
     width: 130,
-    isEditable: true,
+    editable: true,
     type: "enum",
     enumOptions: [
       { label: "New", value: "New" },
@@ -21,15 +21,15 @@ const HEADERS: HeaderObject[] = [
       { label: "Cancelled", value: "Cancelled" },
     ],
   },
-  { accessor: "id", label: "ID", width: 80, isEditable: false, type: "number" },
-  { accessor: "firstName", label: "First Name", width: 150, isEditable: true, type: "string" },
-  { accessor: "lastName", label: "Last Name", width: 150, isEditable: true, type: "string" },
-  { accessor: "email", label: "Email", minWidth: 100, width: "1fr", isEditable: true, type: "string" },
+  { accessor: "id", label: "ID", width: 80, editable: false, type: "number" },
+  { accessor: "firstName", label: "First Name", width: 150, editable: true, type: "string" },
+  { accessor: "lastName", label: "Last Name", width: 150, editable: true, type: "string" },
+  { accessor: "email", label: "Email", minWidth: 100, width: "1fr", editable: true, type: "string" },
   {
     accessor: "role",
     label: "Role",
     width: 150,
-    isEditable: true,
+    editable: true,
     type: "enum",
     enumOptions: [
       { label: "Developer", value: "Developer" },
@@ -39,10 +39,10 @@ const HEADERS: HeaderObject[] = [
       { label: "QA", value: "QA" },
     ],
   },
-  { accessor: "hireDate", label: "Hire Date", width: 150, isEditable: true, type: "date" },
-  { accessor: "isActive", label: "Active", width: 100, isEditable: true, type: "boolean" },
-  { accessor: "salary", label: "Salary", width: 120, isEditable: true, type: "number" },
-  { accessor: "reviewDate", label: "Next Review", width: 150, isEditable: true, type: "date" },
+  { accessor: "hireDate", label: "Hire Date", width: 150, editable: true, type: "date" },
+  { accessor: "isActive", label: "Active", width: 100, editable: true, type: "boolean" },
+  { accessor: "salary", label: "Salary", width: 120, editable: true, type: "number" },
+  { accessor: "reviewDate", label: "Next Review", width: 150, editable: true, type: "date" },
 ];
 
 const ROWS: Row[] = [

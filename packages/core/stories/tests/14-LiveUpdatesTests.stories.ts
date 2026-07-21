@@ -6,7 +6,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { waitForTable } from "./testUtils";
 
 const meta: Meta = {
@@ -44,7 +44,7 @@ function renderLiveUpdatesTable() {
   const tableContainer = document.createElement("div");
   wrapper.appendChild(tableContainer);
 
-  const headers: HeaderObject[] = [
+  const headers: ColumnDef[] = [
     { accessor: "id", label: "ID", width: 60, type: "number" },
     { accessor: "product", label: "Product", width: 180, type: "string" },
     {
@@ -65,7 +65,7 @@ function renderLiveUpdatesTable() {
   ];
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: headers,
+    columns: headers,
     rows: initialData,
     getRowId: (params) => String(params.row?.id),
     height: "400px",

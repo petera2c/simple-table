@@ -9,7 +9,7 @@ import { SAAS_HEADERS } from "../data/saas-data";
 const ROWS_PER_PAGE = 10;
 
 export const paginationExampleDefaults = {
-  shouldPaginate: true,
+  enablePagination: true,
   rowsPerPage: ROWS_PER_PAGE,
   columnReordering: true,
   columnResizing: true,

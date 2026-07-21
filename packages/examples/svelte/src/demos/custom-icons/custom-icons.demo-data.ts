@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject, Row } from "@simple-table/svelte";
+import type { SvelteColumnDef, Row } from "@simple-table/svelte";
 
 export const customIconsData: Row[] = [
   { id: 1, name: "Alpha Release", version: "1.0.0", status: "released", downloads: 15420, date: "2024-01-15" },
@@ -12,17 +12,17 @@ export const customIconsData: Row[] = [
   { id: 8, name: "Next Release", version: "2.2.0", status: "planned", downloads: 0, date: "2025-01-20" },
 ];
 
-export const customIconsHeaders: SvelteHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 60, type: "number", isSortable: true },
-  { accessor: "name", label: "Release", width: 170, type: "string", isSortable: true },
-  { accessor: "version", label: "Version", width: 100, type: "string", isSortable: true },
-  { accessor: "status", label: "Status", width: 110, type: "string", isSortable: true },
+export const customIconsHeaders: SvelteColumnDef[] = [
+  { accessor: "id", label: "ID", width: 60, type: "number", sortable: true },
+  { accessor: "name", label: "Release", width: 170, type: "string", sortable: true },
+  { accessor: "version", label: "Version", width: 100, type: "string", sortable: true },
+  { accessor: "status", label: "Status", width: 110, type: "string", sortable: true },
   {
     accessor: "downloads",
     label: "Downloads",
     width: 130,
     type: "number",
-    isSortable: true,
+    sortable: true,
     valueFormatter: ({ value }) => (value as number).toLocaleString(),
   },
   {
@@ -30,7 +30,7 @@ export const customIconsHeaders: SvelteHeaderObject[] = [
     label: "Date",
     width: 130,
     type: "date",
-    isSortable: true,
+    sortable: true,
     valueFormatter: ({ value }) =>
       new Date(value as string).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
   },

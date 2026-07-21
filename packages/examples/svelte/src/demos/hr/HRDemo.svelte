@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteHeaderObject, CellChangeProps } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef, CellChangeProps } from "@simple-table/svelte";
   import { hrConfig } from "./hr.demo-data";
   import HrFullNameCell from "./HrFullNameCell.svelte";
   import HrPerformanceCell from "./HrPerformanceCell.svelte";
@@ -43,12 +43,12 @@
   columnReordering={true}
   columnResizing={true}
   customTheme={{ rowHeight }}
-  defaultHeaders={headers}
+  columns={headers}
   onCellEdit={handleCellEdit}
   rows={data}
   {height}
   {rowsPerPage}
   selectableCells={true}
-  shouldPaginate={true}
+  enablePagination={true}
   {theme}
 />

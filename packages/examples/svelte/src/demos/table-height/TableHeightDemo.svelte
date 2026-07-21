@@ -20,7 +20,7 @@
     {/each}
   </div>
   <SimpleTable
-    defaultHeaders={tableHeightConfig.headers}
+    columns={tableHeightConfig.headers}
     rows={tableHeightConfig.rows}
     height={selectedHeight}
     {theme}

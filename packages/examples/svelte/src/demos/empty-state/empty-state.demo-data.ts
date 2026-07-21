@@ -1,9 +1,9 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject, Row } from "@simple-table/svelte";
+import type { SvelteColumnDef, Row } from "@simple-table/svelte";
 
 export const emptyStateData: Row[] = [];
 
-export const emptyStateHeaders: SvelteHeaderObject[] = [
+export const emptyStateHeaders: SvelteColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 180, type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },

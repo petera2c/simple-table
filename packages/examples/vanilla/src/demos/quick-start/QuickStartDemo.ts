@@ -8,11 +8,11 @@ export function renderQuickStartDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: quickStartConfig.headers,
+    columns: quickStartConfig.headers,
     rows: quickStartConfig.rows,
     height: options?.height ?? "300px",
     theme: options?.theme,
-    editColumns: quickStartConfig.tableProps.editColumns,
+    enableColumnEditor: quickStartConfig.tableProps.enableColumnEditor,
     selectableCells: quickStartConfig.tableProps.selectableCells,
     customTheme: quickStartConfig.tableProps.customTheme,
   });

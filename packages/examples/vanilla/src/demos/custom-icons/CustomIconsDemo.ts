@@ -8,7 +8,7 @@ export function renderCustomIconsDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: [...customIconsConfig.headers],
+    columns: [...customIconsConfig.headers],
     rows: customIconsConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

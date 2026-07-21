@@ -9,7 +9,7 @@ const NestedTablesDemo = ({ height = "500px", theme }: { height?: string | numbe
   return (
     <SimpleTable
       autoExpandColumns={nestedTablesConfig.tableProps.autoExpandColumns}
-      defaultHeaders={nestedTablesConfig.headers}
+      columns={nestedTablesConfig.headers}
       rows={sampleData}
       rowGrouping={nestedTablesConfig.tableProps.rowGrouping}
       getRowId={nestedTablesConfig.tableProps.getRowId}

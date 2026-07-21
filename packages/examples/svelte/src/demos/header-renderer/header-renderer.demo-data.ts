@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject, Row } from "@simple-table/svelte";
+import type { SvelteColumnDef, Row } from "@simple-table/svelte";
 
 
 export const headerRendererData: Row[] = [
@@ -13,13 +13,13 @@ export const headerRendererData: Row[] = [
   { id: 8, name: "Henry Patel", email: "henry@example.com", role: "Lead", salary: 145000, department: "Engineering" },
 ];
 
-export const headerRendererHeaders: SvelteHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 60, type: "number", isSortable: true },
-  { accessor: "name", label: "Employee Name", width: 180, type: "string", isSortable: true },
+export const headerRendererHeaders: SvelteColumnDef[] = [
+  { accessor: "id", label: "ID", width: 60, type: "number", sortable: true },
+  { accessor: "name", label: "Employee Name", width: 180, type: "string", sortable: true },
   { accessor: "email", label: "Email Address", width: 200, type: "string" },
-  { accessor: "role", label: "Job Role", width: 130, type: "string", isSortable: true },
-  { accessor: "salary", label: "Annual Salary", width: 140, type: "number", isSortable: true },
-  { accessor: "department", label: "Department", width: 150, type: "string", isSortable: true },
+  { accessor: "role", label: "Job Role", width: 130, type: "string", sortable: true },
+  { accessor: "salary", label: "Annual Salary", width: 140, type: "number", sortable: true },
+  { accessor: "department", label: "Department", width: 150, type: "string", sortable: true },
 ];
 
 export const headerRendererConfig = {

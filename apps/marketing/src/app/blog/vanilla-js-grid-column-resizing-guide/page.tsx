@@ -62,7 +62,7 @@ export default function Page() {
         { title: "Memory leaks on SPA navigation", problem: "Mounting in a SPA without disposing leaks listeners.", solution: "Always call table.dispose() on cleanup; in micro-frontends, hook this to your unmount lifecycle." },
         { title: "Resize handles too narrow on touch", problem: "Mobile users can't grab the 4px column edge.", solution: "Use a library that auto-widens handles for touch (simple-table-core does this)." },
         { title: "Bundle size", problem: "Tabulator and Handsontable add 200-400 kB to your bundle.", solution: "If you don't need every feature, simple-table-core is ~70 kB gzipped with the same core capabilities." },
-        { title: "TypeScript types missing", problem: "Some grids ship loose any-typed APIs.", solution: "simple-table-core is strict-TypeScript-first; HeaderObject, Row, and event payloads are all typed." },
+        { title: "TypeScript types missing", problem: "Some grids ship loose any-typed APIs.", solution: "simple-table-core is strict-TypeScript-first; ColumnDef, Row, and event payloads are all typed." },
       ]}
       faqs={[
         { question: "Can I use this in a web component?", answer: "Yes. Mount inside the shadow root: pass shadowRoot.querySelector('#host') as the element. simple-table-core uses CSS variables for theming, so it inherits styles you set inside the shadow tree." },

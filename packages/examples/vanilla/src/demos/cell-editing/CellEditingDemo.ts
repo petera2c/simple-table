@@ -10,7 +10,7 @@ export function renderCellEditingDemo(
   let rows = [...cellEditingConfig.rows];
 
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: cellEditingConfig.headers,
+    columns: cellEditingConfig.headers,
     rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

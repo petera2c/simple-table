@@ -26,8 +26,8 @@ const COLUMN_REORDERING_PROPS: PropInfo[] = [
     name: "onColumnOrderChange",
     required: false,
     description:
-      "Callback function that fires when column order changes. With `@simple-table/react`, receives `ReactHeaderObject[]`. Angular, Svelte, and Solid adapters use `AngularHeaderObject[]`, `SvelteHeaderObject[]`, and `SolidHeaderObject[]` respectively.",
-    type: "(newHeaders: ReactHeaderObject[]) => void",
+      "Callback function that fires when column order changes. With `@simple-table/react`, receives `ReactColumnDef[]`. Angular, Svelte, and Solid adapters use `AngularColumnDef[]`, `SvelteColumnDef[]`, and `SolidColumnDef[]` respectively.",
+    type: "(newHeaders: ReactColumnDef[]) => void",
     example: `<SimpleTable
   columnReordering={true}
   onColumnOrderChange={(newHeaders) => {
@@ -40,7 +40,7 @@ const COLUMN_REORDERING_PROPS: PropInfo[] = [
   },
   {
     key: "disableReorder",
-    name: "HeaderObject.disableReorder",
+    name: "ColumnDef.disableReorder",
     required: false,
     description:
       "Prevents specific columns from being reordered. Set this on individual header objects to lock them in place.",
@@ -85,7 +85,7 @@ export default function ColumnReorderingContent() {
         according to their preferences. Columns can be reordered by dragging column headers or
         through the column editor (when{" "}
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-          editColumns={true}
+          enableColumnEditor={true}
         </code>
         ).
       </motion.p>

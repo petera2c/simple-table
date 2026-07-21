@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject, CellRenderer, TableAPI, Row, CellValue } from "simple-table-core";
+import type { Theme, ColumnDef, CellRenderer, TableAPI, Row, CellValue } from "simple-table-core";
 import { infrastructureData, getInfraMetricColorStyles, getInfraStatusColors } from "./infrastructure.demo-data";
 import type { InfrastructureServer } from "./infrastructure.demo-data";
 import "simple-table-core/styles.css";
@@ -115,7 +115,7 @@ function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined, ro
   };
 }
 
-function getHeaders(currentTheme?: Theme): HeaderObject[] {
+function getHeaders(currentTheme?: Theme): ColumnDef[] {
   const t = currentTheme || "light";
 
   const serverIdRenderer: CellRenderer = ({ row }) => {
@@ -180,20 +180,20 @@ function getHeaders(currentTheme?: Theme): HeaderObject[] {
   };
 
   return [
-    { accessor: "serverId", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Server ID", minWidth: 180, pinned: "left", type: "string", width: "1.2fr", cellRenderer: serverIdRenderer },
-    { accessor: "serverName", align: "left", filterable: true, isEditable: false, isSortable: true, label: "Name", minWidth: 200, type: "string", width: "1.5fr" },
+    { accessor: "serverId", align: "left", filterable: true, editable: false, sortable: true, label: "Server ID", minWidth: 180, pinned: "left", type: "string", width: "1.2fr", cellRenderer: serverIdRenderer },
+    { accessor: "serverName", align: "left", filterable: true, editable: false, sortable: true, label: "Name", minWidth: 200, type: "string", width: "1.5fr" },
     {
-      accessor: "performance", label: "Performance Metrics", width: 690, isSortable: false,
+      accessor: "performance", label: "Performance Metrics", width: 690, sortable: false,
       children: [
-        { accessor: "cpuHistory", label: "CPU History", width: 150, isSortable: false, filterable: false, isEditable: false, align: "center", type: "lineAreaChart", tooltip: "CPU usage over the last 30 intervals" },
-        { accessor: "cpuUsage", label: "CPU %", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: cpuRenderer },
-        { accessor: "memoryUsage", label: "Memory %", width: 130, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: memoryRenderer },
-        { accessor: "diskUsage", label: "Disk %", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: diskRenderer },
-        { accessor: "responseTime", label: "Response (ms)", width: 120, isSortable: true, filterable: true, isEditable: true, align: "right", type: "number", cellRenderer: responseRenderer },
+        { accessor: "cpuHistory", label: "CPU History", width: 150, sortable: false, filterable: false, editable: false, align: "center", type: "lineAreaChart", tooltip: "CPU usage over the last 30 intervals" },
+        { accessor: "cpuUsage", label: "CPU %", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number", cellRenderer: cpuRenderer },
+        { accessor: "memoryUsage", label: "Memory %", width: 130, sortable: true, filterable: true, editable: true, align: "right", type: "number", cellRenderer: memoryRenderer },
+        { accessor: "diskUsage", label: "Disk %", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number", cellRenderer: diskRenderer },
+        { accessor: "responseTime", label: "Response (ms)", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number", cellRenderer: responseRenderer },
       ],
     },
     {
-      accessor: "status", label: "Status", width: 130, isSortable: true, filterable: true, isEditable: false, align: "center", type: "enum",
+      accessor: "status", label: "Status", width: 130, sortable: true, filterable: true, editable: false, align: "center", type: "enum",
       enumOptions: [{ label: "Online", value: "online" }, { label: "Warning", value: "warning" }, { label: "Critical", value: "critical" }, { label: "Maintenance", value: "maintenance" }, { label: "Offline", value: "offline" }],
       valueGetter: ({ row }) => {
         const s = String(row.status);
@@ -216,8 +216,8 @@ export function renderInfrastructureDemo(
     autoExpandColumns: true,
     columnReordering: true,
     columnResizing: true,
-    defaultHeaders: getHeaders(options?.theme),
-    editColumns: true,
+    columns: getHeaders(options?.theme),
+    enableColumnEditor: true,
     height: options?.height ?? "400px",
     rows: data,
     selectableCells: true,

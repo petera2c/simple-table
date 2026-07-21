@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, OnRowGroupExpandProps, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, OnRowGroupExpandProps, Theme } from "@simple-table/angular";
 import {
   dynamicNestedTablesConfig,
   dynamicNestedTablesData,
@@ -15,7 +15,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [autoExpandColumns]="tableProps.autoExpandColumns"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [expandAll]="tableProps.expandAll"
       [height]="height"
       [rowGrouping]="tableProps.rowGrouping"
@@ -30,7 +30,7 @@ export class DynamicNestedTablesDemoComponent {
   @Input() height: string | number = "500px";
   @Input() theme?: Theme;
 
-  headers: AngularHeaderObject[] = dynamicNestedTablesConfig.headers;
+  headers: AngularColumnDef[] = dynamicNestedTablesConfig.headers;
   rows: DynamicCompany[] = [...dynamicNestedTablesData];
   readonly tableProps = dynamicNestedTablesConfig.tableProps;
 

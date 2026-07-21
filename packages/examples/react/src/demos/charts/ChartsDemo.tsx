@@ -7,7 +7,7 @@ const ChartsDemo = ({ height = "400px", theme }: { height?: string | number; the
     <SimpleTable
       columnReordering={chartsConfig.tableProps.columnReordering}
       columnResizing={chartsConfig.tableProps.columnResizing}
-      defaultHeaders={chartsConfig.headers}
+      columns={chartsConfig.headers}
       rows={chartsConfig.rows}
       selectableCells={chartsConfig.tableProps.selectableCells}
       height={height}

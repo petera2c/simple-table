@@ -30,38 +30,38 @@ const THEME_PROPS: PropInfo[] = [
 />`,
   },
   {
-    key: "useHoverRowBackground",
-    name: "useHoverRowBackground",
+    key: "hoverRowBackground",
+    name: "hoverRowBackground",
     required: false,
     description:
       "Enables a background color change when hovering over a row. This provides better visual feedback for users when interacting with the table.",
     type: "boolean",
     example: `<SimpleTable
-  useHoverRowBackground={true}  // Default
+  hoverRowBackground={true}  // Default
   // ... other props
 />`,
   },
   {
-    key: "useOddEvenRowBackground",
-    name: "useOddEvenRowBackground",
+    key: "oddEvenRowBackground",
+    name: "oddEvenRowBackground",
     required: false,
     description:
       "Applies alternating background colors to odd and even rows. This makes it easier to distinguish between adjacent rows, especially in tables with many columns.",
     type: "boolean",
     example: `<SimpleTable
-  useOddEvenRowBackground={true}  // Default
+  oddEvenRowBackground={true}  // Default
   // ... other props
 />`,
   },
   {
-    key: "useOddColumnBackground",
-    name: "useOddColumnBackground",
+    key: "oddColumnBackground",
+    name: "oddColumnBackground",
     required: false,
     description:
       "Applies alternating background colors to odd and even columns. This can help differentiate between adjacent columns in tables with many columns or narrow columns.",
     type: "boolean",
     example: `<SimpleTable
-  useOddColumnBackground={false}  // Default
+  oddColumnBackground={false}  // Default
   // ... other props
 />`,
   },

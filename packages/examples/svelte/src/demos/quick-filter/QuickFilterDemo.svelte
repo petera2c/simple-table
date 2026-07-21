@@ -37,7 +37,7 @@
     </button>
   </div>
   <SimpleTable
-    defaultHeaders={quickFilterConfig.headers}
+    columns={quickFilterConfig.headers}
     rows={quickFilterConfig.rows}
     {height}
     {theme}

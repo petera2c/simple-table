@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject } from "@simple-table/svelte";
+import type { SvelteColumnDef } from "@simple-table/svelte";
 
 export interface ManufacturingRow {
   id: string;
@@ -83,27 +83,27 @@ export function generateManufacturingData(count: number = 8): ManufacturingRow[]
 
 export const manufacturingData = generateManufacturingData(8);
 
-export const manufacturingHeaders: SvelteHeaderObject[] = [
-  { accessor: "productLine", label: "Production Line", width: 180, expandable: true, isSortable: true, isEditable: false, align: "left", type: "string" },
-  { accessor: "station", label: "Workstation", width: 150, isSortable: true, isEditable: false, align: "left", type: "string" },
-  { accessor: "machineType", label: "Machine Type", width: 150, isSortable: true, isEditable: false, align: "left", type: "string" },
+export const manufacturingHeaders: SvelteColumnDef[] = [
+  { accessor: "productLine", label: "Production Line", width: 180, expandable: true, sortable: true, editable: false, align: "left", type: "string" },
+  { accessor: "station", label: "Workstation", width: 150, sortable: true, editable: false, align: "left", type: "string" },
+  { accessor: "machineType", label: "Machine Type", width: 150, sortable: true, editable: false, align: "left", type: "string" },
   {
-    accessor: "status", label: "Status", width: 180, isSortable: true, isEditable: false, align: "center", type: "string",
+    accessor: "status", label: "Status", width: 180, sortable: true, editable: false, align: "center", type: "string",
     valueGetter: ({ row }) => {
       if (row.stations && Array.isArray(row.stations)) return 999;
       const priorityMap: Record<string, number> = { "Unplanned Downtime": 1, Idle: 2, Setup: 3, "Scheduled Maintenance": 4, Running: 5 };
       return priorityMap[String(row.status)] || 999;
     },
   },
-  { accessor: "outputRate", label: "Output (units/shift)", width: 200, isSortable: true, isEditable: false, align: "right", type: "number", aggregation: { type: "sum" } },
-  { accessor: "cycletime", label: "Cycle Time (s)", width: 140, isSortable: true, isEditable: false, align: "right", type: "number", aggregation: { type: "average" } },
-  { accessor: "efficiency", label: "Efficiency", width: 150, isSortable: true, isEditable: false, align: "center", type: "number", aggregation: { type: "average" } },
-  { accessor: "defectRate", label: "Defect Rate", width: 120, isSortable: true, isEditable: false, align: "right", type: "number", aggregation: { type: "average" } },
-  { accessor: "defectCount", label: "Defects", width: 120, isSortable: true, isEditable: false, align: "right", type: "number", aggregation: { type: "sum" } },
-  { accessor: "downtime", label: "Downtime (h)", width: 130, isSortable: true, isEditable: false, align: "right", type: "number", aggregation: { type: "sum" } },
-  { accessor: "utilization", label: "Utilization", width: 130, isSortable: true, isEditable: false, align: "right", type: "number", aggregation: { type: "average" } },
-  { accessor: "energy", label: "Energy (kWh)", width: 130, isSortable: true, isEditable: false, align: "right", type: "number", aggregation: { type: "sum" } },
-  { accessor: "maintenanceDate", label: "Next Maintenance", width: 200, isSortable: true, isEditable: false, align: "center", type: "date" },
+  { accessor: "outputRate", label: "Output (units/shift)", width: 200, sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "sum" } },
+  { accessor: "cycletime", label: "Cycle Time (s)", width: 140, sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "average" } },
+  { accessor: "efficiency", label: "Efficiency", width: 150, sortable: true, editable: false, align: "center", type: "number", aggregation: { type: "average" } },
+  { accessor: "defectRate", label: "Defect Rate", width: 120, sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "average" } },
+  { accessor: "defectCount", label: "Defects", width: 120, sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "sum" } },
+  { accessor: "downtime", label: "Downtime (h)", width: 130, sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "sum" } },
+  { accessor: "utilization", label: "Utilization", width: 130, sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "average" } },
+  { accessor: "energy", label: "Energy (kWh)", width: 130, sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "sum" } },
+  { accessor: "maintenanceDate", label: "Next Maintenance", width: 200, sortable: true, editable: false, align: "center", type: "date" },
 ];
 
 export function getManufacturingStatusColors(status: string, theme?: string) {

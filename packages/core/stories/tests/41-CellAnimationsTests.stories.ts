@@ -16,7 +16,7 @@
  * animated (we don't want to fight the user's pointer mid-drag).
  */
 
-import { HeaderObject, Row, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, Row, SimpleTableVanilla } from "../../src/index";
 import { expect } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable, addParagraph, addControlPanel } from "../utils";
@@ -70,12 +70,12 @@ const createData = (): AnimRow[] => [
   { id: 8, name: "Henry", age: 45, revenue: 95000, city: "Houston" },
 ];
 
-const createHeaders = (): HeaderObject[] => [
-  { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-  { accessor: "name", label: "Name", width: 160, isSortable: true },
-  { accessor: "age", label: "Age", width: 100, isSortable: true, type: "number" },
-  { accessor: "revenue", label: "Revenue", width: 150, isSortable: true, type: "number" },
-  { accessor: "city", label: "City", width: 160, isSortable: true },
+const createHeaders = (): ColumnDef[] => [
+  { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+  { accessor: "name", label: "Name", width: 160, sortable: true },
+  { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },
+  { accessor: "revenue", label: "Revenue", width: 150, sortable: true, type: "number" },
+  { accessor: "city", label: "City", width: 160, sortable: true },
 ];
 
 const findCellByRowAndAccessor = (
@@ -128,7 +128,7 @@ export const ProgrammaticReorderAnimation = {
               onClick: () => {
                 const api = result.table.getAPI();
                 const reversed = [...api.getHeaders()].reverse();
-                result.table.update({ defaultHeaders: reversed });
+                result.table.update({ columns: reversed });
               },
             },
             {
@@ -140,14 +140,14 @@ export const ProgrammaticReorderAnimation = {
                 const b = headers.findIndex((h) => h.accessor === "city");
                 if (a !== -1 && b !== -1) {
                   [headers[a], headers[b]] = [headers[b], headers[a]];
-                  result.table.update({ defaultHeaders: headers });
+                  result.table.update({ columns: headers });
                 }
               },
             },
             {
               label: "Reset",
               onClick: () => {
-                result.table.update({ defaultHeaders: originalHeaders });
+                result.table.update({ columns: originalHeaders });
               },
             },
           ],
@@ -179,7 +179,7 @@ export const ProgrammaticReorderAnimation = {
     const leftBefore = parseFloat(cellBefore!.style.left || "0");
 
     // Step 2: reverse — assert mid-flight transition then settle.
-    table.update({ defaultHeaders: [...original].reverse() });
+    table.update({ columns: [...original].reverse() });
     await tickFrames(2);
 
     const cellMid = findCellByRowAndAccessor(canvasElement, 0, "name");
@@ -197,7 +197,7 @@ export const ProgrammaticReorderAnimation = {
 
     // Step 3: reset back to original.
     await sleep(BEAT);
-    table.update({ defaultHeaders: original });
+    table.update({ columns: original });
     await tickFrames(2);
     const cellResetMid = findCellByRowAndAccessor(canvasElement, 0, "name");
     expect(cellResetMid!.style.transition).toContain("transform");
@@ -209,7 +209,7 @@ export const ProgrammaticReorderAnimation = {
     const a = swapped.findIndex((h) => h.accessor === "name");
     const b = swapped.findIndex((h) => h.accessor === "city");
     [swapped[a], swapped[b]] = [swapped[b], swapped[a]];
-    table.update({ defaultHeaders: swapped });
+    table.update({ columns: swapped });
     // 5 RAFs ≈ 80ms — past the double-rAF FLIP "First"/"Play" handoff and
     // into the active transition, well before SETTLE_PAUSE elapses.
     await tickFrames(5);
@@ -235,7 +235,7 @@ export const ProgrammaticReorderAnimation = {
 
     // Step 5: final reset.
     await sleep(BEAT);
-    table.update({ defaultHeaders: original });
+    table.update({ columns: original });
     await sleep(SETTLE_PAUSE);
 
     const cellFinal = findCellByRowAndAccessor(canvasElement, 0, "name");
@@ -248,7 +248,7 @@ export const ProgrammaticReorderAnimation = {
  *
  * Step 1 is the straightforward case — move the center column (B) to the
  * rightmost position by swapping B and C via
- * `table.update({ defaultHeaders: [...] })`. After that animation settles,
+ * `table.update({ columns: [...] })`. After that animation settles,
  * the play function chains four more reorders (5 total) so we exercise:
  *
  *   - Pairwise neighbour swaps (B↔C, A↔B).
@@ -269,7 +269,7 @@ export const ProgrammaticReorderAnimation = {
  */
 export const SimpleThreeByThreeCenterToRightSwap = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "a", label: "A", width: 120 },
       { accessor: "b", label: "B", width: 120 },
       { accessor: "c", label: "C", width: 120 },
@@ -287,7 +287,7 @@ export const SimpleThreeByThreeCenterToRightSwap = {
     setTable(result.table);
     result.h2.textContent = `Simplest 3×3 column swap · move center → right · ${SLOW_DURATION}ms`;
 
-    const findByAccessor = (accessor: string): HeaderObject => {
+    const findByAccessor = (accessor: string): ColumnDef => {
       const h = result.table
         .getAPI()
         .getHeaders()
@@ -296,7 +296,7 @@ export const SimpleThreeByThreeCenterToRightSwap = {
       return h;
     };
     const setOrder = (accessors: string[]): void => {
-      result.table.update({ defaultHeaders: accessors.map(findByAccessor) });
+      result.table.update({ columns: accessors.map(findByAccessor) });
     };
 
     addControlPanel(
@@ -370,7 +370,7 @@ export const SimpleThreeByThreeCenterToRightSwap = {
       // synchronously then schedules a RAF that resets to translate3d(0,0,0)
       // and applies the transition CSS. Awaiting any RAF here would only
       // ever surface the destination (0,0,0).
-      table.update({ defaultHeaders: nextHeaders });
+      table.update({ columns: nextHeaders });
 
       interface Sample {
         row: number;
@@ -499,7 +499,7 @@ export const SimpleThreeByThreeCenterToRightSwap = {
  *
  * For each of five chained programmatic reorders the test:
  *   1. Snapshots every header cell's `style.left` BEFORE the update.
- *   2. Calls `table.update({ defaultHeaders })` then synchronously reads
+ *   2. Calls `table.update({ columns })` then synchronously reads
  *      the FLIP "First" frame transform on every header.
  *   3. Asserts the inverse `transform-X` equals `oldLeft − newLeft` (±1.5px),
  *      that headers whose index didn't change have no transform, and that
@@ -510,7 +510,7 @@ export const SimpleThreeByThreeCenterToRightSwap = {
  */
 export const HeaderCellsAnimateOnColumnReorder = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "a", label: "A", width: 120 },
       { accessor: "b", label: "B", width: 120 },
       { accessor: "c", label: "C", width: 120 },
@@ -581,7 +581,7 @@ export const HeaderCellsAnimateOnColumnReorder = {
       // CRITICAL: trigger the update and read the FLIP "First" frame
       // synchronously. Awaiting any RAF here would only ever surface
       // translate3d(0,0,0) — the destination state.
-      table.update({ defaultHeaders: nextHeaders });
+      table.update({ columns: nextHeaders });
 
       interface HeaderSample {
         accessor: string;
@@ -697,7 +697,7 @@ export const HeaderCellsAnimateOnColumnReorder = {
  */
 export const HeaderCellsAnimateDuringDragReorder = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "a", label: "A", width: 120 },
       { accessor: "b", label: "B", width: 120 },
       { accessor: "c", label: "C", width: 120 },
@@ -924,7 +924,7 @@ export const HeaderCellsAnimateDuringDragReorder = {
  */
 export const HeaderDragDoesNotFlickerDuringAnimation = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "a", label: "A", width: 120 },
       { accessor: "b", label: "B", width: 120 },
       { accessor: "c", label: "C", width: 120 },
@@ -1147,7 +1147,7 @@ export const ReorderWithoutAnimations = {
               onClick: () => {
                 const api = result.table.getAPI();
                 const reversed = [...api.getHeaders()].reverse();
-                result.table.update({ defaultHeaders: reversed });
+                result.table.update({ columns: reversed });
               },
             },
           ],
@@ -1170,7 +1170,7 @@ export const ReorderWithoutAnimations = {
 
     const api = table.getAPI();
     const reversed = [...api.getHeaders()].reverse();
-    table.update({ defaultHeaders: reversed });
+    table.update({ columns: reversed });
 
     await new Promise((r) => setTimeout(r, 50));
     const cells = Array.from(
@@ -1354,7 +1354,7 @@ export const ReorderAnimatesFromPreviousPositionPerCell = {
 
     const table = getTable();
     const original = table.getAPI().getHeaders();
-    table.update({ defaultHeaders: [...original].reverse() });
+    table.update({ columns: [...original].reverse() });
 
     // CRITICAL: read the FLIP "First" frame *synchronously* — the coordinator
     // sets `transform: translate3d(dx, dy, 0)` inside play() then schedules a
@@ -1450,10 +1450,10 @@ export const ReorderAnimatesFromPreviousPositionPerCell = {
  */
 export const SortSlidesRowsCrossingTheViewportBoundary = {
   render: () => {
-    const headers: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-      { accessor: "name", label: "Name", width: 200, isSortable: true },
-      { accessor: "value", label: "Value", width: 150, isSortable: true, type: "number" },
+    const headers: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+      { accessor: "name", label: "Name", width: 200, sortable: true },
+      { accessor: "value", label: "Value", width: 150, sortable: true, type: "number" },
     ];
     const rows: Row[] = Array.from({ length: 100 }, (_, i) => ({
       id: i + 1,
@@ -1605,7 +1605,7 @@ export const SortSlidesRowsCrossingTheViewportBoundary = {
  * (and header cells) on EVERY `dragover` swap — not just on the final
  * `dragend`. Visually: while the user drags column B sideways, column C
  * should glide left to make room as soon as B's center crosses C's center,
- * the same way a programmatic `table.update({ defaultHeaders })` swap
+ * the same way a programmatic `table.update({ columns })` swap
  * animates.
  *
  * How the host pulls this off:
@@ -1629,7 +1629,7 @@ export const SortSlidesRowsCrossingTheViewportBoundary = {
  */
 export const DragAndDropColumnReorderShouldAnimate = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "a", label: "A", width: 120 },
       { accessor: "b", label: "B", width: 120 },
       { accessor: "c", label: "C", width: 120 },

@@ -8,7 +8,7 @@ export function renderAggregateFunctionsDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: aggregateFunctionsConfig.headers,
+    columns: aggregateFunctionsConfig.headers,
     rows: aggregateFunctionsConfig.rows,
     rowGrouping: aggregateFunctionsConfig.tableProps.rowGrouping,
     columnResizing: true,

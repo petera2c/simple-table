@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnDestroy } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { columnWidthConfig } from "./column-width.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -12,7 +12,7 @@ import "@simple-table/angular/styles.css";
       [autoExpandColumns]="!isMobile"
       [columnResizing]="true"
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
     ></simple-table>
@@ -23,7 +23,7 @@ export class ColumnWidthDemoComponent implements OnInit, OnDestroy {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnWidthConfig.rows;
-  readonly headers: AngularHeaderObject[] = columnWidthConfig.headers;
+  readonly headers: AngularColumnDef[] = columnWidthConfig.headers;
   isMobile = false;
 
   private checkMobile = () => { this.isMobile = window.innerWidth < 768; };

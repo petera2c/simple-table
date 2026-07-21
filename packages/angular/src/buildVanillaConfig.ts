@@ -10,6 +10,17 @@ import type {
 import type { MountRegistry } from "./MountRegistry";
 import { wrapAngularRenderer, wrapCachedAngularRenderer } from "./utils/wrapAngularRenderer";
 
+/** Resolve preferred `columns` or legacy `defaultHeaders`. */
+export function resolveAngularColumns(
+  config: Pick<SimpleTableAngularProps, "columns" | "defaultHeaders">,
+): ReadonlyArray<HeaderObject | AngularHeaderObject> {
+  const headers = config.columns ?? config.defaultHeaders;
+  if (!headers) {
+    throw new Error("SimpleTable requires `columns` or `defaultHeaders`");
+  }
+  return headers;
+}
+
 export function buildVanillaConfig(
   config: SimpleTableAngularProps,
   registry: MountRegistry,
@@ -17,7 +28,8 @@ export function buildVanillaConfig(
   injector: EnvironmentInjector,
 ): SimpleTableConfig {
   const {
-    defaultHeaders,
+    defaultHeaders: _defaultHeaders,
+    columns: _columns,
     rows,
     footerRenderer,
     emptyStateRenderer,
@@ -32,6 +44,20 @@ export function buildVanillaConfig(
     onColumnWidthChange,
     onHeaderEdit,
     onColumnSelect,
+    enableColumnEditor,
+    editColumns,
+    enableColumnEditorInitOpen,
+    editColumnsInitOpen,
+    enablePagination,
+    shouldPaginate,
+    onTableReady,
+    onGridReady,
+    hoverRowBackground,
+    useHoverRowBackground,
+    oddColumnBackground,
+    useOddColumnBackground,
+    oddEvenRowBackground,
+    useOddEvenRowBackground,
     ...rest
   } = config;
 
@@ -114,12 +140,21 @@ export function buildVanillaConfig(
     return transformed;
   }
 
+  const defaultHeaders = resolveAngularColumns(config);
+
   registry.pruneRendererCaches(collectHeaderAccessors(defaultHeaders));
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,
     rows: rows as Row[],
     defaultHeaders: defaultHeaders.map(transformHeader),
+    editColumns: enableColumnEditor ?? editColumns,
+    editColumnsInitOpen: enableColumnEditorInitOpen ?? editColumnsInitOpen,
+    shouldPaginate: enablePagination ?? shouldPaginate,
+    onGridReady: onTableReady ?? onGridReady,
+    useHoverRowBackground: hoverRowBackground ?? useHoverRowBackground,
+    useOddColumnBackground: oddColumnBackground ?? useOddColumnBackground,
+    useOddEvenRowBackground: oddEvenRowBackground ?? useOddEvenRowBackground,
     // Authoritative mount teardown: core calls this before it permanently
     // discards any host element, so the registry destroys exactly the affected
     // Angular ComponentRefs (including CDK Overlay / floating UI).

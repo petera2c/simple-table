@@ -1,9 +1,9 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Define headers
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 100, width: "1fr", type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },
@@ -101,7 +101,7 @@ const EMPLOYEE_DATA = [
 
 const ThemesDemo = ({ height = "400px", theme }: { height?: string | number; theme: Theme }) => {
   return (
-    <SimpleTable defaultHeaders={headers} height={height} rows={EMPLOYEE_DATA} theme={theme} />
+    <SimpleTable columns={headers} height={height} rows={EMPLOYEE_DATA} theme={theme} />
   );
 };
 

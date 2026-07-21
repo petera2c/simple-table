@@ -11,7 +11,7 @@ const TooltipDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={tooltipConfig.headers}
+      columns={tooltipConfig.headers}
       rows={tooltipConfig.rows}
       height={height}
       theme={theme}

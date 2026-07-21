@@ -155,8 +155,8 @@ const AnalyticsDemo = ({
               columnReordering
               columnResizing
               copyHeadersToClipboard
-              defaultHeaders={analyticsDemoConfig.headers}
-              editColumns
+              columns={analyticsDemoConfig.headers}
+              enableColumnEditor
               enableStickyParents={nestedRows}
               expandAll={nestedRows}
               getRowId={({ row }) => {
@@ -171,8 +171,8 @@ const AnalyticsDemo = ({
               rows={analyticsDemoConfig.rows}
               selectableCells
               theme={theme}
-              useHoverRowBackground
-              useOddEvenRowBackground
+              hoverRowBackground
+              oddEvenRowBackground
             />
           )}
         </div>

@@ -1,10 +1,10 @@
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject, CellRendererProps } from "@simple-table/react";
+import type { Theme, ReactColumnDef, CellRendererProps } from "@simple-table/react";
 import { manufacturingConfig, getManufacturingStatusColors } from "./manufacturing.demo-data";
 import type { ManufacturingRow } from "./manufacturing.demo-data";
 import "@simple-table/react/styles.css";
 
-function getHeaders(): ReactHeaderObject[] {
+function getHeaders(): ReactColumnDef[] {
   const baseHeaders = [...manufacturingConfig.headers];
   return baseHeaders.map((h) => {
     if (h.accessor === "productLine") {
@@ -226,7 +226,7 @@ const ManufacturingDemo = ({
   <SimpleTable
     columnResizing
     columnReordering
-    defaultHeaders={getHeaders()}
+    columns={getHeaders()}
     height={height}
     rowGrouping={["stations"]}
     rows={manufacturingConfig.rows}

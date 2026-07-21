@@ -1,11 +1,11 @@
 /**
  * TOOLTIPS TESTS
- * Tests for HeaderObject.tooltip - header tooltip (custom .st-tooltip on hover, no native title to avoid double tooltip).
+ * Tests for ColumnDef.tooltip - header tooltip (custom .st-tooltip on hover, no native title to avoid double tooltip).
  */
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -30,7 +30,7 @@ const createData = () => [
 
 export const HeaderTooltipShownOnHover = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "name",
@@ -58,7 +58,7 @@ export const HeaderTooltipShownOnHover = {
 
 export const HeaderWithoutTooltip = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
     ];
@@ -78,7 +78,7 @@ export const HeaderWithoutTooltip = {
 
 export const MultipleHeadersWithTooltips = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number", tooltip: "Unique identifier" },
       { accessor: "name", label: "Name", width: 150, type: "string", tooltip: "Display name" },
     ];

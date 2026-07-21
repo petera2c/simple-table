@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="cellHighlightingConfig.headers"
+    :columns="cellHighlightingConfig.headers"
     :rows="cellHighlightingConfig.rows"
     :height="height"
     :theme="theme"

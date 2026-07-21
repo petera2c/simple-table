@@ -76,7 +76,7 @@ export default function Page() {
       ]}
       faqs={[
         { question: "Does Simple Table for Angular support signals?", answer: "Yes—headers and rows accept signals or static values. Resize updates flow through Angular's change detection automatically." },
-        { question: "Can I disable resize per column?", answer: "Yes. Set isResizable: false on individual HeaderObject entries to keep specific columns fixed." },
+        { question: "Can I disable resize per column?", answer: "Yes. Set isResizable: false on individual ColumnDef entries to keep specific columns fixed." },
         { question: "What about responsive / mobile?", answer: "Disable autoExpandColumns at small viewports and let the grid scroll horizontally. Resize handles still work on touch." },
         { question: "How does this integrate with sorting and filtering?", answer: "Resizing is independent of sort/filter state. Users can resize while sorted/filtered without losing their position." },
       ]}

@@ -17,12 +17,12 @@ function formatTableHeight(height?: string | number | null): string {
 export default function AnalyticsExample({
   height,
   icons,
-  onGridReady,
+  onTableReady,
   theme,
 }: {
   height?: string | number | null;
   icons?: ReactIconsConfig;
-  onGridReady?: () => void;
+  onTableReady?: () => void;
   theme?: Theme;
 }) {
   const [activeId, setActiveId] = useState(analyticsPresets[0].id);
@@ -153,8 +153,8 @@ export default function AnalyticsExample({
               columnReordering
               columnResizing
               copyHeadersToClipboard
-              defaultHeaders={analyticsHeaders}
-              editColumns
+              columns={analyticsHeaders}
+              enableColumnEditor
               enableStickyParents={nestedRows}
               expandAll={nestedRows}
               getRowId={({ row }) => {
@@ -166,13 +166,13 @@ export default function AnalyticsExample({
               includeHeadersInCSVExport
               initialSortColumn={isPivoted ? undefined : "sales"}
               initialSortDirection={isPivoted ? undefined : "desc"}
-              onGridReady={onGridReady}
+              onTableReady={onTableReady}
               pivot={active.pivot}
               rows={analyticsRows}
               selectableCells
               theme={theme}
-              useHoverRowBackground
-              useOddEvenRowBackground
+              hoverRowBackground
+              oddEvenRowBackground
             />
           )}
         </div>

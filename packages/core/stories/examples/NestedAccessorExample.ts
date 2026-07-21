@@ -2,20 +2,20 @@
  * Nested Accessor Example – vanilla port of React NestedAccessorExample.
  * Same headers, data, and props as React version.
  */
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
-const nestedAccessorHeaders: HeaderObject[] = [
+const nestedAccessorHeaders: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
-  { accessor: "name", label: "Player Name", width: 200, type: "string", isSortable: true },
-  { accessor: "team", label: "Team", width: 150, type: "string", isSortable: true, filterable: true },
+  { accessor: "name", label: "Player Name", width: 200, type: "string", sortable: true },
+  { accessor: "team", label: "Team", width: 150, type: "string", sortable: true, filterable: true },
   {
     accessor: "stats.points",
     label: "Points",
     width: 100,
     type: "number",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     align: "right",
     valueFormatter: ({ value }: { value?: unknown }) => Number(value).toFixed(1),
@@ -25,7 +25,7 @@ const nestedAccessorHeaders: HeaderObject[] = [
     label: "Assists",
     width: 100,
     type: "number",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     align: "right",
     valueFormatter: ({ value }: { value?: unknown }) => Number(value).toFixed(1),
@@ -35,7 +35,7 @@ const nestedAccessorHeaders: HeaderObject[] = [
     label: "Rebounds",
     width: 100,
     type: "number",
-    isSortable: true,
+    sortable: true,
     align: "right",
     valueFormatter: ({ value }: { value?: unknown }) => Number(value).toFixed(1),
   },
@@ -44,7 +44,7 @@ const nestedAccessorHeaders: HeaderObject[] = [
     label: "Latest Rank",
     width: 120,
     type: "number",
-    isSortable: true,
+    sortable: true,
     filterable: true,
     align: "right",
     valueFormatter: ({ value }: { value?: unknown }) => `#${value}`,
@@ -54,7 +54,7 @@ const nestedAccessorHeaders: HeaderObject[] = [
     label: "Performance Rating",
     width: 160,
     type: "number",
-    isSortable: true,
+    sortable: true,
     align: "right",
     valueFormatter: ({ value }: { value?: unknown }) => `${Number(value).toFixed(1)}%`,
   },
@@ -63,7 +63,7 @@ const nestedAccessorHeaders: HeaderObject[] = [
     label: "Last Game Score",
     width: 140,
     type: "number",
-    isSortable: true,
+    sortable: true,
     align: "right",
     valueFormatter: ({ value }: { value?: unknown }) => `${value} pts`,
   },
@@ -72,7 +72,7 @@ const nestedAccessorHeaders: HeaderObject[] = [
     label: "Top Award",
     width: 180,
     type: "string",
-    isSortable: true,
+    sortable: true,
     filterable: true,
   },
   {
@@ -80,7 +80,7 @@ const nestedAccessorHeaders: HeaderObject[] = [
     label: "Salary",
     width: 150,
     type: "number",
-    isSortable: true,
+    sortable: true,
     align: "right",
     valueFormatter: ({ value }: { value?: unknown }) =>
       new Intl.NumberFormat("en-US", {
@@ -95,7 +95,7 @@ const nestedAccessorHeaders: HeaderObject[] = [
     label: "Years Left",
     width: 120,
     type: "number",
-    isSortable: true,
+    sortable: true,
     align: "center",
     valueFormatter: ({ value }: { value?: unknown }) =>
       `${value} ${Number(value) === 1 ? "year" : "years"}`,

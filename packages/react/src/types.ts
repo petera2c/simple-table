@@ -148,8 +148,8 @@ export interface ReactColumnEditorConfig extends Omit<
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
 /**
- * Column definition for `defaultHeaders`: same column metadata as core columns, but
- * `cellRenderer` / `headerRenderer` / `children` / `nestedTable` are React-only.
+ * Column definition for `columns` / `defaultHeaders`: same column metadata as core
+ * columns, but `cellRenderer` / `headerRenderer` / `children` / `nestedTable` are React-only.
  */
 export interface ReactHeaderObject extends Omit<
   HeaderObject,
@@ -169,12 +169,15 @@ export interface ReactHeaderObject extends Omit<
   >;
 }
 
+/** Preferred name for React column definitions. Alias of {@link ReactHeaderObject}. */
+export type ReactColumnDef = ReactHeaderObject;
+
 // ─── Top-level props ──────────────────────────────────────────────────────────
 // Mirrors SimpleTableProps with React-specific renderer/icon types. Use `ref` +
 // `forwardRef<TableAPI, …>` for the imperative API.
 //
 //   Overridden to React equivalents:
-//     - defaultHeaders         → ReadonlyArray<ReactHeaderObject>
+//     - columns / defaultHeaders → ReadonlyArray<ReactHeaderObject>
 //     - footerRenderer         → React.ComponentType<FooterRendererProps>
 //     - loadingStateRenderer   → React.ComponentType<…> | React.ReactNode
 //     - errorStateRenderer     → React.ComponentType<…> | React.ReactNode
@@ -188,6 +191,7 @@ export interface SimpleTableReactProps extends Omit<
   SimpleTableProps,
   // Overridden below with React types
   | "defaultHeaders"
+  | "columns"
   | "footerRenderer"
   | "emptyStateRenderer"
   | "errorStateRenderer"
@@ -203,7 +207,13 @@ export interface SimpleTableReactProps extends Omit<
   | "onHeaderEdit"
   | "onColumnSelect"
 > {
-  defaultHeaders: ReadonlyArray<ReactHeaderObject>;
+  /**
+   * Column definitions.
+   * @deprecated Prefer {@link columns}
+   */
+  defaultHeaders?: ReadonlyArray<ReactHeaderObject>;
+  /** Column definitions. Preferred over `defaultHeaders`. */
+  columns?: ReadonlyArray<ReactHeaderObject>;
   onColumnOrderChange?: (newHeaders: ReactHeaderObject[]) => void;
   onColumnWidthChange?: (headers: ReactHeaderObject[]) => void;
   onHeaderEdit?: (header: ReactHeaderObject, newLabel: string) => void;

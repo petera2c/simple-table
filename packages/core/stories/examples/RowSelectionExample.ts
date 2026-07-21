@@ -2,7 +2,7 @@
  * RowSelection Example – vanilla port of React RowSelectionExample.
  * Same data, headers, and props as React version.
  */
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
@@ -19,17 +19,17 @@ const ROWS: Row[] = [
   { id: 10, name: "Hannah Montana", age: 22, role: "Junior Developer", department: "Engineering", startDate: "2023-06-01", status: "Active" },
 ];
 
-const HEADERS: HeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80, isSortable: true, filterable: true },
-  { accessor: "name", label: "Name", minWidth: 120, width: "1fr", isSortable: true, filterable: true },
-  { accessor: "age", label: "Age", width: 80, isSortable: true, filterable: true },
-  { accessor: "role", label: "Role", width: 140, isSortable: true, filterable: true },
-  { accessor: "department", label: "Department", width: 120, isSortable: true, filterable: true },
+const HEADERS: ColumnDef[] = [
+  { accessor: "id", label: "ID", width: 80, sortable: true, filterable: true },
+  { accessor: "name", label: "Name", minWidth: 120, width: "1fr", sortable: true, filterable: true },
+  { accessor: "age", label: "Age", width: 80, sortable: true, filterable: true },
+  { accessor: "role", label: "Role", width: 140, sortable: true, filterable: true },
+  { accessor: "department", label: "Department", width: 120, sortable: true, filterable: true },
   {
     accessor: "status",
     label: "Status",
     width: 100,
-    isSortable: true,
+    sortable: true,
     filterable: true,
     cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
       const span = document.createElement("span");
@@ -43,7 +43,7 @@ const HEADERS: HeaderObject[] = [
 
 export const rowSelectionExampleDefaults = {
   columnResizing: true,
-  editColumns: true,
+  enableColumnEditor: true,
   selectableCells: false,
   columnReordering: true,
   enableRowSelection: true,

@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject } from "simple-table-core";
+import type { Theme, ColumnDef } from "simple-table-core";
 import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
 import "simple-table-core/styles.css";
 
@@ -23,7 +23,7 @@ export function renderColumnResizingDemo(
   wrapper.appendChild(tableContainer);
   container.appendChild(wrapper);
 
-  let headers: HeaderObject[] = [...columnResizingHeaders];
+  let headers: ColumnDef[] = [...columnResizingHeaders];
   try {
     const saved = localStorage.getItem(COLUMN_RESIZING_STORAGE_KEY);
     if (saved) {
@@ -33,12 +33,12 @@ export function renderColumnResizingDemo(
   } catch { /* ignore */ }
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: headers,
+    columns: headers,
     rows: columnResizingData,
     height: options?.height ?? "400px",
     theme: options?.theme,
     columnResizing: true,
-    onColumnWidthChange: (updatedHeaders: HeaderObject[]) => {
+    onColumnWidthChange: (updatedHeaders: ColumnDef[]) => {
       try {
         const widthMap: Record<string, unknown> = {};
         for (const h of updatedHeaders) widthMap[h.accessor] = h.width;

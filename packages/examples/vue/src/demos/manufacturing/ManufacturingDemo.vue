@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueHeaderObject, CellRendererProps } from "@simple-table/vue";
+import type { Theme, VueColumnDef, CellRendererProps } from "@simple-table/vue";
 import { manufacturingConfig, getManufacturingStatusColors } from "./manufacturing.demo-data";
 import type { ManufacturingRow } from "./manufacturing.demo-data";
 import "@simple-table/vue/styles.css";
@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
   height: "400px",
 });
 
-function getHeaders(): VueHeaderObject[] {
+function getHeaders(): VueColumnDef[] {
   return manufacturingConfig.headers.map((col) => {
     if (col.accessor === "productLine") {
       return {
@@ -226,7 +226,7 @@ const headers = getHeaders();
 
 <template>
   <SimpleTable
-    :default-headers="headers"
+    :columns="headers"
     :rows="manufacturingConfig.rows"
     :height="props.height"
     :theme="props.theme"

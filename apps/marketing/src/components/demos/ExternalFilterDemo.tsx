@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Accessor, TableFilterState, Theme, CellRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, Accessor, TableFilterState, Theme, CellRendererProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Type for our sample data
@@ -219,7 +219,7 @@ const sampleData: EmployeeData[] = [
   },
 ];
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   {
     accessor: "name",
     label: "Name",
@@ -378,7 +378,7 @@ const ExternalFilterDemo = ({ theme }: { theme?: Theme }) => {
       </div>
 
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         rows={filteredData} // We provide the pre-filtered data
         onFilterChange={handleFilterChange} // Handle filter changes externally
         externalFilterHandling={true} // Disable internal filtering logic

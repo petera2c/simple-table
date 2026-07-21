@@ -1,11 +1,11 @@
 /**
  * AGGREGATE FUNCTIONS TESTS
- * Tests for HeaderObject.aggregation (sum, average, count, min, max, custom, parseValue, formatResult).
+ * Tests for ColumnDef.aggregation (sum, average, count, min, max, custom, parseValue, formatResult).
  */
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -46,7 +46,7 @@ const simpleGroupedData = () => [
 
 export const AggregationSum = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
       {
         accessor: "amount",
@@ -77,7 +77,7 @@ export const AggregationSum = {
 
 export const AggregationAverage = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
       {
         accessor: "score",
@@ -106,7 +106,7 @@ export const AggregationAverage = {
 
 export const AggregationCount = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
       {
         accessor: "id",
@@ -135,7 +135,7 @@ export const AggregationCount = {
 
 export const AggregationMinMax = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
       {
         accessor: "score",
@@ -155,7 +155,7 @@ export const AggregationMinMax = {
     const data = [
       { id: "g1", name: "Group", items: [{ id: 1, name: "A", score: 10 }, { id: 2, name: "B", score: 90 }] },
     ];
-    const headersWithTwoCols: HeaderObject[] = [
+    const headersWithTwoCols: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
       { accessor: "score", label: "Min", width: 80, type: "number", aggregation: { type: "min" } },
       { accessor: "score", label: "Max", width: 80, type: "number", aggregation: { type: "max" } },
@@ -187,7 +187,7 @@ export const AggregationParseAndFormat = {
         ],
       },
     ];
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
       {
         accessor: "amount",
@@ -221,7 +221,7 @@ export const AggregationParseAndFormat = {
 
 export const AggregationCustom = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
       {
         accessor: "amount",
@@ -284,7 +284,7 @@ export const HierarchicalAggregation = {
       },
     ];
 
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
       {
         accessor: "salary",

@@ -47,12 +47,12 @@ export default function FromNgxDatatablePage() {
       installCommand="npm install @simple-table/angular"
       mappingRows={[
         { competitor: "[rows]", simpleTable: "[rows]", notes: "See the Simple Table docs for the row shape." },
-        { competitor: "[columns]", simpleTable: "[defaultHeaders]", notes: "prop → accessor; name → label." },
+        { competitor: "[columns]", simpleTable: "[columns]", notes: "prop → accessor; name → label." },
         { competitor: "[columnMode]='force'", simpleTable: "Width-based layout", notes: "Set explicit widths or use 'minmax' helpers on Simple Table headers." },
         { competitor: "[scrollbarV]='true'", simpleTable: "height + virtualization (built-in)", notes: "Set a height; row virtualization kicks in automatically." },
-        { competitor: "ngx-datatable-column", simpleTable: "HeaderObject.cellRenderer", notes: "Replace template-projection columns with renderer components." },
+        { competitor: "ngx-datatable-column", simpleTable: "ColumnDef.cellRenderer", notes: "Replace template-projection columns with renderer components." },
         { competitor: "[selected] / (select)", simpleTable: "selectableCells / selectableColumns", notes: "Configure on the table." },
-        { competitor: "[sorts]", simpleTable: "Initial sort on HeaderObject", notes: "Set HeaderObject.sortDirection on the column you want sorted." },
+        { competitor: "[sorts]", simpleTable: "Initial sort on ColumnDef", notes: "Set ColumnDef.sortDirection on the column you want sorted." },
         { competitor: "Theme classes (material/dark)", simpleTable: "@simple-table/angular/styles.css", notes: "Theme via CSS variables." },
       ]}
       migrationSteps={[
@@ -67,7 +67,7 @@ import "@simple-table/angular/styles.css";`,
         },
         {
           title: "Convert columns",
-          body: <p>Convert each ngx-datatable column to a HeaderObject. Replace template projection with cellRenderer components.</p>,
+          body: <p>Convert each ngx-datatable column to a ColumnDef. Replace template projection with cellRenderer components.</p>,
         },
         {
           title: "Reshape your row data",

@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, AngularIconsConfig, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, AngularIconsConfig, Row, Theme } from "@simple-table/angular";
 import { customIconsConfig } from "./custom-icons.demo-data";
 import {
   DemoExpandIconComponent,
@@ -19,7 +19,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
       [icons]="icons"
@@ -31,7 +31,7 @@ export class CustomIconsDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = customIconsConfig.rows;
-  readonly headers: AngularHeaderObject[] = customIconsConfig.headers;
+  readonly headers: AngularColumnDef[] = customIconsConfig.headers;
   readonly icons: AngularIconsConfig = {
     sortUp: DemoSortUpIconComponent,
     sortDown: DemoSortDownIconComponent,

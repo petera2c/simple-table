@@ -10,7 +10,7 @@ export default function ColumnReorderingDemo(props: { height?: string | number; 
   return (
     <SimpleTable
       columnReordering
-      defaultHeaders={headers()}
+      columns={headers()}
       rows={columnReorderingConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

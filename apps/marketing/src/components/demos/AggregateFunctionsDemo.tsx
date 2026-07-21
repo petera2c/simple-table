@@ -1,8 +1,8 @@
 import { SimpleTable } from "@simple-table/react";
-import type { CellValue, ReactHeaderObject, Theme, ValueFormatterProps } from "@simple-table/react";
+import type { CellValue, ReactColumnDef, Theme, ValueFormatterProps } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   {
     accessor: "followers",
@@ -422,7 +422,7 @@ const AggregateFunctionsDemo = ({
   return (
     <SimpleTable
       columnResizing
-      defaultHeaders={headers}
+      columns={headers}
       rows={rows}
       rowGrouping={["categories", "creators"]}
       height={height}

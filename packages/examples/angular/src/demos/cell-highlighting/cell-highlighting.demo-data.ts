@@ -1,14 +1,14 @@
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
 
-export const cellHighlightingHeaders: AngularHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-  { accessor: "name", label: "Name", minWidth: 80, width: "1fr", isSortable: true, type: "string" },
-  { accessor: "age", label: "Age", width: 100, isSortable: true, type: "number" },
-  { accessor: "role", label: "Role", width: 150, isSortable: true, type: "string" },
-  { accessor: "department", label: "Department", width: 150, isSortable: true, type: "string" },
-  { accessor: "startDate", label: "Start Date", width: 150, isSortable: true, type: "date" },
+export const cellHighlightingHeaders: AngularColumnDef[] = [
+  { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+  { accessor: "name", label: "Name", minWidth: 80, width: "1fr", sortable: true, type: "string" },
+  { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },
+  { accessor: "role", label: "Role", width: 150, sortable: true, type: "string" },
+  { accessor: "department", label: "Department", width: 150, sortable: true, type: "string" },
+  { accessor: "startDate", label: "Start Date", width: 150, sortable: true, type: "date" },
 ];
 
 export const cellHighlightingData = [

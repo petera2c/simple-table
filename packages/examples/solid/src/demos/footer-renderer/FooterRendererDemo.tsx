@@ -40,9 +40,9 @@ export default function FooterRendererDemo(props: { height?: string | number; th
 
   return (
     <SimpleTable
-      defaultHeaders={footerRendererConfig.headers}
+      columns={footerRendererConfig.headers}
       rows={footerRendererConfig.rows}
-      shouldPaginate={true}
+      enablePagination={true}
       rowsPerPage={10}
       height={props.height ?? "400px"}
       theme={props.theme}

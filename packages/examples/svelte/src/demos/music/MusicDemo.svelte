@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteHeaderObject, CellRenderer } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef, CellRenderer } from "@simple-table/svelte";
   import { musicData, musicHeaders } from "./music.demo-data";
   import "@simple-table/svelte/styles.css";
   import "./music-theme.css";
@@ -41,27 +41,27 @@
     reachFollowersRatio: MusicRatioCell,
   };
 
-  function applyMusicCellRenderers(hdrs: SvelteHeaderObject[]): SvelteHeaderObject[] {
+  function applyMusicCellRenderers(hdrs: SvelteColumnDef[]): SvelteColumnDef[] {
     return hdrs.map((h) => {
       const acc = String(h.accessor);
-      const next: SvelteHeaderObject = { ...h };
+      const next: SvelteColumnDef = { ...h };
       if (acc === "rank") next.pinned = "left";
       if (acc === "artistName") next.pinned = "left";
       const R = renderers[acc];
       if (R) next.cellRenderer = R as CellRenderer;
-      if (h.children) next.children = applyMusicCellRenderers(h.children as SvelteHeaderObject[]);
+      if (h.children) next.children = applyMusicCellRenderers(h.children as SvelteColumnDef[]);
       return next;
     });
   }
 
   const headers = $derived(
-    applyMusicCellRenderers(JSON.parse(JSON.stringify(musicHeaders)) as SvelteHeaderObject[]),
+    applyMusicCellRenderers(JSON.parse(JSON.stringify(musicHeaders)) as SvelteColumnDef[]),
   );
 </script>
 
 <div class="music-theme-container" style="font-family: Inter">
   <SimpleTable
-    defaultHeaders={headers}
+    columns={headers}
     rows={[...musicData]}
     {height}
     {theme}

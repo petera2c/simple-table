@@ -8,7 +8,7 @@ export function renderColumnPinningDemo(
   options?: { height?: string | number; theme?: Theme },
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: columnPinningConfig.headers,
+    columns: columnPinningConfig.headers,
     rows: columnPinningConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

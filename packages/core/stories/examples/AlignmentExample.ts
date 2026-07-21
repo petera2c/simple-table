@@ -13,7 +13,7 @@ export const alignmentExampleDefaults = {
   columnReordering: true,
   selectableCells: true,
   selectableColumns: true,
-  editColumns: true,
+  enableColumnEditor: true,
   height: "calc(100dvh - 112px)",
 };
 
@@ -32,7 +32,7 @@ export function renderAlignmentExample(args?: Partial<UniversalVanillaArgs>): HT
 
   const options = { ...defaultVanillaArgs, ...alignmentExampleDefaults, ...args };
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: RETAIL_SALES_HEADERS,
+    columns: RETAIL_SALES_HEADERS,
     rows: generateRetailSalesData(),
     rowGrouping: ["stores"],
     getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),

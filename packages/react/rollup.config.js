@@ -96,8 +96,9 @@ export default {
       tsconfig: "tsconfig.build.json",
       exclude: ["node_modules/**", "src/**/__tests__/**"],
       clean: true,
-      // Watch aliases core source into this package; typechecking that graph
-      // here is brittle. Prod keeps core external — typecheck that graph.
+      // rpt2 forces importHelpers:true; tslib is a devDependency so typecheck
+      // works. Emit still inlines helpers — consumers do not need tslib.
+      // Watch aliases core source; typechecking that graph is brittle.
       check: !isDev,
       useTsconfigDeclarationDir: !isDev,
       tsconfigOverride: {

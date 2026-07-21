@@ -4,6 +4,11 @@ import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject
 import Row from "../types/Row";
 import { CustomTheme, areCustomThemesEqual } from "../types/CustomTheme";
 import RowState from "../types/RowState";
+import {
+  normalizeConfig,
+  normalizeConfigPatch,
+  type SimpleTableConfigInput,
+} from "../utils/normalizeConfig";
 
 import { AnimationCoordinator } from "../managers/AnimationCoordinator";
 import { AutoScaleManager } from "../managers/AutoScaleManager";
@@ -66,7 +71,8 @@ import "../styles/all-themes.css";
  */
 const isDevEnvironment = (): boolean => {
   try {
-    return typeof process !== "undefined" && !!process.env && process.env.NODE_ENV !== "production";
+    const proc = (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process;
+    return !!proc?.env && proc.env.NODE_ENV !== "production";
   } catch {
     return false;
   }
@@ -243,26 +249,29 @@ export class SimpleTableVanilla {
    */
   private lastRenderedVisibilityKey: string | null = null;
 
-  constructor(container: HTMLElement, config: SimpleTableConfig) {
+  constructor(container: HTMLElement, config: SimpleTableConfigInput) {
     this.container = container;
-    this.config = config;
+    // Collapse consumer aliases (`columns`, `enablePagination`, …) before any
+    // internal reads — `this.config` is the only shape the rest of the class uses.
+    this.config = normalizeConfig(config);
+    const resolved = this.config;
 
-    this.customTheme = TableInitializer.mergeCustomTheme(config);
-    this.mergedColumnEditorConfig = TableInitializer.mergeColumnEditorConfig(config);
-    this.resolvedIcons = TableInitializer.resolveIcons(config);
+    this.customTheme = TableInitializer.mergeCustomTheme(resolved);
+    this.mergedColumnEditorConfig = TableInitializer.mergeColumnEditorConfig(resolved);
+    this.resolvedIcons = TableInitializer.resolveIcons(resolved);
 
-    this.localRows = [...config.rows];
-    this.headers = [...config.defaultHeaders];
-    this.pristineDefaultHeaders = deepClone(config.defaultHeaders);
-    this.columnEditorOpen = config.editColumnsInitOpen ?? false;
-    this.internalIsLoading = config.isLoading ?? false;
+    this.localRows = [...resolved.rows];
+    this.headers = [...resolved.defaultHeaders];
+    this.pristineDefaultHeaders = deepClone(resolved.defaultHeaders);
+    this.columnEditorOpen = resolved.editColumnsInitOpen ?? false;
+    this.internalIsLoading = resolved.isLoading ?? false;
 
     // Apply pivot before measuring headers / collapsed state so the first paint
     // uses generated columns when `pivot` is configured at mount.
     this.pivotManager = new PivotManager({
       sourceRows: this.localRows,
       fieldHeaders: this.pristineDefaultHeaders,
-      pivot: config.pivot ?? null,
+      pivot: resolved.pivot ?? null,
     });
     const initialPivot = this.pivotManager.getState();
     if (initialPivot.active) {
@@ -272,7 +281,7 @@ export class SimpleTableVanilla {
     this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
     this.collapsedHeaders = TableInitializer.getInitialCollapsedHeaders(this.headers);
     this.expandedDepths = TableInitializer.getInitialExpandedDepths({
-      ...config,
+      ...resolved,
       rowGrouping: this.getEffectiveRowGrouping(),
     });
 
@@ -1755,9 +1764,12 @@ export class SimpleTableVanilla {
     );
   }
 
-  update(config: Partial<SimpleTableConfig>): void {
+  update(config: Partial<SimpleTableConfigInput>): void {
     this.isUpdating = true;
-    this.config = { ...this.config, ...config };
+    const patch = normalizeConfigPatch(config);
+    this.config = { ...this.config, ...patch };
+    // Rebind so the rest of this method reads normalized keys (`defaultHeaders`, etc.).
+    config = patch as Partial<SimpleTableConfigInput>;
 
     if (config.animations !== undefined) {
       this.applyAnimationsConfig(config.animations);

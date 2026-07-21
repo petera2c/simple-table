@@ -14,7 +14,7 @@ import Link from "next/link";
 const COLUMN_VISIBILITY_PROPS: PropInfo[] = [
   {
     key: "hide",
-    name: "HeaderObject.hide",
+    name: "ColumnDef.hide",
     required: false,
     description:
       "Controls the initial visibility of the column. When true, the column will be hidden by default.",
@@ -33,27 +33,27 @@ const COLUMN_VISIBILITY_PROPS: PropInfo[] = [
 }`,
   },
   {
-    key: "editColumns",
-    name: "editColumns",
+    key: "enableColumnEditor",
+    name: "enableColumnEditor",
     required: false,
     description:
       "Enables the column visibility controls, allowing users to show/hide columns through a UI panel.",
     type: "boolean",
     example: `<SimpleTable
-  editColumns={true}
+  enableColumnEditor={true}
   // ... other props
 />`,
   },
   {
-    key: "editColumnsInitOpen",
-    name: "editColumnsInitOpen",
+    key: "enableColumnEditorInitOpen",
+    name: "enableColumnEditorInitOpen",
     required: false,
     description:
-      "Opens the column visibility menu by default when the table loads. Requires editColumns to be true.",
+      "Opens the column visibility menu by default when the table loads. Requires enableColumnEditor to be true.",
     type: "boolean",
     example: `<SimpleTable
-  editColumns={true}
-  editColumnsInitOpen={true}
+  enableColumnEditor={true}
+  enableColumnEditorInitOpen={true}
   // ... other props
 />`,
   },
@@ -66,7 +66,7 @@ const COLUMN_VISIBILITY_PROPS: PropInfo[] = [
     type: "boolean",
     example: `<SimpleTable
   ref={tableRef}
-  editColumns
+  enableColumnEditor
   columnEditorConfig={{ showToggle: false }}
 />
 
@@ -82,7 +82,7 @@ const COLUMN_VISIBILITY_PROPS: PropInfo[] = [
       "Callback triggered when column visibility changes. Receives a ColumnVisibilityState object mapping each column accessor to its visibility state (true = visible, false = hidden). Perfect for persisting user preferences or syncing visibility state with external storage.",
     type: "(visibilityState: ColumnVisibilityState) => void",
     example: `<SimpleTable
-  editColumns={true}
+  enableColumnEditor={true}
   onColumnVisibilityChange={(visibilityState) => {
     console.log('Visibility changed:', visibilityState);
     // Example: { name: true, email: true, phone: false }
@@ -98,7 +98,7 @@ const COLUMN_VISIBILITY_PROPS: PropInfo[] = [
   },
   {
     key: "excludeFromRender",
-    name: "HeaderObject.excludeFromRender",
+    name: "ColumnDef.excludeFromRender",
     required: false,
     description:
       "When true, excludes the column from both the rendered table and the column editor. The column is still included in CSV exports. Useful for ID columns or metadata that should be exported but not displayed or toggled by users.",
@@ -167,7 +167,7 @@ const ColumnVisibilityContent = () => {
           </code>{" "}
           property in the header objects and the{" "}
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            editColumns
+            enableColumnEditor
           </code>{" "}
           prop on the SimpleTable component.
         </p>
@@ -267,7 +267,7 @@ const ColumnVisibilityContent = () => {
           </code>
           ,{" "}
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            isEssential
+            essential
           </code>
           ,{" "}
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">

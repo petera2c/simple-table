@@ -384,7 +384,7 @@ export function SimpleTableExample({ data, columns }) {
   return (
     <SimpleTable
       rows={data}
-      defaultHeaders={columns}
+      columns={columns}
       
       height={400}
     />

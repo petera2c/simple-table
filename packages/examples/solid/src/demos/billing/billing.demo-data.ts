@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SolidHeaderObject } from "@simple-table/solid";
+import type { SolidColumnDef } from "@simple-table/solid";
 
 export interface BillingRow {
   id: string | number;
@@ -85,8 +85,8 @@ export function generateBillingData(count: number = 30): BillingRow[] {
 
 export const billingData = generateBillingData(30);
 
-function generateMonthHeaders(): SolidHeaderObject[] {
-  const headers: SolidHeaderObject[] = [];
+function generateMonthHeaders(): SolidColumnDef[] {
+  const headers: SolidColumnDef[] = [];
   const year = 2024;
   for (let monthIndex = 11; monthIndex >= 0; monthIndex--) {
     const fullMonthName = new Date(year, monthIndex).toLocaleString("default", { month: "long" });
@@ -95,8 +95,8 @@ function generateMonthHeaders(): SolidHeaderObject[] {
       accessor: `month_${mo}_${year}`,
       label: `${fullMonthName} ${year}`,
       width: 200,
-      isSortable: true,
-      isEditable: false,
+      sortable: true,
+      editable: false,
       align: "right",
       type: "number",
       children: [
@@ -105,8 +105,8 @@ function generateMonthHeaders(): SolidHeaderObject[] {
           label: "Balance",
           accessor: `balance_${mo}_${year}`,
           width: 200,
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           align: "right",
           type: "number",
           aggregation: { type: "sum" },
@@ -120,8 +120,8 @@ function generateMonthHeaders(): SolidHeaderObject[] {
           label: "Revenue",
           accessor: `revenue_${mo}_${year}`,
           width: 200,
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           align: "right",
           type: "number",
           aggregation: { type: "sum" },
@@ -136,14 +136,14 @@ function generateMonthHeaders(): SolidHeaderObject[] {
   return headers;
 }
 
-export const billingHeaders: SolidHeaderObject[] = [
+export const billingHeaders: SolidColumnDef[] = [
   {
     accessor: "name",
     label: "Name",
     width: 250,
     expandable: true,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "left",
     pinned: "left",
     type: "string",
@@ -152,8 +152,8 @@ export const billingHeaders: SolidHeaderObject[] = [
     accessor: "amount",
     label: "Total Amount",
     width: 130,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
@@ -166,8 +166,8 @@ export const billingHeaders: SolidHeaderObject[] = [
     accessor: "deferredRevenue",
     label: "Deferred Revenue",
     width: 180,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
@@ -180,8 +180,8 @@ export const billingHeaders: SolidHeaderObject[] = [
     accessor: "recognizedRevenue",
     label: "Recognized Revenue",
     width: 180,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },

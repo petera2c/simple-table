@@ -493,10 +493,10 @@ function MyTable() {
               <CodeBlock
                 className="mb-6"
                 code={`<SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   
-  shouldPaginate={true}
+  enablePagination={true}
   rowsPerPage={10}
   footerRenderer={({
     currentPage,
@@ -895,10 +895,10 @@ const headers = [
 const MyDataTable = ({ data }) => {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={data}
       
-      shouldPaginate={true}
+      enablePagination={true}
       rowsPerPage={10}
       footerRenderer={({
         currentPage,

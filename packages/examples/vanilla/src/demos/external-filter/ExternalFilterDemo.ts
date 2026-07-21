@@ -24,7 +24,7 @@ export function renderExternalFilterDemo(
   };
 
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: externalFilterConfig.headers,
+    columns: externalFilterConfig.headers,
     rows: externalFilterConfig.rows,
     externalFilterHandling: true,
     columnResizing: true,

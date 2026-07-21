@@ -105,7 +105,7 @@ export default function Page() {
       ]}
       faqs={[
         { question: "Is ngx-datatable abandoned?", answer: "Not formally, but its release cadence has slowed enough that production teams routinely wait for Angular-version compatibility releases. If you're worried, the safer long-term bet is a more actively maintained alternative." },
-        { question: "How long does the migration take?", answer: "Usually a few days for a single feature area. Map ngx-datatable columns to Simple Table HeaderObjects, adapt your rows to Simple Table's row shape, and convert template-projection columns to cellRenderer components. See the migration guide linked below." },
+        { question: "How long does the migration take?", answer: "Usually a few days for a single feature area. Map ngx-datatable columns to Simple Table ColumnDefs, adapt your rows to Simple Table's row shape, and convert template-projection columns to cellRenderer components. See the migration guide linked below." },
         { question: "Will I keep custom cell templates?", answer: "Yes. ngx-datatable's <ng-template> projection becomes Simple Table's cell renderer pattern. You pass an Angular component instead of inline template projection." },
         { question: "Does Simple Table support tree data?", answer: "Yes. Tree data, expandable rows, and lazy loading are all first-class in Simple Table." },
       ]}

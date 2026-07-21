@@ -1,6 +1,6 @@
-import type { PivotConfig, AngularHeaderObject, Row } from "@simple-table/angular";
+import type { PivotConfig, AngularColumnDef, Row } from "@simple-table/angular";
 
-export const pivotHeaders: AngularHeaderObject[] = [
+export const pivotHeaders: AngularColumnDef[] = [
   { accessor: "region", label: "Region", width: 110, type: "string" },
   { accessor: "country", label: "Country", width: 100, type: "string" },
   { accessor: "category", label: "Category", width: 110, type: "string" },

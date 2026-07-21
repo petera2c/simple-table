@@ -28,6 +28,8 @@ import {
 import { PinnedSectionsState } from "../../types/PinnedSectionsState";
 import { deepClone } from "../../utils/generalUtils";
 import type { PivotConfig } from "../../types/PivotTypes";
+import type { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
+import type { RowId } from "../../types/RowId";
 
 export interface TableAPIContext {
   config: SimpleTableConfig;
@@ -507,7 +509,7 @@ export class TableAPIImpl {
         context.onRender();
       },
 
-      applyColumnVisibility: async (visibility: { [accessor: string]: boolean }) => {
+      applyColumnVisibility: async (visibility: ColumnVisibilityState) => {
         const updateHeaderVisibility = (headerList: HeaderObject[]): HeaderObject[] => {
           return headerList.map((header) => {
             const acc = String(header.accessor);
@@ -555,7 +557,7 @@ export class TableAPIImpl {
         context.selectionManager?.selectCellRange(startCell, endCell);
       },
 
-      getSelectedRows: (): Set<string> => {
+      getSelectedRows: (): Set<RowId> => {
         return context.rowSelectionManager?.getSelectedRows() ?? new Set();
       },
 
@@ -563,30 +565,31 @@ export class TableAPIImpl {
         return context.rowSelectionManager?.getSelectedRowsData() ?? [];
       },
 
-      getRow: (rowId: string): Row | undefined => {
-        const fromManager = context.rowSelectionManager?.getRow(rowId);
+      getRow: (rowId: RowId): Row | undefined => {
+        const id = String(rowId);
+        const fromManager = context.rowSelectionManager?.getRow(id);
         if (fromManager !== undefined) return fromManager;
         // Fall back to current processed / flattened rows even when row selection is off
         const processed = context.getCachedProcessedResult?.();
         if (processed) {
           const found = processed.currentTableRows.find(
-            (tr) => tr?.rowId != null && rowIdToString(tr.rowId) === rowId,
+            (tr) => tr?.rowId != null && rowIdToString(tr.rowId) === id,
           );
           if (found) return found.row;
         }
         return undefined;
       },
 
-      selectRow: (rowId: string) => {
-        context.rowSelectionManager?.selectRow(rowId);
+      selectRow: (rowId: RowId) => {
+        context.rowSelectionManager?.selectRow(String(rowId));
       },
 
-      deselectRow: (rowId: string) => {
-        context.rowSelectionManager?.deselectRow(rowId);
+      deselectRow: (rowId: RowId) => {
+        context.rowSelectionManager?.deselectRow(String(rowId));
       },
 
-      toggleRowSelection: (rowId: string) => {
-        context.rowSelectionManager?.handleToggleRow(rowId);
+      toggleRowSelection: (rowId: RowId) => {
+        context.rowSelectionManager?.handleToggleRow(String(rowId));
       },
 
       clearRowSelection: () => {

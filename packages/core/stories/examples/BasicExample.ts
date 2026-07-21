@@ -3,18 +3,18 @@
  */
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 
 const roles = ["Developer", "Designer", "Manager", "Intern", "DevOps", "Engineer"];
 const departments = ["Engineering", "Design", "Management", "Internship"];
 
 export const basicExampleDefaults = {
   columnResizing: true,
-  editColumns: true,
+  enableColumnEditor: true,
   selectableCells: true,
   columnReordering: true,
   height: "500px",
-  useOddEvenRowBackground: true,
+  oddEvenRowBackground: true,
 };
 
 export function createBasicData(rowLength: number): Row[] {
@@ -28,18 +28,18 @@ export function createBasicData(rowLength: number): Row[] {
 }
 
 export function renderBasicExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
-  const headers: HeaderObject[] = [
-    { accessor: "id", label: "ID", width: 80, isSortable: true, filterable: true },
+  const headers: ColumnDef[] = [
+    { accessor: "id", label: "ID", width: 80, sortable: true, filterable: true },
     {
       accessor: "name",
       label: "Name",
       minWidth: 80,
       width: "1fr",
-      isSortable: true,
+      sortable: true,
       filterable: true,
     },
-    { accessor: "age", label: "Age", width: 100, isSortable: true, filterable: true },
-    { accessor: "role", label: "Role", width: 150, isSortable: true, filterable: true },
+    { accessor: "age", label: "Age", width: 100, sortable: true, filterable: true },
+    { accessor: "role", label: "Role", width: 150, sortable: true, filterable: true },
   ];
   const options = { ...defaultVanillaArgs, ...basicExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(headers, createBasicData(10), {

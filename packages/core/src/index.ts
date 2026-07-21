@@ -1,14 +1,14 @@
 import { SimpleTableVanilla } from "./core/SimpleTableVanilla";
-import type BoundingBox from "./types/BoundingBox";
 import type Cell from "./types/Cell";
 import type CellChangeProps from "./types/CellChangeProps";
 import type CellValue from "./types/CellValue";
-import type DragHandlerProps from "./types/DragHandlerProps";
 import type EnumOption from "./types/EnumOption";
 import type HeaderObject from "./types/HeaderObject";
 import type {
   Accessor,
+  AutoSizeMode,
   ChartOptions,
+  ColumnDef,
   ColumnType,
   Comparator,
   ComparatorProps,
@@ -20,6 +20,7 @@ import type {
   ValueGetter,
   ValueGetterProps,
 } from "./types/HeaderObject";
+import type { SimpleTableConfigInput } from "./utils/normalizeConfig";
 import type { AggregationConfig, AggregationType } from "./types/AggregationTypes";
 import type { PivotConfig, PivotValueConfig, PivotResult } from "./types/PivotTypes";
 import {
@@ -29,15 +30,11 @@ import {
   PIVOT_BLANK_LABEL,
 } from "./types/PivotTypes";
 import { pivotRows, buildPivotAccessor, buildPivotRowTotalAccessor } from "./utils/pivot/pivotRows";
-import type OnSortProps from "./types/OnSortProps";
 import type OnRowGroupExpandProps from "./types/OnRowGroupExpandProps";
 import type Row from "./types/Row";
 import type RowState from "./types/RowState";
-import type SharedTableProps from "./types/SharedTableProps";
 import type SortColumn from "./types/SortColumn";
-import type TableHeaderProps from "./types/TableHeaderProps";
 import type { TableAPI, SetHeaderRenameProps, ExportToCSVProps } from "./types/TableAPI";
-import type TableRowProps from "./types/TableRowProps";
 import type Theme from "./types/Theme";
 import type UpdateDataProps from "./types/UpdateCellProps";
 import type {
@@ -95,9 +92,17 @@ import type { SimpleTableProps } from "./types/SimpleTableProps";
 import type { AnimationsConfig } from "./types/AnimationsConfig";
 import type { RowId } from "./types/RowId";
 import type { PinnedSectionsState } from "./types/PinnedSectionsState";
+import type { Pinned } from "./types/Pinned";
+import type TableRow from "./types/TableRow";
 
 export { SimpleTableVanilla };
 export { asRows } from "./utils/asRows";
+export {
+  normalizeConfig,
+  normalizeConfigPatch,
+  normalizeColumnDef,
+  normalizeColumnDefs,
+} from "./utils/normalizeConfig";
 export {
   pivotRows,
   buildPivotAccessor,
@@ -121,7 +126,7 @@ export type {
   AggregationConfig,
   AggregationType,
   AnimationsConfig,
-  BoundingBox,
+  AutoSizeMode,
   Cell,
   CellChangeProps,
   CellClickProps,
@@ -135,6 +140,7 @@ export type {
   ColumnEditorRowRenderer,
   ColumnEditorRowRendererComponents,
   ColumnEditorRowRendererProps,
+  ColumnDef,
   ColumnEditorSearchFunction,
   ColumnType,
   ColumnVisibilityState,
@@ -142,7 +148,6 @@ export type {
   ComparatorProps,
   CustomTheme,
   CustomThemeProps,
-  DragHandlerProps,
   EmptyStateRenderer,
   EmptyStateRendererProps,
   EnumOption,
@@ -172,7 +177,8 @@ export type {
   HeaderRendererProps,
   HeaderRendererComponents,
   OnRowGroupExpandProps,
-  OnSortProps,
+  Pinned,
+  PinnedSectionsState,
   PivotConfig,
   PivotValueConfig,
   PivotResult,
@@ -187,17 +193,15 @@ export type {
   RowSelectionMode,
   RowState,
   SetHeaderRenameProps,
-  SharedTableProps,
   ShowWhen,
   SimpleTableConfig,
+  SimpleTableConfigInput,
   SimpleTableProps,
   SortColumn,
   TableAPI,
   TableFilterState,
-  TableHeaderProps,
-  TableRowProps,
+  TableRow,
   Theme,
-  PinnedSectionsState,
   UpdateDataProps,
   ValueFormatter,
   ValueFormatterProps,

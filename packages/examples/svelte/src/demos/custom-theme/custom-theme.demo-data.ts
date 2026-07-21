@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject, Row } from "@simple-table/svelte";
+import type { SvelteColumnDef, Row } from "@simple-table/svelte";
 
 
 export const customThemeData: Row[] = [
@@ -20,9 +20,9 @@ function formatPhone(raw: string): string {
   return raw;
 }
 
-export const customThemeHeaders: SvelteHeaderObject[] = [
+export const customThemeHeaders: SvelteColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
-  { accessor: "name", label: "Name", width: 170, type: "string", isSortable: true },
+  { accessor: "name", label: "Name", width: 170, type: "string", sortable: true },
   {
     accessor: "phone",
     label: "Phone",
@@ -31,7 +31,7 @@ export const customThemeHeaders: SvelteHeaderObject[] = [
     valueFormatter: ({ value }) => formatPhone(value as string),
   },
   { accessor: "email", label: "Email", width: 180, type: "string" },
-  { accessor: "city", label: "City", width: 140, type: "string", isSortable: true },
+  { accessor: "city", label: "City", width: 140, type: "string", sortable: true },
   { accessor: "status", label: "Status", width: 100, type: "string" },
 ];
 

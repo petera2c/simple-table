@@ -203,7 +203,7 @@ export default function CustomizingDataGridsStylingEasyPage() {
               {`import { SimpleTable } from "@simple-table/react";
 
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   className="rounded-xl shadow-2xl border-2 border-indigo-200"
   headerClassName="bg-linear-to-r from-purple-500 to-pink-500 text-white"

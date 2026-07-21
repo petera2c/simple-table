@@ -42,7 +42,7 @@ const DynamicNestedTablesDemo = ({ height = "500px", theme }: { height?: string 
   return (
     <SimpleTable
       autoExpandColumns={dynamicNestedTablesConfig.tableProps.autoExpandColumns}
-      defaultHeaders={dynamicNestedTablesConfig.headers}
+      columns={dynamicNestedTablesConfig.headers}
       expandAll={dynamicNestedTablesConfig.tableProps.expandAll}
       height={height}
       rowGrouping={dynamicNestedTablesConfig.tableProps.rowGrouping}

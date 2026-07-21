@@ -1,8 +1,8 @@
 // Self-contained demo table setup for this example.
-import type { ReactHeaderObject } from "@simple-table/react";
+import type { ReactColumnDef } from "@simple-table/react";
 
 
-export const columnAlignmentHeaders: ReactHeaderObject[] = [
+export const columnAlignmentHeaders: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, align: "left", type: "number" },
   { accessor: "name", label: "Name", minWidth: 100, width: "1fr", align: "center", type: "string" },
   { accessor: "score", label: "Score", width: 120, align: "right", type: "number" },

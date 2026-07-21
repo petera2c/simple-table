@@ -2,7 +2,7 @@
  * Dynamic nested tables (lazy-loaded child grids) — vanilla Storybook counterpart to
  * apps/marketing DynamicNestedTablesDemo and packages/examples/vanilla dynamic-nested-tables.
  */
-import type { HeaderObject, OnRowGroupExpandProps, Row } from "../../src/index";
+import type { ColumnDef, OnRowGroupExpandProps, Row } from "../../src/index";
 import { SimpleTableVanilla } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
@@ -168,30 +168,30 @@ const INITIAL_COMPANIES: DynamicCompany[] = [
   },
 ];
 
-const DIVISION_HEADERS: HeaderObject[] = [
-  { accessor: "divisionName", label: "Division", width: 200, isSortable: true },
-  { accessor: "revenue", label: "Revenue", width: 120, isSortable: true },
-  { accessor: "profitMargin", label: "Profit Margin", width: 130, isSortable: true },
-  { accessor: "headcount", label: "Headcount", width: 110, type: "number", isSortable: true },
-  { accessor: "location", label: "Location", width: 180, isSortable: true },
+const DIVISION_HEADERS: ColumnDef[] = [
+  { accessor: "divisionName", label: "Division", width: 200, sortable: true },
+  { accessor: "revenue", label: "Revenue", width: 120, sortable: true },
+  { accessor: "profitMargin", label: "Profit Margin", width: 130, sortable: true },
+  { accessor: "headcount", label: "Headcount", width: 110, type: "number", sortable: true },
+  { accessor: "location", label: "Location", width: 180, sortable: true },
 ];
 
-const COMPANY_HEADERS: HeaderObject[] = [
+const COMPANY_HEADERS: ColumnDef[] = [
   {
     accessor: "companyName",
     label: "Company",
     width: 200,
     expandable: true,
-    isSortable: true,
+    sortable: true,
     nestedTable: {
-      defaultHeaders: DIVISION_HEADERS,
+      columns: DIVISION_HEADERS,
       expandAll: false,
       autoExpandColumns: true,
     },
   },
-  { accessor: "industry", label: "Industry", width: 150, isSortable: true },
-  { accessor: "revenue", label: "Revenue", width: 120, isSortable: true },
-  { accessor: "employees", label: "Employees", width: 120, type: "number", isSortable: true },
+  { accessor: "industry", label: "Industry", width: 150, sortable: true },
+  { accessor: "revenue", label: "Revenue", width: 120, sortable: true },
+  { accessor: "employees", label: "Employees", width: 120, type: "number", sortable: true },
 ];
 
 function stateBlock(message: string, color: string): HTMLElement {

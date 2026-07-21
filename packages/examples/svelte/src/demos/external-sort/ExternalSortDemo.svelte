@@ -31,7 +31,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={externalSortConfig.headers}
+  columns={externalSortConfig.headers}
   rows={sortedRows}
   externalSortHandling={true}
   columnResizing={externalSortConfig.tableProps.columnResizing}

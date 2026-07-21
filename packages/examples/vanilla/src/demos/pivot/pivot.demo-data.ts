@@ -1,6 +1,6 @@
-import type { HeaderObject, PivotConfig, Row } from "simple-table-core";
+import type { ColumnDef, PivotConfig, Row } from "simple-table-core";
 
-export const pivotHeaders: HeaderObject[] = [
+export const pivotHeaders: ColumnDef[] = [
   { accessor: "region", label: "Region", width: 110, type: "string" },
   { accessor: "country", label: "Country", width: 100, type: "string" },
   { accessor: "category", label: "Category", width: 110, type: "string" },

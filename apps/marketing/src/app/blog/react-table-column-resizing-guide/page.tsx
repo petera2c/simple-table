@@ -506,10 +506,10 @@ const handleMouseMove = (e: MouseEvent) => {
 
               <CodeBlock
                 className="mb-6"
-                code={`import { SimpleTable, HeaderObject } from "@simple-table/react";
+                code={`import { SimpleTable, ColumnDef } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { 
     accessor: "id", 
     label: "ID", 
@@ -542,7 +542,7 @@ export default function ResizableTable({ data }) {
   return (
     <SimpleTable
       columnResizing={true}  // That's it!
-      defaultHeaders={headers}
+      columns={headers}
       rows={data}
       
       height="500px"
@@ -582,7 +582,7 @@ export default function ResizableTable({ data }) {
                 code={`<SimpleTable
   columnResizing={true}
   autoExpandColumns={true}  // Columns always fill container
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   
   height="500px"
@@ -632,7 +632,7 @@ export default function ResizableTable({ data }) {
 
               <CodeBlock
                 className="mb-6"
-                code={`const headers: HeaderObject[] = [
+                code={`const headers: ColumnDef[] = [
   { 
     accessor: "id", 
     label: "ID", 
@@ -707,7 +707,7 @@ export default function ResponsiveTable({ data }) {
     <SimpleTable
       columnResizing={true}
       autoExpandColumns={!isMobile}  // Disable on mobile
-      defaultHeaders={headers}
+      columns={headers}
       rows={data}
       
       height="500px"

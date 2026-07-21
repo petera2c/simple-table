@@ -1,14 +1,14 @@
 <template>
   <SimpleTable
     ref="tableRef"
-    :default-headers="headers"
+    :columns="headers"
     :rows="infrastructureData"
     :height="height"
     :theme="theme"
     :auto-expand-columns="true"
     :column-reordering="true"
     :column-resizing="true"
-    :edit-columns="true"
+    :enable-column-editor="true"
     :selectable-cells="true"
   />
 </template>
@@ -16,7 +16,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, VueHeaderObject, CellRendererProps, Row, CellValue } from "@simple-table/vue";
+import type { Theme, TableAPI, VueColumnDef, CellRendererProps, Row, CellValue } from "@simple-table/vue";
 import {
   infrastructureConfig,
   infrastructureData,
@@ -144,18 +144,18 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
 const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
 
 function applyRenderers(
-  hdrs: readonly VueHeaderObject[],
+  hdrs: readonly VueColumnDef[],
   map: Record<string, (p: CellRendererProps) => unknown>,
-): VueHeaderObject[] {
+): VueColumnDef[] {
   return hdrs.map((h) => {
     const renderer = map[h.accessor as string];
-    const clone: VueHeaderObject = renderer ? { ...h, cellRenderer: renderer } : { ...h };
+    const clone: VueColumnDef = renderer ? { ...h, cellRenderer: renderer } : { ...h };
     if (h.children) clone.children = applyRenderers(h.children, map);
     return clone;
   });
 }
 
-const headers = computed((): VueHeaderObject[] => {
+const headers = computed((): VueColumnDef[] => {
   const t = props.theme || "light";
 
   const serverIdRenderer = ({ row }: CellRendererProps) => {

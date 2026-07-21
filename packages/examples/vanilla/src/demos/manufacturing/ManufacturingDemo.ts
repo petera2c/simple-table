@@ -1,5 +1,5 @@
 import { SimpleTableVanilla, asRows } from "simple-table-core";
-import type { Theme, HeaderObject, CellRenderer, CellRendererProps } from "simple-table-core";
+import type { Theme, ColumnDef, CellRenderer, CellRendererProps } from "simple-table-core";
 import { manufacturingConfig, getManufacturingStatusColors } from "./manufacturing.demo-data";
 import type { ManufacturingRow } from "./manufacturing.demo-data";
 import "simple-table-core/styles.css";
@@ -8,7 +8,7 @@ function hasStations(row: Record<string, unknown>): boolean {
   return Boolean(row.stations && Array.isArray(row.stations));
 }
 
-function getHeaders(): HeaderObject[] {
+function getHeaders(): ColumnDef[] {
   const productLineRenderer: CellRenderer = ({ row }: CellRendererProps) => {
     const d = row as unknown as ManufacturingRow;
     if (hasStations(row)) {
@@ -199,7 +199,7 @@ export function renderManufacturingDemo(
   const table = new SimpleTableVanilla(container, {
     columnResizing: true,
     columnReordering: true,
-    defaultHeaders: getHeaders(),
+    columns: getHeaders(),
     height: options?.height ?? "400px",
     rowGrouping: ["stations"],
     rows: asRows(manufacturingConfig.rows),

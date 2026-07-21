@@ -29,7 +29,7 @@
   </div>
   <SimpleTable
     bind:this={tableRef}
-    defaultHeaders={rowGroupingConfig.headers}
+    columns={rowGroupingConfig.headers}
     rows={rowGroupingConfig.rows}
     rowGrouping={rowGroupingConfig.tableProps.rowGrouping}
     enableStickyParents={true}

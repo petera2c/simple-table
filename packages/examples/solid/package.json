@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --port 5204",
     "build": "vite build",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -8,7 +8,7 @@
     </div>
     <SimpleTable
       :column-resizing="true"
-      :default-headers="headers"
+      :columns="headers"
       :rows="columnResizingData"
       :height="height"
       :theme="theme"
@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueHeaderObject } from "@simple-table/vue";
+import type { Theme, VueColumnDef } from "@simple-table/vue";
 import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
 import "@simple-table/vue/styles.css";
 
@@ -28,7 +28,7 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
 
-const headers = ref<VueHeaderObject[]>([...columnResizingHeaders]);
+const headers = ref<VueColumnDef[]>([...columnResizingHeaders]);
 const saveMessage = ref("");
 
 onMounted(() => {
@@ -44,7 +44,7 @@ onMounted(() => {
   } catch { /* ignore */ }
 });
 
-function handleColumnWidthChange(updatedHeaders: VueHeaderObject[]) {
+function handleColumnWidthChange(updatedHeaders: VueColumnDef[]) {
   try {
     const widthMap = updatedHeaders.reduce(
       (acc: Record<string, unknown>, h) => { acc[h.accessor] = h.width; return acc; },

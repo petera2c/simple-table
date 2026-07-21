@@ -41,7 +41,7 @@ export class ColumnEditorCustomRowComponent implements AfterViewInit, OnChanges 
   @Input({ required: true }) components!: ColumnEditorRowRendererProps["components"];
   @Input() accessor?: ColumnEditorRowRendererProps["accessor"];
   @Input() panelSection?: ColumnEditorRowRendererProps["panelSection"];
-  @Input() isEssential?: ColumnEditorRowRendererProps["isEssential"];
+  @Input() essential?: ColumnEditorRowRendererProps["essential"];
   @Input() canToggleVisibility?: ColumnEditorRowRendererProps["canToggleVisibility"];
   @Input() allowColumnPinning?: ColumnEditorRowRendererProps["allowColumnPinning"];
   @Input() pinControl?: ColumnEditorRowRendererProps["pinControl"];

@@ -1,7 +1,7 @@
 "use client";
 import { useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 // Data generation utilities
@@ -220,7 +220,7 @@ const generateSampleData = (count: number = 25) => {
 };
 
 // Child grid for divisions: 6 columns with detailed metrics
-const divisionHeaders: ReactHeaderObject[] = [
+const divisionHeaders: ReactColumnDef[] = [
   { accessor: "divisionId", label: "Division ID", width: 120 },
   { accessor: "revenue", label: "Revenue", width: 120 },
   { accessor: "profitMargin", label: "Profit Margin", width: 130 },
@@ -229,14 +229,14 @@ const divisionHeaders: ReactHeaderObject[] = [
 ];
 
 // Parent grid: 9 columns for companies
-const companyHeaders: ReactHeaderObject[] = [
+const companyHeaders: ReactColumnDef[] = [
   {
     accessor: "companyName",
     label: "Company",
     width: 200,
     expandable: true,
     nestedTable: {
-      defaultHeaders: divisionHeaders,
+      columns: divisionHeaders,
     },
   },
   { accessor: "stockSymbol", label: "Symbol", width: 100 },
@@ -258,7 +258,7 @@ const NestedTablesDemo = ({
   return (
     <SimpleTable
       autoExpandColumns
-      defaultHeaders={companyHeaders}
+      columns={companyHeaders}
       rows={sampleData}
       rowGrouping={["divisions"]}
       getRowId={({ row }) => row.id as string}

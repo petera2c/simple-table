@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject, CellClickProps } from "simple-table-core";
+import type { Theme, ColumnDef, CellClickProps } from "simple-table-core";
 import {
   cellClickingHeaders,
   cellClickingData,
@@ -33,7 +33,7 @@ export function renderCellClickingDemo(
 
   let rows: ProjectTask[] = [...cellClickingData];
 
-  const headers: HeaderObject[] = cellClickingHeaders.map((h) => {
+  const headers: ColumnDef[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") {
       return {
         ...h,
@@ -122,7 +122,7 @@ export function renderCellClickingDemo(
   }
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: headers,
+    columns: headers,
     rows,
     height: options?.height ?? "320px",
     theme: options?.theme,

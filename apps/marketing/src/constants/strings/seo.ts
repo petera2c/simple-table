@@ -1142,7 +1142,7 @@ export const SEO_STRINGS = {
   apiReference: {
     title: "Simple Table API Reference: Data Grid Props",
     description:
-      "Complete API reference for Simple Table props and HeaderObject configuration for React, Vue, Angular, Svelte, Solid, and vanilla adapters. All data grid props for datagrids and data tables with TypeScript support.",
+      "Complete API reference for Simple Table props and ColumnDef configuration for React, Vue, Angular, Svelte, Solid, and vanilla adapters. All data grid props for datagrids and data tables with TypeScript support.",
     keywords:
       "simple-table, simple-table-core, @simple-table/react, @simple-table/vue, data-grid, datagrid, data table, api reference, props reference, typescript table, documentation, javascript data grid, multi-framework data grid",
   },

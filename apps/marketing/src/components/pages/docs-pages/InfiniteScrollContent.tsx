@@ -67,7 +67,7 @@ const WINDOW_SCROLL_PROPS: PropInfo[] = [
     type: 'HTMLElement | "window" | (() => HTMLElement | null)',
     example: `// Page-level scroll (most common in real apps)
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={rows}
   scrollParent="window"
   onLoadMore={handleLoadMore}
@@ -75,7 +75,7 @@ const WINDOW_SCROLL_PROPS: PropInfo[] = [
 
 // Custom container (e.g. a side panel with overflow: auto)
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={rows}
   scrollParent={() => containerRef.current}
   onLoadMore={handleLoadMore}

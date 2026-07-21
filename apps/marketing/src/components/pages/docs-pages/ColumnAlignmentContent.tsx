@@ -12,7 +12,7 @@ import PropTable, { type PropInfo } from "@/components/PropTable";
 const COLUMN_ALIGNMENT_PROPS: PropInfo[] = [
   {
     key: "align",
-    name: "HeaderObject.align",
+    name: "ColumnDef.align",
     required: false,
     description:
       "Controls the horizontal alignment of content within the column for both header and cell content.",

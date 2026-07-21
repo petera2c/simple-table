@@ -7,7 +7,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={tooltipConfig.headers}
+  columns={tooltipConfig.headers}
   rows={tooltipConfig.rows}
   {height}
   {theme}

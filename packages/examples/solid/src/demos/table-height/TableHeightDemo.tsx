@@ -32,7 +32,7 @@ export default function TableHeightDemo(props: { height?: string | number; theme
         </For>
       </div>
       <SimpleTable
-        defaultHeaders={tableHeightConfig.headers}
+        columns={tableHeightConfig.headers}
         rows={tableHeightConfig.rows}
         height={selectedHeight()}
         theme={props.theme}

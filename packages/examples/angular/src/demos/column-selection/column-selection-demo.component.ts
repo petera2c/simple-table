@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { columnSelectionConfig } from "./column-selection.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -10,7 +10,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
       [selectableColumns]="selectableColumns"
@@ -22,6 +22,6 @@ export class ColumnSelectionDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnSelectionConfig.rows;
-  readonly headers: AngularHeaderObject[] = columnSelectionConfig.headers;
+  readonly headers: AngularColumnDef[] = columnSelectionConfig.headers;
   readonly selectableColumns = columnSelectionConfig.tableProps.selectableColumns;
 }

@@ -104,7 +104,7 @@ export default function Page() {
       ]}
       faqs={[
         { question: "Is Vue Good Table actively maintained?", answer: "vue-good-table-next is the Vue 3 successor; the original vue-good-table is largely Vue 2-era. Activity is moderate; complex use cases sometimes outpace it." },
-        { question: "How big is the migration?", answer: "Usually a few hours per table. Map column definitions to HeaderObjects, adapt your rows to Simple Table's row shape, and convert slot-based templates to cellRenderer Vue components." },
+        { question: "How big is the migration?", answer: "Usually a few hours per table. Map column definitions to ColumnDefs, adapt your rows to Simple Table's row shape, and convert slot-based templates to cellRenderer Vue components." },
         { question: "Does Simple Table support search and global filtering?", answer: "Yes. Column filters are first-class; combine them for global-search-like behavior, or pre-filter rows in your composable." },
       ]}
       conclusionParagraphs={[

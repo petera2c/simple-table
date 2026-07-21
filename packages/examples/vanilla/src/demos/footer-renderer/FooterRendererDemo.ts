@@ -108,11 +108,11 @@ export function renderFooterRendererDemo(
 ): SimpleTableVanilla {
   const theme = options?.theme;
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: [...footerRendererConfig.headers],
+    columns: [...footerRendererConfig.headers],
     rows: footerRendererConfig.rows,
     height: options?.height ?? "400px",
     theme,
-    shouldPaginate: true,
+    enablePagination: true,
     rowsPerPage: 10,
     footerRenderer: (props) => createFooter(props, theme),
     hideFooter: false,

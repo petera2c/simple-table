@@ -12,7 +12,7 @@ export const pinnedColumnsExampleDefaults = {
   columnReordering: true,
   selectableCells: true,
   selectableColumns: true,
-  editColumns: true,
+  enableColumnEditor: true,
   height: "calc(100dvh - 112px)",
   enableStickyParents: true,
   theme: "modern-dark" as Theme,

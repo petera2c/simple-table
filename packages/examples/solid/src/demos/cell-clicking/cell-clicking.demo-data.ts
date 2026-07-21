@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SolidHeaderObject, Row } from "@simple-table/solid";
+import type { SolidColumnDef, Row } from "@simple-table/solid";
 
 
 export type ProjectTask = {
@@ -27,15 +27,15 @@ export const cellClickingData: ProjectTask[] = [
   { id: 1008, task: "Database migration scripts", assignee: "River Jackson", priority: "Low", status: "Not Started", dueDate: "2024-02-28", estimatedHours: 8, completedHours: 0, details: "Create migration scripts for database schema updates" },
 ];
 
-export const cellClickingHeaders: SolidHeaderObject[] = [
-  { accessor: "id", label: "Task ID", width: 80, isSortable: true, type: "number" },
-  { accessor: "task", label: "Task Name", minWidth: 150, width: "1fr", isSortable: true, type: "string" },
-  { accessor: "assignee", label: "Assignee", width: 120, isSortable: true, type: "string" },
-  { accessor: "priority", label: "Priority", width: 100, isSortable: true, type: "string" },
-  { accessor: "status", label: "Status", width: 120, isSortable: true, type: "string" },
-  { accessor: "dueDate", label: "Due Date", width: 120, isSortable: true, type: "date" },
-  { accessor: "estimatedHours", label: "Est. Hours", width: 100, isSortable: true, type: "number" },
-  { accessor: "completedHours", label: "Done Hours", width: 100, isSortable: true, type: "number" },
+export const cellClickingHeaders: SolidColumnDef[] = [
+  { accessor: "id", label: "Task ID", width: 80, sortable: true, type: "number" },
+  { accessor: "task", label: "Task Name", minWidth: 150, width: "1fr", sortable: true, type: "string" },
+  { accessor: "assignee", label: "Assignee", width: 120, sortable: true, type: "string" },
+  { accessor: "priority", label: "Priority", width: 100, sortable: true, type: "string" },
+  { accessor: "status", label: "Status", width: 120, sortable: true, type: "string" },
+  { accessor: "dueDate", label: "Due Date", width: 120, sortable: true, type: "date" },
+  { accessor: "estimatedHours", label: "Est. Hours", width: 100, sortable: true, type: "number" },
+  { accessor: "completedHours", label: "Done Hours", width: 100, sortable: true, type: "number" },
   { accessor: "details", label: "View Details", width: 120, type: "other" },
 ];
 

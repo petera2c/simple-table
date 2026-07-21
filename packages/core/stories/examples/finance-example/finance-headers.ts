@@ -1,15 +1,15 @@
 /**
  * Finance example headers – ported from React finance-headers (vanilla-compatible).
  */
-import type { HeaderObject } from "../../../src/index";
+import type { ColumnDef } from "../../../src/index";
 
-export const FINANCE_HEADERS: HeaderObject[] = [
+export const FINANCE_HEADERS: ColumnDef[] = [
   {
     accessor: "ticker",
     align: "left",
     filterable: true,
-    isEditable: false,
-    isSortable: true,
+    editable: false,
+    sortable: true,
     label: "Symbol",
     minWidth: 120,
     pinned: "left",
@@ -20,8 +20,8 @@ export const FINANCE_HEADERS: HeaderObject[] = [
     accessor: "companyName",
     align: "left",
     filterable: true,
-    isEditable: false,
-    isSortable: true,
+    editable: false,
+    sortable: true,
     label: "Name",
     minWidth: 220,
     type: "string",
@@ -31,16 +31,16 @@ export const FINANCE_HEADERS: HeaderObject[] = [
     accessor: "priceMetrics",
     label: "Price Performance",
     width: 250,
-    isSortable: false,
+    sortable: false,
     collapsible: true,
     children: [
       {
         accessor: "price",
         label: "Price (USD)",
         width: 160,
-        isSortable: true,
+        sortable: true,
         filterable: true,
-        isEditable: true,
+        editable: true,
         align: "right",
         type: "number",
         valueFormatter: ({ value }: { value?: unknown }) => {
@@ -56,8 +56,8 @@ export const FINANCE_HEADERS: HeaderObject[] = [
         label: "Change %",
         width: 160,
         filterable: true,
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         align: "right",
         type: "number",
         cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
@@ -74,16 +74,16 @@ export const FINANCE_HEADERS: HeaderObject[] = [
     accessor: "fundamentals",
     label: "Fundamentals",
     width: 380,
-    isSortable: false,
+    sortable: false,
     collapsible: true,
     children: [
       {
         accessor: "marketCap",
         label: "Mkt Cap ($B)",
         width: 180,
-        isSortable: true,
+        sortable: true,
         filterable: true,
-        isEditable: true,
+        editable: true,
         showWhen: "parentCollapsed",
         align: "right",
         type: "number",
@@ -92,9 +92,9 @@ export const FINANCE_HEADERS: HeaderObject[] = [
         accessor: "peRatio",
         label: "P/E Ratio",
         width: 160,
-        isSortable: true,
+        sortable: true,
         filterable: true,
-        isEditable: true,
+        editable: true,
         align: "right",
         type: "number",
         valueFormatter: ({ value }: { value?: unknown }) => {
@@ -106,9 +106,9 @@ export const FINANCE_HEADERS: HeaderObject[] = [
         accessor: "dividendYield",
         label: "Div Yield",
         width: 160,
-        isSortable: true,
+        sortable: true,
         filterable: true,
-        isEditable: true,
+        editable: true,
         align: "right",
         type: "number",
         valueFormatter: ({ value }: { value?: unknown }) => {
@@ -122,14 +122,14 @@ export const FINANCE_HEADERS: HeaderObject[] = [
     accessor: "analystInfo",
     label: "Analyst Information",
     width: 380,
-    isSortable: false,
+    sortable: false,
     children: [
       {
         accessor: "analystRating",
         label: "Rating",
         width: 160,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         filterable: true,
         align: "center",
         type: "enum",
@@ -148,8 +148,8 @@ export const FINANCE_HEADERS: HeaderObject[] = [
         accessor: "date",
         label: "Date",
         width: 160,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "center",
         type: "date",
       },
@@ -158,8 +158,8 @@ export const FINANCE_HEADERS: HeaderObject[] = [
         label: "Following",
         width: 160,
         filterable: true,
-        isSortable: true,
-        isEditable: true,
+        sortable: true,
+        editable: true,
         align: "center",
         type: "boolean",
       },

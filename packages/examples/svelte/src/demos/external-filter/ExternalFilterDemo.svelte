@@ -24,7 +24,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={externalFilterConfig.headers}
+  columns={externalFilterConfig.headers}
   rows={filteredRows}
   externalFilterHandling={true}
   columnResizing={true}

@@ -1,7 +1,7 @@
 <template>
   <SimpleTable
     ref="tableRef"
-    :default-headers="liveUpdateConfig.headers"
+    :columns="liveUpdateConfig.headers"
     :rows="liveUpdateConfig.rows"
     :height="height"
     :theme="theme"

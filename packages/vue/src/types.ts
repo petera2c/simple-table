@@ -70,9 +70,9 @@ export interface VueColumnEditorConfig
 
 // ─── HeaderObject override ────────────────────────────────────────────────────
 /**
- * Column definition for `defaultHeaders`: core column metadata with Vue-only
- * `cellRenderer` / `headerRenderer` / `children` / `nestedTable`.
- * `defaultHeaders` also accepts plain `HeaderObject[]` from shared configs.
+ * Column definition for `columns` / `defaultHeaders`: core column metadata with
+ * Vue-only `cellRenderer` / `headerRenderer` / `children` / `nestedTable`.
+ * `columns` / `defaultHeaders` also accept plain `HeaderObject[]` from shared configs.
  */
 export interface VueHeaderObject
   extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
@@ -89,14 +89,21 @@ export interface VueHeaderObject
   >;
 }
 
+/** Preferred name for Vue column definitions. Alias of {@link VueHeaderObject}. */
+export type VueColumnDef = VueHeaderObject;
+
 // ─── Top-level props ──────────────────────────────────────────────────────────
 // Mirrors SimpleTableProps with Vue-specific overrides. Use a template ref and
 // `ref.value?.getAPI()` for the imperative TableAPI.
+//
+//   Overridden to Vue equivalents:
+//     - columns / defaultHeaders → ReadonlyArray<HeaderObject | VueHeaderObject>
 export interface SimpleTableVueProps
   extends Omit<
     SimpleTableProps,
     | "rows"
     | "defaultHeaders"
+    | "columns"
     | "footerRenderer"
     | "emptyStateRenderer"
     | "errorStateRenderer"
@@ -107,7 +114,13 @@ export interface SimpleTableVueProps
     | "icons"
     | "rowButtons"
   > {
-  defaultHeaders: ReadonlyArray<HeaderObject | VueHeaderObject>;
+  /**
+   * Column definitions.
+   * @deprecated Prefer {@link columns}
+   */
+  defaultHeaders?: ReadonlyArray<HeaderObject | VueHeaderObject>;
+  /** Column definitions. Preferred over `defaultHeaders`. */
+  columns?: ReadonlyArray<HeaderObject | VueHeaderObject>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   footerRenderer?: VueFooterRenderer;

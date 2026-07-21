@@ -1,13 +1,13 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteHeaderObject, Row } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef, Row } from "@simple-table/svelte";
   import { billingConfig } from "./billing.demo-data";
   import BillingNameCell from "./BillingNameCell.svelte";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  const headers: SvelteHeaderObject[] = billingConfig.headers.map((h) => {
+  const headers: SvelteColumnDef[] = billingConfig.headers.map((h) => {
     if (h.accessor === "name") {
       return { ...h, cellRenderer: BillingNameCell };
     }
@@ -18,8 +18,8 @@
 <SimpleTable
   columnReordering={true}
   columnResizing={true}
-  defaultHeaders={headers}
-  editColumns={true}
+  columns={headers}
+  enableColumnEditor={true}
   {height}
   initialSortColumn="amount"
   initialSortDirection="desc"
@@ -27,5 +27,5 @@
   rows={billingConfig.rows as unknown as Row[]}
   selectableCells={true}
   {theme}
-  useOddColumnBackground={true}
+  oddColumnBackground={true}
 />

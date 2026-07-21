@@ -11,12 +11,12 @@ import billingData from "./billing-data.json";
 export const billingExampleDefaults = {
   columnReordering: true,
   columnResizing: true,
-  editColumns: true,
+  enableColumnEditor: true,
   selectableCells: true,
   height: "70dvh",
   initialSortColumn: "amount" as const,
   initialSortDirection: "desc" as const,
-  useOddColumnBackground: true,
+  oddColumnBackground: true,
   rowGrouping: ["invoices", "charges"] as const,
 };
 

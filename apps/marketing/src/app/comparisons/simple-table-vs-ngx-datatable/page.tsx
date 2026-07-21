@@ -120,7 +120,7 @@ export default function SimpleTableVsNgxDatatablePage() {
       migrationCallout={
         <>
           ngx-datatable&apos;s <code>[columns]</code> + <code>[rows]</code> map to Simple Table&apos;s
-          <code> defaultHeaders</code> + <code>rows</code>. Cell templates with{" "}
+          <code> columns</code> + <code>rows</code>. Cell templates with{" "}
           <code>ng-template let-row</code> become standalone Angular components passed as renderers.
         </>
       }

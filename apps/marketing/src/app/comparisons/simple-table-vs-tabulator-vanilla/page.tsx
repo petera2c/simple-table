@@ -63,7 +63,7 @@ export default function SimpleTableVsTabulatorVanillaPage() {
         { feature: "License", simpleTable: { verdict: "yes", note: "Community License." }, competitor: { verdict: "yes", note: "MIT." } },
       ]}
       installCommand="npm install simple-table-core"
-      migrationCallout={<>Tabulator&apos;s <code>new Tabulator(el, {`{ columns, data }`})</code> maps to simple-table-core&apos;s <code>new SimpleTableVanilla(el, {`{ defaultHeaders, rows }`})</code>. The data shape is similar; cell formatters become functions returning DOM nodes or framework components.</>}
+      migrationCallout={<>Tabulator&apos;s <code>new Tabulator(el, {`{ columns, data }`})</code> maps to simple-table-core&apos;s <code>new SimpleTableVanilla(el, {`{ columns, rows }`})</code>. The data shape is similar; cell formatters become functions returning DOM nodes or framework components.</>}
       faqs={[
         { question: "Can simple-table-core run in any browser environment?", answer: "Yes. simple-table-core has no peer dependencies and works with any modern bundler (Vite, esbuild, Rollup, Webpack) as well as a plain <script type='module'>." },
         { question: "Why publish a vanilla core if there are framework adapters?", answer: "Because the engine is genuinely framework-agnostic. Web-component / vanilla apps use simple-table-core directly; framework apps use the @simple-table/* wrappers, which all share the same core data shape and feature flags." },

@@ -1,9 +1,9 @@
 <template>
   <SimpleTable
-    :default-headers="collapsibleColumnsConfig.headers"
+    :columns="collapsibleColumnsConfig.headers"
     :rows="collapsibleColumnsConfig.rows"
     :column-resizing="true"
-    :edit-columns="true"
+    :enable-column-editor="true"
     :selectable-cells="true"
     :column-reordering="true"
     :height="height"

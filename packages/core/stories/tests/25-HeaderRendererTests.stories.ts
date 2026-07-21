@@ -1,11 +1,11 @@
 /**
  * HEADER RENDERER TESTS
- * Tests for HeaderObject.headerRenderer - custom header content.
+ * Tests for ColumnDef.headerRenderer - custom header content.
  */
 
 import type { Meta } from "@storybook/html";
 import { expect, userEvent } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import type { HeaderRenderer } from "../../src/types/HeaderRendererProps";
 import { waitForTable, waitUntil } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -31,7 +31,7 @@ const createData = () => [
 
 export const CustomHeaderRenderer = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "name",
@@ -66,7 +66,7 @@ export const CustomHeaderRenderer = {
 export const HeaderRendererWithComponents = {
   parameters: { tags: ["fail-header-renderer-with-components"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       {
         accessor: "id",
         label: "ID",
@@ -102,7 +102,7 @@ export const HeaderRendererWithComponents = {
 
 export const DefaultHeaderWithoutRenderer = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
     ];
@@ -127,7 +127,7 @@ export const DefaultHeaderWithoutRenderer = {
 
 export const HeaderRendererWithFilterIcon = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       {
         accessor: "name",
         label: "Name",
@@ -185,13 +185,13 @@ export const HeaderRendererWithFilterIcon = {
 
 export const HeaderRendererSortIconAppearsOnSort = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       {
         accessor: "name",
         label: "Name",
         width: 200,
         type: "string",
-        isSortable: true,
+        sortable: true,
         headerRenderer: ({ components, header }) => {
           const wrap = document.createElement("div");
           wrap.setAttribute("data-testid", "sortable-custom-header");
@@ -252,7 +252,7 @@ export const HeaderRendererSortIconAppearsOnSort = {
 
 export const HeaderRendererWithCollapseIcon = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60 },
       {
         accessor: "salesGroup",

@@ -114,8 +114,8 @@ const SalesDemo = ({ height, theme }: { height?: string | number | null; theme?:
       autoExpandColumns={!isMobile}
       columnResizing
       columnReordering
-      defaultHeaders={SALES_HEADERS}
-      editColumns
+      columns={SALES_HEADERS}
+      enableColumnEditor
       footerPosition="top"
       footerRenderer={renderFooter}
       height={formatTableHeight(height)}
@@ -125,7 +125,7 @@ const SalesDemo = ({ height, theme }: { height?: string | number | null; theme?:
       rows={data}
       rowsPerPage={40}
       selectableCells
-      shouldPaginate
+      enablePagination
       theme={theme}
     />
   );

@@ -7,7 +7,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={columnSelectionConfig.headers}
+  columns={columnSelectionConfig.headers}
   rows={columnSelectionConfig.rows}
   {height}
   {theme}

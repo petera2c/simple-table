@@ -8,7 +8,7 @@ export function renderSingleRowChildrenDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   return new SimpleTableVanilla(container, {
-    defaultHeaders: singleRowChildrenConfig.headers,
+    columns: singleRowChildrenConfig.headers,
     rows: singleRowChildrenConfig.rows,
     columnResizing: singleRowChildrenConfig.tableProps.columnResizing,
     selectableCells: singleRowChildrenConfig.tableProps.selectableCells,

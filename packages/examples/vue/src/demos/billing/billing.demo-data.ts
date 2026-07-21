@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { VueHeaderObject } from "@simple-table/vue";
+import type { VueColumnDef } from "@simple-table/vue";
 
 export interface BillingRow {
   id: string | number;
@@ -85,8 +85,8 @@ export function generateBillingData(count: number = 30): BillingRow[] {
 
 export const billingData = generateBillingData(30);
 
-function generateMonthHeaders(): VueHeaderObject[] {
-  const headers: VueHeaderObject[] = [];
+function generateMonthHeaders(): VueColumnDef[] {
+  const headers: VueColumnDef[] = [];
   const year = 2024;
   for (let monthIndex = 11; monthIndex >= 0; monthIndex--) {
     const fullMonthName = new Date(year, monthIndex).toLocaleString("default", { month: "long" });
@@ -95,8 +95,8 @@ function generateMonthHeaders(): VueHeaderObject[] {
       accessor: `month_${mo}_${year}`,
       label: `${fullMonthName} ${year}`,
       width: 200,
-      isSortable: true,
-      isEditable: false,
+      sortable: true,
+      editable: false,
       align: "right",
       type: "number",
       children: [
@@ -105,8 +105,8 @@ function generateMonthHeaders(): VueHeaderObject[] {
           label: "Balance",
           accessor: `balance_${mo}_${year}`,
           width: 200,
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           align: "right",
           type: "number",
           aggregation: { type: "sum" },
@@ -120,8 +120,8 @@ function generateMonthHeaders(): VueHeaderObject[] {
           label: "Revenue",
           accessor: `revenue_${mo}_${year}`,
           width: 200,
-          isSortable: true,
-          isEditable: false,
+          sortable: true,
+          editable: false,
           align: "right",
           type: "number",
           aggregation: { type: "sum" },
@@ -136,14 +136,14 @@ function generateMonthHeaders(): VueHeaderObject[] {
   return headers;
 }
 
-export const billingHeaders: VueHeaderObject[] = [
+export const billingHeaders: VueColumnDef[] = [
   {
     accessor: "name",
     label: "Name",
     width: 250,
     expandable: true,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "left",
     pinned: "left",
     type: "string",
@@ -152,8 +152,8 @@ export const billingHeaders: VueHeaderObject[] = [
     accessor: "amount",
     label: "Total Amount",
     width: 130,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
@@ -166,8 +166,8 @@ export const billingHeaders: VueHeaderObject[] = [
     accessor: "deferredRevenue",
     label: "Deferred Revenue",
     width: 180,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
@@ -180,8 +180,8 @@ export const billingHeaders: VueHeaderObject[] = [
     accessor: "recognizedRevenue",
     label: "Recognized Revenue",
     width: 180,
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     align: "right",
     type: "number",
     aggregation: { type: "sum" },

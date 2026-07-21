@@ -1,10 +1,10 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 import { useState, useEffect } from "react";
 
 // Define headers with different width strategies
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   // Fixed width in pixels
   { accessor: "id", label: "ID", width: 60, type: "number" },
 
@@ -155,7 +155,7 @@ const ColumnWidthDemo = ({
     <SimpleTable
       autoExpandColumns={!isMobile}
       columnResizing
-      defaultHeaders={headers}
+      columns={headers}
       height={height}
       rows={EMPLOYEE_DATA}
       theme={theme}

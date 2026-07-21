@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { quickStartConfig } from "./quick-start.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -10,10 +10,10 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
-      [editColumns]="editColumnsProp"
+      [enableColumnEditor]="enableColumnEditorProp"
       [selectableCells]="selectableCellsProp"
       [customTheme]="customTheme"
     ></simple-table>
@@ -24,8 +24,8 @@ export class QuickStartDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = quickStartConfig.rows;
-  readonly headers: AngularHeaderObject[] = quickStartConfig.headers;
-  readonly editColumnsProp = quickStartConfig.tableProps.editColumns;
+  readonly headers: AngularColumnDef[] = quickStartConfig.headers;
+  readonly enableColumnEditorProp = quickStartConfig.tableProps.enableColumnEditor;
   readonly selectableCellsProp = quickStartConfig.tableProps.selectableCells;
   readonly customTheme = quickStartConfig.tableProps.customTheme;
 }

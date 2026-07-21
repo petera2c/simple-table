@@ -38,7 +38,7 @@ const icons: VueIconsConfig = {
 
 <template>
   <SimpleTable
-    :default-headers="customIconsConfig.headers"
+    :columns="customIconsConfig.headers"
     :rows="customIconsConfig.rows"
     :icons="icons"
     :height="props.height"

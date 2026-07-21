@@ -46,9 +46,9 @@ export default function FromSvelteHeadlessTablePage() {
       installCommand="npm install @simple-table/svelte"
       mappingRows={[
         { competitor: "createTable + writable store", simpleTable: "$state with default headers + rows", notes: "Reactivity via runes (Svelte 5) or stores (Svelte 4)." },
-        { competitor: "table.column({ accessor, header })", simpleTable: "HeaderObject (accessor, label, width)", notes: "Same fields, declared on a plain object." },
+        { competitor: "table.column({ accessor, header })", simpleTable: "ColumnDef (accessor, label, width)", notes: "Same fields, declared on a plain object." },
         { competitor: "addSortBy / addColumnFilters plugins", simpleTable: "Built-in sort + filter", notes: "No plugin wiring needed." },
-        { competitor: "addGroupedRows", simpleTable: "Built-in row grouping + aggregations", notes: "Configure via HeaderObject + props." },
+        { competitor: "addGroupedRows", simpleTable: "Built-in row grouping + aggregations", notes: "Configure via ColumnDef + props." },
         { competitor: "Custom HTML composition", simpleTable: "<SimpleTable /> + cell renderer components", notes: "Pass renderers for custom cells/headers." },
         { competitor: "Bring-your-own virtualization", simpleTable: "Built-in (set height)", notes: "Row + column virtualization for 1M+ rows." },
       ]}
@@ -64,7 +64,7 @@ import "@simple-table/svelte/styles.css";`,
         },
         {
           title: "Convert columns",
-          body: <p>Replace <code>table.column({`{ accessor, header }`})</code> calls with HeaderObject entries containing accessor + label + width.</p>,
+          body: <p>Replace <code>table.column({`{ accessor, header }`})</code> calls with ColumnDef entries containing accessor + label + width.</p>,
         },
         {
           title: "Replace stores with $state or stores",
@@ -76,7 +76,7 @@ import "@simple-table/svelte/styles.css";`,
         },
         {
           title: "Move custom HTML to renderers",
-          body: <p>Anywhere you used <code>&lt;Render of=… /&gt;</code> with custom JSX-ish projection, pass a Svelte component via HeaderObject.cellRenderer.</p>,
+          body: <p>Anywhere you used <code>&lt;Render of=… /&gt;</code> with custom JSX-ish projection, pass a Svelte component via ColumnDef.cellRenderer.</p>,
         },
       ]}
       gotchas={[

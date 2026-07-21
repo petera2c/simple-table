@@ -794,7 +794,7 @@ const headers = [
 ];
 
 <SimpleTable 
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   
 />`}
@@ -807,10 +807,10 @@ const headers = [
               <CodeBlock
                 className="mb-6"
                 code={`<SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
   
-  shouldPaginate={true}
+  enablePagination={true}
   footerRenderer={(props) => <MyCustomFooter {...props} />}
 />`}
               />

@@ -13,6 +13,7 @@ import {
   calculateFinalNestedGridHeight,
 } from "./rowUtils";
 import { calculateRowTopPosition, type HeightOffsets } from "./infiniteScrollUtils";
+import { normalizeConfig } from "./normalizeConfig";
 
 /**
  * Minimal surface of a table instance this renderer drives. Declared
@@ -134,9 +135,8 @@ export function createNestedGridRow(
   innerContainer.style.width = "100%";
   rowElement.appendChild(innerContainer);
 
-  const nestedConfig: SimpleTableConfig = {
+  const nestedConfig = normalizeConfig({
     ...nestedGridConfig,
-    defaultHeaders: nestedGridConfig.defaultHeaders,
     rows: childRows,
     theme: theme as SimpleTableConfig["theme"],
     customTheme: nestedCustomTheme,
@@ -146,7 +146,7 @@ export function createNestedGridRow(
     errorStateRenderer,
     emptyStateRenderer,
     icons,
-  };
+  });
 
   if (!context.createNestedTable) {
     throw new Error(

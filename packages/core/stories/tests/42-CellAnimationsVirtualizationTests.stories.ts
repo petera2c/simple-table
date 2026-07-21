@@ -46,7 +46,7 @@
  * outgoing ghost path kicks in horizontally as well.
  */
 
-import { HeaderObject, SimpleTableVanilla, Row } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla, Row } from "../../src/index";
 import { expect } from "@storybook/test";
 import { waitForTable } from "./testUtils";
 import { addParagraph, addControlPanel } from "../utils";
@@ -108,7 +108,7 @@ interface RenderResult {
 }
 
 const renderConstrainedTable = (
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   data: Row[],
   options: Record<string, unknown>,
 ): RenderResult => {
@@ -133,7 +133,7 @@ const renderConstrainedTable = (
   wrapper.appendChild(tableContainer);
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: headers,
+    columns: headers,
     rows: data,
     height: `${VIEWPORT_HEIGHT}px`,
     animations: { enabled: true, duration: SLOW_DURATION },
@@ -144,14 +144,14 @@ const renderConstrainedTable = (
   return { wrapper, h2, status, tableContainer, table };
 };
 
-const createHeaders = (): HeaderObject[] => {
-  const headers: HeaderObject[] = [{ accessor: "id", label: "ID", width: 100, isSortable: true }];
+const createHeaders = (): ColumnDef[] => {
+  const headers: ColumnDef[] = [{ accessor: "id", label: "ID", width: 100, sortable: true }];
   for (let i = 0; i < COLUMN_COUNT; i++) {
     headers.push({
       accessor: `col_${i}`,
       label: `Col ${i}`,
       width: COLUMN_WIDTH,
-      isSortable: true,
+      sortable: true,
       type: "number",
     });
   }
@@ -341,7 +341,7 @@ export const SlowColumnReorderMarathon = {
               onClick: () => {
                 const api = result.table.getAPI();
                 const reversed = [...api.getHeaders()].reverse();
-                result.table.update({ defaultHeaders: reversed });
+                result.table.update({ columns: reversed });
               },
             },
             {
@@ -353,7 +353,7 @@ export const SlowColumnReorderMarathon = {
                 const b = headers.findIndex((h) => h.accessor === "col_5");
                 if (a !== -1 && b !== -1) {
                   [headers[a], headers[b]] = [headers[b], headers[a]];
-                  result.table.update({ defaultHeaders: headers });
+                  result.table.update({ columns: headers });
                 }
               },
             },
@@ -366,13 +366,13 @@ export const SlowColumnReorderMarathon = {
                   const j = Math.floor(Math.random() * (i + 1));
                   [headers[i], headers[j]] = [headers[j], headers[i]];
                 }
-                result.table.update({ defaultHeaders: headers });
+                result.table.update({ columns: headers });
               },
             },
             {
               label: "Reset",
               onClick: () => {
-                result.table.update({ defaultHeaders: createHeaders() });
+                result.table.update({ columns: createHeaders() });
               },
             },
           ],
@@ -401,7 +401,7 @@ export const SlowColumnReorderMarathon = {
     const original = api.getHeaders();
 
     announce(status, "Step 1/2 · Reversing all columns…");
-    table.update({ defaultHeaders: [...original].reverse() });
+    table.update({ columns: [...original].reverse() });
     // 5 RAFs ≈ 80ms — well past the double-rAF FLIP "First"/"Play" handoff
     // and into the active transition window (animations.duration=1500ms).
     await tickFrames(5);
@@ -411,7 +411,7 @@ export const SlowColumnReorderMarathon = {
 
     announce(status, "Step 2/2 · Resetting to original order…");
     await sleep(BEAT);
-    table.update({ defaultHeaders: original });
+    table.update({ columns: original });
     await tickFrames(5);
     expect(countActuallyAnimating(canvasElement)).toBeGreaterThan(50);
     await sleep(SETTLE_PAUSE);
@@ -427,7 +427,7 @@ export const SlowColumnReorderMarathon = {
  * on-screen, no off-screen sweeps). The play function:
  *
  *   1. Captures both cells' pre-swap left positions.
- *   2. Calls `table.update({ defaultHeaders: swapped })`.
+ *   2. Calls `table.update({ columns: swapped })`.
  *   3. Synchronously asserts each cell's FLIP transform-X equals
  *      (oldLeft - newLeft) — i.e. cell A starts where B was, cell B starts
  *      where A was, and they slide toward each other in opposite directions.
@@ -457,14 +457,14 @@ export const ContainedNeighborSwapAnimation = {
                 const b = headers.findIndex((h) => h.accessor === "col_2");
                 if (a !== -1 && b !== -1) {
                   [headers[a], headers[b]] = [headers[b], headers[a]];
-                  result.table.update({ defaultHeaders: headers });
+                  result.table.update({ columns: headers });
                 }
               },
             },
             {
               label: "Reset",
               onClick: () => {
-                result.table.update({ defaultHeaders: createHeaders() });
+                result.table.update({ columns: createHeaders() });
               },
             },
           ],
@@ -512,7 +512,7 @@ export const ContainedNeighborSwapAnimation = {
     const ai = swapped.findIndex((h) => h.accessor === ACC_A);
     const bi = swapped.findIndex((h) => h.accessor === ACC_B);
     [swapped[ai], swapped[bi]] = [swapped[bi], swapped[ai]];
-    table.update({ defaultHeaders: swapped });
+    table.update({ columns: swapped });
 
     const cellA = findCellByRowIndexAndAccessor(canvasElement, ROW_INDEX, ACC_A)!;
     const cellB = findCellByRowIndexAndAccessor(canvasElement, ROW_INDEX, ACC_B)!;
@@ -590,7 +590,7 @@ export const ReorderAtMultipleScrollPositions = {
               onClick: () => {
                 const api = result.table.getAPI();
                 const reversed = [...api.getHeaders()].reverse();
-                result.table.update({ defaultHeaders: reversed });
+                result.table.update({ columns: reversed });
               },
             },
             {
@@ -598,7 +598,7 @@ export const ReorderAtMultipleScrollPositions = {
               onClick: () => {
                 const sc = findScroller(result.tableContainer);
                 if (sc) sc.scrollTop = 0;
-                result.table.update({ defaultHeaders: createHeaders() });
+                result.table.update({ columns: createHeaders() });
               },
             },
           ],
@@ -645,7 +645,7 @@ export const ReorderAtMultipleScrollPositions = {
 
       announce(status, `Step ${i + 1}/${positions.length} · Reversing columns at ${label}…`);
       order = [...order].reverse();
-      table.update({ defaultHeaders: order });
+      table.update({ columns: order });
       // Wait long enough for the FLIP `play` RAF to fire and the browser to
       // start interpolating, but well short of SLOW_DURATION so cells are
       // still mid-flight. 5 RAFs ≈ 80ms, vs. animations.duration=1500ms.
@@ -686,7 +686,7 @@ export const ReorderAtMultipleScrollPositions = {
 
     announce(status, "Restoring scroll & order…");
     scroller!.scrollTop = 0;
-    table.update({ defaultHeaders: original });
+    table.update({ columns: original });
     await sleep(SETTLE_PAUSE);
     announce(status, "Done.");
     expect(countGhosts(canvasElement)).toBe(0);
@@ -790,7 +790,7 @@ export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
       const beforeGeom = cumulativeLefts(beforeOrder);
 
       announce(status, `${label}: reversing all columns and reading FLIP first frames…`);
-      table.update({ defaultHeaders: [...beforeOrder].reverse() });
+      table.update({ columns: [...beforeOrder].reverse() });
 
       // Synchronously read the first-frame transforms of every row-0 cell now
       // in the DOM (FLIP inline styles are applied during update()).
@@ -1566,7 +1566,7 @@ export const ReorderAfterHorizontalScrollRetainsExitingCellsAsGhosts = {
 
     const original = table.getAPI().getHeaders();
     const reversed = [...original].reverse();
-    table.update({ defaultHeaders: reversed });
+    table.update({ columns: reversed });
 
     // Synchronously inspect the DOM right after the reverse.
     const ghosts = Array.from(

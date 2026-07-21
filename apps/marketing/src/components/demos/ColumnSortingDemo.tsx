@@ -1,17 +1,17 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: ReactHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 80, isSortable: true, type: "number" },
-  { accessor: "name", label: "Name", width: 180, isSortable: true, type: "string" },
-  { accessor: "age", label: "Age", width: 80, isSortable: true, type: "number" },
-  { accessor: "role", label: "Role", width: 200, isSortable: true, type: "string" },
+const headers: ReactColumnDef[] = [
+  { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
+  { accessor: "name", label: "Name", width: 180, sortable: true, type: "string" },
+  { accessor: "age", label: "Age", width: 80, sortable: true, type: "number" },
+  { accessor: "role", label: "Role", width: 200, sortable: true, type: "string" },
   {
     accessor: "department",
     label: "Department",
     width: 180,
-    isSortable: true,
+    sortable: true,
     type: "string",
     valueFormatter: ({ value }) => {
       return (value as string).charAt(0).toUpperCase() + (value as string).slice(1);
@@ -21,7 +21,7 @@ const headers: ReactHeaderObject[] = [
     accessor: "startDate",
     label: "Start Date",
     width: 140,
-    isSortable: true,
+    sortable: true,
     type: "date",
     valueFormatter: ({ value }) => {
       if (typeof value === "string") {
@@ -145,7 +145,7 @@ const ColumnSortingDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       height={height}
       initialSortColumn="age"
       initialSortDirection="desc"

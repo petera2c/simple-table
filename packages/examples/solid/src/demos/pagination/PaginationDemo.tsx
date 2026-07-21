@@ -30,13 +30,13 @@ export default function PaginationDemo(props: {
 
   return (
     <SimpleTable
-      defaultHeaders={paginationConfig.headers}
+      columns={paginationConfig.headers}
       height={props.height ?? "auto"}
       isLoading={isLoading()}
       onNextPage={onNextPage}
       rows={rows()}
       rowsPerPage={PAGINATION_ROWS_PER_PAGE}
-      shouldPaginate={true}
+      enablePagination={true}
       theme={props.theme}
     />
   );

@@ -5,7 +5,7 @@ import {
   rowsShallowUnchanged,
 } from "simple-table-core";
 import type { SimpleTableConfig, TableAPI } from "simple-table-core";
-import { buildVanillaConfig } from "./buildVanillaConfig";
+import { buildVanillaConfig, resolveSolidColumns } from "./buildVanillaConfig";
 import { MountRegistry } from "./MountRegistry";
 import type { SimpleTableSolidProps, TableInstance } from "./types";
 
@@ -23,14 +23,16 @@ import type { SimpleTableSolidProps, TableInstance } from "./types";
  * <SimpleTable
  *   ref={(api) => (tableApi = api)}
  *   rows={rows()}
- *   defaultHeaders={headers}
+ *   columns={headers}
  * />
  */
 export function SimpleTable(props: SimpleTableSolidProps) {
   let containerEl!: HTMLDivElement;
   let instance: TableInstance | null = null;
   const registry = new MountRegistry();
-  let syncedDefaultHeaders: SimpleTableSolidProps["defaultHeaders"] | undefined;
+  let syncedDefaultHeaders: ReadonlyArray<
+    NonNullable<SimpleTableSolidProps["columns"]>[number]
+  > | undefined;
   let syncedRows: SimpleTableSolidProps["rows"] | undefined;
 
   onMount(() => {
@@ -39,7 +41,7 @@ export function SimpleTable(props: SimpleTableSolidProps) {
       buildVanillaConfig(props, registry),
     ) as unknown as TableInstance;
     instance.mount();
-    syncedDefaultHeaders = props.defaultHeaders;
+    syncedDefaultHeaders = resolveSolidColumns(props);
     syncedRows = props.rows;
 
     if (props.ref) {
@@ -47,19 +49,20 @@ export function SimpleTable(props: SimpleTableSolidProps) {
     }
   });
 
-  // Sync prop changes reactively. Skip no-op defaultHeaders/rows when
+  // Sync prop changes reactively. Skip no-op columns/rows when
   // structure/content is unchanged (unstable column/row rebuilds).
   createEffect(() => {
     if (!instance) return;
 
     const fullConfig = buildVanillaConfig(props, registry);
     const patch: Partial<SimpleTableConfig> = { ...fullConfig };
+    const resolvedColumns = resolveSolidColumns(props);
 
     const headersUnchanged = headersStructurallyEqual(
       syncedDefaultHeaders,
-      props.defaultHeaders,
+      resolvedColumns,
     );
-    syncedDefaultHeaders = props.defaultHeaders;
+    syncedDefaultHeaders = resolvedColumns;
     if (headersUnchanged) {
       delete patch.defaultHeaders;
     }

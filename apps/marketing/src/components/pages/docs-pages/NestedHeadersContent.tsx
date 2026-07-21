@@ -12,12 +12,12 @@ import PropTable, { type PropInfo } from "@/components/PropTable";
 const NESTED_HEADERS_PROPS: PropInfo[] = [
   {
     key: "children",
-    name: "HeaderObject.children",
+    name: "ColumnDef.children",
     required: false,
     description:
       "Array of child column definitions that will be grouped under this parent header. Creates a hierarchical column structure.",
-    type: "HeaderObject[]",
-    link: "/docs/api-reference#header-object",
+    type: "ColumnDef[]",
+    link: "/docs/api-reference#column-def",
     example: `// Parent header with child columns
 {
   label: "Test Scores",

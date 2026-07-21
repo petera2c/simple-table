@@ -2,7 +2,7 @@
  * Charts Example – vanilla port of React ChartsExample.
  * Uses same data, headers and props as main branch.
  */
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
@@ -115,26 +115,26 @@ export const CHARTS_EXAMPLE_DATA: Row[] = [
   },
 ];
 
-const HEADERS: HeaderObject[] = [
+const HEADERS: ColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
     width: 70,
-    isSortable: true,
+    sortable: true,
     type: "number",
   },
   {
     accessor: "product",
     label: "Product",
     width: 180,
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
     accessor: "category",
     label: "Category",
     width: 120,
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
@@ -181,7 +181,7 @@ const HEADERS: HeaderObject[] = [
     accessor: "rating",
     label: "Rating",
     width: 80,
-    isSortable: true,
+    sortable: true,
     type: "number",
     align: "center",
   },

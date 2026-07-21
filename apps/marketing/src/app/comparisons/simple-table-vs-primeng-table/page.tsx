@@ -67,7 +67,7 @@ export default function SimpleTableVsPrimengTablePage() {
         <>Bundle: Simple Table for Angular ships ~70 kB gzipped including the engine and Angular bindings. PrimeNG&apos;s @primeng/table requires the broader primeng package + theme assets, typically adding 200–400 kB depending on which theme is loaded.</>
       }
       installCommand="npm install @simple-table/angular"
-      migrationCallout={<>PrimeNG&apos;s <code>columns</code> + <code>value</code> inputs map to Simple Table&apos;s <code>defaultHeaders</code> + <code>rows</code>. Cell templates with <code>pTemplate=&quot;body&quot;</code> become standalone components passed as renderers.</>}
+      migrationCallout={<>PrimeNG&apos;s <code>columns</code> + <code>value</code> inputs map to Simple Table&apos;s <code>columns</code> + <code>rows</code>. Cell templates with <code>pTemplate=&quot;body&quot;</code> become standalone components passed as renderers.</>}
       faqs={[
         { question: "Should I drop PrimeNG entirely if I move to Simple Table?", answer: "Not necessarily. Many teams keep PrimeNG for forms and dialogs while moving the data grid to Simple Table to reduce bundle and use a more modern, signal-friendly API. Both can coexist." },
         { question: "Does Simple Table for Angular support theming?", answer: "Yes—via CSS variables. You can match an existing PrimeNG theme by mapping CSS variables, or ship a custom theme without PrimeNG dependencies." },

@@ -4,13 +4,13 @@ import type {
   Theme,
   CellChangeProps,
   CellRendererProps,
-  ReactHeaderObject,
+  ReactColumnDef,
 } from "@simple-table/react";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
 import type { HREmployee } from "./hr.demo-data";
 import "@simple-table/react/styles.css";
 
-function getHeaders(): ReactHeaderObject[] {
+function getHeaders(): ReactColumnDef[] {
   return hrConfig.headers.map((h) => {
     if (h.accessor === "fullName") {
       return {
@@ -177,13 +177,13 @@ const HRDemo = ({ height = "400px", theme }: { height?: string | number; theme?:
     <SimpleTable
       columnReordering
       columnResizing
-      defaultHeaders={headers}
+      columns={headers}
       onCellEdit={handleCellEdit}
       customTheme={{ rowHeight }}
       rows={data}
       rowsPerPage={howManyRowsCanFit}
       selectableCells
-      shouldPaginate
+      enablePagination
       height={height}
       theme={theme}
     />

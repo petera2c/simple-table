@@ -30,7 +30,7 @@ export default function ExternalSortDemo(props: {
 
   return (
     <SimpleTable
-      defaultHeaders={externalSortConfig.headers}
+      columns={externalSortConfig.headers}
       rows={sortedRows()}
       height={props.height ?? "400px"}
       theme={props.theme}

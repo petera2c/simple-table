@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularCellRenderer, AngularHeaderObject, CellChangeProps, Theme } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularColumnDef, CellChangeProps, Theme } from "@simple-table/angular";
 import { hrConfig } from "./hr.demo-data";
 import { HrFullNameCellComponent } from "./hr-full-name-cell.component";
 import { HrHireDateCellComponent } from "./hr-hire-date-cell.component";
@@ -19,8 +19,8 @@ const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   status: HrStatusCellComponent,
 };
 
-function buildHRHeaders(): AngularHeaderObject[] {
-  return hrConfig.headers.map((h): AngularHeaderObject => {
+function buildHRHeaders(): AngularColumnDef[] {
+  return hrConfig.headers.map((h): AngularColumnDef => {
     const cellRenderer = RENDERERS[String(h.accessor)];
     return cellRenderer ? { ...h, cellRenderer } : { ...h };
   });
@@ -32,14 +32,14 @@ function buildHRHeaders(): AngularHeaderObject[] {
   imports: [SimpleTableComponent],
   template: `
     <simple-table
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rows]="data"
       [height]="height"
       [theme]="theme"
       [columnReordering]="true"
       [columnResizing]="true"
       [selectableCells]="true"
-      [shouldPaginate]="true"
+      [enablePagination]="true"
       [rowsPerPage]="rowsPerPage"
       [customTheme]="{ rowHeight: 48 }"
       (cellEdit)="onCellEdit($event)"
@@ -50,7 +50,7 @@ export class HRDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = buildHRHeaders();
+  readonly headers: AngularColumnDef[] = buildHRHeaders();
   data = [...hrConfig.rows];
 
   get rowsPerPage(): number {

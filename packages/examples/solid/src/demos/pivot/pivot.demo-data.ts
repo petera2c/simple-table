@@ -1,6 +1,6 @@
-import type { PivotConfig, SolidHeaderObject, Row } from "@simple-table/solid";
+import type { PivotConfig, SolidColumnDef, Row } from "@simple-table/solid";
 
-export const pivotHeaders: SolidHeaderObject[] = [
+export const pivotHeaders: SolidColumnDef[] = [
   { accessor: "region", label: "Region", width: 110, type: "string" },
   { accessor: "country", label: "Country", width: 100, type: "string" },
   { accessor: "category", label: "Category", width: 110, type: "string" },

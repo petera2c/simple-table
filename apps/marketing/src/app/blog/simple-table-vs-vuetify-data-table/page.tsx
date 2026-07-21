@@ -106,7 +106,7 @@ export default function Page() {
       faqs={[
         { question: "Can I keep Vuetify for the rest of my app?", answer: "Yes. Many teams swap only v-data-table for Simple Table while keeping Vuetify for forms, dialogs, and layout. They coexist fine." },
         { question: "Does Simple Table support Nuxt SSR?", answer: "Yes. @simple-table/vue ships ESM and works with Nuxt 3 and Nuxt 4 out of the box, including SSR." },
-        { question: "How big is the migration?", answer: "Usually a few hours to a few days. Map Vuetify headers to Simple Table HeaderObjects (title→label, key→accessor), adapt your items to Simple Table's row shape, and convert v-slot:item.<key> templates to cellRenderer Vue components." },
+        { question: "How big is the migration?", answer: "Usually a few hours to a few days. Map Vuetify headers to Simple Table ColumnDefs (title→label, key→accessor), adapt your items to Simple Table's row shape, and convert v-slot:item.<key> templates to cellRenderer Vue components." },
         { question: "Will I lose Material Design styling?", answer: "Not entirely. Theme Simple Table via CSS variables to match Material density and tokens. The visual outcome can be very close." },
       ]}
       conclusionParagraphs={[

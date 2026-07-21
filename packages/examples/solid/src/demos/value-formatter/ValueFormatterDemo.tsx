@@ -8,7 +8,7 @@ export default function ValueFormatterDemo(props: {
 }) {
   return (
     <SimpleTable
-      defaultHeaders={valueFormatterConfig.headers}
+      columns={valueFormatterConfig.headers}
       rows={valueFormatterConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

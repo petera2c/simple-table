@@ -16,12 +16,12 @@ import PropTable, { type PropInfo } from "@/components/PropTable";
 
 const TABLE_PROPS: PropInfo[] = [
   {
-    key: "defaultHeaders",
-    name: "defaultHeaders",
+    key: "columns",
+    name: "columns",
     required: true,
     description: "Array of column definitions that specify the structure of your table.",
-    type: "HeaderObject[]",
-    link: "/docs/api-reference#header-object",
+    type: "ColumnDef[]",
+    link: "/docs/api-reference#column-def",
     example: `const headers = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", type: "string" }
@@ -76,12 +76,12 @@ height="100%"`,
 }}`,
   },
   {
-    key: "editColumns",
-    name: "editColumns",
+    key: "enableColumnEditor",
+    name: "enableColumnEditor",
     required: false,
     description: "Enable column reordering by drag and drop.",
     type: "boolean",
-    example: `editColumns={true}`,
+    example: `enableColumnEditor={true}`,
   },
   {
     key: "selectableCells",

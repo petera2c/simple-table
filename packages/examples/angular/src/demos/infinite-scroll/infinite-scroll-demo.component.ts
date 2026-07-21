@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { infiniteScrollConfig, generateInfiniteScrollData } from "./infinite-scroll.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -17,7 +17,7 @@ const BATCH_SIZE = 15;
       </div>
       <simple-table
         [rows]="rows"
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [isLoading]="loading"
         [height]="height"
         [theme]="theme"
@@ -30,7 +30,7 @@ export class InfiniteScrollDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = infiniteScrollConfig.headers;
+  readonly headers: AngularColumnDef[] = infiniteScrollConfig.headers;
   rows: Row[] = generateInfiniteScrollData(0, 30) as Row[];
   loading = false;
   hasMore = true;

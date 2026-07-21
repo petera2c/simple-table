@@ -1,10 +1,20 @@
-import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
+import { SimpleTable } from "@simple-table/solid";
+import type {
+  Theme,
+  SolidColumnDef,
+  SolidCellRenderer,
+  CellRendererProps,
+} from "@simple-table/solid";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "@simple-table/solid/styles.css";
 
 const getInitials = (name: string) =>
-  name.split(" ").map((n) => n[0]).join("").toUpperCase();
+  name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
 
 const TeamCell = (props: CellRendererProps) => {
   const members = (props.row as CellRendererEmployee).teamMembers;
@@ -76,7 +86,14 @@ const ProgressCell = (props: CellRendererProps) => {
   return (
     <div>
       <div style={{ "font-size": "12px", "margin-bottom": "2px" }}>{pct}%</div>
-      <div style={{ height: "10px", background: "#E5E7EB", "border-radius": "5px", overflow: "hidden" }}>
+      <div
+        style={{
+          height: "10px",
+          background: "#E5E7EB",
+          "border-radius": "5px",
+          overflow: "hidden",
+        }}
+      >
         <div
           style={{
             width: `${pct}%`,
@@ -141,7 +158,7 @@ const TagsCell = (props: CellRendererProps) => {
   );
 };
 
-const RENDERER_MAP: Record<string, (props: CellRendererProps) => unknown> = {
+const RENDERER_MAP: Record<string, SolidCellRenderer> = {
   teamMembers: TeamCell,
   website: WebsiteCell,
   status: StatusCell,
@@ -151,7 +168,7 @@ const RENDERER_MAP: Record<string, (props: CellRendererProps) => unknown> = {
   tags: TagsCell,
 };
 
-const HEADERS: SolidHeaderObject[] = cellRendererConfig.headers.map((h) => {
+const HEADERS: SolidColumnDef[] = cellRendererConfig.headers.map((h) => {
   const fn = RENDERER_MAP[String(h.accessor)];
   return fn !== undefined ? { ...h, cellRenderer: fn } : h;
 });
@@ -159,7 +176,7 @@ const HEADERS: SolidHeaderObject[] = cellRendererConfig.headers.map((h) => {
 export default function CellRendererDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
-      defaultHeaders={HEADERS}
+      columns={HEADERS}
       rows={cellRendererConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

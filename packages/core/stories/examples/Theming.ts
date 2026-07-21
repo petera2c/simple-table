@@ -9,10 +9,10 @@ import { SPACE_HEADERS } from "../data/space-data";
 export const themingExampleDefaults = {
   columnResizing: true,
   columnReordering: true,
-  editColumns: true,
+  enableColumnEditor: true,
   selectableCells: true,
   selectableColumns: true,
-  shouldPaginate: true,
+  enablePagination: true,
   rowsPerPage: 10,
   height: "400px",
 };

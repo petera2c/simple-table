@@ -5,7 +5,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -23,7 +23,7 @@ const meta: Meta = {
 
 export default meta;
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 120, type: "string" },
 ];
@@ -136,13 +136,13 @@ export const UseHoverRowBackground = {
     const { wrapper } = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",
-      useHoverRowBackground: true,
+      hoverRowBackground: true,
     });
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    // useHoverRowBackground adds "st-row-hovered" to cells when the mouse enters a row
+    // hoverRowBackground adds "st-row-hovered" to cells when the mouse enters a row
     const firstCell = canvasElement.querySelector<HTMLElement>(".st-cell");
     expect(firstCell).toBeTruthy();
     firstCell!.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
@@ -163,12 +163,12 @@ export const UseHoverRowBackgroundIsolatedAcrossTables = {
     const tableA = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "200px",
-      useHoverRowBackground: true,
+      hoverRowBackground: true,
     });
     const tableB = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "200px",
-      useHoverRowBackground: true,
+      hoverRowBackground: true,
     });
     tableA.wrapper.dataset.table = "a";
     tableB.wrapper.dataset.table = "b";
@@ -200,7 +200,7 @@ export const UseOddEvenRowBackground = {
     const { wrapper } = renderVanillaTable(headers, stripedData(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "400px",
-      useOddEvenRowBackground: true,
+      oddEvenRowBackground: true,
     });
     return wrapper;
   },
@@ -262,7 +262,7 @@ export const UseOddEvenRowBackgroundDisabled = {
     const { wrapper } = renderVanillaTable(headers, stripedData(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "400px",
-      useOddEvenRowBackground: false,
+      oddEvenRowBackground: false,
     });
     return wrapper;
   },
@@ -281,7 +281,7 @@ export const UseOddEvenRowBackgroundDisabled = {
 };
 
 // Visual-effect test: with a theme that defines distinct odd/even colors
-// (e.g. "light"), enabling useOddEvenRowBackground must actually produce
+// (e.g. "light"), enabling oddEvenRowBackground must actually produce
 // different computed background colors between adjacent rows. This guards
 // against regressions where the class is applied but the styling does not
 // resolve (e.g. due to broken selectors or specificity issues).
@@ -292,7 +292,7 @@ export const UseOddEvenRowBackgroundVisualEffect = {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "400px",
       theme: "light",
-      useOddEvenRowBackground: true,
+      oddEvenRowBackground: true,
     });
     return wrapper;
   },
@@ -328,7 +328,7 @@ export const UseOddColumnBackground = {
     const { wrapper } = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",
-      useOddColumnBackground: true,
+      oddColumnBackground: true,
     });
     return wrapper;
   },

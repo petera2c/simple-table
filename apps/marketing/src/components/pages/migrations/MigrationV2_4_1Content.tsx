@@ -106,7 +106,7 @@ export default function MigrationV2_4_1Content() {
             </p>
             <CodeBlock
               code={`<SimpleTable
-  editColumns={true}
+  enableColumnEditor={true}
   columnEditorPosition="right"
   // ... other props
 />`}
@@ -119,7 +119,7 @@ export default function MigrationV2_4_1Content() {
             </p>
             <CodeBlock
               code={`<SimpleTable
-  editColumns={true}
+  enableColumnEditor={true}
   // columnEditorPosition removed - uses optimized default
   // ... other props
 />`}
@@ -173,7 +173,7 @@ export default function MigrationV2_4_1Content() {
             </p>
             <CodeBlock
               code={`<SimpleTable
-  editColumns={true}
+  enableColumnEditor={true}
   columnEditorText="Customize Columns"
   // ... other props
 />`}
@@ -186,7 +186,7 @@ export default function MigrationV2_4_1Content() {
             </p>
             <CodeBlock
               code={`<SimpleTable
-  editColumns={true}
+  enableColumnEditor={true}
   columnEditorConfig={{
     text: "Customize Columns",
     searchEnabled: true,                    // NEW: Enable search (default: true)
@@ -310,7 +310,7 @@ import {
 
           <CodeBlock
             code={`<SimpleTable
-  editColumns={true}
+  enableColumnEditor={true}
   columnEditorConfig={{
     text: "Columns",
     searchEnabled: true,                      // Enable search (default: true)
@@ -343,7 +343,7 @@ import {
               <strong>No configuration needed!</strong> Drag-and-drop in the column editor is
               automatically enabled when{" "}
               <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
-                editColumns={true}
+                enableColumnEditor={true}
               </code>
               .
             </p>
@@ -366,7 +366,7 @@ import {
 import { faGripVertical } from "@fortawesome/free-solid-svg-icons";
 
 <SimpleTable
-  editColumns={true}
+  enableColumnEditor={true}
   icons={{
     drag: <FontAwesomeIcon icon={faGripVertical} className="text-gray-500" />,
   }}
@@ -411,9 +411,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
-  editColumns={true}
+  enableColumnEditor={true}
   columnEditorText="Customize Columns"
   columnEditorPosition="right"
   expandIcon={<FontAwesomeIcon icon={faChevronRight} />}
@@ -440,9 +440,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={data}
-  editColumns={true}
+  enableColumnEditor={true}
   columnEditorConfig={{
     text: "Customize Columns",
     searchEnabled: true,

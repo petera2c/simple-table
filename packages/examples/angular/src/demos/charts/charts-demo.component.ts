@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { chartsConfig } from "./charts.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -11,7 +11,7 @@ import "@simple-table/angular/styles.css";
     <simple-table
       [columnReordering]="true"
       [columnResizing]="true"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rows]="rows"
       [selectableCells]="true"
       [height]="height"
@@ -23,6 +23,6 @@ export class ChartsDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = chartsConfig.headers;
+  readonly headers: AngularColumnDef[] = chartsConfig.headers;
   readonly rows: Row[] = chartsConfig.rows;
 }

@@ -11,7 +11,7 @@ const CellHighlightingDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={cellHighlightingConfig.headers}
+      columns={cellHighlightingConfig.headers}
       rows={cellHighlightingConfig.rows}
       height={height}
       theme={theme}

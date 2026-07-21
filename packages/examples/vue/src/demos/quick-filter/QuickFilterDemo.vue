@@ -55,7 +55,7 @@
       </button>
     </div>
     <SimpleTable
-      :default-headers="quickFilterConfig.headers"
+      :columns="quickFilterConfig.headers"
       :rows="quickFilterConfig.rows"
       :height="height"
       :theme="theme"

@@ -1,5 +1,5 @@
 import type {
-  ReactHeaderObject,
+  ReactColumnDef,
   CellRendererProps,
   ValueGetterProps,
 } from "@simple-table/react";
@@ -40,7 +40,7 @@ const ChangeCell = (accessor: keyof CryptoCoin) => {
   return ChangeCellRenderer;
 };
 
-export const HEADERS: ReactHeaderObject[] = [
+export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "rank",
     label: "#",
@@ -48,8 +48,8 @@ export const HEADERS: ReactHeaderObject[] = [
     align: "center",
     type: "number",
     pinned: "left",
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     cellRenderer: ({ row, theme }: CellRendererProps) => {
       const c = getThemeColors(theme);
       return <span style={{ color: c.muted, fontWeight: 600 }}>{row.rank as number}</span>;
@@ -62,8 +62,8 @@ export const HEADERS: ReactHeaderObject[] = [
     align: "left",
     type: "string",
     pinned: "left",
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     // Sort/filter the synthetic "asset" column by the coin name.
     valueGetter: ({ row }: ValueGetterProps) => row.name as string,
     cellRenderer: ({ row, theme }: CellRendererProps) => {
@@ -101,8 +101,8 @@ export const HEADERS: ReactHeaderObject[] = [
     width: 130,
     align: "right",
     type: "number",
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     cellRenderer: ({ row, theme }: CellRendererProps) => {
       const c = getThemeColors(theme);
       return (
@@ -118,8 +118,8 @@ export const HEADERS: ReactHeaderObject[] = [
     width: 160,
     align: "center",
     type: "lineAreaChart",
-    isSortable: false,
-    isEditable: false,
+    sortable: false,
+    editable: false,
     filterable: false,
     tooltip: "Price trend over the last 30 intervals",
     chartOptions: {
@@ -132,7 +132,7 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "performance",
     label: "Performance",
     width: 480,
-    isSortable: false,
+    sortable: false,
     collapsible: true,
     children: [
       {
@@ -141,8 +141,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: 120,
         align: "right",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "always",
         cellRenderer: ChangeCell("change24h"),
       },
@@ -152,8 +152,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: 110,
         align: "right",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "parentExpanded",
         cellRenderer: ChangeCell("change1h"),
       },
@@ -163,8 +163,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: 110,
         align: "right",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "parentExpanded",
         cellRenderer: ChangeCell("change7d"),
       },
@@ -174,8 +174,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: 120,
         align: "right",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "parentExpanded",
         cellRenderer: ChangeCell("change30d"),
       },
@@ -185,7 +185,7 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "market",
     label: "Market",
     width: 560,
-    isSortable: false,
+    sortable: false,
     collapsible: true,
     children: [
       {
@@ -194,8 +194,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: 150,
         align: "right",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "always",
         cellRenderer: ({ row, theme }: CellRendererProps) => {
           const c = getThemeColors(theme);
@@ -212,8 +212,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: 150,
         align: "right",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "parentExpanded",
         cellRenderer: ({ row, theme }: CellRendererProps) => {
           const c = getThemeColors(theme);
@@ -230,8 +230,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: 220,
         align: "left",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "parentExpanded",
         cellRenderer: ({ row, theme }: CellRendererProps) => {
           const symbol = row.symbol as string;
@@ -264,8 +264,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: 120,
         align: "right",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "parentExpanded",
         cellRenderer: ChangeCell("athChangePercent"),
       },

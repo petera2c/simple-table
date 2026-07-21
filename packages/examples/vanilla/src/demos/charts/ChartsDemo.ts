@@ -10,7 +10,7 @@ export function renderChartsDemo(
   return new SimpleTableVanilla(container, {
     columnReordering: chartsConfig.tableProps.columnReordering,
     columnResizing: chartsConfig.tableProps.columnResizing,
-    defaultHeaders: chartsConfig.headers,
+    columns: chartsConfig.headers,
     rows: chartsConfig.rows,
     selectableCells: chartsConfig.tableProps.selectableCells,
     height: options?.height ?? "400px",

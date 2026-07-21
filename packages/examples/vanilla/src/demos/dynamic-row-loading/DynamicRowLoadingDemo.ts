@@ -61,8 +61,8 @@ export function renderDynamicRowLoadingDemo(
 
   const table = new SimpleTableVanilla(container, {
     columnResizing: dynamicRowLoadingConfig.tableProps.columnResizing,
-    defaultHeaders: dynamicRowLoadingConfig.headers,
-    editColumns: dynamicRowLoadingConfig.tableProps.editColumns,
+    columns: dynamicRowLoadingConfig.headers,
+    enableColumnEditor: dynamicRowLoadingConfig.tableProps.enableColumnEditor,
     expandAll: dynamicRowLoadingConfig.tableProps.expandAll,
     height: options?.height ?? "400px",
     onRowGroupExpand: handleRowExpand,
@@ -71,7 +71,7 @@ export function renderDynamicRowLoadingDemo(
     rows: rows,
     selectableCells: dynamicRowLoadingConfig.tableProps.selectableCells,
     theme: options?.theme,
-    useOddEvenRowBackground: dynamicRowLoadingConfig.tableProps.useOddEvenRowBackground,
+    oddEvenRowBackground: dynamicRowLoadingConfig.tableProps.oddEvenRowBackground,
   });
 
   return table;

@@ -1,7 +1,7 @@
 import { SimpleTable } from "@simple-table/react";
 import type {
   ColumnEditorCustomRendererProps,
-  ReactHeaderObject,
+  ReactColumnDef,
   Row,
   TableAPI,
   Theme,
@@ -95,7 +95,7 @@ const sampleData: Row[] = [
   },
 ];
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "name", label: "Employee Name", width: 180, filterable: true, type: "string" },
   { accessor: "age", label: "Age", width: 80, filterable: true, type: "number" },
   { accessor: "department", label: "Department", width: 140, filterable: true, type: "string" },
@@ -113,21 +113,21 @@ const headers: ReactHeaderObject[] = [
 ];
 
 function hasHeaderChanged(
-  currentHeaders: readonly ReactHeaderObject[],
-  defaultHeaders: readonly ReactHeaderObject[],
+  currentHeaders: readonly ReactColumnDef[],
+  columns: readonly ReactColumnDef[],
 ): boolean {
-  const filter = (h: readonly ReactHeaderObject[]) =>
+  const filter = (h: readonly ReactColumnDef[]) =>
     h.filter(
       (x) =>
-        !(x as ReactHeaderObject & { isSelectionColumn?: boolean }).isSelectionColumn &&
+        !(x as ReactColumnDef & { isSelectionColumn?: boolean }).isSelectionColumn &&
         !x.excludeFromRender,
     );
   const current = filter(currentHeaders);
-  const defaults = filter(defaultHeaders);
+  const defaults = filter(columns);
 
   if (current.length !== defaults.length) return true;
 
-  const headerDiffers = (cur: ReactHeaderObject, def: ReactHeaderObject): boolean => {
+  const headerDiffers = (cur: ReactColumnDef, def: ReactColumnDef): boolean => {
     if (cur.accessor !== def.accessor) {
       console.log("accessor differs", cur.accessor, def.accessor);
       return true;
@@ -141,8 +141,8 @@ function hasHeaderChanged(
       console.log("pinned differs", cur.pinned, def.pinned);
       return true;
     }
-    const curChildren = filter((cur.children ?? []) as ReactHeaderObject[]);
-    const defChildren = filter((def.children ?? []) as ReactHeaderObject[]);
+    const curChildren = filter((cur.children ?? []) as ReactColumnDef[]);
+    const defChildren = filter((def.children ?? []) as ReactColumnDef[]);
     if (curChildren.length !== defChildren.length) return true;
     return curChildren.some((c, i) => headerDiffers(c, defChildren[i]));
   };
@@ -160,8 +160,8 @@ const ColumnEditorCustomRendererDemo = ({
   theme?: Theme;
 }) => {
   const tableRef = useRef<TableAPI>(null);
-  const defaultHeaders = headers;
-  console.log("defaultHeaders", defaultHeaders);
+  const columns = headers;
+  console.log("columns", columns);
 
   const customRenderer = ({
     searchSection,
@@ -170,8 +170,8 @@ const ColumnEditorCustomRendererDemo = ({
     headers: currentHeaders,
   }: ColumnEditorCustomRendererProps) => {
     const showResetButton = hasHeaderChanged(
-      currentHeaders as ReactHeaderObject[],
-      defaultHeaders,
+      currentHeaders as ReactColumnDef[],
+      columns,
     );
 
     return (
@@ -211,11 +211,11 @@ const ColumnEditorCustomRendererDemo = ({
     <div style={{ padding: "20px" }}>
       <SimpleTable
         autoExpandColumns
-        defaultHeaders={headers}
+        columns={headers}
         rows={sampleData}
         columnResizing
         columnReordering
-        editColumns
+        enableColumnEditor
         columnEditorConfig={{
           text: "Columns",
           searchEnabled: true,

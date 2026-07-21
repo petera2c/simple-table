@@ -7,7 +7,7 @@ export default function ChartsDemo(props: { height?: string | number; theme?: Th
     <SimpleTable
       columnReordering={chartsConfig.tableProps.columnReordering}
       columnResizing={chartsConfig.tableProps.columnResizing}
-      defaultHeaders={chartsConfig.headers}
+      columns={chartsConfig.headers}
       rows={chartsConfig.rows}
       selectableCells={chartsConfig.tableProps.selectableCells}
       height={props.height ?? "400px"}

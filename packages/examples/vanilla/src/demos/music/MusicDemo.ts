@@ -1,5 +1,5 @@
 import { SimpleTableVanilla, asRows } from "simple-table-core";
-import type { Theme, HeaderObject, CellRenderer, CellRendererProps } from "simple-table-core";
+import type { Theme, ColumnDef, CellRenderer, CellRendererProps } from "simple-table-core";
 import { musicData, getMusicThemeColors } from "./music.demo-data";
 import type { MusicArtist } from "./music.demo-data";
 import "simple-table-core/styles.css";
@@ -60,7 +60,7 @@ function growthMetric(
   ]);
 }
 
-function buildMusicHeaders(theme?: string): HeaderObject[] {
+function buildMusicHeaders(theme?: string): ColumnDef[] {
   const c = getMusicThemeColors(theme);
 
   const artistRenderer: CellRenderer = ({ row }: CellRendererProps) => {
@@ -159,48 +159,48 @@ function buildMusicHeaders(theme?: string): HeaderObject[] {
   };
 
   return [
-    { accessor: "rank", label: "#", width: 60, isSortable: true, isEditable: false, align: "center", type: "number", pinned: "left" },
-    { accessor: "artistName", label: "Artist", width: 330, isSortable: true, isEditable: false, align: "left", type: "string", pinned: "left", cellRenderer: artistRenderer },
-    { accessor: "artistType", label: "Identity", width: 280, isSortable: false, isEditable: false, align: "left", type: "string", cellRenderer: artistTypeRenderer },
+    { accessor: "rank", label: "#", width: 60, sortable: true, editable: false, align: "center", type: "number", pinned: "left" },
+    { accessor: "artistName", label: "Artist", width: 330, sortable: true, editable: false, align: "left", type: "string", pinned: "left", cellRenderer: artistRenderer },
+    { accessor: "artistType", label: "Identity", width: 280, sortable: false, editable: false, align: "left", type: "string", cellRenderer: artistTypeRenderer },
     {
       accessor: "followersGroup", label: "Followers", width: 700, collapsible: true,
       children: [
-        { accessor: "followers", label: "Total Followers", width: 180, showWhen: "always", isSortable: true, isEditable: false, type: "number", cellRenderer: followersRenderer },
-        { accessor: "followers7DayGrowth", label: "7-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("followers7DayGrowth", "followers7DayGrowthPercent", false) },
-        { accessor: "followers28DayGrowth", label: "28-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("followers28DayGrowth", "followers28DayGrowthPercent", false) },
-        { accessor: "followers60DayGrowth", label: "60-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("followers60DayGrowth", "followers60DayGrowthPercent", false) },
+        { accessor: "followers", label: "Total Followers", width: 180, showWhen: "always", sortable: true, editable: false, type: "number", cellRenderer: followersRenderer },
+        { accessor: "followers7DayGrowth", label: "7-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("followers7DayGrowth", "followers7DayGrowthPercent", false) },
+        { accessor: "followers28DayGrowth", label: "28-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("followers28DayGrowth", "followers28DayGrowthPercent", false) },
+        { accessor: "followers60DayGrowth", label: "60-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("followers60DayGrowth", "followers60DayGrowthPercent", false) },
       ],
     },
-    { accessor: "popularity", label: "Popularity", width: 180, isSortable: true, isEditable: false, align: "center", type: "number", cellRenderer: popularityRenderer },
+    { accessor: "popularity", label: "Popularity", width: 180, sortable: true, editable: false, align: "center", type: "number", cellRenderer: popularityRenderer },
     {
       accessor: "playlistReachGroup", label: "Playlist Reach", width: 700, collapsible: true,
       children: [
-        { accessor: "playlistReach", label: "Total Reach", width: 180, showWhen: "always", isSortable: true, isEditable: false, type: "number", cellRenderer: playlistReachRenderer },
-        { accessor: "playlistReach7DayGrowth", label: "7-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("playlistReach7DayGrowth", "playlistReach7DayGrowthPercent", true) },
-        { accessor: "playlistReach28DayGrowth", label: "28-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("playlistReach28DayGrowth", "playlistReach28DayGrowthPercent", true) },
-        { accessor: "playlistReach60DayGrowth", label: "60-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("playlistReach60DayGrowth", "playlistReach60DayGrowthPercent", true) },
+        { accessor: "playlistReach", label: "Total Reach", width: 180, showWhen: "always", sortable: true, editable: false, type: "number", cellRenderer: playlistReachRenderer },
+        { accessor: "playlistReach7DayGrowth", label: "7-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("playlistReach7DayGrowth", "playlistReach7DayGrowthPercent", true) },
+        { accessor: "playlistReach28DayGrowth", label: "28-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("playlistReach28DayGrowth", "playlistReach28DayGrowthPercent", true) },
+        { accessor: "playlistReach60DayGrowth", label: "60-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("playlistReach60DayGrowth", "playlistReach60DayGrowthPercent", true) },
       ],
     },
     {
       accessor: "playlistCountGroup", label: "Playlist Count", width: 700, collapsible: true,
       children: [
-        { accessor: "playlistCount", label: "Total Count", width: 180, showWhen: "always", isSortable: true, isEditable: false, type: "number", cellRenderer: playlistCountRenderer },
-        { accessor: "playlistCount7DayGrowth", label: "7-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("playlistCount7DayGrowth", "playlistCount7DayGrowthPercent", false) },
-        { accessor: "playlistCount28DayGrowth", label: "28-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("playlistCount28DayGrowth", "playlistCount28DayGrowthPercent", false) },
-        { accessor: "playlistCount60DayGrowth", label: "60-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("playlistCount60DayGrowth", "playlistCount60DayGrowthPercent", false) },
+        { accessor: "playlistCount", label: "Total Count", width: 180, showWhen: "always", sortable: true, editable: false, type: "number", cellRenderer: playlistCountRenderer },
+        { accessor: "playlistCount7DayGrowth", label: "7-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("playlistCount7DayGrowth", "playlistCount7DayGrowthPercent", false) },
+        { accessor: "playlistCount28DayGrowth", label: "28-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("playlistCount28DayGrowth", "playlistCount28DayGrowthPercent", false) },
+        { accessor: "playlistCount60DayGrowth", label: "60-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("playlistCount60DayGrowth", "playlistCount60DayGrowthPercent", false) },
       ],
     },
     {
       accessor: "monthlyListenersGroup", label: "Monthly Listeners", width: 700, collapsible: true,
       children: [
-        { accessor: "monthlyListeners", label: "Total Listeners", width: 180, showWhen: "always", isSortable: true, isEditable: false, type: "number", cellRenderer: monthlyListenersRenderer },
-        { accessor: "monthlyListeners7DayGrowth", label: "7-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("monthlyListeners7DayGrowth", "monthlyListeners7DayGrowthPercent", true) },
-        { accessor: "monthlyListeners28DayGrowth", label: "28-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("monthlyListeners28DayGrowth", "monthlyListeners28DayGrowthPercent", true) },
-        { accessor: "monthlyListeners60DayGrowth", label: "60-Day Growth", width: 160, isSortable: true, isEditable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("monthlyListeners60DayGrowth", "monthlyListeners60DayGrowthPercent", true) },
+        { accessor: "monthlyListeners", label: "Total Listeners", width: 180, showWhen: "always", sortable: true, editable: false, type: "number", cellRenderer: monthlyListenersRenderer },
+        { accessor: "monthlyListeners7DayGrowth", label: "7-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("monthlyListeners7DayGrowth", "monthlyListeners7DayGrowthPercent", true) },
+        { accessor: "monthlyListeners28DayGrowth", label: "28-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("monthlyListeners28DayGrowth", "monthlyListeners28DayGrowthPercent", true) },
+        { accessor: "monthlyListeners60DayGrowth", label: "60-Day Growth", width: 160, sortable: true, editable: false, align: "right", type: "number", showWhen: "parentExpanded", cellRenderer: growthCell("monthlyListeners60DayGrowth", "monthlyListeners60DayGrowthPercent", true) },
       ],
     },
-    { accessor: "conversionRate", label: "Conversion Rate", width: 150, isSortable: true, isEditable: false, align: "right", type: "number", cellRenderer: conversionRateRenderer },
-    { accessor: "reachFollowersRatio", label: "Reach/Followers Ratio", width: 220, isSortable: true, isEditable: false, align: "right", type: "number", cellRenderer: ratioRenderer },
+    { accessor: "conversionRate", label: "Conversion Rate", width: 150, sortable: true, editable: false, align: "right", type: "number", cellRenderer: conversionRateRenderer },
+    { accessor: "reachFollowersRatio", label: "Reach/Followers Ratio", width: 220, sortable: true, editable: false, align: "right", type: "number", cellRenderer: ratioRenderer },
   ];
 }
 
@@ -214,7 +214,7 @@ export function renderMusicDemo(
   container.appendChild(wrapper);
 
   const table = new SimpleTableVanilla(wrapper, {
-    defaultHeaders: buildMusicHeaders(options?.theme),
+    columns: buildMusicHeaders(options?.theme),
     rows: asRows([...musicData]),
     height: options?.height ?? "400px",
     theme: options?.theme,

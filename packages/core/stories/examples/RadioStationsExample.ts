@@ -10,7 +10,7 @@ import { SimpleTableVanilla } from "../../src/index";
 import type {
   CellRendererProps,
   FooterRendererProps,
-  HeaderObject,
+  ColumnDef,
   Row,
 } from "../../src/index";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
@@ -167,7 +167,7 @@ function countryCellRenderer({ value }: CellRendererProps): HTMLElement {
   return wrap;
 }
 
-function getHeaders(): HeaderObject[] {
+function getHeaders(): ColumnDef[] {
   return [
     {
       accessor: "__index__",
@@ -176,7 +176,7 @@ function getHeaders(): HeaderObject[] {
       type: "number",
       align: "center",
       pinned: "left",
-      isSortable: false,
+      sortable: false,
     },
     {
       accessor: "name",
@@ -185,7 +185,7 @@ function getHeaders(): HeaderObject[] {
       type: "string",
       align: "left",
       pinned: "left",
-      isSortable: true,
+      sortable: true,
       cellRenderer: stationCellRenderer,
     },
     {
@@ -195,7 +195,7 @@ function getHeaders(): HeaderObject[] {
       type: "string",
       align: "left",
       pinned: "left",
-      isSortable: true,
+      sortable: true,
     },
     {
       accessor: "broadcast_area",
@@ -204,7 +204,7 @@ function getHeaders(): HeaderObject[] {
       type: "string",
       align: "left",
       pinned: "left",
-      isSortable: true,
+      sortable: true,
     },
     {
       accessor: "country",
@@ -213,7 +213,7 @@ function getHeaders(): HeaderObject[] {
       type: "string",
       align: "left",
       pinned: "left",
-      isSortable: true,
+      sortable: true,
       cellRenderer: countryCellRenderer,
     },
     {
@@ -223,7 +223,7 @@ function getHeaders(): HeaderObject[] {
       minWidth: 120,
       type: "number",
       align: "right",
-      isSortable: true,
+      sortable: true,
       valueFormatter: ({ value }) => formatNumber(value),
     },
     {
@@ -233,7 +233,7 @@ function getHeaders(): HeaderObject[] {
       minWidth: 120,
       type: "number",
       align: "right",
-      isSortable: true,
+      sortable: true,
       valueFormatter: ({ value }) => formatNumber(value),
     },
   ];
@@ -271,7 +271,7 @@ export const radioStationsExampleDefaults: Partial<UniversalVanillaArgs> = {
   columnReordering: true,
   columnResizing: true,
   autoExpandColumns: true,
-  editColumns: true,
+  enableColumnEditor: true,
   theme: "custom",
   customTheme: {
     rowHeight: ROW_HEIGHT,
@@ -306,7 +306,7 @@ export function renderRadioStationsExample(args?: Partial<UniversalVanillaArgs>)
   scrollContainer.appendChild(tableContainer);
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: getHeaders(),
+    columns: getHeaders(),
     rows: radioRows,
     getRowId: (p) => String((p.row as RadioStationRow | undefined)?.id),
     theme: options.theme,
@@ -314,8 +314,8 @@ export function renderRadioStationsExample(args?: Partial<UniversalVanillaArgs>)
     columnReordering: options.columnReordering,
     columnResizing: options.columnResizing,
     autoExpandColumns: options.autoExpandColumns,
-    editColumns: options.editColumns,
-    editColumnsInitOpen: options.editColumnsInitOpen,
+    enableColumnEditor: options.enableColumnEditor,
+    enableColumnEditorInitOpen: options.enableColumnEditorInitOpen,
     columnEditorConfig: {
       text: "All Columns",
       searchEnabled: true,
@@ -323,7 +323,7 @@ export function renderRadioStationsExample(args?: Partial<UniversalVanillaArgs>)
     },
     footerPosition: "top",
     footerRenderer: createClientFooter,
-    shouldPaginate: false,
+    enablePagination: false,
     hideFooter: options.hideFooter,
     initialSortColumn: "aqh",
     initialSortDirection: "desc",

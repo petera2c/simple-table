@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, TableAPI, Theme } from "@simple-table/react";
+import type { ReactColumnDef, TableAPI, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
 type Employee = {
@@ -19,11 +19,11 @@ const EMPLOYEES: Employee[] = [
   { id: 6, name: "Frank Miller", department: "Engineering", role: "Platform Engineer" },
 ];
 
-const HEADERS: ReactHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 70, type: "number", isSortable: true },
-  { accessor: "name", label: "Name", width: "1fr", minWidth: 140, type: "string", isSortable: true },
-  { accessor: "department", label: "Department", width: 140, type: "string", isSortable: true },
-  { accessor: "role", label: "Role", width: 160, type: "string", isSortable: true },
+const HEADERS: ReactColumnDef[] = [
+  { accessor: "id", label: "ID", width: 70, type: "number", sortable: true },
+  { accessor: "name", label: "Name", width: "1fr", minWidth: 140, type: "string", sortable: true },
+  { accessor: "department", label: "Department", width: 140, type: "string", sortable: true },
+  { accessor: "role", label: "Role", width: 160, type: "string", sortable: true },
 ];
 
 type DemoProps = { height?: string | number; theme?: Theme };
@@ -44,7 +44,7 @@ export function RowSelectionSingleDemo({ height = "260px", theme }: DemoProps) {
       </div>
       <SimpleTable
         ref={tableRef}
-        defaultHeaders={HEADERS}
+        columns={HEADERS}
         rows={EMPLOYEES}
         enableRowSelection
         rowSelectionMode="single"
@@ -73,7 +73,7 @@ export function RowSelectionClickDemo({ height = "260px", theme }: DemoProps) {
       </div>
       <SimpleTable
         ref={tableRef}
-        defaultHeaders={HEADERS}
+        columns={HEADERS}
         rows={EMPLOYEES}
         enableRowSelection
         selectRowOnClick
@@ -158,7 +158,7 @@ export function RowSelectionApiDemo({ height = "260px", theme }: DemoProps) {
 
       <SimpleTable
         ref={tableRef}
-        defaultHeaders={HEADERS}
+        columns={HEADERS}
         rows={EMPLOYEES}
         enableRowSelection
         getRowId={({ row }) => String((row as Employee).id)}

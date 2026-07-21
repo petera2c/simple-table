@@ -1,10 +1,10 @@
 import { createSignal } from "solid-js";
-import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidHeaderObject, CellChangeProps, CellRendererProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidColumnDef, CellChangeProps, CellRendererProps } from "@simple-table/solid";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
 import type { HREmployee, HRTagColorKey } from "./hr.demo-data";
 import "@simple-table/solid/styles.css";
 
-function getHeaders(): SolidHeaderObject[] {
+function getHeaders(): SolidColumnDef[] {
   return hrConfig.headers.map((h) => {
       if (h.accessor === "fullName") {
         return {
@@ -175,13 +175,13 @@ export default function HRDemo(props: { height?: string | number; theme?: Theme 
     <SimpleTable
       columnReordering
       columnResizing
-      defaultHeaders={getHeaders()}
+      columns={getHeaders()}
       onCellEdit={handleCellEdit}
       customTheme={{ rowHeight }}
       rows={data()}
       rowsPerPage={howManyRowsCanFit()}
       selectableCells
-      shouldPaginate
+      enablePagination
       height={props.height ?? "400px"}
       theme={props.theme}
     />

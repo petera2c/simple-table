@@ -35,7 +35,7 @@ const ThemesDemo = ({
         ))}
       </div>
       <SimpleTable
-        defaultHeaders={themesConfig.headers}
+        columns={themesConfig.headers}
         rows={themesConfig.rows}
         height={height}
         theme={selectedTheme}

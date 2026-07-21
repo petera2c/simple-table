@@ -195,7 +195,7 @@ export default function NestedHeadersReactTablesPage() {
     accessor: "name",
     label: "Name",
     width: "1fr",
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
@@ -207,21 +207,21 @@ export default function NestedHeadersReactTablesPage() {
         accessor: "mathScore",
         label: "Math",
         width: 100,
-        isSortable: true,
+        sortable: true,
         type: "number",
       },
       {
         accessor: "scienceScore",
         label: "Science",
         width: 100,
-        isSortable: true,
+        sortable: true,
         type: "number",
       },
       {
         accessor: "historyScore",
         label: "History",
         width: 100,
-        isSortable: true,
+        sortable: true,
         type: "number",
       },
     ],
@@ -306,36 +306,36 @@ export default function NestedHeadersReactTablesPage() {
               </p>
 
               <pre className="bg-gray-900 dark:bg-gray-950 text-gray-100 p-4 rounded-lg overflow-auto mb-6 text-sm leading-relaxed">
-                {`import { SimpleTable, HeaderObject } from "@simple-table/react";
+                {`import { SimpleTable, ColumnDef } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
     width: 80,
-    isSortable: true,
+    sortable: true,
     type: "number",
   },
   {
     accessor: "name",
     label: "Name",
     width: "1fr",
-    isSortable: true,
+    sortable: true,
     type: "string",
   },
   {
     accessor: "score",
     label: "Test Scores",
     width: 300,
-    isSortable: false, // Parent headers typically don't sort
+    sortable: false, // Parent headers typically don't sort
     type: "number",
     children: [
       {
         accessor: "mathScore",
         label: "Math",
         width: 100,
-        isSortable: true,
+        sortable: true,
         type: "number",
         align: "right",
         // Custom renderer to highlight high scores
@@ -350,7 +350,7 @@ const headers: HeaderObject[] = [
         accessor: "scienceScore",
         label: "Science",
         width: 100,
-        isSortable: true,
+        sortable: true,
         type: "number",
         align: "right",
         cellRenderer: ({ row, accessor }) => {
@@ -364,7 +364,7 @@ const headers: HeaderObject[] = [
         accessor: "historyScore",
         label: "History",
         width: 100,
-        isSortable: true,
+        sortable: true,
         type: "number",
         align: "right",
         cellRenderer: ({ row, accessor }) => {
@@ -380,7 +380,7 @@ const headers: HeaderObject[] = [
     accessor: "grade",
     label: "Overall Grade",
     width: 120,
-    isSortable: true,
+    sortable: true,
     type: "string",
     align: "center",
   },
@@ -389,7 +389,7 @@ const headers: HeaderObject[] = [
 export default function StudentGradeTable() {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={studentData}
       theme="modern-light"
       height="400px"

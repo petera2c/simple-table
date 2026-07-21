@@ -115,7 +115,7 @@ const TABLE_API_PROPS: PropInfo[] = [
     name: "getPivotHeaders()",
     required: false,
     description: "Generated headers while pivot is active; otherwise the current headers.",
-    type: "() => HeaderObject[]",
+    type: "() => ColumnDef[]",
   },
   {
     key: "getPivotedRows",
@@ -203,7 +203,7 @@ const PivotContent = () => {
         <p>
           Pass <strong>flat</strong> rows and a field catalog in{" "}
           <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
-            defaultHeaders
+            columns
           </code>
           . Headers supply labels, types, widths, and formatters for source fields. When pivot is
           active, the grid does not show that catalog as columns — it shows generated row-dimension
@@ -211,7 +211,7 @@ const PivotContent = () => {
         </p>
         <pre className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-sm overflow-x-auto text-gray-800 dark:text-gray-200">
 {`<SimpleTable
-  defaultHeaders={headers} // field catalog
+  columns={headers} // field catalog
   rows={flatRows}
   pivot={{
     rows: ["region"],

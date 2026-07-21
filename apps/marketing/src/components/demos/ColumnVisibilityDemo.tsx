@@ -1,12 +1,12 @@
 import { SimpleTable } from "@simple-table/react";
-import type { ColumnEditorRowRendererProps, ReactHeaderObject, Theme } from "@simple-table/react";
+import type { ColumnEditorRowRendererProps, ReactColumnDef, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 import { useMemo, useCallback } from "react";
 
 const STORAGE_KEY = "columnVisibilityDemo";
 
 // Define base headers structure
-const BASE_HEADERS: ReactHeaderObject[] = [
+const BASE_HEADERS: ReactColumnDef[] = [
   {
     accessor: "id",
     label: "ID",
@@ -174,9 +174,9 @@ const ColumnVisibilityDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={headers}
-      editColumns
-      editColumnsInitOpen
+      columns={headers}
+      enableColumnEditor
+      enableColumnEditorInitOpen
       rows={EMPLOYEE_DATA}
       height={height}
       theme={theme}

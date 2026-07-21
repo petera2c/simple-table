@@ -1,12 +1,13 @@
 {
   "name": "@simple-table/react",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/types/index.d.ts",
   "scripts": {
     "build": "rollup -c",
     "preview": "rollup -c -w",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "version:patch": "npm version patch && git push && git push --tags",
     "version:minor": "npm version minor && git push && git push --tags",
@@ -22,7 +23,10 @@
       "require": "./dist/cjs/index.js",
       "types": "./dist/types/index.d.ts"
     },
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": {
+      "types": "./styles.css.d.ts",
+      "default": "./dist/styles.css"
+    }
   },
   "license": "Community",
   "publishConfig": {
@@ -30,7 +34,8 @@
   },
   "files": [
     "dist",
-    "LICENSE"
+    "LICENSE",
+    "styles.css.d.ts"
   ],
   "peerDependencies": {
     "react": ">=18.0.0",

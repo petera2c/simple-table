@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { SvelteHeaderObject, Row } from "@simple-table/svelte";
+import type { SvelteColumnDef, Row } from "@simple-table/svelte";
 
 export const columnEditorCustomRendererData: Row[] = [
   { id: 1, name: "Alice Johnson", email: "alice@example.com", role: "Engineer", salary: 125000, department: "Engineering", status: "active" },
@@ -12,20 +12,20 @@ export const columnEditorCustomRendererData: Row[] = [
   { id: 8, name: "Henry Patel", email: "henry@example.com", role: "Lead", salary: 145000, department: "Engineering", status: "active" },
 ];
 
-export const columnEditorCustomRendererHeaders: SvelteHeaderObject[] = [
+export const columnEditorCustomRendererHeaders: SvelteColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
-  { accessor: "name", label: "Name", width: 170, type: "string", isSortable: true },
+  { accessor: "name", label: "Name", width: 170, type: "string", sortable: true },
   { accessor: "email", label: "Email", width: 200, type: "string" },
-  { accessor: "role", label: "Role", width: 130, type: "string", isSortable: true },
+  { accessor: "role", label: "Role", width: 130, type: "string", sortable: true },
   {
     accessor: "salary",
     label: "Salary",
     width: 130,
     type: "number",
-    isSortable: true,
+    sortable: true,
     valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
   },
-  { accessor: "department", label: "Department", width: 140, type: "string", isSortable: true },
+  { accessor: "department", label: "Department", width: 140, type: "string", sortable: true },
   { accessor: "status", label: "Status", width: 100, type: "string" },
 ];
 
@@ -33,7 +33,7 @@ export const columnEditorCustomRendererConfig = {
   headers: columnEditorCustomRendererHeaders,
   rows: columnEditorCustomRendererData,
   tableProps: {
-    editColumns: true,
+    enableColumnEditor: true,
   },
 } as const;
 

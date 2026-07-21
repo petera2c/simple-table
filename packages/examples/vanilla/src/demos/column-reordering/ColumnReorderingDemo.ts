@@ -8,7 +8,7 @@ export function renderColumnReorderingDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: columnReorderingConfig.headers,
+    columns: columnReorderingConfig.headers,
     rows: columnReorderingConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

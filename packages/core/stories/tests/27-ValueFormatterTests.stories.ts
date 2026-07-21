@@ -1,11 +1,11 @@
 /**
  * VALUE FORMATTER TESTS
- * Tests for HeaderObject.valueFormatter - formatted display without custom cellRenderer.
+ * Tests for ColumnDef.valueFormatter - formatted display without custom cellRenderer.
  */
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -30,7 +30,7 @@ const createData = () => [
 
 export const ValueFormatterCurrency = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 120, type: "string" },
       {
@@ -56,7 +56,7 @@ export const ValueFormatterCurrency = {
 
 export const ValueFormatterPercentage = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "pct",
@@ -81,7 +81,7 @@ export const ValueFormatterPercentage = {
 
 export const NoFormatterShowsRawValue = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "price", label: "Price", width: 120, type: "number" },
     ];
@@ -107,7 +107,7 @@ export const UseFormattedValueForClipboardFalse = {
     let copiedText = "";
     (window as unknown as { __clipboardCapture?: { text: string } }).__clipboardCapture = { text: "" };
 
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "price",
@@ -143,7 +143,7 @@ export const UseFormattedValueForClipboardFalse = {
 export const UseFormattedValueForCSV = {
   render: () => {
     const { SimpleTableVanilla: STV } = require("../../src/index") as typeof import("../../src/index");
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "price",
@@ -159,7 +159,7 @@ export const UseFormattedValueForCSV = {
     const origCreateElement = document.createElement.bind(document);
     const tableContainer = document.createElement("div");
     const table = new STV(tableContainer, {
-      defaultHeaders: headers,
+      columns: headers,
       rows: createData(),
       getRowId: (p) => String(p.row?.id),
       height: "250px",
@@ -215,7 +215,7 @@ export const UseFormattedValueForCSV = {
 
 export const CellRendererWinsOverValueFormatter = {
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "price",

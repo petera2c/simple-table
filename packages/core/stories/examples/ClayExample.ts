@@ -2,7 +2,7 @@
  * ClayExample – vanilla port of React ClayExample.
  * Same employee table with row selection, column borders, and customTheme.
  */
-import type { HeaderObject, Row } from "../../src/index";
+import type { ColumnDef, Row } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
@@ -15,7 +15,7 @@ const CLAY_ROWS: Row[] = [
   { id: 6, name: "Diana Prince", age: 29, role: "Developer", department: "Engineering", email: "diana.prince@company.com", startDate: "2022-02-28", status: "Inactive", salary: 71000 },
 ];
 
-const CLAY_HEADERS: HeaderObject[] = [
+const CLAY_HEADERS: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 60 },
   { accessor: "name", label: "Name", minWidth: 120, width: "1fr" },
   { accessor: "role", label: "Role", width: 120 },
@@ -50,7 +50,7 @@ function createRowButton(label: string, title: string): (props: { row: Row }) =>
 
 export const clayExampleDefaults = {
   columnResizing: true,
-  editColumns: true,
+  enableColumnEditor: true,
   selectableCells: true,
   columnReordering: true,
   enableRowSelection: true,

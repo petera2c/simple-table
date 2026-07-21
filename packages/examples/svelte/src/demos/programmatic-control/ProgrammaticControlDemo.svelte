@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteHeaderObject } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef } from "@simple-table/svelte";
   import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
   import "@simple-table/svelte/styles.css";
 
@@ -9,7 +9,7 @@
   let tableRef: any;
   let statusMessage = $state("No status message");
 
-  const headers: SvelteHeaderObject[] = programmaticControlConfig.headers.map((h) => {
+  const headers: SvelteColumnDef[] = programmaticControlConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
@@ -50,7 +50,10 @@
     const hdrs = api.getHeaders();
     const sortState = api.getSortState();
     const filterState = api.getFilterState();
-    const totalValue = allRows.reduce((sum: number, r: Record<string, unknown>) => sum + (r.price as number) * (r.stock as number), 0);
+    const totalValue = allRows.reduce(
+      (sum: number, r) => sum + (Number(r.row.price) || 0) * (Number(r.row.stock) || 0),
+      0,
+    );
     const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
     alert(
       `Table Info:\n• Rows: ${allRows.length}\n• Columns: ${hdrs.length}\n• Active filters: ${Object.keys(filterState).length}\n• Sort: ${sortInfo}\n• Total inventory value: $${totalValue.toFixed(2)}`,
@@ -72,7 +75,7 @@
   </div>
   <SimpleTable
     bind:this={tableRef}
-    defaultHeaders={headers}
+    columns={headers}
     rows={programmaticControlConfig.rows}
     {height}
     {theme}

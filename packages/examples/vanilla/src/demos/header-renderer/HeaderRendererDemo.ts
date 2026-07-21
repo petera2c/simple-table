@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject, Row } from "simple-table-core";
+import type { Theme, ColumnDef, Row } from "simple-table-core";
 import { headerRendererConfig } from "./header-renderer.demo-data";
 import "simple-table-core/styles.css";
 
@@ -28,10 +28,10 @@ export function renderHeaderRendererDemo(
     });
   }
 
-  function buildHeaders(): HeaderObject[] {
+  function buildHeaders(): ColumnDef[] {
     return headerRendererConfig.headers.map((h) => ({
       ...h,
-      isSortable: false,
+      sortable: false,
       headerRenderer: () => {
         const isSorted = sortAccessor === h.accessor;
         const dir = isSorted ? sortDirection : null;
@@ -61,7 +61,7 @@ export function renderHeaderRendererDemo(
               sortDirection = null;
             }
           }
-          table.update({ defaultHeaders: buildHeaders(), rows: getSortedData() });
+          table.update({ columns: buildHeaders(), rows: getSortedData() });
         });
 
         const label = document.createElement("span");
@@ -81,7 +81,7 @@ export function renderHeaderRendererDemo(
   }
 
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: buildHeaders(),
+    columns: buildHeaders(),
     rows: getSortedData(),
     height: options?.height ?? "400px",
     theme: options?.theme,

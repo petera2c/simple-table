@@ -51,9 +51,9 @@ export function renderServerSidePaginationExample(args?: Partial<UniversalVanill
 
   const options = { ...defaultVanillaArgs, ...args };
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: SAAS_HEADERS,
+    columns: SAAS_HEADERS,
     rows: TOTAL_DATA.slice(0, ROWS_PER_PAGE),
-    shouldPaginate: true,
+    enablePagination: true,
     rowsPerPage: ROWS_PER_PAGE,
     serverSidePagination: true,
     totalRowCount: TOTAL_DATA.length,

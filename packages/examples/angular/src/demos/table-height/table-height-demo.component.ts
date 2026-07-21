@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { tableHeightConfig } from "./table-height.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -28,7 +28,7 @@ import "@simple-table/angular/styles.css";
       </div>
       <simple-table
         [rows]="rows"
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [height]="selectedHeight"
         [theme]="theme"
       ></simple-table>
@@ -40,7 +40,7 @@ export class TableHeightDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = tableHeightConfig.rows;
-  readonly headers: AngularHeaderObject[] = tableHeightConfig.headers;
+  readonly headers: AngularColumnDef[] = tableHeightConfig.headers;
   readonly heights = ["200px", "300px", "400px"];
   selectedHeight = "400px";
 }

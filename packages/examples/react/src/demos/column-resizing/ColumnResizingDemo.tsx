@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject } from "@simple-table/react";
+import type { Theme, ReactColumnDef } from "@simple-table/react";
 import {
   columnResizingHeaders,
   columnResizingData,
@@ -35,7 +35,7 @@ const ColumnResizingDemo = ({
     }
   }, []);
 
-  const handleColumnWidthChange = (updatedHeaders: ReactHeaderObject[]) => {
+  const handleColumnWidthChange = (updatedHeaders: ReactColumnDef[]) => {
     try {
       const widthMap = updatedHeaders.reduce(
         (acc, h) => {
@@ -77,7 +77,7 @@ const ColumnResizingDemo = ({
       )}
       <SimpleTable
         columnResizing
-        defaultHeaders={headers}
+        columns={headers}
         rows={columnResizingData}
         height={height}
         theme={theme}

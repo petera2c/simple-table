@@ -6,6 +6,7 @@
   "description": "Real-browser (Playwright + CDP) memory-leak suite for simple-table-core under high-frequency cell updates.",
   "scripts": {
     "serve": "vite",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",

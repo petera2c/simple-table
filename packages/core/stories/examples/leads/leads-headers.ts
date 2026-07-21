@@ -2,16 +2,16 @@
  * Leads example headers – ported from React leads-headers (vanilla-compatible).
  * Cell renderers return strings; no React-specific components.
  */
-import type { HeaderObject } from "../../../src/index";
+import type { ColumnDef } from "../../../src/index";
 
-export const LEADS_HEADERS: HeaderObject[] = [
+export const LEADS_HEADERS: ColumnDef[] = [
   {
     accessor: "name",
     label: "CONTACT",
     width: 290,
     minWidth: 290,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     type: "string",
     cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
       `${row.name ?? ""} | ${row.title ?? ""} @ ${row.company ?? ""}`.trim(),
@@ -21,8 +21,8 @@ export const LEADS_HEADERS: HeaderObject[] = [
     label: "SIGNAL",
     width: 340,
     minWidth: 340,
-    isSortable: true,
-    isEditable: true,
+    sortable: true,
+    editable: true,
     type: "string",
     cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
       `Keyword: ${String(row.signal ?? "")}`,
@@ -32,7 +32,7 @@ export const LEADS_HEADERS: HeaderObject[] = [
     label: "AI SCORE",
     width: 100,
     minWidth: 100,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "number",
     cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
@@ -45,7 +45,7 @@ export const LEADS_HEADERS: HeaderObject[] = [
     label: "EMAIL",
     width: 210,
     minWidth: 210,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "enum",
     enumOptions: [
@@ -62,7 +62,7 @@ export const LEADS_HEADERS: HeaderObject[] = [
     label: "IMPORT",
     width: 100,
     minWidth: 100,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "string",
     cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
@@ -73,7 +73,7 @@ export const LEADS_HEADERS: HeaderObject[] = [
     label: "LIST",
     width: 160,
     minWidth: 160,
-    isSortable: true,
+    sortable: true,
     align: "center",
     type: "enum",
     enumOptions: [

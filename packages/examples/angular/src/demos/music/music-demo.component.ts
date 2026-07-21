@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent, asRows } from "@simple-table/angular";
-import type { AngularCellRenderer, AngularHeaderObject, Theme } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularColumnDef, Theme } from "@simple-table/angular";
 import { musicData, musicHeaders } from "./music.demo-data";
 import { MusicArtistCellComponent } from "./music-artist-cell.component";
 import { MusicArtistTypeCellComponent } from "./music-artist-type-cell.component";
@@ -39,10 +39,10 @@ const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   reachFollowersRatio: MusicRatioCellComponent,
 };
 
-function applyMusicCellRenderers(hdrs: AngularHeaderObject[]): AngularHeaderObject[] {
-  return hdrs.map((h): AngularHeaderObject => {
+function applyMusicCellRenderers(hdrs: AngularColumnDef[]): AngularColumnDef[] {
+  return hdrs.map((h): AngularColumnDef => {
     const acc = String(h.accessor);
-    const next: AngularHeaderObject = { ...h };
+    const next: AngularColumnDef = { ...h };
     const cellRenderer = RENDERERS[acc];
     if (cellRenderer) next.cellRenderer = cellRenderer;
     if (h.children) next.children = applyMusicCellRenderers(h.children);
@@ -57,7 +57,7 @@ function applyMusicCellRenderers(hdrs: AngularHeaderObject[]): AngularHeaderObje
   template: `
     <div class="music-theme-container" style="font-family: Inter">
       <simple-table
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [rows]="rows"
         [height]="height"
         [theme]="theme"
@@ -74,7 +74,7 @@ export class MusicDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows = asRows([...musicData]);
-  readonly headers: AngularHeaderObject[] = applyMusicCellRenderers(
-    structuredClone(musicHeaders) as AngularHeaderObject[],
+  readonly headers: AngularColumnDef[] = applyMusicCellRenderers(
+    structuredClone(musicHeaders) as AngularColumnDef[],
   );
 }

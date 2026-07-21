@@ -70,8 +70,8 @@ export function renderAnalyticsDemo(
       columnReordering: true,
       columnResizing: true,
       copyHeadersToClipboard: true,
-      defaultHeaders: analyticsDemoConfig.headers,
-      editColumns: true,
+      columns: analyticsDemoConfig.headers,
+      enableColumnEditor: true,
       enableStickyParents: nested,
       expandAll: nested,
       getRowId: ({ row }) => {
@@ -86,8 +86,8 @@ export function renderAnalyticsDemo(
       rows: analyticsDemoConfig.rows,
       selectableCells: true,
       theme: options?.theme,
-      useHoverRowBackground: true,
-      useOddEvenRowBackground: true,
+      hoverRowBackground: true,
+      oddEvenRowBackground: true,
     });
   };
 

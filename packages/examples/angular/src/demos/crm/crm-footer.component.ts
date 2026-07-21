@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core";
 import type { FooterRendererProps } from "@simple-table/angular";
 import { generateVisiblePages } from "./crm.demo-data";
-import { crmFooterPalette, crmRowsPerPageSignal as crmRowsPerPageStore } from "./crm-demo-context";
+import { crmFooterPalette, crmRowsPerPageSignal } from "./crm-demo-context";
 
 @Component({
   standalone: true,
@@ -101,7 +101,7 @@ export class CrmFooterComponent {
 
   onRowsChange(ev: Event): void {
     const v = parseInt((ev.target as HTMLSelectElement).value, 10);
-    crmRowsPerPageStore.set(v);
+    crmRowsPerPageSignal.set(v);
     this.onPageChange(1);
   }
 

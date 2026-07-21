@@ -393,9 +393,9 @@ export const HEADER_RENDERER_PROPS: PropInfo[] = [
     name: "header",
     required: true,
     description:
-      "The complete HeaderObject containing all configuration for this column including label, width, and other properties",
-    type: "HeaderObject",
-    link: "#header-object",
+      "The complete ColumnDef containing all configuration for this column including label, width, and other properties",
+    type: "ColumnDef",
+    link: "#column-def",
     example: `props.header.label // "Name", "Status", etc.
 props.header.width // 150, "1fr", etc.`,
   },
@@ -444,9 +444,9 @@ export const COLUMN_EDITOR_ROW_RENDERER_PROPS: PropInfo[] = [
     name: "header",
     required: true,
     description:
-      "The complete HeaderObject containing all configuration for this column including label, width, and other properties",
-    type: "HeaderObject",
-    link: "#header-object",
+      "The complete ColumnDef containing all configuration for this column including label, width, and other properties",
+    type: "ColumnDef",
+    link: "#column-def",
     example: `props.header.label // "Name", "Status", etc.
 props.header.width // 150, "1fr", etc.`,
   },
@@ -480,14 +480,14 @@ columnEditorConfig={{
 )`,
   },
   {
-    key: "isEssential",
-    name: "isEssential",
+    key: "essential",
+    name: "essential",
     required: false,
     description: "True when the column is essential (stricter visibility and pin/reorder rules).",
     type: "boolean",
     link: "/docs/api-reference#column-editor-row-renderer-props",
-    example: `rowRenderer: ({ isEssential, components }) => (
-  <div style={{ fontWeight: isEssential ? 600 : 400 }}>{components.labelContent}</div>
+    example: `rowRenderer: ({ essential, components }) => (
+  <div style={{ fontWeight: essential ? 600 : 400 }}>{components.labelContent}</div>
 )`,
   },
   {

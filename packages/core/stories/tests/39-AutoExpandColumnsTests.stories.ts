@@ -6,7 +6,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect, userEvent } from "@storybook/test";
-import { HeaderObject, Row } from "../../src/index";
+import { ColumnDef, Row } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -499,7 +499,7 @@ const assertMainColumnsFillContainer = (
 };
 
 function renderWithWidth(
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   data: Row[],
   options: Record<string, unknown> = {},
   wrapperWidth: string | null = null,
@@ -559,7 +559,7 @@ async function waitForResizeSettle(
 export const AutoExpandWarmUp = {
   parameters: { tags: ["warmup"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 200, type: "string" },
     ];
     return renderWithWidth(headers, createEmployeeData(), {}, "100%");
@@ -576,7 +576,7 @@ export const AutoExpandWarmUp = {
 export const AutoExpandWithLeftPinned = {
   parameters: { tags: ["auto-expand-left-pinned"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       {
         accessor: "name",
         label: "Name",
@@ -639,7 +639,7 @@ export const AutoExpandWithLeftPinned = {
 export const AutoExpandWithRightPinned = {
   parameters: { tags: ["auto-expand-right-pinned"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
       {
@@ -702,7 +702,7 @@ export const AutoExpandWithRightPinned = {
 export const AutoExpandWithBothLeftAndRightPinned = {
   parameters: { tags: ["auto-expand-both-pinned"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       {
         accessor: "name",
         label: "Name",
@@ -772,7 +772,7 @@ export const AutoExpandWithBothLeftAndRightPinned = {
 export const AutoExpandMultiplePinnedBothSides = {
   parameters: { tags: ["auto-expand-multiple-pinned-both-sides"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       {
         accessor: "id",
         label: "ID",
@@ -851,7 +851,7 @@ export const AutoExpandMultiplePinnedBothSides = {
 export const PinnedSectionScalesWithinBounds = {
   parameters: { tags: ["auto-expand-pinned-section-scales-within-bounds"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       {
         accessor: "name",
         label: "Name",
@@ -910,7 +910,7 @@ export const PinnedSectionScalesWithinBounds = {
 export const AutoExpandWithRowGrouping = {
   parameters: { tags: ["auto-expand-row-grouping"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       {
         accessor: "name",
         label: "Name",
@@ -959,7 +959,7 @@ export const AutoExpandWithRowGrouping = {
 export const AutoExpandGroupedExpandCollapse = {
   parameters: { tags: ["auto-expand-grouped-expand-collapse"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       {
         accessor: "name",
         label: "Name",
@@ -1011,7 +1011,7 @@ export const AutoExpandCollapsibleColumnsFillContainer = {
   tags: ["auto-expand-collapsible-fill"],
   parameters: { tags: ["auto-expand-collapsible-fill"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 160, type: "string" },
       {
@@ -1112,7 +1112,7 @@ export const AutoExpandWithNestedGrouping = {
         ],
       },
     ];
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       {
         accessor: "name",
         label: "Name",
@@ -1160,7 +1160,7 @@ export const AutoExpandWithNestedGrouping = {
 export const AutoExpandHideColumnReexpand = {
   parameters: { tags: ["auto-expand-hide-column-reexpand"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "storeName",
@@ -1186,7 +1186,7 @@ export const AutoExpandHideColumnReexpand = {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "400px",
       autoExpandColumns: true,
-      editColumns: true,
+      enableColumnEditor: true,
     });
     wrapper.style.width = "100%";
     wrapper.style.boxSizing = "border-box";
@@ -1228,7 +1228,7 @@ export const AutoExpandHideColumnReexpand = {
 export const AutoExpandShowColumnReexpand = {
   parameters: { tags: ["auto-expand-show-column-reexpand"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "storeName",
@@ -1254,7 +1254,7 @@ export const AutoExpandShowColumnReexpand = {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "400px",
       autoExpandColumns: true,
-      editColumns: true,
+      enableColumnEditor: true,
     });
     wrapper.style.width = "100%";
     wrapper.style.boxSizing = "border-box";
@@ -1289,7 +1289,7 @@ export const AutoExpandShowColumnReexpand = {
 export const AutoExpandHideMultipleThenShowOne = {
   parameters: { tags: ["auto-expand-hide-multiple-then-show-one"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "storeName",
@@ -1311,7 +1311,7 @@ export const AutoExpandHideMultipleThenShowOne = {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "400px",
       autoExpandColumns: true,
-      editColumns: true,
+      enableColumnEditor: true,
     });
     wrapper.style.width = "900px";
     wrapper.style.boxSizing = "border-box";
@@ -1370,7 +1370,7 @@ export const AutoExpandHideMultipleThenShowOne = {
 export const AutoExpandResizeOneColumnProportional = {
   parameters: { tags: ["auto-expand-resize-one-column-proportional"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "storeName",
@@ -1428,7 +1428,7 @@ export const AutoExpandResizeOneColumnProportional = {
 export const AutoExpandResizeThenReexpandOnEnd = {
   parameters: { tags: ["auto-expand-resize-then-reexpand-on-end"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "storeName",
@@ -1479,7 +1479,7 @@ export const AutoExpandResizeThenReexpandOnEnd = {
 export const AutoExpandResizePinnedColumn = {
   parameters: { tags: ["auto-expand-resize-pinned-column"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       {
         accessor: "name",
         label: "Name",
@@ -1535,7 +1535,7 @@ export const AutoExpandResizePinnedColumn = {
 export const AutoExpandResizeMultipleColumns = {
   parameters: { tags: ["auto-expand-resize-multiple-columns"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "storeName",
@@ -1610,7 +1610,7 @@ export const AutoExpandResizeMultipleColumns = {
 export const AutoExpandResizeMultipleColumnsStress = {
   parameters: { tags: ["auto-expand-resize-multiple-columns-stress"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "storeName",
@@ -1700,7 +1700,7 @@ export const AutoExpandResizeMultipleColumnsStress = {
 export const AutoExpandWideContainerNoHorizontalScroll = {
   parameters: { tags: ["auto-expand-wide-container-no-horizontal-scroll"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: 100, type: "string" },
       { accessor: "email", label: "Email", width: 100, type: "string" },
@@ -1732,7 +1732,7 @@ export const AutoExpandWideContainerNoHorizontalScroll = {
 export const AutoExpandNarrowContainerHorizontalScroll = {
   parameters: { tags: ["auto-expand-narrow-container-horizontal-scroll"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, minWidth: 60, type: "number" },
       {
         accessor: "name",
@@ -1786,7 +1786,7 @@ export const AutoExpandNarrowContainerHorizontalScroll = {
 export const AutoExpandHorizontalScrollHeaderBodySync = {
   parameters: { tags: ["auto-expand-horizontal-scroll-header-body-sync"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
@@ -1825,7 +1825,7 @@ export const AutoExpandHorizontalScrollHeaderBodySync = {
 export const AutoExpandScrollThenResizeStable = {
   parameters: { tags: ["auto-expand-scroll-then-resize-stable"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "storeName",
@@ -1877,7 +1877,7 @@ export const AutoExpandScrollThenResizeStable = {
 export const AutoExpandSingleColumn = {
   parameters: { tags: ["auto-expand-single-column"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 200, type: "string" },
     ];
     return renderWithWidth(
@@ -1907,7 +1907,7 @@ export const AutoExpandSingleColumn = {
 export const AutoExpandAllPinnedNoMain = {
   parameters: { tags: ["auto-expand-all-pinned-no-main"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       {
         accessor: "id",
         label: "ID",
@@ -1964,7 +1964,7 @@ export const AutoExpandAllPinnedNoMain = {
 export const AutoExpandContainerResizeTriggersRescale = {
   parameters: { tags: ["auto-expand-container-resize-triggers-rescale"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       {
@@ -2014,7 +2014,7 @@ export const AutoExpandContainerResizeTriggersRescale = {
 export const AutoExpandResizeRightPinnedColumn = {
   parameters: { tags: ["auto-expand-resize-right-pinned-column"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 70, type: "number" },
       { accessor: "name", label: "Name", width: 160, type: "string" },
       { accessor: "email", label: "Email", width: 180, type: "string" },
@@ -2080,7 +2080,7 @@ export const AutoExpandResizeRightPinnedColumn = {
 export const AutoExpandResizePinnedBoundaryColumn = {
   parameters: { tags: ["auto-expand-resize-pinned-boundary-column"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 70, pinned: "left", type: "number" },
       { accessor: "name", label: "Name", width: 130, pinned: "left", type: "string" },
       { accessor: "email", label: "Email", width: 170, type: "string" },
@@ -2137,7 +2137,7 @@ export const AutoExpandResizePinnedBoundaryColumn = {
 export const AutoExpandResizeMainWithBothPinned = {
   parameters: { tags: ["auto-expand-resize-main-with-both-pinned"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 70, pinned: "left", type: "number" },
       { accessor: "name", label: "Name", width: 140, pinned: "left", type: "string" },
       { accessor: "email", label: "Email", width: 160, type: "string" },
@@ -2226,7 +2226,7 @@ export const AutoExpandResizeMainWithBothPinned = {
 export const AutoExpandShrinkColumnToMinWidth = {
   parameters: { tags: ["auto-expand-shrink-column-to-min-width"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 180, type: "string" },
       { accessor: "city", label: "City", width: 150, type: "string" },
@@ -2296,7 +2296,7 @@ export const AutoExpandShrinkColumnToMinWidth = {
 export const AutoExpandGrowPastSiblingFloorsOverflows = {
   parameters: { tags: ["auto-expand-grow-past-sibling-floors-overflows"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 70, type: "number" },
       { accessor: "storeName", label: "Store Name", width: 120, type: "string" },
       { accessor: "city", label: "City", width: 100, type: "string" },
@@ -2375,7 +2375,7 @@ export const AutoExpandGrowPastSiblingFloorsOverflows = {
 export const AutoExpandResizePinnedPastMaxSectionWidth = {
   parameters: { tags: ["auto-expand-resize-pinned-past-max-section-width"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 70, pinned: "left", type: "number" },
       { accessor: "name", label: "Name", width: 130, pinned: "left", type: "string" },
       { accessor: "email", label: "Email", width: 160, type: "string" },
@@ -2441,7 +2441,7 @@ export const AutoExpandResizePinnedPastMaxSectionWidth = {
 export const AutoExpandResizeDualPinnedMaxClamp = {
   parameters: { tags: ["auto-expand-resize-dual-pinned-max-clamp"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 70, pinned: "left", type: "number" },
       { accessor: "name", label: "Name", width: 120, pinned: "left", type: "string" },
       { accessor: "email", label: "Email", width: 150, type: "string" },
@@ -2510,7 +2510,7 @@ export const AutoExpandResizeDualPinnedMaxClamp = {
 export const AutoExpandDoubleClickResizePinned = {
   parameters: { tags: ["auto-expand-double-click-resize-pinned"] },
   render: () => {
-    const headersNarrowEmail: HeaderObject[] = [
+    const headersNarrowEmail: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 70, pinned: "left", type: "number" },
       { accessor: "name", label: "Name", width: 320, pinned: "left", type: "string" },
       { accessor: "email", label: "Email", width: 55, type: "string" },
@@ -2593,7 +2593,7 @@ export const AutoExpandDoubleClickResizePinned = {
 export const AutoExpandLastMainColumnHasResizeHandle = {
   parameters: { tags: ["auto-expand-last-main-has-handle"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "title", label: "Title", width: 520, type: "string" },
       { accessor: "notes", label: "Notes", width: 72, type: "string" },
     ];
@@ -2661,7 +2661,7 @@ export const AutoExpandLastMainColumnHasResizeHandle = {
 export const AutoExpandResizePinnedAndMainStress = {
   parameters: { tags: ["auto-expand-resize-pinned-and-main-stress"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       {
         accessor: "id",
         label: "ID",
@@ -2760,7 +2760,7 @@ export const AutoExpandResizePinnedAndMainStress = {
 export const AutoExpandDisabledNoExpand = {
   parameters: { tags: ["auto-expand-disabled-no-expand"] },
   render: () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
       {

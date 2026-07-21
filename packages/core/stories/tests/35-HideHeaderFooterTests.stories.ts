@@ -5,7 +5,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { HeaderObject } from "../../src/index";
+import { ColumnDef } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -23,7 +23,7 @@ const meta: Meta = {
 
 export default meta;
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 150, type: "string" },
 ];
@@ -57,7 +57,7 @@ export const HideFooter = {
     const { wrapper } = renderVanillaTable(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",
-      shouldPaginate: true,
+      enablePagination: true,
       rowsPerPage: 2,
       hideFooter: true,
     });
@@ -73,9 +73,9 @@ export const HideFooter = {
 
 export const HideHeaderWithSorting = {
   render: () => {
-    const sortableHeaders: HeaderObject[] = [
-      { accessor: "id", label: "ID", width: 80, type: "number", isSortable: true },
-      { accessor: "name", label: "Name", width: 150, type: "string", isSortable: true },
+    const sortableHeaders: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number", sortable: true },
+      { accessor: "name", label: "Name", width: 150, type: "string", sortable: true },
     ];
     const { wrapper } = renderVanillaTable(sortableHeaders, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),

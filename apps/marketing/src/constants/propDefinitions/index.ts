@@ -7,8 +7,8 @@ export { UNION_TYPE_DEFINITIONS } from "./unionTypes";
 // SimpleTable component props
 export { SIMPLE_TABLE_PROPS } from "./simpleTableProps";
 
-// HeaderObject configuration props
-export { HEADER_OBJECT_PROPS } from "./headerObjectProps";
+// ColumnDef configuration props
+export { COLUMN_DEF_PROPS } from "./columnDefProps";
 
 // Callback props (cell, row, filter events)
 export {

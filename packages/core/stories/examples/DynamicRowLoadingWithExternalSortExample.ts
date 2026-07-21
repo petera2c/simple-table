@@ -1,12 +1,12 @@
 /**
  * DynamicRowLoadingWithExternalSort Example – vanilla port of React DynamicRowLoadingWithExternalSortExample.
  */
-import type { HeaderObject } from "../../src/index";
+import type { ColumnDef } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 import { createBasicData } from "./BasicExample";
 
-const HEADERS: HeaderObject[] = [
+const HEADERS: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80 },
   { accessor: "name", label: "Name", width: 150 },
   { accessor: "age", label: "Age", width: 100 },

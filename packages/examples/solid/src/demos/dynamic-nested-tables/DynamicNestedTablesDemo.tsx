@@ -46,7 +46,7 @@ export default function DynamicNestedTablesDemo(props: { height?: string | numbe
   return (
     <SimpleTable
       autoExpandColumns={dynamicNestedTablesConfig.tableProps.autoExpandColumns}
-      defaultHeaders={dynamicNestedTablesConfig.headers}
+      columns={dynamicNestedTablesConfig.headers}
       expandAll={dynamicNestedTablesConfig.tableProps.expandAll}
       height={props.height ?? "500px"}
       rowGrouping={dynamicNestedTablesConfig.tableProps.rowGrouping}

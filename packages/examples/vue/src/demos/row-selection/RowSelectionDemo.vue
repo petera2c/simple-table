@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, RowSelectionChangeProps, VueHeaderObject } from "@simple-table/vue";
+import type { Theme, RowSelectionChangeProps, VueColumnDef } from "@simple-table/vue";
 import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
 import type { LibraryBook } from "./row-selection.demo-data";
 import "@simple-table/vue/styles.css";
@@ -18,7 +18,7 @@ const selectedTitles = computed(() =>
     : "None",
 );
 
-const headers: VueHeaderObject[] = rowSelectionConfig.headers.map((h) => {
+const headers: VueColumnDef[] = rowSelectionConfig.headers.map((h) => {
   if (h.accessor === "status") {
     return {
       ...h,
@@ -56,7 +56,7 @@ function handleRowSelectionChange(props: RowSelectionChangeProps) {
     </div>
 
     <SimpleTable
-      :default-headers="headers"
+      :columns="headers"
       :rows="rowSelectionConfig.rows"
       :enable-row-selection="true"
       :column-resizing="true"

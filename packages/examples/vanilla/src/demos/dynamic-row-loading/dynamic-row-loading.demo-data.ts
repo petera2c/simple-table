@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "simple-table-core";
+import type { ColumnDef, Row } from "simple-table-core";
 
 
 export interface DynamicRegion extends Row {
@@ -37,7 +37,7 @@ export interface DynamicProduct extends Row {
   lastUpdate: string;
 }
 
-export const dynamicRowLoadingHeaders: HeaderObject[] = [
+export const dynamicRowLoadingHeaders: ColumnDef[] = [
   { accessor: "name", label: "Name", width: 280, expandable: true, type: "string", pinned: "left" },
   { accessor: "type", label: "Type", width: 100, type: "string" },
   {
@@ -199,7 +199,7 @@ export const dynamicRowLoadingConfig = {
     expandAll: false,
     columnResizing: true,
     selectableCells: true,
-    useOddEvenRowBackground: true,
-    editColumns: true,
+    oddEvenRowBackground: true,
+    enableColumnEditor: true,
   },
 } as const;

@@ -8,7 +8,7 @@ export function renderValueFormatterDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: valueFormatterConfig.headers,
+    columns: valueFormatterConfig.headers,
     rows: valueFormatterConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

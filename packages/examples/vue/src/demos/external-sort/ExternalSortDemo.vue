@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="externalSortConfig.headers"
+    :columns="externalSortConfig.headers"
     :rows="sortedRows"
     :external-sort-handling="true"
     :column-resizing="externalSortConfig.tableProps.columnResizing"

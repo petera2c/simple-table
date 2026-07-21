@@ -12,14 +12,14 @@ import ExampleControls from "@/components/ExampleControls";
 const ROW_HEIGHT = 32;
 
 type SalesExampleWrapperProps = {
-  onGridReady?: () => void;
-  shouldPaginate?: boolean;
+  onTableReady?: () => void;
+  enablePagination?: boolean;
   theme?: Theme;
 };
 
 export default function SalesExampleWrapper({
-  onGridReady,
-  shouldPaginate = true,
+  onTableReady,
+  enablePagination = true,
   theme,
 }: SalesExampleWrapperProps) {
   const { currentTheme, currentIconLibrary } = useExamplesContext();
@@ -27,7 +27,7 @@ export default function SalesExampleWrapper({
   const tableIcons = getTableIcons(currentIconLibrary);
 
   const containerHeight = useExampleHeight({
-    isUsingPagination: shouldPaginate,
+    isUsingPagination: enablePagination,
     rowHeight: ROW_HEIGHT,
   });
 
@@ -45,7 +45,7 @@ export default function SalesExampleWrapper({
             key={currentIconLibrary}
             height={containerHeight}
             icons={tableIcons}
-            onGridReady={onGridReady}
+            onTableReady={onTableReady}
             theme={selectedTheme}
           />
         </ExamplesWrapper>

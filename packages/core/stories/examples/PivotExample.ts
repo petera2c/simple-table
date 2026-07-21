@@ -3,7 +3,7 @@
  */
 import type {
   AggregationType,
-  HeaderObject,
+  ColumnDef,
   PivotConfig,
   PivotValueConfig,
   Row,
@@ -30,14 +30,14 @@ const MEASURE_FIELDS = [
 
 const AGG_TYPES: AggregationType[] = ["sum", "average", "count", "min", "max"];
 
-const HEADERS: HeaderObject[] = [
+const HEADERS: ColumnDef[] = [
   ...DIMENSION_FIELDS.map((f) => ({
     accessor: f.accessor,
     label: f.label,
     width: 110,
     type: "string" as const,
     filterable: true,
-    isSortable: true,
+    sortable: true,
   })),
   {
     accessor: "sales",
@@ -45,7 +45,7 @@ const HEADERS: HeaderObject[] = [
     width: 100,
     type: "number",
     align: "right",
-    isSortable: true,
+    sortable: true,
     valueFormatter: ({ value }: { value?: unknown }) =>
       typeof value === "number" ? `$${value.toLocaleString()}` : "",
   },
@@ -55,7 +55,7 @@ const HEADERS: HeaderObject[] = [
     width: 80,
     type: "number",
     align: "right",
-    isSortable: true,
+    sortable: true,
   },
   {
     accessor: "cost",
@@ -63,7 +63,7 @@ const HEADERS: HeaderObject[] = [
     width: 100,
     type: "number",
     align: "right",
-    isSortable: true,
+    sortable: true,
     valueFormatter: ({ value }: { value?: unknown }) =>
       typeof value === "number" ? `$${value.toLocaleString()}` : "",
   },

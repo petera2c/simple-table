@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject, HeaderRendererProps } from "@simple-table/react";
+import type { Theme, ReactColumnDef, HeaderRendererProps } from "@simple-table/react";
 import { headerRendererConfig } from "./header-renderer.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -72,10 +72,10 @@ const StatefulHeader = ({ header, components }: HeaderRendererProps) => {
   );
 };
 
-const headers: ReactHeaderObject[] = headerRendererConfig.headers.map((h) => ({
+const headers: ReactColumnDef[] = headerRendererConfig.headers.map((h) => ({
   ...h,
   // Keep built-in sorting so sort icon refresh goes through core's header path.
-  isSortable: h.isSortable ?? true,
+  sortable: h.sortable ?? true,
   filterable: h.accessor === "role" || h.accessor === "department",
   headerRenderer: StatefulHeader,
 }));
@@ -94,7 +94,7 @@ const HeaderRendererDemo = ({
         if the header remounts on sort, both reset.
       </p>
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         rows={headerRendererConfig.rows}
         height={height}
         theme={theme}

@@ -1,5 +1,5 @@
 import type {
-  ReactHeaderObject,
+  ReactColumnDef,
   CellRendererProps,
   ValueGetterProps,
 } from "@simple-table/react";
@@ -36,7 +36,7 @@ function ratingColor(rating: number, theme?: string) {
   return { bg: c.errorBg, text: c.error };
 }
 
-export const HEADERS: ReactHeaderObject[] = [
+export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "rank",
     label: "#",
@@ -44,8 +44,8 @@ export const HEADERS: ReactHeaderObject[] = [
     align: "center",
     type: "number",
     pinned: "left",
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     cellRenderer: ({ row, theme }: CellRendererProps) => {
       const c = getThemeColors(theme);
       const rank = row.rank as number;
@@ -71,8 +71,8 @@ export const HEADERS: ReactHeaderObject[] = [
     align: "left",
     type: "string",
     pinned: "left",
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     valueGetter: ({ row }: ValueGetterProps) => row.name as string,
     cellRenderer: ({ row, theme }: CellRendererProps) => {
       const c = getThemeColors(theme);
@@ -124,8 +124,8 @@ export const HEADERS: ReactHeaderObject[] = [
     width: "auto",
     align: "center",
     type: "enum",
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     filterable: true,
     enumOptions: [
       { label: "Goalkeeper", value: "GK" },
@@ -145,8 +145,8 @@ export const HEADERS: ReactHeaderObject[] = [
     width: "auto",
     align: "center",
     type: "number",
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     cellRenderer: ({ row, theme }: CellRendererProps) => {
       const rating = row.rating as number;
       const styles = ratingColor(rating, theme);
@@ -175,8 +175,8 @@ export const HEADERS: ReactHeaderObject[] = [
     width: "auto",
     align: "center",
     type: "lineAreaChart",
-    isSortable: false,
-    isEditable: false,
+    sortable: false,
+    editable: false,
     filterable: false,
     tooltip: "Match ratings over the last 8 games",
     chartOptions: {
@@ -193,8 +193,8 @@ export const HEADERS: ReactHeaderObject[] = [
     width: "auto",
     align: "center",
     type: "number",
-    isSortable: true,
-    isEditable: false,
+    sortable: true,
+    editable: false,
     tooltip: "Appearances this season",
     cellRenderer: StatCell("appearances"),
   },
@@ -202,7 +202,7 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "attack",
     label: "Attack",
     width: "auto",
-    isSortable: false,
+    sortable: false,
     collapsible: true,
     children: [
       {
@@ -211,8 +211,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: "auto",
         align: "center",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "always",
         cellRenderer: ({ row, theme }: CellRendererProps) => {
           const c = getThemeColors(theme);
@@ -229,8 +229,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: "auto",
         align: "center",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "parentExpanded",
         cellRenderer: StatCell("assists"),
       },
@@ -240,8 +240,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: "auto",
         align: "center",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "parentExpanded",
         tooltip: "Expected goals",
         cellRenderer: StatCell("xG", 1),
@@ -252,8 +252,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: "auto",
         align: "center",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "parentExpanded",
         tooltip: "Expected assists",
         cellRenderer: StatCell("xA", 1),
@@ -264,8 +264,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: "auto",
         align: "center",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "parentExpanded",
         cellRenderer: StatCell("shots"),
       },
@@ -275,7 +275,7 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "passing",
     label: "Passing",
     width: "auto",
-    isSortable: false,
+    sortable: false,
     collapsible: true,
     children: [
       {
@@ -284,8 +284,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: "auto",
         align: "left",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "always",
         cellRenderer: ({ row, theme }: CellRendererProps) => {
           const pct = row.passAccuracy as number;
@@ -300,8 +300,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: "auto",
         align: "center",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "parentExpanded",
         cellRenderer: StatCell("passes"),
       },
@@ -311,8 +311,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: "auto",
         align: "center",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "parentExpanded",
         tooltip: "Passes leading to a shot",
         cellRenderer: StatCell("keyPasses"),
@@ -323,7 +323,7 @@ export const HEADERS: ReactHeaderObject[] = [
     accessor: "defense",
     label: "Defense",
     width: "auto",
-    isSortable: false,
+    sortable: false,
     collapsible: true,
     collapseDefault: true,
     children: [
@@ -333,8 +333,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: "auto",
         align: "center",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "always",
         cellRenderer: StatCell("tackles"),
       },
@@ -344,8 +344,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: "auto",
         align: "center",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "parentExpanded",
         cellRenderer: StatCell("interceptions"),
       },
@@ -355,8 +355,8 @@ export const HEADERS: ReactHeaderObject[] = [
         width: "auto",
         align: "center",
         type: "number",
-        isSortable: true,
-        isEditable: false,
+        sortable: true,
+        editable: false,
         showWhen: "parentExpanded",
         cellRenderer: StatCell("clearances"),
       },
