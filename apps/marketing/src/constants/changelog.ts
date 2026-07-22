@@ -50,29 +50,6 @@ export const v4_0_3: ChangelogEntry = {
   ],
 };
 
-export const v4_0_2: ChangelogEntry = {
-  version: "4.0.2",
-  date: "2026-07-21",
-  title: "Clearer public API names",
-  titleLink: "/migrations/v4-0-5",
-  description:
-    "Introduced preferred names for columns, feature flags, and column options (temporary aliases; removed in 4.0.5).",
-  changes: [
-    {
-      type: "improvement",
-      description:
-        "Introduced clearer consumer-facing names (e.g. columns, ColumnDef, enableColumnEditor, enablePagination, onTableReady). See 4.0.5 for the hard-cut that removes legacy names.",
-      link: "/migrations/v4-0-5",
-    },
-    {
-      type: "improvement",
-      description:
-        "Exported TableRow, Pinned, and AutoSizeMode; aligned TableAPI row-id typing; removed leaked internal types from package barrels.",
-      link: "/docs/api-reference",
-    },
-  ],
-};
-
 export const v4_0_1: ChangelogEntry = {
   version: "4.0.1",
   date: "2026-07-20",
@@ -2374,7 +2351,6 @@ export const v1_4_4: ChangelogEntry = {
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   v4_0_5,
   v4_0_3,
-  v4_0_2,
   v4_0_1,
   v4_0_0,
   v3_9_9,
