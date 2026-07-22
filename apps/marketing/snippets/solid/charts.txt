@@ -10,7 +10,7 @@ import "@simple-table/solid/styles.css";
 export default function ChartsDemo() {
   return (
     <SimpleTable
-      defaultHeaders={chartsConfig.headers}
+      columns={chartsConfig.headers}
       rows={chartsConfig.rows}
       columnReordering
       columnResizing

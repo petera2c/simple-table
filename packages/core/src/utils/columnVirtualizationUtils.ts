@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import { Pinned } from "../types/Pinned";
 import { displayCell } from "./cellUtils";
 
@@ -12,7 +12,7 @@ export interface CumulativeWidthMap {
   /** Total width of all columns combined */
   totalWidth: number;
   /** Ordered array of leaf headers (actual columns that render) */
-  leafHeaders: HeaderObject[];
+  leafHeaders: ColumnDef[];
 }
 
 /**
@@ -22,7 +22,7 @@ export interface CumulativeWidthMap {
  * @param header - The header object
  * @returns Width in pixels
  */
-const getColumnWidthInPixels = (header: HeaderObject): number => {
+const getColumnWidthInPixels = (header: ColumnDef): number => {
   const { width } = header;
 
   if (typeof width === "number") {
@@ -51,14 +51,14 @@ const getColumnWidthInPixels = (header: HeaderObject): number => {
  * @returns Flat array of leaf headers in order
  */
 export const getLeafHeaders = (
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   pinned: Pinned | undefined,
-  allHeaders: HeaderObject[],
+  allHeaders: ColumnDef[],
   collapsedHeaders?: Set<Accessor>,
-): HeaderObject[] => {
-  const leaves: HeaderObject[] = [];
+): ColumnDef[] => {
+  const leaves: ColumnDef[] = [];
 
-  const processHeader = (header: HeaderObject, rootPinned?: Pinned) => {
+  const processHeader = (header: ColumnDef, rootPinned?: Pinned) => {
     if (!displayCell({ header, pinned, headers: allHeaders, collapsedHeaders, rootPinned })) {
       return;
     }
@@ -94,9 +94,9 @@ export const getLeafHeaders = (
  * @returns Cumulative width map with column positions
  */
 export const buildCumulativeWidthMap = (
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   pinned: Pinned | undefined,
-  allHeaders: HeaderObject[],
+  allHeaders: ColumnDef[],
   collapsedHeaders?: Set<Accessor>,
 ): CumulativeWidthMap => {
   // Get leaf headers (actual columns that render)
@@ -183,7 +183,7 @@ export const getVisibleColumns = ({
 }): {
   startIndex: number;
   endIndex: number;
-  columns: HeaderObject[];
+  columns: ColumnDef[];
 } => {
   const { leafHeaders } = widthMap;
 
@@ -238,9 +238,9 @@ export const getVisibleColumns = ({
  * @returns Maps for leaf-to-parents and parent-to-leaves relationships
  */
 export const buildColumnHierarchy = (
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   pinned: Pinned | undefined,
-  allHeaders: HeaderObject[],
+  allHeaders: ColumnDef[],
   collapsedHeaders?: Set<Accessor>,
 ): {
   leafToParents: Map<Accessor, Accessor[]>;
@@ -249,7 +249,7 @@ export const buildColumnHierarchy = (
   const leafToParents = new Map<Accessor, Accessor[]>();
   const parentToLeaves = new Map<Accessor, Accessor[]>();
 
-  const processHeader = (header: HeaderObject, parentChain: Accessor[], rootPinned?: Pinned) => {
+  const processHeader = (header: ColumnDef, parentChain: Accessor[], rootPinned?: Pinned) => {
     if (!displayCell({ header, pinned, headers: allHeaders, collapsedHeaders, rootPinned })) {
       return;
     }
@@ -294,7 +294,7 @@ export const buildColumnHierarchy = (
  * @returns Set of all header accessors to render (leaves + ancestors)
  */
 export const getHeadersToRender = (
-  visibleLeafColumns: HeaderObject[],
+  visibleLeafColumns: ColumnDef[],
   leafToParents: Map<Accessor, Accessor[]>,
 ): Set<Accessor> => {
   const headersToRender = new Set<Accessor>();
@@ -318,13 +318,13 @@ export const getHeadersToRender = (
  * Represents a single header cell in the grid with its positioning
  */
 export type GridCell = {
-  header: HeaderObject;
+  header: ColumnDef;
   gridColumnStart: number;
   gridColumnEnd: number;
   gridRowStart: number;
   gridRowEnd: number;
   colIndex: number;
-  parentHeader?: HeaderObject;
+  parentHeader?: ColumnDef;
 };
 
 /**
@@ -343,7 +343,7 @@ export type GridCell = {
 export const recalculateGridPositions = (
   originalGridCells: GridCell[],
   headersToRender: Set<Accessor>,
-  visibleLeafColumns: HeaderObject[],
+  visibleLeafColumns: ColumnDef[],
   startColumnIndex: number,
 ): GridCell[] => {
   // Filter to only headers that should be rendered

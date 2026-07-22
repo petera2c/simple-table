@@ -65,8 +65,8 @@ export default function DynamicRowLoadingDemo(props: { height?: string | number;
   return (
     <SimpleTable
       columnResizing={dynamicRowLoadingConfig.tableProps.columnResizing}
-      defaultHeaders={dynamicRowLoadingConfig.headers}
-      editColumns={dynamicRowLoadingConfig.tableProps.editColumns}
+      columns={dynamicRowLoadingConfig.headers}
+      enableColumnEditor={dynamicRowLoadingConfig.tableProps.enableColumnEditor}
       expandAll={dynamicRowLoadingConfig.tableProps.expandAll}
       height={props.height ?? "400px"}
       onRowGroupExpand={handleRowExpand}
@@ -75,7 +75,7 @@ export default function DynamicRowLoadingDemo(props: { height?: string | number;
       rows={rows()}
       selectableCells={dynamicRowLoadingConfig.tableProps.selectableCells}
       theme={props.theme}
-      useOddEvenRowBackground={dynamicRowLoadingConfig.tableProps.useOddEvenRowBackground}
+      oddEvenRowBackground={dynamicRowLoadingConfig.tableProps.oddEvenRowBackground}
     />
   );
 }

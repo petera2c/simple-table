@@ -11,7 +11,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       #simpleTable
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rows]="rows"
       height="400px"
     ></simple-table>

@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../../types/HeaderObject";
+import ColumnDef, { Accessor } from "../../types/ColumnDef";
 import CellValue from "../../types/CellValue";
 import { IconsConfig } from "../../types/IconsConfig";
 import OnRowGroupExpandProps from "../../types/OnRowGroupExpandProps";
@@ -21,7 +21,7 @@ type Dispatch<A> = (value: A) => void;
 
 // Types for cell data
 export interface AbsoluteBodyCell {
-  header: HeaderObject;
+  header: ColumnDef;
   row: Row;
   rowIndex: number;
   colIndex: number;
@@ -92,16 +92,16 @@ export interface CellRenderContext {
   /** Keyboard active row id for focus styling */
   activeRowId?: string | null;
   cellUpdateFlash?: boolean;
-  useOddColumnBackground?: boolean;
-  useHoverRowBackground?: boolean;
+  oddColumnBackground?: boolean;
+  hoverRowBackground?: boolean;
   /**
    * Unique id for this table instance. Scopes the module-level row-hover cell
    * map so multiple tables on one page with overlapping rowIds don't cross-hover.
    */
   hoverScopeId: string;
-  useOddEvenRowBackground?: boolean;
+  oddEvenRowBackground?: boolean;
   rowGrouping?: string[];
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   /**
    * Accessor of the column whose body cells identify the row and should carry
    * `role="rowheader"` (the first non-selection leaf column). Other data cells

@@ -10,7 +10,7 @@ import type {
   AbsoluteBodyCell,
   CellRenderContext,
 } from "../../../core/src/utils/bodyCell/types";
-import type HeaderObject from "../../../core/src/types/HeaderObject";
+import type ColumnDef from "../../../core/src/types/ColumnDef";
 import type Row from "../../../core/src/types/Row";
 
 // Regression tests for the custom-cell-renderer over-render fix.
@@ -60,7 +60,7 @@ function buildContext(overrides: Partial<CellRenderContext> = {}): CellRenderCon
 }
 
 /** Build an AbsoluteBodyCell for a single-column ("name") data row. */
-function buildCell(row: Row, header: HeaderObject): AbsoluteBodyCell {
+function buildCell(row: Row, header: ColumnDef): AbsoluteBodyCell {
   return {
     header,
     row,
@@ -92,7 +92,7 @@ function buildCell(row: Row, header: HeaderObject): AbsoluteBodyCell {
 
 describe("custom cellRenderer memoization in updateBodyCellElement", () => {
   let cellRenderer: ReturnType<typeof vi.fn>;
-  let header: HeaderObject;
+  let header: ColumnDef;
 
   beforeEach(() => {
     cellRenderer = vi.fn(({ row }: { row: Row }) => {
@@ -105,8 +105,8 @@ describe("custom cellRenderer memoization in updateBodyCellElement", () => {
       accessor: "name",
       label: "Name",
       width: 120,
-      cellRenderer: cellRenderer as unknown as HeaderObject["cellRenderer"],
-    } as HeaderObject;
+      cellRenderer: cellRenderer as unknown as ColumnDef["cellRenderer"],
+    } as ColumnDef;
   });
 
   it("renders the custom content once on creation", () => {

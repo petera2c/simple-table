@@ -1,4 +1,4 @@
-import { HeaderObject } from "..";
+import { ColumnDef } from "..";
 import TableRow from "./TableRow";
 import { CumulativeHeightMap } from "../utils/infiniteScrollUtils";
 
@@ -6,9 +6,9 @@ interface TableBodyProps {
   calculatedHeaderHeight: number;
   heightMap?: CumulativeHeightMap;
   partiallyVisibleRows: TableRow[];
-  pinnedLeftColumns: HeaderObject[];
+  pinnedLeftColumns: ColumnDef[];
   pinnedLeftWidth: number;
-  pinnedRightColumns: HeaderObject[];
+  pinnedRightColumns: ColumnDef[];
   pinnedRightWidth: number;
   regularRows: TableRow[];
   rowsToRender: TableRow[];

@@ -2,7 +2,7 @@ import type { Type } from "@angular/core";
 import type {
   SimpleTableProps,
   SimpleTableConfig,
-  HeaderObject,
+  ColumnDef,
   Row,
   TableAPI,
   CellRenderer,
@@ -76,19 +76,19 @@ export interface AngularColumnEditorConfig extends Omit<
   customRenderer?: AngularColumnEditorCustomRenderer;
 }
 
-// ─── HeaderObject override ────────────────────────────────────────────────────
+// ─── ColumnDef override ────────────────────────────────────────────────────
 /**
- * Column definition for `columns` / `defaultHeaders`: core column metadata with
- * Angular-only renderer fields. `columns` / `defaultHeaders` also accept plain
- * `HeaderObject[]` from shared configs.
+ * Column definition for `columns`: core column metadata with
+ * Angular-only renderer fields. `columns` also accept plain
+ * `ColumnDef[]` from shared configs.
  */
-export interface AngularHeaderObject extends Omit<
-  HeaderObject,
+export interface AngularColumnDef extends Omit<
+  ColumnDef,
   "cellRenderer" | "headerRenderer" | "children" | "nestedTable"
 > {
   cellRenderer?: AngularCellRenderer;
   headerRenderer?: AngularHeaderRenderer;
-  children?: AngularHeaderObject[];
+  children?: AngularColumnDef[];
   nestedTable?: Omit<
     SimpleTableAngularProps,
     | "rows"
@@ -99,19 +99,16 @@ export interface AngularHeaderObject extends Omit<
   >;
 }
 
-/** Preferred name for Angular column definitions. Alias of {@link AngularHeaderObject}. */
-export type AngularColumnDef = AngularHeaderObject;
 
 // ─── Top-level props ──────────────────────────────────────────────────────────
 // Mirrors SimpleTableProps with Angular-specific overrides. Use @ViewChild on the
 // table component and `getAPI()` for the imperative TableAPI.
 //
 //   Overridden to Angular equivalents:
-//     - columns / defaultHeaders → ReadonlyArray<HeaderObject | AngularHeaderObject>
+//     - columns → ReadonlyArray<ColumnDef | AngularColumnDef>
 export interface SimpleTableAngularProps extends Omit<
   SimpleTableProps,
   | "rows"
-  | "defaultHeaders"
   | "columns"
   | "footerRenderer"
   | "emptyStateRenderer"
@@ -127,19 +124,14 @@ export interface SimpleTableAngularProps extends Omit<
   | "onHeaderEdit"
   | "onColumnSelect"
 > {
-  /**
-   * Column definitions.
-   * @deprecated Prefer {@link columns}
-   */
-  defaultHeaders?: ReadonlyArray<HeaderObject | AngularHeaderObject>;
-  /** Column definitions. Preferred over `defaultHeaders`. */
-  columns?: ReadonlyArray<HeaderObject | AngularHeaderObject>;
+  /** Column definitions. */
+  columns?: ReadonlyArray<ColumnDef | AngularColumnDef>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
-  onColumnOrderChange?: (newHeaders: AngularHeaderObject[]) => void;
-  onColumnWidthChange?: (headers: AngularHeaderObject[]) => void;
-  onHeaderEdit?: (header: AngularHeaderObject, newLabel: string) => void;
-  onColumnSelect?: (header: AngularHeaderObject) => void;
+  onColumnOrderChange?: (newHeaders: AngularColumnDef[]) => void;
+  onColumnWidthChange?: (headers: AngularColumnDef[]) => void;
+  onHeaderEdit?: (header: AngularColumnDef, newLabel: string) => void;
+  onColumnSelect?: (header: AngularColumnDef) => void;
   footerRenderer?: AngularFooterRenderer;
   loadingStateRenderer?: AngularLoadingStateRenderer;
   errorStateRenderer?: AngularErrorStateRenderer;

@@ -1,4 +1,4 @@
-import type { Accessor } from "./HeaderObject";
+import type { Accessor } from "./ColumnDef";
 import type Row from "./Row";
 import type Theme from "./Theme";
 import type CellValue from "./CellValue";

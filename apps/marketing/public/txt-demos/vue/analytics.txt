@@ -104,8 +104,8 @@
           :column-reordering="true"
           :column-resizing="true"
           :copy-headers-to-clipboard="true"
-          :default-headers="analyticsDemoConfig.headers"
-          :edit-columns="true"
+          :columns="analyticsDemoConfig.headers"
+          :enable-column-editor="true"
           :enable-sticky-parents="nestedRows"
           :expand-all="nestedRows"
           :get-row-id="getRowId"
@@ -118,8 +118,8 @@
           :rows="analyticsDemoConfig.rows"
           :selectable-cells="true"
           :theme="theme"
-          :use-hover-row-background="true"
-          :use-odd-even-row-background="true"
+          :hover-row-background="true"
+          :odd-even-row-background="true"
         />
       </div>
     </div>

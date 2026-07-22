@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
-import type { ReactHeaderObject } from "../index";
+import type { ReactColumnDef } from "../index";
 
 // With dynamic row grouping (rowGrouping + onRowGroupExpand):
 //
@@ -36,7 +36,7 @@ async function waitForElement(
   throw new Error(`Timed out waiting for element: ${selector}`);
 }
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "name", label: "Name", width: 160, type: "string", expandable: true },
   { accessor: "age", label: "Age", width: 80, type: "number" },
 ];
@@ -53,7 +53,7 @@ function render(
 ): void {
   root!.render(
     createElement(SimpleTable, {
-      defaultHeaders: headers,
+      columns: headers,
       rows,
       isLoading,
       rowGrouping: ["children"],

@@ -1,6 +1,6 @@
 import { SimpleTableConfig } from "../../types/SimpleTableConfig";
 import { CustomTheme } from "../../types/CustomTheme";
-import HeaderObject, { Accessor } from "../../types/HeaderObject";
+import ColumnDef, { Accessor } from "../../types/ColumnDef";
 import Row from "../../types/Row";
 import RowState from "../../types/RowState";
 import { DimensionManager, type DimensionManagerState } from "../../managers/DimensionManager";
@@ -54,8 +54,8 @@ export interface RenderContext {
   config: SimpleTableConfig;
   customTheme: CustomTheme;
   dimensionManager: DimensionManager | null;
-  draggedHeaderRef: { current: HeaderObject | null };
-  effectiveHeaders: HeaderObject[];
+  draggedHeaderRef: { current: ColumnDef | null };
+  effectiveHeaders: ColumnDef[];
   essentialAccessors: Set<string>;
   expandedDepths: Set<number>;
   expandedRows: Map<string, number>;
@@ -63,18 +63,18 @@ export interface RenderContext {
   getCollapsedRows: () => Map<string, number>;
   getCollapsedHeaders?: () => Set<Accessor>;
   getExpandedRows: () => Map<string, number>;
-  getHeaders: () => HeaderObject[];
+  getHeaders: () => ColumnDef[];
   /** Pristine snapshot of the configured column definitions — the reset target for the column editor's reset button. */
-  getPristineDefaultHeaders: () => HeaderObject[];
+  getPristineDefaultHeaders: () => ColumnDef[];
   getRowStateMap: () => Map<string | number, RowState>;
   headerRegistry: Map<string, any>;
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   /**
    * Unique id for this table instance. Scopes row-hover cell tracking so
    * multiple tables on one page with overlapping rowIds don't cross-hover.
    */
   hoverScopeId: string;
-  hoveredHeaderRef: { current: HeaderObject | null };
+  hoveredHeaderRef: { current: ColumnDef | null };
   internalIsLoading: boolean;
   isResizing: boolean;
   localRows: Row[];
@@ -102,7 +102,7 @@ export interface RenderContext {
   setColumnEditorOpen: (open: boolean) => void;
   setCurrentPage: (page: number) => void;
   setExpandedRows: (rows: Map<string, number>) => void;
-  setHeaders: (headers: HeaderObject[]) => void;
+  setHeaders: (headers: ColumnDef[]) => void;
   setIsResizing: (value: boolean) => void;
   setRowStateMap: (map: Map<string | number, any>) => void;
   sortManager: SortManager | null;
@@ -147,7 +147,7 @@ interface FlattenedRowsCache {
 
 export class RenderOrchestrator {
   private tableRenderer: TableRenderer;
-  private lastHeadersRef: HeaderObject[] | null = null;
+  private lastHeadersRef: ColumnDef[] | null = null;
   private lastRowsRef: Row[] | null = null;
   private flattenedRowsCache: FlattenedRowsCache | null = null;
   private lastProcessedResult: ProcessRowsResult | null = null;
@@ -158,10 +158,10 @@ export class RenderOrchestrator {
   private lastScrollRafPaintedRange: { start: number; end: number } | null = null;
   /** Reuse normalized headers across scroll frames when layout inputs are unchanged. */
   private scrollRafHeadersMemo: {
-    headersRef: HeaderObject[];
+    headersRef: ColumnDef[];
     containerWidth: number;
     collapsedKey: string;
-    effectiveHeaders: HeaderObject[];
+    effectiveHeaders: ColumnDef[];
   } | null = null;
 
   constructor() {
@@ -209,11 +209,11 @@ export class RenderOrchestrator {
   }
 
   computeEffectiveHeaders(
-    headers: HeaderObject[],
+    headers: ColumnDef[],
     config: SimpleTableConfig,
     customTheme: CustomTheme,
     containerWidth?: number,
-  ): HeaderObject[] {
+  ): ColumnDef[] {
     let processedHeaders = [...headers];
 
     if (shouldShowRowSelectionColumn(config) && !headers?.[0]?.isSelectionColumn) {
@@ -246,7 +246,7 @@ export class RenderOrchestrator {
   ): {
     dimensionState: DimensionManagerState;
     containerWidth: number;
-    effectiveHeaders: HeaderObject[];
+    effectiveHeaders: ColumnDef[];
     calculatedHeaderHeight: number;
     maxHeaderDepth: number;
     flattenResult: FlattenRowsResult;
@@ -269,7 +269,7 @@ export class RenderOrchestrator {
         ? ""
         : [...context.collapsedHeaders].map(String).sort().join("\0");
 
-    let effectiveHeaders: HeaderObject[];
+    let effectiveHeaders: ColumnDef[];
     if (
       context.positionOnlyBody &&
       context.config.autoExpandColumns !== true &&
@@ -384,7 +384,7 @@ export class RenderOrchestrator {
       let rowsToFlatten = quickFilteredRows;
       let hasLoadingPlaceholders = false;
       if (isLoading) {
-        let rowsToShow = context.config.shouldPaginate ? (context.config.rowsPerPage ?? 10) : 10;
+        let rowsToShow = context.config.enablePagination ? (context.config.rowsPerPage ?? 10) : 10;
         if (state.isMainSectionScrollable) {
           rowsToShow += 1;
         }
@@ -438,19 +438,19 @@ export class RenderOrchestrator {
             height: context.config.height,
             maxHeight: context.config.maxHeight,
             rowHeight: context.customTheme.rowHeight,
-            shouldPaginate: context.config.shouldPaginate ?? false,
+            enablePagination: context.config.enablePagination ?? false,
             rowsPerPage: context.config.rowsPerPage ?? 10,
             totalRowCount: context.config.totalRowCount ?? flattenResult.paginatableRows.length,
             headerHeight: calculatedHeaderHeight,
             footerHeight:
-              (context.config.shouldPaginate || context.config.footerRenderer) &&
+              (context.config.enablePagination || context.config.footerRenderer) &&
               !context.config.hideFooter
                 ? context.customTheme.footerHeight
                 : undefined,
             externalViewportHeight: context.externalViewportHeight,
           });
 
-    const shouldPaginate = context.config.shouldPaginate ?? false;
+    const enablePagination = context.config.enablePagination ?? false;
     const rowsPerPage = context.config.rowsPerPage ?? 10;
     const serverSidePagination = context.config.serverSidePagination ?? false;
     const totalRowCountForHeight =
@@ -473,7 +473,7 @@ export class RenderOrchestrator {
     const scrollReuseKey =
       contentHeight === undefined
         ? ""
-        : `${canUseCache ? 1 : 0}|${contentHeight}|${state.currentPage}|${rowsPerPage}|${shouldPaginate}|${serverSidePagination}|${context.customTheme.rowHeight}|${calculatedHeaderHeight}|${totalRowCountForHeight}|${enableStickyParents}|${rowGroupingKey}|${flattenResult.flattenedRows.length}|${heightOffsetsLen}|${heightOffsetsChecksum}`;
+        : `${canUseCache ? 1 : 0}|${contentHeight}|${state.currentPage}|${rowsPerPage}|${enablePagination}|${serverSidePagination}|${context.customTheme.rowHeight}|${calculatedHeaderHeight}|${totalRowCountForHeight}|${enableStickyParents}|${rowGroupingKey}|${flattenResult.flattenedRows.length}|${heightOffsetsLen}|${heightOffsetsChecksum}`;
 
     const scrollReuseEligible =
       Boolean(context.positionOnlyBody) &&
@@ -500,7 +500,7 @@ export class RenderOrchestrator {
         parentEndPositions: flattenResult.parentEndPositions,
         currentPage: state.currentPage,
         rowsPerPage,
-        shouldPaginate,
+        enablePagination,
         serverSidePagination,
         contentHeight,
         rowHeight: context.customTheme.rowHeight,
@@ -631,7 +631,7 @@ export class RenderOrchestrator {
       rootStyle.setProperty("--st-main-section-width", `${mainSectionContainerWidth}px`);
       rootStyle.setProperty("--st-scrollbar-width", `${state.scrollbarWidth}px`);
       const editorStripWidth = getColumnEditorStripWidth(
-        context.config.editColumns,
+        context.config.enableColumnEditor,
         mergedColumnEditorConfig.showToggle,
       );
       rootStyle.setProperty("--st-editor-width", `${editorStripWidth}px`);
@@ -716,7 +716,7 @@ export class RenderOrchestrator {
     headerContainer: HTMLElement,
     calculatedHeaderHeight: number,
     maxHeaderDepth: number,
-    effectiveHeaders: HeaderObject[],
+    effectiveHeaders: ColumnDef[],
     context: RenderContext,
   ): void {
     if (context.config.hideHeader) return;
@@ -728,7 +728,7 @@ export class RenderOrchestrator {
   private renderBody(
     bodyContainer: HTMLElement,
     processedResult: any,
-    effectiveHeaders: HeaderObject[],
+    effectiveHeaders: ColumnDef[],
     context: RenderContext,
     state: RenderState,
   ): void {
@@ -740,7 +740,7 @@ export class RenderOrchestrator {
     footerContainer: HTMLElement,
     totalRows: number,
     currentPage: number,
-    effectiveHeaders: HeaderObject[],
+    effectiveHeaders: ColumnDef[],
     context: RenderContext,
   ): void {
     const deps = this.buildRendererDeps(effectiveHeaders, context);
@@ -760,7 +760,7 @@ export class RenderOrchestrator {
     contentWrapper: HTMLElement,
     columnEditorOpen: boolean,
     mergedColumnEditorConfig: MergedColumnEditorConfig,
-    effectiveHeaders: HeaderObject[],
+    effectiveHeaders: ColumnDef[],
     context: RenderContext,
   ): void {
     const deps = this.buildRendererDeps(effectiveHeaders, context);
@@ -784,7 +784,7 @@ export class RenderOrchestrator {
     pinnedLeftContentWidth: number,
     pinnedRightContentWidth: number,
     tableBodyContainer: HTMLDivElement | null,
-    effectiveHeaders: HeaderObject[],
+    effectiveHeaders: ColumnDef[],
     context: RenderContext,
   ): void {
     // Body may be absent in empty state; TableRenderer falls back to the header
@@ -834,7 +834,7 @@ export class RenderOrchestrator {
   }
 
   private buildRendererDeps(
-    effectiveHeaders: HeaderObject[],
+    effectiveHeaders: ColumnDef[],
     context: RenderContext,
     state?: RenderState,
   ) {

@@ -1,6 +1,6 @@
 import type CellValue from "../../types/CellValue";
-import type HeaderObject from "../../types/HeaderObject";
-import type { Accessor } from "../../types/HeaderObject";
+import type ColumnDef from "../../types/ColumnDef";
+import type { Accessor } from "../../types/ColumnDef";
 import type Row from "../../types/Row";
 import type {
   PivotConfig,
@@ -25,8 +25,8 @@ type DimValue = string | number | boolean;
 export type PivotRowsProps = {
   rows: Row[];
   pivot: PivotConfig;
-  /** Field catalog (`defaultHeaders`) for labels, types, widths, formatters. */
-  fieldHeaders: HeaderObject[];
+  /** Field catalog (`columns`) for labels, types, widths, formatters. */
+  fieldHeaders: ColumnDef[];
 };
 
 const normalizeDimValue = (value: CellValue): DimValue => {
@@ -50,9 +50,9 @@ const compareDimLabels = (a: string, b: string): number => {
 };
 
 const findFieldHeader = (
-  catalog: Map<string, HeaderObject>,
+  catalog: Map<string, ColumnDef>,
   accessor: Accessor
-): HeaderObject | undefined => catalog.get(String(accessor));
+): ColumnDef | undefined => catalog.get(String(accessor));
 
 export const buildPivotAccessor = (colKey: string, valueAccessor: Accessor): string => {
   return `${PIVOT_ACCESSOR_PREFIX}${colKey}${KEY_SEP}${String(valueAccessor)}`;
@@ -73,9 +73,9 @@ const createLeafHeader = ({
 }: {
   accessor: string;
   label: string;
-  field?: HeaderObject;
+  field?: ColumnDef;
   alignRight?: boolean;
-}): HeaderObject => ({
+}): ColumnDef => ({
   accessor,
   label,
   width: field?.width ?? 100,
@@ -98,11 +98,11 @@ const buildColumnHeaders = ({
 }: {
   colKeys: string[];
   values: PivotValueConfig[];
-  catalog: Map<string, HeaderObject>;
+  catalog: Map<string, ColumnDef>;
   showRowTotals: boolean;
-}): HeaderObject[] => {
+}): ColumnDef[] => {
   const multiValue = values.length > 1;
-  const roots: HeaderObject[] = [];
+  const roots: ColumnDef[] = [];
 
   // Trie: path segment → node
   type TrieNode = {
@@ -128,7 +128,7 @@ const buildColumnHeaders = ({
     node.colKey = colKey;
   }
 
-  const trieToHeaders = (node: TrieNode, pathPrefix: string): HeaderObject[] => {
+  const trieToHeaders = (node: TrieNode, pathPrefix: string): ColumnDef[] => {
     const entries = Array.from(node.children.entries()).sort(([a], [b]) =>
       compareDimLabels(a, b)
     );
@@ -224,9 +224,9 @@ const buildColumnHeaders = ({
 
 const buildRowDimensionHeaders = (
   rowDims: Accessor[],
-  catalog: Map<string, HeaderObject>,
+  catalog: Map<string, ColumnDef>,
   expandable: boolean
-): HeaderObject[] => {
+): ColumnDef[] => {
   return rowDims.map((accessor, index) => {
     const field = findFieldHeader(catalog, accessor);
     return {
@@ -437,7 +437,7 @@ export const pivotRows = ({ rows, pivot, fieldHeaders }: PivotRowsProps): PivotR
   const showColumnTotals = pivot.showColumnTotals !== false;
   const showGrandTotal = pivot.showGrandTotal !== false;
 
-  const catalog = new Map<string, HeaderObject>();
+  const catalog = new Map<string, ColumnDef>();
   for (const header of flattenAllHeaders(fieldHeaders)) {
     catalog.set(String(header.accessor), header);
   }
@@ -505,7 +505,7 @@ export const pivotRows = ({ rows, pivot, fieldHeaders }: PivotRowsProps): PivotR
 
   const expandable = rowDims.length > 1;
   const rowHeaders = buildRowDimensionHeaders(rowDims, catalog, expandable);
-  const headers: HeaderObject[] = [...rowHeaders, ...columnHeaders];
+  const headers: ColumnDef[] = [...rowHeaders, ...columnHeaders];
 
   let pivotedRows: Row[];
 

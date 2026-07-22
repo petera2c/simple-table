@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import { AggregationConfig } from "../types/AggregationTypes";
 import Row from "../types/Row";
 import RowState from "../types/RowState";
@@ -25,7 +25,7 @@ import { isLoadingPlaceholderRow } from "../utils/loadingPlaceholderUtils";
 
 export interface RowManagerConfig {
   rows: Row[];
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   rowGrouping?: Accessor[];
   getRowId?: GetRowId;
   rowHeight: number;
@@ -71,7 +71,7 @@ export class RowManager {
     };
   }
 
-  private getAllAggregationHeaders(): HeaderObject[] {
+  private getAllAggregationHeaders(): ColumnDef[] {
     return flattenAllHeaders(this.config.headers).filter((header) => header.aggregation);
   }
 

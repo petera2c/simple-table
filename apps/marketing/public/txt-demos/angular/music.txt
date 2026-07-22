@@ -1,11 +1,11 @@
 // music-demo.component.ts
 import { Component } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Row } from "@simple-table/angular";
+import type { AngularColumnDef, Row } from "@simple-table/angular";
 import { musicData } from "./music.demo-data";
 import "@simple-table/angular/styles.css";
 
-const headers: AngularHeaderObject[] = [
+const headers: AngularColumnDef[] = [
   { accessor: "rank", label: "#", type: "number", width: 60, pinned: "left", align: "center" },
   { accessor: "artistName", label: "Artist", type: "string", width: 330, pinned: "left" },
   {
@@ -28,7 +28,7 @@ const headers: AngularHeaderObject[] = [
   imports: [SimpleTableComponent],
   template: `
     <simple-table
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rows]="rows"
       [columnReordering]="true"
       [columnResizing]="true"

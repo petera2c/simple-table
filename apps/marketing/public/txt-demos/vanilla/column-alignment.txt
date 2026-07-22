@@ -9,7 +9,7 @@ export function renderColumnAlignmentDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: columnAlignmentConfig.headers,
+    columns: columnAlignmentConfig.headers,
     rows: columnAlignmentConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
@@ -20,10 +20,10 @@ export function renderColumnAlignmentDemo(
 
 // column-alignment.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
-export const columnAlignmentHeaders: HeaderObject[] = [
+export const columnAlignmentHeaders: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, align: "left", type: "number" },
   { accessor: "name", label: "Name", minWidth: 100, width: "1fr", align: "center", type: "string" },
   { accessor: "score", label: "Score", width: 120, align: "right", type: "number" },

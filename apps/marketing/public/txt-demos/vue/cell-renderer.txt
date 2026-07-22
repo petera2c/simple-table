@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { h, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueHeaderObject, CellRendererProps } from "@simple-table/vue";
+import type { Theme, VueColumnDef, CellRendererProps } from "@simple-table/vue";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "@simple-table/vue/styles.css";
@@ -193,7 +193,7 @@ const headers = computed(() =>
 
 <template>
   <SimpleTable
-    :default-headers="headers"
+    :columns="headers"
     :rows="cellRendererConfig.rows"
     :height="height"
     :theme="theme"

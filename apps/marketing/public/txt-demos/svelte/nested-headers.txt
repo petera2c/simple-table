@@ -7,7 +7,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={nestedHeadersConfig.headers}
+  columns={nestedHeadersConfig.headers}
   rows={nestedHeadersConfig.rows}
   {height}
   {theme}

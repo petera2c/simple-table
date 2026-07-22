@@ -20,7 +20,7 @@ import { getOrCreateRowElement, reconcileRowElements } from "./ariaRowOwnership"
 import { calculateSeparatorTopPosition } from "./infiniteScrollUtils";
 import { DEFAULT_CUSTOM_THEME } from "../types/CustomTheme";
 import type TableRow from "../types/TableRow";
-import type HeaderObject from "../types/HeaderObject";
+import type ColumnDef from "../types/ColumnDef";
 import type { AnimationCoordinator, CellPosition } from "../managers/AnimationCoordinator";
 
 // Re-export types for backward compatibility
@@ -59,9 +59,9 @@ const getRenderedSeparators = (container: HTMLElement): Map<number, HTMLElement>
  * `hide` or `excludeFromRender`. Cheap and only invoked when an accordion
  * window is active, so it doesn't run on plain sort/scroll renders.
  */
-const collectVisibleLeafAccessors = (headers: HeaderObject[]): Set<string> => {
+const collectVisibleLeafAccessors = (headers: ColumnDef[]): Set<string> => {
   const visible = new Set<string>();
-  const walk = (list: HeaderObject[]): void => {
+  const walk = (list: ColumnDef[]): void => {
     for (const header of list) {
       if (isHeaderExcludedFromLayout(header)) continue;
       visible.add(String(header.accessor));

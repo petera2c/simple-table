@@ -1,6 +1,6 @@
 import { SimpleTableConfig } from "../types/SimpleTableConfig";
 import { TableAPI } from "../types/TableAPI";
-import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
+import ColumnDef, { Accessor, DEFAULT_SHOW_WHEN } from "../types/ColumnDef";
 import Row from "../types/Row";
 import { CustomTheme, areCustomThemesEqual } from "../types/CustomTheme";
 import RowState from "../types/RowState";
@@ -89,26 +89,26 @@ export class SimpleTableVanilla {
   private domManager: DOMManager;
   private renderOrchestrator: RenderOrchestrator;
 
-  private draggedHeaderRef: { current: HeaderObject | null } = {
+  private draggedHeaderRef: { current: ColumnDef | null } = {
     current: null,
   };
-  private hoveredHeaderRef: { current: HeaderObject | null } = {
+  private hoveredHeaderRef: { current: ColumnDef | null } = {
     current: null,
   };
 
   private localRows: Row[] = [];
-  private headers: HeaderObject[] = [];
+  private headers: ColumnDef[] = [];
   /**
    * Pristine deep-cloned snapshot of the column definitions as configured
-   * (constructor / update with `defaultHeaders`). `this.headers` shares object
-   * references with `config.defaultHeaders` at mount, and the column editor
+   * (constructor / update with `columns`). `this.headers` shares object
+   * references with `config.columns` at mount, and the column editor
    * mutates header objects in place (e.g. `header.hide = true`) — so
-   * `config.defaultHeaders` drifts with runtime state and cannot serve as the
+   * `config.columns` drifts with runtime state and cannot serve as the
    * reset target. `resetColumns()` restores from this snapshot instead, giving
    * a well-defined default: every column visible except those explicitly
    * configured with `hide: true` in the definitions.
    */
-  private pristineDefaultHeaders: HeaderObject[] = [];
+  private pristineDefaultHeaders: ColumnDef[] = [];
   private essentialAccessors: Set<string> = new Set();
   /** Accessors of leaf columns that should size to content (width:"auto" or autoSizeColumns). */
   private autoSizeAccessors: Set<Accessor> = new Set();
@@ -262,9 +262,9 @@ export class SimpleTableVanilla {
     this.resolvedIcons = TableInitializer.resolveIcons(resolved);
 
     this.localRows = [...resolved.rows];
-    this.headers = [...resolved.defaultHeaders];
-    this.pristineDefaultHeaders = deepClone(resolved.defaultHeaders);
-    this.columnEditorOpen = resolved.editColumnsInitOpen ?? false;
+    this.headers = [...resolved.columns];
+    this.pristineDefaultHeaders = deepClone(resolved.columns);
+    this.columnEditorOpen = resolved.enableColumnEditorInitOpen ?? false;
     this.internalIsLoading = resolved.isLoading ?? false;
 
     // Apply pivot before measuring headers / collapsed state so the first paint
@@ -380,9 +380,9 @@ export class SimpleTableVanilla {
    * children are flattened so a parent collapse/expand counts as a
    * visibility change at the leaf level too.
    */
-  private buildVisibilityKey(headers: HeaderObject[]): string {
+  private buildVisibilityKey(headers: ColumnDef[]): string {
     const parts: string[] = [];
-    const walk = (header: HeaderObject, pinnedAncestor: string | undefined): void => {
+    const walk = (header: ColumnDef, pinnedAncestor: string | undefined): void => {
       if (isHeaderExcludedFromLayout(header)) return;
       const pinned = header.pinned ?? pinnedAncestor ?? "main";
       if (header.children && header.children.length > 0) {
@@ -408,7 +408,7 @@ export class SimpleTableVanilla {
    * the user's actually-painted state and correctly detects hide/show and
    * pin/unpin changes.
    */
-  private didColumnVisibilityChange(nextHeaders: HeaderObject[]): boolean {
+  private didColumnVisibilityChange(nextHeaders: ColumnDef[]): boolean {
     const nextKey = this.buildVisibilityKey(nextHeaders);
     return this.lastRenderedVisibilityKey !== null && nextKey !== this.lastRenderedVisibilityKey;
   }
@@ -477,7 +477,7 @@ export class SimpleTableVanilla {
    */
   private collectAccordionRenderableAccessors(): Set<string> {
     const set = new Set<string>();
-    const visit = (header: HeaderObject): void => {
+    const visit = (header: ColumnDef): void => {
       if (isHeaderExcludedFromLayout(header)) return;
       set.add(String(header.accessor));
       if (!header.children || header.children.length === 0) return;
@@ -657,7 +657,7 @@ export class SimpleTableVanilla {
       // maxHeight, regardless of how many rows are present locally.
       totalRowCount: this.config.totalRowCount ?? this.localRows.length,
       footerHeight:
-        (this.config.shouldPaginate || this.config.footerRenderer) && !this.config.hideFooter
+        (this.config.enablePagination || this.config.footerRenderer) && !this.config.hideFooter
           ? this.customTheme.footerHeight
           : undefined,
       containerElement: refs.tableBodyContainerRef.current,
@@ -678,8 +678,8 @@ export class SimpleTableVanilla {
             if (this.mounted) this.recomputeExternalViewportHeight();
           });
         }
-        if (this.config.onGridReady) {
-          this.config.onGridReady();
+        if (this.config.onTableReady) {
+          this.config.onTableReady();
         }
       }
     });
@@ -1341,7 +1341,7 @@ export class SimpleTableVanilla {
           });
         }
       },
-      setHeaders: (headers: HeaderObject[]) => {
+      setHeaders: (headers: ColumnDef[]) => {
         // When the visible/pinned set of columns changed (hide/show, pin/unpin),
         // open the accordion-horizontal animation window so incoming cells
         // grow from width 0 and outgoing cells shrink to width 0 in their
@@ -1404,7 +1404,7 @@ export class SimpleTableVanilla {
       setCurrentPage: (page: number) => {
         if (
           page !== this.currentPage &&
-          this.config.shouldPaginate &&
+          this.config.enablePagination &&
           !this.config.serverSidePagination
         ) {
           // Re-fit "auto" columns to the new page's rendered rows.
@@ -1427,7 +1427,7 @@ export class SimpleTableVanilla {
   }
 
   /** A leaf column that should size to content (declared with width:"auto"). */
-  private isAutoSizeLeaf(header: HeaderObject): boolean {
+  private isAutoSizeLeaf(header: ColumnDef): boolean {
     if (header.isSelectionColumn) return false;
     return isAutoWidth(header);
   }
@@ -1461,7 +1461,7 @@ export class SimpleTableVanilla {
    * every auto column's width.
    */
   private getAutoSizeRows(): Row[] {
-    if (this.config.shouldPaginate && !this.config.serverSidePagination) {
+    if (this.config.enablePagination && !this.config.serverSidePagination) {
       const processed = this.renderOrchestrator.getLastProcessedResult();
       if (processed) {
         const pageRows = processed.currentTableRows
@@ -1483,7 +1483,7 @@ export class SimpleTableVanilla {
    */
   private getShrinkFloors(): Map<string, number> {
     const declared = new Map<string, number>();
-    const visitDeclared = (h: HeaderObject): void => {
+    const visitDeclared = (h: ColumnDef): void => {
       if (h.children && h.children.length > 0) {
         h.children.forEach(visitDeclared);
       }
@@ -1513,7 +1513,7 @@ export class SimpleTableVanilla {
 
   /** Immutably write measured pixel widths into the leaf headers. */
   private applyMeasuredWidths(widths: Map<Accessor, number>): void {
-    const apply = (h: HeaderObject): HeaderObject => {
+    const apply = (h: ColumnDef): ColumnDef => {
       const next = { ...h };
       // Apply before recursing: `singleRowChildren` / collapsed parents are
       // visible leaves that still carry children, and must receive their
@@ -1769,7 +1769,7 @@ export class SimpleTableVanilla {
     this.isUpdating = true;
     const patch = normalizeConfigPatch(config);
     this.config = { ...this.config, ...patch };
-    // Rebind so the rest of this method reads normalized keys (`defaultHeaders`, etc.).
+    // Rebind so the rest of this method reads normalized keys (`columns`, etc.).
     config = patch as Partial<SimpleTableConfigInput>;
 
     if (config.animations !== undefined) {
@@ -1826,17 +1826,17 @@ export class SimpleTableVanilla {
       });
     }
 
-    if (config.defaultHeaders !== undefined && !this.isResizing) {
+    if (config.columns !== undefined && !this.isResizing) {
       // Snapshot before mutating headers so the FLIP `play` at the end of the
       // ensuing render can inverse-transform from the old layout to the new
       // one — works the same whether the caller is reordering programmatically
       // or via an in-flight header drag.
       //
       // Skip entirely while `isResizing`: mid-drag parent re-renders often push
-      // a fresh defaultHeaders tree with stale widths, which would replace
+      // a fresh columns tree with stale widths, which would replace
       // this.headers, clear naturalWidths, and fight the in-progress resize.
       this.captureAnimationSnapshot();
-      this.pristineDefaultHeaders = deepClone(config.defaultHeaders);
+      this.pristineDefaultHeaders = deepClone(config.columns);
       // Field catalog drives filters; visible headers come from pivot when active.
       if (this.filterManager) {
         this.filterManager.updateConfig({ headers: this.pristineDefaultHeaders });
@@ -1844,7 +1844,7 @@ export class SimpleTableVanilla {
       if (this.pivotManager?.isActive()) {
         this.syncPivotPipeline(this.filterManager?.getFilteredRows() ?? this.localRows);
       } else {
-        this.headers = [...config.defaultHeaders];
+        this.headers = [...config.columns];
         this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
         if (this.sortManager) {
           this.sortManager.updateConfig({ headers: this.headers });
@@ -1914,12 +1914,12 @@ export class SimpleTableVanilla {
           headerHeight: this.customTheme.headerHeight,
           rowHeight: this.customTheme.rowHeight,
           footerHeight:
-            (this.config.shouldPaginate || this.config.footerRenderer) && !this.config.hideFooter
+            (this.config.enablePagination || this.config.footerRenderer) && !this.config.hideFooter
               ? this.customTheme.footerHeight
               : undefined,
         });
 
-        if (this.config.shouldPaginate && previousTheme.rowHeight !== this.customTheme.rowHeight) {
+        if (this.config.enablePagination && previousTheme.rowHeight !== this.customTheme.rowHeight) {
           this.currentPage = 1;
         }
 
@@ -2235,7 +2235,7 @@ export class SimpleTableVanilla {
           this.suppressNextAnimationSnapshot = false;
         }
       },
-      setHeaders: (headers: HeaderObject[]) => {
+      setHeaders: (headers: ColumnDef[]) => {
         // Same trigger as the renderContext.setHeaders path: open the
         // accordion-horizontal animation window when the visible/pinned set
         // changed (hide/show/pin/unpin from the column editor). Pure

@@ -13,7 +13,7 @@ export interface HorizontalScrollbarProps {
   pinnedRightContentWidth: number;
   tableBodyContainerRef: HTMLDivElement;
   /** True when the column-editor toggle strip is visible and reserves horizontal space. */
-  editColumns: boolean;
+  enableColumnEditor: boolean;
   sectionScrollController?: SectionScrollController | null;
   /**
    * When true, skip the DOM scrollWidth check and always build the scrollbar.
@@ -35,7 +35,7 @@ export const createHorizontalScrollbar = (
     pinnedLeftContentWidth,
     pinnedRightContentWidth,
     tableBodyContainerRef,
-    editColumns,
+    enableColumnEditor,
     sectionScrollController,
     forceScrollable = false,
   } = props;
@@ -59,9 +59,9 @@ export const createHorizontalScrollbar = (
   const scrollbarWidth = isContentVerticalScrollable
     ? tableBodyContainerRef.offsetWidth - tableBodyContainerRef.clientWidth
     : 0;
-  const editorWidth = editColumns ? COLUMN_EDIT_WIDTH : 0;
+  const editorWidth = enableColumnEditor ? COLUMN_EDIT_WIDTH : 0;
   const rightSectionWidth =
-    (editColumns ? pinnedRightWidth + PINNED_BORDER_WIDTH : pinnedRightWidth) + scrollbarWidth;
+    (enableColumnEditor ? pinnedRightWidth + PINNED_BORDER_WIDTH : pinnedRightWidth) + scrollbarWidth;
 
   // Create container
   const container = document.createElement("div");
@@ -135,7 +135,7 @@ export const syncHorizontalScrollbarLayout = (
     pinnedLeftContentWidth,
     pinnedRightContentWidth,
     tableBodyContainerRef,
-    editColumns,
+    enableColumnEditor,
   } = props;
 
   const isContentVerticalScrollable =
@@ -143,9 +143,9 @@ export const syncHorizontalScrollbarLayout = (
   const scrollbarWidth = isContentVerticalScrollable
     ? tableBodyContainerRef.offsetWidth - tableBodyContainerRef.clientWidth
     : 0;
-  const editorWidth = editColumns ? COLUMN_EDIT_WIDTH : 0;
+  const editorWidth = enableColumnEditor ? COLUMN_EDIT_WIDTH : 0;
   const rightSectionWidth =
-    (editColumns ? pinnedRightWidth + PINNED_BORDER_WIDTH : pinnedRightWidth) + scrollbarWidth;
+    (enableColumnEditor ? pinnedRightWidth + PINNED_BORDER_WIDTH : pinnedRightWidth) + scrollbarWidth;
 
   const leftSection = container.querySelector(
     ".st-horizontal-scrollbar-left",

@@ -1,8 +1,8 @@
-import type HeaderObject from "./HeaderObject";
+import type ColumnDef from "./ColumnDef";
 
 export interface ColumnEditorCustomRendererProps {
   /** The current headers array */
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   /** Pre-built search input section, or null if search is disabled */
   searchSection: HTMLElement | null;
   /** Pre-built column list section with drag-and-drop, checkboxes, etc. */

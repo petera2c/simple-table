@@ -22,7 +22,7 @@ export function renderTableHeightDemo(
   container.appendChild(wrapper);
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: tableHeightConfig.headers,
+    columns: tableHeightConfig.headers,
     rows: tableHeightConfig.rows,
     height: selectedHeight,
     theme: options?.theme,
@@ -57,10 +57,10 @@ export function renderTableHeightDemo(
 
 // table-height.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
-export const tableHeightHeaders: HeaderObject[] = [
+export const tableHeightHeaders: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 150, width: "1fr", type: "string" },
   { accessor: "email", label: "Email", minWidth: 200, width: "1fr", type: "string" },

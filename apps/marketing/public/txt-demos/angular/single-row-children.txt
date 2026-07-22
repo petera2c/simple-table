@@ -1,6 +1,6 @@
 // single-row-children-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { singleRowChildrenConfig } from "./single-row-children.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -10,7 +10,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rows]="rows"
       [columnResizing]="true"
       [selectableCells]="true"
@@ -23,14 +23,14 @@ export class SingleRowChildrenDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = singleRowChildrenConfig.headers;
+  readonly headers: AngularColumnDef[] = singleRowChildrenConfig.headers;
   readonly rows: Row[] = singleRowChildrenConfig.rows;
 }
 
 
 // single-row-children.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
 
 export const singleRowChildrenData = [
@@ -47,7 +47,7 @@ export const singleRowChildrenData = [
   { id: 11, studentId: "STU-2024-011", studentName: "Keiko Tanaka", gradeLevel: "12th Grade", overallGPA: 3.9, mathGrade: 94, scienceGrade: 93, englishGrade: 96, historyGrade: 92 },
 ];
 
-export const singleRowChildrenHeaders: AngularHeaderObject[] = [
+export const singleRowChildrenHeaders: AngularColumnDef[] = [
   { accessor: "studentId", label: "Student ID", width: 160, sortable: true, type: "string" },
   { accessor: "gradeLevel", label: "Grade Level", width: 150, sortable: true, type: "string" },
   {

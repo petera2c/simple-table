@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import { Pinned } from "../types/Pinned";
 import { RowId } from "../types/RowId";
 import { shouldHideWhenParentCollapsed } from "./collapseUtils";
@@ -17,9 +17,9 @@ export const displayCell = ({
   collapsedHeaders,
   rootPinned,
 }: {
-  header: HeaderObject;
+  header: ColumnDef;
   pinned?: Pinned;
-  headers?: HeaderObject[];
+  headers?: ColumnDef[];
   collapsedHeaders?: Set<Accessor>;
   rootPinned?: Pinned;
 }) => {

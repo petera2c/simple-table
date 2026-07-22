@@ -76,7 +76,7 @@
   </div>
 
   <SimpleTable
-    defaultHeaders={windowScrollHeaders}
+    columns={windowScrollHeaders}
     {rows}
     {theme}
     {getRowId}

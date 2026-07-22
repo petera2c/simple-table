@@ -19,7 +19,7 @@ export default function ExternalFilterDemo(props: { height?: string | number; th
 
   return (
     <SimpleTable
-      defaultHeaders={externalFilterConfig.headers}
+      columns={externalFilterConfig.headers}
       rows={filteredData()}
       onFilterChange={setFilters}
       externalFilterHandling

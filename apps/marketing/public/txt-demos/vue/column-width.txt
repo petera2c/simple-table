@@ -2,7 +2,7 @@
   <SimpleTable
     :auto-expand-columns="!isMobile"
     :column-resizing="true"
-    :default-headers="columnWidthConfig.headers"
+    :columns="columnWidthConfig.headers"
     :height="height"
     :rows="columnWidthConfig.rows"
     :theme="theme"

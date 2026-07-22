@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from "vitest";
 // column definitions (all visible except headers defined with `hide: true`),
 // regardless of any runtime visibility changes made through the column editor.
 import { SimpleTableVanilla } from "simple-table-core";
-import type { HeaderObject, SimpleTableConfig } from "simple-table-core";
+import type { ColumnDef, SimpleTableConfig } from "simple-table-core";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -34,7 +34,7 @@ const rows = [
 
 const getRowId = (p: { row: unknown }) => String((p.row as { id?: number })?.id);
 
-const makeHeaders = (): HeaderObject[] => [
+const makeHeaders = (): ColumnDef[] => [
   { accessor: "name", label: "Name", width: 120, type: "string" },
   { accessor: "score", label: "Score", width: 120, type: "number" },
   // Explicitly configured as hidden in the column definitions — must STAY
@@ -42,18 +42,18 @@ const makeHeaders = (): HeaderObject[] => [
   { accessor: "secret", label: "Secret", width: 120, type: "string", hide: true },
 ];
 
-function mountTable(defaultHeaders: HeaderObject[]): SimpleTableVanilla {
+function mountTable(columns: ColumnDef[]): SimpleTableVanilla {
   container = document.createElement("div");
   document.body.appendChild(container);
 
   const config: SimpleTableConfig = {
-    defaultHeaders,
+    columns,
     rows,
     getRowId,
     height: "250px",
     theme: "light",
-    editColumns: true,
-    editColumnsInitOpen: true,
+    enableColumnEditor: true,
+    enableColumnEditorInitOpen: true,
   };
 
   instance = new SimpleTableVanilla(container, config);

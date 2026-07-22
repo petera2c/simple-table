@@ -5,7 +5,7 @@ import "simple-table-core/styles.css";
 
 export function renderManufacturingDemo(container: HTMLElement) {
   return new SimpleTableVanilla(container, {
-    defaultHeaders: manufacturingConfig.headers,
+    columns: manufacturingConfig.headers,
     rows: manufacturingConfig.rows,
     rowGrouping: ["stations"],
     columnReordering: true,

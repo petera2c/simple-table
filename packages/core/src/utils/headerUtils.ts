@@ -1,5 +1,5 @@
 import { PINNED_BORDER_WIDTH } from "../consts/general-consts";
-import HeaderObject from "../types/HeaderObject";
+import ColumnDef from "../types/ColumnDef";
 
 /**
  * Gets all leaf column indices (bottom-level columns) for a given header and its descendants
@@ -7,7 +7,7 @@ import HeaderObject from "../types/HeaderObject";
  * @param colIndex The column index of the header in the current context
  * @returns Array of column indices that belong to this header branch
  */
-export const getHeaderLeafIndices = (header: HeaderObject, colIndex: number): number[] => {
+export const getHeaderLeafIndices = (header: ColumnDef, colIndex: number): number[] => {
   // For a leaf node (no children), just return the current index
   if (!header.children || header.children.length === 0) {
     return [colIndex];
@@ -17,7 +17,7 @@ export const getHeaderLeafIndices = (header: HeaderObject, colIndex: number): nu
   const columnsToSelect: number[] = [];
 
   // Recursive function to collect column indices
-  const collectChildIndices = (childHeader: HeaderObject, startIndex: number): number => {
+  const collectChildIndices = (childHeader: ColumnDef, startIndex: number): number => {
     // If this is a leaf node, add its index and increment
     if (!childHeader.children || childHeader.children.length === 0) {
       columnsToSelect.push(startIndex);
@@ -44,7 +44,7 @@ export const getHeaderLeafIndices = (header: HeaderObject, colIndex: number): nu
  * @param headers The headers array to flatten
  * @returns Flattened array of all leaf headers
  */
-export const flattenHeaders = (headers: HeaderObject[]): HeaderObject[] => {
+export const flattenHeaders = (headers: ColumnDef[]): ColumnDef[] => {
   return headers.flatMap((header) => {
     if (!header.children || header.children.length === 0) {
       return [header];
@@ -58,7 +58,7 @@ export const flattenHeaders = (headers: HeaderObject[]): HeaderObject[] => {
  * @param headers The headers array to flatten
  * @returns Flattened array of all headers in the hierarchy
  */
-export const flattenAllHeaders = (headers: HeaderObject[]): HeaderObject[] => {
+export const flattenAllHeaders = (headers: ColumnDef[]): ColumnDef[] => {
   return headers.flatMap((header) => {
     const result = [header];
     if (header.children && header.children.length > 0) {
@@ -99,7 +99,7 @@ export const getHeaderDescriptionId = (accessor: string | number): string => {
  * @param filterable Whether the column is filterable
  * @returns Description string for aria-describedby, or empty string if no description
  */
-export const getHeaderDescription = (header: HeaderObject, filterable: boolean): string => {
+export const getHeaderDescription = (header: ColumnDef, filterable: boolean): string => {
   const parts: string[] = [];
 
   // Add column type if available

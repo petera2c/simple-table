@@ -1,4 +1,4 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import { ColumnEditorSearchFunction, ColumnEditorConfig } from "../../types/ColumnEditorConfig";
 import { ColumnEditorCustomRenderer } from "../../types/ColumnEditorCustomRendererProps";
 import { FlattenedHeader } from "../../types/FlattenedHeader";
@@ -9,7 +9,7 @@ import { IconsConfig } from "../../types/IconsConfig";
 import { partitionRootHeadersByPin, PanelSection } from "../../utils/pinnedColumnUtils";
 
 export interface CreateColumnEditorPopoutOptions {
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   open: boolean;
   searchEnabled: boolean;
   searchPlaceholder: string;
@@ -17,13 +17,13 @@ export interface CreateColumnEditorPopoutOptions {
   columnEditorConfig: ColumnEditorConfig;
   icons?: IconsConfig;
   essentialAccessors?: ReadonlySet<string>;
-  setHeaders: (headers: HeaderObject[]) => void;
+  setHeaders: (headers: ColumnDef[]) => void;
   onColumnVisibilityChange?: (state: ColumnVisibilityState) => void;
-  onColumnOrderChange?: (headers: HeaderObject[]) => void;
+  onColumnOrderChange?: (headers: ColumnDef[]) => void;
   resetColumns?: () => void;
 }
 
-const defaultHeaderMatchesSearch = (header: HeaderObject, searchTerm: string): boolean => {
+const defaultHeaderMatchesSearch = (header: ColumnDef, searchTerm: string): boolean => {
   const lowerSearch = searchTerm.toLowerCase();
 
   if (header.label.toLowerCase().includes(lowerSearch)) {
@@ -38,10 +38,10 @@ const defaultHeaderMatchesSearch = (header: HeaderObject, searchTerm: string): b
 };
 
 const filterHeaders = (
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   searchTerm: string,
   searchFunction?: ColumnEditorSearchFunction,
-): HeaderObject[] => {
+): ColumnDef[] => {
   if (!searchTerm.trim()) {
     return headers;
   }
@@ -113,7 +113,7 @@ function assembleDefaultLayout(
 function assembleCustomLayout(
   content: HTMLElement,
   customRenderer: ColumnEditorCustomRenderer,
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   searchWrapper: HTMLElement | null,
   listsContainer: HTMLElement,
   resetFooter: HTMLElement | null,
@@ -159,7 +159,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
   let isDragging = false;
 
   const initialExpanded = new Set<string>();
-  const collectAccessors = (headerList: HeaderObject[]) => {
+  const collectAccessors = (headerList: ColumnDef[]) => {
     headerList.forEach((header) => {
       if (header.children && header.children.length > 0) {
         initialExpanded.add(header.accessor);
@@ -264,11 +264,11 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     });
   };
 
-  const doesAnyHeaderHaveChildren = (sectionHeaders: HeaderObject[]) => {
+  const doesAnyHeaderHaveChildren = (sectionHeaders: ColumnDef[]) => {
     return sectionHeaders.some((header) => header.children && header.children.length > 0);
   };
 
-  const getFlattenedHeaders = (sectionHeaders: HeaderObject[], panelSection: PanelSection): FlattenedHeader[] => {
+  const getFlattenedHeaders = (sectionHeaders: ColumnDef[], panelSection: PanelSection): FlattenedHeader[] => {
     const filteredHeaders = searchEnabled
       ? filterHeaders(sectionHeaders, searchTerm, searchFunction)
       : sectionHeaders;
@@ -282,9 +282,9 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
       parent = null,
       currentPath = [],
     }: {
-      headers: HeaderObject[];
+      headers: ColumnDef[];
       depth: number;
-      parent: HeaderObject | null;
+      parent: ColumnDef | null;
       currentPath: number[];
     }) => {
       list.forEach((header, index) => {
@@ -315,7 +315,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
   };
 
   const renderSection = (
-    sectionHeaders: HeaderObject[],
+    sectionHeaders: ColumnDef[],
     panelSection: PanelSection,
     label: string | null,
     targetContainer: HTMLElement,

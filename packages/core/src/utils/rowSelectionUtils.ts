@@ -1,6 +1,6 @@
 import Row from "../types/Row";
 import TableRow from "../types/TableRow";
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import type { RowSelectionMode } from "../types/RowSelectionMode";
 import { rowIdToString } from "./rowUtils";
 
@@ -156,7 +156,7 @@ export const getSelectedRowCount = (selectedRows: Set<string>): number => {
  * Create a selection header for the checkbox column
  */
 export const createSelectionHeader = (width: number) => {
-  const selectionHeader: HeaderObject = {
+  const selectionHeader: ColumnDef = {
     accessor: "__row_selection__" as Accessor,
     label: "",
     width, // Configurable width for selection column

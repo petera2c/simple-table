@@ -3,7 +3,6 @@ import type Cell from "./types/Cell";
 import type CellChangeProps from "./types/CellChangeProps";
 import type CellValue from "./types/CellValue";
 import type EnumOption from "./types/EnumOption";
-import type HeaderObject from "./types/HeaderObject";
 import type {
   Accessor,
   AutoSizeMode,
@@ -19,7 +18,7 @@ import type {
   ValueFormatterProps,
   ValueGetter,
   ValueGetterProps,
-} from "./types/HeaderObject";
+} from "./types/ColumnDef";
 import type { SimpleTableConfigInput } from "./utils/normalizeConfig";
 import type { AggregationConfig, AggregationType } from "./types/AggregationTypes";
 import type { PivotConfig, PivotValueConfig, PivotResult } from "./types/PivotTypes";
@@ -172,7 +171,6 @@ export type {
   LoadingStateRendererProps,
   HeaderDropdown,
   HeaderDropdownProps,
-  HeaderObject,
   HeaderRenderer,
   HeaderRendererProps,
   HeaderRendererComponents,

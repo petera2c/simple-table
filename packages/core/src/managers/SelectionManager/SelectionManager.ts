@@ -1,5 +1,5 @@
 import type Cell from "../../types/Cell";
-import type HeaderObject from "../../types/HeaderObject";
+import type ColumnDef from "../../types/ColumnDef";
 import type TableRowType from "../../types/TableRow";
 import { findLeafHeaders } from "../../utils/headerWidthUtils";
 import { rowIdToString } from "../../utils/rowUtils";
@@ -50,7 +50,7 @@ export class SelectionManager {
   // Cached derived state
   private columnsWithSelectedCells: Set<number> = new Set();
   private rowsWithSelectedCells: Set<string> = new Set();
-  private leafHeaders: HeaderObject[] = [];
+  private leafHeaders: ColumnDef[] = [];
   /** rowId -> table row index; avoids O(tableRows) findIndex per cell in getBorderClass */
   private rowIdToTableIndex: Map<string, number> = new Map();
   /** Set of "rowId\tcolIndex" for O(1) selected membership in syncAllCellClasses */
@@ -882,7 +882,7 @@ export class SelectionManager {
     const root = this.config.tableRoot ?? document;
     const headerCells = root.querySelectorAll(".st-header-cell");
 
-    const byAccessor = new Map<string, HeaderObject>();
+    const byAccessor = new Map<string, ColumnDef>();
     for (const h of flattenAllHeaders(this.config.headers)) {
       byAccessor.set(String(h.accessor), h);
     }

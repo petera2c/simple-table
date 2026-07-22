@@ -2,11 +2,11 @@
 <template>
   <SimpleTable
     ref="tableRef"
-    :default-headers="headers"
+    :columns="headers"
     :rows="infrastructureData"
     :column-reordering="true"
     :column-resizing="true"
-    :edit-columns="true"
+    :enable-column-editor="true"
     :selectable-cells="true"
     height="400px"
   />
@@ -14,13 +14,13 @@
 
 <script setup lang="ts">
 import { SimpleTable } from "@simple-table/vue";
-import type { VueHeaderObject } from "@simple-table/vue";
+import type { VueColumnDef } from "@simple-table/vue";
 import { infrastructureData } from "./infrastructure.demo-data"; // 50 sample servers
 import "@simple-table/vue/styles.css";
 
 const tableRef = ref();
 
-const headers: VueHeaderObject[] = [
+const headers: VueColumnDef[] = [
   { accessor: "serverId", label: "Server ID", type: "string", pinned: "left", width: "1.2fr", sortable: true },
   {
     accessor: "performance",

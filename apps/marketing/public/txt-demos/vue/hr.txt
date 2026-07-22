@@ -1,9 +1,9 @@
 // HRDemo.vue
 <template>
   <SimpleTable
-    :default-headers="hrConfig.headers"
+    :columns="hrConfig.headers"
     :rows="rows"
-    :should-paginate="true"
+    :enable-pagination="true"
     :rows-per-page="8"
     :custom-theme="{ rowHeight: 48 }"
     :column-reordering="true"

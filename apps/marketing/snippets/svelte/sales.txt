@@ -9,9 +9,9 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={SALES_HEADERS}
+  columns={SALES_HEADERS}
   {rows}
-  shouldPaginate={true}
+  enablePagination={true}
   rowsPerPage={40}
   footerPosition="top"
   initialSortColumn="dealValue"
@@ -19,7 +19,7 @@
   autoExpandColumns={true}
   columnReordering={true}
   columnResizing={true}
-  editColumns={true}
+  enableColumnEditor={true}
   selectableCells={true}
   height="70dvh"
 />

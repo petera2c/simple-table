@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SimpleTable } from "../index";
-import type { CellRendererProps, ReactHeaderObject } from "../index";
+import type { CellRendererProps, ReactColumnDef } from "../index";
 
 const rows = [
   { id: 1, name: "Alice", score: 10 },
@@ -58,13 +58,13 @@ describe("SimpleTable (React adapter) — custom renderer error isolation", () =
       return createElement("span", { className: "ok-cell" }, "OK");
     }
 
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string", cellRenderer: BoomCell },
       { accessor: "score", label: "Score", width: 120, type: "number", cellRenderer: OkCell },
     ];
 
     const host = mount(
-      createElement(SimpleTable, { defaultHeaders: headers, rows, getRowId, height: "250px", theme: "light" }),
+      createElement(SimpleTable, { columns: headers, rows, getRowId, height: "250px", theme: "light" }),
     );
 
     // Sibling cells (and the table chrome) still render despite the throw.

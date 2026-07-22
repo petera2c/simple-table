@@ -1,10 +1,10 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import { HeaderRenderContext } from "./types";
 import { createSelectionCheckbox } from "./selection";
 import { addTrackedEventListener } from "./eventTracking";
 
 export const createEditableInput = (
-  header: HeaderObject,
+  header: ColumnDef,
   context: HeaderRenderContext,
   labelContainer: HTMLElement
 ): HTMLInputElement => {
@@ -66,7 +66,7 @@ export const createEditableInput = (
 };
 
 export const createLabelContent = (
-  header: HeaderObject,
+  header: ColumnDef,
   context: HeaderRenderContext,
   labelOverride?: string
 ): HTMLElement => {

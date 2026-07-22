@@ -6,7 +6,6 @@ export { asRows } from "simple-table-core";
 export type {
   SimpleTableSvelteProps,
   TableInstance,
-  SvelteHeaderObject,
   SvelteColumnDef,
   SvelteIconsConfig,
   SvelteIconElement,
@@ -73,7 +72,6 @@ export type {
   GetRowIdParams,
   HeaderDropdown,
   HeaderDropdownProps,
-  HeaderObject,
   HeaderRenderer,
   HeaderRendererComponents,
   HeaderRendererProps,

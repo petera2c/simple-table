@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import Row from "../types/Row";
 import SortColumn, { SortDirection } from "../types/SortColumn";
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
@@ -16,7 +16,7 @@ import { ScrollManager, ScrollManagerConfig } from "./ScrollManager";
 import { SelectionManager, SelectionManagerConfig } from "./SelectionManager";
 
 export interface TableManagerConfig {
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   rows: Row[];
   rowHeight: number;
   headerHeight?: number;
@@ -39,9 +39,9 @@ export interface TableManagerConfig {
   
   onSortChange?: (sort: SortColumn | null) => void;
   onFilterChange?: (filters: TableFilterState) => void;
-  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
+  onColumnOrderChange?: (newHeaders: ColumnDef[]) => void;
   onColumnVisibilityChange?: (visibilityState: ColumnVisibilityState) => void;
-  onColumnWidthChange?: (headers: HeaderObject[]) => void;
+  onColumnWidthChange?: (headers: ColumnDef[]) => void;
   onLoadMore?: () => void;
   onCellEdit?: (props: any) => void;
   

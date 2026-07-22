@@ -7,7 +7,7 @@ import {
   getMainSectionViewportWidth,
   recalculateAllSectionWidths,
 } from "../../../core/src/utils/resizeUtils/sectionWidths";
-import type HeaderObject from "../../../core/src/types/HeaderObject";
+import type ColumnDef from "../../../core/src/types/ColumnDef";
 
 // Regression test for the "column virtualization disabled in wide tables" bug.
 //
@@ -48,7 +48,7 @@ describe("getMainSectionViewportWidth — column virtualization viewport", () =>
   it("does NOT return the full content width for a wide many-column table (the regression)", () => {
     // Mirror the MusicWindowScroll shape: two pinned-left columns + many wide
     // main columns whose combined width far exceeds the visible container.
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "rank", label: "#", width: 70, pinned: "left" },
       { accessor: "identity", label: "Identity", width: 240, pinned: "left" },
       ...Array.from({ length: 58 }, (_, i) => ({

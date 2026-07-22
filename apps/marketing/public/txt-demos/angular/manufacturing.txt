@@ -11,7 +11,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rows]="rows"
       [rowGrouping]="['stations']"
       [columnReordering]="true"

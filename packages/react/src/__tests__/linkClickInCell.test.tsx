@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SimpleTable } from "../index";
-import type { CellRendererProps, ReactHeaderObject } from "../index";
+import type { CellRendererProps, ReactColumnDef } from "../index";
 
 const rows = [
   { id: 1, name: "Alice" },
@@ -66,14 +66,14 @@ describe("SimpleTable (React adapter) — links inside selectable cells", () => 
       );
     }
 
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string", cellRenderer: LinkCell },
     ];
 
     const host = mount(
       createElement(SimpleTable, {
-        defaultHeaders: headers,
+        columns: headers,
         rows,
         getRowId: (p: { row: unknown }) => String((p.row as { id?: number })?.id),
         height: "250px",

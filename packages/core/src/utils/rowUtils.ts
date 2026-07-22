@@ -1,6 +1,6 @@
 import TableRow from "../types/TableRow";
 import Row from "../types/Row";
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import CellValue from "../types/CellValue";
 import RowState from "../types/RowState";
 import { CustomTheme } from "../types/CustomTheme";
@@ -501,7 +501,7 @@ export const flattenRowsWithGrouping = ({
   hasLoadingRenderer?: boolean;
   hasErrorRenderer?: boolean;
   hasEmptyRenderer?: boolean;
-  headers?: HeaderObject[];
+  headers?: ColumnDef[];
   rowHeight: number;
   headerHeight: number;
   customTheme: CustomTheme;

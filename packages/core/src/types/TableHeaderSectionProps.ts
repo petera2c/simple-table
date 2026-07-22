@@ -1,13 +1,13 @@
 import { Pinned } from "./Pinned";
 import SortColumn from "./SortColumn";
-import { HeaderObject } from "..";
+import { ColumnDef } from "..";
 import { ColumnIndices } from "../utils/columnIndicesUtils";
 
 interface TableHeaderSectionProps {
   calculatedHeaderHeight: number;
   columnIndices: ColumnIndices;
   handleScroll?: (event: UIEvent) => void;
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   leftOffset?: number;
   maxDepth: number;
   pinned?: Pinned;

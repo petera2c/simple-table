@@ -1,13 +1,13 @@
 import { TableFilterState, FilterCondition } from "../types/FilterTypes";
 import { applyFilterToValue } from "../utils/filterUtils";
 import Row from "../types/Row";
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import { getNestedValue, rowsOrderEqual } from "../utils/rowUtils";
 import { flattenAllHeaders } from "../utils/headerUtils";
 
 export interface FilterManagerConfig {
   rows: Row[];
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   externalFilterHandling: boolean;
   onFilterChange?: (filters: TableFilterState) => void;
   announce?: (message: string) => void;
@@ -24,7 +24,7 @@ export class FilterManager {
   private config: FilterManagerConfig;
   private state: FilterManagerState;
   private subscribers: Set<StateChangeCallback> = new Set();
-  private headerLookup: Map<Accessor, HeaderObject> = new Map();
+  private headerLookup: Map<Accessor, ColumnDef> = new Map();
 
   constructor(config: FilterManagerConfig) {
     this.config = config;
@@ -41,7 +41,7 @@ export class FilterManager {
 
   private updateHeaderLookup(): void {
     const allHeaders = flattenAllHeaders(this.config.headers);
-    this.headerLookup = new Map<Accessor, HeaderObject>();
+    this.headerLookup = new Map<Accessor, ColumnDef>();
     
     allHeaders.forEach((header) => {
       this.headerLookup.set(header.accessor, header);

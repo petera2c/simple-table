@@ -9,7 +9,7 @@ export default function NestedTablesDemo(props: { height?: string | number; them
   return (
     <SimpleTable
       autoExpandColumns={nestedTablesConfig.tableProps.autoExpandColumns}
-      defaultHeaders={nestedTablesConfig.headers}
+      columns={nestedTablesConfig.headers}
       rows={sampleData()}
       rowGrouping={nestedTablesConfig.tableProps.rowGrouping}
       getRowId={nestedTablesConfig.tableProps.getRowId}

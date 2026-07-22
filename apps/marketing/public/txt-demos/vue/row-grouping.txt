@@ -10,7 +10,7 @@
     </div>
     <SimpleTable
       ref="tableRef"
-      :default-headers="rowGroupingConfig.headers"
+      :columns="rowGroupingConfig.headers"
       :rows="rowGroupingConfig.rows"
       :row-grouping="rowGroupingConfig.tableProps.rowGrouping"
       :enable-sticky-parents="true"

@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
-import type { ReactHeaderObject } from "../index";
+import type { ReactColumnDef } from "../index";
 
 // Repro for "maxHeight + serverSidePagination doesn't create an inner scrollbar
 // when the table mounts with an empty rows array".
@@ -40,7 +40,7 @@ async function waitFor(predicate: () => boolean, timeoutMs = 3000): Promise<void
   throw new Error("Timed out waiting for condition");
 }
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 160, type: "string" },
 ];
@@ -60,12 +60,12 @@ describe("SimpleTable (React adapter) — maxHeight + serverSidePagination empty
     const renderWith = (rows: Array<{ id: number; name: string }>) =>
       root!.render(
         createElement(SimpleTable, {
-          defaultHeaders: headers,
+          columns: headers,
           rows,
           getRowId: (p) => String((p.row as { id: number }).id),
           maxHeight: "300px",
           theme: "light",
-          shouldPaginate: true,
+          enablePagination: true,
           serverSidePagination: true,
           rowsPerPage: 10,
           totalRowCount: 100,

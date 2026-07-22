@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
-import type { ReactHeaderObject } from "../index";
+import type { ReactColumnDef } from "../index";
 
 // Regression test for the "only one column group can be collapsed at a time" bug.
 //
@@ -58,7 +58,7 @@ describe("SimpleTable (React adapter) — collapsing multiple column groups", ()
     // Pin the groups left so jsdom's zero-width viewport (which virtualizes out
     // main-section columns) doesn't hide the expanded children — pinned
     // sections always render all of their cells, isolating the collapse logic.
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number", pinned: "left" },
       {
         accessor: "perf",
@@ -86,7 +86,7 @@ describe("SimpleTable (React adapter) — collapsing multiple column groups", ()
 
     const host = mount(
       createElement(SimpleTable, {
-        defaultHeaders: headers,
+        columns: headers,
         rows,
         getRowId: (p: { row: unknown }) => String((p.row as { id?: number })?.id),
         height: "300px",

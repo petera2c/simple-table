@@ -8,9 +8,9 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={hrConfig.headers}
+  columns={hrConfig.headers}
   {rows}
-  shouldPaginate={true}
+  enablePagination={true}
   rowsPerPage={8}
   customTheme={{ rowHeight: 48 }}
   columnReordering={true}

@@ -101,7 +101,7 @@ function handleLoadMore() {
     </div>
 
     <SimpleTable
-      :default-headers="windowScrollHeaders"
+      :columns="windowScrollHeaders"
       :rows="rows"
       :theme="$props.theme"
       :get-row-id="getRowId"

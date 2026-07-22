@@ -1,4 +1,5 @@
-import HeaderObject, { Accessor } from "./HeaderObject";
+import type ColumnDef from "./ColumnDef";
+import { Accessor } from "./ColumnDef";
 import Row from "./Row";
 import {
   VanillaEmptyStateRenderer,
@@ -28,9 +29,8 @@ import type { FooterPosition } from "./FooterPosition";
 import type { PivotConfig } from "./PivotTypes";
 
 /**
- * Canonical runtime config after {@link normalizeConfig}. Consumer-facing
- * aliases (`columns`, `enableColumnEditor`, …) are accepted on
- * {@link SimpleTableConfigInput} / {@link SimpleTableProps} and collapsed here.
+ * Canonical runtime config after {@link normalizeConfig}.
+ * Preferred public prop names only (no legacy aliases).
  */
 export interface SimpleTableConfig {
   animations?: AnimationsConfig;
@@ -49,13 +49,18 @@ export interface SimpleTableConfig {
   columnEditorConfig?: ColumnEditorConfig;
   columnReordering?: boolean;
   columnResizing?: boolean;
+  /** Column definitions. */
+  columns: ColumnDef[];
   copyHeadersToClipboard?: boolean;
   customTheme?: CustomThemeProps;
-  defaultHeaders: HeaderObject[];
-  editColumns?: boolean;
-  editColumnsInitOpen?: boolean;
+  /** Show the column editor / visibility UI. */
+  enableColumnEditor?: boolean;
+  /** Open the column editor when the table loads. */
+  enableColumnEditorInitOpen?: boolean;
   emptyStateRenderer?: VanillaEmptyStateRenderer;
   enableHeaderEditing?: boolean;
+  /** Enable client-side pagination. */
+  enablePagination?: boolean;
   enableRowSelection?: boolean;
   /** @see SimpleTableProps.rowSelectionMode */
   rowSelectionMode?: RowSelectionMode;
@@ -83,6 +88,8 @@ export interface SimpleTableConfig {
   height?: string | number;
   hideFooter?: boolean;
   hideHeader?: boolean;
+  /** Highlight the hovered row. */
+  hoverRowBackground?: boolean;
   icons?: VanillaIconsConfig;
   includeHeadersInCSVExport?: boolean;
   initialSortColumn?: string;
@@ -90,15 +97,20 @@ export interface SimpleTableConfig {
   isLoading?: boolean;
   loadingStateRenderer?: VanillaLoadingStateRenderer;
   maxHeight?: string | number;
+  /** Alternate column background. */
+  oddColumnBackground?: boolean;
+  /** Alternate odd/even row backgrounds. */
+  oddEvenRowBackground?: boolean;
   onCellClick?: (props: CellClickProps) => void;
   onCellEdit?: (props: CellChangeProps) => void;
-  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
-  onColumnSelect?: (header: HeaderObject) => void;
+  onColumnOrderChange?: (newHeaders: ColumnDef[]) => void;
+  onColumnSelect?: (header: ColumnDef) => void;
   onColumnVisibilityChange?: (visibilityState: ColumnVisibilityState) => void;
-  onColumnWidthChange?: (headers: HeaderObject[]) => void;
+  onColumnWidthChange?: (headers: ColumnDef[]) => void;
   onFilterChange?: (filters: TableFilterState) => void;
-  onGridReady?: () => void;
-  onHeaderEdit?: (header: HeaderObject, newLabel: string) => void;
+  /** Called once when the table is ready. */
+  onTableReady?: () => void;
+  onHeaderEdit?: (header: ColumnDef, newLabel: string) => void;
   infiniteScrollThreshold?: number;
   onLoadMore?: () => void;
   onNextPage?: OnNextPage;
@@ -130,11 +142,7 @@ export interface SimpleTableConfig {
   selectableCells?: boolean;
   selectableColumns?: boolean;
   serverSidePagination?: boolean;
-  shouldPaginate?: boolean;
   tableEmptyStateRenderer?: HTMLElement | string | null;
   theme?: Theme;
   totalRowCount?: number;
-  useHoverRowBackground?: boolean;
-  useOddColumnBackground?: boolean;
-  useOddEvenRowBackground?: boolean;
 }

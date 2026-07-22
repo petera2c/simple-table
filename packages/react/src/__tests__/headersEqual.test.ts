@@ -3,10 +3,10 @@ import {
   collectHeaderAccessors,
   headersStructurallyEqual,
 } from "../utils/headersEqual";
-import type { ReactHeaderObject } from "../types";
+import type { ReactColumnDef } from "../types";
 
 describe("headersStructurallyEqual", () => {
-  const base = (): ReactHeaderObject[] => [
+  const base = (): ReactColumnDef[] => [
     { accessor: "name", label: "Name", width: 120, type: "string", sortable: true },
     {
       accessor: "metrics",

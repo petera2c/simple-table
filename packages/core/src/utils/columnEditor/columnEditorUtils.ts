@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../../types/HeaderObject";
+import ColumnDef, { Accessor } from "../../types/ColumnDef";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
 import { FlattenedHeader } from "../../types/FlattenedHeader";
 import { PanelSection } from "../../types/PanelSection";
@@ -16,7 +16,7 @@ export type { FlattenedHeader };
 export type HoveredSeparator = { panelSection: PanelSection; index: number } | null;
 
 export const findAndMarkParentsVisible = (
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   childAccessor: Accessor,
   visited: Set<string> = new Set(),
 ) => {
@@ -45,11 +45,11 @@ export const findAndMarkParentsVisible = (
   }
 };
 
-export const areAllChildrenHidden = (children: HeaderObject[]) => {
+export const areAllChildrenHidden = (children: ColumnDef[]) => {
   return children.every((child) => child.hide);
 };
 
-export const updateParentHeaders = (headers: HeaderObject[]) => {
+export const updateParentHeaders = (headers: ColumnDef[]) => {
   headers.forEach((header) => {
     if (header.children && header.children.length > 0) {
       updateParentHeaders(header.children);
@@ -63,10 +63,10 @@ export const updateParentHeaders = (headers: HeaderObject[]) => {
   });
 };
 
-export const buildColumnVisibilityState = (headers: HeaderObject[]): ColumnVisibilityState => {
+export const buildColumnVisibilityState = (headers: ColumnDef[]): ColumnVisibilityState => {
   const visibilityState: ColumnVisibilityState = {};
 
-  const processHeader = (header: HeaderObject) => {
+  const processHeader = (header: ColumnDef) => {
     visibilityState[header.accessor] = !header.hide;
 
     if (header.children && header.children.length > 0) {

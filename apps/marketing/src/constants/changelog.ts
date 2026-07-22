@@ -11,19 +11,19 @@ export interface ChangelogEntry {
   }[];
 }
 
-export const v4_0_4: ChangelogEntry = {
-  version: "4.0.4",
+export const v4_0_5: ChangelogEntry = {
+  version: "4.0.5",
   date: "2026-07-22",
-  title: "Column flags: sortable / editable / essential only",
-  titleLink: "/migrations/v4-0-4",
+  title: "Hard-cut to preferred API names",
+  titleLink: "/migrations/v4-0-5",
   description:
-    "Removes legacy isSortable / isEditable / isEssential column flags. Preferred names are canonical for both input and read-back headers.",
+    "Removes all legacy naming aliases. columns, ColumnDef, enable* flags, onTableReady, hover/odd backgrounds, and sortable/editable/essential are the only supported names.",
   changes: [
     {
       type: "breaking",
       description:
-        "Column flags isSortable / isEditable / isEssential are removed. Use sortable / editable / essential only — including on headers returned from getHeaders(), headerRenderer, column editor rowRenderer, and column change callbacks.",
-      link: "/migrations/v4-0-4",
+        "Legacy props and types are removed (not aliased): defaultHeaders → columns, HeaderObject / *HeaderObject → ColumnDef / *ColumnDef, editColumns → enableColumnEditor, shouldPaginate → enablePagination, onGridReady → onTableReady, useHoverRowBackground / useOdd* → hoverRowBackground / odd*, and isSortable / isEditable / isEssential → sortable / editable / essential (including read-back headers).",
+      link: "/migrations/v4-0-5",
     },
   ],
 };
@@ -54,15 +54,15 @@ export const v4_0_2: ChangelogEntry = {
   version: "4.0.2",
   date: "2026-07-21",
   title: "Clearer public API names",
-  titleLink: "/migrations/v4-0-4",
+  titleLink: "/migrations/v4-0-5",
   description:
-    "Preferred names for columns, feature flags, and column options — with backward-compatible aliases for table-level props.",
+    "Introduced preferred names for columns, feature flags, and column options (temporary aliases; removed in 4.0.5).",
   changes: [
     {
       type: "improvement",
       description:
-        "Renamed consumer-facing APIs for clarity (e.g. columns, ColumnDef, enableColumnEditor, enablePagination, onTableReady). Legacy table-level names remain supported as aliases — see the migration guide for the full list.",
-      link: "/migrations/v4-0-4",
+        "Introduced clearer consumer-facing names (e.g. columns, ColumnDef, enableColumnEditor, enablePagination, onTableReady). See 4.0.5 for the hard-cut that removes legacy names.",
+      link: "/migrations/v4-0-5",
     },
     {
       type: "improvement",
@@ -2372,7 +2372,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
-  v4_0_4,
+  v4_0_5,
   v4_0_3,
   v4_0_2,
   v4_0_1,

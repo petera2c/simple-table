@@ -12,7 +12,6 @@ export { wrapAngularRenderer } from "./utils/wrapAngularRenderer";
 export type {
   SimpleTableAngularProps,
   TableInstance,
-  AngularHeaderObject,
   AngularColumnDef,
   AngularIconsConfig,
   AngularIconSlot,
@@ -79,7 +78,6 @@ export type {
   GetRowIdParams,
   HeaderDropdown,
   HeaderDropdownProps,
-  HeaderObject,
   HeaderRenderer,
   HeaderRendererComponents,
   HeaderRendererProps,

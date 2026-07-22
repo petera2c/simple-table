@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import { Pinned } from "../types/Pinned";
 import { getAllVisibleLeafHeaders } from "../utils/headerWidthUtils";
 import { isHeaderExcludedFromLayout } from "../utils/cellUtils";
@@ -20,10 +20,10 @@ interface AutoScaleConfig {
   collapsedHeaders?: Set<Accessor>;
 }
 
-type HeaderUpdateCallback = (headers: HeaderObject[]) => void;
+type HeaderUpdateCallback = (headers: ColumnDef[]) => void;
 
 /** Numeric pixel width of a leaf header (post-normalization all widths are px). */
-const getLeafPixelWidth = (header: HeaderObject): number =>
+const getLeafPixelWidth = (header: ColumnDef): number =>
   typeof header.width === "number"
     ? header.width
     : typeof header.width === "string" && header.width.endsWith("px")
@@ -45,7 +45,7 @@ const getLeafPixelWidth = (header: HeaderObject): number =>
  * column (growth-only cap).
  */
 const scaleSection = (
-  leafHeaders: HeaderObject[],
+  leafHeaders: ColumnDef[],
   availableSectionWidth: number,
 ): Map<string, number> => {
   const scaledWidths = new Map<string, number>();
@@ -133,9 +133,9 @@ const scaleSection = (
 };
 
 export const applyAutoScaleToHeaders = (
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   options: AutoScaleConfig,
-): HeaderObject[] => {
+): ColumnDef[] => {
   const {
     autoExpandColumns,
     containerWidth,
@@ -190,7 +190,7 @@ export const applyAutoScaleToHeaders = (
     return headers;
   }
 
-  const scaleHeader = (header: HeaderObject, rootPinned?: Pinned): HeaderObject => {
+  const scaleHeader = (header: ColumnDef, rootPinned?: Pinned): ColumnDef => {
     if (isHeaderExcludedFromLayout(header)) return header;
 
     const currentRootPinned = rootPinned ?? header.pinned;
@@ -261,14 +261,14 @@ export class AutoScaleManager {
     }
   }
 
-  applyAutoScale(headers: HeaderObject[]): HeaderObject[] {
+  applyAutoScale(headers: ColumnDef[]): ColumnDef[] {
     return applyAutoScaleToHeaders(headers, this.config);
   }
 
   setHeaders(
-    headersOrUpdater: HeaderObject[] | ((prev: HeaderObject[]) => HeaderObject[]),
-    currentHeaders: HeaderObject[],
-  ): HeaderObject[] {
+    headersOrUpdater: ColumnDef[] | ((prev: ColumnDef[]) => ColumnDef[]),
+    currentHeaders: ColumnDef[],
+  ): ColumnDef[] {
     const newHeaders =
       typeof headersOrUpdater === "function" ? headersOrUpdater(currentHeaders) : headersOrUpdater;
 

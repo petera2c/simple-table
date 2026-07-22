@@ -35,7 +35,7 @@ function handleLoadMore() {
   <div>
     <div style="margin-bottom: 8px; font-size: 13px; color: #666">{{ statusText }}</div>
     <SimpleTable
-      :default-headers="infiniteScrollConfig.headers"
+      :columns="infiniteScrollConfig.headers"
       :rows="rows"
       :is-loading="loading"
       :on-load-more="handleLoadMore"

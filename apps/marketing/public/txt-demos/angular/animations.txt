@@ -1,7 +1,7 @@
 // animations-demo.component.ts
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { animationsConfig } from "./animations.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -12,12 +12,12 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
       [columnReordering]="true"
-      [editColumns]="true"
-      [editColumnsInitOpen]="true"
+      [enableColumnEditor]="true"
+      [enableColumnEditorInitOpen]="true"
       (columnOrderChange)="onColumnOrderChange($event)"
     ></simple-table>
   `,
@@ -27,9 +27,9 @@ export class AnimationsDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = animationsConfig.rows;
-  headers: AngularHeaderObject[] = [...animationsConfig.headers];
+  headers: AngularColumnDef[] = [...animationsConfig.headers];
 
-  onColumnOrderChange(newHeaders: AngularHeaderObject[]): void {
+  onColumnOrderChange(newHeaders: AngularColumnDef[]): void {
     this.headers = newHeaders;
   }
 }
@@ -37,10 +37,10 @@ export class AnimationsDemoComponent {
 
 // animations.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
 
-export const animationsHeaders: AngularHeaderObject[] = [
+export const animationsHeaders: AngularColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, sortable: true, type: "number" },
   { accessor: "name", label: "Name", minWidth: 140, width: "1fr", sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 80, align: "right", sortable: true, type: "number" },
@@ -74,5 +74,5 @@ export const animationsData = [
 export const animationsConfig = {
   headers: animationsHeaders,
   rows: animationsData,
-  tableProps: { columnReordering: true, editColumns: true, editColumnsInitOpen: true },
+  tableProps: { columnReordering: true, enableColumnEditor: true, enableColumnEditorInitOpen: true },
 } as const;

@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
-import type { ReactHeaderObject } from "../index";
+import type { ReactColumnDef } from "../index";
 
 // Repro for the "stale rowId cell" bug.
 //
@@ -35,7 +35,7 @@ async function waitFor(predicate: () => boolean, timeoutMs = 3000): Promise<void
   throw new Error("Timed out waiting for condition");
 }
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 160, type: "string" },
 ];
@@ -48,7 +48,7 @@ interface RowData {
 function render(rows: RowData[], isLoading: boolean): void {
   root!.render(
     createElement(SimpleTable, {
-      defaultHeaders: headers,
+      columns: headers,
       rows,
       isLoading,
       getRowId: (p) => String(p.row.id),

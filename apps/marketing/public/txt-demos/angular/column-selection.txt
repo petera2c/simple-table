@@ -1,6 +1,6 @@
 // column-selection-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { columnSelectionConfig } from "./column-selection.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -11,7 +11,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
       [selectableColumns]="selectableColumns"
@@ -23,17 +23,17 @@ export class ColumnSelectionDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnSelectionConfig.rows;
-  readonly headers: AngularHeaderObject[] = columnSelectionConfig.headers;
+  readonly headers: AngularColumnDef[] = columnSelectionConfig.headers;
   readonly selectableColumns = columnSelectionConfig.tableProps.selectableColumns;
 }
 
 
 // column-selection.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
 
-export const columnSelectionHeaders: AngularHeaderObject[] = [
+export const columnSelectionHeaders: AngularColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   { accessor: "name", label: "Name", minWidth: 120, width: "1fr", sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },

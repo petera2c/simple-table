@@ -1,4 +1,4 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import {
   FilterCondition,
   BooleanFilterOperator,
@@ -11,7 +11,7 @@ import { createCustomSelect } from "./createCustomSelect";
 import { createFilterActions } from "./createFilterActions";
 
 export interface CreateBooleanFilterOptions {
-  header: HeaderObject;
+  header: ColumnDef;
   currentFilter?: FilterCondition;
   onApplyFilter: (filter: FilterCondition) => void;
   onClearFilter: () => void;

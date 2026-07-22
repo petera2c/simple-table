@@ -1,16 +1,16 @@
 import { createSignal, createMemo } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { Theme, SolidHeaderObject } from "@simple-table/solid";
+import type { Theme, SolidColumnDef } from "@simple-table/solid";
 import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function ColumnEditingDemo(props: { height?: string | number; theme?: Theme }) {
-  const [additionalColumns, setAdditionalColumns] = createSignal<SolidHeaderObject[]>([]);
+  const [additionalColumns, setAdditionalColumns] = createSignal<SolidColumnDef[]>([]);
   const [lastAdded, setLastAdded] = createSignal("");
 
   const addColumn = () => {
     const n = additionalColumns().length + 1;
-    const col: SolidHeaderObject = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
+    const col: SolidColumnDef = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
     setAdditionalColumns([...additionalColumns(), col]);
     setLastAdded(col.label);
   };
@@ -40,7 +40,7 @@ export default function ColumnEditingDemo(props: { height?: string | number; the
         )}
       </div>
       <SimpleTable
-        defaultHeaders={headers()}
+        columns={headers()}
         rows={columnEditingData}
         height={props.height ?? "400px"}
         theme={props.theme}

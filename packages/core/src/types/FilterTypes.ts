@@ -1,5 +1,5 @@
 import CellValue from "./CellValue";
-import { Accessor } from "./HeaderObject";
+import { Accessor } from "./ColumnDef";
 
 // Filter operators for different data types
 export type StringFilterOperator =

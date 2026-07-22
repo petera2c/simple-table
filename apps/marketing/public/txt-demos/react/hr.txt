@@ -13,9 +13,9 @@ const HRDemo = () => {
 
   return (
     <SimpleTable
-      defaultHeaders={hrConfig.headers}
+      columns={hrConfig.headers}
       rows={rows}
-      shouldPaginate
+      enablePagination
       rowsPerPage={8}
       customTheme={{ rowHeight: 48 }}
       columnReordering

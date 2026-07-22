@@ -35,17 +35,17 @@ export const COLUMN_EDIT_WIDTH = 29.5;
  * Returns 0 when editing is off or the strip is hidden via `showToggle: false`.
  */
 export const getColumnEditorStripWidth = (
-  editColumns: boolean | undefined,
+  enableColumnEditor: boolean | undefined,
   showToggle: boolean = true,
-): number => (editColumns && showToggle ? COLUMN_EDIT_WIDTH : 0);
+): number => (enableColumnEditor && showToggle ? COLUMN_EDIT_WIDTH : 0);
 
 /**
  * Whether the built-in column-editor toggle strip is visible and takes layout space.
  */
 export const isColumnEditorStripVisible = (
-  editColumns: boolean | undefined,
+  enableColumnEditor: boolean | undefined,
   showToggle: boolean = true,
-): boolean => Boolean(editColumns && showToggle);
+): boolean => Boolean(enableColumnEditor && showToggle);
 
 export const TABLE_HEADER_CELL_WIDTH_DEFAULT = 150;
 export const PINNED_BORDER_WIDTH = 1;

@@ -1,7 +1,7 @@
 import TableRow from "../types/TableRow";
 import { CustomTheme } from "../types/CustomTheme";
 import { rowIdToString } from "./rowUtils";
-import { Accessor } from "../types/HeaderObject";
+import { Accessor } from "../types/ColumnDef";
 
 const SEPARATOR_HEIGHT = 1;
 

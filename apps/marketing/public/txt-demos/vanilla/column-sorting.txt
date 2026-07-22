@@ -9,7 +9,7 @@ export function renderColumnSortingDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: columnSortingConfig.headers,
+    columns: columnSortingConfig.headers,
     rows: columnSortingConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
@@ -23,7 +23,7 @@ export function renderColumnSortingDemo(
 // column-sorting.demo-data.ts
 // Self-contained demo table setup for this example.
 import type { Row } from "simple-table-core";
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
 export const COLUMN_SORTING_DATA: Row[] = [
@@ -126,7 +126,7 @@ export const COLUMN_SORTING_DATA: Row[] = [
 ];
 
 
-export const columnSortingHeaders: HeaderObject[] = [
+export const columnSortingHeaders: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   { accessor: "name", label: "Name", width: 180, sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 80, sortable: true, type: "number" },

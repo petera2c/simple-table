@@ -2,7 +2,7 @@ import { createElement, useState, type Dispatch, type SetStateAction } from "rea
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
-import type { OnRowGroupExpandProps, ReactHeaderObject } from "../index";
+import type { OnRowGroupExpandProps, ReactColumnDef } from "../index";
 
 // Repro: onRowGroupExpand is invoked with a stale `row` snapshot when a grouped
 // row is re-expanded after lazy-loaded children were already fetched. Consumers
@@ -50,7 +50,7 @@ async function waitForElement(
   throw new Error(`Timed out waiting for element: ${selector}`);
 }
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "name", label: "Name", width: 200, type: "string", expandable: true },
   { accessor: "budget", label: "Budget", width: 120, type: "number" },
 ];
@@ -154,7 +154,7 @@ function mountLazyReExpandTable(): { host: HTMLDivElement; probe: ReExpandProbe 
     setRowsRef.current = setRows;
 
     return createElement(SimpleTable, {
-      defaultHeaders: headers,
+      columns: headers,
       rows,
       height: "320px",
       theme: "light",

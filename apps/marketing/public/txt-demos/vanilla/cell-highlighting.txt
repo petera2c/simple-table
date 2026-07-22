@@ -9,7 +9,7 @@ export function renderCellHighlightingDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: cellHighlightingConfig.headers,
+    columns: cellHighlightingConfig.headers,
     rows: cellHighlightingConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
@@ -22,10 +22,10 @@ export function renderCellHighlightingDemo(
 
 // cell-highlighting.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
-export const cellHighlightingHeaders: HeaderObject[] = [
+export const cellHighlightingHeaders: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   { accessor: "name", label: "Name", minWidth: 80, width: "1fr", sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },

@@ -1,10 +1,10 @@
 // MusicDemo.tsx
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, CellRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, CellRendererProps } from "@simple-table/react";
 import { musicData } from "./music.demo-data";
 import "@simple-table/react/styles.css";
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "rank", label: "#", type: "number", width: 60, pinned: "left", align: "center" },
   {
     accessor: "artistName",
@@ -30,7 +30,7 @@ const headers: ReactHeaderObject[] = [
 
 const MusicDemo = () => (
   <SimpleTable
-    defaultHeaders={headers}
+    columns={headers}
     rows={musicData}
     columnReordering
     columnResizing

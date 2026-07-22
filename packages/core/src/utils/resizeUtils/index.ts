@@ -1,5 +1,5 @@
-import type HeaderObject from "../../types/HeaderObject";
-import type { Accessor } from "../../types/HeaderObject";
+import type ColumnDef from "../../types/ColumnDef";
+import type { Accessor } from "../../types/ColumnDef";
 import type { HandleResizeStartProps } from "../../types/HandleResizeStartProps";
 import {
   findLeafHeaders,
@@ -30,7 +30,7 @@ const rescaleMainSectionForBoundaryResize = ({
   newMainAvailable,
   shrinkFloors,
 }: {
-  mainLeafHeaders: HeaderObject[];
+  mainLeafHeaders: ColumnDef[];
   mainInitialWidths: Map<string, number>;
   newMainAvailable: number;
   shrinkFloors?: Map<string, number>;
@@ -129,7 +129,7 @@ export const handleResizeStart = ({
   // Get the children that should be resized:
   // - For parents: resize only currently visible leaf children, or parent itself if no visible children
   // - For leaf headers: resize the header itself
-  let childrenToResize: HeaderObject[];
+  let childrenToResize: ColumnDef[];
   if (isParentHeader) {
     const visibleChildren = findLeafHeaders(header, collapsedHeaders);
     childrenToResize = visibleChildren.length > 0 ? visibleChildren : [header];
@@ -193,7 +193,7 @@ export const handleResizeStart = ({
   // pinned section grows or shrinks.
   let isBoundaryResize = false;
   const mainInitialWidths = new Map<string, number>();
-  let mainLeafHeaders: HeaderObject[] = [];
+  let mainLeafHeaders: ColumnDef[] = [];
 
   if (autoExpandColumns && rootPinned && effectiveContainerWidth > 0) {
     const sectionLeafs = getAllVisibleLeafHeaders(
@@ -434,10 +434,10 @@ export const handleResizeStart = ({
 export type ApplyColumnAutoFitWithAutoExpandParams = {
   collapsedHeaders: Set<Accessor>;
   containerWidth: number;
-  getTargetLeafWidth: (leafHeader: HeaderObject) => number;
-  header: HeaderObject;
+  getTargetLeafWidth: (leafHeader: ColumnDef) => number;
+  header: ColumnDef;
   headerCellElement: HTMLElement | null;
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   mainBodyRef: HandleResizeStartProps["mainBodyRef"];
   /** Persist the auto-fitted column(s)' widths as their natural widths. */
   onAutoExpandNaturalWidths?: (widths: Map<string, number>) => void;
@@ -472,7 +472,7 @@ export const applyColumnAutoFitWithAutoExpand = ({
   const rootPinned = getRootPinned(header, headers);
 
   const isParentHeader = Boolean(header.children && header.children.length > 0);
-  let childrenToResize: HeaderObject[];
+  let childrenToResize: ColumnDef[];
   if (isParentHeader) {
     const visibleChildren = findLeafHeaders(header, collapsedHeaders);
     childrenToResize = visibleChildren.length > 0 ? visibleChildren : [header];
@@ -525,7 +525,7 @@ export const applyColumnAutoFitWithAutoExpand = ({
 
   let isBoundaryResize = false;
   const mainInitialWidths = new Map<string, number>();
-  let mainLeafHeaders: HeaderObject[] = [];
+  let mainLeafHeaders: ColumnDef[] = [];
 
   if (rootPinned && effectiveContainerWidth > 0) {
     const sectionLeafs = getAllVisibleLeafHeaders(

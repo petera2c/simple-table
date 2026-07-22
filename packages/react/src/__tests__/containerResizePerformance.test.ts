@@ -6,7 +6,7 @@ import {
 } from "../../../core/src/managers/DimensionManager";
 import { RenderOrchestrator } from "../../../core/src/core/rendering/RenderOrchestrator";
 import { SimpleTableVanilla } from "simple-table-core";
-import type { HeaderObject, Row } from "simple-table-core";
+import type { ColumnDef, Row } from "simple-table-core";
 
 /**
  * Container-resize performance during animated layout shifts (e.g. a collapsible
@@ -81,7 +81,7 @@ const PLATFORM_METRICS = [
   "conversions",
 ] as const;
 
-const createPlatformHeaders = (): HeaderObject[] => [
+const createPlatformHeaders = (): ColumnDef[] => [
   { accessor: "id", label: "ID", width: 64, pinned: "left", type: "number" },
   { accessor: "platform", label: "Platform", width: 140, pinned: "left", type: "string" },
   { accessor: "territory", label: "Territory", width: 100, type: "string" },
@@ -186,7 +186,7 @@ describe("SimpleTableVanilla — container resize relayout churn", () => {
     let containerWidth = 1200;
 
     instance = new SimpleTableVanilla(host, {
-      defaultHeaders: createPlatformHeaders(),
+      columns: createPlatformHeaders(),
       rows: createPlatformRows(30),
       getRowId: (p) => String((p.row as { id?: number }).id),
       maxHeight: "400px",

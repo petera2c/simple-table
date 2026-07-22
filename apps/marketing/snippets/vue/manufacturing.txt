@@ -1,7 +1,7 @@
 // ManufacturingDemo.vue
 <template>
   <SimpleTable
-    :default-headers="manufacturingConfig.headers"
+    :columns="manufacturingConfig.headers"
     :rows="manufacturingConfig.rows"
     :row-grouping="['stations']"
     :column-reordering="true"

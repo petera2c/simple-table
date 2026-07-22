@@ -35,7 +35,7 @@ export default function InfiniteScrollDemo(props: { height?: string | number; th
         {statusText()}
       </div>
       <SimpleTable
-        defaultHeaders={infiniteScrollConfig.headers}
+        columns={infiniteScrollConfig.headers}
         rows={rows()}
         onLoadMore={handleLoadMore}
         isLoading={loading()}

@@ -5,16 +5,16 @@ import "@simple-table/react/styles.css";
 
 const BillingDemo = () => (
   <SimpleTable
-    defaultHeaders={billingConfig.headers}
+    columns={billingConfig.headers}
     rows={billingConfig.rows}
     rowGrouping={["invoices", "charges"]}
     initialSortColumn="amount"
     initialSortDirection="desc"
     columnReordering
     columnResizing
-    editColumns
+    enableColumnEditor
     selectableCells
-    useOddColumnBackground
+    oddColumnBackground
     height="400px"
   />
 );

@@ -1,4 +1,4 @@
-import { Accessor } from "./HeaderObject";
+import { Accessor } from "./ColumnDef";
 
 // Column visibility state for the entire table
 // Maps column accessor to visibility (true = visible, false = hidden)

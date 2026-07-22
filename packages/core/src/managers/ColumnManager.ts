@@ -1,21 +1,21 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import { ColumnVisibilityState } from "../types/ColumnVisibilityTypes";
 import { Pinned } from "../types/Pinned";
 
 export interface ColumnManagerConfig {
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   collapsedHeaders: Set<Accessor>;
-  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
+  onColumnOrderChange?: (newHeaders: ColumnDef[]) => void;
   onColumnVisibilityChange?: (visibilityState: ColumnVisibilityState) => void;
-  onColumnWidthChange?: (headers: HeaderObject[]) => void;
+  onColumnWidthChange?: (headers: ColumnDef[]) => void;
 }
 
 export interface ColumnManagerState {
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   collapsedHeaders: Set<Accessor>;
   columnVisibility: ColumnVisibilityState;
-  draggedHeader: HeaderObject | null;
-  hoveredHeader: HeaderObject | null;
+  draggedHeader: ColumnDef | null;
+  hoveredHeader: ColumnDef | null;
 }
 
 type StateChangeCallback = (state: ColumnManagerState) => void;
@@ -39,10 +39,10 @@ export class ColumnManager {
     };
   }
 
-  private buildColumnVisibilityState(headers: HeaderObject[]): ColumnVisibilityState {
+  private buildColumnVisibilityState(headers: ColumnDef[]): ColumnVisibilityState {
     const visibility: ColumnVisibilityState = {};
     
-    const processHeaders = (headers: HeaderObject[]) => {
+    const processHeaders = (headers: ColumnDef[]) => {
       headers.forEach((header) => {
         visibility[header.accessor] = !header.hide;
         if (header.children && header.children.length > 0) {
@@ -89,7 +89,7 @@ export class ColumnManager {
     this.subscribers.forEach((cb) => cb(this.state));
   }
 
-  setHeaders(headers: HeaderObject[]): void {
+  setHeaders(headers: ColumnDef[]): void {
     this.state.headers = headers;
     const columnVisibility = this.buildColumnVisibilityState(headers);
     this.state.columnVisibility = columnVisibility;
@@ -124,7 +124,7 @@ export class ColumnManager {
   }
 
   updateColumnWidth(accessor: Accessor, width: number | string): void {
-    const updateHeaderWidth = (headers: HeaderObject[]): HeaderObject[] => {
+    const updateHeaderWidth = (headers: ColumnDef[]): ColumnDef[] => {
       return headers.map((header) => {
         if (header.accessor === accessor) {
           return { ...header, width };
@@ -145,16 +145,16 @@ export class ColumnManager {
     this.notifySubscribers();
   }
 
-  reorderColumns(newHeaders: HeaderObject[]): void {
+  reorderColumns(newHeaders: ColumnDef[]): void {
     this.setHeaders(newHeaders);
   }
 
-  setDraggedHeader(header: HeaderObject | null): void {
+  setDraggedHeader(header: ColumnDef | null): void {
     this.state.draggedHeader = header;
     this.notifySubscribers();
   }
 
-  setHoveredHeader(header: HeaderObject | null): void {
+  setHoveredHeader(header: ColumnDef | null): void {
     this.state.hoveredHeader = header;
     this.notifySubscribers();
   }
@@ -163,7 +163,7 @@ export class ColumnManager {
     return this.state;
   }
 
-  getHeaders(): HeaderObject[] {
+  getHeaders(): ColumnDef[] {
     return this.state.headers;
   }
 

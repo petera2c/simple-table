@@ -1,4 +1,4 @@
-import type { HeaderObject, Row } from "simple-table-core";
+import type { ColumnDef, Row } from "simple-table-core";
 
 export type StockRow = Row & {
   id: string;
@@ -53,7 +53,7 @@ export function makeStockRows(count: number): StockRow[] {
   return rows;
 }
 
-export const stockHeaders: HeaderObject[] = [
+export const stockHeaders: ColumnDef[] = [
   { accessor: "symbol", label: "Symbol", width: 90, type: "string", sortable: true },
   { accessor: "price", label: "Price", width: 100, type: "number", sortable: true },
   { accessor: "change", label: "Chg", width: 90, type: "number", sortable: true },

@@ -1,6 +1,6 @@
-import type HeaderObject from "../../types/HeaderObject";
+import type ColumnDef from "../../types/ColumnDef";
 import type { Pinned } from "../../types/Pinned";
-import { DEFAULT_SHOW_WHEN } from "../../types/HeaderObject";
+import { DEFAULT_SHOW_WHEN } from "../../types/ColumnDef";
 import { findLeafHeaders, getHeaderWidthInPixels } from "../headerWidthUtils";
 import { findParentHeader } from "../collapseUtils";
 import { getCellId, isHeaderExcludedFromLayout } from "../cellUtils";
@@ -11,8 +11,8 @@ import { recalculateAllSectionWidths } from "./sectionWidths";
  * Get the pinned value from the root header (for nested headers, children inherit from parent)
  */
 export const getRootPinned = (
-  header: HeaderObject,
-  headers: HeaderObject[],
+  header: ColumnDef,
+  headers: ColumnDef[],
 ): Pinned | undefined => {
   if (header.pinned) return header.pinned;
   const parent = findParentHeader(headers, header.accessor);
@@ -28,14 +28,14 @@ export const getRootPinned = (
  * @param overrideWidths - Optional map of accessor -> width to use for position calculation (e.g. after resize so DOM reflects just-set value)
  */
 export const updateColumnWidthsInDOM = (
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   collapsedHeaders?: Set<string>,
   overrideWidths?: Map<string, number>,
 ): void => {
   // Group headers by pinned section
-  const pinnedLeftHeaders: HeaderObject[] = [];
-  const mainHeaders: HeaderObject[] = [];
-  const pinnedRightHeaders: HeaderObject[] = [];
+  const pinnedLeftHeaders: ColumnDef[] = [];
+  const mainHeaders: ColumnDef[] = [];
+  const pinnedRightHeaders: ColumnDef[] = [];
 
   headers.forEach((header) => {
     // Match SectionRenderer / findLeafHeaders: excluded columns are not laid out.
@@ -52,7 +52,7 @@ export const updateColumnWidthsInDOM = (
 
   // Helper to recursively calculate positions; only visible children (by collapsed state) are included
   const calculateHeaderPositions = (
-    header: HeaderObject,
+    header: ColumnDef,
     currentLeft: number,
     positions: Map<string, { left: number; width: number }>,
   ): number => {
@@ -103,7 +103,7 @@ export const updateColumnWidthsInDOM = (
   // Helper to calculate positions for a section (each section starts at left: 0)
   // Returns positions for both leaf headers and parent headers
   const calculateSectionPositions = (
-    sectionHeaders: HeaderObject[],
+    sectionHeaders: ColumnDef[],
   ): Map<string, { left: number; width: number }> => {
     const positions = new Map<string, { left: number; width: number }>();
     let currentLeft = 0;
@@ -190,7 +190,7 @@ export const updateColumnWidthsInDOM = (
     ".st-horizontal-scrollbar-container",
   ) as HTMLElement | null;
   const mainBody = root?.querySelector(".st-body-main") as HTMLDivElement | null;
-  const editColumns = Boolean(
+  const enableColumnEditor = Boolean(
     root?.querySelector(".st-column-editor:not(.st-column-editor--no-toggle)"),
   );
   if (
@@ -207,7 +207,7 @@ export const updateColumnWidthsInDOM = (
       pinnedLeftContentWidth: leftContentWidth,
       pinnedRightContentWidth: rightContentWidth,
       tableBodyContainerRef: tableContainer,
-      editColumns,
+      enableColumnEditor,
     });
   }
 };

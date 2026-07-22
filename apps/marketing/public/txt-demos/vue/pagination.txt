@@ -1,12 +1,12 @@
 <template>
   <SimpleTable
-    :default-headers="paginationConfig.headers"
+    :columns="paginationConfig.headers"
     :height="height ?? 'auto'"
     :is-loading="isLoading"
     :on-next-page="onNextPage"
     :rows="rows"
     :rows-per-page="PAGINATION_ROWS_PER_PAGE"
-    :should-paginate="true"
+    :enable-pagination="true"
     :theme="theme"
   />
 </template>

@@ -1,6 +1,6 @@
 // nested-headers-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { nestedHeadersConfig } from "./nested-headers.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -11,7 +11,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
       [columnResizing]="columnResizing"
@@ -23,17 +23,17 @@ export class NestedHeadersDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = nestedHeadersConfig.rows;
-  readonly headers: AngularHeaderObject[] = nestedHeadersConfig.headers;
+  readonly headers: AngularColumnDef[] = nestedHeadersConfig.headers;
   readonly columnResizing = nestedHeadersConfig.tableProps.columnResizing;
 }
 
 
 // nested-headers.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
 
-export const nestedHeadersHeaders: AngularHeaderObject[] = [
+export const nestedHeadersHeaders: AngularColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", sortable: true, type: "string" },
   {

@@ -1,9 +1,9 @@
 // SalesDemo.vue
 <template>
   <SimpleTable
-    :default-headers="SALES_HEADERS"
+    :columns="SALES_HEADERS"
     :rows="rows"
-    :should-paginate="true"
+    :enable-pagination="true"
     :rows-per-page="40"
     footer-position="top"
     initial-sort-column="dealValue"
@@ -11,7 +11,7 @@
     :auto-expand-columns="true"
     :column-reordering="true"
     :column-resizing="true"
-    :edit-columns="true"
+    :enable-column-editor="true"
     :selectable-cells="true"
     height="70dvh"
   />

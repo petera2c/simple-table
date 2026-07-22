@@ -8,11 +8,11 @@ export default function QuickStartDemo(props: {
 }) {
   return (
     <SimpleTable
-      defaultHeaders={quickStartConfig.headers}
+      columns={quickStartConfig.headers}
       rows={quickStartConfig.rows}
       height={props.height ?? "300px"}
       theme={props.theme}
-      editColumns={quickStartConfig.tableProps.editColumns}
+      enableColumnEditor={quickStartConfig.tableProps.enableColumnEditor}
       selectableCells={quickStartConfig.tableProps.selectableCells}
       customTheme={quickStartConfig.tableProps.customTheme}
     />

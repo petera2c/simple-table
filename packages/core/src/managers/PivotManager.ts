@@ -1,19 +1,19 @@
-import type HeaderObject from "../types/HeaderObject";
-import type { Accessor } from "../types/HeaderObject";
+import type ColumnDef from "../types/ColumnDef";
+import type { Accessor } from "../types/ColumnDef";
 import type Row from "../types/Row";
 import type { PivotConfig, PivotResult } from "../types/PivotTypes";
 import { pivotRows } from "../utils/pivot/pivotRows";
 
 export interface PivotManagerConfig {
   sourceRows: Row[];
-  fieldHeaders: HeaderObject[];
+  fieldHeaders: ColumnDef[];
   pivot: PivotConfig | null;
 }
 
 export interface PivotManagerState {
   active: boolean;
   pivotedRows: Row[];
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   rowGrouping?: Accessor[];
   pivot: PivotConfig | null;
 }

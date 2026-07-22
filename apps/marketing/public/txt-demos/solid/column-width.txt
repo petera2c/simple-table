@@ -21,7 +21,7 @@ export default function ColumnWidthDemo(props: { height?: string | number; theme
     <SimpleTable
       autoExpandColumns={!isMobile()}
       columnResizing
-      defaultHeaders={columnWidthConfig.headers}
+      columns={columnWidthConfig.headers}
       height={props.height ?? "400px"}
       rows={columnWidthConfig.rows}
       theme={props.theme}

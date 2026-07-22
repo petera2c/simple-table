@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
-import type { ReactHeaderObject } from "../index";
+import type { ReactColumnDef } from "../index";
 
 // Repro for the stale-cell bug. Body cells are reused by the id
 // `${rowId}-${accessor}`. When `getRowId` derives the id from the row data, a
@@ -47,7 +47,7 @@ async function waitForElement(
   throw new Error(`Timed out waiting for element: ${selector}`);
 }
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 160, type: "string" },
 ];
@@ -59,7 +59,7 @@ function render(
 ): void {
   root!.render(
     createElement(SimpleTable, {
-      defaultHeaders: headers,
+      columns: headers,
       rows,
       isLoading,
       // The id comes from the row data, so it is `undefined` (→ "undefined")

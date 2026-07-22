@@ -1,4 +1,4 @@
-import { Accessor } from "./HeaderObject";
+import { Accessor } from "./ColumnDef";
 import Row from "./Row";
 
 export type QuickFilterMode = "simple" | "smart";

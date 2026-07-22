@@ -11,7 +11,7 @@ const RowHeightDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={rowHeightConfig.headers}
+      columns={rowHeightConfig.headers}
       rows={rowHeightConfig.rows}
       height={height}
       theme={theme}

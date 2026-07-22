@@ -1,11 +1,11 @@
-import HeaderObject from "./HeaderObject";
+import ColumnDef from "./ColumnDef";
 import type { PanelSection } from "./PanelSection";
 
 export type FlattenedHeader = {
-  header: HeaderObject;
+  header: ColumnDef;
   visualIndex: number;
   depth: number;
-  parent: HeaderObject | null;
+  parent: ColumnDef | null;
   indexPath: number[];
   panelSection?: PanelSection;
 };

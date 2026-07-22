@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
-import type { FooterRendererProps, HeaderRendererProps, ReactHeaderObject } from "../index";
+import type { FooterRendererProps, HeaderRendererProps, ReactColumnDef } from "../index";
 
 const rows = [
   { id: 1, name: "Alice", score: 10 },
@@ -51,13 +51,13 @@ describe("SimpleTable (React adapter) — DOM-node slots bridged into headerRend
       return createElement("span", { className: "custom-head" }, components?.labelContent ?? header.label);
     }
 
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
       { accessor: "score", label: "Score", width: 120, type: "number", headerRenderer: Head },
     ];
 
     const host = mount(
-      createElement(SimpleTable, { defaultHeaders: headers, rows, getRowId, height: "250px", theme: "light" }),
+      createElement(SimpleTable, { columns: headers, rows, getRowId, height: "250px", theme: "light" }),
     );
 
     await waitFor(() => host.querySelector(".custom-head .st-header-label-text") !== null);
@@ -69,7 +69,7 @@ describe("SimpleTable (React adapter) — DOM-node slots bridged into headerRend
       return createElement("span", { className: "custom-head" }, header.label, components?.filterIcon);
     }
 
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
       {
         accessor: "score",
@@ -82,7 +82,7 @@ describe("SimpleTable (React adapter) — DOM-node slots bridged into headerRend
     ];
 
     const host = mount(
-      createElement(SimpleTable, { defaultHeaders: headers, rows, getRowId, height: "250px", theme: "light" }),
+      createElement(SimpleTable, { columns: headers, rows, getRowId, height: "250px", theme: "light" }),
     );
 
     await waitFor(() => host.querySelector(".custom-head") !== null);
@@ -95,7 +95,7 @@ describe("SimpleTable (React adapter) — DOM-node slots bridged into headerRend
       return createElement("span", { className: "custom-head" }, header.label, components?.collapseIcon);
     }
 
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       {
         accessor: "group",
         label: "Group",
@@ -111,7 +111,7 @@ describe("SimpleTable (React adapter) — DOM-node slots bridged into headerRend
     ];
 
     const host = mount(
-      createElement(SimpleTable, { defaultHeaders: headers, rows, getRowId, height: "250px", theme: "light" }),
+      createElement(SimpleTable, { columns: headers, rows, getRowId, height: "250px", theme: "light" }),
     );
 
     await waitFor(() => host.querySelector(".custom-head") !== null);
@@ -131,18 +131,18 @@ describe("SimpleTable (React adapter) — DOM-node slots bridged into footerRend
       );
     }
 
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
     ];
 
     const host = mount(
       createElement(SimpleTable, {
-        defaultHeaders: headers,
+        columns: headers,
         rows,
         getRowId,
         height: "250px",
         theme: "light",
-        shouldPaginate: true,
+        enablePagination: true,
         rowsPerPage: 1,
         footerRenderer: Footer,
       }),

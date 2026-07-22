@@ -7,7 +7,7 @@ import { recalculateAllSectionWidths } from "../../../core/src/utils/resizeUtils
 import { updateColumnWidthsInDOM } from "../../../core/src/utils/resizeUtils/domUpdates";
 import { normalizeHeaderWidths } from "../../../core/src/utils/headerWidthUtils";
 import { getCellId } from "../../../core/src/utils/cellUtils";
-import type HeaderObject from "../../../core/src/types/HeaderObject";
+import type ColumnDef from "../../../core/src/types/ColumnDef";
 
 // Regression tests for the `excludeFromRender` width bug.
 //
@@ -27,7 +27,7 @@ afterEach(() => {
 
 describe("recalculateAllSectionWidths — excludeFromRender columns", () => {
   it("does not add excludeFromRender column widths to the body (main) section width", () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
       // Hidden-from-render export-only columns (e.g. CSV export). These must NOT
@@ -44,7 +44,7 @@ describe("recalculateAllSectionWidths — excludeFromRender columns", () => {
   });
 
   it("keeps pinned section widths free of excludeFromRender columns too", () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 200, pinned: "left" },
       { accessor: "secret", label: "Secret", width: 120, pinned: "left", excludeFromRender: true },
       { accessor: "email", label: "Email", width: 250 },
@@ -57,7 +57,7 @@ describe("recalculateAllSectionWidths — excludeFromRender columns", () => {
   });
 
   it("matches the influencers shape: pinned left + excludeFromRender in main with a width", () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "__index__", label: "#", width: 70, pinned: "left" },
       { accessor: "name", label: "Influencer", width: 400, pinned: "left" },
       // Accidental production case: excluded from render but still has width: 150.
@@ -113,7 +113,7 @@ describe("updateColumnWidthsInDOM — excludeFromRender columns", () => {
     }
     document.body.appendChild(container);
 
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 200, pinned: "left" },
       { accessor: "id", label: "Internal ID", width: 150, excludeFromRender: true },
       { accessor: "ranks.score_100", label: "Score", width: 150 },
@@ -135,7 +135,7 @@ describe("updateColumnWidthsInDOM — excludeFromRender columns", () => {
 
 describe("normalizeHeaderWidths — excludeFromRender columns", () => {
   it("does not let excludeFromRender px widths steal from the fr pool", () => {
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "a", label: "A", width: "1fr" },
       { accessor: "secret", label: "Secret", width: 200, excludeFromRender: true },
       { accessor: "b", label: "B", width: "1fr" },

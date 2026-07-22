@@ -1,6 +1,6 @@
 // ColumnResizingDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject } from "simple-table-core";
+import type { Theme, ColumnDef } from "simple-table-core";
 import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
 import "simple-table-core/styles.css";
 
@@ -24,7 +24,7 @@ export function renderColumnResizingDemo(
   wrapper.appendChild(tableContainer);
   container.appendChild(wrapper);
 
-  let headers: HeaderObject[] = [...columnResizingHeaders];
+  let headers: ColumnDef[] = [...columnResizingHeaders];
   try {
     const saved = localStorage.getItem(COLUMN_RESIZING_STORAGE_KEY);
     if (saved) {
@@ -34,12 +34,12 @@ export function renderColumnResizingDemo(
   } catch { /* ignore */ }
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: headers,
+    columns: headers,
     rows: columnResizingData,
     height: options?.height ?? "400px",
     theme: options?.theme,
     columnResizing: true,
-    onColumnWidthChange: (updatedHeaders: HeaderObject[]) => {
+    onColumnWidthChange: (updatedHeaders: ColumnDef[]) => {
       try {
         const widthMap: Record<string, unknown> = {};
         for (const h of updatedHeaders) widthMap[h.accessor] = h.width;
@@ -61,12 +61,12 @@ export function renderColumnResizingDemo(
 
 // column-resizing.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
 export const COLUMN_RESIZING_STORAGE_KEY = "columnResizingDemo_widths";
 
-export const columnResizingHeaders: HeaderObject[] = [
+export const columnResizingHeaders: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "First Name", width: "1fr", minWidth: 100, type: "string" },
   { accessor: "age", label: "Age", width: "1fr", minWidth: 50, type: "string" },

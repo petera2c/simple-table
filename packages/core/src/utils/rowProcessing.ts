@@ -5,7 +5,7 @@ import {
   buildCumulativeHeightMap,
   CumulativeHeightMap,
 } from "./infiniteScrollUtils";
-import { Accessor } from "../types/HeaderObject";
+import { Accessor } from "../types/ColumnDef";
 import TableRow from "../types/TableRow";
 import { HeightOffsets } from "./infiniteScrollUtils";
 import { CustomTheme } from "../types/CustomTheme";
@@ -16,7 +16,7 @@ export interface ProcessRowsConfig {
   parentEndPositions: number[];
   currentPage: number;
   rowsPerPage: number;
-  shouldPaginate: boolean;
+  enablePagination: boolean;
   serverSidePagination: boolean;
   contentHeight: number | undefined;
   rowHeight: number;
@@ -55,10 +55,10 @@ function applyPagination(
   parentEndPositions: number[],
   currentPage: number,
   rowsPerPage: number,
-  shouldPaginate: boolean,
+  enablePagination: boolean,
   serverSidePagination: boolean,
 ): TableRow[] {
-  if (!shouldPaginate || serverSidePagination) {
+  if (!enablePagination || serverSidePagination) {
     return allRows.map((tableRow, index) => ({
       ...tableRow,
       position: index,
@@ -80,7 +80,7 @@ function applyPagination(
   return paginatedRows.map((tableRow, index) => {
     const absoluteRowIndex = tableRow.nestedTable
       ? tableRow.absoluteRowIndex
-      : shouldPaginate && !serverSidePagination
+      : enablePagination && !serverSidePagination
         ? startPosition + index
         : index;
 
@@ -106,7 +106,7 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
     scrollDirection = "none",
     scrollTop,
     serverSidePagination,
-    shouldPaginate,
+    enablePagination,
     rowGrouping,
   } = config;
 
@@ -117,7 +117,7 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
     parentEndPositions,
     currentPage,
     rowsPerPage,
-    shouldPaginate,
+    enablePagination,
     serverSidePagination,
   );
 
@@ -126,14 +126,14 @@ export function processRows(config: ProcessRowsConfig): ProcessRowsResult {
   // a page-relative `top` (on-page rows align with DOM, off-page rows fall
   // above/below the viewport). 0 when pagination is off (or server-side).
   let pageStartIndex = 0;
-  if (shouldPaginate && !serverSidePagination) {
+  if (enablePagination && !serverSidePagination) {
     const startParentIndex = (currentPage - 1) * rowsPerPage;
     pageStartIndex =
       startParentIndex === 0 ? 0 : (parentEndPositions[startParentIndex - 1] ?? 0);
   }
 
   const paginatedHeightOffsets =
-    !heightOffsets || heightOffsets.length === 0 || !shouldPaginate || serverSidePagination
+    !heightOffsets || heightOffsets.length === 0 || !enablePagination || serverSidePagination
       ? heightOffsets
       : (() => {
           const positionMap = new Map<number, number>();

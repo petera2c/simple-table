@@ -1,6 +1,6 @@
 /**
  * Shared prop-sync helpers for framework adapters.
- * Used to skip no-op `defaultHeaders` / `rows` updates when consumers rebuild
+ * Used to skip no-op `columns` / `rows` updates when consumers rebuild
  * column configs or shallow-clone rows every render.
  */
 

@@ -2,7 +2,7 @@ export interface ContentHeightConfig {
   height?: string | number;
   maxHeight?: string | number;
   rowHeight: number;
-  shouldPaginate?: boolean;
+  enablePagination?: boolean;
   rowsPerPage?: number;
   totalRowCount: number;
   headerHeight?: number;
@@ -210,7 +210,7 @@ export const calculateContentHeight = ({
   height,
   maxHeight,
   rowHeight,
-  shouldPaginate,
+  enablePagination,
   rowsPerPage,
   totalRowCount,
   headerHeight,

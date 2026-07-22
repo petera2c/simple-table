@@ -86,7 +86,7 @@ export type ExportValueGetter = (props: ExportValueProps) => string | number;
 // Default showWhen value for child columns when not specified
 export const DEFAULT_SHOW_WHEN: ShowWhen = "parentExpanded";
 
-type HeaderObject = {
+export type ColumnDef = {
   accessor: Accessor;
   aggregation?: AggregationConfig;
   align?: "left" | "center" | "right";
@@ -99,7 +99,7 @@ type HeaderObject = {
   autoSizeMode?: AutoSizeMode;
   cellRenderer?: CellRenderer;
   chartOptions?: ChartOptions; // Options for chart rendering (lineAreaChart, barChart)
-  children?: HeaderObject[];
+  children?: ColumnDef[];
   collapsible?: boolean; // This is used to determine if the column is collapsible
   collapseDefault?: boolean; // When true, this column starts collapsed
   comparator?: Comparator; // Custom sorting function based on row-level metadata
@@ -171,7 +171,4 @@ type HeaderObject = {
   maxWidth?: number | string; // Upper bound for width, including auto-sizing
 };
 
-export default HeaderObject;
-
-/** Preferred name for column definitions. Alias of {@link HeaderObject}. */
-export type ColumnDef = HeaderObject;
+export default ColumnDef;

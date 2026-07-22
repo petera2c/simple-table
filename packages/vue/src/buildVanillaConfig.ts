@@ -1,9 +1,9 @@
-import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig, Row } from "simple-table-core";
+import type { SimpleTableConfig, ColumnDef, ColumnEditorConfig, Row } from "simple-table-core";
 import { collectHeaderAccessors } from "simple-table-core";
 import type { VNode } from "vue";
 import type {
   SimpleTableVueProps,
-  VueHeaderObject,
+  VueColumnDef,
   VueColumnEditorConfig,
   VueIconsConfig,
 } from "./types";
@@ -45,13 +45,13 @@ function transformColumnEditorConfig(
 }
 
 function transformHeader(
-  header: HeaderObject | VueHeaderObject,
+  header: ColumnDef | VueColumnDef,
   registry: MountRegistry,
-): HeaderObject {
+): ColumnDef {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
   const accessor = String(header.accessor);
 
-  const transformed: HeaderObject = { ...(rest as any) };
+  const transformed: ColumnDef = { ...(rest as any) };
 
   if (cellRenderer) {
     if (typeof cellRenderer === "object") {
@@ -91,13 +91,13 @@ function transformHeader(
   return transformed;
 }
 
-/** Resolve preferred `columns` or legacy `defaultHeaders`. */
+/** Resolve column definitions. */
 export function resolveVueColumns(
-  config: Pick<SimpleTableVueProps, "columns" | "defaultHeaders">,
-): ReadonlyArray<HeaderObject | VueHeaderObject> {
-  const headers = config.columns ?? config.defaultHeaders;
+  config: Pick<SimpleTableVueProps, "columns">,
+): ReadonlyArray<ColumnDef | VueColumnDef> {
+  const headers = config.columns;
   if (!headers) {
-    throw new Error("SimpleTable requires `columns` or `defaultHeaders`");
+    throw new Error("SimpleTable requires `columns`");
   }
   return headers;
 }
@@ -107,7 +107,6 @@ export function buildVanillaConfig(
   registry: MountRegistry,
 ): SimpleTableConfig {
   const {
-    defaultHeaders: _defaultHeaders,
     columns: _columns,
     rows,
     footerRenderer,
@@ -120,37 +119,30 @@ export function buildVanillaConfig(
     icons,
     rowButtons,
     enableColumnEditor,
-    editColumns,
     enableColumnEditorInitOpen,
-    editColumnsInitOpen,
     enablePagination,
-    shouldPaginate,
     onTableReady,
-    onGridReady,
     hoverRowBackground,
-    useHoverRowBackground,
     oddColumnBackground,
-    useOddColumnBackground,
     oddEvenRowBackground,
-    useOddEvenRowBackground,
     ...rest
   } = config;
 
-  const defaultHeaders = resolveVueColumns(config);
+  const columns = resolveVueColumns(config);
 
-  registry.pruneRendererCaches(collectHeaderAccessors(defaultHeaders));
+  registry.pruneRendererCaches(collectHeaderAccessors(columns));
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,
     rows: rows as Row[],
-    defaultHeaders: defaultHeaders.map((header) => transformHeader(header, registry)),
-    editColumns: enableColumnEditor ?? editColumns,
-    editColumnsInitOpen: enableColumnEditorInitOpen ?? editColumnsInitOpen,
-    shouldPaginate: enablePagination ?? shouldPaginate,
-    onGridReady: onTableReady ?? onGridReady,
-    useHoverRowBackground: hoverRowBackground ?? useHoverRowBackground,
-    useOddColumnBackground: oddColumnBackground ?? useOddColumnBackground,
-    useOddEvenRowBackground: oddEvenRowBackground ?? useOddEvenRowBackground,
+    columns: columns.map((header) => transformHeader(header, registry)),
+    enableColumnEditor,
+    enableColumnEditorInitOpen,
+    enablePagination,
+    onTableReady,
+    hoverRowBackground,
+    oddColumnBackground,
+    oddEvenRowBackground,
     // Authoritative mount teardown: core calls this before it permanently
     // discards any host element, so the registry unmounts exactly the affected
     // Vue apps (including Teleport / floating UI).

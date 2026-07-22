@@ -2,7 +2,7 @@ import { createContext, createElement, useContext } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
-import type { CellRendererProps, HeaderRendererProps, ReactHeaderObject } from "../index";
+import type { CellRendererProps, HeaderRendererProps, ReactColumnDef } from "../index";
 
 const rows = [
   { id: 1, name: "Alice", score: 10 },
@@ -48,7 +48,7 @@ describe("SimpleTable (React adapter) — host context + DOM slot bridging", () 
       return createElement("span", { className: "ctx-cell" }, label);
     }
 
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
       { accessor: "score", label: "Score", width: 120, type: "number", cellRenderer: ThemeCell },
     ];
@@ -58,7 +58,7 @@ describe("SimpleTable (React adapter) — host context + DOM slot bridging", () 
         ThemeLabelContext.Provider,
         { value: "FROM_HOST" },
         createElement(SimpleTable, {
-          defaultHeaders: headers,
+          columns: headers,
           rows,
           getRowId: (p: { row: unknown }) => String((p.row as { id?: number })?.id),
           height: "250px",
@@ -86,7 +86,7 @@ describe("SimpleTable (React adapter) — host context + DOM slot bridging", () 
       );
     }
 
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
       {
         accessor: "score",
@@ -100,7 +100,7 @@ describe("SimpleTable (React adapter) — host context + DOM slot bridging", () 
 
     const host = mount(
       createElement(SimpleTable, {
-        defaultHeaders: headers,
+        columns: headers,
         rows,
         getRowId: (p: { row: unknown }) => String((p.row as { id?: number })?.id),
         height: "250px",

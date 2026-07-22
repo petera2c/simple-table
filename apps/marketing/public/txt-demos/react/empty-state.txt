@@ -37,7 +37,7 @@ const EmptyStateDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={emptyStateConfig.headers}
+      columns={emptyStateConfig.headers}
       rows={emptyStateConfig.rows}
       tableEmptyStateRenderer={tableEmptyState}
       height={height}

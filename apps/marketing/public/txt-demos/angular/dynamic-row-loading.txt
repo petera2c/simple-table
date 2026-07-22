@@ -1,6 +1,6 @@
 // dynamic-row-loading-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, OnRowGroupExpandProps, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, OnRowGroupExpandProps, Theme } from "@simple-table/angular";
 import {
   dynamicRowLoadingConfig,
   generateInitialRegions,
@@ -17,8 +17,8 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [columnResizing]="true"
-      [defaultHeaders]="headers"
-      [editColumns]="true"
+      [columns]="headers"
+      [enableColumnEditor]="true"
       [expandAll]="false"
       [height]="height"
       [onRowGroupExpand]="handleRowExpand"
@@ -27,7 +27,7 @@ import "@simple-table/angular/styles.css";
       [rows]="rows"
       [selectableCells]="true"
       [theme]="theme"
-      [useOddEvenRowBackground]="true"
+      [oddEvenRowBackground]="true"
     ></simple-table>
   `,
 })
@@ -35,7 +35,7 @@ export class DynamicRowLoadingDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  headers: AngularHeaderObject[] = dynamicRowLoadingConfig.headers;
+  headers: AngularColumnDef[] = dynamicRowLoadingConfig.headers;
   rows: DynamicRegion[] = generateInitialRegions();
   readonly grouping = ["stores", "products"];
   readonly getRowId = ({ row }: { row: Record<string, unknown> }) => row["id"] as string;
@@ -90,7 +90,7 @@ export class DynamicRowLoadingDemoComponent {
 
 // dynamic-row-loading.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject, Row } from "@simple-table/angular";
+import type { AngularColumnDef, Row } from "@simple-table/angular";
 
 
 export interface DynamicRegion extends Row {
@@ -128,7 +128,7 @@ export interface DynamicProduct extends Row {
   lastUpdate: string;
 }
 
-export const dynamicRowLoadingHeaders: AngularHeaderObject[] = [
+export const dynamicRowLoadingHeaders: AngularColumnDef[] = [
   { accessor: "name", label: "Name", width: 280, expandable: true, type: "string", pinned: "left" },
   { accessor: "type", label: "Type", width: 100, type: "string" },
   {
@@ -290,7 +290,7 @@ export const dynamicRowLoadingConfig = {
     expandAll: false,
     columnResizing: true,
     selectableCells: true,
-    useOddEvenRowBackground: true,
-    editColumns: true,
+    oddEvenRowBackground: true,
+    enableColumnEditor: true,
   },
 } as const;

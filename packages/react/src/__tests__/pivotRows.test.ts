@@ -6,11 +6,11 @@ import {
   PIVOT_CHILDREN_KEY,
   PIVOT_IS_TOTAL_KEY,
   PIVOT_BLANK_LABEL,
-  type HeaderObject,
+  type ColumnDef,
   type Row,
 } from "simple-table-core";
 
-const fieldHeaders: HeaderObject[] = [
+const fieldHeaders: ColumnDef[] = [
   { accessor: "region", label: "Region", width: 120, type: "string" },
   { accessor: "product", label: "Product", width: 120, type: "string" },
   { accessor: "quarter", label: "Quarter", width: 80, type: "string" },

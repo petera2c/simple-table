@@ -5,16 +5,16 @@ import "simple-table-core/styles.css";
 
 export function renderBillingDemo(container: HTMLElement) {
   return new SimpleTableVanilla(container, {
-    defaultHeaders: billingConfig.headers,
+    columns: billingConfig.headers,
     rows: billingConfig.rows,
     rowGrouping: ["invoices", "charges"],
     initialSortColumn: "amount",
     initialSortDirection: "desc",
     columnReordering: true,
     columnResizing: true,
-    editColumns: true,
+    enableColumnEditor: true,
     selectableCells: true,
-    useOddColumnBackground: true,
+    oddColumnBackground: true,
     height: "400px",
   });
 }

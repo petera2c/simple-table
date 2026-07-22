@@ -1,4 +1,4 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import { ColumnEditorConfig } from "../../types/ColumnEditorConfig";
 import { IconsConfig } from "../../types/IconsConfig";
 import { ColumnEditorRowRendererComponents } from "../../types/ColumnEditorRowRendererProps";
@@ -40,7 +40,7 @@ const DRAG_ICON_SVG = `<svg
 </svg>`;
 
 export interface CreateColumnEditorRowOptions {
-  allHeaders: HeaderObject[];
+  allHeaders: ColumnDef[];
   clearHoverSeparator?: () => void;
   depth: number;
   doesAnyHeaderHaveChildren: boolean;
@@ -50,7 +50,7 @@ export interface CreateColumnEditorRowOptions {
   expandedHeaders: Set<string>;
   flattenedHeaders: FlattenedHeader[];
   forceExpanded: boolean;
-  header: HeaderObject;
+  header: ColumnDef;
   hoveredSeparator: HoveredSeparator;
   panelSection?: PanelSection;
   rowIndex: number;
@@ -61,10 +61,10 @@ export interface CreateColumnEditorRowOptions {
   /** Resolved table icons; `icons.drag` overrides the default column-editor drag handle. */
   icons?: IconsConfig;
   essentialAccessors?: ReadonlySet<string>;
-  headers: HeaderObject[];
-  setHeaders: (headers: HeaderObject[]) => void;
+  headers: ColumnDef[];
+  setHeaders: (headers: ColumnDef[]) => void;
   onColumnVisibilityChange?: (state: ColumnVisibilityState) => void;
-  onColumnOrderChange?: (headers: HeaderObject[]) => void;
+  onColumnOrderChange?: (headers: ColumnDef[]) => void;
   /** When set (e.g. after expand toggle), used with updateExpandIconState so the chevron animates like table cells. */
   previousExpandedHeaders?: ReadonlySet<string>;
 }
@@ -138,7 +138,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
   rowContainer.style.paddingLeft = paddingLeft;
   rowContainer.draggable = true;
 
-  const applyHeaderOrder = (updatedHeaders: HeaderObject[]): boolean => {
+  const applyHeaderOrder = (updatedHeaders: ColumnDef[]): boolean => {
     if (
       essentialAccessors.size > 0 &&
       !validateFullHeaderTreeEssentialOrder(updatedHeaders, essentialAccessors)

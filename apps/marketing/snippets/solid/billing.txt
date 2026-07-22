@@ -6,16 +6,16 @@ import "@simple-table/solid/styles.css";
 export default function BillingDemo() {
   return (
     <SimpleTable
-      defaultHeaders={billingConfig.headers}
+      columns={billingConfig.headers}
       rows={billingConfig.rows}
       rowGrouping={["invoices", "charges"]}
       initialSortColumn="amount"
       initialSortDirection="desc"
       columnReordering
       columnResizing
-      editColumns
+      enableColumnEditor
       selectableCells
-      useOddColumnBackground
+      oddColumnBackground
       height="400px"
     />
   );

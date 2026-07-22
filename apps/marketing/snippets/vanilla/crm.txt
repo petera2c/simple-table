@@ -1,6 +1,6 @@
 // CRMDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { HeaderObject, CellRenderer } from "simple-table-core";
+import type { ColumnDef, CellRenderer } from "simple-table-core";
 import { crmData } from "./crm.demo-data";
 import "simple-table-core/styles.css";
 
@@ -10,7 +10,7 @@ const nameRenderer: CellRenderer = ({ row }) => {
   return el;
 };
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "name", label: "CONTACT", type: "string", width: "2fr", sortable: true, cellRenderer: nameRenderer },
   { accessor: "signal", label: "SIGNAL", type: "string", width: "3fr" },
   { accessor: "aiScore", label: "AI SCORE", type: "number", align: "center" },
@@ -20,10 +20,10 @@ const headers: HeaderObject[] = [
 
 export function renderCRMDemo(container: HTMLElement) {
   return new SimpleTableVanilla(container, {
-    defaultHeaders: headers,
+    columns: headers,
     rows: [...crmData],
     enableRowSelection: true,
-    shouldPaginate: true,
+    enablePagination: true,
     rowsPerPage: 100,
     columnReordering: true,
     columnResizing: true,

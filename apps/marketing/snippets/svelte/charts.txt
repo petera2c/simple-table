@@ -10,7 +10,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={chartsConfig.headers}
+  columns={chartsConfig.headers}
   rows={chartsConfig.rows}
   columnReordering={true}
   columnResizing={true}

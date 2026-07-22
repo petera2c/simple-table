@@ -5,7 +5,7 @@ import "simple-table-core/styles.css";
 
 export function renderLiveUpdateDemo(container: HTMLElement) {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: liveUpdateConfig.headers,
+    columns: liveUpdateConfig.headers,
     rows: liveUpdateConfig.rows,
     height: "400px",
   });

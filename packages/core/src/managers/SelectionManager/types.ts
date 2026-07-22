@@ -1,5 +1,5 @@
-import type HeaderObject from "../../types/HeaderObject";
-import type { Accessor } from "../../types/HeaderObject";
+import type ColumnDef from "../../types/ColumnDef";
+import type { Accessor } from "../../types/ColumnDef";
 import type TableRowType from "../../types/TableRow";
 import type Cell from "../../types/Cell";
 import type { CustomTheme } from "../../types/CustomTheme";
@@ -15,7 +15,7 @@ export interface SelectionManagerConfig {
    * even if this is false.
    */
   selectableColumns?: boolean;
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   tableRows: TableRowType[];
   onCellEdit?: (props: any) => void;
   cellRegistry?: Map<string, any>;

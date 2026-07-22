@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
+import ColumnDef, { Accessor, DEFAULT_SHOW_WHEN } from "../types/ColumnDef";
 import { flattenAllHeaders, flattenHeaders } from "./headerUtils";
 import { isHeaderExcludedFromLayout } from "./headerLayoutUtils";
 
@@ -7,9 +7,9 @@ import { isHeaderExcludedFromLayout } from "./headerLayoutUtils";
  * Optimized using flattenAllHeaders for better performance
  */
 export const findParentHeader = (
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   childAccessor: Accessor
-): HeaderObject | null => {
+): ColumnDef | null => {
   // Get all headers in the hierarchy
   const allHeaders = flattenAllHeaders(headers);
 
@@ -29,8 +29,8 @@ export const findParentHeader = (
  * Check if a header should be hidden based on its parent's collapsed state
  */
 export const shouldHideWhenParentCollapsed = (
-  header: HeaderObject,
-  headers: HeaderObject[],
+  header: ColumnDef,
+  headers: ColumnDef[],
   collapsedHeaders: Set<Accessor>
 ): boolean => {
   const parentHeader = findParentHeader(headers, header.accessor);
@@ -55,7 +55,7 @@ export const shouldHideWhenParentCollapsed = (
  * Get all child headers of a parent header (recursively)
  * Uses flattenAllHeaders for consistency and better performance
  */
-export const getAllChildHeaders = (header: HeaderObject): HeaderObject[] => {
+export const getAllChildHeaders = (header: ColumnDef): ColumnDef[] => {
   if (!header.children || header.children.length === 0) {
     return [];
   }
@@ -67,7 +67,7 @@ export const getAllChildHeaders = (header: HeaderObject): HeaderObject[] => {
 /**
  * Check if a header has collapsible children
  */
-export const hasCollapsibleChildren = (header: HeaderObject): boolean => {
+export const hasCollapsibleChildren = (header: ColumnDef): boolean => {
   return Boolean(header.children?.length && header.collapsible);
 };
 
@@ -79,8 +79,8 @@ export const hasCollapsibleChildren = (header: HeaderObject): boolean => {
  * actually rendered. Leaf headers return 1.
  */
 export const getHeaderColspan = (
-  header: HeaderObject,
-  rootHeaders: HeaderObject[],
+  header: ColumnDef,
+  rootHeaders: ColumnDef[],
   collapsedHeaders: Set<Accessor>,
 ): number => {
   if (!header.children || header.children.length === 0) return 1;
@@ -98,7 +98,7 @@ export const getHeaderColspan = (
  * Get all leaf (bottom-level) headers that should be visible when a parent is collapsed
  * Uses flattenHeaders for consistent leaf detection
  */
-export const getVisibleLeafHeadersWhenCollapsed = (header: HeaderObject): HeaderObject[] => {
+export const getVisibleLeafHeadersWhenCollapsed = (header: ColumnDef): ColumnDef[] => {
   if (!header.children || header.children.length === 0) {
     return [];
   }

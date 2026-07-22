@@ -1,4 +1,4 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import {
   FilterCondition,
   NumberFilterOperator,
@@ -13,7 +13,7 @@ import { createFilterInput } from "./createFilterInput";
 import { createFilterActions } from "./createFilterActions";
 
 export interface CreateNumberFilterOptions {
-  header: HeaderObject;
+  header: ColumnDef;
   currentFilter?: FilterCondition;
   onApplyFilter: (filter: FilterCondition) => void;
   onClearFilter: () => void;

@@ -1,5 +1,5 @@
 import Cell from "../types/Cell";
-import HeaderObject from "../types/HeaderObject";
+import ColumnDef from "../types/ColumnDef";
 import type TableRowType from "../types/TableRow";
 import { rowIdToString, getNestedValue, setNestedValue } from "./rowUtils";
 import { isHeaderExcludedFromLayout } from "./cellUtils";
@@ -13,7 +13,7 @@ interface CellRegistryEntry {
  */
 export const copySelectedCellsToClipboard = (
   selectedCells: Set<string>,
-  leafHeaders: HeaderObject[],
+  leafHeaders: ColumnDef[],
   tableRows: TableRowType[],
   copyHeadersToClipboard: boolean = false
 ): string => {
@@ -24,7 +24,7 @@ export const copySelectedCellsToClipboard = (
 
   // Create a mapping of column indices to accessors and headers for quick lookup
   const colIndexToAccessor = new Map<number, string>();
-  const colIndexToHeader = new Map<number, HeaderObject>();
+  const colIndexToHeader = new Map<number, ColumnDef>();
   flattenedLeafHeaders.forEach((header, index) => {
     colIndexToAccessor.set(index, header.accessor);
     colIndexToHeader.set(index, header);
@@ -118,7 +118,7 @@ export const copySelectedCellsToClipboard = (
 export const pasteClipboardDataToCells = (
   clipboardText: string,
   initialFocusedCell: Cell,
-  leafHeaders: HeaderObject[],
+  leafHeaders: ColumnDef[],
   tableRows: TableRowType[],
   onCellEdit?: (props: any) => void,
   cellRegistry?: Map<string, CellRegistryEntry>
@@ -224,7 +224,7 @@ export const pasteClipboardDataToCells = (
  */
 export const deleteSelectedCellsContent = (
   selectedCells: Set<string>,
-  leafHeaders: HeaderObject[],
+  leafHeaders: ColumnDef[],
   tableRows: TableRowType[],
   onCellEdit?: (props: any) => void,
   cellRegistry?: Map<string, CellRegistryEntry>

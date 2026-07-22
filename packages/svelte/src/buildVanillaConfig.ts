@@ -1,8 +1,8 @@
-import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig, Row } from "simple-table-core";
+import type { SimpleTableConfig, ColumnDef, ColumnEditorConfig, Row } from "simple-table-core";
 import { collectHeaderAccessors } from "simple-table-core";
 import type {
   SimpleTableSvelteProps,
-  SvelteHeaderObject,
+  SvelteColumnDef,
   SvelteColumnEditorConfig,
   SvelteIconsConfig,
 } from "./types";
@@ -46,13 +46,13 @@ function transformColumnEditorConfig(
 }
 
 function transformHeader(
-  header: HeaderObject | SvelteHeaderObject,
+  header: ColumnDef | SvelteColumnDef,
   registry: MountRegistry,
-): HeaderObject {
+): ColumnDef {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
   const accessor = String(header.accessor);
 
-  const transformed: HeaderObject = { ...(rest as any) };
+  const transformed: ColumnDef = { ...(rest as any) };
 
   if (cellRenderer) {
     if (typeof cellRenderer === "function" && cellRenderer.length >= 2) {
@@ -94,13 +94,13 @@ function transformHeader(
   return transformed;
 }
 
-/** Resolve preferred `columns` or legacy `defaultHeaders`. */
+/** Resolve column definitions. */
 export function resolveSvelteColumns(
-  config: Pick<SimpleTableSvelteProps, "columns" | "defaultHeaders">,
-): ReadonlyArray<HeaderObject | SvelteHeaderObject> {
-  const headers = config.columns ?? config.defaultHeaders;
+  config: Pick<SimpleTableSvelteProps, "columns">,
+): ReadonlyArray<ColumnDef | SvelteColumnDef> {
+  const headers = config.columns;
   if (!headers) {
-    throw new Error("SimpleTable requires `columns` or `defaultHeaders`");
+    throw new Error("SimpleTable requires `columns`");
   }
   return headers;
 }
@@ -110,7 +110,6 @@ export function buildVanillaConfig(
   registry: MountRegistry,
 ): SimpleTableConfig {
   const {
-    defaultHeaders: _defaultHeaders,
     columns: _columns,
     rows,
     footerRenderer,
@@ -127,63 +126,56 @@ export function buildVanillaConfig(
     onHeaderEdit,
     onColumnSelect,
     enableColumnEditor,
-    editColumns,
     enableColumnEditorInitOpen,
-    editColumnsInitOpen,
     enablePagination,
-    shouldPaginate,
     onTableReady,
-    onGridReady,
     hoverRowBackground,
-    useHoverRowBackground,
     oddColumnBackground,
-    useOddColumnBackground,
     oddEvenRowBackground,
-    useOddEvenRowBackground,
     ...rest
   } = config;
 
-  const defaultHeaders = resolveSvelteColumns(config);
+  const columns = resolveSvelteColumns(config);
 
-  registry.pruneRendererCaches(collectHeaderAccessors(defaultHeaders));
+  registry.pruneRendererCaches(collectHeaderAccessors(columns));
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,
     rows: rows as Row[],
-    defaultHeaders: defaultHeaders.map((header) => transformHeader(header, registry)),
-    editColumns: enableColumnEditor ?? editColumns,
-    editColumnsInitOpen: enableColumnEditorInitOpen ?? editColumnsInitOpen,
-    shouldPaginate: enablePagination ?? shouldPaginate,
-    onGridReady: onTableReady ?? onGridReady,
-    useHoverRowBackground: hoverRowBackground ?? useHoverRowBackground,
-    useOddColumnBackground: oddColumnBackground ?? useOddColumnBackground,
-    useOddEvenRowBackground: oddEvenRowBackground ?? useOddEvenRowBackground,
+    columns: columns.map((header) => transformHeader(header, registry)),
+    enableColumnEditor,
+    enableColumnEditorInitOpen,
+    enablePagination,
+    onTableReady,
+    hoverRowBackground,
+    oddColumnBackground,
+    oddEvenRowBackground,
     // Authoritative mount teardown: core calls this before it permanently
     // discards any host element, so the registry unmounts exactly the affected
     // Svelte instances (including teleport / floating UI).
     onRendererHostDiscard: registry.disposeHost,
     ...(onColumnOrderChange
       ? {
-          onColumnOrderChange: (headers: HeaderObject[]) =>
-            onColumnOrderChange(headers as unknown as SvelteHeaderObject[]),
+          onColumnOrderChange: (headers: ColumnDef[]) =>
+            onColumnOrderChange(headers as unknown as SvelteColumnDef[]),
         }
       : {}),
     ...(onColumnWidthChange
       ? {
-          onColumnWidthChange: (headers: HeaderObject[]) =>
-            onColumnWidthChange(headers as unknown as SvelteHeaderObject[]),
+          onColumnWidthChange: (headers: ColumnDef[]) =>
+            onColumnWidthChange(headers as unknown as SvelteColumnDef[]),
         }
       : {}),
     ...(onHeaderEdit
       ? {
-          onHeaderEdit: (header: HeaderObject, newLabel: string) =>
-            onHeaderEdit(header as unknown as SvelteHeaderObject, newLabel),
+          onHeaderEdit: (header: ColumnDef, newLabel: string) =>
+            onHeaderEdit(header as unknown as SvelteColumnDef, newLabel),
         }
       : {}),
     ...(onColumnSelect
       ? {
-          onColumnSelect: (header: HeaderObject) =>
-            onColumnSelect(header as unknown as SvelteHeaderObject),
+          onColumnSelect: (header: ColumnDef) =>
+            onColumnSelect(header as unknown as SvelteColumnDef),
         }
       : {}),
   };

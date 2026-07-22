@@ -62,8 +62,8 @@
 
 <SimpleTable
   columnResizing={dynamicRowLoadingConfig.tableProps.columnResizing}
-  defaultHeaders={dynamicRowLoadingConfig.headers}
-  editColumns={dynamicRowLoadingConfig.tableProps.editColumns}
+  columns={dynamicRowLoadingConfig.headers}
+  enableColumnEditor={dynamicRowLoadingConfig.tableProps.enableColumnEditor}
   expandAll={dynamicRowLoadingConfig.tableProps.expandAll}
   {height}
   onRowGroupExpand={handleRowExpand}
@@ -72,5 +72,5 @@
   rows={rows}
   selectableCells={dynamicRowLoadingConfig.tableProps.selectableCells}
   {theme}
-  useOddEvenRowBackground={dynamicRowLoadingConfig.tableProps.useOddEvenRowBackground}
+  oddEvenRowBackground={dynamicRowLoadingConfig.tableProps.oddEvenRowBackground}
 />

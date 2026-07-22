@@ -3,7 +3,7 @@ import { SimpleTableVanilla } from "simple-table-core";
 import type { SimpleTableConfig, TableAPI } from "simple-table-core";
 import { buildVanillaConfig, resolveReactColumns } from "./buildVanillaConfig";
 import { PortalBridge, useTablePortals } from "./PortalBridge";
-import type { SimpleTableReactProps, TableInstance, ReactHeaderObject } from "./types";
+import type { SimpleTableReactProps, TableInstance, ReactColumnDef } from "./types";
 import { headersStructurallyEqual } from "./utils/headersEqual";
 import { rowsShallowUnchanged } from "./utils/rowsEqual";
 
@@ -28,7 +28,7 @@ function shallowTablePropsChanged(
  * with React component types for all renderer props: cellRenderer,
  * headerRenderer, footerRenderer, loadingStateRenderer, errorStateRenderer,
  * emptyStateRenderer, headerDropdown, and per-column renderers inside
- * ReactHeaderObject.
+ * ReactColumnDef.
  *
  * The ref exposes the full TableAPI imperative interface (sort, filter,
  * paginate, export to CSV, cell selection, column visibility, etc.).
@@ -63,7 +63,7 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
      * Consumer may pass a new array reference every render; we only push
      * headers into core when accessors/widths/flags actually change.
      */
-    const syncedDefaultHeadersRef = useRef<ReadonlyArray<ReactHeaderObject> | undefined>(undefined);
+    const syncedDefaultHeadersRef = useRef<ReadonlyArray<ReactColumnDef> | undefined>(undefined);
     /** Last `rows` array whose content was applied via `update`. */
     const syncedRowsRef = useRef<SimpleTableReactProps["rows"] | undefined>(undefined);
     const lastSyncedPropsRef = useRef<SimpleTableReactProps | null>(null);
@@ -113,7 +113,7 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
     }, []);
 
     // Sync prop changes to the vanilla instance.
-    // - `defaultHeaders`: push only when structure changes (ignore renderer
+    // - `columns`: push only when structure changes (ignore renderer
     //   identity churn from inline column builders).
     // - `rows`: skip when ids + shallow field equality match the last sync
     //   (covers `rows.map(r => ({...r}))` anti-pattern).
@@ -141,7 +141,7 @@ const SimpleTable = React.forwardRef<TableAPI, SimpleTableReactProps>(
       // keep looking "new" under reference equality.
       syncedDefaultHeadersRef.current = resolvedColumns;
       if (headersUnchanged) {
-        delete patch.defaultHeaders;
+        delete patch.columns;
       }
 
       const rowsUnchanged = rowsShallowUnchanged(

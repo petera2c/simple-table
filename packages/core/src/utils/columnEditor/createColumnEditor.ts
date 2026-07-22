@@ -1,4 +1,4 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import { ColumnEditorSearchFunction, ColumnEditorConfig } from "../../types/ColumnEditorConfig";
 import { createColumnEditorPopout } from "./createColumnEditorPopout";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
@@ -7,8 +7,8 @@ import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
 
 export interface CreateColumnEditorOptions {
   columnEditorText: string;
-  editColumns: boolean;
-  headers: HeaderObject[];
+  enableColumnEditor: boolean;
+  headers: ColumnDef[];
   open: boolean;
   searchEnabled: boolean;
   searchPlaceholder: string;
@@ -17,16 +17,16 @@ export interface CreateColumnEditorOptions {
   icons?: IconsConfig;
   essentialAccessors?: ReadonlySet<string>;
   resetColumns?: () => void;
-  setHeaders: (headers: HeaderObject[]) => void;
+  setHeaders: (headers: ColumnDef[]) => void;
   onColumnVisibilityChange?: (state: ColumnVisibilityState) => void;
-  onColumnOrderChange?: (headers: HeaderObject[]) => void;
+  onColumnOrderChange?: (headers: ColumnDef[]) => void;
   setOpen: (open: boolean) => void;
 }
 
 export const createColumnEditor = (options: CreateColumnEditorOptions) => {
   let {
     columnEditorText,
-    editColumns,
+    enableColumnEditor,
     headers,
     open,
     searchEnabled,
@@ -42,7 +42,7 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
     setOpen,
   } = options;
 
-  if (!editColumns) {
+  if (!enableColumnEditor) {
     const emptyDiv = document.createElement("div");
     return {
       element: emptyDiv,

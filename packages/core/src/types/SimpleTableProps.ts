@@ -1,5 +1,6 @@
 import { TableAPI } from "./TableAPI";
-import HeaderObject, { Accessor } from "./HeaderObject";
+import type ColumnDef from "./ColumnDef";
+import { Accessor } from "./ColumnDef";
 import Row from "./Row";
 import {
   EmptyStateRenderer,
@@ -38,31 +39,18 @@ export interface SimpleTableProps {
   columnEditorConfig?: ColumnEditorConfig; // Configuration for the column editor drawer
   columnReordering?: boolean; // Flag for column reordering
   columnResizing?: boolean; // Flag for column resizing
+  /** Column definitions. */
+  columns?: ColumnDef[];
   copyHeadersToClipboard?: boolean; // Flag for including column headers when copying cells to clipboard (default: false)
   customTheme?: CustomThemeProps; // Custom theme configuration for dimensions and spacing
-  /**
-   * Column definitions.
-   * @deprecated Prefer {@link columns}
-   */
-  defaultHeaders?: HeaderObject[];
-  /** Column definitions. Preferred over `defaultHeaders`. */
-  columns?: HeaderObject[];
-  /**
-   * Show the column editor / visibility UI.
-   * @deprecated Prefer {@link enableColumnEditor}
-   */
-  editColumns?: boolean;
-  /** Show the column editor / visibility UI. Preferred over `editColumns`. */
+  /** Show the column editor / visibility UI. */
   enableColumnEditor?: boolean;
-  /**
-   * Open the column editor when the table loads.
-   * @deprecated Prefer {@link enableColumnEditorInitOpen}
-   */
-  editColumnsInitOpen?: boolean;
-  /** Open the column editor when the table loads. Preferred over `editColumnsInitOpen`. */
+  /** Open the column editor when the table loads. */
   enableColumnEditorInitOpen?: boolean;
   emptyStateRenderer?: EmptyStateRenderer; // Custom renderer for empty states (for nested row states)
   enableHeaderEditing?: boolean; // Flag for enabling header label editing when clicking already active headers
+  /** Enable client-side pagination. */
+  enablePagination?: boolean;
   enableRowSelection?: boolean; // Flag for enabling row selection
   /**
    * Row selection mode when `enableRowSelection` is true.
@@ -108,6 +96,8 @@ export interface SimpleTableProps {
   height?: string | number; // Height of the table
   hideFooter?: boolean; // Flag for hiding the footer
   hideHeader?: boolean; // Flag for hiding the header
+  /** Highlight the hovered row. */
+  hoverRowBackground?: boolean;
   icons?: IconsConfig; // Configuration for all table icons
   includeHeadersInCSVExport?: boolean; // Flag for including column headers in CSV export (default: true)
   initialSortColumn?: string; // Accessor of the column to sort by on initial load
@@ -115,21 +105,20 @@ export interface SimpleTableProps {
   isLoading?: boolean; // Flag for showing loading skeleton state
   loadingStateRenderer?: LoadingStateRenderer; // Custom renderer for loading states
   maxHeight?: string | number; // Maximum height of the table (enables adaptive height with virtualization)
+  /** Alternate column background. */
+  oddColumnBackground?: boolean;
+  /** Alternate odd/even row backgrounds. */
+  oddEvenRowBackground?: boolean;
   onCellClick?: (props: CellClickProps) => void;
   onCellEdit?: (props: CellChangeProps) => void;
-  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
-  onColumnSelect?: (header: HeaderObject) => void; // Callback when a column is selected/clicked
+  onColumnOrderChange?: (newHeaders: ColumnDef[]) => void;
+  onColumnSelect?: (header: ColumnDef) => void; // Callback when a column is selected/clicked
   onColumnVisibilityChange?: (visibilityState: ColumnVisibilityState) => void; // Callback when column visibility changes
-  onColumnWidthChange?: (headers: HeaderObject[]) => void; // Callback when column widths change (resize or auto-size)
+  onColumnWidthChange?: (headers: ColumnDef[]) => void; // Callback when column widths change (resize or auto-size)
   onFilterChange?: (filters: TableFilterState) => void; // Callback when filter is applied
-  /**
-   * Called once when the table is ready.
-   * @deprecated Prefer {@link onTableReady}
-   */
-  onGridReady?: () => void;
-  /** Called once when the table is ready. Preferred over `onGridReady`. */
+  /** Called once when the table is ready. */
   onTableReady?: () => void;
-  onHeaderEdit?: (header: HeaderObject, newLabel: string) => void; // Callback when a header is edited
+  onHeaderEdit?: (header: ColumnDef, newLabel: string) => void; // Callback when a header is edited
   infiniteScrollThreshold?: number; // Pixel distance from the bottom of the scrollable area at which `onLoadMore` fires (default: 200)
   onLoadMore?: () => void; // Callback when user scrolls near bottom to load more data
   onNextPage?: OnNextPage; // Custom handler for next page
@@ -154,35 +143,7 @@ export interface SimpleTableProps {
   selectableCells?: boolean; // Flag if can select cells
   selectableColumns?: boolean; // Flag for selectable column headers
   serverSidePagination?: boolean; // Flag to disable internal pagination slicing (for server-side pagination)
-  /**
-   * Enable client-side pagination.
-   * @deprecated Prefer {@link enablePagination}
-   */
-  shouldPaginate?: boolean;
-  /** Enable client-side pagination. Preferred over `shouldPaginate`. */
-  enablePagination?: boolean;
   tableEmptyStateRenderer?: HTMLElement | string | null; // Custom empty state component when table has no rows
   theme?: Theme; // Theme
   totalRowCount?: number; // Total number of rows on server (for server-side pagination)
-  /**
-   * Highlight the hovered row.
-   * @deprecated Prefer {@link hoverRowBackground}
-   */
-  useHoverRowBackground?: boolean;
-  /** Highlight the hovered row. Preferred over `useHoverRowBackground`. */
-  hoverRowBackground?: boolean;
-  /**
-   * Alternate column background.
-   * @deprecated Prefer {@link oddColumnBackground}
-   */
-  useOddColumnBackground?: boolean;
-  /** Alternate column background. Preferred over `useOddColumnBackground`. */
-  oddColumnBackground?: boolean;
-  /**
-   * Alternate odd/even row backgrounds.
-   * @deprecated Prefer {@link oddEvenRowBackground}
-   */
-  useOddEvenRowBackground?: boolean;
-  /** Alternate odd/even row backgrounds. Preferred over `useOddEvenRowBackground`. */
-  oddEvenRowBackground?: boolean;
 }

@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTableVanilla } from "simple-table-core";
 import { buildVanillaConfig } from "../buildVanillaConfig";
 import { MountRegistry } from "../MountRegistry";
-import type { SimpleTableVueProps, VueHeaderObject } from "../types";
+import type { SimpleTableVueProps, VueColumnDef } from "../types";
 
 /**
  * Simulates Teleport/floating UI: content is appended to document.body and
@@ -73,7 +73,7 @@ function findScoreHeaderLabel(scope: HTMLElement): HTMLElement {
 
 describe("Vue adapter — headerRenderer mount cleanup on sort", () => {
   it("disposes the previous header mount so body-portaled floating UI unmounts on sort", async () => {
-    const headers: VueHeaderObject[] = [
+    const headers: VueColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
       {
         accessor: "score",
@@ -90,7 +90,7 @@ describe("Vue adapter — headerRenderer mount cleanup on sort", () => {
     registry = new MountRegistry();
 
     const props: SimpleTableVueProps = {
-      defaultHeaders: headers,
+      columns: headers,
       rows,
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",

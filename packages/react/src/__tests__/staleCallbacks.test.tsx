@@ -2,9 +2,9 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SimpleTable } from "../index";
-import type { ReactHeaderObject, SimpleTableReactProps } from "../index";
+import type { ReactColumnDef, SimpleTableReactProps } from "../index";
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 120, type: "string", sortable: true },
 ];
@@ -44,7 +44,7 @@ async function waitForElement(
 function renderTable(host: HTMLDivElement, props: Partial<SimpleTableReactProps>): void {
   root!.render(
     createElement(SimpleTable, {
-      defaultHeaders: headers,
+      columns: headers,
       rows,
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",

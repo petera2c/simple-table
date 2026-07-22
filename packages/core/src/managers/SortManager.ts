@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import Row from "../types/Row";
 import SortColumn, { SortDirection } from "../types/SortColumn";
 import { handleSort } from "../utils/sortUtils";
@@ -7,7 +7,7 @@ import { flattenAllHeaders } from "../utils/headerUtils";
 import { calculateAggregatedRows } from "../hooks/useAggregatedRows";
 
 export interface SortManagerConfig {
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   tableRows: Row[];
   externalSortHandling: boolean;
   onSortChange?: (sort: SortColumn | null) => void;
@@ -28,7 +28,7 @@ export class SortManager {
   private config: SortManagerConfig;
   private state: SortManagerState;
   private subscribers: Set<StateChangeCallback> = new Set();
-  private headerLookup: Map<Accessor, HeaderObject> = new Map();
+  private headerLookup: Map<Accessor, ColumnDef> = new Map();
 
   constructor(config: SortManagerConfig) {
     this.config = config;
@@ -45,7 +45,7 @@ export class SortManager {
 
   private updateHeaderLookup(): void {
     const allHeaders = flattenAllHeaders(this.config.headers);
-    this.headerLookup = new Map<Accessor, HeaderObject>();
+    this.headerLookup = new Map<Accessor, ColumnDef>();
     
     allHeaders.forEach((header) => {
       this.headerLookup.set(header.accessor, header);
@@ -71,7 +71,7 @@ export class SortManager {
     sortColumn,
   }: {
     groupingKeys: string[];
-    headers: HeaderObject[];
+    headers: ColumnDef[];
     rows: Row[];
     sortColumn: SortColumn;
   }): Row[] {
@@ -232,7 +232,7 @@ export class SortManager {
   }
 
   computeSortedRowsPreview(accessor: Accessor): Row[] {
-    const findHeaderRecursively = (headers: HeaderObject[]): HeaderObject | undefined => {
+    const findHeaderRecursively = (headers: ColumnDef[]): ColumnDef | undefined => {
       for (const header of headers) {
         if (header.accessor === accessor) {
           return header;

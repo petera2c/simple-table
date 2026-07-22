@@ -1,8 +1,8 @@
-import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig, Row } from "simple-table-core";
+import type { SimpleTableConfig, ColumnDef, ColumnEditorConfig, Row } from "simple-table-core";
 import { collectHeaderAccessors } from "simple-table-core";
 import type {
   SimpleTableSolidProps,
-  SolidHeaderObject,
+  SolidColumnDef,
   SolidColumnEditorConfig,
   SolidIconsConfig,
 } from "./types";
@@ -45,13 +45,13 @@ function transformColumnEditorConfig(
 }
 
 function transformHeader(
-  header: HeaderObject | SolidHeaderObject,
+  header: ColumnDef | SolidColumnDef,
   registry: MountRegistry,
-): HeaderObject {
+): ColumnDef {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
   const accessor = String(header.accessor);
 
-  const transformed: HeaderObject = { ...(rest as any) };
+  const transformed: ColumnDef = { ...(rest as any) };
 
   if (cellRenderer) {
     transformed.cellRenderer = wrapCachedSolidRenderer(
@@ -83,13 +83,13 @@ function transformHeader(
   return transformed;
 }
 
-/** Resolve preferred `columns` or legacy `defaultHeaders`. */
+/** Resolve column definitions. */
 export function resolveSolidColumns(
-  config: Pick<SimpleTableSolidProps, "columns" | "defaultHeaders">,
-): ReadonlyArray<HeaderObject | SolidHeaderObject> {
-  const headers = config.columns ?? config.defaultHeaders;
+  config: Pick<SimpleTableSolidProps, "columns">,
+): ReadonlyArray<ColumnDef | SolidColumnDef> {
+  const headers = config.columns;
   if (!headers) {
-    throw new Error("SimpleTable requires `columns` or `defaultHeaders`");
+    throw new Error("SimpleTable requires `columns`");
   }
   return headers;
 }
@@ -99,7 +99,6 @@ export function buildVanillaConfig(
   registry: MountRegistry,
 ): SimpleTableConfig {
   const {
-    defaultHeaders: _defaultHeaders,
     columns: _columns,
     rows,
     footerRenderer,
@@ -117,63 +116,56 @@ export function buildVanillaConfig(
     onHeaderEdit,
     onColumnSelect,
     enableColumnEditor,
-    editColumns,
     enableColumnEditorInitOpen,
-    editColumnsInitOpen,
     enablePagination,
-    shouldPaginate,
     onTableReady,
-    onGridReady,
     hoverRowBackground,
-    useHoverRowBackground,
     oddColumnBackground,
-    useOddColumnBackground,
     oddEvenRowBackground,
-    useOddEvenRowBackground,
     ...rest
   } = config;
 
-  const defaultHeaders = resolveSolidColumns(config);
+  const columns = resolveSolidColumns(config);
 
-  registry.pruneRendererCaches(collectHeaderAccessors(defaultHeaders));
+  registry.pruneRendererCaches(collectHeaderAccessors(columns));
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,
     rows: rows as Row[],
-    defaultHeaders: defaultHeaders.map((header) => transformHeader(header, registry)),
-    editColumns: enableColumnEditor ?? editColumns,
-    editColumnsInitOpen: enableColumnEditorInitOpen ?? editColumnsInitOpen,
-    shouldPaginate: enablePagination ?? shouldPaginate,
-    onGridReady: onTableReady ?? onGridReady,
-    useHoverRowBackground: hoverRowBackground ?? useHoverRowBackground,
-    useOddColumnBackground: oddColumnBackground ?? useOddColumnBackground,
-    useOddEvenRowBackground: oddEvenRowBackground ?? useOddEvenRowBackground,
+    columns: columns.map((header) => transformHeader(header, registry)),
+    enableColumnEditor,
+    enableColumnEditorInitOpen,
+    enablePagination,
+    onTableReady,
+    hoverRowBackground,
+    oddColumnBackground,
+    oddEvenRowBackground,
     // Authoritative mount teardown: core calls this before it permanently
     // discards any host element, so the registry disposes exactly the affected
     // Solid trees (including portals / floating UI).
     onRendererHostDiscard: registry.disposeHost,
     ...(onColumnOrderChange
       ? {
-          onColumnOrderChange: (headers: HeaderObject[]) =>
-            onColumnOrderChange(headers as unknown as SolidHeaderObject[]),
+          onColumnOrderChange: (headers: ColumnDef[]) =>
+            onColumnOrderChange(headers as unknown as SolidColumnDef[]),
         }
       : {}),
     ...(onColumnWidthChange
       ? {
-          onColumnWidthChange: (headers: HeaderObject[]) =>
-            onColumnWidthChange(headers as unknown as SolidHeaderObject[]),
+          onColumnWidthChange: (headers: ColumnDef[]) =>
+            onColumnWidthChange(headers as unknown as SolidColumnDef[]),
         }
       : {}),
     ...(onHeaderEdit
       ? {
-          onHeaderEdit: (header: HeaderObject, newLabel: string) =>
-            onHeaderEdit(header as unknown as SolidHeaderObject, newLabel),
+          onHeaderEdit: (header: ColumnDef, newLabel: string) =>
+            onHeaderEdit(header as unknown as SolidColumnDef, newLabel),
         }
       : {}),
     ...(onColumnSelect
       ? {
-          onColumnSelect: (header: HeaderObject) =>
-            onColumnSelect(header as unknown as SolidHeaderObject),
+          onColumnSelect: (header: ColumnDef) =>
+            onColumnSelect(header as unknown as SolidColumnDef),
         }
       : {}),
   };

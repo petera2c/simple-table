@@ -1,12 +1,12 @@
 // infrastructure-demo.component.ts
 import { Component } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Row } from "@simple-table/angular";
+import type { AngularColumnDef, Row } from "@simple-table/angular";
 import { infrastructureData } from "./infrastructure.demo-data"; // 50 sample servers
 import { InfraCpuCellComponent } from "./infrastructure-cell-components";
 import "@simple-table/angular/styles.css";
 
-const headers: AngularHeaderObject[] = [
+const headers: AngularColumnDef[] = [
   { accessor: "serverId", label: "Server ID", type: "string", pinned: "left", width: "1.2fr", sortable: true },
   {
     accessor: "performance",
@@ -27,11 +27,11 @@ const headers: AngularHeaderObject[] = [
   imports: [SimpleTableComponent],
   template: `
     <simple-table
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rows]="rows"
       [columnReordering]="true"
       [columnResizing]="true"
-      [editColumns]="true"
+      [enableColumnEditor]="true"
       [selectableCells]="true"
       height="400px"
     ></simple-table>
@@ -39,7 +39,7 @@ const headers: AngularHeaderObject[] = [
 })
 export class InfrastructureDemoComponent {
   readonly rows: Row[] = infrastructureData;
-  readonly headers: AngularHeaderObject[] = headers;
+  readonly headers: AngularColumnDef[] = headers;
 
   // Stream live metrics by calling the table API's updateData(...) on an interval
 }

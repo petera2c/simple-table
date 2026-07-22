@@ -1,4 +1,4 @@
-import type HeaderObject from "../../types/HeaderObject";
+import type ColumnDef from "../../types/ColumnDef";
 import { getHeaderMinWidth } from "../headerWidthUtils";
 
 /**
@@ -12,7 +12,7 @@ export const handleParentHeaderResize = ({
   maxWidth,
 }: {
   delta: number;
-  leafHeaders: HeaderObject[];
+  leafHeaders: ColumnDef[];
   minWidth: number;
   startWidth: number;
   maxWidth: number;

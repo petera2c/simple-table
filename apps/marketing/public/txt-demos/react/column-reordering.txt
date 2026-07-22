@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactHeaderObject } from "@simple-table/react";
+import type { Theme, ReactColumnDef } from "@simple-table/react";
 import { columnReorderingConfig } from "./column-reordering.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -13,14 +13,14 @@ const ColumnReorderingDemo = ({
 }) => {
   const [headers, setHeaders] = useState(() => [...columnReorderingConfig.headers]);
 
-  const handleColumnOrderChange = (newHeaders: ReactHeaderObject[]) => {
+  const handleColumnOrderChange = (newHeaders: ReactColumnDef[]) => {
     setHeaders(newHeaders);
   };
 
   return (
     <SimpleTable
       columnReordering={columnReorderingConfig.tableProps.columnReordering}
-      defaultHeaders={headers}
+      columns={headers}
       rows={columnReorderingConfig.rows}
       height={height}
       theme={theme}

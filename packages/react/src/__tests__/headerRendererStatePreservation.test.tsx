@@ -2,7 +2,7 @@ import { createElement, createRef, useEffect, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
-import type { HeaderRendererProps, ReactHeaderObject, TableAPI } from "../index";
+import type { HeaderRendererProps, ReactColumnDef, TableAPI } from "../index";
 
 /**
  * Regression: sort/filter icon refresh must not tear down a React headerRenderer
@@ -109,7 +109,7 @@ async function setLocalHeaderState(host: HTMLElement): Promise<void> {
 
 describe("SimpleTable (React adapter) — headerRenderer state across sort/filter", () => {
   it("preserves React header state when the column sort toggles", async () => {
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
       {
         accessor: "score",
@@ -123,7 +123,7 @@ describe("SimpleTable (React adapter) — headerRenderer state across sort/filte
 
     const host = mount(
       createElement(SimpleTable, {
-        defaultHeaders: headers,
+        columns: headers,
         rows,
         getRowId: (p: { row: unknown }) => String((p.row as { id?: number })?.id),
         height: "250px",
@@ -164,7 +164,7 @@ describe("SimpleTable (React adapter) — headerRenderer state across sort/filte
 
   it("preserves React header state when a filter is applied on the column", async () => {
     const tableRef = createRef<TableAPI>();
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
       {
         accessor: "score",
@@ -179,7 +179,7 @@ describe("SimpleTable (React adapter) — headerRenderer state across sort/filte
     const host = mount(
       createElement(SimpleTable, {
         ref: tableRef,
-        defaultHeaders: headers,
+        columns: headers,
         rows,
         getRowId: (p: { row: unknown }) => String((p.row as { id?: number })?.id),
         height: "250px",
@@ -204,9 +204,9 @@ describe("SimpleTable (React adapter) — headerRenderer state across sort/filte
   });
 });
 
-describe("SimpleTable (React adapter) — unstable defaultHeaders / rows refs", () => {
-  it("preserves React header state when defaultHeaders is rebuilt with the same structure", async () => {
-    function buildHeaders(): ReactHeaderObject[] {
+describe("SimpleTable (React adapter) — unstable columns / rows refs", () => {
+  it("preserves React header state when columns is rebuilt with the same structure", async () => {
+    function buildHeaders(): ReactColumnDef[] {
       return [
         { accessor: "name", label: "Name", width: 120, type: "string" },
         {
@@ -240,7 +240,7 @@ describe("SimpleTable (React adapter) — unstable defaultHeaders / rows refs", 
           `churn ${tick}`,
         ),
         createElement(SimpleTable, {
-          defaultHeaders: buildHeaders(),
+          columns: buildHeaders(),
           rows: rowData,
           getRowId: (p: { row: unknown }) => String((p.row as { id?: number })?.id),
           height: "250px",
@@ -267,7 +267,7 @@ describe("SimpleTable (React adapter) — unstable defaultHeaders / rows refs", 
   it("applies a real structural header change after unstable rebuilds", async () => {
     function Harness() {
       const [extra, setExtra] = useState(false);
-      const headers: ReactHeaderObject[] = [
+      const headers: ReactColumnDef[] = [
         { accessor: "name", label: "Name", width: 120, type: "string" },
         {
           accessor: "score",
@@ -293,7 +293,7 @@ describe("SimpleTable (React adapter) — unstable defaultHeaders / rows refs", 
           "add column",
         ),
         createElement(SimpleTable, {
-          defaultHeaders: headers.map((h) => ({ ...h })),
+          columns: headers.map((h) => ({ ...h })),
           rows: rows.map((r) => ({ ...r, extra: "x" })),
           getRowId: (p: { row: unknown }) => String((p.row as { id?: number })?.id),
           height: "250px",

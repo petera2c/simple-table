@@ -2,7 +2,7 @@ import type { Component, JSX } from "solid-js";
 import type {
   SimpleTableProps,
   SimpleTableConfig,
-  HeaderObject,
+  ColumnDef,
   Row,
   TableAPI,
   CellRendererProps,
@@ -66,17 +66,17 @@ export interface SolidColumnEditorConfig
   customRenderer?: SolidColumnEditorCustomRenderer;
 }
 
-// ─── HeaderObject override ────────────────────────────────────────────────────
+// ─── ColumnDef override ────────────────────────────────────────────────────
 /**
- * Column definition for `columns` / `defaultHeaders`: core column metadata with
- * Solid-only renderer fields. `columns` / `defaultHeaders` also accept plain
- * `HeaderObject[]` from shared configs.
+ * Column definition for `columns`: core column metadata with
+ * Solid-only renderer fields. `columns` also accept plain
+ * `ColumnDef[]` from shared configs.
  */
-export interface SolidHeaderObject
-  extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
+export interface SolidColumnDef
+  extends Omit<ColumnDef, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
   cellRenderer?: SolidCellRenderer;
   headerRenderer?: SolidHeaderRenderer;
-  children?: SolidHeaderObject[];
+  children?: SolidColumnDef[];
   nestedTable?: Omit<
     SimpleTableSolidProps,
     | "rows"
@@ -87,20 +87,17 @@ export interface SolidHeaderObject
   >;
 }
 
-/** Preferred name for Solid column definitions. Alias of {@link SolidHeaderObject}. */
-export type SolidColumnDef = SolidHeaderObject;
 
 // ─── Top-level props ──────────────────────────────────────────────────────────
 // Mirrors SimpleTableProps with Solid-specific overrides. Pass `ref` to receive
 // the TableAPI once mounted (callback ref).
 //
 //   Overridden to Solid equivalents:
-//     - columns / defaultHeaders → ReadonlyArray<HeaderObject | SolidHeaderObject>
+//     - columns → ReadonlyArray<ColumnDef | SolidColumnDef>
 export interface SimpleTableSolidProps
   extends Omit<
     SimpleTableProps,
     | "rows"
-    | "defaultHeaders"
     | "columns"
     | "footerRenderer"
     | "emptyStateRenderer"
@@ -116,19 +113,14 @@ export interface SimpleTableSolidProps
     | "onHeaderEdit"
     | "onColumnSelect"
   > {
-  /**
-   * Column definitions.
-   * @deprecated Prefer {@link columns}
-   */
-  defaultHeaders?: ReadonlyArray<HeaderObject | SolidHeaderObject>;
-  /** Column definitions. Preferred over `defaultHeaders`. */
-  columns?: ReadonlyArray<HeaderObject | SolidHeaderObject>;
+  /** Column definitions. */
+  columns?: ReadonlyArray<ColumnDef | SolidColumnDef>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
-  onColumnOrderChange?: (newHeaders: SolidHeaderObject[]) => void;
-  onColumnWidthChange?: (headers: SolidHeaderObject[]) => void;
-  onHeaderEdit?: (header: SolidHeaderObject, newLabel: string) => void;
-  onColumnSelect?: (header: SolidHeaderObject) => void;
+  onColumnOrderChange?: (newHeaders: SolidColumnDef[]) => void;
+  onColumnWidthChange?: (headers: SolidColumnDef[]) => void;
+  onHeaderEdit?: (header: SolidColumnDef, newLabel: string) => void;
+  onColumnSelect?: (header: SolidColumnDef) => void;
   footerRenderer?: SolidFooterRenderer;
   loadingStateRenderer?: SolidLoadingStateRenderer;
   errorStateRenderer?: SolidErrorStateRenderer;

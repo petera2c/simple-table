@@ -1,6 +1,6 @@
 // custom-theme-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { customThemeConfig } from "./custom-theme.demo-data";
 import "@simple-table/angular/styles.css";
 import "./custom-theme.css";
@@ -12,7 +12,7 @@ import "./custom-theme.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="resolvedTheme"
       [customTheme]="customThemeOverrides"
@@ -26,7 +26,7 @@ export class CustomThemeDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = customThemeConfig.rows;
-  readonly headers: AngularHeaderObject[] = customThemeConfig.headers;
+  readonly headers: AngularColumnDef[] = customThemeConfig.headers;
   readonly customThemeOverrides = customThemeConfig.tableProps.customTheme;
 
   get resolvedTheme(): Theme {
@@ -130,7 +130,7 @@ export class CustomThemeDemoComponent {
 
 // custom-theme.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject, Row } from "@simple-table/angular";
+import type { AngularColumnDef, Row } from "@simple-table/angular";
 
 
 export const customThemeData: Row[] = [
@@ -151,7 +151,7 @@ function formatPhone(raw: string): string {
   return raw;
 }
 
-export const customThemeHeaders: AngularHeaderObject[] = [
+export const customThemeHeaders: AngularColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 170, type: "string", sortable: true },
   {

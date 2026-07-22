@@ -1,6 +1,6 @@
 import Row from "./Row";
 import RowState from "./RowState";
-import HeaderObject, { Accessor } from "./HeaderObject";
+import ColumnDef, { Accessor } from "./ColumnDef";
 
 type TableRow = {
   depth: number;
@@ -40,7 +40,7 @@ type TableRow = {
   // If this row should render a nested grid, this contains the necessary information
   nestedTable?: {
     parentRow: Row;
-    expandableHeader: HeaderObject;
+    expandableHeader: ColumnDef;
     childAccessor: Accessor;
     calculatedHeight: number; // The calculated height in pixels for this nested grid
   };

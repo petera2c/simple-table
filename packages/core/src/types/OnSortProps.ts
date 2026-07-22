@@ -1,4 +1,4 @@
-import { Accessor } from "./HeaderObject";
+import { Accessor } from "./ColumnDef";
 
 type OnSortProps = (accessor: Accessor) => void;
 

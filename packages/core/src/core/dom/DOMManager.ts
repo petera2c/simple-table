@@ -73,7 +73,7 @@ export class DOMManager {
     // Match RenderOrchestrator so DimensionManager's first clientWidth read (before any render)
     // already excludes the column editor strip when the toggle is visible.
     const editorStripWidth = getColumnEditorStripWidth(
-      config.editColumns,
+      config.enableColumnEditor,
       config.columnEditorConfig?.showToggle,
     );
     content.style.width =

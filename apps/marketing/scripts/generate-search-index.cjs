@@ -168,7 +168,7 @@ function getSEOMetadata(docId) {
     "api-reference": {
       title: "Simple Table API Reference: React Grid Props",
       description:
-        "Complete API reference for Simple Table props and HeaderObject configuration. All react-table props for datagrids and data tables with TypeScript support.",
+        "Complete API reference for Simple Table props and ColumnDef configuration. All react-table props for datagrids and data tables with TypeScript support.",
       keywords:
         "simple-table, simple-table-core, react-table, react-grid, data-grid, datagrid, data table, api reference, props reference, typescript table, documentation",
     },

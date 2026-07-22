@@ -14,11 +14,11 @@ export function renderColumnEditorCustomRendererDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: [...columnEditorCustomRendererConfig.headers],
+    columns: [...columnEditorCustomRendererConfig.headers],
     rows: columnEditorCustomRendererConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
-    editColumns: true,
+    enableColumnEditor: true,
     columnEditorConfig: {
       text: COLUMN_EDITOR_TEXT,
       searchEnabled: true,
@@ -32,7 +32,7 @@ export function renderColumnEditorCustomRendererDemo(
 
 // column-editor-custom-renderer.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row, ColumnEditorRowRendererProps } from "simple-table-core";
+import type { ColumnDef, Row, ColumnEditorRowRendererProps } from "simple-table-core";
 
 
 export const columnEditorCustomRendererData: Row[] = [
@@ -46,7 +46,7 @@ export const columnEditorCustomRendererData: Row[] = [
   { id: 8, name: "Henry Patel", email: "henry@example.com", role: "Lead", salary: 145000, department: "Engineering", status: "active" },
 ];
 
-export const columnEditorCustomRendererHeaders: HeaderObject[] = [
+export const columnEditorCustomRendererHeaders: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 170, type: "string", sortable: true },
   { accessor: "email", label: "Email", width: 200, type: "string" },
@@ -67,7 +67,7 @@ export const columnEditorCustomRendererConfig = {
   headers: columnEditorCustomRendererHeaders,
   rows: columnEditorCustomRendererData,
   tableProps: {
-    editColumns: true,
+    enableColumnEditor: true,
   },
 } as const;
 

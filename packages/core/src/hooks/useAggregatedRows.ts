@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import { AggregationConfig } from "../types/AggregationTypes";
 import Row from "../types/Row";
 import { flattenAllHeaders } from "../utils/headerUtils";
@@ -8,12 +8,12 @@ import { RowManager } from "../managers/RowManager";
 
 interface CalculateAggregatedRowsProps {
   rows?: Row[];
-  headers?: HeaderObject[];
+  headers?: ColumnDef[];
   rowGrouping?: string[];
   rowManager?: RowManager;
 }
 
-const getAllAggregationHeaders = (headers: HeaderObject[]): HeaderObject[] => {
+const getAllAggregationHeaders = (headers: ColumnDef[]): ColumnDef[] => {
   return flattenAllHeaders(headers).filter((header) => header.aggregation);
 };
 

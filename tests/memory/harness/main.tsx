@@ -4,7 +4,7 @@ import { flushSync } from "react-dom";
 import { SimpleTableVanilla } from "simple-table-core";
 import type { CellRendererProps, SimpleTableConfig, TableAPI } from "simple-table-core";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, SimpleTableReactProps } from "@simple-table/react";
+import type { ReactColumnDef, SimpleTableReactProps } from "@simple-table/react";
 
 import { makeStockRows, stockHeaders, TICK_ACCESSORS, type StockRow } from "./data";
 import type { LeakHarness, MountOptions, MountTarget, ScrollMetrics } from "./types";
@@ -84,7 +84,7 @@ async function unmountInternal(): Promise<void> {
 
 async function mountCore(options: MountOptions, data: StockRow[]): Promise<void> {
   const config: SimpleTableConfig = {
-    defaultHeaders: stockHeaders,
+    columns: stockHeaders,
     rows: data,
     height: options.height ?? 400,
     cellUpdateFlash: options.cellUpdateFlash ?? false,
@@ -103,14 +103,14 @@ async function mountCore(options: MountOptions, data: StockRow[]): Promise<void>
 }
 
 async function mountReact(options: MountOptions, data: StockRow[]): Promise<void> {
-  const headers: ReactHeaderObject[] = stockHeaders.map((h) =>
+  const headers: ReactColumnDef[] = stockHeaders.map((h) =>
     options.customRenderer && h.accessor === "price"
-      ? ({ ...h, cellRenderer: PriceCell } as ReactHeaderObject)
-      : (h as ReactHeaderObject),
+      ? ({ ...h, cellRenderer: PriceCell } as ReactColumnDef)
+      : (h as ReactColumnDef),
   );
 
   const props: SimpleTableReactProps = {
-    defaultHeaders: headers,
+    columns: headers,
     rows: data,
     height: options.height ?? 400,
     cellUpdateFlash: options.cellUpdateFlash ?? false,

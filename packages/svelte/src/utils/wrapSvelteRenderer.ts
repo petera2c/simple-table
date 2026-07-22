@@ -24,7 +24,7 @@ export function wrapSvelteRenderer<P extends Record<string, any>>(
 
 /**
  * Like {@link wrapSvelteRenderer}, but reuses one wrapper per accessor so
- * unstable column rebuilds keep a stable function identity on HeaderObject.
+ * unstable column rebuilds keep a stable function identity on ColumnDef.
  */
 export function wrapCachedSvelteRenderer<P extends Record<string, any>>(
   registry: MountRegistry,

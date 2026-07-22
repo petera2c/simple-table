@@ -14,9 +14,9 @@ const SalesDemo = () => {
 
   return (
     <SimpleTable
-      defaultHeaders={SALES_HEADERS}
+      columns={SALES_HEADERS}
       rows={rows}
-      shouldPaginate
+      enablePagination
       rowsPerPage={40}
       footerPosition="top"
       footerRenderer={(props: FooterRendererProps) => (
@@ -27,7 +27,7 @@ const SalesDemo = () => {
       autoExpandColumns
       columnReordering
       columnResizing
-      editColumns
+      enableColumnEditor
       selectableCells
       onCellEdit={handleCellEdit}
       height="70dvh"

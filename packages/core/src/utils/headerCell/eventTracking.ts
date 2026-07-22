@@ -1,4 +1,4 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import { cleanupAriaRows } from "../ariaRowOwnership";
 
 // Event listener tracking - store listeners per element
@@ -16,7 +16,7 @@ let throttleLastCallTime = 0;
 // Drag state tracking
 export let prevUpdateTime = Date.now();
 export let prevDraggingPosition = { screenX: 0, screenY: 0 };
-export let prevHeaders: HeaderObject[] | null = null;
+export let prevHeaders: ColumnDef[] | null = null;
 
 export const setPrevUpdateTime = (time: number) => {
   prevUpdateTime = time;
@@ -29,7 +29,7 @@ export const setPrevDraggingPosition = (position: {
   prevDraggingPosition = position;
 };
 
-export const setPrevHeaders = (headers: HeaderObject[] | null) => {
+export const setPrevHeaders = (headers: ColumnDef[] | null) => {
   prevHeaders = headers;
 };
 

@@ -24,7 +24,7 @@ export function wrapSolidRenderer<P extends object>(
 
 /**
  * Like {@link wrapSolidRenderer}, but reuses one wrapper per accessor so
- * unstable column rebuilds keep a stable function identity on HeaderObject.
+ * unstable column rebuilds keep a stable function identity on ColumnDef.
  */
 export function wrapCachedSolidRenderer<P extends object>(
   registry: MountRegistry,

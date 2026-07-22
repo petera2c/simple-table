@@ -32,7 +32,7 @@ export function renderInfiniteScrollDemo(
   updateStatus();
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: infiniteScrollConfig.headers,
+    columns: infiniteScrollConfig.headers,
     rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
@@ -57,7 +57,7 @@ export function renderInfiniteScrollDemo(
 
 // infinite-scroll.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "simple-table-core";
+import type { ColumnDef, Row } from "simple-table-core";
 
 
 const FIRST_NAMES = ["Elena", "Kai", "Amara", "Santiago", "Priya", "Magnus", "Zara", "Luca", "Sarah", "Olumide", "Isabella", "Dmitri"];
@@ -81,7 +81,7 @@ export function generateInfiniteScrollData(startIndex: number, count: number): R
   return rows;
 }
 
-export const infiniteScrollHeaders: HeaderObject[] = [
+export const infiniteScrollHeaders: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120 },
   { accessor: "email", label: "Email", width: 250 },

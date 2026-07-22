@@ -11,7 +11,7 @@ export function renderColumnWidthDemo(
   const isMobile = window.innerWidth < 768;
 
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: columnWidthConfig.headers,
+    columns: columnWidthConfig.headers,
     rows: columnWidthConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
@@ -31,10 +31,10 @@ export function renderColumnWidthDemo(
 
 // column-width.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
-export const columnWidthHeaders: HeaderObject[] = [
+export const columnWidthHeaders: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, type: "string" },
   { accessor: "email", label: "Email", width: "1fr", minWidth: 180, type: "string" },

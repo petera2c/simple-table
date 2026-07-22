@@ -1,8 +1,8 @@
-import HeaderObject from "./HeaderObject";
+import ColumnDef from "./ColumnDef";
 type SortDirection = "asc" | "desc";
 // Type for a single sort column
 type SortColumn = {
-  key: HeaderObject;
+  key: ColumnDef;
   direction: SortDirection;
 };
 

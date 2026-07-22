@@ -61,7 +61,7 @@ function markWrapped<T extends (...args: any[]) => any>(fn: T): T {
  * inherits context. The returned container is filled on the host's next render.
  *
  * Idempotent: if `Component` is already a wrapped vanilla renderer, it is
- * returned unchanged so controlled `defaultHeaders` updates cannot nest wraps.
+ * returned unchanged so controlled `columns` updates cannot nest wraps.
  */
 export function wrapReactRenderer<P extends object>(
   bridge: PortalBridge,
@@ -135,7 +135,7 @@ export function wrapReactHeaderRenderer(
  * Like {@link wrapReactRendererIntoFragment}, but reuses one wrapper per
  * `accessor` on the bridge. When the consumer rebuilds columns with a new
  * Component identity, the slot's `component` is updated in place so the
- * wrapped function identity stays stable across `defaultHeaders` rebuilds.
+ * wrapped function identity stays stable across `columns` rebuilds.
  */
 export function wrapCachedCellRenderer<P extends object>(
   bridge: PortalBridge,

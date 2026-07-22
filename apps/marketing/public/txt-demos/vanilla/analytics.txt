@@ -95,8 +95,8 @@ export function renderAnalyticsDemo(
       columnReordering: true,
       columnResizing: true,
       copyHeadersToClipboard: true,
-      defaultHeaders: analyticsDemoConfig.headers,
-      editColumns: true,
+      columns: analyticsDemoConfig.headers,
+      enableColumnEditor: true,
       enableStickyParents: nested,
       expandAll: nested,
       getRowId: ({ row }) => String(row.id),
@@ -109,8 +109,8 @@ export function renderAnalyticsDemo(
       rows: analyticsDemoConfig.rows,
       selectableCells: true,
       theme: options?.theme,
-      useHoverRowBackground: true,
-      useOddEvenRowBackground: true,
+      hoverRowBackground: true,
+      oddEvenRowBackground: true,
     });
   };
 
@@ -149,9 +149,9 @@ export function renderAnalyticsDemo(
 
 
 // analytics.demo-data.ts
-import type { HeaderObject, PivotConfig, Row } from "simple-table-core";
+import type { ColumnDef, PivotConfig, Row } from "simple-table-core";
 
-export const analyticsHeaders: HeaderObject[] = [
+export const analyticsHeaders: ColumnDef[] = [
   {
     accessor: "region",
     label: "Region",

@@ -11,16 +11,16 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rows]="rows"
       [rowGrouping]="['invoices', 'charges']"
       initialSortColumn="amount"
       initialSortDirection="desc"
       [columnReordering]="true"
       [columnResizing]="true"
-      [editColumns]="true"
+      [enableColumnEditor]="true"
       [selectableCells]="true"
-      [useOddColumnBackground]="true"
+      [oddColumnBackground]="true"
       height="400px"
     ></simple-table>
   `,

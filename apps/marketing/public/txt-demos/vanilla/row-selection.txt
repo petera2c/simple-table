@@ -1,6 +1,6 @@
 // RowSelectionDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject } from "simple-table-core";
+import type { Theme, ColumnDef } from "simple-table-core";
 import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
 import type { LibraryBook } from "./row-selection.demo-data";
 import "simple-table-core/styles.css";
@@ -28,7 +28,7 @@ export function renderRowSelectionDemo(
 
   const titlesSpan = infoPanel.querySelector("#selected-titles")!;
 
-  const headers: HeaderObject[] = rowSelectionConfig.headers.map((h) => {
+  const headers: ColumnDef[] = rowSelectionConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
@@ -43,7 +43,7 @@ export function renderRowSelectionDemo(
   });
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: headers,
+    columns: headers,
     rows: rowSelectionConfig.rows,
     height: options?.height ?? "348px",
     theme: options?.theme,
@@ -66,7 +66,7 @@ export function renderRowSelectionDemo(
 
 // row-selection.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
 export type LibraryBook = {
@@ -98,7 +98,7 @@ export const rowSelectionData: LibraryBook[] = [
   { id: 1012, isbn: "978-0593229439", title: "Climate Solutions for Tomorrow", author: "Dr. Hassan Al-Rashid", genre: "Environmental Science", yearPublished: 2022, pages: 398, rating: 4.8, status: "Available", librarySection: "Science" },
 ];
 
-export const rowSelectionHeaders: HeaderObject[] = [
+export const rowSelectionHeaders: ColumnDef[] = [
   { accessor: "id", label: "Book ID", width: 80, sortable: true, type: "number" },
   { accessor: "isbn", label: "ISBN", width: 120, sortable: true, type: "string" },
   { accessor: "title", label: "Title", minWidth: 150, width: "1fr", sortable: true, type: "string" },

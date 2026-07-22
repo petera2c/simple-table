@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import { Pinned } from "../types/Pinned";
 import { displayCell } from "./cellUtils";
 
@@ -17,9 +17,9 @@ export function calculateColumnIndices({
   pinnedRightColumns,
   collapsedHeaders,
 }: {
-  headers: HeaderObject[];
-  pinnedLeftColumns: HeaderObject[];
-  pinnedRightColumns: HeaderObject[];
+  headers: ColumnDef[];
+  pinnedLeftColumns: ColumnDef[];
+  pinnedRightColumns: ColumnDef[];
   collapsedHeaders?: Set<Accessor>;
 }): ColumnIndices {
   const indices: ColumnIndices = {};
@@ -29,7 +29,7 @@ export function calculateColumnIndices({
   const allHeaders = [...pinnedLeftColumns, ...headers, ...pinnedRightColumns];
 
   const processHeader = (
-    header: HeaderObject,
+    header: ColumnDef,
     isFirst: boolean = false,
     rootPinned?: Pinned,
   ): void => {

@@ -1,10 +1,10 @@
 // MusicDemo.tsx
 import { SimpleTable } from "@simple-table/solid";
-import type { SolidHeaderObject, CellRendererProps } from "@simple-table/solid";
+import type { SolidColumnDef, CellRendererProps } from "@simple-table/solid";
 import { musicData } from "./music.demo-data";
 import "@simple-table/solid/styles.css";
 
-const headers: SolidHeaderObject[] = [
+const headers: SolidColumnDef[] = [
   { accessor: "rank", label: "#", type: "number", width: 60, pinned: "left", align: "center" },
   {
     accessor: "artistName",
@@ -31,7 +31,7 @@ const headers: SolidHeaderObject[] = [
 export default function MusicDemo() {
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={musicData}
       columnReordering
       columnResizing

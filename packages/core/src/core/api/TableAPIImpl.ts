@@ -1,6 +1,6 @@
 import { TableAPI } from "../../types/TableAPI";
 import { SimpleTableConfig } from "../../types/SimpleTableConfig";
-import HeaderObject, { Accessor } from "../../types/HeaderObject";
+import ColumnDef, { Accessor } from "../../types/ColumnDef";
 import Row from "../../types/Row";
 import TableRow from "../../types/TableRow";
 import SortColumn, { SortDirection } from "../../types/SortColumn";
@@ -34,10 +34,10 @@ import type { RowId } from "../../types/RowId";
 export interface TableAPIContext {
   config: SimpleTableConfig;
   localRows: Row[];
-  effectiveHeaders: HeaderObject[];
-  headers: HeaderObject[];
+  effectiveHeaders: ColumnDef[];
+  headers: ColumnDef[];
   /** Pristine snapshot of the configured column definitions (see SimpleTableVanilla.pristineDefaultHeaders). */
-  getPristineDefaultHeaders: () => HeaderObject[];
+  getPristineDefaultHeaders: () => ColumnDef[];
   essentialAccessors: Set<string>;
   customTheme: CustomTheme;
   currentPage: number;
@@ -82,13 +82,13 @@ export interface TableAPIContext {
    * frequency ticks don't spam sort animations.
    */
   runWithoutAnimationSnapshot?: (fn: () => void) => void;
-  setHeaders: (headers: HeaderObject[]) => void;
+  setHeaders: (headers: ColumnDef[]) => void;
   setCurrentPage: (page: number) => void;
   setColumnEditorOpen: (open: boolean) => void;
   getEffectiveRowGrouping: () => Accessor[] | undefined;
   setPivot: (config: PivotConfig | null) => void;
   getPivot: () => PivotConfig | null;
-  getPivotHeaders: () => HeaderObject[];
+  getPivotHeaders: () => ColumnDef[];
   getPivotedRows: () => Row[];
 }
 
@@ -334,7 +334,7 @@ export class TableAPIImpl {
         return getFlattenResult().flattenedRows;
       },
 
-      getHeaders: (): HeaderObject[] => {
+      getHeaders: (): ColumnDef[] => {
         return context.effectiveHeaders;
       },
 
@@ -374,7 +374,7 @@ export class TableAPIImpl {
       },
 
       resetColumns: () => {
-        // Restore the pristine column definitions — NOT config.defaultHeaders,
+        // Restore the pristine column definitions — NOT config.columns,
         // whose header objects are mutated in place by runtime visibility
         // changes (column editor) and so drift away from the configured state.
         // While pivot is active, restore generated pivot headers (not the
@@ -495,7 +495,7 @@ export class TableAPIImpl {
         return context.getPivot();
       },
 
-      getPivotHeaders: (): HeaderObject[] => {
+      getPivotHeaders: (): ColumnDef[] => {
         return context.getPivotHeaders();
       },
 
@@ -504,13 +504,13 @@ export class TableAPIImpl {
       },
 
       toggleColumnEditor: (open?: boolean) => {
-        if (!context.config.editColumns) return;
+        if (!context.config.enableColumnEditor) return;
         context.setColumnEditorOpen(open !== undefined ? open : !context.columnEditorOpen);
         context.onRender();
       },
 
       applyColumnVisibility: async (visibility: ColumnVisibilityState) => {
-        const updateHeaderVisibility = (headerList: HeaderObject[]): HeaderObject[] => {
+        const updateHeaderVisibility = (headerList: ColumnDef[]): ColumnDef[] => {
           return headerList.map((header) => {
             const acc = String(header.accessor);
             const shouldUpdate = acc in visibility;

@@ -1,5 +1,5 @@
-import type { Accessor } from "./HeaderObject";
-import type HeaderObject from "./HeaderObject";
+import type { Accessor } from "./ColumnDef";
+import type ColumnDef from "./ColumnDef";
 import type { IconElement } from "./IconsConfig";
 import type { PanelSection } from "./PanelSection";
 
@@ -12,7 +12,7 @@ export interface ColumnEditorRowRendererComponents {
   pinIcon?: IconElement;
 }
 
-/** Pin / unpin actions for column editor rows (also use for lock/tooltip UX via HeaderObject.essential). */
+/** Pin / unpin actions for column editor rows (also use for lock/tooltip UX via ColumnDef.essential). */
 export interface ColumnEditorPinControl {
   pinnedSide: "left" | "right" | null;
   canPinLeft: boolean;
@@ -25,11 +25,11 @@ export interface ColumnEditorPinControl {
 
 interface ColumnEditorRowRendererProps {
   accessor: Accessor;
-  header: HeaderObject;
+  header: ColumnDef;
   components: ColumnEditorRowRendererComponents;
   /** Which panel section this row is rendered in */
   panelSection?: PanelSection;
-  /** Resolved from HeaderObject.essential / essentialAccessors */
+  /** Resolved from ColumnDef.essential / essentialAccessors */
   essential?: boolean;
   /** False when visibility cannot be toggled (essential columns) */
   canToggleVisibility?: boolean;

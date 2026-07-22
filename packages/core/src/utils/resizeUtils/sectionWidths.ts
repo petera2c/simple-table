@@ -1,4 +1,4 @@
-import type HeaderObject from "../../types/HeaderObject";
+import type ColumnDef from "../../types/ColumnDef";
 import { findLeafHeaders, getHeaderWidthInPixels } from "../headerWidthUtils";
 import { getMaxPinnedSectionPercent } from "../../consts/column-constraints";
 import { calculatePinnedWidth } from "../headerUtils";
@@ -39,7 +39,7 @@ export const recalculateAllSectionWidths = ({
   containerWidth,
   collapsedHeaders,
 }: {
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   containerWidth?: number;
   collapsedHeaders?: Set<string>;
 }) => {

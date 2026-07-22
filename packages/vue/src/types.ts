@@ -2,7 +2,7 @@ import type { Component, VNode } from "vue";
 import type {
   SimpleTableProps,
   SimpleTableConfig,
-  HeaderObject,
+  ColumnDef,
   Row,
   TableAPI,
   CellRendererProps,
@@ -68,17 +68,17 @@ export interface VueColumnEditorConfig
   customRenderer?: VueColumnEditorCustomRenderer;
 }
 
-// ─── HeaderObject override ────────────────────────────────────────────────────
+// ─── ColumnDef override ────────────────────────────────────────────────────
 /**
- * Column definition for `columns` / `defaultHeaders`: core column metadata with
+ * Column definition for `columns`: core column metadata with
  * Vue-only `cellRenderer` / `headerRenderer` / `children` / `nestedTable`.
- * `columns` / `defaultHeaders` also accept plain `HeaderObject[]` from shared configs.
+ * `columns` also accept plain `ColumnDef[]` from shared configs.
  */
-export interface VueHeaderObject
-  extends Omit<HeaderObject, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
+export interface VueColumnDef
+  extends Omit<ColumnDef, "cellRenderer" | "headerRenderer" | "children" | "nestedTable"> {
   cellRenderer?: VueCellRenderer;
   headerRenderer?: VueHeaderRenderer;
-  children?: VueHeaderObject[];
+  children?: VueColumnDef[];
   nestedTable?: Omit<
     SimpleTableVueProps,
     | "rows"
@@ -89,20 +89,17 @@ export interface VueHeaderObject
   >;
 }
 
-/** Preferred name for Vue column definitions. Alias of {@link VueHeaderObject}. */
-export type VueColumnDef = VueHeaderObject;
 
 // ─── Top-level props ──────────────────────────────────────────────────────────
 // Mirrors SimpleTableProps with Vue-specific overrides. Use a template ref and
 // `ref.value?.getAPI()` for the imperative TableAPI.
 //
 //   Overridden to Vue equivalents:
-//     - columns / defaultHeaders → ReadonlyArray<HeaderObject | VueHeaderObject>
+//     - columns → ReadonlyArray<ColumnDef | VueColumnDef>
 export interface SimpleTableVueProps
   extends Omit<
     SimpleTableProps,
     | "rows"
-    | "defaultHeaders"
     | "columns"
     | "footerRenderer"
     | "emptyStateRenderer"
@@ -114,13 +111,8 @@ export interface SimpleTableVueProps
     | "icons"
     | "rowButtons"
   > {
-  /**
-   * Column definitions.
-   * @deprecated Prefer {@link columns}
-   */
-  defaultHeaders?: ReadonlyArray<HeaderObject | VueHeaderObject>;
-  /** Column definitions. Preferred over `defaultHeaders`. */
-  columns?: ReadonlyArray<HeaderObject | VueHeaderObject>;
+  /** Column definitions. */
+  columns?: ReadonlyArray<ColumnDef | VueColumnDef>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   footerRenderer?: VueFooterRenderer;

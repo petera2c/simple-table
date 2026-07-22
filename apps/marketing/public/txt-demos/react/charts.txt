@@ -9,7 +9,7 @@ import "@simple-table/react/styles.css";
 
 const ChartsDemo = () => (
   <SimpleTable
-    defaultHeaders={chartsConfig.headers}
+    columns={chartsConfig.headers}
     rows={chartsConfig.rows}
     columnReordering
     columnResizing

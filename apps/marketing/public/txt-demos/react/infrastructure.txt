@@ -1,11 +1,11 @@
 // InfrastructureDemo.tsx
 import { useRef } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { TableAPI, ReactHeaderObject, CellRendererProps } from "@simple-table/react";
+import type { TableAPI, ReactColumnDef, CellRendererProps } from "@simple-table/react";
 import { infrastructureData } from "./infrastructure.demo-data"; // 50 sample servers
 import "@simple-table/react/styles.css";
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "serverId", label: "Server ID", type: "string", pinned: "left", width: "1.2fr", sortable: true },
   {
     accessor: "performance",
@@ -35,11 +35,11 @@ const InfrastructureDemo = () => {
   return (
     <SimpleTable
       ref={tableRef}
-      defaultHeaders={headers}
+      columns={headers}
       rows={infrastructureData}
       columnReordering
       columnResizing
-      editColumns
+      enableColumnEditor
       selectableCells
       height="400px"
     />

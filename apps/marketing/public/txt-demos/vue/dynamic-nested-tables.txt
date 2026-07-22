@@ -1,7 +1,7 @@
 <template>
   <SimpleTable
     :auto-expand-columns="dynamicNestedTablesConfig.tableProps.autoExpandColumns"
-    :default-headers="dynamicNestedTablesConfig.headers"
+    :columns="dynamicNestedTablesConfig.headers"
     :expand-all="dynamicNestedTablesConfig.tableProps.expandAll"
     :height="height"
     :row-grouping="dynamicNestedTablesConfig.tableProps.rowGrouping"

@@ -7,7 +7,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={cellHighlightingConfig.headers}
+  columns={cellHighlightingConfig.headers}
   rows={cellHighlightingConfig.rows}
   {height}
   {theme}

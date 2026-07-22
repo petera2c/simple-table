@@ -1,12 +1,12 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteHeaderObject } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef } from "@simple-table/svelte";
   import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  let headers: SvelteHeaderObject[] = $state([...columnResizingHeaders]);
+  let headers: SvelteColumnDef[] = $state([...columnResizingHeaders]);
   let saveMessage = $state("");
 
   $effect(() => {
@@ -19,7 +19,7 @@
     } catch { /* ignore */ }
   });
 
-  function handleColumnWidthChange(updatedHeaders: SvelteHeaderObject[]) {
+  function handleColumnWidthChange(updatedHeaders: SvelteColumnDef[]) {
     try {
       const widthMap: Record<string, unknown> = {};
       for (const h of updatedHeaders) widthMap[h.accessor] = h.width;
@@ -42,7 +42,7 @@
   {/if}
   <SimpleTable
     columnResizing={true}
-    defaultHeaders={headers}
+    columns={headers}
     rows={columnResizingData}
     {height}
     {theme}

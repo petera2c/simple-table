@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type {
   Theme,
-  ReactHeaderObject,
+  ReactColumnDef,
   CellRendererProps,
   CellClickProps,
 } from "@simple-table/react";
@@ -19,7 +19,7 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
   const [selectedTask, setSelectedTask] = useState<ProjectTask | null>(null);
   const [rows, setRows] = useState<ProjectTask[]>([...cellClickingData]);
 
-  const headers: ReactHeaderObject[] = useMemo(
+  const headers: ReactColumnDef[] = useMemo(
     () =>
       cellClickingHeaders.map((h) => {
         if (h.accessor === "priority") {
@@ -210,7 +210,7 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
 
       <SimpleTable
         columnResizing
-        defaultHeaders={headers}
+        columns={headers}
         height={height ?? "320px"}
         onCellClick={handleCellClick}
         rows={rows}

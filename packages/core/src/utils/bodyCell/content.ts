@@ -1,4 +1,4 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import CellValue from "../../types/CellValue";
 import { formatDate } from "../formatters";
 import { getNestedValue, hasNestedRows, expandStateKey, isRowExpanded as getIsRowExpanded } from "../rowUtils";
@@ -11,7 +11,7 @@ import { createExpandIcon } from "./expansion";
 // Format cell content for display
 export const formatCellContent = (
   content: CellValue,
-  header: HeaderObject,
+  header: ColumnDef,
   colIndex: number,
   row: any,
   rowIndex: number,

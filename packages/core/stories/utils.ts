@@ -9,7 +9,7 @@ type TableInstance = InstanceType<typeof SimpleTableVanilla>;
 
 /**
  * Config passed through to {@link SimpleTableVanilla}, minus `columns` /
- * `defaultHeaders` / `rows` which are supplied as the first two arguments of
+ * `columns` / `rows` which are supplied as the first two arguments of
  * {@link renderVanillaTable}.
  *
  * Keys are constrained to {@link SimpleTableConfigInput} so consumer aliases
@@ -19,7 +19,7 @@ type TableInstance = InstanceType<typeof SimpleTableVanilla>;
  * than the public types still typecheck.
  */
 export type RenderVanillaTableOptions = {
-  [K in keyof Omit<SimpleTableConfigInput, "columns" | "defaultHeaders" | "rows">]?: unknown;
+  [K in keyof Omit<SimpleTableConfigInput, "columns" | "rows">]?: unknown;
 };
 
 export interface RenderVanillaTableResult {

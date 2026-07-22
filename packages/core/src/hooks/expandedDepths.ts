@@ -1,4 +1,4 @@
-import { Accessor } from "../types/HeaderObject";
+import { Accessor } from "../types/ColumnDef";
 
 /**
  * Initialize expandedDepths based on expandAll prop and rowGrouping

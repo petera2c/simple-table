@@ -1,6 +1,6 @@
 // external-sort-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, asRows} from "@simple-table/angular";import type { AngularHeaderObject, Row, SortColumn, Theme } from "@simple-table/angular";
+import {SimpleTableComponent, asRows} from "@simple-table/angular";import type { AngularColumnDef, Row, SortColumn, Theme } from "@simple-table/angular";
 import { externalSortConfig } from "./external-sort.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -11,7 +11,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="sortedRows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
       [externalSortHandling]="true"
@@ -24,7 +24,7 @@ export class ExternalSortDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularHeaderObject[] = externalSortConfig.headers;
+  readonly headers: AngularColumnDef[] = externalSortConfig.headers;
   private sortState: SortColumn | null = null;
 
   handleSortChange = (sort: SortColumn | null): void => {
@@ -52,7 +52,7 @@ export class ExternalSortDemoComponent {
 
 // external-sort.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
 
 export const externalSortData = [
@@ -70,7 +70,7 @@ export const externalSortData = [
   { id: 12, name: "Dmitri Volkov", age: 39, email: "dmitri.volkov@techcorp.com", salary: 135000, department: "DevOps" },
 ];
 
-export const externalSortHeaders: AngularHeaderObject[] = [
+export const externalSortHeaders: AngularColumnDef[] = [
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 120, sortable: true, type: "number" },
   { accessor: "department", label: "Department", width: 150, sortable: true, type: "string" },

@@ -44,9 +44,9 @@ const FooterRendererDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={footerRendererConfig.headers}
+      columns={footerRendererConfig.headers}
       rows={footerRendererConfig.rows}
-      shouldPaginate={true}
+      enablePagination={true}
       rowsPerPage={10}
       height={height}
       theme={theme}

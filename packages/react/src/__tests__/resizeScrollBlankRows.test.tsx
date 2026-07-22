@@ -3,7 +3,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS, CONTAINER_RESIZE_BURST_END_MS } from "../../../core/src/managers/DimensionManager";
 import { SimpleTable } from "../index";
-import type { CellRendererProps, ReactHeaderObject } from "../index";
+import type { CellRendererProps, ReactColumnDef } from "../index";
 
 /**
  * Regression: after a few container resize events, scrolling back up leaves
@@ -161,7 +161,7 @@ describe("SimpleTable — blank rows after resize + scroll back", () => {
 
     let containerWidth = 1200;
 
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number", pinned: "left" },
       {
         accessor: "name",
@@ -185,10 +185,10 @@ describe("SimpleTable — blank rows after resize + scroll back", () => {
       return extended;
     });
 
-    const renderTable = (nextHeaders: ReactHeaderObject[]) => {
+    const renderTable = (nextHeaders: ReactColumnDef[]) => {
       root!.render(
         createElement(SimpleTable, {
-          defaultHeaders: nextHeaders,
+          columns: nextHeaders,
           rows: rowsWithMetrics,
           getRowId: (p) => String((p.row as { id: number }).id),
           height: "400px",

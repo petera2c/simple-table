@@ -1,4 +1,4 @@
-import type HeaderObject from "../../types/HeaderObject";
+import type ColumnDef from "../../types/ColumnDef";
 import { MIN_COLUMN_WIDTH } from "../../consts/column-constraints";
 
 /**
@@ -17,7 +17,7 @@ export const distributeCompensationProportionally = ({
   initialWidthsMap,
   shrinkFloors,
 }: {
-  columnsToShrink: HeaderObject[];
+  columnsToShrink: ColumnDef[];
   totalCompensation: number;
   initialWidthsMap: Map<string, number>;
   shrinkFloors?: Map<string, number>;

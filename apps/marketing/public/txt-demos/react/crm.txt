@@ -1,11 +1,11 @@
 // CRMDemo.tsx
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, CellRendererProps, FooterRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, CellRendererProps, FooterRendererProps } from "@simple-table/react";
 import { crmData } from "./crm.demo-data";
 import "@simple-table/react/styles.css";
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   {
     accessor: "name",
     label: "CONTACT",
@@ -25,10 +25,10 @@ const CRMDemo = () => {
 
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={rows}
       enableRowSelection
-      shouldPaginate
+      enablePagination
       rowsPerPage={100}
       columnReordering
       columnResizing

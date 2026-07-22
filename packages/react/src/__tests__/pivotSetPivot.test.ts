@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTableVanilla, buildPivotAccessor } from "simple-table-core";
-import type { HeaderObject, SimpleTableConfig } from "simple-table-core";
+import type { ColumnDef, SimpleTableConfig } from "simple-table-core";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -23,7 +23,7 @@ afterEach(() => {
   container = null;
 });
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "region", label: "Region", width: 120, type: "string" },
   { accessor: "quarter", label: "Quarter", width: 80, type: "string" },
   { accessor: "sales", label: "Sales", width: 100, type: "number" },
@@ -41,7 +41,7 @@ describe("setPivot regenerates columns", () => {
     document.body.appendChild(container);
 
     const config: SimpleTableConfig = {
-      defaultHeaders: headers,
+      columns: headers,
       rows,
       height: "300px",
       theme: "light",

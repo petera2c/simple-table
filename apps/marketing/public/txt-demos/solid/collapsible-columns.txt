@@ -8,10 +8,10 @@ export default function CollapsibleColumnsDemo(props: {
 }) {
   return (
     <SimpleTable
-      defaultHeaders={collapsibleColumnsConfig.headers}
+      columns={collapsibleColumnsConfig.headers}
       rows={collapsibleColumnsConfig.rows}
       columnResizing
-      editColumns
+      enableColumnEditor
       selectableCells
       columnReordering
       height={props.height ?? "400px"}

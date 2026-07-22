@@ -21,7 +21,7 @@ export default function LiveUpdateDemo() {
   return (
     <SimpleTable
       ref={(api) => (tableRef = api)}
-      defaultHeaders={liveUpdateConfig.headers}
+      columns={liveUpdateConfig.headers}
       rows={liveUpdateConfig.rows}
       height="400px"
     />

@@ -27,7 +27,7 @@ export interface CreateTableFooterOptions {
   onNextPage?: OnNextPage;
   onUserPageChange?: (page: number) => void | Promise<void>;
   rowsPerPage: number;
-  shouldPaginate?: boolean;
+  enablePagination?: boolean;
   totalPages: number;
   totalRows: number;
   /** Custom icon for previous page button (string = HTML, HTMLElement = node to clone/append). */
@@ -101,7 +101,7 @@ export const createTableFooter = (options: CreateTableFooterOptions) => {
     onNextPage,
     onUserPageChange,
     rowsPerPage,
-    shouldPaginate,
+    enablePagination,
     totalPages,
     totalRows,
     prevIcon,
@@ -110,7 +110,7 @@ export const createTableFooter = (options: CreateTableFooterOptions) => {
 
   let hasMoreData = true;
 
-  if (hideFooter || !shouldPaginate) {
+  if (hideFooter || !enablePagination) {
     const emptyDiv = document.createElement("div");
     return {
       element: emptyDiv,
@@ -262,13 +262,13 @@ export const createTableFooter = (options: CreateTableFooterOptions) => {
     if (newOptions.onNextPage !== undefined) onNextPage = newOptions.onNextPage;
     if (newOptions.onUserPageChange !== undefined) onUserPageChange = newOptions.onUserPageChange;
     if (newOptions.rowsPerPage !== undefined) rowsPerPage = newOptions.rowsPerPage;
-    if (newOptions.shouldPaginate !== undefined) shouldPaginate = newOptions.shouldPaginate;
+    if (newOptions.enablePagination !== undefined) enablePagination = newOptions.enablePagination;
     if (newOptions.totalPages !== undefined) totalPages = newOptions.totalPages;
     if (newOptions.totalRows !== undefined) totalRows = newOptions.totalRows;
     if (newOptions.prevIcon !== undefined) prevIcon = newOptions.prevIcon;
     if (newOptions.nextIcon !== undefined) nextIcon = newOptions.nextIcon;
 
-    if (hideFooter || !shouldPaginate) {
+    if (hideFooter || !enablePagination) {
       container.style.display = "none";
     } else {
       container.style.display = "flex";

@@ -1,6 +1,6 @@
 import { QuickFilterConfig, SmartFilterToken } from "../types/QuickFilterTypes";
 import Row from "../types/Row";
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import { getNestedValue } from "../utils/rowUtils";
 import CellValue from "../types/CellValue";
 import { parseSmartFilter, matchesSimpleFilter } from "../utils/quickFilterUtils";
@@ -8,7 +8,7 @@ import { isHeaderExcludedFromLayout } from "../utils/cellUtils";
 
 interface FilterRowsWithQuickFilterProps {
   rows: Row[];
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   quickFilter?: QuickFilterConfig;
 }
 

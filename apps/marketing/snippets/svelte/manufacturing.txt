@@ -6,7 +6,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={manufacturingConfig.headers}
+  columns={manufacturingConfig.headers}
   rows={manufacturingConfig.rows}
   rowGrouping={["stations"]}
   columnReordering={true}

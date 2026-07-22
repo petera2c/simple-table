@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import { PinnedSectionsState } from "../types/PinnedSectionsState";
 import { PanelSection } from "../types/PanelSection";
 import { isHeaderExcludedFromLayout } from "./cellUtils";
@@ -6,10 +6,10 @@ import { isHeaderExcludedFromLayout } from "./cellUtils";
 export type { PinnedSectionsState, PanelSection };
 
 /** Root-level columns only, preserving order within each pin group. */
-export function partitionRootHeadersByPin(headers: HeaderObject[]): {
-  pinnedLeft: HeaderObject[];
-  unpinned: HeaderObject[];
-  pinnedRight: HeaderObject[];
+export function partitionRootHeadersByPin(headers: ColumnDef[]): {
+  pinnedLeft: ColumnDef[];
+  unpinned: ColumnDef[];
+  pinnedRight: ColumnDef[];
 } {
   return {
     pinnedLeft: headers.filter((h) => h.pinned === "left"),
@@ -19,7 +19,7 @@ export function partitionRootHeadersByPin(headers: HeaderObject[]): {
 }
 
 export function isHeaderEssential(
-  header: HeaderObject,
+  header: ColumnDef,
   essentialAccessors: ReadonlySet<string>,
 ): boolean {
   return (
@@ -29,9 +29,9 @@ export function isHeaderEssential(
 }
 
 /** Accessors for every header with `essential` in the tree (including nested). */
-export function collectEssentialAccessors(headers: HeaderObject[]): Set<string> {
+export function collectEssentialAccessors(headers: ColumnDef[]): Set<string> {
   const set = new Set<string>();
-  const walk = (list: HeaderObject[]) => {
+  const walk = (list: ColumnDef[]) => {
     for (const h of list) {
       if (h.essential) set.add(String(h.accessor));
       if (h.children?.length) walk(h.children);
@@ -43,7 +43,7 @@ export function collectEssentialAccessors(headers: HeaderObject[]): Set<string> 
 
 /** Within one sibling list: all essential columns must form a left prefix. */
 export function hasEssentialPrefixOrder(
-  siblings: HeaderObject[],
+  siblings: ColumnDef[],
   essentialAccessors: ReadonlySet<string>,
 ): boolean {
   let sawNonEssential = false;
@@ -58,7 +58,7 @@ export function hasEssentialPrefixOrder(
 
 /** Root array mixes pin sections; validate each pin group separately, then recurse into children. */
 export function validateFullHeaderTreeEssentialOrder(
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   essentialAccessors: ReadonlySet<string>,
 ): boolean {
   const { pinnedLeft, unpinned, pinnedRight } = partitionRootHeadersByPin(headers);
@@ -74,7 +74,7 @@ export function validateFullHeaderTreeEssentialOrder(
 }
 
 function validateEssentialPrefixRecursive(
-  children: HeaderObject[],
+  children: ColumnDef[],
   essentialAccessors: ReadonlySet<string>,
 ): boolean {
   if (!hasEssentialPrefixOrder(children, essentialAccessors)) return false;
@@ -86,7 +86,7 @@ function validateEssentialPrefixRecursive(
   return true;
 }
 
-export function getPinnedSectionsState(headers: HeaderObject[]): PinnedSectionsState {
+export function getPinnedSectionsState(headers: ColumnDef[]): PinnedSectionsState {
   const { pinnedLeft, unpinned, pinnedRight } = partitionRootHeadersByPin(headers);
   return {
     left: pinnedLeft.map((h) => h.accessor),
@@ -97,7 +97,7 @@ export function getPinnedSectionsState(headers: HeaderObject[]): PinnedSectionsS
 
 function clampSectionAccessors(
   accessors: Accessor[],
-  headerByAccessor: Map<string, HeaderObject>,
+  headerByAccessor: Map<string, ColumnDef>,
   essentialAccessors: ReadonlySet<string>,
 ): Accessor[] {
   const essential = accessors.filter((a) =>
@@ -114,10 +114,10 @@ function clampSectionAccessors(
  * Clamps essential columns to the left within each section. Returns null if accessors don't match roots.
  */
 export function rebuildHeadersFromPinnedState(
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   state: PinnedSectionsState,
   essentialAccessors: ReadonlySet<string>,
-): HeaderObject[] | null {
+): ColumnDef[] | null {
   const rootKeys = new Set(headers.map((h) => String(h.accessor)));
   const listed = [...state.left, ...state.main, ...state.right];
   if (listed.length !== rootKeys.size) return null;
@@ -130,8 +130,8 @@ export function rebuildHeadersFromPinnedState(
   const main = clampSectionAccessors(state.main, headerByAccessor, essentialAccessors);
   const right = clampSectionAccessors(state.right, headerByAccessor, essentialAccessors);
 
-  const withPin = (h: HeaderObject, pin: "left" | "right" | undefined): HeaderObject => {
-    const next: HeaderObject = { ...h };
+  const withPin = (h: ColumnDef, pin: "left" | "right" | undefined): ColumnDef => {
+    const next: ColumnDef = { ...h };
     if (pin === "left") next.pinned = "left";
     else if (pin === "right") next.pinned = "right";
     else delete next.pinned;
@@ -151,11 +151,11 @@ export function rebuildHeadersFromPinnedState(
  * start of main; right-pinned (and other) columns are inserted at the end of main.
  */
 export function moveRootColumnPinSide(
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   accessor: Accessor,
   target: Exclude<PanelSection, "main"> | "main",
   essentialAccessors: ReadonlySet<string>,
-): HeaderObject[] | null {
+): ColumnDef[] | null {
   const acc = String(accessor);
   const current = getPinnedSectionsState(headers);
   const left = current.left.filter((a) => String(a) !== acc);

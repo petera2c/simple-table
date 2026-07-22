@@ -31,8 +31,8 @@ import type { SimpleTableVueProps, TableInstance } from "./types";
  */
 /**
  * Vue preserves the original casing of attrs for undeclared props.
- * Template authors use kebab-case (:default-headers, :should-paginate),
- * which the compiler outputs as "default-headers" etc. in the VNode props.
+ * Template authors use kebab-case (:columns, :enable-pagination),
+ * which the compiler outputs as "columns" etc. in the VNode props.
  * Since our props option is empty, these land in attrs with hyphens.
  * We camelize here so buildVanillaConfig receives the expected camelCase keys.
  */
@@ -77,7 +77,7 @@ const SimpleTable = defineComponent({
       );
       syncedDefaultHeaders = resolvedColumns;
       if (headersUnchanged) {
-        delete patch.defaultHeaders;
+        delete patch.columns;
       }
 
       const rowsUnchanged = rowsShallowUnchanged(

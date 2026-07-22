@@ -11,7 +11,7 @@ export function renderCellEditingDemo(
   let rows = [...cellEditingConfig.rows];
 
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: cellEditingConfig.headers,
+    columns: cellEditingConfig.headers,
     rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
@@ -28,10 +28,10 @@ export function renderCellEditingDemo(
 
 // cell-editing.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
-export const cellEditingHeaders: HeaderObject[] = [
+export const cellEditingHeaders: ColumnDef[] = [
   { accessor: "firstName", label: "First Name", width: "1fr", minWidth: 100, editable: true, type: "string" },
   { accessor: "lastName", label: "Last Name", width: 120, editable: true, type: "string" },
   { accessor: "role", label: "Role", width: 120, editable: true, type: "enum", enumOptions: [

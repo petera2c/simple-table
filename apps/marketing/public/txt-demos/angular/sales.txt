@@ -12,9 +12,9 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rows]="rows"
-      [shouldPaginate]="true"
+      [enablePagination]="true"
       [rowsPerPage]="40"
       footerPosition="top"
       initialSortColumn="dealValue"
@@ -22,7 +22,7 @@ import "@simple-table/angular/styles.css";
       [autoExpandColumns]="true"
       [columnReordering]="true"
       [columnResizing]="true"
-      [editColumns]="true"
+      [enableColumnEditor]="true"
       [selectableCells]="true"
       height="70dvh"
     ></simple-table>

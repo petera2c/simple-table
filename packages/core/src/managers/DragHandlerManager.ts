@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import type { Pinned } from "../types/Pinned";
 import { deepClone } from "../utils/generalUtils";
 import PreviousValueTracker from "../hooks/previousValue";
@@ -8,7 +8,7 @@ import { findParentHeader } from "../utils/collapseUtils";
 const REVERT_TO_PREVIOUS_HEADERS_DELAY = 1500;
 
 export const getHeaderIndexPath = (
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   targetAccessor: Accessor,
   currentPath: number[] = [],
 ): number[] | null => {
@@ -25,7 +25,7 @@ export const getHeaderIndexPath = (
   return null;
 };
 
-export const getSiblingArray = (headers: HeaderObject[], indexPath: number[]): HeaderObject[] => {
+export const getSiblingArray = (headers: ColumnDef[], indexPath: number[]): ColumnDef[] => {
   let current = headers;
   for (let i = 0; i < indexPath.length - 1; i++) {
     current = current[indexPath[i]].children!;
@@ -34,10 +34,10 @@ export const getSiblingArray = (headers: HeaderObject[], indexPath: number[]): H
 };
 
 export const setSiblingArray = (
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   indexPath: number[],
-  newSiblings: HeaderObject[],
-): HeaderObject[] => {
+  newSiblings: ColumnDef[],
+): ColumnDef[] => {
   if (indexPath.length === 1) {
     return newSiblings;
   }
@@ -51,8 +51,8 @@ export const setSiblingArray = (
 
 /** Pinned side of the root column that owns this header (nested leaves inherit parent pin). */
 const getRootPinnedForSection = (
-  header: HeaderObject,
-  rootHeaders: HeaderObject[],
+  header: ColumnDef,
+  rootHeaders: ColumnDef[],
 ): Pinned | undefined => {
   if (header.pinned) return header.pinned;
   const parent = findParentHeader(rootHeaders, header.accessor);
@@ -60,8 +60,8 @@ const getRootPinnedForSection = (
 };
 
 export const getHeaderSection = (
-  header: HeaderObject,
-  rootHeaders: HeaderObject[],
+  header: ColumnDef,
+  rootHeaders: ColumnDef[],
 ): "left" | "main" | "right" => {
   const p = getRootPinnedForSection(header, rootHeaders);
   if (p === "left") return "left";
@@ -70,9 +70,9 @@ export const getHeaderSection = (
 };
 
 export const updateHeaderPinnedProperty = (
-  header: HeaderObject,
+  header: ColumnDef,
   targetSection: "left" | "main" | "right",
-): HeaderObject => {
+): ColumnDef => {
   const updatedHeader = { ...header };
   if (targetSection === "left") {
     updatedHeader.pinned = "left";
@@ -85,16 +85,16 @@ export const updateHeaderPinnedProperty = (
 };
 
 export function swapHeaders(
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   draggedPath: number[],
   hoveredPath: number[],
-): { newHeaders: HeaderObject[]; emergencyBreak: boolean } {
+): { newHeaders: ColumnDef[]; emergencyBreak: boolean } {
   const newHeaders = deepClone(headers);
   let emergencyBreak = false;
 
-  function getHeaderAtPath(headers: HeaderObject[], path: number[]): HeaderObject {
+  function getHeaderAtPath(headers: ColumnDef[], path: number[]): ColumnDef {
     let current = headers;
-    let header: HeaderObject | undefined;
+    let header: ColumnDef | undefined;
     for (let i = 0; i < path.length - 1; i++) {
       current = current[path[i]].children!;
     }
@@ -102,7 +102,7 @@ export function swapHeaders(
     return header;
   }
 
-  function setHeaderAtPath(headers: HeaderObject[], path: number[], value: HeaderObject): void {
+  function setHeaderAtPath(headers: ColumnDef[], path: number[], value: ColumnDef): void {
     let current = headers;
     for (let i = 0; i < path.length - 1; i++) {
       if (current[path[i]].children) {
@@ -129,10 +129,10 @@ export function insertHeaderAcrossSections({
   draggedHeader,
   hoveredHeader,
 }: {
-  headers: HeaderObject[];
-  draggedHeader: HeaderObject;
-  hoveredHeader: HeaderObject;
-}): { newHeaders: HeaderObject[]; emergencyBreak: boolean } {
+  headers: ColumnDef[];
+  draggedHeader: ColumnDef;
+  hoveredHeader: ColumnDef;
+}): { newHeaders: ColumnDef[]; emergencyBreak: boolean } {
   const newHeaders = deepClone(headers);
   let emergencyBreak = false;
 
@@ -168,24 +168,24 @@ export function insertHeaderAcrossSections({
 }
 
 export interface DragHandlerManagerConfig {
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   essentialAccessors?: ReadonlySet<string>;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
-  onHeadersChange?: (newHeaders: HeaderObject[]) => void;
+  onTableHeaderDragEnd: (newHeaders: ColumnDef[]) => void;
+  onColumnOrderChange?: (newHeaders: ColumnDef[]) => void;
+  onHeadersChange?: (newHeaders: ColumnDef[]) => void;
 }
 
 export class DragHandlerManager {
   private config: DragHandlerManagerConfig;
-  private draggedHeader: HeaderObject | null = null;
-  private hoveredHeader: HeaderObject | null = null;
+  private draggedHeader: ColumnDef | null = null;
+  private hoveredHeader: ColumnDef | null = null;
   private prevUpdateTime: number = Date.now();
   private prevDraggingPosition = { screenX: 0, screenY: 0 };
-  private prevHeadersTracker: PreviousValueTracker<HeaderObject[] | null>;
+  private prevHeadersTracker: PreviousValueTracker<ColumnDef[] | null>;
 
   constructor(config: DragHandlerManagerConfig) {
     this.config = config;
-    this.prevHeadersTracker = new PreviousValueTracker<HeaderObject[] | null>(config.headers);
+    this.prevHeadersTracker = new PreviousValueTracker<ColumnDef[] | null>(config.headers);
   }
 
   updateConfig(config: Partial<DragHandlerManagerConfig>): void {
@@ -195,15 +195,15 @@ export class DragHandlerManager {
     }
   }
 
-  getDraggedHeader(): HeaderObject | null {
+  getDraggedHeader(): ColumnDef | null {
     return this.draggedHeader;
   }
 
-  getHoveredHeader(): HeaderObject | null {
+  getHoveredHeader(): ColumnDef | null {
     return this.hoveredHeader;
   }
 
-  handleDragStart(header: HeaderObject): void {
+  handleDragStart(header: ColumnDef): void {
     this.draggedHeader = header;
     this.prevUpdateTime = Date.now();
   }
@@ -213,7 +213,7 @@ export class DragHandlerManager {
     hoveredHeader,
   }: {
     event: DragEvent;
-    hoveredHeader: HeaderObject;
+    hoveredHeader: ColumnDef;
   }): void {
     event.preventDefault();
 
@@ -233,7 +233,7 @@ export class DragHandlerManager {
     const hoveredSection = getHeaderSection(hoveredHeader, this.config.headers);
     const isCrossSectionDrag = draggedSection !== hoveredSection;
 
-    let newHeaders: HeaderObject[];
+    let newHeaders: ColumnDef[];
     let emergencyBreak = false;
 
     if (isCrossSectionDrag) {

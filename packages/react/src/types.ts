@@ -2,7 +2,7 @@ import type React from "react";
 import type {
   SimpleTableProps,
   SimpleTableConfig,
-  HeaderObject,
+  ColumnDef,
   TableAPI,
   Row,
   CellRendererProps,
@@ -146,18 +146,18 @@ export interface ReactColumnEditorConfig extends Omit<
   customRenderer?: ReactColumnEditorCustomRenderer;
 }
 
-// ─── HeaderObject override ────────────────────────────────────────────────────
+// ─── ColumnDef override ────────────────────────────────────────────────────
 /**
- * Column definition for `columns` / `defaultHeaders`: same column metadata as core
+ * Column definition for `columns`: same column metadata as core
  * columns, but `cellRenderer` / `headerRenderer` / `children` / `nestedTable` are React-only.
  */
-export interface ReactHeaderObject extends Omit<
-  HeaderObject,
+export interface ReactColumnDef extends Omit<
+  ColumnDef,
   "cellRenderer" | "headerRenderer" | "children" | "nestedTable"
 > {
   cellRenderer?: ReactCellRenderer;
   headerRenderer?: ReactHeaderRenderer;
-  children?: ReadonlyArray<ReactHeaderObject>;
+  children?: ReadonlyArray<ReactColumnDef>;
   /** Nested grid: React table props minus row data and inherited state renderers. */
   nestedTable?: Omit<
     SimpleTableReactProps,
@@ -169,15 +169,13 @@ export interface ReactHeaderObject extends Omit<
   >;
 }
 
-/** Preferred name for React column definitions. Alias of {@link ReactHeaderObject}. */
-export type ReactColumnDef = ReactHeaderObject;
 
 // ─── Top-level props ──────────────────────────────────────────────────────────
 // Mirrors SimpleTableProps with React-specific renderer/icon types. Use `ref` +
 // `forwardRef<TableAPI, …>` for the imperative API.
 //
 //   Overridden to React equivalents:
-//     - columns / defaultHeaders → ReadonlyArray<ReactHeaderObject>
+//     - columns → ReadonlyArray<ReactColumnDef>
 //     - footerRenderer         → React.ComponentType<FooterRendererProps>
 //     - loadingStateRenderer   → React.ComponentType<…> | React.ReactNode
 //     - errorStateRenderer     → React.ComponentType<…> | React.ReactNode
@@ -190,7 +188,6 @@ export type ReactColumnDef = ReactHeaderObject;
 export interface SimpleTableReactProps extends Omit<
   SimpleTableProps,
   // Overridden below with React types
-  | "defaultHeaders"
   | "columns"
   | "footerRenderer"
   | "emptyStateRenderer"
@@ -207,17 +204,12 @@ export interface SimpleTableReactProps extends Omit<
   | "onHeaderEdit"
   | "onColumnSelect"
 > {
-  /**
-   * Column definitions.
-   * @deprecated Prefer {@link columns}
-   */
-  defaultHeaders?: ReadonlyArray<ReactHeaderObject>;
-  /** Column definitions. Preferred over `defaultHeaders`. */
-  columns?: ReadonlyArray<ReactHeaderObject>;
-  onColumnOrderChange?: (newHeaders: ReactHeaderObject[]) => void;
-  onColumnWidthChange?: (headers: ReactHeaderObject[]) => void;
-  onHeaderEdit?: (header: ReactHeaderObject, newLabel: string) => void;
-  onColumnSelect?: (header: ReactHeaderObject) => void;
+  /** Column definitions. */
+  columns?: ReadonlyArray<ReactColumnDef>;
+  onColumnOrderChange?: (newHeaders: ReactColumnDef[]) => void;
+  onColumnWidthChange?: (headers: ReactColumnDef[]) => void;
+  onHeaderEdit?: (header: ReactColumnDef, newLabel: string) => void;
+  onColumnSelect?: (header: ReactColumnDef) => void;
   /** Row data: any object rows (domain models) or core `Row[]`; cast to vanilla `Row[]` inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
   footerRenderer?: ReactFooterRenderer;

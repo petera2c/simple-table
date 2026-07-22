@@ -31,10 +31,10 @@ const ColumnVisibilityDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={columnVisibilityConfig.rows}
-      editColumns
-      editColumnsInitOpen
+      enableColumnEditor
+      enableColumnEditorInitOpen
       height={height}
       theme={theme}
       onColumnVisibilityChange={onColumnVisibilityChange}

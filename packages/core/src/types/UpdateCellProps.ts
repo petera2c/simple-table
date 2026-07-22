@@ -1,5 +1,5 @@
 import { CellValue } from "..";
-import { Accessor } from "./HeaderObject";
+import { Accessor } from "./ColumnDef";
 
 type UpdateDataProps = {
   accessor: Accessor;

@@ -1,16 +1,16 @@
 // BillingDemo.vue
 <template>
   <SimpleTable
-    :default-headers="billingConfig.headers"
+    :columns="billingConfig.headers"
     :rows="billingConfig.rows"
     :row-grouping="['invoices', 'charges']"
     initial-sort-column="amount"
     initial-sort-direction="desc"
     :column-reordering="true"
     :column-resizing="true"
-    :edit-columns="true"
+    :enable-column-editor="true"
     :selectable-cells="true"
-    :use-odd-column-background="true"
+    :odd-column-background="true"
     height="400px"
   />
 </template>

@@ -28,12 +28,12 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={paginationConfig.headers}
+  columns={paginationConfig.headers}
   height={height ?? "auto"}
   {isLoading}
   {onNextPage}
   {rows}
   rowsPerPage={PAGINATION_ROWS_PER_PAGE}
-  shouldPaginate={true}
+  enablePagination={true}
   {theme}
 />

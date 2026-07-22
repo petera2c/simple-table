@@ -1,4 +1,4 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import { getCellId } from "../cellUtils";
 import { getHeaderLeafIndices, getColumnRange } from "../headerUtils";
 import {
@@ -26,7 +26,7 @@ import {
 
 export const handleColumnHeaderClick = (
   event: MouseEvent,
-  header: HeaderObject,
+  header: ColumnDef,
   colIndex: number,
   context: HeaderRenderContext,
 ) => {
@@ -110,7 +110,7 @@ export const handleColumnHeaderClick = (
 
 export const handleColumnHeaderDoubleClick = (
   event: MouseEvent,
-  header: HeaderObject,
+  header: ColumnDef,
   context: HeaderRenderContext,
 ) => {
   if (header.isSelectionColumn) return;
@@ -123,7 +123,7 @@ export const handleColumnHeaderDoubleClick = (
 export const attachDragHandlers = (
   labelElement: HTMLElement,
   cellElement: HTMLElement,
-  header: HeaderObject,
+  header: ColumnDef,
   context: HeaderRenderContext,
 ) => {
   const { columnReordering, draggedHeaderRef, hoveredHeaderRef } = context;
@@ -185,7 +185,7 @@ export const attachDragHandlers = (
       const hoveredSection = getHeaderSection(header, liveHeaders);
       const isCrossSectionDrag = draggedSection !== hoveredSection;
 
-      let newHeaders: HeaderObject[];
+      let newHeaders: ColumnDef[];
       let emergencyBreak = false;
 
       if (isCrossSectionDrag) {

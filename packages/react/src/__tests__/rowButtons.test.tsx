@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SimpleTable } from "../index";
-import type { ReactHeaderObject } from "../index";
+import type { ReactColumnDef } from "../index";
 import type { RowButtonProps } from "simple-table-core";
 
 const rows = [
@@ -57,14 +57,14 @@ describe("SimpleTable (React adapter) — rowButtons", () => {
     const onEdit = vi.fn();
     const onDelete = vi.fn();
 
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, type: "string" },
     ];
 
     const host = mount(
       createElement(SimpleTable, {
-        defaultHeaders: headers,
+        columns: headers,
         rows,
         getRowId: (p: { row: unknown }) => String((p.row as { id?: number })?.id),
         height: "250px",

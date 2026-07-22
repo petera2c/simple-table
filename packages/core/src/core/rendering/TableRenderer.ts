@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../../types/HeaderObject";
+import ColumnDef, { Accessor } from "../../types/ColumnDef";
 import { SimpleTableConfig } from "../../types/SimpleTableConfig";
 import { CustomTheme } from "../../types/CustomTheme";
 import { FilterCondition } from "../../types/FilterTypes";
@@ -54,8 +54,8 @@ export interface TableRendererDeps {
   config: SimpleTableConfig;
   customTheme: CustomTheme;
   dimensionManager: DimensionManager | null;
-  draggedHeaderRef: { current: HeaderObject | null };
-  effectiveHeaders: HeaderObject[];
+  draggedHeaderRef: { current: ColumnDef | null };
+  effectiveHeaders: ColumnDef[];
   essentialAccessors: Set<string>;
   expandedDepths: Set<number>;
   expandedRows: Map<string, number>;
@@ -63,15 +63,15 @@ export interface TableRendererDeps {
   getCollapsedHeaders?: () => Set<Accessor>;
   getCollapsedRows: () => Map<string, number>;
   getExpandedRows: () => Map<string, number>;
-  getHeaders: () => HeaderObject[];
+  getHeaders: () => ColumnDef[];
   /** Pristine snapshot of the configured column definitions — the reset target for the column editor's reset button. */
-  getPristineDefaultHeaders: () => HeaderObject[];
+  getPristineDefaultHeaders: () => ColumnDef[];
   getRowStateMap: () => Map<string | number, any>;
   headerRegistry: Map<string, any>;
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   /** Unique id for this table instance — scopes row-hover cell tracking. */
   hoverScopeId: string;
-  hoveredHeaderRef: { current: HeaderObject | null };
+  hoveredHeaderRef: { current: ColumnDef | null };
   internalIsLoading: boolean;
   isResizing: boolean;
   localRows: any[];
@@ -95,7 +95,7 @@ export interface TableRendererDeps {
   setCollapsedHeaders: (headers: Set<Accessor>) => void;
   setCollapsedRows: (rows: Map<string, number>) => void;
   setExpandedRows: (rows: Map<string, number>) => void;
-  setHeaders: (headers: HeaderObject[]) => void;
+  setHeaders: (headers: ColumnDef[]) => void;
   setIsResizing: (value: boolean) => void;
   setRowStateMap: (map: Map<string | number, any>) => void;
   sortManager: SortManager | null;
@@ -307,7 +307,7 @@ export class TableRenderer {
       },
       onColumnWidthChange: deps.config.onColumnWidthChange,
       onColumnOrderChange: deps.config.onColumnOrderChange,
-      onTableHeaderDragEnd: (headers: HeaderObject[]) => {
+      onTableHeaderDragEnd: (headers: ColumnDef[]) => {
         deps.setHeaders(headers);
         deps.onRender();
       },
@@ -524,12 +524,12 @@ export class TableRenderer {
       selectedRowCount,
       activeRowId: deps.rowSelectionManager?.getActiveRowId() ?? null,
       cellUpdateFlash: deps.config.cellUpdateFlash,
-      useOddColumnBackground: deps.config.useOddColumnBackground,
+      oddColumnBackground: deps.config.oddColumnBackground,
       // Defaults to true (documented default) so row hover works out of the box
       // when consumers don't explicitly pass the flag. Explicit `false` is honored.
-      useHoverRowBackground: deps.config.useHoverRowBackground ?? true,
+      hoverRowBackground: deps.config.hoverRowBackground ?? true,
       hoverScopeId: deps.hoverScopeId,
-      useOddEvenRowBackground: deps.config.useOddEvenRowBackground,
+      oddEvenRowBackground: deps.config.oddEvenRowBackground,
       rowGrouping: deps.config.rowGrouping,
       headers: deps.effectiveHeaders,
       rowHeaderAccessor,
@@ -810,8 +810,8 @@ export class TableRenderer {
         {
           collapsedHeaders: deps.collapsedHeaders,
           customTheme: deps.customTheme,
-          editColumns: isColumnEditorStripVisible(
-            deps.config.editColumns,
+          enableColumnEditor: isColumnEditorStripVisible(
+            deps.config.enableColumnEditor,
             deps.config.columnEditorConfig?.showToggle,
           ),
           headers: deps.effectiveHeaders,
@@ -869,7 +869,7 @@ export class TableRenderer {
     if (!container) return;
 
     const hasCustomFooter = Boolean(deps.config.footerRenderer);
-    const hasPaginationFooter = deps.config.shouldPaginate && !deps.config.hideFooter;
+    const hasPaginationFooter = deps.config.enablePagination && !deps.config.hideFooter;
 
     if (!hasCustomFooter) {
       this.lastCustomFooterRenderer = null;
@@ -971,7 +971,7 @@ export class TableRenderer {
         onNextPage: deps.config.onNextPage,
         onUserPageChange: deps.config.onPageChange,
         rowsPerPage,
-        shouldPaginate: deps.config.shouldPaginate ?? false,
+        enablePagination: deps.config.enablePagination ?? false,
         totalPages,
         totalRows,
         prevIcon: deps.resolvedIcons?.prev,
@@ -986,7 +986,7 @@ export class TableRenderer {
         onNextPage: deps.config.onNextPage,
         onUserPageChange: deps.config.onPageChange,
         rowsPerPage,
-        shouldPaginate: deps.config.shouldPaginate ?? false,
+        enablePagination: deps.config.enablePagination ?? false,
         totalPages,
         totalRows,
         prevIcon: deps.resolvedIcons?.prev,
@@ -1006,7 +1006,7 @@ export class TableRenderer {
   ): void {
     if (!contentWrapper) return;
 
-    if (!deps.config.editColumns) {
+    if (!deps.config.enableColumnEditor) {
       if (this.columnEditorInstance) {
         this.columnEditorInstance.destroy();
         this.columnEditorInstance = null;
@@ -1015,7 +1015,7 @@ export class TableRenderer {
     }
 
     const resetColumns = () => {
-      // Restore the pristine column definitions — NOT config.defaultHeaders,
+      // Restore the pristine column definitions — NOT config.columns,
       // whose header objects are mutated in place by runtime visibility
       // changes (column editor) and so drift away from the configured state.
       const pristineHeaders = deps.getPristineDefaultHeaders();
@@ -1028,7 +1028,7 @@ export class TableRenderer {
     if (this.columnEditorInstance) {
       this.columnEditorInstance.update({
         columnEditorText: mergedColumnEditorConfig.text,
-        editColumns: deps.config.editColumns,
+        enableColumnEditor: deps.config.enableColumnEditor,
         headers: deps.headers,
         open: columnEditorOpen,
         searchEnabled: mergedColumnEditorConfig.searchEnabled,
@@ -1037,7 +1037,7 @@ export class TableRenderer {
         columnEditorConfig: mergedColumnEditorConfig,
         icons: deps.resolvedIcons,
         essentialAccessors: deps.essentialAccessors,
-        setHeaders: (newHeaders: HeaderObject[]) => {
+        setHeaders: (newHeaders: ColumnDef[]) => {
           deps.setHeaders(newHeaders);
           if (this.columnEditorInstance) {
             this.columnEditorInstance.update({
@@ -1054,7 +1054,7 @@ export class TableRenderer {
     } else {
       const columnEditor = createColumnEditor({
         columnEditorText: mergedColumnEditorConfig.text,
-        editColumns: deps.config.editColumns,
+        enableColumnEditor: deps.config.enableColumnEditor,
         headers: deps.headers,
         open: columnEditorOpen,
         searchEnabled: mergedColumnEditorConfig.searchEnabled,
@@ -1063,7 +1063,7 @@ export class TableRenderer {
         columnEditorConfig: mergedColumnEditorConfig,
         icons: deps.resolvedIcons,
         essentialAccessors: deps.essentialAccessors,
-        setHeaders: (newHeaders: HeaderObject[]) => {
+        setHeaders: (newHeaders: ColumnDef[]) => {
           deps.setHeaders(newHeaders);
           if (this.columnEditorInstance) {
             this.columnEditorInstance.update({
@@ -1151,8 +1151,8 @@ export class TableRenderer {
         pinnedLeftContentWidth,
         pinnedRightContentWidth,
         tableBodyContainerRef,
-        editColumns: isColumnEditorStripVisible(
-          deps.config.editColumns,
+        enableColumnEditor: isColumnEditorStripVisible(
+          deps.config.enableColumnEditor,
           deps.config.columnEditorConfig?.showToggle,
         ),
         sectionScrollController: deps.sectionScrollController ?? undefined,
@@ -1191,8 +1191,8 @@ export class TableRenderer {
           pinnedLeftContentWidth,
           pinnedRightContentWidth,
           tableBodyContainerRef,
-          editColumns: isColumnEditorStripVisible(
-            deps.config.editColumns,
+          enableColumnEditor: isColumnEditorStripVisible(
+            deps.config.enableColumnEditor,
             deps.config.columnEditorConfig?.showToggle,
           ),
           sectionScrollController: deps.sectionScrollController ?? undefined,
@@ -1210,8 +1210,8 @@ export class TableRenderer {
         pinnedLeftContentWidth,
         pinnedRightContentWidth,
         tableBodyContainerRef,
-        editColumns: isColumnEditorStripVisible(
-          deps.config.editColumns,
+        enableColumnEditor: isColumnEditorStripVisible(
+          deps.config.enableColumnEditor,
           deps.config.columnEditorConfig?.showToggle,
         ),
         sectionScrollController: this.sectionScrollController,

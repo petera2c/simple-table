@@ -1,6 +1,6 @@
 // CellClickingDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject, CellClickProps } from "simple-table-core";
+import type { Theme, ColumnDef, CellClickProps } from "simple-table-core";
 import {
   cellClickingHeaders,
   cellClickingData,
@@ -34,7 +34,7 @@ export function renderCellClickingDemo(
 
   let rows: ProjectTask[] = [...cellClickingData];
 
-  const headers: HeaderObject[] = cellClickingHeaders.map((h) => {
+  const headers: ColumnDef[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") {
       return {
         ...h,
@@ -123,7 +123,7 @@ export function renderCellClickingDemo(
   }
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: headers,
+    columns: headers,
     rows,
     height: options?.height ?? "320px",
     theme: options?.theme,
@@ -174,7 +174,7 @@ export function renderCellClickingDemo(
 
 // cell-clicking.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "simple-table-core";
+import type { ColumnDef, Row } from "simple-table-core";
 
 
 export type ProjectTask = {
@@ -202,7 +202,7 @@ export const cellClickingData: ProjectTask[] = [
   { id: 1008, task: "Database migration scripts", assignee: "River Jackson", priority: "Low", status: "Not Started", dueDate: "2024-02-28", estimatedHours: 8, completedHours: 0, details: "Create migration scripts for database schema updates" },
 ];
 
-export const cellClickingHeaders: HeaderObject[] = [
+export const cellClickingHeaders: ColumnDef[] = [
   { accessor: "id", label: "Task ID", width: 80, sortable: true, type: "number" },
   { accessor: "task", label: "Task Name", minWidth: 150, width: "1fr", sortable: true, type: "string" },
   { accessor: "assignee", label: "Assignee", width: 120, sortable: true, type: "string" },

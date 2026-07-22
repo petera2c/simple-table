@@ -1,14 +1,14 @@
 // InfrastructureDemo.svelte
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { SvelteHeaderObject } from "@simple-table/svelte";
+  import type { SvelteColumnDef } from "@simple-table/svelte";
   import { infrastructureData } from "./infrastructure.demo-data"; // 50 sample servers
   import InfraCpuCell from "./InfraCpuCell.svelte";
   import "@simple-table/svelte/styles.css";
 
   let tableRef: any;
 
-  const headers: SvelteHeaderObject[] = [
+  const headers: SvelteColumnDef[] = [
     { accessor: "serverId", label: "Server ID", type: "string", pinned: "left", width: "1.2fr", sortable: true },
     {
       accessor: "performance",
@@ -28,11 +28,11 @@
 
 <SimpleTable
   bind:this={tableRef}
-  defaultHeaders={headers}
+  columns={headers}
   rows={infrastructureData}
   columnReordering={true}
   columnResizing={true}
-  editColumns={true}
+  enableColumnEditor={true}
   selectableCells={true}
   height="400px"
 />

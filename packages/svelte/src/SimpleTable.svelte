@@ -17,7 +17,6 @@
   type $$Props = SimpleTableSvelteProps;
 
   export let rows: $$Props["rows"];
-  export let defaultHeaders: $$Props["defaultHeaders"] = undefined;
   export let columns: $$Props["columns"] = undefined;
 
   // All remaining optional props — spread via $$restProps
@@ -26,41 +25,41 @@
   const registry = new MountRegistry();
 
   /** Last headers/rows whose structure/content was applied via update. */
-  let syncedDefaultHeaders: ReadonlyArray<
+  let syncedColumns: ReadonlyArray<
     NonNullable<$$Props["columns"]>[number]
   > | undefined = undefined;
   let syncedRows: $$Props["rows"] | undefined = undefined;
 
   onMount(() => {
-    const props = { rows, defaultHeaders, columns, ...$$restProps } as SimpleTableSvelteProps;
+    const props = { rows, columns, ...$$restProps } as SimpleTableSvelteProps;
     instance = new SimpleTableVanilla(
       container,
       buildVanillaConfig(props, registry),
     ) as unknown as TableInstance;
     instance.mount();
-    syncedDefaultHeaders = resolveSvelteColumns(props);
+    syncedColumns = resolveSvelteColumns(props);
     syncedRows = rows;
   });
 
   onDestroy(() => {
     instance?.destroy();
     instance = null;
-    syncedDefaultHeaders = undefined;
+    syncedColumns = undefined;
     syncedRows = undefined;
     registry.clear();
   });
 
   // Reactive update: skip no-op columns/rows when structure/content is unchanged.
   $: if (instance) {
-    const props = { rows, defaultHeaders, columns, ...$$restProps } as SimpleTableSvelteProps;
+    const props = { rows, columns, ...$$restProps } as SimpleTableSvelteProps;
     const fullConfig = buildVanillaConfig(props, registry);
     const patch: Partial<SimpleTableConfig> = { ...fullConfig };
     const resolvedColumns = resolveSvelteColumns(props);
 
-    const headersUnchanged = headersStructurallyEqual(syncedDefaultHeaders, resolvedColumns);
-    syncedDefaultHeaders = resolvedColumns;
+    const headersUnchanged = headersStructurallyEqual(syncedColumns, resolvedColumns);
+    syncedColumns = resolvedColumns;
     if (headersUnchanged) {
-      delete patch.defaultHeaders;
+      delete patch.columns;
     }
 
     const rowsUnchanged = rowsShallowUnchanged(

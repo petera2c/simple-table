@@ -1,13 +1,13 @@
 // CRMDemo.svelte
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { SvelteHeaderObject } from "@simple-table/svelte";
+  import type { SvelteColumnDef } from "@simple-table/svelte";
   import { crmData } from "./crm.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let rows = $state([...crmData]);
 
-  const headers: SvelteHeaderObject[] = [
+  const headers: SvelteColumnDef[] = [
     { accessor: "name", label: "CONTACT", type: "string", width: "2fr", sortable: true },
     { accessor: "signal", label: "SIGNAL", type: "string", width: "3fr" },
     { accessor: "aiScore", label: "AI SCORE", type: "number", align: "center" },
@@ -17,10 +17,10 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   {rows}
   enableRowSelection={true}
-  shouldPaginate={true}
+  enablePagination={true}
   rowsPerPage={100}
   columnReordering={true}
   columnResizing={true}

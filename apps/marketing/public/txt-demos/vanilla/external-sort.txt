@@ -29,7 +29,7 @@ export function renderExternalSortDemo(
   }
 
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: externalSortConfig.headers,
+    columns: externalSortConfig.headers,
     rows: asRows(externalSortConfig.rows),
     height: options?.height ?? "400px",
     theme: options?.theme,
@@ -46,7 +46,7 @@ export function renderExternalSortDemo(
 
 // external-sort.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
 export const externalSortData = [
@@ -64,7 +64,7 @@ export const externalSortData = [
   { id: 12, name: "Dmitri Volkov", age: 39, email: "dmitri.volkov@techcorp.com", salary: 135000, department: "DevOps" },
 ];
 
-export const externalSortHeaders: HeaderObject[] = [
+export const externalSortHeaders: ColumnDef[] = [
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 120, sortable: true, type: "number" },
   { accessor: "department", label: "Department", width: 150, sortable: true, type: "string" },

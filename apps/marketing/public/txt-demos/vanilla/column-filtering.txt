@@ -9,7 +9,7 @@ export function renderColumnFilteringDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: columnFilteringConfig.headers,
+    columns: columnFilteringConfig.headers,
     rows: columnFilteringConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
@@ -21,7 +21,7 @@ export function renderColumnFilteringDemo(
 // column-filtering.demo-data.ts
 // Self-contained demo table setup for this example.
 import type { Row } from "simple-table-core";
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
 export const COLUMN_FILTERING_DATA: Row[] = [
@@ -169,7 +169,7 @@ export const DEPARTMENT_OPTIONS = [
   { label: "Quality Assurance", value: "Quality Assurance" },
 ];
 
-export const columnFilteringHeaders: HeaderObject[] = [
+export const columnFilteringHeaders: ColumnDef[] = [
   {
     accessor: "id",
     label: "ID",

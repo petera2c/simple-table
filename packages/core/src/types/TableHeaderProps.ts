@@ -1,5 +1,5 @@
 import SortColumn from "./SortColumn";
-import HeaderObject from "./HeaderObject";
+import ColumnDef from "./ColumnDef";
 
 export interface RefObject<T> {
   current: T | null;
@@ -8,11 +8,11 @@ export interface RefObject<T> {
 type TableHeaderProps = {
   calculatedHeaderHeight: number;
   centerHeaderRef: RefObject<HTMLDivElement | null>;
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   mainBodyWidth: number;
-  pinnedLeftColumns: HeaderObject[];
+  pinnedLeftColumns: ColumnDef[];
   pinnedLeftWidth: number;
-  pinnedRightColumns: HeaderObject[];
+  pinnedRightColumns: ColumnDef[];
   pinnedRightWidth: number;
   sort: SortColumn | null;
 };

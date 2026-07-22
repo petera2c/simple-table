@@ -11,7 +11,7 @@ const ColumnPinningDemo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={columnPinningConfig.headers}
+      columns={columnPinningConfig.headers}
       rows={columnPinningConfig.rows}
       height={height}
       theme={theme}

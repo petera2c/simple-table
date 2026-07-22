@@ -7,10 +7,10 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={collapsibleColumnsConfig.headers}
+  columns={collapsibleColumnsConfig.headers}
   rows={collapsibleColumnsConfig.rows}
   columnResizing={true}
-  editColumns={true}
+  enableColumnEditor={true}
   selectableCells={true}
   columnReordering={true}
   {height}

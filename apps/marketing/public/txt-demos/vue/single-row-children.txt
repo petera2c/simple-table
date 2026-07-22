@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="singleRowChildrenConfig.headers"
+    :columns="singleRowChildrenConfig.headers"
     :rows="singleRowChildrenConfig.rows"
     :column-resizing="singleRowChildrenConfig.tableProps.columnResizing"
     :selectable-cells="singleRowChildrenConfig.tableProps.selectableCells"

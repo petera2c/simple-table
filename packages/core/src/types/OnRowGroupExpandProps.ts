@@ -1,5 +1,5 @@
 import Row from "./Row";
-import { Accessor } from "./HeaderObject";
+import { Accessor } from "./ColumnDef";
 
 interface OnRowGroupExpandProps {
   row: Row;

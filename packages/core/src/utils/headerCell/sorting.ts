@@ -1,8 +1,8 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import { HeaderRenderContext } from "./types";
 import { addTrackedEventListener } from "./eventTracking";
 
-export const createSortIcon = (header: HeaderObject, context: HeaderRenderContext): HTMLElement | null => {
+export const createSortIcon = (header: ColumnDef, context: HeaderRenderContext): HTMLElement | null => {
   const { sort, icons } = context;
   
   if (!sort || sort.key.accessor !== header.accessor) return null;

@@ -1,6 +1,6 @@
 // HeaderRendererDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, HeaderObject, Row } from "simple-table-core";
+import type { Theme, ColumnDef, Row } from "simple-table-core";
 import { headerRendererConfig } from "./header-renderer.demo-data";
 import "simple-table-core/styles.css";
 
@@ -29,7 +29,7 @@ export function renderHeaderRendererDemo(
     });
   }
 
-  function buildHeaders(): HeaderObject[] {
+  function buildHeaders(): ColumnDef[] {
     return headerRendererConfig.headers.map((h) => ({
       ...h,
       sortable: false,
@@ -62,7 +62,7 @@ export function renderHeaderRendererDemo(
               sortDirection = null;
             }
           }
-          table.update({ defaultHeaders: buildHeaders(), rows: getSortedData() });
+          table.update({ columns: buildHeaders(), rows: getSortedData() });
         });
 
         const label = document.createElement("span");
@@ -82,7 +82,7 @@ export function renderHeaderRendererDemo(
   }
 
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: buildHeaders(),
+    columns: buildHeaders(),
     rows: getSortedData(),
     height: options?.height ?? "400px",
     theme: options?.theme,
@@ -94,7 +94,7 @@ export function renderHeaderRendererDemo(
 
 // header-renderer.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "simple-table-core";
+import type { ColumnDef, Row } from "simple-table-core";
 
 
 export const headerRendererData: Row[] = [
@@ -108,7 +108,7 @@ export const headerRendererData: Row[] = [
   { id: 8, name: "Henry Patel", email: "henry@example.com", role: "Lead", salary: 145000, department: "Engineering" },
 ];
 
-export const headerRendererHeaders: HeaderObject[] = [
+export const headerRendererHeaders: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number", sortable: true },
   { accessor: "name", label: "Employee Name", width: 180, type: "string", sortable: true },
   { accessor: "email", label: "Email Address", width: 200, type: "string" },

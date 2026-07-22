@@ -1,8 +1,8 @@
 <template>
   <SimpleTable
     :column-resizing="dynamicRowLoadingConfig.tableProps.columnResizing"
-    :default-headers="dynamicRowLoadingConfig.headers"
-    :edit-columns="dynamicRowLoadingConfig.tableProps.editColumns"
+    :columns="dynamicRowLoadingConfig.headers"
+    :enable-column-editor="dynamicRowLoadingConfig.tableProps.enableColumnEditor"
     :expand-all="dynamicRowLoadingConfig.tableProps.expandAll"
     :height="height"
     :on-row-group-expand="handleRowExpand"
@@ -11,7 +11,7 @@
     :rows="rows"
     :selectable-cells="dynamicRowLoadingConfig.tableProps.selectableCells"
     :theme="theme"
-    :use-odd-even-row-background="dynamicRowLoadingConfig.tableProps.useOddEvenRowBackground"
+    :odd-even-row-background="dynamicRowLoadingConfig.tableProps.oddEvenRowBackground"
   />
 </template>
 

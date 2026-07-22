@@ -1,11 +1,11 @@
 // crm-demo.component.ts
 import { Component } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Row } from "@simple-table/angular";
+import type { AngularColumnDef, Row } from "@simple-table/angular";
 import { crmData } from "./crm.demo-data";
 import "@simple-table/angular/styles.css";
 
-const headers: AngularHeaderObject[] = [
+const headers: AngularColumnDef[] = [
   { accessor: "name", label: "CONTACT", type: "string", width: "2fr", sortable: true },
   { accessor: "signal", label: "SIGNAL", type: "string", width: "3fr" },
   { accessor: "aiScore", label: "AI SCORE", type: "number", align: "center" },
@@ -19,10 +19,10 @@ const headers: AngularHeaderObject[] = [
   imports: [SimpleTableComponent],
   template: `
     <simple-table
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rows]="rows"
       [enableRowSelection]="true"
-      [shouldPaginate]="true"
+      [enablePagination]="true"
       [rowsPerPage]="100"
       [columnReordering]="true"
       [columnResizing]="true"

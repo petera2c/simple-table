@@ -5,9 +5,9 @@ import "simple-table-core/styles.css";
 
 export function renderHRDemo(container: HTMLElement) {
   return new SimpleTableVanilla(container, {
-    defaultHeaders: hrConfig.headers,
+    columns: hrConfig.headers,
     rows: [...hrConfig.rows],
-    shouldPaginate: true,
+    enablePagination: true,
     rowsPerPage: 8,
     customTheme: { rowHeight: 48 },
     columnReordering: true,

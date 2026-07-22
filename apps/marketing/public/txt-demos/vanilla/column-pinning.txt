@@ -9,7 +9,7 @@ export function renderColumnPinningDemo(
   options?: { height?: string | number; theme?: Theme },
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: columnPinningConfig.headers,
+    columns: columnPinningConfig.headers,
     rows: columnPinningConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
@@ -21,10 +21,10 @@ export function renderColumnPinningDemo(
 
 // column-pinning.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
-export const columnPinningHeaders: HeaderObject[] = [
+export const columnPinningHeaders: ColumnDef[] = [
   { accessor: "name", label: "Name", width: 132, pinned: "left", type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },
   { accessor: "role", label: "Role", width: 150, type: "string" },

@@ -1,11 +1,11 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import { FilterCondition, EnumFilterOperator } from "../../types/FilterTypes";
 import { createFilterActions } from "./createFilterActions";
 import { createFilterInput } from "./createFilterInput";
 import { createCheckbox } from "../columnEditor/createCheckbox";
 
 export interface CreateEnumFilterOptions {
-  header: HeaderObject;
+  header: ColumnDef;
   currentFilter?: FilterCondition;
   onApplyFilter: (filter: FilterCondition) => void;
   onClearFilter: () => void;

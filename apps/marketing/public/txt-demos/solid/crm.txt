@@ -1,11 +1,11 @@
 // CRMDemo.tsx
 import { createSignal } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { SolidHeaderObject } from "@simple-table/solid";
+import type { SolidColumnDef } from "@simple-table/solid";
 import { crmData } from "./crm.demo-data";
 import "@simple-table/solid/styles.css";
 
-const headers: SolidHeaderObject[] = [
+const headers: SolidColumnDef[] = [
   {
     accessor: "name",
     label: "CONTACT",
@@ -25,10 +25,10 @@ export default function CRMDemo() {
 
   return (
     <SimpleTable
-      defaultHeaders={headers}
+      columns={headers}
       rows={rows()}
       enableRowSelection
-      shouldPaginate
+      enablePagination
       rowsPerPage={100}
       columnReordering
       columnResizing

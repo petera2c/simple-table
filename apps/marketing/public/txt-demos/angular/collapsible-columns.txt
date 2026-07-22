@@ -1,6 +1,6 @@
 // collapsible-columns-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { collapsibleColumnsConfig } from "./collapsible-columns.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -11,9 +11,9 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [columnResizing]="true"
-      [editColumns]="true"
+      [enableColumnEditor]="true"
       [selectableCells]="true"
       [columnReordering]="true"
       [height]="height"
@@ -26,13 +26,13 @@ export class CollapsibleColumnsDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = collapsibleColumnsConfig.rows;
-  readonly headers: AngularHeaderObject[] = collapsibleColumnsConfig.headers;
+  readonly headers: AngularColumnDef[] = collapsibleColumnsConfig.headers;
 }
 
 
 // collapsible-columns.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
 
 export const collapsibleColumnsData = [
@@ -53,7 +53,7 @@ export const collapsibleColumnsData = [
 const fmt = (accessor: string) => ({ row }: { row: Record<string, unknown> }) =>
   `$${((row[accessor] as number) || 0).toLocaleString()}`;
 
-const monthCol = (accessor: string, label: string): AngularHeaderObject => ({
+const monthCol = (accessor: string, label: string): AngularColumnDef => ({
   accessor,
   label,
   width: 100,
@@ -64,7 +64,7 @@ const monthCol = (accessor: string, label: string): AngularHeaderObject => ({
   cellRenderer: fmt(accessor),
 });
 
-export const collapsibleColumnsHeaders: AngularHeaderObject[] = [
+export const collapsibleColumnsHeaders: AngularColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, sortable: true },
   { accessor: "name", label: "Sales Rep", minWidth: 150, width: "1fr", sortable: true },
   { accessor: "region", label: "Region", width: 140, sortable: true },
@@ -117,7 +117,7 @@ export const collapsibleColumnsConfig = {
   rows: collapsibleColumnsData,
   tableProps: {
     columnResizing: true,
-    editColumns: true,
+    enableColumnEditor: true,
     selectableCells: true,
     columnReordering: true,
   },

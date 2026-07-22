@@ -1,7 +1,7 @@
 // custom-icons-demo.component.ts
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, AngularIconsConfig, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, AngularIconsConfig, Row, Theme } from "@simple-table/angular";
 import { customIconsConfig } from "./custom-icons.demo-data";
 import {
   DemoExpandIconComponent,
@@ -20,7 +20,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
       [icons]="icons"
@@ -32,7 +32,7 @@ export class CustomIconsDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = customIconsConfig.rows;
-  readonly headers: AngularHeaderObject[] = customIconsConfig.headers;
+  readonly headers: AngularColumnDef[] = customIconsConfig.headers;
   readonly icons: AngularIconsConfig = {
     sortUp: DemoSortUpIconComponent,
     sortDown: DemoSortDownIconComponent,
@@ -46,7 +46,7 @@ export class CustomIconsDemoComponent {
 
 // custom-icons.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject, Row } from "@simple-table/angular";
+import type { AngularColumnDef, Row } from "@simple-table/angular";
 
 
 export const customIconsData: Row[] = [
@@ -60,7 +60,7 @@ export const customIconsData: Row[] = [
   { id: 8, name: "Next Release", version: "2.2.0", status: "planned", downloads: 0, date: "2025-01-20" },
 ];
 
-export const customIconsHeaders: AngularHeaderObject[] = [
+export const customIconsHeaders: AngularColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number", sortable: true },
   { accessor: "name", label: "Release", width: 170, type: "string", sortable: true },
   { accessor: "version", label: "Version", width: 100, type: "string", sortable: true },

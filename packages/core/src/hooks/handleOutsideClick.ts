@@ -1,4 +1,4 @@
-import HeaderObject from "../types/HeaderObject";
+import ColumnDef from "../types/ColumnDef";
 import Cell from "../types/Cell";
 
 export interface HandleOutsideClickConfig {
@@ -7,8 +7,8 @@ export interface HandleOutsideClickConfig {
   selectedColumns: Set<number>;
   setSelectedCells: (cells: Set<string>) => void;
   setSelectedColumns: (columns: Set<number>) => void;
-  activeHeaderDropdown?: HeaderObject | null;
-  setActiveHeaderDropdown?: (header: HeaderObject | null) => void;
+  activeHeaderDropdown?: ColumnDef | null;
+  setActiveHeaderDropdown?: (header: ColumnDef | null) => void;
   startCell?: { current: Cell | null };
   /** When provided, used to read current selection (avoids stale refs). */
   getSelectedCells?: () => Set<string>;

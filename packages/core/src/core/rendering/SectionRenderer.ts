@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../../types/HeaderObject";
+import ColumnDef, { Accessor } from "../../types/ColumnDef";
 import {
   renderHeaderCells,
   AbsoluteCell,
@@ -28,7 +28,7 @@ import {
 import { createStateRow, type StateRowRenderContext } from "../../utils/stateRowRenderer";
 
 export interface HeaderSectionParams {
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   collapsedHeaders: Set<Accessor>;
   pinned?: "left" | "right";
   maxHeaderDepth: number;
@@ -39,7 +39,7 @@ export interface HeaderSectionParams {
 }
 
 export interface BodySectionParams {
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   rows: TableRow[];
   collapsedHeaders: Set<Accessor>;
   pinned?: "left" | "right";
@@ -810,7 +810,7 @@ export class SectionRenderer {
   }
 
   private calculateAbsoluteHeaderCells(
-    headers: HeaderObject[],
+    headers: ColumnDef[],
     collapsedHeaders: Set<Accessor>,
     maxDepth: number,
     headerHeight: number,
@@ -821,9 +821,9 @@ export class SectionRenderer {
     let currentLeft = 0;
 
     const processHeader = (
-      header: HeaderObject,
+      header: ColumnDef,
       depth: number,
-      parentHeader?: HeaderObject,
+      parentHeader?: ColumnDef,
     ): number => {
       if (isHeaderExcludedFromLayout(header)) return 0;
 
@@ -925,7 +925,7 @@ export class SectionRenderer {
   }
 
   private calculateAbsoluteBodyCells(
-    headers: HeaderObject[],
+    headers: ColumnDef[],
     rows: TableRow[],
     collapsedHeaders: Set<Accessor>,
     rowHeight: number,
@@ -992,12 +992,12 @@ export class SectionRenderer {
   }
 
   private getLeafHeaders(
-    headers: HeaderObject[],
+    headers: ColumnDef[],
     collapsedHeaders: Set<Accessor>,
-  ): HeaderObject[] {
-    const leaves: HeaderObject[] = [];
+  ): ColumnDef[] {
+    const leaves: ColumnDef[] = [];
 
-    const processHeader = (header: HeaderObject): void => {
+    const processHeader = (header: ColumnDef): void => {
       if (isHeaderExcludedFromLayout(header)) return;
 
       const isCollapsed = collapsedHeaders.has(header.accessor);
@@ -1033,8 +1033,8 @@ export class SectionRenderer {
     return leaves;
   }
 
-  private createHeadersHash(headers: HeaderObject[]): string {
-    const hashHeader = (h: HeaderObject): string => {
+  private createHeadersHash(headers: ColumnDef[]): string {
+    const hashHeader = (h: ColumnDef): string => {
       let hash = `${h.accessor}:${h.width}:${h.pinned || ""}:${h.hide || ""}:${h.excludeFromRender || ""}`;
       if (h.children && h.children.length > 0) {
         hash += `:children[${h.children.map(hashHeader).join(",")}]`;
@@ -1059,9 +1059,9 @@ export class SectionRenderer {
       "rowSelectionMode",
       "activeRowId",
       "cellUpdateFlash",
-      "useOddColumnBackground",
-      "useHoverRowBackground",
-      "useOddEvenRowBackground",
+      "oddColumnBackground",
+      "hoverRowBackground",
+      "oddEvenRowBackground",
       "rowHeight",
       "containerWidth",
       // Loading skeleton state. Without this, `update({ isLoading })` alone
@@ -1182,7 +1182,7 @@ export class SectionRenderer {
 
   private getCachedBodyCells(
     sectionKey: string,
-    headers: HeaderObject[],
+    headers: ColumnDef[],
     rows: TableRow[],
     collapsedHeaders: Set<Accessor>,
     rowHeight: number,
@@ -1304,7 +1304,7 @@ export class SectionRenderer {
 
   private getCachedHeaderCells(
     sectionKey: string,
-    headers: HeaderObject[],
+    headers: ColumnDef[],
     collapsedHeaders: Set<Accessor>,
     maxDepth: number,
     headerHeight: number,
@@ -1463,7 +1463,7 @@ export class SectionRenderer {
    */
   private captureSnapshotConfig(
     sectionKey: string,
-    headers: HeaderObject[],
+    headers: ColumnDef[],
     collapsedHeaders: Set<Accessor>,
     rows: TableRow[],
     rowHeight: number,

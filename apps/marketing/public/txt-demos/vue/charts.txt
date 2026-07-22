@@ -1,7 +1,7 @@
 // ChartsDemo.vue
 <template>
   <SimpleTable
-    :default-headers="chartsConfig.headers"
+    :columns="chartsConfig.headers"
     :rows="chartsConfig.rows"
     :column-reordering="true"
     :column-resizing="true"

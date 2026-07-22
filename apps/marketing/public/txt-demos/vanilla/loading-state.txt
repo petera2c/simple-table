@@ -27,7 +27,7 @@ export function renderLoadingStateDemo(
   let timer: ReturnType<typeof setTimeout> | null = null;
 
   const table = new SimpleTableVanilla(tableContainer, {
-    defaultHeaders: loadingStateConfig.headers,
+    columns: loadingStateConfig.headers,
     rows: [] as Row[],
     height: options?.height ?? "400px",
     theme: options?.theme,
@@ -64,7 +64,7 @@ export function renderLoadingStateDemo(
 
 // loading-state.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
 export const loadingStateData = [
@@ -78,7 +78,7 @@ export const loadingStateData = [
   { id: 8, name: "Luca Rossi", age: 26, department: "Marketing", salary: 75000, status: "Active" },
 ];
 
-export const loadingStateHeaders: HeaderObject[] = [
+export const loadingStateHeaders: ColumnDef[] = [
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120 },
   { accessor: "age", label: "Age", width: 80, type: "number" },
   { accessor: "department", label: "Department", width: 150 },

@@ -1,11 +1,11 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import { hasCollapsibleChildren } from "../collapseUtils";
 import { updateExpandIconState } from "../bodyCell/expansion";
 import { HeaderRenderContext } from "./types";
 import { addTrackedEventListener } from "./eventTracking";
 
 /** Use same icon and animation as body row expand/collapse (icons.expand + st-expand-icon-container). */
-export const createCollapseIcon = (header: HeaderObject, context: HeaderRenderContext): HTMLElement | null => {
+export const createCollapseIcon = (header: ColumnDef, context: HeaderRenderContext): HTMLElement | null => {
   const { icons } = context;
 
   const isCollapsible = hasCollapsibleChildren(header);

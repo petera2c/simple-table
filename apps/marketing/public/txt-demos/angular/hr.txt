@@ -11,9 +11,9 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [rows]="rows"
-      [shouldPaginate]="true"
+      [enablePagination]="true"
       [rowsPerPage]="8"
       [customTheme]="{ rowHeight: 48 }"
       [columnReordering]="true"

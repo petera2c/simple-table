@@ -2,7 +2,7 @@ import type { Component } from "svelte";
 import type {
   SimpleTableProps,
   SimpleTableConfig,
-  HeaderObject,
+  ColumnDef,
   Row,
   TableAPI,
   CellRenderer,
@@ -70,19 +70,19 @@ export interface SvelteColumnEditorConfig extends Omit<
   customRenderer?: SvelteColumnEditorCustomRenderer;
 }
 
-// ─── HeaderObject override ────────────────────────────────────────────────────
+// ─── ColumnDef override ────────────────────────────────────────────────────
 /**
- * Column definition for `columns` / `defaultHeaders`: core column metadata with
- * Svelte-only renderer fields. `columns` / `defaultHeaders` also accept plain
- * `HeaderObject[]` from shared configs.
+ * Column definition for `columns`: core column metadata with
+ * Svelte-only renderer fields. `columns` also accept plain
+ * `ColumnDef[]` from shared configs.
  */
-export interface SvelteHeaderObject extends Omit<
-  HeaderObject,
+export interface SvelteColumnDef extends Omit<
+  ColumnDef,
   "cellRenderer" | "headerRenderer" | "children" | "nestedTable"
 > {
   cellRenderer?: SvelteCellRenderer;
   headerRenderer?: SvelteHeaderRenderer;
-  children?: SvelteHeaderObject[];
+  children?: SvelteColumnDef[];
   nestedTable?: Omit<
     SimpleTableSvelteProps,
     | "rows"
@@ -93,19 +93,16 @@ export interface SvelteHeaderObject extends Omit<
   >;
 }
 
-/** Preferred name for Svelte column definitions. Alias of {@link SvelteHeaderObject}. */
-export type SvelteColumnDef = SvelteHeaderObject;
 
 // ─── Top-level props ──────────────────────────────────────────────────────────
 // Mirrors SimpleTableProps with Svelte-specific overrides. Use `bind:this` on the
 // table component and `getAPI()` for the imperative TableAPI.
 //
 //   Overridden to Svelte equivalents:
-//     - columns / defaultHeaders → ReadonlyArray<HeaderObject | SvelteHeaderObject>
+//     - columns → ReadonlyArray<ColumnDef | SvelteColumnDef>
 export interface SimpleTableSvelteProps extends Omit<
   SimpleTableProps,
   | "rows"
-  | "defaultHeaders"
   | "columns"
   | "footerRenderer"
   | "emptyStateRenderer"
@@ -121,19 +118,14 @@ export interface SimpleTableSvelteProps extends Omit<
   | "onHeaderEdit"
   | "onColumnSelect"
 > {
-  /**
-   * Column definitions.
-   * @deprecated Prefer {@link columns}
-   */
-  defaultHeaders?: ReadonlyArray<HeaderObject | SvelteHeaderObject>;
-  /** Column definitions. Preferred over `defaultHeaders`. */
-  columns?: ReadonlyArray<HeaderObject | SvelteHeaderObject>;
+  /** Column definitions. */
+  columns?: ReadonlyArray<ColumnDef | SvelteColumnDef>;
   /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
   rows: ReadonlyArray<Row> | ReadonlyArray<object>;
-  onColumnOrderChange?: (newHeaders: SvelteHeaderObject[]) => void;
-  onColumnWidthChange?: (headers: SvelteHeaderObject[]) => void;
-  onHeaderEdit?: (header: SvelteHeaderObject, newLabel: string) => void;
-  onColumnSelect?: (header: SvelteHeaderObject) => void;
+  onColumnOrderChange?: (newHeaders: SvelteColumnDef[]) => void;
+  onColumnWidthChange?: (headers: SvelteColumnDef[]) => void;
+  onHeaderEdit?: (header: SvelteColumnDef, newLabel: string) => void;
+  onColumnSelect?: (header: SvelteColumnDef) => void;
   footerRenderer?: SvelteFooterRenderer;
   loadingStateRenderer?: SvelteLoadingStateRenderer;
   errorStateRenderer?: SvelteErrorStateRenderer;

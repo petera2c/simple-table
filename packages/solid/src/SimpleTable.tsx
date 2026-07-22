@@ -64,7 +64,7 @@ export function SimpleTable(props: SimpleTableSolidProps) {
     );
     syncedDefaultHeaders = resolvedColumns;
     if (headersUnchanged) {
-      delete patch.defaultHeaders;
+      delete patch.columns;
     }
 
     const rowsUnchanged = rowsShallowUnchanged(

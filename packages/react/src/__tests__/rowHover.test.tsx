@@ -2,9 +2,9 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
-import type { ReactHeaderObject, SimpleTableReactProps } from "../index";
+import type { ReactColumnDef, SimpleTableReactProps } from "../index";
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 120, type: "string" },
 ];
@@ -52,7 +52,7 @@ async function mountTable(
   root = createRoot(host);
   root.render(
     createElement(SimpleTable, {
-      defaultHeaders: headers,
+      columns: headers,
       rows,
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",
@@ -80,8 +80,8 @@ async function mountTable(
 // Asserting on the class (rather than a computed color) keeps the test fast and
 // independent of CSS loading, while still guarding the behaviour a user sees.
 describe("SimpleTable (React adapter) — row hover styling", () => {
-  it("applies the hover class to a row's cells on mouseenter when useHoverRowBackground is enabled", async () => {
-    const { host, firstCell } = await mountTable({ useHoverRowBackground: true });
+  it("applies the hover class to a row's cells on mouseenter when hoverRowBackground is enabled", async () => {
+    const { host, firstCell } = await mountTable({ hoverRowBackground: true });
 
     firstCell.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
     await wait(50);
@@ -90,7 +90,7 @@ describe("SimpleTable (React adapter) — row hover styling", () => {
   });
 
   it("removes the hover class when the pointer leaves the row", async () => {
-    const { host, firstCell } = await mountTable({ useHoverRowBackground: true });
+    const { host, firstCell } = await mountTable({ hoverRowBackground: true });
 
     firstCell.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
     await wait(50);
@@ -101,8 +101,8 @@ describe("SimpleTable (React adapter) — row hover styling", () => {
     expect(host.querySelectorAll(".st-cell.st-row-hovered").length).toBe(0);
   });
 
-  it("does not apply the hover class when useHoverRowBackground is disabled", async () => {
-    const { host, firstCell } = await mountTable({ useHoverRowBackground: false });
+  it("does not apply the hover class when hoverRowBackground is disabled", async () => {
+    const { host, firstCell } = await mountTable({ hoverRowBackground: false });
 
     firstCell.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
     await wait(50);

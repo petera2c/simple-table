@@ -7,11 +7,11 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={quickStartConfig.headers}
+  columns={quickStartConfig.headers}
   rows={quickStartConfig.rows}
   {height}
   {theme}
-  editColumns={quickStartConfig.tableProps.editColumns}
+  enableColumnEditor={quickStartConfig.tableProps.enableColumnEditor}
   selectableCells={quickStartConfig.tableProps.selectableCells}
   customTheme={quickStartConfig.tableProps.customTheme}
 />

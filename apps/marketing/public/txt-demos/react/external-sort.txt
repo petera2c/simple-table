@@ -30,7 +30,7 @@ const ExternalSortDemo = ({
 
   return (
     <SimpleTable
-      defaultHeaders={externalSortConfig.headers}
+      columns={externalSortConfig.headers}
       rows={sortedData}
       onSortChange={setSortConfig}
       externalSortHandling

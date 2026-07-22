@@ -1,6 +1,6 @@
 // row-selection-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, RowSelectionChangeProps, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, RowSelectionChangeProps, Theme } from "@simple-table/angular";
 import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
 import type { LibraryBook } from "./row-selection.demo-data";
 import "@simple-table/angular/styles.css";
@@ -25,7 +25,7 @@ import "@simple-table/angular/styles.css";
 
       <simple-table
         [rows]="rows"
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [height]="height"
         [theme]="theme"
         [enableRowSelection]="true"
@@ -42,7 +42,7 @@ export class RowSelectionDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = rowSelectionConfig.rows;
-  readonly headers: AngularHeaderObject[] = rowSelectionConfig.headers.map((h) => {
+  readonly headers: AngularColumnDef[] = rowSelectionConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
@@ -74,7 +74,7 @@ export class RowSelectionDemoComponent {
 
 // row-selection.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
 
 export type LibraryBook = {
@@ -106,7 +106,7 @@ export const rowSelectionData: LibraryBook[] = [
   { id: 1012, isbn: "978-0593229439", title: "Climate Solutions for Tomorrow", author: "Dr. Hassan Al-Rashid", genre: "Environmental Science", yearPublished: 2022, pages: 398, rating: 4.8, status: "Available", librarySection: "Science" },
 ];
 
-export const rowSelectionHeaders: AngularHeaderObject[] = [
+export const rowSelectionHeaders: AngularColumnDef[] = [
   { accessor: "id", label: "Book ID", width: 80, sortable: true, type: "number" },
   { accessor: "isbn", label: "ISBN", width: 120, sortable: true, type: "string" },
   { accessor: "title", label: "Title", minWidth: 150, width: "1fr", sortable: true, type: "string" },

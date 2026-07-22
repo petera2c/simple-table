@@ -9,7 +9,7 @@ export function renderValueFormatterDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: valueFormatterConfig.headers,
+    columns: valueFormatterConfig.headers,
     rows: valueFormatterConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
@@ -21,7 +21,7 @@ export function renderValueFormatterDemo(
 
 // value-formatter.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "simple-table-core";
+import type { ColumnDef, Row } from "simple-table-core";
 
 
 export const valueFormatterData: Row[] = [
@@ -48,7 +48,7 @@ const DEPARTMENT_CODES: Record<string, string> = {
   operations: "OPS",
 };
 
-export const valueFormatterHeaders: HeaderObject[] = [
+export const valueFormatterHeaders: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   {
     accessor: "firstName",

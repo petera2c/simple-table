@@ -9,11 +9,11 @@ export function renderQuickStartDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: quickStartConfig.headers,
+    columns: quickStartConfig.headers,
     rows: quickStartConfig.rows,
     height: options?.height ?? "300px",
     theme: options?.theme,
-    editColumns: quickStartConfig.tableProps.editColumns,
+    enableColumnEditor: quickStartConfig.tableProps.enableColumnEditor,
     selectableCells: quickStartConfig.tableProps.selectableCells,
     customTheme: quickStartConfig.tableProps.customTheme,
   });
@@ -24,7 +24,7 @@ export function renderQuickStartDemo(
 // quick-start.demo-data.ts
 // Self-contained demo table setup for this example.
 import type { Row } from "simple-table-core";
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 
 export const QUICK_START_DATA: Row[] = [
@@ -127,7 +127,7 @@ export const QUICK_START_DATA: Row[] = [
 ];
 
 
-export const quickStartHeaders: HeaderObject[] = [
+export const quickStartHeaders: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   {
     accessor: "name",
@@ -147,7 +147,7 @@ export const quickStartConfig = {
   headers: quickStartHeaders,
   rows: QUICK_START_DATA,
   tableProps: {
-    editColumns: true,
+    enableColumnEditor: true,
     selectableCells: true,
     customTheme: { rowHeight: 32 },
   },

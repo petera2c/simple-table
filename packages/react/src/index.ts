@@ -6,7 +6,6 @@ export { asRows } from "simple-table-core";
 export type {
   SimpleTableReactProps,
   TableInstance,
-  ReactHeaderObject,
   ReactColumnDef,
   ReactColumnEditorConfig,
   ReactIconsConfig,
@@ -32,7 +31,7 @@ export type {
 
 // Re-export vanilla types for callbacks and the imperative ref API. For
 // column definitions and column-related callbacks on `SimpleTable`, use
-// `ReactHeaderObject` (exported above).
+// `ReactColumnDef` (exported above).
 export type {
   Accessor,
   AggregationConfig,

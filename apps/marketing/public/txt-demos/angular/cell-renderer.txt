@@ -1,7 +1,7 @@
 // cell-renderer-demo.component.ts
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularCellRenderer, AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import { CrProgressCellComponent } from "./cr-progress-cell.component";
 import { CrRatingCellComponent } from "./cr-rating-cell.component";
@@ -29,7 +29,7 @@ const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
       [selectableCells]="true"
@@ -42,7 +42,7 @@ export class CellRendererDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = cellRendererConfig.rows;
-  readonly headers: AngularHeaderObject[] = cellRendererConfig.headers.map((h): AngularHeaderObject => {
+  readonly headers: AngularColumnDef[] = cellRendererConfig.headers.map((h): AngularColumnDef => {
     const cellRenderer = RENDERERS[String(h.accessor)];
     return cellRenderer ? { ...h, cellRenderer } : { ...h };
   });
@@ -51,7 +51,7 @@ export class CellRendererDemoComponent {
 
 // cell-renderer.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
 
 export type CellRendererEmployee = {
@@ -81,7 +81,7 @@ export const cellRendererData: CellRendererEmployee[] = [
   { id: 12, name: "Atlas Johnson", website: "atlasjohnson.brand", status: "inactive", progress: 28, rating: 3.6, verified: false, tags: ["Brand Design", "Graphic Design"], teamMembers: [{ name: "Uma Patel", role: "Graphic Designer" }] },
 ];
 
-export const cellRendererHeaders: AngularHeaderObject[] = [
+export const cellRendererHeaders: AngularColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 180, type: "string" },
   { accessor: "teamMembers", label: "Team", width: 280, type: "string" },

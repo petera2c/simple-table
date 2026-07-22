@@ -1,8 +1,8 @@
 import type { ComponentType, ReactNode } from "react";
-import type { SimpleTableConfig, HeaderObject, ColumnEditorConfig, Row } from "simple-table-core";
+import type { SimpleTableConfig, ColumnDef, ColumnEditorConfig, Row } from "simple-table-core";
 import type {
   SimpleTableReactProps,
-  ReactHeaderObject,
+  ReactColumnDef,
   ReactColumnEditorConfig,
   ReactIconsConfig,
 } from "./types";
@@ -65,11 +65,11 @@ function transformColumnEditorConfig(
   };
 }
 
-function transformHeader(header: ReactHeaderObject, bridge: PortalBridge): HeaderObject {
+function transformHeader(header: ReactColumnDef, bridge: PortalBridge): ColumnDef {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
   const accessor = String(header.accessor);
 
-  const transformed: HeaderObject = { ...(rest as any) };
+  const transformed: ColumnDef = { ...(rest as any) };
 
   if (cellRenderer) {
     transformed.cellRenderer = wrapCachedCellRenderer(
@@ -101,13 +101,13 @@ function transformHeader(header: ReactHeaderObject, bridge: PortalBridge): Heade
   return transformed;
 }
 
-/** Resolve preferred `columns` or legacy `defaultHeaders`. */
+/** Resolve column definitions. */
 export function resolveReactColumns(
-  config: Pick<SimpleTableReactProps, "columns" | "defaultHeaders">,
-): ReadonlyArray<ReactHeaderObject> {
-  const headers = config.columns ?? config.defaultHeaders;
+  config: Pick<SimpleTableReactProps, "columns">,
+): ReadonlyArray<ReactColumnDef> {
+  const headers = config.columns;
   if (!headers) {
-    throw new Error("SimpleTable requires `columns` or `defaultHeaders`");
+    throw new Error("SimpleTable requires `columns`");
   }
   return headers;
 }
@@ -117,7 +117,6 @@ export function buildVanillaConfig(
   bridge: PortalBridge,
 ): SimpleTableConfig {
   const {
-    defaultHeaders: _defaultHeaders,
     columns: _columns,
     rows,
     footerRenderer,
@@ -134,63 +133,56 @@ export function buildVanillaConfig(
     onHeaderEdit,
     onColumnSelect,
     enableColumnEditor,
-    editColumns,
     enableColumnEditorInitOpen,
-    editColumnsInitOpen,
     enablePagination,
-    shouldPaginate,
     onTableReady,
-    onGridReady,
     hoverRowBackground,
-    useHoverRowBackground,
     oddColumnBackground,
-    useOddColumnBackground,
     oddEvenRowBackground,
-    useOddEvenRowBackground,
     ...rest
   } = config;
 
-  const defaultHeaders = resolveReactColumns(config);
+  const columns = resolveReactColumns(config);
 
-  bridge.pruneRendererCaches(collectHeaderAccessors(defaultHeaders));
+  bridge.pruneRendererCaches(collectHeaderAccessors(columns));
 
   const vanillaConfig: SimpleTableConfig = {
     ...rest,
     rows: rows as Row[],
-    defaultHeaders: defaultHeaders.map((header) => transformHeader(header, bridge)),
-    editColumns: enableColumnEditor ?? editColumns,
-    editColumnsInitOpen: enableColumnEditorInitOpen ?? editColumnsInitOpen,
-    shouldPaginate: enablePagination ?? shouldPaginate,
-    onGridReady: onTableReady ?? onGridReady,
-    useHoverRowBackground: hoverRowBackground ?? useHoverRowBackground,
-    useOddColumnBackground: oddColumnBackground ?? useOddColumnBackground,
-    useOddEvenRowBackground: oddEvenRowBackground ?? useOddEvenRowBackground,
+    columns: columns.map((header) => transformHeader(header, bridge)),
+    enableColumnEditor,
+    enableColumnEditorInitOpen,
+    enablePagination,
+    onTableReady,
+    hoverRowBackground,
+    oddColumnBackground,
+    oddEvenRowBackground,
     // Authoritative portal teardown: core calls this before it permanently
     // discards any host element, so the bridge unmounts exactly the affected
     // portal subtrees (no DOM-inference / MutationObserver pruning needed).
     onRendererHostDiscard: bridge.disposeHost,
     ...(onColumnOrderChange
       ? {
-          onColumnOrderChange: (headers: HeaderObject[]) =>
-            onColumnOrderChange(headers as unknown as ReactHeaderObject[]),
+          onColumnOrderChange: (headers: ColumnDef[]) =>
+            onColumnOrderChange(headers as unknown as ReactColumnDef[]),
         }
       : {}),
     ...(onColumnWidthChange
       ? {
-          onColumnWidthChange: (headers: HeaderObject[]) =>
-            onColumnWidthChange(headers as unknown as ReactHeaderObject[]),
+          onColumnWidthChange: (headers: ColumnDef[]) =>
+            onColumnWidthChange(headers as unknown as ReactColumnDef[]),
         }
       : {}),
     ...(onHeaderEdit
       ? {
-          onHeaderEdit: (header: HeaderObject, newLabel: string) =>
-            onHeaderEdit(header as unknown as ReactHeaderObject, newLabel),
+          onHeaderEdit: (header: ColumnDef, newLabel: string) =>
+            onHeaderEdit(header as unknown as ReactColumnDef, newLabel),
         }
       : {}),
     ...(onColumnSelect
       ? {
-          onColumnSelect: (header: HeaderObject) =>
-            onColumnSelect(header as unknown as ReactHeaderObject),
+          onColumnSelect: (header: ColumnDef) =>
+            onColumnSelect(header as unknown as ReactColumnDef),
         }
       : {}),
   };

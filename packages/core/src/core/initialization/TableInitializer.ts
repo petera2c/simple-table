@@ -3,7 +3,7 @@ import { CustomTheme, DEFAULT_CUSTOM_THEME } from "../../types/CustomTheme";
 import { DEFAULT_COLUMN_EDITOR_CONFIG } from "../../types/ColumnEditorConfig";
 import { ColumnEditorRowRenderer } from "../../types/ColumnEditorRowRendererProps";
 import { ColumnEditorCustomRenderer } from "../../types/ColumnEditorCustomRendererProps";
-import HeaderObject, { Accessor } from "../../types/HeaderObject";
+import ColumnDef, { Accessor } from "../../types/ColumnDef";
 import {
   createAngleLeftIcon,
   createAngleRightIcon,
@@ -33,7 +33,7 @@ export interface MergedColumnEditorConfig {
   searchEnabled: boolean;
   searchPlaceholder: string;
   allowColumnPinning: boolean;
-  searchFunction?: (header: HeaderObject, searchText: string) => boolean;
+  searchFunction?: (header: ColumnDef, searchText: string) => boolean;
   rowRenderer?: ColumnEditorRowRenderer;
   customRenderer?: ColumnEditorCustomRenderer;
 }
@@ -91,13 +91,13 @@ export class TableInitializer {
     };
   }
 
-  static buildEssentialAccessors(headers: HeaderObject[]): Set<string> {
+  static buildEssentialAccessors(headers: ColumnDef[]): Set<string> {
     return collectEssentialAccessors(headers);
   }
 
-  static getInitialCollapsedHeaders(headers: HeaderObject[]): Set<Accessor> {
+  static getInitialCollapsedHeaders(headers: ColumnDef[]): Set<Accessor> {
     const collapsed = new Set<Accessor>();
-    const processHeaders = (hdrs: HeaderObject[]) => {
+    const processHeaders = (hdrs: ColumnDef[]) => {
       hdrs.forEach((header) => {
         if (header.collapseDefault && header.collapsible) {
           collapsed.add(header.accessor);

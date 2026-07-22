@@ -1,7 +1,7 @@
 // quick-filter-demo.component.ts
 import { Component, Input } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, QuickFilterMode, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, QuickFilterMode, Row, Theme } from "@simple-table/angular";
 import { quickFilterConfig } from "./quick-filter.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -60,7 +60,7 @@ import "@simple-table/angular/styles.css";
       </div>
       <simple-table
         [rows]="rows"
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [height]="height"
         [theme]="theme"
         [quickFilter]="{ text: searchText, mode: filterMode, caseSensitive: caseSensitive }"
@@ -73,7 +73,7 @@ export class QuickFilterDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = quickFilterConfig.rows;
-  readonly headers: AngularHeaderObject[] = quickFilterConfig.headers;
+  readonly headers: AngularColumnDef[] = quickFilterConfig.headers;
   searchText = "";
   filterMode: QuickFilterMode = "simple";
   caseSensitive = false;
@@ -82,10 +82,10 @@ export class QuickFilterDemoComponent {
 
 // quick-filter.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
 
-export const quickFilterHeaders: AngularHeaderObject[] = [
+export const quickFilterHeaders: AngularColumnDef[] = [
   { accessor: "name", label: "Employee Name", width: 180, type: "string" },
   { accessor: "age", label: "Age", width: 80, type: "number" },
   { accessor: "department", label: "Department", width: 140, type: "string" },

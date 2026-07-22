@@ -1,4 +1,4 @@
-import type HeaderObject from "../../types/HeaderObject";
+import type ColumnDef from "../../types/ColumnDef";
 import { findLeafHeaders, getHeaderWidthInPixels, getHeaderMinWidth } from "../headerWidthUtils";
 import { getMaxPinnedSectionPercent } from "../../consts/column-constraints";
 import { isHeaderExcludedFromLayout } from "../cellUtils";
@@ -11,8 +11,8 @@ export const calculateMaxHeaderWidth = ({
   headers,
   collapsedHeaders,
 }: {
-  header: HeaderObject;
-  headers: HeaderObject[];
+  header: ColumnDef;
+  headers: ColumnDef[];
   collapsedHeaders?: Set<string>;
 }): number => {
   // Get the table container element

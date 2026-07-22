@@ -1,24 +1,24 @@
 import CellChangeProps from "./CellChangeProps";
-import HeaderObject from "./HeaderObject";
+import ColumnDef from "./ColumnDef";
 import Row from "./Row";
 import Cell from "./Cell";
 
 type TableRowProps = {
   currentRows: Row[];
-  draggedHeaderRef: { current: HeaderObject | null };
+  draggedHeaderRef: { current: ColumnDef | null };
   getBorderClass: (rowIndex: number, columnIndex: number) => string;
   handleMouseDown: (props: Cell) => void;
   handleMouseOver: (rowIndex: number, columnIndex: number) => void;
-  headers: HeaderObject[];
-  hoveredHeaderRef: { current: HeaderObject | null };
+  headers: ColumnDef[];
+  hoveredHeaderRef: { current: ColumnDef | null };
   isSelected: (rowIndex: number, columnIndex: number) => boolean;
   isInitialFocusedCell: (rowIndex: number, columnIndex: number) => boolean;
   onCellEdit?: (props: CellChangeProps) => void;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
+  onTableHeaderDragEnd: (newHeaders: ColumnDef[]) => void;
   onToggleGroup: (rowId: number) => void;
   row: Row;
   rowIndex: number;
-  shouldPaginate: boolean;
+  enablePagination: boolean;
   tableRef: { current: HTMLDivElement | null };
 };
 

@@ -7,7 +7,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={columnPinningConfig.headers}
+  columns={columnPinningConfig.headers}
   rows={columnPinningConfig.rows}
   {height}
   {theme}

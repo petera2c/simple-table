@@ -1,5 +1,5 @@
 import UpdateDataProps from "./UpdateCellProps";
-import HeaderObject, { Accessor } from "./HeaderObject";
+import ColumnDef, { Accessor } from "./ColumnDef";
 import TableRow from "./TableRow";
 import Row from "./Row";
 import SortColumn, { SortDirection } from "./SortColumn";
@@ -23,7 +23,7 @@ export type TableAPI = {
   setHeaderRename: (props: SetHeaderRenameProps) => void;
   getVisibleRows: () => TableRow[];
   getAllRows: () => TableRow[];
-  getHeaders: () => HeaderObject[];
+  getHeaders: () => ColumnDef[];
   exportToCSV: (props?: ExportToCSVProps) => void;
   getSortState: () => SortColumn | null;
   applySortState: (props?: { accessor: Accessor; direction?: SortDirection }) => Promise<void>;
@@ -52,7 +52,7 @@ export type TableAPI = {
   /**
    * Reset columns to the configured definitions: default order, widths, and
    * visibility. All columns become visible again except those explicitly
-   * defined with `hide: true` in `defaultHeaders`, regardless of any runtime
+   * defined with `hide: true` in `columns`, regardless of any runtime
    * visibility changes made since mount.
    */
   resetColumns: () => void;
@@ -79,7 +79,7 @@ export type TableAPI = {
   setPivot: (config: PivotConfig | null) => void;
   getPivot: () => PivotConfig | null;
   /** Generated headers while pivot is active; otherwise current headers. */
-  getPivotHeaders: () => HeaderObject[];
+  getPivotHeaders: () => ColumnDef[];
   /** Post-pivot rows (pre-flatten) while pivot is active; otherwise source rows. */
   getPivotedRows: () => Row[];
 };

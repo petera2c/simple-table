@@ -1,4 +1,4 @@
-import HeaderObject from "../types/HeaderObject";
+import ColumnDef from "../types/ColumnDef";
 import TableRow from "../types/TableRow";
 import { getNestedValue } from "./rowUtils";
 
@@ -32,10 +32,10 @@ const escapeCSVValue = (value: any): string => {
 /**
  * Gets all visible headers (flattens nested headers and excludes hidden ones)
  */
-const getVisibleHeaders = (headers: HeaderObject[]): HeaderObject[] => {
-  const visible: HeaderObject[] = [];
+const getVisibleHeaders = (headers: ColumnDef[]): ColumnDef[] => {
+  const visible: ColumnDef[] = [];
 
-  const processHeaders = (headerList: HeaderObject[]) => {
+  const processHeaders = (headerList: ColumnDef[]) => {
     for (const header of headerList) {
       // Skip hidden headers, selection columns, and columns excluded from CSV
       if (header.hide || header.isSelectionColumn || header.excludeFromCsv) {
@@ -65,7 +65,7 @@ const getVisibleHeaders = (headers: HeaderObject[]): HeaderObject[] => {
  */
 export const convertToCSV = (
   visibleRows: TableRow[],
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   includeHeadersInCSVExport: boolean = true
 ): string => {
   const visibleHeaders = getVisibleHeaders(headers);
@@ -156,7 +156,7 @@ export const downloadCSV = (csvContent: string, filename: string = "table-export
  */
 export const exportTableToCSV = (
   visibleRows: TableRow[],
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   filename?: string,
   includeHeadersInCSVExport: boolean = true
 ): void => {

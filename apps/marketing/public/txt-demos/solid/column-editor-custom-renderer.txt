@@ -69,9 +69,9 @@ const columnEditorConfig: SolidColumnEditorConfig = {
 export default function ColumnEditorCustomRendererDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
-      defaultHeaders={columnEditorCustomRendererConfig.headers}
+      columns={columnEditorCustomRendererConfig.headers}
       rows={columnEditorCustomRendererConfig.rows}
-      editColumns
+      enableColumnEditor
       columnEditorConfig={columnEditorConfig}
       height={props.height ?? "400px"}
       theme={props.theme}

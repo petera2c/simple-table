@@ -21,7 +21,7 @@ const LiveUpdateDemo = () => {
   return (
     <SimpleTable
       ref={tableRef}
-      defaultHeaders={liveUpdateConfig.headers}
+      columns={liveUpdateConfig.headers}
       rows={liveUpdateConfig.rows}
       height="400px"
     />

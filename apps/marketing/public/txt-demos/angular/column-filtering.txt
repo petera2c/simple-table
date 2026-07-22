@@ -1,6 +1,6 @@
 // column-filtering-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { columnFilteringConfig } from "./column-filtering.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -11,7 +11,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
     ></simple-table>
@@ -22,13 +22,13 @@ export class ColumnFilteringDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = columnFilteringConfig.rows;
-  readonly headers: AngularHeaderObject[] = columnFilteringConfig.headers;
+  readonly headers: AngularColumnDef[] = columnFilteringConfig.headers;
 }
 
 
 // column-filtering.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { Row, AngularHeaderObject } from "@simple-table/angular";
+import type { Row, AngularColumnDef } from "@simple-table/angular";
 
 
 export const COLUMN_FILTERING_DATA: Row[] = [
@@ -176,7 +176,7 @@ export const DEPARTMENT_OPTIONS = [
   { label: "Quality Assurance", value: "Quality Assurance" },
 ];
 
-export const columnFilteringHeaders: AngularHeaderObject[] = [
+export const columnFilteringHeaders: AngularColumnDef[] = [
   {
     accessor: "id",
     label: "ID",

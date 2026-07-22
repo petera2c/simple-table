@@ -2,7 +2,7 @@ import { createElement, useEffect } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
-import type { HeaderRendererProps, ReactHeaderObject } from "../index";
+import type { HeaderRendererProps, ReactColumnDef } from "../index";
 
 /**
  * Simulates a Radix-style floating UI: content is appended to document.body and
@@ -77,7 +77,7 @@ function findScoreHeaderLabel(host: HTMLElement): HTMLElement {
 
 describe("SimpleTable (React adapter) — headerRenderer portal cleanup on sort", () => {
   it("disposes the previous header portal so body-portaled floating UI unmounts on sort", async () => {
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
       {
         accessor: "score",
@@ -91,7 +91,7 @@ describe("SimpleTable (React adapter) — headerRenderer portal cleanup on sort"
 
     const host = mount(
       createElement(SimpleTable, {
-        defaultHeaders: headers,
+        columns: headers,
         rows,
         getRowId: (p: { row: unknown }) => String((p.row as { id?: number })?.id),
         height: "250px",

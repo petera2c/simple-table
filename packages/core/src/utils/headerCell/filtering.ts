@@ -1,4 +1,4 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import { HeaderRenderContext } from "./types";
 import { addTrackedEventListener } from "./eventTracking";
 import { createFilterDropdown } from "../filters/createFilterDropdown";
@@ -6,7 +6,7 @@ import { createDropdown } from "../filters/createDropdown";
 import { FilterCondition } from "../../types/FilterTypes";
 
 export const createFilterIcon = (
-  header: HeaderObject,
+  header: ColumnDef,
   context: HeaderRenderContext,
 ): HTMLElement | null => {
   const { filters, handleApplyFilter, handleClearFilter, icons } = context;

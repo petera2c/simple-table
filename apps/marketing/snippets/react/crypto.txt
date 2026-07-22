@@ -1,7 +1,7 @@
 // CryptoDemo.tsx
 import { useRef } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, CellRendererProps, TableAPI } from "@simple-table/react";
+import type { ReactColumnDef, CellRendererProps, TableAPI } from "@simple-table/react";
 import { generateCryptoData } from "./crypto-data";
 
 const data = generateCryptoData(1000);
@@ -18,7 +18,7 @@ const ChangeCell =
     );
   };
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "rank", label: "#", type: "number", width: 56, pinned: "left", align: "center" },
   {
     accessor: "asset",
@@ -69,11 +69,11 @@ const CryptoDemo = () => {
   return (
     <SimpleTable
       ref={tableRef}
-      defaultHeaders={headers}
+      columns={headers}
       rows={data}
       columnReordering
       columnResizing
-      editColumns
+      enableColumnEditor
       selectableCells
       customTheme={{ headerHeight: 40, rowHeight: 64 }}
       scrollParent="window"

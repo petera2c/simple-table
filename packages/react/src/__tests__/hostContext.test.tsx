@@ -6,7 +6,7 @@ import type {
   CellRendererProps,
   FooterRendererProps,
   HeaderRendererProps,
-  ReactHeaderObject,
+  ReactColumnDef,
 } from "../index";
 
 const rows = [
@@ -60,7 +60,7 @@ describe("SimpleTable (React adapter) — host context reaches every renderer ty
       return createElement("span", { className: "ctx-head" }, header.label, ":", label);
     }
 
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
       { accessor: "score", label: "Score", width: 120, type: "number", headerRenderer: ScoreHeader },
     ];
@@ -69,7 +69,7 @@ describe("SimpleTable (React adapter) — host context reaches every renderer ty
       createElement(
         Ctx.Provider,
         { value: "FROM_HOST" },
-        createElement(SimpleTable, { defaultHeaders: headers, rows, getRowId, height: "250px", theme: "light" }),
+        createElement(SimpleTable, { columns: headers, rows, getRowId, height: "250px", theme: "light" }),
       ),
     );
 
@@ -87,7 +87,7 @@ describe("SimpleTable (React adapter) — host context reaches every renderer ty
       return createElement("span", { className: "ctx-footer" }, label);
     }
 
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
     ];
 
@@ -96,13 +96,13 @@ describe("SimpleTable (React adapter) — host context reaches every renderer ty
         Ctx.Provider,
         { value: "FROM_HOST" },
         createElement(SimpleTable, {
-          defaultHeaders: headers,
+          columns: headers,
           rows,
           getRowId,
           height: "250px",
           theme: "light",
           // Paginate so core renders the footer (and thus invokes footerRenderer).
-          shouldPaginate: true,
+          enablePagination: true,
           rowsPerPage: 1,
           footerRenderer: Footer,
         }),
@@ -132,7 +132,7 @@ describe("SimpleTable (React adapter) — host context reaches every renderer ty
       return createElement("span", { className: "ctx-guard" }, value);
     }
 
-    const headers: ReactHeaderObject[] = [
+    const headers: ReactColumnDef[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
       { accessor: "score", label: "Score", width: 120, type: "number", cellRenderer: GuardedCell },
     ];
@@ -141,7 +141,7 @@ describe("SimpleTable (React adapter) — host context reaches every renderer ty
       createElement(
         Ctx.Provider,
         { value: "PROVIDED" },
-        createElement(SimpleTable, { defaultHeaders: headers, rows, getRowId, height: "250px", theme: "light" }),
+        createElement(SimpleTable, { columns: headers, rows, getRowId, height: "250px", theme: "light" }),
       ),
     );
 

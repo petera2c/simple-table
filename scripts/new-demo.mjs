@@ -57,7 +57,7 @@ function writeFile(filePath, content) {
 
 // --- Per-demo data (duplicated in each framework package) ---
 const demoDataTs = `// Self-contained demo table setup for this example.
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 import type { Row } from "simple-table-core";
 
 export const ${camel}Data: Row[] = [
@@ -65,7 +65,7 @@ export const ${camel}Data: Row[] = [
   { id: 1 },
 ];
 
-export const ${camel}Headers: HeaderObject[] = [
+export const ${camel}Headers: ColumnDef[] = [
   // TODO: Add column definitions
   { accessor: "id", label: "ID", width: 80 },
 ];
@@ -91,7 +91,7 @@ const ${pascal}Demo = ({
 }) => {
   return (
     <SimpleTable
-      defaultHeaders={${camel}Config.headers}
+      columns={${camel}Config.headers}
       rows={${camel}Config.rows}
       height={height}
       theme={theme}
@@ -105,7 +105,7 @@ export default ${pascal}Demo;
 // --- Vue ---
 const vueDemo = `<template>
   <SimpleTable
-    :default-headers="${camel}Config.headers"
+    :columns="${camel}Config.headers"
     :rows="${camel}Config.rows"
     :height="height"
     :theme="theme"
@@ -133,7 +133,7 @@ const svelteDemo = `<script lang="ts">
 </script>
 
 <SimpleTable
-  defaultHeaders={${camel}Config.headers}
+  columns={${camel}Config.headers}
   rows={${camel}Config.rows}
   {height}
   {theme}
@@ -152,7 +152,7 @@ export default function ${pascal}Demo(props: {
 }) {
   return (
     <SimpleTable
-      defaultHeaders={${camel}Config.headers}
+      columns={${camel}Config.headers}
       rows={${camel}Config.rows}
       height={props.height ?? "400px"}
       theme={props.theme}
@@ -163,7 +163,7 @@ export default function ${pascal}Demo(props: {
 
 // --- Angular ---
 const angularDemo = `import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { ${camel}Config } from "./${demoName}.demo-data";
 import "@simple-table/angular/styles.css";
 
@@ -174,7 +174,7 @@ import "@simple-table/angular/styles.css";
   template: \`
     <simple-table
       [rows]="rows"
-      [defaultHeaders]="headers"
+      [columns]="headers"
       [height]="height"
       [theme]="theme"
     ></simple-table>
@@ -185,7 +185,7 @@ export class ${pascal}DemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = ${camel}Config.rows;
-  readonly headers: AngularHeaderObject[] = ${camel}Config.headers;
+  readonly headers: AngularColumnDef[] = ${camel}Config.headers;
 }
 `;
 
@@ -200,7 +200,7 @@ export function render${pascal}Demo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: ${camel}Config.headers,
+    columns: ${camel}Config.headers,
     rows: ${camel}Config.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,

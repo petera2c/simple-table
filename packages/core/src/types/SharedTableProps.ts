@@ -1,4 +1,4 @@
-import HeaderObject from "./HeaderObject";
+import ColumnDef from "./ColumnDef";
 
 export interface RefObject<T> {
   current: T | null;
@@ -6,15 +6,15 @@ export interface RefObject<T> {
 
 interface SharedTableProps {
   centerHeaderRef: RefObject<HTMLDivElement | null>;
-  draggedHeaderRef: { current: HeaderObject | null };
+  draggedHeaderRef: { current: ColumnDef | null };
   headerContainerRef: RefObject<HTMLDivElement | null>;
-  headers: HeaderObject[];
-  hoveredHeaderRef: { current: HeaderObject | null };
+  headers: ColumnDef[];
+  hoveredHeaderRef: { current: ColumnDef | null };
   mainBodyRef: RefObject<HTMLDivElement | null>;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
-  pinnedLeftColumns: HeaderObject[];
+  onTableHeaderDragEnd: (newHeaders: ColumnDef[]) => void;
+  pinnedLeftColumns: ColumnDef[];
   pinnedLeftHeaderRef: RefObject<HTMLDivElement | null>;
-  pinnedRightColumns: HeaderObject[];
+  pinnedRightColumns: ColumnDef[];
   pinnedRightHeaderRef: RefObject<HTMLDivElement | null>;
   rowHeight: number;
   tableBodyContainerRef: RefObject<HTMLDivElement | null>;

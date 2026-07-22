@@ -187,12 +187,12 @@ const calculateBodyCellClasses = (cell: AbsoluteBodyCell, context: CellRenderCon
         ? "st-cell-warning-flash-first"
         : "st-cell-warning-flash"
       : "",
-    context.useOddColumnBackground ? (colIndex % 2 === 0 ? "even-column" : "odd-column") : "",
+    context.oddColumnBackground ? (colIndex % 2 === 0 ? "even-column" : "odd-column") : "",
     isSelectionColumn ? "st-selection-cell" : "",
     hasHighlightedCellInRow ? "st-selection-has-highlighted-cell" : "",
     isLastColumnInSection ? "st-last-column" : "",
     isSubCell ? "st-sub-cell" : "",
-    context.useOddEvenRowBackground ? (isOdd ? "st-cell-even-row" : "st-cell-odd-row") : "",
+    context.oddEvenRowBackground ? (isOdd ? "st-cell-even-row" : "st-cell-odd-row") : "",
     context.isRowSelected?.(rowId) ? "st-cell-selected-row" : "",
     context.activeRowId != null && String(context.activeRowId) === String(rowId)
       ? "st-row-active"
@@ -485,7 +485,7 @@ export const createBodyCellElement = (
 
   // Row hover handlers - use efficient Map-based tracking, scoped per table
   // so overlapping rowIds across multiple tables on one page don't cross-hover.
-  if (context.useHoverRowBackground) {
+  if (context.hoverRowBackground) {
     const rowIdKey = String(rowId);
     const hoverScopeId = context.hoverScopeId;
     // Track this cell by row id (re-keyed in updateBodyCellElement when the

@@ -1,6 +1,6 @@
 // InfrastructureDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { HeaderObject, CellRenderer } from "simple-table-core";
+import type { ColumnDef, CellRenderer } from "simple-table-core";
 import { infrastructureData } from "./infrastructure.demo-data"; // 50 sample servers
 import "simple-table-core/styles.css";
 
@@ -10,7 +10,7 @@ const cpuRenderer: CellRenderer = ({ row }) => {
   return span;
 };
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "serverId", label: "Server ID", type: "string", pinned: "left", width: "1.2fr", sortable: true },
   {
     accessor: "performance",
@@ -27,11 +27,11 @@ const headers: HeaderObject[] = [
 
 export function renderInfrastructureDemo(container: HTMLElement) {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: headers,
+    columns: headers,
     rows: infrastructureData,
     columnReordering: true,
     columnResizing: true,
-    editColumns: true,
+    enableColumnEditor: true,
     selectableCells: true,
     height: "400px",
   });

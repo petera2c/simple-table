@@ -1,6 +1,6 @@
 import { getCellId } from "../cellUtils";
 import { getHeaderLeafIndices, getHeaderDescriptionId, getHeaderDescription } from "../headerUtils";
-import { DEFAULT_SHOW_WHEN } from "../../types/HeaderObject";
+import { DEFAULT_SHOW_WHEN } from "../../types/ColumnDef";
 import { AbsoluteCell, HeaderRenderContext } from "./types";
 import { createSortIcon } from "./sorting";
 import { createFilterIcon } from "./filtering";

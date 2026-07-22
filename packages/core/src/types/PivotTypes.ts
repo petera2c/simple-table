@@ -1,6 +1,6 @@
-import { Accessor } from "./HeaderObject";
+import { Accessor } from "./ColumnDef";
 import { AggregationConfig } from "./AggregationTypes";
-import HeaderObject from "./HeaderObject";
+import ColumnDef from "./ColumnDef";
 import Row from "./Row";
 
 export type PivotValueConfig = {
@@ -38,7 +38,7 @@ export const PIVOT_BLANK_LABEL = "(blank)";
 
 export type PivotResult = {
   rows: Row[];
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   /** Internal rowGrouping to use while pivot is active (undefined when flat). */
   rowGrouping?: Accessor[];
 };

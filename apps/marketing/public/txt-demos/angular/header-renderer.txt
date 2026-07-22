@@ -31,7 +31,7 @@ export function cycleHeaderDemoSort(accessor: string): void {
 // header-renderer-demo.component.ts
 import { Component, computed, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import { headerDemoSortAccessor, headerDemoSortDirection } from "./header-demo-sort";
 import { headerRendererConfig } from "./header-renderer.demo-data";
 import { HeaderSortableHeaderComponent } from "./header-sortable-header.component";
@@ -44,7 +44,7 @@ import "@simple-table/angular/styles.css";
   template: `
     <simple-table
       [rows]="sortedData()"
-      [defaultHeaders]="headers()"
+      [columns]="headers()"
       [height]="height"
       [theme]="theme"
     ></simple-table>
@@ -70,7 +70,7 @@ export class HeaderRendererDemoComponent {
     });
   });
 
-  readonly headers = computed((): AngularHeaderObject[] =>
+  readonly headers = computed((): AngularColumnDef[] =>
     headerRendererConfig.headers.map((h) => ({
       ...h,
       sortable: false,
@@ -82,7 +82,7 @@ export class HeaderRendererDemoComponent {
 
 // header-renderer.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject, Row } from "@simple-table/angular";
+import type { AngularColumnDef, Row } from "@simple-table/angular";
 
 
 export const headerRendererData: Row[] = [
@@ -96,7 +96,7 @@ export const headerRendererData: Row[] = [
   { id: 8, name: "Henry Patel", email: "henry@example.com", role: "Lead", salary: 145000, department: "Engineering" },
 ];
 
-export const headerRendererHeaders: AngularHeaderObject[] = [
+export const headerRendererHeaders: AngularColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number", sortable: true },
   { accessor: "name", label: "Employee Name", width: 180, type: "string", sortable: true },
   { accessor: "email", label: "Email Address", width: 200, type: "string" },

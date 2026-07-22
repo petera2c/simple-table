@@ -1,7 +1,7 @@
 // window-infinite-scroll-demo.component.ts
 import { Component, ElementRef, Input, ViewChild } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
 import {
   generateWindowScrollRows,
   windowScrollHeaders,
@@ -54,7 +54,7 @@ const LOAD_DELAY_MS = 350;
       </div>
 
       <simple-table
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [rows]="rows"
         [theme]="theme"
         [getRowId]="getRowId"
@@ -82,7 +82,7 @@ export class WindowInfiniteScrollDemoComponent {
   @ViewChild("wrapper", { static: true })
   wrapperRef!: ElementRef<HTMLDivElement>;
 
-  readonly headers: AngularHeaderObject[] = windowScrollHeaders;
+  readonly headers: AngularColumnDef[] = windowScrollHeaders;
   rows: Row[] = generateWindowScrollRows(0, INITIAL_ROWS);
   loading = false;
   hasMore = true;
@@ -122,7 +122,7 @@ export class WindowInfiniteScrollDemoComponent {
 
 // window-infinite-scroll.demo-data.ts
 // Self-contained data + headers for the window-scroll infinite scroll example.
-import type { AngularHeaderObject, Row } from "@simple-table/angular";
+import type { AngularColumnDef, Row } from "@simple-table/angular";
 
 const FIRST_NAMES = [
   "Elena",
@@ -196,7 +196,7 @@ export function generateWindowScrollRows(startIndex: number, count: number): Row
   return rows;
 }
 
-export const windowScrollHeaders: AngularHeaderObject[] = [
+export const windowScrollHeaders: AngularColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number", align: "right" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 160 },
   { accessor: "email", label: "Email", width: 260 },

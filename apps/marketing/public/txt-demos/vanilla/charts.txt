@@ -9,7 +9,7 @@ import "simple-table-core/styles.css";
 
 export function renderChartsDemo(container: HTMLElement) {
   return new SimpleTableVanilla(container, {
-    defaultHeaders: chartsConfig.headers,
+    columns: chartsConfig.headers,
     rows: chartsConfig.rows,
     columnReordering: true,
     columnResizing: true,

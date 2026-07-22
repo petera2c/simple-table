@@ -1,5 +1,5 @@
-import type { Accessor } from "./HeaderObject";
-import type HeaderObject from "./HeaderObject";
+import type { Accessor } from "./ColumnDef";
+import type ColumnDef from "./ColumnDef";
 import type { IconElement } from "./IconsConfig";
 
 export interface HeaderRendererComponents {
@@ -12,7 +12,7 @@ export interface HeaderRendererComponents {
 interface HeaderRendererProps {
   accessor: Accessor;
   colIndex: number;
-  header: HeaderObject;
+  header: ColumnDef;
   components?: HeaderRendererComponents;
 }
 

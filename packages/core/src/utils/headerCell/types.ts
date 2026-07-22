@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../../types/HeaderObject";
+import ColumnDef, { Accessor } from "../../types/ColumnDef";
 import SortColumn from "../../types/SortColumn";
 import { TableFilterState, FilterCondition } from "../../types/FilterTypes";
 import { IconsConfig } from "../../types/IconsConfig";
@@ -12,13 +12,13 @@ type MutableRefObject<T> = { current: T };
 type RefObject<T> = { readonly current: T | null };
 
 export interface AbsoluteCell {
-  header: HeaderObject;
+  header: ColumnDef;
   left: number;
   top: number;
   width: number;
   height: number;
   colIndex: number;
-  parentHeader?: HeaderObject;
+  parentHeader?: ColumnDef;
 }
 
 export interface HeaderRenderContext {
@@ -31,7 +31,7 @@ export interface HeaderRenderContext {
   columnResizing: boolean;
   columnsWithSelectedCells: Set<number>;
   containerWidth: number;
-  draggedHeaderRef: MutableRefObject<HeaderObject | null>;
+  draggedHeaderRef: MutableRefObject<ColumnDef | null>;
   enableHeaderEditing?: boolean;
   enableRowSelection?: boolean;
   /** When `"single"`, header select-all checkbox is hidden. */
@@ -47,11 +47,11 @@ export interface HeaderRenderContext {
   handleClearFilter: (accessor: Accessor) => void;
   handleSelectAll?: (checked: boolean) => void;
   /** Live header tree from table state (avoids stale `headers` snapshot in long-lived handlers). */
-  getHeaders: () => HeaderObject[];
+  getHeaders: () => ColumnDef[];
   headerHeight: number;
   headerRegistry?: Map<string, { setEditing: (editing: boolean) => void }>;
-  headers: HeaderObject[];
-  hoveredHeaderRef: MutableRefObject<HeaderObject | null>;
+  headers: ColumnDef[];
+  hoveredHeaderRef: MutableRefObject<ColumnDef | null>;
   icons: IconsConfig;
   lastHeaderIndex: number;
   mainBodyRef: RefObject<HTMLDivElement>;
@@ -59,12 +59,12 @@ export interface HeaderRenderContext {
   mainSectionViewportWidth?: number; /** Main section *visible* viewport width (container minus pinned); use for getVisibleCells when !pinned */
   /** When false, skip column virtualization and render every header cell in the main section. Default true. */
   enableVirtualization?: boolean;
-  onColumnOrderChange?: (headers: HeaderObject[]) => void;
-  onColumnSelect?: (header: HeaderObject) => void;
-  onColumnWidthChange?: (headers: HeaderObject[]) => void;
-  onHeaderEdit?: (header: HeaderObject, newLabel: string) => void;
+  onColumnOrderChange?: (headers: ColumnDef[]) => void;
+  onColumnSelect?: (header: ColumnDef) => void;
+  onColumnWidthChange?: (headers: ColumnDef[]) => void;
+  onHeaderEdit?: (header: ColumnDef, newLabel: string) => void;
   onSort: (accessor: Accessor) => void;
-  onTableHeaderDragEnd: (headers: HeaderObject[]) => void;
+  onTableHeaderDragEnd: (headers: ColumnDef[]) => void;
   pinned?: "left" | "right";
   /** Mirrors body context: pinned strip width for cache invalidation when only section width changes. */
   pinnedSectionWidthPx?: number;
@@ -77,7 +77,7 @@ export interface HeaderRenderContext {
   selectedColumns: Set<number>;
   selectedRowCount?: number; /** Used for context cache invalidation when row selection changes */
   setCollapsedHeaders: Dispatch<SetStateAction<Set<Accessor>>>;
-  setHeaders: Dispatch<SetStateAction<HeaderObject[]>>;
+  setHeaders: Dispatch<SetStateAction<ColumnDef[]>>;
   setInitialFocusedCell: (cell: any) => void;
   setIsResizing: Dispatch<SetStateAction<boolean>>;
   setSelectedCells: Dispatch<SetStateAction<Set<string>>>;

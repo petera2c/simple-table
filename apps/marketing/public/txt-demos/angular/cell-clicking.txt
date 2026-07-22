@@ -86,7 +86,7 @@ export class CellClickStatusCellComponent {
 import { NgIf } from "@angular/common";
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, CellClickProps, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, CellClickProps, Theme } from "@simple-table/angular";
 import { cellClickingData, cellClickingHeaders, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
 import type { ProjectTask } from "./cell-clicking.demo-data";
 import { CellClickDetailsCellComponent } from "./cell-click-details-cell.component";
@@ -119,7 +119,7 @@ import "@simple-table/angular/styles.css";
 
       <simple-table
         [columnResizing]="true"
-        [defaultHeaders]="headers"
+        [columns]="headers"
         [height]="height"
         [onCellClick]="handleCellClick"
         [rows]="rows"
@@ -140,7 +140,7 @@ export class CellClickingDemoComponent {
     return this.theme === "modern-dark" || this.theme === "dark";
   }
 
-  readonly headers: AngularHeaderObject[] = cellClickingHeaders.map((h) => {
+  readonly headers: AngularColumnDef[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") {
       return { ...h, cellRenderer: CellClickPriorityCellComponent };
     }
@@ -192,7 +192,7 @@ export class CellClickingDemoComponent {
 
 // cell-clicking.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularHeaderObject, Row } from "@simple-table/angular";
+import type { AngularColumnDef, Row } from "@simple-table/angular";
 
 
 export type ProjectTask = {
@@ -220,7 +220,7 @@ export const cellClickingData: ProjectTask[] = [
   { id: 1008, task: "Database migration scripts", assignee: "River Jackson", priority: "Low", status: "Not Started", dueDate: "2024-02-28", estimatedHours: 8, completedHours: 0, details: "Create migration scripts for database schema updates" },
 ];
 
-export const cellClickingHeaders: AngularHeaderObject[] = [
+export const cellClickingHeaders: AngularColumnDef[] = [
   { accessor: "id", label: "Task ID", width: 80, sortable: true, type: "number" },
   { accessor: "task", label: "Task Name", minWidth: 150, width: "1fr", sortable: true, type: "string" },
   { accessor: "assignee", label: "Assignee", width: 120, sortable: true, type: "string" },

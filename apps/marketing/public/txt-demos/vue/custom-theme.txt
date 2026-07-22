@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
 
 <template>
   <SimpleTable
-    :default-headers="customThemeConfig.headers"
+    :columns="customThemeConfig.headers"
     :rows="customThemeConfig.rows"
     :theme="props.theme ?? 'custom'"
     :custom-theme="customThemeConfig.tableProps.customTheme"

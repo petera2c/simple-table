@@ -11,7 +11,7 @@ import { SimpleTable } from "@simple-table/react";
 import type {
   Theme,
   CellRendererProps,
-  ReactHeaderObject,
+  ReactColumnDef,
   HeaderRendererProps,
 } from "@simple-table/react";
 import {
@@ -41,7 +41,7 @@ import "@simple-table/react/styles.css";
  * on every parent update, which can flicker header menus and fight column resize.
  */
 type UnstableReproFlags = {
-  /** Rebuild defaultHeaders from scratch each render (new object + renderer refs). */
+  /** Rebuild columns from scratch each render (new object + renderer refs). */
   unstableColumns: boolean;
   /** Pass a freshly mapped/cloned rows array each render. */
   unstableRows: boolean;
@@ -900,7 +900,7 @@ function withSkeletonCell(
 }
 
 /** Ensure every header gets a React headerRenderer (portal), matching Chartmetric density. */
-function withHeaderMenus(headers: readonly ReactHeaderObject[]): ReactHeaderObject[] {
+function withHeaderMenus(headers: readonly ReactColumnDef[]): ReactColumnDef[] {
   return headers.map((header) => {
     const children = header.children ? withHeaderMenus(header.children) : undefined;
     const cellRenderer = header.cellRenderer
@@ -923,8 +923,8 @@ function withHeaderMenus(headers: readonly ReactHeaderObject[]): ReactHeaderObje
 }
 
 function collectWidths(
-  headers: readonly ReactHeaderObject[],
-  into: Map<string, ReactHeaderObject["width"]>,
+  headers: readonly ReactColumnDef[],
+  into: Map<string, ReactColumnDef["width"]>,
 ) {
   for (const h of headers) {
     into.set(String(h.accessor), h.width);
@@ -934,13 +934,13 @@ function collectWidths(
 
 /** Width-only merge so controlled resize doesn't re-wrap React renderers. */
 function mergeHeaderWidths(
-  prev: readonly ReactHeaderObject[],
-  next: readonly ReactHeaderObject[],
-): ReactHeaderObject[] {
-  const widthByAccessor = new Map<string, ReactHeaderObject["width"]>();
+  prev: readonly ReactColumnDef[],
+  next: readonly ReactColumnDef[],
+): ReactColumnDef[] {
+  const widthByAccessor = new Map<string, ReactColumnDef["width"]>();
   collectWidths(next, widthByAccessor);
 
-  const apply = (headers: readonly ReactHeaderObject[]): ReactHeaderObject[] =>
+  const apply = (headers: readonly ReactColumnDef[]): ReactColumnDef[] =>
     headers.map((h) => {
       const width = widthByAccessor.get(String(h.accessor));
       const children = h.children?.length ? apply(h.children) : undefined;
@@ -962,8 +962,8 @@ function mergeHeaderWidths(
  * accessors, widths, nested groups, collapsed top videos, no audience age.
  * Main scroll width ≈ 150+390+280+500+900+1010+1030+1010 = 5270–5560px.
  */
-function buildHeaders(): ReactHeaderObject[] {
-  const topVideoChildren: ReactHeaderObject[] = [
+function buildHeaders(): ReactColumnDef[] {
+  const topVideoChildren: ReactColumnDef[] = [
     {
       accessor: "topContentsSummary",
       label: "Top Videos",
@@ -1485,8 +1485,8 @@ function UnstableReproToolbar({
  * "columns defined inline / rebuilt from config every render" anti-pattern.
  */
 function rebuildHeadersPreservingWidths(
-  widthSource: readonly ReactHeaderObject[],
-): ReactHeaderObject[] {
+  widthSource: readonly ReactColumnDef[],
+): ReactColumnDef[] {
   const next = buildHeaders();
   return mergeHeaderWidths(next, widthSource);
 }
@@ -1502,7 +1502,7 @@ function cloneRowsUnstable(rows: readonly InfluencerRow[]): InfluencerRow[] {
  * - React portals on every header + body cell
  * - Controlled headers via onColumnWidthChange
  * - autoExpandColumns
- * - editColumns + column reordering/resizing
+ * - enableColumnEditor + column reordering/resizing
  * - footerPosition top (49px)
  * - Infinite scroll: initial 26 rows, fetch +26 near bottom (onLoadMore)
  * - Skeleton placeholder rows at the bottom while the next page loads
@@ -1512,7 +1512,7 @@ function cloneRowsUnstable(rows: readonly InfluencerRow[]): InfluencerRow[] {
 const InfluencersDemo = ({ height, theme }: { height?: string | number | null; theme?: Theme }) => {
   const [rows, setRows] = useState<InfluencerRow[]>(() => generateInfluencerData(0, INITIAL_BATCH));
   const [loading, setLoading] = useState(false);
-  const [headers, setHeaders] = useState<ReactHeaderObject[]>(() => buildHeaders());
+  const [headers, setHeaders] = useState<ReactColumnDef[]>(() => buildHeaders());
   const [repro, setRepro] = useState<UnstableReproFlags>(DEFAULT_REPRO_FLAGS);
   const [, setParentTick] = useState(0);
   const renderCountRef = useRef(0);
@@ -1531,7 +1531,7 @@ const InfluencersDemo = ({ height, theme }: { height?: string | number | null; t
     return () => window.clearInterval(id);
   }, [repro.forceParentRerenders]);
 
-  const handleColumnWidthChange = useCallback((next: ReactHeaderObject[]) => {
+  const handleColumnWidthChange = useCallback((next: ReactColumnDef[]) => {
     setHeaders((prev) => mergeHeaderWidths(prev, next));
   }, []);
 
@@ -1590,7 +1590,7 @@ const InfluencersDemo = ({ height, theme }: { height?: string | number | null; t
       />
       <div style={{ flex: 1, minHeight: 0 }}>
         <SimpleTable
-          defaultHeaders={tableHeaders}
+          columns={tableHeaders}
           rows={tableRows}
           getRowId={(p) => String((p.row as InfluencerRow | undefined)?.id)}
           height="100%"
@@ -1599,7 +1599,7 @@ const InfluencersDemo = ({ height, theme }: { height?: string | number | null; t
           columnResizing
           columnReordering
           autoExpandColumns
-          editColumns
+          enableColumnEditor
           columnEditorConfig={columnEditorConfig}
           onLoadMore={handleLoadMore}
           infiniteScrollThreshold={200}

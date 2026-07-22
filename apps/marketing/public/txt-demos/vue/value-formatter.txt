@@ -1,6 +1,6 @@
 <template>
   <SimpleTable
-    :default-headers="valueFormatterConfig.headers"
+    :columns="valueFormatterConfig.headers"
     :rows="valueFormatterConfig.rows"
     :height="height"
     :theme="theme"

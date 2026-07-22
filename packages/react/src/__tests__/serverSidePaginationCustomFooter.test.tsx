@@ -2,7 +2,7 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SimpleTable } from "../index";
-import type { FooterRendererProps, ReactHeaderObject } from "../index";
+import type { FooterRendererProps, ReactColumnDef } from "../index";
 
 const rows = [
   { id: 1, name: "Alice", score: 10 },
@@ -42,7 +42,7 @@ function mount(node: React.ReactElement): HTMLDivElement {
 
 const getRowId = (p: { row: unknown }) => String((p.row as { id?: number })?.id);
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "name", label: "Name", width: 120, type: "string" },
   { accessor: "score", label: "Score", width: 120, type: "number" },
 ];
@@ -70,12 +70,12 @@ describe("SimpleTable (React adapter) — serverSidePagination + custom footerRe
 
     const host = mount(
       createElement(SimpleTable, {
-        defaultHeaders: headers,
+        columns: headers,
         rows,
         getRowId,
         height: "250px",
         theme: "light",
-        shouldPaginate: true,
+        enablePagination: true,
         serverSidePagination: true,
         rowsPerPage: 1,
         // Drives totalPages so the footer reports more than one page.
@@ -113,12 +113,12 @@ describe("SimpleTable (React adapter) — serverSidePagination + custom footerRe
 
     const host = mount(
       createElement(SimpleTable, {
-        defaultHeaders: headers,
+        columns: headers,
         rows,
         getRowId,
         height: "250px",
         theme: "light",
-        shouldPaginate: true,
+        enablePagination: true,
         serverSidePagination: true,
         rowsPerPage: 1,
         totalRowCount: 3,

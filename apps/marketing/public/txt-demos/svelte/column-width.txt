@@ -20,7 +20,7 @@
 <SimpleTable
   autoExpandColumns={!isMobile}
   columnResizing={true}
-  defaultHeaders={columnWidthConfig.headers}
+  columns={columnWidthConfig.headers}
   rows={columnWidthConfig.rows}
   {height}
   {theme}

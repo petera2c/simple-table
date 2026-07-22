@@ -1,4 +1,4 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import {
   FilterCondition,
   StringFilterOperator,
@@ -12,7 +12,7 @@ import { createFilterInput } from "./createFilterInput";
 import { createFilterActions } from "./createFilterActions";
 
 export interface CreateStringFilterOptions {
-  header: HeaderObject;
+  header: ColumnDef;
   currentFilter?: FilterCondition;
   onApplyFilter: (filter: FilterCondition) => void;
   onClearFilter: () => void;

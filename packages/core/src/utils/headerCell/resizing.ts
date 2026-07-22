@@ -1,5 +1,5 @@
 import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../../consts/general-consts";
-import HeaderObject, { Accessor } from "../../types/HeaderObject";
+import ColumnDef, { Accessor } from "../../types/ColumnDef";
 import { getCellId } from "../cellUtils";
 import {
   calculateHeaderContentWidth,
@@ -22,7 +22,7 @@ const getStyleRoot = (context: HeaderRenderContext): ParentNode | null => {
   return main.closest(".simple-table-root") ?? main;
 };
 
-const findHeaderInTree = (roots: HeaderObject[], accessor: Accessor): HeaderObject | undefined => {
+const findHeaderInTree = (roots: ColumnDef[], accessor: Accessor): ColumnDef | undefined => {
   for (const h of roots) {
     if (h.accessor === accessor) return h;
     if (h.children?.length) {
@@ -35,7 +35,7 @@ const findHeaderInTree = (roots: HeaderObject[], accessor: Accessor): HeaderObje
 
 /** Align storage `width` with painted layout so auto-expand resize math matches the viewport. */
 const syncVisibleLeafWidthsFromDom = (
-  roots: HeaderObject[],
+  roots: ColumnDef[],
   collapsedHeaders: Set<Accessor> | undefined,
 ): void => {
   const leaves = getAllVisibleLeafHeaders(roots, collapsedHeaders);
@@ -51,7 +51,7 @@ const syncVisibleLeafWidthsFromDom = (
 };
 
 export const createResizeHandle = (
-  header: HeaderObject,
+  header: ColumnDef,
   context: HeaderRenderContext,
 ): HTMLElement | null => {
   const { columnResizing } = context;
@@ -71,7 +71,7 @@ export const createResizeHandle = (
   resizeHandle.className = "st-header-resize-handle";
   resizeContainer.appendChild(resizeHandle);
 
-  const measureOptions = (leafHeader: HeaderObject) => ({
+  const measureOptions = (leafHeader: ColumnDef) => ({
     rows: context.rows,
     header: leafHeader,
     // maxWidth/min/autoSizeMode are read from the header inside the measurer;
@@ -86,8 +86,8 @@ export const createResizeHandle = (
 
   /** Live header tree with visible leaf widths aligned to painted layout. */
   const resolveResizeHeaders = (): {
-    headers: HeaderObject[];
-    header: HeaderObject;
+    headers: ColumnDef[];
+    header: ColumnDef;
     collapsedHeaders: Set<Accessor>;
   } => {
     const collapsedHeaders = context.getCollapsedHeaders?.() ?? context.collapsedHeaders;

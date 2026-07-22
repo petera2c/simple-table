@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTableVanilla } from "simple-table-core";
-import type { HeaderObject } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
 /**
  * Mirrors the Storybook expandable loading stories: vanilla
@@ -24,7 +24,7 @@ afterEach(() => {
 
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-const headers: HeaderObject[] = [
+const headers: ColumnDef[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   { accessor: "role", label: "Role", width: 120, type: "string" },
 ];
@@ -52,7 +52,7 @@ function mount(options: { isLoading: boolean; rows?: typeof rows | [] }): HTMLDi
   document.body.appendChild(host);
   container = host;
   table = new SimpleTableVanilla(host, {
-    defaultHeaders: headers,
+    columns: headers,
     rows: options.rows ?? rows,
     rowGrouping: ["teams"],
     getRowId: (p) => String((p.row as { id?: unknown })?.id),

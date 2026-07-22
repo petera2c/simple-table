@@ -2,13 +2,13 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
-import type { ReactHeaderObject } from "../index";
+import type { ReactColumnDef } from "../index";
 
-// Repro for the "deferred headers" anti-pattern: `defaultHeaders` mounts as an
+// Repro for the "deferred headers" anti-pattern: `columns` mounts as an
 // empty array and is populated after mount (e.g. from a useEffect / async
 // fetch). The body renders, but the header band must also appear once the
 // columns arrive. Regression guard for the DimensionManager not recomputing
-// header depth/height when `update({ defaultHeaders })` swaps empty -> non-empty.
+// header depth/height when `update({ columns })` swaps empty -> non-empty.
 
 let container: HTMLDivElement | null = null;
 let root: Root | null = null;
@@ -31,7 +31,7 @@ async function waitFor(predicate: () => boolean, timeoutMs = 3000): Promise<void
   throw new Error("Timed out waiting for condition");
 }
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 160, type: "string" },
 ];
@@ -41,10 +41,10 @@ const rows = [
   { id: 2, name: "Beta" },
 ];
 
-function render(host: HTMLDivElement, defaultHeaders: ReactHeaderObject[]): void {
+function render(host: HTMLDivElement, columns: ReactColumnDef[]): void {
   root!.render(
     createElement(SimpleTable, {
-      defaultHeaders,
+      columns,
       rows,
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",
@@ -54,7 +54,7 @@ function render(host: HTMLDivElement, defaultHeaders: ReactHeaderObject[]): void
 }
 
 describe("SimpleTable (React adapter) — deferred headers", () => {
-  it("renders the header row when defaultHeaders is populated after mount", async () => {
+  it("renders the header row when columns is populated after mount", async () => {
     const host = document.createElement("div");
     document.body.appendChild(host);
     container = host;

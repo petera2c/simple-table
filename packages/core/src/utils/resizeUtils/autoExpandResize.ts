@@ -1,4 +1,4 @@
-import type HeaderObject from "../../types/HeaderObject";
+import type ColumnDef from "../../types/ColumnDef";
 import type { Pinned } from "../../types/Pinned";
 import { getAllVisibleLeafHeaders } from "../headerWidthUtils";
 import { MIN_COLUMN_WIDTH, getMaxPinnedSectionWidth } from "../../consts/column-constraints";
@@ -33,17 +33,17 @@ export const handleResizeWithAutoExpand = ({
   shrinkFloors,
   startWidth,
 }: {
-  childrenToResize?: HeaderObject[];
+  childrenToResize?: ColumnDef[];
   collapsedHeaders?: Set<string>;
   containerWidth: number;
   delta: number;
-  headers: HeaderObject[];
+  headers: ColumnDef[];
   initialWidthsMap: Map<string, number>;
   isParentResize?: boolean;
-  resizedHeader: HeaderObject;
+  resizedHeader: ColumnDef;
   reverse: boolean;
   rootPinned: Pinned | undefined;
-  sectionHeaders: HeaderObject[];
+  sectionHeaders: ColumnDef[];
   sectionWidth: number;
   /** Visible viewport width of the section (main: container minus pinned). 0 when unknown. */
   sectionViewportWidth?: number;
@@ -60,7 +60,7 @@ export const handleResizeWithAutoExpand = ({
    * below content/declared width), clamped to its current width so a floor
    * above the painted width simply means "no surplus to give".
    */
-  const floorFor = (col: HeaderObject): number => {
+  const floorFor = (col: ColumnDef): number => {
     const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
     const floor = Math.max(
       shrinkFloors?.get(col.accessor as string) ?? MIN_COLUMN_WIDTH,
@@ -69,7 +69,7 @@ export const handleResizeWithAutoExpand = ({
     return Math.min(floor, initialWidth);
   };
 
-  const maxShrinkageOf = (cols: HeaderObject[]): number =>
+  const maxShrinkageOf = (cols: ColumnDef[]): number =>
     cols.reduce((total, col) => {
       const initialWidth = initialWidthsMap.get(col.accessor as string) || 100;
       return total + Math.max(0, initialWidth - floorFor(col));
@@ -125,7 +125,7 @@ export const handleResizeWithAutoExpand = ({
     const isRightPinnedBoundary = rootPinned === "right" && isLeftmost;
     const isSectionBoundary = isLeftPinnedBoundary || isRightPinnedBoundary;
 
-    let columnsToShrink: HeaderObject[];
+    let columnsToShrink: ColumnDef[];
 
     if (isSectionBoundary) {
       // At section boundary: don't compensate, just grow/shrink the pinned section
@@ -253,7 +253,7 @@ export const handleResizeWithAutoExpand = ({
   const isRightPinnedBoundary = rootPinned === "right" && isLeftmost;
   const isSectionBoundary = isLeftPinnedBoundary || isRightPinnedBoundary;
 
-  let columnsToShrink: HeaderObject[];
+  let columnsToShrink: ColumnDef[];
 
   if (isSectionBoundary) {
     // At section boundary: don't compensate, just grow/shrink the pinned section

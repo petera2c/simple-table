@@ -1,4 +1,4 @@
-import HeaderObject from "../../types/HeaderObject";
+import ColumnDef from "../../types/ColumnDef";
 import {
   FilterCondition,
   DateFilterOperator,
@@ -15,7 +15,7 @@ import { createDropdown } from "./createDropdown";
 import { createSafeDate } from "../dateUtils";
 
 export interface CreateDateFilterOptions {
-  header: HeaderObject;
+  header: ColumnDef;
   currentFilter?: FilterCondition;
   onApplyFilter: (filter: FilterCondition) => void;
   onClearFilter: () => void;

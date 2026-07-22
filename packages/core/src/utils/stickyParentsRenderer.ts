@@ -2,7 +2,7 @@
 // Replaces StickyParentsContainer.tsx React component
 
 import TableRow from "../types/TableRow";
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import { COLUMN_EDIT_WIDTH, ROW_SEPARATOR_WIDTH } from "../consts/general-consts";
 import { createRowSeparator } from "./rowSeparatorRenderer";
 // import { calculateColumnIndices } from "./columnIndicesUtils";
@@ -18,9 +18,9 @@ export interface StickyParentsContainerProps {
   calculatedHeaderHeight: number;
   heightMap?: CumulativeHeightMap;
   partiallyVisibleRows: TableRow[];
-  pinnedLeftColumns: HeaderObject[];
+  pinnedLeftColumns: ColumnDef[];
   pinnedLeftWidth: number;
-  pinnedRightColumns: HeaderObject[];
+  pinnedRightColumns: ColumnDef[];
   pinnedRightWidth: number;
   scrollTop: number;
   scrollbarWidth: number;
@@ -49,8 +49,8 @@ export interface StickyParentsRenderContext {
   collapsedHeaders: Set<string>;
   customTheme: CustomTheme;
   /** True when the column-editor toggle strip is visible and reserves horizontal space. */
-  editColumns: boolean;
-  headers: HeaderObject[];
+  enableColumnEditor: boolean;
+  headers: ColumnDef[];
   rowHeight: number;
   heightOffsets: HeightOffsets | undefined;
   cellRenderContext: CellRenderContext;
@@ -165,12 +165,12 @@ const calculateTreeTransitionOffset = (
 
 // Get leaf headers (headers without children or with collapsed children)
 const getLeafHeaders = (
-  headers: HeaderObject[],
+  headers: ColumnDef[],
   collapsedHeaders: Set<Accessor>,
-): HeaderObject[] => {
-  const leaves: HeaderObject[] = [];
+): ColumnDef[] => {
+  const leaves: ColumnDef[] = [];
 
-  const processHeader = (header: HeaderObject): void => {
+  const processHeader = (header: ColumnDef): void => {
     if (isHeaderExcludedFromLayout(header)) return;
 
     const isCollapsed = collapsedHeaders.has(header.accessor);
@@ -205,7 +205,7 @@ const getLeafHeaders = (
 };
 
 interface StickySectionParams {
-  sectionHeaders: HeaderObject[];
+  sectionHeaders: ColumnDef[];
   stickyParents: TableRow[];
   stickyHeight: number;
   offsetStartIndex: number;
@@ -402,7 +402,7 @@ export const createStickyParentsContainer = (
 
   // Calculate width accounting for scrollbar
   const containerWidth = `calc(100% - ${props.scrollbarWidth}px - ${
-    context.editColumns ? `${COLUMN_EDIT_WIDTH}px` : "0px"
+    context.enableColumnEditor ? `${COLUMN_EDIT_WIDTH}px` : "0px"
   })`;
 
   // Create main container

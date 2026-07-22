@@ -24,7 +24,7 @@ export function wrapVueRenderer<P extends object>(
 
 /**
  * Like {@link wrapVueRenderer}, but reuses one wrapper per accessor so
- * unstable column rebuilds keep a stable function identity on HeaderObject.
+ * unstable column rebuilds keep a stable function identity on ColumnDef.
  */
 export function wrapCachedVueRenderer<P extends object>(
   registry: MountRegistry,

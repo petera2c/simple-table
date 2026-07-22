@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it } from "vitest";
  * order stay correct after in-place cell writes (not only refresh DOM cells).
  */
 import { SimpleTableVanilla } from "simple-table-core";
-import type { HeaderObject, SimpleTableConfig } from "simple-table-core";
+import type { ColumnDef, SimpleTableConfig } from "simple-table-core";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -43,7 +43,7 @@ function visibleProductNamesInOrder(): string[] {
 }
 
 function mountTable(
-  config: Partial<SimpleTableConfig> & { rows: RowLike[]; defaultHeaders: HeaderObject[] },
+  config: Partial<SimpleTableConfig> & { rows: RowLike[]; columns: ColumnDef[] },
 ) {
   container = document.createElement("div");
   document.body.appendChild(container);
@@ -67,12 +67,12 @@ describe("updateData — filter and sort", () => {
       { id: 2, product: "Widget B", stock: 28 },
       { id: 3, product: "Widget C", stock: 15 },
     ];
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "product", label: "Product", width: 180, type: "string" },
       { accessor: "stock", label: "Stock", width: 120, type: "number" },
     ];
 
-    const table = mountTable({ defaultHeaders: headers, rows });
+    const table = mountTable({ columns: headers, rows });
     const api = table.getAPI();
 
     await api.applyFilter({ accessor: "stock", operator: "greaterThan", value: 20 });
@@ -92,12 +92,12 @@ describe("updateData — filter and sort", () => {
       { id: 2, product: "Widget B", price: 20 },
       { id: 3, product: "Widget C", price: 30 },
     ];
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "product", label: "Product", width: 180, type: "string" },
       { accessor: "price", label: "Price", width: 120, type: "number" },
     ];
 
-    const table = mountTable({ defaultHeaders: headers, rows });
+    const table = mountTable({ columns: headers, rows });
     const api = table.getAPI();
 
     await api.applySortState({ accessor: "price", direction: "asc" });
@@ -125,12 +125,12 @@ describe("updateData — filter and sort", () => {
       { id: 2, product: "Widget B", stats: { score: 50 } },
       { id: 3, product: "Widget C", stats: { score: 90 } },
     ];
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "product", label: "Product", width: 180, type: "string" },
       { accessor: "stats.score", label: "Score", width: 120, type: "number" },
     ];
 
-    const table = mountTable({ defaultHeaders: headers, rows });
+    const table = mountTable({ columns: headers, rows });
     const api = table.getAPI();
 
     await api.applyFilter({
@@ -156,7 +156,7 @@ describe("updateData — filter and sort", () => {
       { id: 1, product: "Widget A", price: 19.99 },
       { id: 2, product: "Widget B", price: 24.99 },
     ];
-    const headers: HeaderObject[] = [
+    const headers: ColumnDef[] = [
       { accessor: "product", label: "Product", width: 180, type: "string" },
       {
         accessor: "price",
@@ -168,7 +168,7 @@ describe("updateData — filter and sort", () => {
       },
     ];
 
-    const table = mountTable({ defaultHeaders: headers, rows });
+    const table = mountTable({ columns: headers, rows });
     const api = table.getAPI();
 
     await waitFor(() => container!.querySelector('[data-accessor="price"]') != null);

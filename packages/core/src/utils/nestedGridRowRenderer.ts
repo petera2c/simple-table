@@ -135,8 +135,13 @@ export function createNestedGridRow(
   innerContainer.style.width = "100%";
   rowElement.appendChild(innerContainer);
 
+  if (!nestedGridConfig.columns) {
+    throw new Error("createNestedGridRow: nestedTable.columns is required");
+  }
+
   const nestedConfig = normalizeConfig({
     ...nestedGridConfig,
+    columns: nestedGridConfig.columns,
     rows: childRows,
     theme: theme as SimpleTableConfig["theme"],
     customTheme: nestedCustomTheme,

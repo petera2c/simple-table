@@ -114,7 +114,7 @@ export default function WindowInfiniteScrollDemo(_props: {
       </div>
 
       <SimpleTable
-        defaultHeaders={windowScrollHeaders}
+        columns={windowScrollHeaders}
         rows={rows()}
         theme={_props.theme}
         getRowId={getRowId}

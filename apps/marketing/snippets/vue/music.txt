@@ -1,7 +1,7 @@
 // MusicDemo.vue
 <template>
   <SimpleTable
-    :default-headers="headers"
+    :columns="headers"
     :rows="musicData"
     :column-reordering="true"
     :column-resizing="true"
@@ -13,11 +13,11 @@
 
 <script setup lang="ts">
 import { SimpleTable } from "@simple-table/vue";
-import type { VueHeaderObject } from "@simple-table/vue";
+import type { VueColumnDef } from "@simple-table/vue";
 import { musicData } from "./music.demo-data";
 import "@simple-table/vue/styles.css";
 
-const headers: VueHeaderObject[] = [
+const headers: VueColumnDef[] = [
   { accessor: "rank", label: "#", type: "number", width: 60, pinned: "left", align: "center" },
   { accessor: "artistName", label: "Artist", type: "string", width: 330, pinned: "left" },
   {

@@ -1,8 +1,8 @@
-import HeaderObject from "../types/HeaderObject";
+import ColumnDef from "../types/ColumnDef";
 import { convertHeightToPixels } from "../hooks/contentHeight";
 
 export interface DimensionManagerConfig {
-  effectiveHeaders: HeaderObject[];
+  effectiveHeaders: ColumnDef[];
   headerHeight?: number;
   rowHeight: number;
   height?: string | number;
@@ -78,7 +78,7 @@ export class DimensionManager {
     }
   }
 
-  private getHeaderDepth(header: HeaderObject): number {
+  private getHeaderDepth(header: ColumnDef): number {
     if (header.singleRowChildren && header.children?.length) {
       return 1;
     }

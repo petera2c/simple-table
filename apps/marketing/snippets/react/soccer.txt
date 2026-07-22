@@ -1,6 +1,6 @@
 // SportsDemo.tsx
 import { SimpleTable } from "@simple-table/react";
-import type { ReactHeaderObject, CellRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, CellRendererProps } from "@simple-table/react";
 import { generateSportsData } from "./sports-data";
 
 const data = generateSportsData(600);
@@ -17,7 +17,7 @@ const RatingPill = ({ row }: CellRendererProps) => {
 };
 
 // Every column uses width: "auto" so it sizes to its content automatically
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "rank", label: "#", type: "number", width: "auto", pinned: "left", align: "center" },
   {
     accessor: "player",
@@ -65,11 +65,11 @@ const headers: ReactHeaderObject[] = [
 
 const SportsDemo = () => (
   <SimpleTable
-    defaultHeaders={headers}
+    columns={headers}
     rows={data}
     columnReordering
     columnResizing
-    editColumns
+    enableColumnEditor
     selectableCells
     initialSortColumn="rating"
     initialSortDirection="desc"

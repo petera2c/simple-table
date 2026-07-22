@@ -18,7 +18,7 @@ import { updateHeaderSelectionCheckbox } from "./headerCell/selection";
 import { updateHeaderCollapseIconState } from "./headerCell/collapsing";
 import { hasCollapsibleChildren, getHeaderColspan } from "./collapseUtils";
 import { getOrCreateRowElement, reconcileRowElements } from "./ariaRowOwnership";
-import type HeaderObject from "../types/HeaderObject";
+import type ColumnDef from "../types/ColumnDef";
 
 // Re-export types for backward compatibility
 export type { AbsoluteCell, HeaderRenderContext } from "./headerCell/types";
@@ -33,9 +33,9 @@ export type { AbsoluteCell, HeaderRenderContext } from "./headerCell/types";
  * `hide` or `excludeFromRender`. Mirrors the body-cell helper of the same
  * shape so columns reach a consistent decision in both header and body.
  */
-const collectVisibleHeaderAccessors = (headers: HeaderObject[]): Set<string> => {
+const collectVisibleHeaderAccessors = (headers: ColumnDef[]): Set<string> => {
   const visible = new Set<string>();
-  const walk = (list: HeaderObject[]): void => {
+  const walk = (list: ColumnDef[]): void => {
     for (const header of list) {
       if (isHeaderExcludedFromLayout(header)) continue;
       visible.add(String(header.accessor));

@@ -7,7 +7,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={singleRowChildrenConfig.headers}
+  columns={singleRowChildrenConfig.headers}
   rows={singleRowChildrenConfig.rows}
   columnResizing={singleRowChildrenConfig.tableProps.columnResizing}
   selectableCells={singleRowChildrenConfig.tableProps.selectableCells}

@@ -10,9 +10,9 @@ export default function AnimationsDemo(props: { height?: string | number; theme?
   return (
     <SimpleTable
       columnReordering
-      defaultHeaders={headers()}
-      editColumns
-      editColumnsInitOpen
+      columns={headers()}
+      enableColumnEditor
+      enableColumnEditorInitOpen
       rows={animationsConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

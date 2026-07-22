@@ -1,4 +1,4 @@
-import HeaderObject, { Accessor } from "../types/HeaderObject";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import Row from "../types/Row";
 import RowState from "../types/RowState";
 import TableRow from "../types/TableRow";
@@ -28,7 +28,7 @@ export interface FlattenRowsConfig {
   hasLoadingRenderer?: boolean;
   hasErrorRenderer?: boolean;
   hasEmptyRenderer?: boolean;
-  headers?: HeaderObject[];
+  headers?: ColumnDef[];
   rowHeight?: number;
   headerHeight?: number;
   customTheme?: CustomTheme;

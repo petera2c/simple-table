@@ -1,10 +1,10 @@
 // CRMDemo.vue
 <template>
   <SimpleTable
-    :default-headers="headers"
+    :columns="headers"
     :rows="rows"
     :enable-row-selection="true"
-    :should-paginate="true"
+    :enable-pagination="true"
     :rows-per-page="100"
     :column-reordering="true"
     :column-resizing="true"
@@ -16,13 +16,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { VueHeaderObject } from "@simple-table/vue";
+import type { VueColumnDef } from "@simple-table/vue";
 import { crmData } from "./crm.demo-data";
 import "@simple-table/vue/styles.css";
 
 const rows = ref([...crmData]);
 
-const headers: VueHeaderObject[] = [
+const headers: VueColumnDef[] = [
   { accessor: "name", label: "CONTACT", type: "string", width: "2fr", sortable: true },
   { accessor: "signal", label: "SIGNAL", type: "string", width: "3fr" },
   { accessor: "aiScore", label: "AI SCORE", type: "number", align: "center" },

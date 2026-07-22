@@ -10,7 +10,7 @@ export function renderCustomThemeDemo(
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla {
   const table = new SimpleTableVanilla(container, {
-    defaultHeaders: [...customThemeConfig.headers],
+    columns: [...customThemeConfig.headers],
     rows: customThemeConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme ?? "custom",
@@ -117,7 +117,7 @@ export function renderCustomThemeDemo(
 
 // custom-theme.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { HeaderObject, Row } from "simple-table-core";
+import type { ColumnDef, Row } from "simple-table-core";
 
 
 export const customThemeData: Row[] = [
@@ -138,7 +138,7 @@ function formatPhone(raw: string): string {
   return raw;
 }
 
-export const customThemeHeaders: HeaderObject[] = [
+export const customThemeHeaders: ColumnDef[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 170, type: "string", sortable: true },
   {

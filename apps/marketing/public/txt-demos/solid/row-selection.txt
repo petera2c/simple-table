@@ -1,7 +1,7 @@
 import { createSignal, createMemo } from "solid-js";
 import {SimpleTable} from "@simple-table/solid";import type {
   Theme,
-  SolidHeaderObject,
+  SolidColumnDef,
   CellRendererProps,
   RowSelectionChangeProps,
 } from "@simple-table/solid";
@@ -20,7 +20,7 @@ export default function RowSelectionDemo(props: {
     return books.length > 0 ? books.map((b) => b.title).join(", ") : "None";
   });
 
-  const headers: SolidHeaderObject[] = rowSelectionConfig.headers.map((h) => {
+  const headers: SolidColumnDef[] = rowSelectionConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
@@ -64,7 +64,7 @@ export default function RowSelectionDemo(props: {
       </div>
 
       <SimpleTable
-        defaultHeaders={headers}
+        columns={headers}
         rows={rowSelectionConfig.rows}
         height={props.height ?? "348px"}
         theme={props.theme}

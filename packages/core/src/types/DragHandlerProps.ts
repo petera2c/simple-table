@@ -1,12 +1,12 @@
-import HeaderObject, { Accessor } from "./HeaderObject";
+import ColumnDef, { Accessor } from "./ColumnDef";
 
 type useDragHandlerProps = {
-  draggedHeaderRef: { current: HeaderObject | null };
+  draggedHeaderRef: { current: ColumnDef | null };
   essentialAccessors?: ReadonlySet<Accessor | string>;
-  headers: HeaderObject[];
-  hoveredHeaderRef: { current: HeaderObject | null };
-  onColumnOrderChange?: (newHeaders: HeaderObject[]) => void;
-  onTableHeaderDragEnd: (newHeaders: HeaderObject[]) => void;
+  headers: ColumnDef[];
+  hoveredHeaderRef: { current: ColumnDef | null };
+  onColumnOrderChange?: (newHeaders: ColumnDef[]) => void;
+  onTableHeaderDragEnd: (newHeaders: ColumnDef[]) => void;
 };
 
 export default useDragHandlerProps;

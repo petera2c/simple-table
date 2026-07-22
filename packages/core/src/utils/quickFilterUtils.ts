@@ -1,5 +1,5 @@
 import { SmartFilterToken } from "../types/QuickFilterTypes";
-import { Accessor } from "../types/HeaderObject";
+import { Accessor } from "../types/ColumnDef";
 
 /**
  * Parses a smart filter query into tokens

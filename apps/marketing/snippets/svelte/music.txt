@@ -1,11 +1,11 @@
 // MusicDemo.svelte
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { SvelteHeaderObject } from "@simple-table/svelte";
+  import type { SvelteColumnDef } from "@simple-table/svelte";
   import { musicData } from "./music.demo-data";
   import "@simple-table/svelte/styles.css";
 
-  const headers: SvelteHeaderObject[] = [
+  const headers: SvelteColumnDef[] = [
     { accessor: "rank", label: "#", type: "number", width: 60, pinned: "left", align: "center" },
     { accessor: "artistName", label: "Artist", type: "string", width: 330, pinned: "left" },
     {
@@ -24,7 +24,7 @@
 </script>
 
 <SimpleTable
-  defaultHeaders={headers}
+  columns={headers}
   rows={musicData}
   columnReordering={true}
   columnResizing={true}

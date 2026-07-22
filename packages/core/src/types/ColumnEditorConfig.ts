@@ -1,4 +1,4 @@
-import HeaderObject from "./HeaderObject";
+import ColumnDef from "./ColumnDef";
 import { ColumnEditorRowRenderer } from "./ColumnEditorRowRendererProps";
 import { ColumnEditorCustomRenderer } from "./ColumnEditorCustomRendererProps";
 
@@ -8,7 +8,7 @@ import { ColumnEditorCustomRenderer } from "./ColumnEditorCustomRendererProps";
  * @param searchTerm - The current search term
  * @returns true if the header matches the search term, false otherwise
  */
-export type ColumnEditorSearchFunction = (header: HeaderObject, searchTerm: string) => boolean;
+export type ColumnEditorSearchFunction = (header: ColumnDef, searchTerm: string) => boolean;
 
 /**
  * Configuration options for the column editor/visibility drawer

@@ -1,4 +1,4 @@
-import type HeaderObject from "../types/HeaderObject";
+import type ColumnDef from "../types/ColumnDef";
 
 /**
  * True when a column must not participate in table layout: cells, widths,
@@ -8,5 +8,5 @@ import type HeaderObject from "../types/HeaderObject";
  * (`excludeFromRender`). Prefer this over checking either flag alone.
  */
 export const isHeaderExcludedFromLayout = (
-  header: Pick<HeaderObject, "hide" | "excludeFromRender">,
+  header: Pick<ColumnDef, "hide" | "excludeFromRender">,
 ): boolean => Boolean(header.hide || header.excludeFromRender);

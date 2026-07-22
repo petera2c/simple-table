@@ -5,7 +5,7 @@ import { SimpleTable } from "../index";
 import type {
   CellRendererProps,
   HeaderRendererProps,
-  ReactHeaderObject,
+  ReactColumnDef,
   SimpleTableReactProps,
 } from "../index";
 
@@ -39,7 +39,7 @@ async function waitForText(scope: HTMLElement, text: string, timeoutMs = 3000): 
 const StatusBadge = ({ value }: CellRendererProps) =>
   createElement("span", { className: "status-badge" }, `status:${String(value)}`);
 
-const headers: ReactHeaderObject[] = [
+const headers: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   {
     accessor: "status",
@@ -63,7 +63,7 @@ function mountTable(props: Partial<SimpleTableReactProps> = {}): HTMLDivElement 
   root = createRoot(host);
   root.render(
     createElement(SimpleTable, {
-      defaultHeaders: headers,
+      columns: headers,
       rows,
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",
@@ -91,7 +91,7 @@ describe("SimpleTable (React adapter) — auto-size columns", () => {
     // Re-render with new data; the adapter re-fits auto columns on the update.
     root!.render(
       createElement(SimpleTable, {
-        defaultHeaders: headers,
+        columns: headers,
         rows: [
           { id: 1, status: "archived" },
           { id: 2, status: "active" },
@@ -107,7 +107,7 @@ describe("SimpleTable (React adapter) — auto-size columns", () => {
   });
 
   it("mounts multiple auto columns alongside a React renderer", async () => {
-    const multiHeaders: ReactHeaderObject[] = [
+    const multiHeaders: ReactColumnDef[] = [
       { accessor: "id", label: "ID", width: "auto", type: "number" },
       { accessor: "name", label: "Name", width: "auto", type: "string" },
       {
@@ -129,7 +129,7 @@ describe("SimpleTable (React adapter) — auto-size columns", () => {
     root = createRoot(host);
     root.render(
       createElement(SimpleTable, {
-        defaultHeaders: multiHeaders,
+        columns: multiHeaders,
         rows: multiRows,
         getRowId: (p) => String((p.row as { id?: number })?.id),
         height: "250px",
@@ -148,7 +148,7 @@ describe("SimpleTable (React adapter) — auto-size columns", () => {
     const CustomHeader = ({ header }: HeaderRendererProps) =>
       createElement("span", { className: "custom-head" }, `head:${header.label}`);
 
-    const customHeaders: ReactHeaderObject[] = [
+    const customHeaders: ReactColumnDef[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "status",
@@ -165,7 +165,7 @@ describe("SimpleTable (React adapter) — auto-size columns", () => {
     root = createRoot(host);
     root.render(
       createElement(SimpleTable, {
-        defaultHeaders: customHeaders,
+        columns: customHeaders,
         rows,
         getRowId: (p) => String((p.row as { id?: number })?.id),
         height: "250px",
@@ -189,7 +189,7 @@ describe("SimpleTable (React adapter) — auto-size columns", () => {
     root = createRoot(host);
     root.render(
       createElement(SimpleTable, {
-        defaultHeaders: headers,
+        columns: headers,
         rows: bigRows,
         getRowId: (p) => String((p.row as { id?: number })?.id),
         height: "250px",
@@ -210,7 +210,7 @@ describe("SimpleTable (React adapter) — auto-size columns", () => {
     for (let i = 0; i < 2; i++) {
       root!.render(
         createElement(SimpleTable, {
-          defaultHeaders: headers,
+          columns: headers,
           rows,
           getRowId: (p) => String((p.row as { id?: number })?.id),
           height: "250px",

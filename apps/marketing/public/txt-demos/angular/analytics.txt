@@ -2,7 +2,7 @@
 import { Component, Input, ViewChild } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularHeaderObject, PivotConfig, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, PivotConfig, Row, Theme } from "@simple-table/angular";
 import {
   analyticsDemoConfig,
   analyticsPresets,
@@ -108,8 +108,8 @@ import "@simple-table/angular/styles.css";
             [columnReordering]="true"
             [columnResizing]="true"
             [rows]="rows"
-            [defaultHeaders]="headers"
-            [editColumns]="true"
+            [columns]="headers"
+            [enableColumnEditor]="true"
             [expandAll]="nestedRows"
             [getRowId]="getRowId"
             height="100%"
@@ -131,7 +131,7 @@ export class AnalyticsDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: Row[] = analyticsDemoConfig.rows;
-  readonly headers: AngularHeaderObject[] = analyticsDemoConfig.headers;
+  readonly headers: AngularColumnDef[] = analyticsDemoConfig.headers;
   readonly presets = analyticsPresets;
   readonly rowCount = analyticsRows.length;
   readonly getRowId = ({ row }: { row: Row }) => String(row.id);
@@ -204,9 +204,9 @@ export class AnalyticsDemoComponent {
 
 
 // analytics.demo-data.ts
-import type { PivotConfig, AngularHeaderObject, Row } from "@simple-table/angular";
+import type { PivotConfig, AngularColumnDef, Row } from "@simple-table/angular";
 
-export const analyticsHeaders: AngularHeaderObject[] = [
+export const analyticsHeaders: AngularColumnDef[] = [
   {
     accessor: "region",
     label: "Region",

@@ -23,7 +23,7 @@ const ColumnWidthDemo = ({
     <SimpleTable
       autoExpandColumns={!isMobile}
       columnResizing
-      defaultHeaders={columnWidthConfig.headers}
+      columns={columnWidthConfig.headers}
       height={height}
       rows={columnWidthConfig.rows}
       theme={theme}

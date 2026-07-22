@@ -59,7 +59,7 @@ export function wrapAngularRenderer<P extends object>(
 
 /**
  * Like {@link wrapAngularRenderer}, but reuses one wrapper per accessor so
- * unstable column rebuilds keep a stable function identity on HeaderObject.
+ * unstable column rebuilds keep a stable function identity on ColumnDef.
  */
 export function wrapCachedAngularRenderer<P extends object>(
   component: Type<P>,

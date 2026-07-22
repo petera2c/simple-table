@@ -1,6 +1,6 @@
 import { useRef, useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, TableAPI, ReactHeaderObject, CellRendererProps } from "@simple-table/react";
+import type { Theme, TableAPI, ReactColumnDef, CellRendererProps } from "@simple-table/react";
 import {
   programmaticControlConfig,
   PROGRAMMATIC_CONTROL_STATUS_COLORS,
@@ -17,7 +17,7 @@ const ProgrammaticControlDemo = ({
   const tableRef = useRef<TableAPI>(null);
   const [statusMessage, setStatusMessage] = useState("No status message");
 
-  const headers: ReactHeaderObject[] = useMemo(
+  const headers: ReactColumnDef[] = useMemo(
     () =>
       programmaticControlConfig.headers.map((h) => {
         if (h.accessor === "status") {
@@ -123,7 +123,7 @@ const ProgrammaticControlDemo = ({
       </div>
       <SimpleTable
         ref={tableRef}
-        defaultHeaders={headers}
+        columns={headers}
         rows={programmaticControlConfig.rows}
         height={height}
         theme={theme}
