@@ -5,7 +5,7 @@ import { infrastructureData } from "./infrastructure.demo-data"; // 50 sample se
 import "@simple-table/solid/styles.css";
 
 const headers: SolidHeaderObject[] = [
-  { accessor: "serverId", label: "Server ID", type: "string", pinned: "left", width: "1.2fr", isSortable: true },
+  { accessor: "serverId", label: "Server ID", type: "string", pinned: "left", width: "1.2fr", sortable: true },
   {
     accessor: "performance",
     label: "Performance Metrics",
@@ -16,7 +16,7 @@ const headers: SolidHeaderObject[] = [
         accessor: "cpuUsage",
         label: "CPU %",
         type: "number",
-        isEditable: true,
+        editable: true,
         width: 120,
         cellRenderer: ({ row }) => <span>{(row.cpuUsage as number).toFixed(1)}%</span>,
       },

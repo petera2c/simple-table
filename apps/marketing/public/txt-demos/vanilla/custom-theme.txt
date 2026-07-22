@@ -140,7 +140,7 @@ function formatPhone(raw: string): string {
 
 export const customThemeHeaders: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
-  { accessor: "name", label: "Name", width: 170, type: "string", isSortable: true },
+  { accessor: "name", label: "Name", width: 170, type: "string", sortable: true },
   {
     accessor: "phone",
     label: "Phone",
@@ -149,7 +149,7 @@ export const customThemeHeaders: HeaderObject[] = [
     valueFormatter: ({ value }) => formatPhone(value as string),
   },
   { accessor: "email", label: "Email", width: 180, type: "string" },
-  { accessor: "city", label: "City", width: 140, type: "string", isSortable: true },
+  { accessor: "city", label: "City", width: 140, type: "string", sortable: true },
   { accessor: "status", label: "Status", width: 100, type: "string" },
 ];
 

@@ -103,8 +103,8 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
 
   const essentialAccessors: ReadonlySet<string> = options.essentialAccessors ?? new Set();
   const allowColumnPinning = options.columnEditorConfig.allowColumnPinning !== false;
-  const isEssential = isHeaderEssential(header, essentialAccessors);
-  const canToggleVisibility = !isEssential;
+  const essential = isHeaderEssential(header, essentialAccessors);
+  const canToggleVisibility = !essential;
 
   const fragment = document.createDocumentFragment();
   const paddingLeft = `${depth * 16}px`;
@@ -412,7 +412,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
 
   // Pin controls — only for root-level columns (depth === 0) when pinning is enabled
   const pinnedSide = header.pinned === "left" || header.pinned === "right" ? header.pinned : null;
-  const canUnpin = Boolean(pinnedSide) && !isEssential;
+  const canUnpin = Boolean(pinnedSide) && !essential;
   const canPinLeft = !pinnedSide && panelSection === "main";
   const canPinRight = !pinnedSide && panelSection === "main";
 
@@ -445,7 +445,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
       header,
       components,
       panelSection,
-      isEssential,
+      essential,
       canToggleVisibility,
       allowColumnPinning,
       pinControl: allowColumnPinning && depth === 0
@@ -477,7 +477,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
 
       if (pinnedSide) {
         const pinnedMark = document.createElement("div");
-        const isPinnedEssential = isEssential;
+        const isPinnedEssential = essential;
         pinnedMark.className = `st-column-pin-btn st-column-pin-side st-column-pin-pinned-active${
           isPinnedEssential ? " st-column-pin-pinned-essential" : ""
         }`;

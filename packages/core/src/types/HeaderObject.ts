@@ -123,29 +123,17 @@ type HeaderObject = {
   filterOperators?: FilterOperator[];
   headerRenderer?: HeaderRenderer;
   hide?: boolean;
-  /**
-   * Whether cells in this column are editable.
-   * @deprecated Prefer {@link editable}
-   */
-  isEditable?: boolean;
-  /** Whether cells in this column are editable. Preferred over `isEditable`. */
+  /** Whether cells in this column are editable. */
   editable?: boolean;
   excludeFromRender?: boolean; // When true, excludes this column from the rendered table (e.g., use only for CSV export)
   excludeFromCsv?: boolean; // When true, excludes this column from the exported CSV file
   isSelectionColumn?: boolean; // This is a flag for the checkbox select row column
   /**
-   * When true, column stays visible, cannot be unpinned from a pinned side, cannot reorder above non-essentials in its section.
-   * @deprecated Prefer {@link essential}
+   * When true, column stays visible, cannot be unpinned from a pinned side, and
+   * cannot reorder above non-essentials in its section.
    */
-  isEssential?: boolean;
-  /** When true, column stays visible and cannot be unpinned / reordered above non-essentials. Preferred over `isEssential`. */
   essential?: boolean;
-  /**
-   * Whether this column is sortable.
-   * @deprecated Prefer {@link sortable}
-   */
-  isSortable?: boolean;
-  /** Whether this column is sortable. Preferred over `isSortable`. */
+  /** Whether this column is sortable. */
   sortable?: boolean;
   label: string;
   minWidth?: number | string;

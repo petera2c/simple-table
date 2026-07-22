@@ -93,7 +93,7 @@ describe("SimpleTable (React adapter) — host context + DOM slot bridging", () 
         label: "Score",
         width: 120,
         type: "number",
-        isSortable: true,
+        sortable: true,
         headerRenderer: ScoreHeader,
       },
     ];

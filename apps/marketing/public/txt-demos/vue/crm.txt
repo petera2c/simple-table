@@ -23,7 +23,7 @@ import "@simple-table/vue/styles.css";
 const rows = ref([...crmData]);
 
 const headers: VueHeaderObject[] = [
-  { accessor: "name", label: "CONTACT", type: "string", width: "2fr", isSortable: true },
+  { accessor: "name", label: "CONTACT", type: "string", width: "2fr", sortable: true },
   { accessor: "signal", label: "SIGNAL", type: "string", width: "3fr" },
   { accessor: "aiScore", label: "AI SCORE", type: "number", align: "center" },
   { accessor: "emailStatus", label: "EMAIL", type: "enum", align: "center" },

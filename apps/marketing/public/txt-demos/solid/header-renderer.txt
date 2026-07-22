@@ -28,7 +28,7 @@ export default function HeaderRendererDemo(props: { height?: string | number; th
   const headers = createMemo((): SolidHeaderObject[] =>
     headerRendererConfig.headers.map((h) => ({
       ...h,
-      isSortable: false,
+      sortable: false,
       headerRenderer: ({ accessor }: HeaderRendererProps) => {
         const isSorted = sortAccessor() === accessor;
         const dir = isSorted ? sortDirection() : null;

@@ -159,7 +159,7 @@ export const pasteClipboardDataToCells = (
       const targetRowId = rowIdToString(targetRow.rowId);
 
       // Track warning flash for non-editable cells
-      if (!targetHeader?.isEditable) {
+      if (!targetHeader?.editable) {
         const cellId = `${targetRowIndex}-${targetColIndex}-${targetRowId}`;
         warningCells.add(cellId);
         return;
@@ -253,7 +253,7 @@ export const deleteSelectedCellsContent = (
     const targetRowId = rowIdToString(targetRow.rowId);
 
     // Track warning flash for non-editable cells
-    if (!targetHeader?.isEditable) {
+    if (!targetHeader?.editable) {
       warningCells.add(cellKey);
       return;
     }

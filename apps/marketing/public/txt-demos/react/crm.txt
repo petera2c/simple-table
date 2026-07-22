@@ -11,7 +11,7 @@ const headers: ReactHeaderObject[] = [
     label: "CONTACT",
     type: "string",
     width: "2fr",
-    isSortable: true,
+    sortable: true,
     cellRenderer: ({ row }: CellRendererProps) => <strong>{row.name as string}</strong>,
   },
   { accessor: "signal", label: "SIGNAL", type: "string", width: "3fr" },

@@ -160,11 +160,11 @@ export const createSelectionHeader = (width: number) => {
     accessor: "__row_selection__" as Accessor,
     label: "",
     width, // Configurable width for selection column
-    isEditable: false,
+    editable: false,
     type: "boolean",
     pinned: "left",
     isSelectionColumn: true,
-    isSortable: false,
+    sortable: false,
     filterable: false,
     align: "center",
   };

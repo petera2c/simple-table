@@ -6,7 +6,7 @@ import { infrastructureData } from "./infrastructure.demo-data"; // 50 sample se
 import "@simple-table/react/styles.css";
 
 const headers: ReactHeaderObject[] = [
-  { accessor: "serverId", label: "Server ID", type: "string", pinned: "left", width: "1.2fr", isSortable: true },
+  { accessor: "serverId", label: "Server ID", type: "string", pinned: "left", width: "1.2fr", sortable: true },
   {
     accessor: "performance",
     label: "Performance Metrics",
@@ -17,7 +17,7 @@ const headers: ReactHeaderObject[] = [
         accessor: "cpuUsage",
         label: "CPU %",
         type: "number",
-        isEditable: true,
+        editable: true,
         width: 120,
         cellRenderer: ({ row }: CellRendererProps) => <span>{(row.cpuUsage as number).toFixed(1)}%</span>,
       },

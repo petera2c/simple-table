@@ -54,13 +54,13 @@ export function makeStockRows(count: number): StockRow[] {
 }
 
 export const stockHeaders: HeaderObject[] = [
-  { accessor: "symbol", label: "Symbol", width: 90, type: "string", isSortable: true },
-  { accessor: "price", label: "Price", width: 100, type: "number", isSortable: true },
-  { accessor: "change", label: "Chg", width: 90, type: "number", isSortable: true },
-  { accessor: "changePct", label: "Chg %", width: 90, type: "number", isSortable: true },
+  { accessor: "symbol", label: "Symbol", width: 90, type: "string", sortable: true },
+  { accessor: "price", label: "Price", width: 100, type: "number", sortable: true },
+  { accessor: "change", label: "Chg", width: 90, type: "number", sortable: true },
+  { accessor: "changePct", label: "Chg %", width: 90, type: "number", sortable: true },
   { accessor: "bid", label: "Bid", width: 90, type: "number" },
   { accessor: "ask", label: "Ask", width: 90, type: "number" },
-  { accessor: "volume", label: "Volume", width: 110, type: "number", isSortable: true },
+  { accessor: "volume", label: "Volume", width: 110, type: "number", sortable: true },
   { accessor: "high", label: "High", width: 90, type: "number" },
   { accessor: "low", label: "Low", width: 90, type: "number" },
 ];

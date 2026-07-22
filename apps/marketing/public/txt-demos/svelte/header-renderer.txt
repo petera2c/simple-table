@@ -28,7 +28,7 @@
   const headers = $derived(
     headerRendererConfig.headers.map((h) => ({
       ...h,
-      isSortable: false,
+      sortable: false,
       headerRenderer: HeaderSortableHeader,
     })),
   );

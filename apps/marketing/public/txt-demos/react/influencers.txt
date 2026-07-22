@@ -988,7 +988,7 @@ function buildHeaders(): ReactHeaderObject[] {
       label: "#",
       width: 70,
       type: "number",
-      isSortable: true,
+      sortable: true,
       align: "center",
       pinned: "left",
       cellRenderer: ({ row }: CellRendererProps) =>
@@ -999,7 +999,7 @@ function buildHeaders(): ReactHeaderObject[] {
       label: "Influencer",
       width: 400,
       type: "string",
-      isSortable: true,
+      sortable: true,
       pinned: "left",
       cellRenderer: InfluencerCell,
     },
@@ -1008,7 +1008,7 @@ function buildHeaders(): ReactHeaderObject[] {
       label: "Chartmetric Score",
       width: 150,
       type: "number",
-      isSortable: true,
+      sortable: true,
       align: "right",
       headerRenderer: (props: HeaderRendererProps) => (
         <IconLabelHeader {...props} platform="chartmetric" />
@@ -1026,7 +1026,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "TikTok",
           width: 130,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconOnlyHeader {...props} platform="tiktok" />
@@ -1039,7 +1039,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "YouTube",
           width: 130,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconOnlyHeader {...props} platform="youtube" />
@@ -1052,7 +1052,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Instagram",
           width: 130,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconOnlyHeader {...props} platform="instagram" />
@@ -1144,7 +1144,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Video Count",
           width: 150,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="tiktok" />
@@ -1157,7 +1157,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Engagement Rate (%)",
           width: 240,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="tiktok" />
@@ -1170,7 +1170,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Views (Average)",
           width: 200,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="tiktok" />
@@ -1183,7 +1183,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Likes (Average)",
           width: 200,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="tiktok" />
@@ -1196,7 +1196,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Comments (Average)",
           width: 220,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="tiktok" />
@@ -1220,7 +1220,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Post Count",
           width: 150,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="instagram" />
@@ -1233,7 +1233,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Engagement Rate (%)",
           width: 260,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="instagram" />
@@ -1246,7 +1246,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Reels Plays (Average)",
           width: 220,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="instagram" />
@@ -1259,7 +1259,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Likes (Average)",
           width: 180,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="instagram" />
@@ -1272,7 +1272,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Comments (Average)",
           width: 220,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="instagram" />
@@ -1296,7 +1296,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Video Count",
           width: 150,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="youtube" />
@@ -1309,7 +1309,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Engagement Rate (%)",
           width: 240,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="youtube" />
@@ -1322,7 +1322,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Views (Average)",
           width: 200,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="youtube" />
@@ -1335,7 +1335,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Likes (Average)",
           width: 200,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="youtube" />
@@ -1348,7 +1348,7 @@ function buildHeaders(): ReactHeaderObject[] {
           label: "Comments (Average)",
           width: 220,
           type: "number",
-          isSortable: true,
+          sortable: true,
           align: "right",
           headerRenderer: (props: HeaderRendererProps) => (
             <IconLabelHeader {...props} platform="youtube" />

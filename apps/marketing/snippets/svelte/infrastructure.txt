@@ -9,14 +9,14 @@
   let tableRef: any;
 
   const headers: SvelteHeaderObject[] = [
-    { accessor: "serverId", label: "Server ID", type: "string", pinned: "left", width: "1.2fr", isSortable: true },
+    { accessor: "serverId", label: "Server ID", type: "string", pinned: "left", width: "1.2fr", sortable: true },
     {
       accessor: "performance",
       label: "Performance Metrics",
       children: [
         // Built-in sparkline column type
         { accessor: "cpuHistory", label: "CPU History", type: "lineAreaChart", width: 150 },
-        { accessor: "cpuUsage", label: "CPU %", type: "number", isEditable: true, width: 120, cellRenderer: InfraCpuCell },
+        { accessor: "cpuUsage", label: "CPU %", type: "number", editable: true, width: 120, cellRenderer: InfraCpuCell },
         // ...memory, disk, response columns
       ],
     },

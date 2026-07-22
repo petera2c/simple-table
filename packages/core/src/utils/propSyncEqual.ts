@@ -17,14 +17,14 @@ export type HeaderStructureLike = {
   type?: string;
   pinned?: string | boolean | null;
   hide?: boolean;
-  isSortable?: boolean;
+  sortable?: boolean;
   filterable?: boolean;
   align?: string;
   collapsible?: boolean;
   collapseDefault?: boolean;
   showWhen?: string;
-  isEditable?: boolean;
-  isEssential?: boolean;
+  editable?: boolean;
+  essential?: boolean;
   disableReorder?: boolean;
   expandable?: boolean;
   excludeFromRender?: boolean;
@@ -47,14 +47,14 @@ function headerStructureEqual(a: HeaderStructureLike, b: HeaderStructureLike): b
     a.type !== b.type ||
     a.pinned !== b.pinned ||
     a.hide !== b.hide ||
-    a.isSortable !== b.isSortable ||
+    a.sortable !== b.sortable ||
     a.filterable !== b.filterable ||
     a.align !== b.align ||
     a.collapsible !== b.collapsible ||
     a.collapseDefault !== b.collapseDefault ||
     a.showWhen !== b.showWhen ||
-    a.isEditable !== b.isEditable ||
-    a.isEssential !== b.isEssential ||
+    a.editable !== b.editable ||
+    a.essential !== b.essential ||
     a.disableReorder !== b.disableReorder ||
     a.expandable !== b.expandable ||
     a.excludeFromRender !== b.excludeFromRender ||

@@ -72,7 +72,7 @@ describe("Solid adapter — headerRenderer mount cleanup on sort", () => {
         label: "Score",
         width: 120,
         type: "number",
-        isSortable: true,
+        sortable: true,
         // wrapSolidRenderer uses createComponent; returning a DOM node is fine
         // for this lifecycle regression (we assert onCleanup, not JSX output).
         headerRenderer: FloatingHeader as any,

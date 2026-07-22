@@ -27,14 +27,14 @@ import type { HeaderObject } from "simple-table-core";
 
 
 export const animationsHeaders: HeaderObject[] = [
-  { accessor: "id", label: "ID", width: 60, isSortable: true, type: "number" },
-  { accessor: "name", label: "Name", minWidth: 140, width: "1fr", isSortable: true, type: "string" },
-  { accessor: "age", label: "Age", width: 80, align: "right", isSortable: true, type: "number" },
-  { accessor: "role", label: "Role", minWidth: 140, width: "1fr", isSortable: true, type: "string" },
+  { accessor: "id", label: "ID", width: 60, sortable: true, type: "number" },
+  { accessor: "name", label: "Name", minWidth: 140, width: "1fr", sortable: true, type: "string" },
+  { accessor: "age", label: "Age", width: 80, align: "right", sortable: true, type: "number" },
+  { accessor: "role", label: "Role", minWidth: 140, width: "1fr", sortable: true, type: "string" },
   {
     accessor: "department",
     disableReorder: true,
-    isSortable: true,
+    sortable: true,
     label: "Department",
     minWidth: 140,
     width: "1fr",

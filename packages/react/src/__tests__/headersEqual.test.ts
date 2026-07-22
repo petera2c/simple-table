@@ -7,7 +7,7 @@ import type { ReactHeaderObject } from "../types";
 
 describe("headersStructurallyEqual", () => {
   const base = (): ReactHeaderObject[] => [
-    { accessor: "name", label: "Name", width: 120, type: "string", isSortable: true },
+    { accessor: "name", label: "Name", width: 120, type: "string", sortable: true },
     {
       accessor: "metrics",
       label: "Metrics",

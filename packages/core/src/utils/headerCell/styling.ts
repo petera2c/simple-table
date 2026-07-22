@@ -33,7 +33,7 @@ export const calculateHeaderCellClasses = (
   } = context;
 
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
-  const clickable = Boolean(header?.isSortable);
+  const clickable = Boolean(header?.sortable);
   const isCollapsed = collapsedHeaders.has(header.accessor);
 
   const hasVisibleChildren = (() => {
@@ -188,7 +188,7 @@ export const createHeaderCellElement = (
     cellElement.setAttribute("aria-expanded", String(!collapsedSet.has(header.accessor)));
   }
 
-  if (header.isSortable) {
+  if (header.sortable) {
     if (context.sort?.key.accessor === header.accessor) {
       cellElement.setAttribute(
         "aria-sort",

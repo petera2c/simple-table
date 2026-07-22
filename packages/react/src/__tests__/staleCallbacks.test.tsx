@@ -6,7 +6,7 @@ import type { ReactHeaderObject, SimpleTableReactProps } from "../index";
 
 const headers: ReactHeaderObject[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
-  { accessor: "name", label: "Name", width: 120, type: "string", isSortable: true },
+  { accessor: "name", label: "Name", width: 120, type: "string", sortable: true },
 ];
 
 const rows = [

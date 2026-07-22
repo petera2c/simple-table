@@ -80,7 +80,7 @@ describe("Vue adapter — headerRenderer mount cleanup on sort", () => {
         label: "Score",
         width: 120,
         type: "number",
-        isSortable: true,
+        sortable: true,
         headerRenderer: FloatingHeader,
       },
     ];

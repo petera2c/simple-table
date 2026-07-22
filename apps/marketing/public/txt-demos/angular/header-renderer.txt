@@ -73,7 +73,7 @@ export class HeaderRendererDemoComponent {
   readonly headers = computed((): AngularHeaderObject[] =>
     headerRendererConfig.headers.map((h) => ({
       ...h,
-      isSortable: false,
+      sortable: false,
       headerRenderer: HeaderSortableHeaderComponent,
     })),
   );
@@ -97,12 +97,12 @@ export const headerRendererData: Row[] = [
 ];
 
 export const headerRendererHeaders: AngularHeaderObject[] = [
-  { accessor: "id", label: "ID", width: 60, type: "number", isSortable: true },
-  { accessor: "name", label: "Employee Name", width: 180, type: "string", isSortable: true },
+  { accessor: "id", label: "ID", width: 60, type: "number", sortable: true },
+  { accessor: "name", label: "Employee Name", width: 180, type: "string", sortable: true },
   { accessor: "email", label: "Email Address", width: 200, type: "string" },
-  { accessor: "role", label: "Job Role", width: 130, type: "string", isSortable: true },
-  { accessor: "salary", label: "Annual Salary", width: 140, type: "number", isSortable: true },
-  { accessor: "department", label: "Department", width: 150, type: "string", isSortable: true },
+  { accessor: "role", label: "Job Role", width: 130, type: "string", sortable: true },
+  { accessor: "salary", label: "Annual Salary", width: 140, type: "number", sortable: true },
+  { accessor: "department", label: "Department", width: 150, type: "string", sortable: true },
 ];
 
 export const headerRendererConfig = {

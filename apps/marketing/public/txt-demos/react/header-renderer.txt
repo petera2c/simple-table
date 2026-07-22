@@ -75,7 +75,7 @@ const StatefulHeader = ({ header, components }: HeaderRendererProps) => {
 const headers: ReactHeaderObject[] = headerRendererConfig.headers.map((h) => ({
   ...h,
   // Keep built-in sorting so sort icon refresh goes through core's header path.
-  isSortable: h.isSortable ?? true,
+  sortable: h.sortable ?? true,
   filterable: h.accessor === "role" || h.accessor === "department",
   headerRenderer: StatefulHeader,
 }));

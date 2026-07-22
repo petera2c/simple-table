@@ -6,7 +6,7 @@ import { crmData } from "./crm.demo-data";
 import "@simple-table/angular/styles.css";
 
 const headers: AngularHeaderObject[] = [
-  { accessor: "name", label: "CONTACT", type: "string", width: "2fr", isSortable: true },
+  { accessor: "name", label: "CONTACT", type: "string", width: "2fr", sortable: true },
   { accessor: "signal", label: "SIGNAL", type: "string", width: "3fr" },
   { accessor: "aiScore", label: "AI SCORE", type: "number", align: "center" },
   { accessor: "emailStatus", label: "EMAIL", type: "enum", align: "center" },

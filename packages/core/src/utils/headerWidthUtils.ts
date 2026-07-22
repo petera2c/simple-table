@@ -821,7 +821,7 @@ export const calculateHeaderContentWidth = (
   // sorted. The icon only exists on the actively sorted column and sorting does
   // not re-fit auto columns (widths must stay stable across sorts), so without
   // this reservation the label would be pushed into ellipsis on first sort.
-  if (header?.isSortable && !sortIconMeasured && sortIcon) {
+  if (header?.sortable && !sortIconMeasured && sortIcon) {
     totalWidth += measureHeaderIconWidth(sortIcon, domQueryRoot);
     visibleItemCount++;
   }

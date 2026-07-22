@@ -23,17 +23,17 @@ export function isHeaderEssential(
   essentialAccessors: ReadonlySet<string>,
 ): boolean {
   return (
-    header.isEssential === true ||
+    header.essential === true ||
     essentialAccessors.has(String(header.accessor))
   );
 }
 
-/** Accessors for every header with `isEssential` in the tree (including nested). */
+/** Accessors for every header with `essential` in the tree (including nested). */
 export function collectEssentialAccessors(headers: HeaderObject[]): Set<string> {
   const set = new Set<string>();
   const walk = (list: HeaderObject[]) => {
     for (const h of list) {
-      if (h.isEssential) set.add(String(h.accessor));
+      if (h.essential) set.add(String(h.accessor));
       if (h.children?.length) walk(h.children);
     }
   };

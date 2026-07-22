@@ -116,7 +116,7 @@ describe("SimpleTable (React adapter) — headerRenderer state across sort/filte
         label: "Score",
         width: 140,
         type: "number",
-        isSortable: true,
+        sortable: true,
         headerRenderer: StatefulHeader,
       },
     ];
@@ -214,7 +214,7 @@ describe("SimpleTable (React adapter) — unstable defaultHeaders / rows refs", 
           label: "Score",
           width: 140,
           type: "number",
-          isSortable: true,
+          sortable: true,
           // New function identity every rebuild — classic unstable columns.
           headerRenderer: (props: HeaderRendererProps) => createElement(StatefulHeader, props),
         },

@@ -1,6 +1,6 @@
 {
   "name": "@simple-table/solid",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/types/index.d.ts",
@@ -60,7 +60,7 @@
     "typescript": "^5.0.0",
     "vitest": "^2.1.9"
   },
-  "description": "Solid.js adapter for simple-table-core — use the Simple Table data grid with full Solid component support for renderers.",
+  "description": "Solid.js adapter for simple-table-core \u2014 use the Simple Table data grid with full Solid component support for renderers.",
   "repository": {
     "type": "git",
     "url": "https://github.com/petera2c/simple-table.git"

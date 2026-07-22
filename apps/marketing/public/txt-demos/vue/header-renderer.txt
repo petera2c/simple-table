@@ -83,7 +83,7 @@ function makeSortableHeader(col: VueHeaderObject) {
 const headers = computed(() =>
   headerRendererConfig.headers.map((col) => ({
     ...col,
-    isSortable: false,
+    sortable: false,
     headerRenderer: makeSortableHeader(col),
   })),
 );

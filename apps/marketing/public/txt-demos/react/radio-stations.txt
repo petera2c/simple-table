@@ -149,7 +149,7 @@ function buildHeaders(): ReactHeaderObject[] {
       type: "number",
       align: "center",
       pinned: "left",
-      isSortable: false,
+      sortable: false,
     }),
     withMenu({
       accessor: "name",
@@ -158,7 +158,7 @@ function buildHeaders(): ReactHeaderObject[] {
       type: "string",
       align: "left",
       pinned: "left",
-      isSortable: true,
+      sortable: true,
       cellRenderer: StationCell,
     }),
     withMenu({
@@ -168,7 +168,7 @@ function buildHeaders(): ReactHeaderObject[] {
       type: "string",
       align: "left",
       pinned: "left",
-      isSortable: true,
+      sortable: true,
     }),
     withMenu({
       accessor: "broadcast_area",
@@ -177,7 +177,7 @@ function buildHeaders(): ReactHeaderObject[] {
       type: "string",
       align: "left",
       pinned: "left",
-      isSortable: true,
+      sortable: true,
     }),
     withMenu({
       accessor: "country",
@@ -186,7 +186,7 @@ function buildHeaders(): ReactHeaderObject[] {
       type: "string",
       align: "left",
       pinned: "left",
-      isSortable: true,
+      sortable: true,
       cellRenderer: CountryCell,
     }),
     withMenu({
@@ -196,7 +196,7 @@ function buildHeaders(): ReactHeaderObject[] {
       minWidth: 120,
       type: "number",
       align: "right",
-      isSortable: true,
+      sortable: true,
       valueFormatter: ({ value }) => formatNumber(value),
     }),
     withMenu({
@@ -206,7 +206,7 @@ function buildHeaders(): ReactHeaderObject[] {
       minWidth: 120,
       type: "number",
       align: "right",
-      isSortable: true,
+      sortable: true,
       valueFormatter: ({ value }) => formatNumber(value),
     }),
   ];

@@ -48,18 +48,18 @@ export const columnEditorCustomRendererData: Row[] = [
 
 export const columnEditorCustomRendererHeaders: HeaderObject[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
-  { accessor: "name", label: "Name", width: 170, type: "string", isSortable: true },
+  { accessor: "name", label: "Name", width: 170, type: "string", sortable: true },
   { accessor: "email", label: "Email", width: 200, type: "string" },
-  { accessor: "role", label: "Role", width: 130, type: "string", isSortable: true },
+  { accessor: "role", label: "Role", width: 130, type: "string", sortable: true },
   {
     accessor: "salary",
     label: "Salary",
     width: 130,
     type: "number",
-    isSortable: true,
+    sortable: true,
     valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
   },
-  { accessor: "department", label: "Department", width: 140, type: "string", isSortable: true },
+  { accessor: "department", label: "Department", width: 140, type: "string", sortable: true },
   { accessor: "status", label: "Status", width: 100, type: "string" },
 ];
 

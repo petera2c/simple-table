@@ -11,6 +11,23 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_0_4: ChangelogEntry = {
+  version: "4.0.4",
+  date: "2026-07-22",
+  title: "Column flags: sortable / editable / essential only",
+  titleLink: "/migrations/v4-0-4",
+  description:
+    "Removes legacy isSortable / isEditable / isEssential column flags. Preferred names are canonical for both input and read-back headers.",
+  changes: [
+    {
+      type: "breaking",
+      description:
+        "Column flags isSortable / isEditable / isEssential are removed. Use sortable / editable / essential only — including on headers returned from getHeaders(), headerRenderer, column editor rowRenderer, and column change callbacks.",
+      link: "/migrations/v4-0-4",
+    },
+  ],
+};
+
 export const v4_0_3: ChangelogEntry = {
   version: "4.0.3",
   date: "2026-07-21",
@@ -37,15 +54,15 @@ export const v4_0_2: ChangelogEntry = {
   version: "4.0.2",
   date: "2026-07-21",
   title: "Clearer public API names",
-  titleLink: "/migrations/v4-0-2",
+  titleLink: "/migrations/v4-0-4",
   description:
-    "Preferred names for columns, feature flags, and column options — with full backward-compatible aliases.",
+    "Preferred names for columns, feature flags, and column options — with backward-compatible aliases for table-level props.",
   changes: [
     {
       type: "improvement",
       description:
-        "Renamed consumer-facing APIs for clarity (e.g. columns, ColumnDef, enableColumnEditor, enablePagination, onTableReady). Legacy names remain supported as aliases — see the migration guide for the full list.",
-      link: "/migrations/v4-0-2",
+        "Renamed consumer-facing APIs for clarity (e.g. columns, ColumnDef, enableColumnEditor, enablePagination, onTableReady). Legacy table-level names remain supported as aliases — see the migration guide for the full list.",
+      link: "/migrations/v4-0-4",
     },
     {
       type: "improvement",
@@ -2355,6 +2372,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_0_4,
   v4_0_3,
   v4_0_2,
   v4_0_1,

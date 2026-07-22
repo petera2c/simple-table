@@ -103,7 +103,7 @@ export const handleColumnHeaderClick = (
     context.onColumnSelect(header);
   }
 
-  if (!context.selectableColumns && header.isSortable) {
+  if (!context.selectableColumns && header.sortable) {
     context.onSort(header.accessor);
   }
 };
@@ -115,7 +115,7 @@ export const handleColumnHeaderDoubleClick = (
 ) => {
   if (header.isSelectionColumn) return;
 
-  if (context.selectableColumns && header.isSortable) {
+  if (context.selectableColumns && header.sortable) {
     context.onSort(header.accessor);
   }
 };

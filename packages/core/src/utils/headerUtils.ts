@@ -108,7 +108,7 @@ export const getHeaderDescription = (header: HeaderObject, filterable: boolean):
   }
 
   // Add sortable status
-  if (header.isSortable) {
+  if (header.sortable) {
     parts.push("sortable");
   }
 

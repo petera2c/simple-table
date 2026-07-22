@@ -1,23 +1,13 @@
 import type HeaderObject from "../types/HeaderObject";
 import type { SimpleTableConfig } from "../types/SimpleTableConfig";
 
-/** Preferred column-def aliases accepted on column objects (normalized to `is*` fields). */
-export type ColumnDefAliases = {
-  /** @deprecated Prefer `editable` */
-  isEditable?: boolean;
-  editable?: boolean;
-  /** @deprecated Prefer `sortable` */
-  isSortable?: boolean;
-  sortable?: boolean;
-  /** @deprecated Prefer `essential` */
-  isEssential?: boolean;
-  essential?: boolean;
-};
-
 /**
  * Consumer-facing config input: accepts preferred prop names alongside legacy
  * names. {@link normalizeConfig} / {@link normalizeConfigPatch} collapse aliases
  * into the canonical {@link SimpleTableConfig} shape used internally.
+ *
+ * Column flags (`sortable` / `editable` / `essential`) have no legacy aliases —
+ * they are stored and returned as those names only.
  */
 export type SimpleTableConfigInput = Omit<
   SimpleTableConfig,
@@ -60,38 +50,17 @@ export type SimpleTableConfigInput = Omit<
   useOddEvenRowBackground?: boolean;
 };
 
-type HeaderWithAliases = HeaderObject & ColumnDefAliases;
-
 function pickAlias<T>(preferred: T | undefined, legacy: T | undefined): T | undefined {
   return preferred !== undefined ? preferred : legacy;
 }
 
-/** Normalize a single column def: preferred bare adjectives win over `is*` aliases. */
+/** Pass-through for column trees (kept for call-site stability / future transforms). */
 export function normalizeColumnDef(header: HeaderObject): HeaderObject {
-  const h = header as HeaderWithAliases;
-  const {
-    editable,
-    sortable,
-    essential,
-    isEditable,
-    isSortable,
-    isEssential,
-    children,
-    ...rest
-  } = h;
-
-  const normalized: HeaderObject = {
-    ...rest,
-    isEditable: pickAlias(editable, isEditable),
-    isSortable: pickAlias(sortable, isSortable),
-    isEssential: pickAlias(essential, isEssential),
+  if (!header.children?.length) return header;
+  return {
+    ...header,
+    children: header.children.map(normalizeColumnDef),
   };
-
-  if (children) {
-    normalized.children = children.map(normalizeColumnDef);
-  }
-
-  return normalized;
 }
 
 export function normalizeColumnDefs(headers: HeaderObject[]): HeaderObject[] {

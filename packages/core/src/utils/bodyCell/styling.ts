@@ -118,7 +118,7 @@ const calculateBodyCellClasses = (cell: AbsoluteBodyCell, context: CellRenderCon
 
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
   const clickable =
-    Boolean(header?.isEditable) ||
+    Boolean(header?.editable) ||
     Boolean(context.onCellClick && !isSelectionColumn) ||
     Boolean(context.selectRowOnClick && context.enableRowSelection && !isSelectionColumn);
 
@@ -429,7 +429,7 @@ export const createBodyCellElement = (
     }
 
     // Start editing on F2 or Enter
-    if ((keyEvent.key === "F2" || keyEvent.key === "Enter") && header.isEditable && !isEditing) {
+    if ((keyEvent.key === "F2" || keyEvent.key === "Enter") && header.editable && !isEditing) {
       keyEvent.preventDefault();
       isEditing = true;
       renderCellContent();
@@ -440,7 +440,7 @@ export const createBodyCellElement = (
 
   // Double-click handler for editing
   const handleDoubleClick = (event: Event) => {
-    if (header.isEditable && !isSelectionColumn && !isEditing) {
+    if (header.editable && !isSelectionColumn && !isEditing) {
       isEditing = true;
       renderCellContent();
     }

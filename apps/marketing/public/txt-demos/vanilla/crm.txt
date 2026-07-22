@@ -11,7 +11,7 @@ const nameRenderer: CellRenderer = ({ row }) => {
 };
 
 const headers: HeaderObject[] = [
-  { accessor: "name", label: "CONTACT", type: "string", width: "2fr", isSortable: true, cellRenderer: nameRenderer },
+  { accessor: "name", label: "CONTACT", type: "string", width: "2fr", sortable: true, cellRenderer: nameRenderer },
   { accessor: "signal", label: "SIGNAL", type: "string", width: "3fr" },
   { accessor: "aiScore", label: "AI SCORE", type: "number", align: "center" },
   { accessor: "emailStatus", label: "EMAIL", type: "enum", align: "center" },

@@ -27,12 +27,24 @@ const RENAMES: { old: string; next: string; notes?: string }[] = [
   { old: "useHoverRowBackground", next: "hoverRowBackground" },
   { old: "useOddColumnBackground", next: "oddColumnBackground" },
   { old: "useOddEvenRowBackground", next: "oddEvenRowBackground" },
-  { old: "isEditable", next: "editable", notes: "Column-level flag" },
-  { old: "isSortable", next: "sortable", notes: "Column-level flag" },
-  { old: "isEssential", next: "essential", notes: "Column-level flag" },
+  {
+    old: "isEditable",
+    next: "editable",
+    notes: "Breaking in 4.0.4 — old name removed (not aliased). Applies to read-back headers too.",
+  },
+  {
+    old: "isSortable",
+    next: "sortable",
+    notes: "Breaking in 4.0.4 — old name removed (not aliased). Applies to read-back headers too.",
+  },
+  {
+    old: "isEssential",
+    next: "essential",
+    notes: "Breaking in 4.0.4 — old name removed (not aliased). Applies to read-back headers too.",
+  },
 ];
 
-export default function MigrationV4_0_2Content() {
+export default function MigrationV4_0_4Content() {
   return (
     <PageWrapper>
       <motion.div
@@ -45,7 +57,7 @@ export default function MigrationV4_0_2Content() {
           <FontAwesomeIcon icon={faArrowRight} className="text-blue-600 text-2xl" />
         </div>
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-          Migration Guide: API naming (v4.0.2)
+          Migration Guide: API naming (v4.0.4)
         </h1>
       </motion.div>
 
@@ -55,9 +67,16 @@ export default function MigrationV4_0_2Content() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Simple Table v4.0.2 introduces clearer public names that match how people talk about tables
-        (columns, not “headers”; enable flags instead of should*/use* prefixes). Old names still work
-        as aliases — update when convenient.
+        Simple Table v4.0.4 continues the clearer public names introduced in 4.0.2 (columns, not
+        “headers”; enable flags instead of should*/use* prefixes). Most old table-level names still
+        work as aliases. Column flags{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isSortable</code> /{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isEditable</code> /{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isEssential</code> are
+        removed — use{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">sortable</code> /{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">editable</code> /{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">essential</code> only.
       </motion.p>
 
       <motion.div
@@ -69,23 +88,37 @@ export default function MigrationV4_0_2Content() {
         <h3 className="font-bold text-gray-800 dark:text-white mb-3 text-xl">Compatibility</h3>
         <ul className="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li>
-            <strong>Non-breaking.</strong> Preferred names are aliases. Existing{" "}
+            <strong>Mostly non-breaking.</strong> Table-level preferred names are aliases. Existing{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">defaultHeaders</code>,{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">HeaderObject</code>,
-            and the other legacy names continue to work.
+            and other legacy table props continue to work.
           </li>
           <li>
-            When both old and new props are passed, the <strong>preferred</strong> name wins (e.g.{" "}
+            <strong>Breaking in 4.0.4 for column flags.</strong>{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isSortable</code> /{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isEditable</code> /{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isEssential</code> are
+            removed from types and runtime. Use{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">sortable</code> /{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">editable</code> /{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">essential</code> for
+            both input and read-back (
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">getHeaders()</code>,
+            renderers, column callbacks).
+          </li>
+          <li>
+            When both old and new <em>table-level</em> props are passed, the{" "}
+            <strong>preferred</strong> name wins (e.g.{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">columns</code> over{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">defaultHeaders</code>
             ).
           </li>
           <li>
-            Docs and examples now use only the preferred names. See the{" "}
+            Docs and examples use the preferred names. See the{" "}
             <Link href="/changelog" className="text-blue-600 dark:text-blue-400 hover:underline">
               changelog
-            </Link>{" "}
-            for the 4.0.2 entry.
+            </Link>
+            .
           </li>
         </ul>
       </motion.div>
@@ -212,11 +245,24 @@ const columns: ReactColumnDef[] = [
         <ol className="list-decimal pl-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li>
             Upgrade to{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">4.0.2</code> (or
-            later). Your app should keep working with no changes.
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">4.0.4</code> (or
+            later).
           </li>
           <li>
-            Find/replace using the table above — start with{" "}
+            <strong>Required:</strong> replace column flags{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isSortable</code> /{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isEditable</code> /{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isEssential</code>{" "}
+            with{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">sortable</code> /{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">editable</code> /{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">essential</code>{" "}
+            everywhere (defs and any code that reads headers). Do not rename{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isSelectionColumn</code>
+            .
+          </li>
+          <li>
+            Optionally find/replace table-level aliases — start with{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">defaultHeaders</code>{" "}
             →{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">columns</code> and
@@ -225,22 +271,7 @@ const columns: ReactColumnDef[] = [
             types →{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">*ColumnDef</code>.
           </li>
-          <li>
-            Replace column flags{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isSortable</code> /{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isEditable</code> /{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isEssential</code>{" "}
-            with{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">sortable</code> /{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">editable</code> /{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">essential</code>. Do
-            not rename{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isSelectionColumn</code>
-            .
-          </li>
-          <li>
-            Run your typecheck — preferred names are fully typed on all adapters.
-          </li>
+          <li>Run your typecheck — preferred names are fully typed on all adapters.</li>
         </ol>
       </motion.div>
 
