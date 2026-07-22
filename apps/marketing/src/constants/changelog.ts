@@ -14,15 +14,15 @@ export interface ChangelogEntry {
 export const v4_0_5: ChangelogEntry = {
   version: "4.0.5",
   date: "2026-07-22",
-  title: "Hard-cut to preferred API names",
+  title: "Renamed public API props and types",
   titleLink: "/migrations/v4-0-5",
   description:
-    "Removes all legacy naming aliases. columns, ColumnDef, enable* flags, onTableReady, hover/odd backgrounds, and sortable/editable/essential are the only supported names.",
+    "Several props and types are renamed for clearer naming. Consumers must update to the new names.",
   changes: [
     {
       type: "breaking",
       description:
-        "Legacy props and types are removed (not aliased): defaultHeaders → columns, HeaderObject / *HeaderObject → ColumnDef / *ColumnDef, editColumns → enableColumnEditor, shouldPaginate → enablePagination, onGridReady → onTableReady, useHoverRowBackground / useOdd* → hoverRowBackground / odd*, and isSortable / isEditable / isEssential → sortable / editable / essential (including read-back headers).",
+        "Renamed: defaultHeaders → columns, HeaderObject / *HeaderObject → ColumnDef / *ColumnDef, editColumns → enableColumnEditor, shouldPaginate → enablePagination, onGridReady → onTableReady, useHoverRowBackground / useOdd* → hoverRowBackground / odd*, and isSortable / isEditable / isEssential → sortable / editable / essential (including values read back from headers).",
       link: "/migrations/v4-0-5",
     },
   ],

@@ -13,7 +13,7 @@ import PageWrapper from "@/components/PageWrapper";
 import Link from "next/link";
 
 const RENAMES: { old: string; next: string; notes?: string }[] = [
-  { old: "HeaderObject", next: "ColumnDef", notes: "Core type — old name removed" },
+  { old: "HeaderObject", next: "ColumnDef", notes: "Core type" },
   { old: "ReactHeaderObject", next: "ReactColumnDef" },
   { old: "VueHeaderObject", next: "VueColumnDef" },
   { old: "AngularHeaderObject", next: "AngularColumnDef" },
@@ -30,17 +30,17 @@ const RENAMES: { old: string; next: string; notes?: string }[] = [
   {
     old: "isEditable",
     next: "editable",
-    notes: "Column flag — applies to read-back headers too",
+    notes: "Also update any code that reads this from headers",
   },
   {
     old: "isSortable",
     next: "sortable",
-    notes: "Column flag — applies to read-back headers too",
+    notes: "Also update any code that reads this from headers",
   },
   {
     old: "isEssential",
     next: "essential",
-    notes: "Column flag — applies to read-back headers too",
+    notes: "Also update any code that reads this from headers",
   },
 ];
 
@@ -67,11 +67,8 @@ export default function MigrationV4_0_5Content() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Simple Table v4.0.5 hard-cuts to the clearer public names (columns, enable* flags,{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">sortable</code> /{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">editable</code> /{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">essential</code>
-        ). Legacy names are removed — not aliased.
+        In Simple Table v4.0.5, several props and types are renamed for clearer naming. Update your
+        code to the new names below — the old names no longer work.
       </motion.p>
 
       <motion.div
@@ -83,15 +80,15 @@ export default function MigrationV4_0_5Content() {
         <h3 className="font-bold text-gray-800 dark:text-white mb-3 text-xl">Breaking change</h3>
         <ul className="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li>
-            All renamed props and types in the table below are <strong>removed</strong>. Update
-            call sites and any code that reads headers (
+            Consumers must switch every renamed prop and type to its new name. That includes table
+            props, type imports, and any code that reads column headers (
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">getHeaders()</code>,
             renderers, column callbacks).
           </li>
           <li>
-            Do not rename{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isSelectionColumn</code>
-            .
+            Leave{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isSelectionColumn</code>{" "}
+            as-is — it was not renamed.
           </li>
           <li>
             See the{" "}
@@ -226,20 +223,25 @@ const columns: ReactColumnDef[] = [
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">4.0.5</code> (or
             later).
           </li>
-          <li>Find/replace using the table above — start with column flags and{" "}
+          <li>
+            Rename each prop and type using the table above. A good starting point is{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">defaultHeaders</code>{" "}
             →{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">columns</code>.
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">columns</code> and the
+            column flags (
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">sortable</code> /{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">editable</code> /{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">essential</code>
+            ).
           </li>
           <li>
-            Update type imports{" "}
+            Update type imports from{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">*HeaderObject</code>{" "}
-            →{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">*ColumnDef</code>{" "}
-            /{" "}
+            to{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">*ColumnDef</code> /{" "}
             <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">ColumnDef</code>.
           </li>
-          <li>Run your typecheck — only the new names are typed.</li>
+          <li>Run typecheck and fix any remaining old names.</li>
         </ol>
       </motion.div>
     </PageWrapper>
