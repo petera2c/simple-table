@@ -1,7 +1,7 @@
 // Main orchestrator for header cell rendering
 // This file coordinates all header cell rendering modules
 
-import { getCellId } from "./cellUtils";
+import { getCellId, isHeaderExcludedFromLayout } from "./cellUtils";
 import { AbsoluteCell, HeaderRenderContext } from "./headerCell/types";
 import {
   getRenderedCells,
@@ -37,7 +37,7 @@ const collectVisibleHeaderAccessors = (headers: HeaderObject[]): Set<string> => 
   const visible = new Set<string>();
   const walk = (list: HeaderObject[]): void => {
     for (const header of list) {
-      if (header.hide || header.excludeFromRender) continue;
+      if (isHeaderExcludedFromLayout(header)) continue;
       visible.add(String(header.accessor));
       if (header.children?.length) walk(header.children);
     }

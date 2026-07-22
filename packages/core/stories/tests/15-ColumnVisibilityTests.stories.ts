@@ -527,6 +527,102 @@ export const ExcludeFromRenderDoesNotInflateRowWidth = {
   },
 };
 
+// Influencers-shaped regression: pinned-left identity columns + an accidental
+// `excludeFromRender` column with width: 150 in the main section. After a
+// column resize, `updateColumnWidthsInDOM` must not advance `currentLeft` by
+// the excluded width — otherwise every main cell after it shifts right by 150px
+// and the row separator / scroll range reserves empty space.
+export const ExcludeFromRenderDoesNotShiftAfterResize = {
+  render: () => {
+    const headers: ColumnDef[] = [
+      { accessor: "__index__", label: "#", width: 70, type: "number", pinned: "left" },
+      { accessor: "name", label: "Influencer", width: 220, type: "string", pinned: "left" },
+      // Accidental production case from Chartmetric influencers.
+      { accessor: "id", label: "Internal ID", width: 150, type: "string", excludeFromRender: true },
+      { accessor: "score", label: "Score", width: 150, type: "number" },
+      { accessor: "role", label: "Role", width: 700, type: "string" },
+      { accessor: "region", label: "Region", width: 800, type: "string" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      columnResizing: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+
+    expect(canvasElement.querySelector('[data-accessor="id"]')).toBeFalsy();
+
+    const scoreHeader = canvasElement.querySelector(
+      '.st-header-main [data-accessor="score"]',
+    ) as HTMLElement | null;
+    expect(scoreHeader).toBeTruthy();
+
+    // First visible main leaf must start at left: 0 — not 150 (excluded width).
+    const scoreLeftBefore = parseFloat(scoreHeader!.style.left) || 0;
+    expect(Math.abs(scoreLeftBefore - 0)).toBeLessThanOrEqual(1);
+
+    const resizeHandle = scoreHeader!.querySelector(
+      ".st-header-resize-handle-container",
+    ) as HTMLElement | null;
+    expect(resizeHandle).toBeTruthy();
+
+    const rect = resizeHandle!.getBoundingClientRect();
+    const startX = rect.left + 5;
+    const y = rect.top + 5;
+    resizeHandle!.dispatchEvent(
+      new MouseEvent("mousedown", { clientX: startX, clientY: y, bubbles: true, cancelable: true }),
+    );
+    document.dispatchEvent(
+      new MouseEvent("mousemove", {
+        clientX: startX + 40,
+        clientY: y,
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    document.dispatchEvent(
+      new MouseEvent("mouseup", {
+        clientX: startX + 40,
+        clientY: y,
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+
+    // Allow the resize RAF + DOM update to flush.
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+    const scoreHeaderAfter = canvasElement.querySelector(
+      '.st-header-main [data-accessor="score"]',
+    ) as HTMLElement | null;
+    const roleHeader = canvasElement.querySelector(
+      '.st-header-main [data-accessor="role"]',
+    ) as HTMLElement | null;
+    expect(scoreHeaderAfter).toBeTruthy();
+    expect(roleHeader).toBeTruthy();
+
+    const scoreLeft = parseFloat(scoreHeaderAfter!.style.left) || 0;
+    const scoreWidth = parseFloat(scoreHeaderAfter!.style.width) || 0;
+    const roleLeft = parseFloat(roleHeader!.style.left) || 0;
+
+    // Score remains the first main leaf (left 0). Role immediately follows it —
+    // not scoreWidth + 150 from the excluded Internal ID column.
+    expect(Math.abs(scoreLeft - 0)).toBeLessThanOrEqual(1);
+    expect(Math.abs(roleLeft - scoreWidth)).toBeLessThanOrEqual(2);
+
+    const bodyMain = canvasElement.querySelector(".st-body-main") as HTMLElement | null;
+    const separator = bodyMain?.querySelector(".st-row-separator") as HTMLElement | null;
+    expect(separator).toBeTruthy();
+    const separatorWidth = parseFloat(separator!.style.width) || 0;
+    // Visible main natural widths: score (~190 after +40 resize) + role 700 + region 800.
+    // Must stay well below that sum + the excluded 150.
+    expect(separatorWidth).toBeLessThan(scoreWidth + 700 + 800 + 75);
+  },
+};
+
 // ============================================================================
 // COLUMN EDITOR CUSTOM RENDERER
 // ============================================================================

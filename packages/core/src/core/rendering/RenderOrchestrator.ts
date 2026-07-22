@@ -203,6 +203,11 @@ export class RenderOrchestrator {
     }
   }
 
+  /** @see TableRenderer.invalidateCustomFooterCache */
+  invalidateCustomFooterCache(): void {
+    this.tableRenderer.invalidateCustomFooterCache();
+  }
+
   computeEffectiveHeaders(
     headers: HeaderObject[],
     config: SimpleTableConfig,

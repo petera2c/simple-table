@@ -13,7 +13,7 @@ import {
 } from "../../utils/bodyCellRenderer";
 import TableRow from "../../types/TableRow";
 import { rowIdToString, expandStateKey, calculateFinalNestedGridHeight } from "../../utils/rowUtils";
-import { getCellId } from "../../utils/cellUtils";
+import { getCellId, isHeaderExcludedFromLayout } from "../../utils/cellUtils";
 import { DEFAULT_CUSTOM_THEME } from "../../types/CustomTheme";
 import type { AnimationCoordinator, CellPosition } from "../../managers/AnimationCoordinator";
 import {
@@ -825,13 +825,14 @@ export class SectionRenderer {
       depth: number,
       parentHeader?: HeaderObject,
     ): number => {
-      if (header.hide || header.excludeFromRender) return 0;
+      if (isHeaderExcludedFromLayout(header)) return 0;
 
       const isCollapsed = collapsedHeaders.has(header.accessor);
       const hasChildren = header.children && header.children.length > 0;
 
       if (hasChildren) {
         const visibleChildren = header.children!.filter((child) => {
+          if (isHeaderExcludedFromLayout(child)) return false;
           const showWhen = child.showWhen || "parentExpanded";
           if (isCollapsed) {
             return showWhen === "parentCollapsed" || showWhen === "always";
@@ -997,13 +998,14 @@ export class SectionRenderer {
     const leaves: HeaderObject[] = [];
 
     const processHeader = (header: HeaderObject): void => {
-      if (header.hide || header.excludeFromRender) return;
+      if (isHeaderExcludedFromLayout(header)) return;
 
       const isCollapsed = collapsedHeaders.has(header.accessor);
       const hasChildren = header.children && header.children.length > 0;
 
       if (hasChildren) {
         const visibleChildren = header.children!.filter((child) => {
+          if (isHeaderExcludedFromLayout(child)) return false;
           const showWhen = child.showWhen || "parentExpanded";
           if (isCollapsed) {
             return showWhen === "parentCollapsed" || showWhen === "always";
@@ -1033,7 +1035,7 @@ export class SectionRenderer {
 
   private createHeadersHash(headers: HeaderObject[]): string {
     const hashHeader = (h: HeaderObject): string => {
-      let hash = `${h.accessor}:${h.width}:${h.pinned || ""}:${h.hide || ""}`;
+      let hash = `${h.accessor}:${h.width}:${h.pinned || ""}:${h.hide || ""}:${h.excludeFromRender || ""}`;
       if (h.children && h.children.length > 0) {
         hash += `:children[${h.children.map(hashHeader).join(",")}]`;
       }

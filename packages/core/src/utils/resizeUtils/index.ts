@@ -14,6 +14,7 @@ import { recalculateAllSectionWidths } from "./sectionWidths";
 import { calculateMaxHeaderWidth } from "./maxWidth";
 import { handleParentHeaderResize } from "./parentHeaderResize";
 import { handleResizeWithAutoExpand } from "./autoExpandResize";
+import { isHeaderExcludedFromLayout } from "../cellUtils";
 
 /**
  * Rescale the main section after a pinned boundary column resize changed the
@@ -106,7 +107,7 @@ export const handleResizeStart = ({
   const startX = "clientX" in event ? event.clientX : event.touches[0].clientX;
   const isTouchEvent = "touches" in event;
 
-  if (!header || header.hide) return;
+  if (!header || isHeaderExcludedFromLayout(header)) return;
 
   const effectiveContainerWidth = resolveContainerWidthForResize(
     containerWidth,
@@ -461,7 +462,7 @@ export const applyColumnAutoFitWithAutoExpand = ({
   onAutoExpandNaturalWidths,
   shrinkFloors,
 }: ApplyColumnAutoFitWithAutoExpandParams): void => {
-  if (!header || header.hide) return;
+  if (!header || isHeaderExcludedFromLayout(header)) return;
 
   const effectiveContainerWidth = resolveContainerWidthForResize(
     containerWidth,

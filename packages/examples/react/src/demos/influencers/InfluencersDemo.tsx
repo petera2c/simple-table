@@ -998,6 +998,9 @@ function mergeHeaderWidths(
  * Headers mirrored from sandbox3.chartmetric.com/influencers DOM:
  * accessors, widths, nested groups, collapsed top videos, no audience age.
  * Main scroll width ≈ 150+390+280+500+900+1010+1030+1010 = 5270–5560px.
+ *
+ * Includes an accidental production case: `id` has excludeFromRender + width: 150.
+ * Cells/headers are correctly omitted, but layout must not reserve that width.
  */
 function buildHeaders(): ReactColumnDef[] {
   const topVideoChildren: ReactColumnDef[] = [
@@ -1039,6 +1042,15 @@ function buildHeaders(): ReactColumnDef[] {
       sortable: true,
       pinned: "left",
       cellRenderer: InfluencerCell,
+    },
+    // Repro: excluded from render but still has a width (as seen in Chartmetric).
+    // Expect no header/body cells AND no reserved horizontal space.
+    {
+      accessor: "id",
+      label: "Internal ID",
+      width: 150,
+      type: "string",
+      excludeFromRender: true,
     },
     {
       accessor: "ranks.score_100",

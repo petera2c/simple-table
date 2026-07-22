@@ -1,5 +1,6 @@
 import HeaderObject from "../types/HeaderObject";
 import { Pinned } from "../types/Pinned";
+import { isHeaderExcludedFromLayout } from "./cellUtils";
 
 // Deep clone function that preserves functions
 export const deepClone = <T>(obj: T): T => {
@@ -23,5 +24,5 @@ export const deepClone = <T>(obj: T): T => {
 export const canDisplaySection = (headers: HeaderObject[], pinned?: Pinned) => {
   return headers
     .filter((header) => header.pinned === pinned)
-    .some((header) => !header.hide && !header.excludeFromRender);
+    .some((header) => !isHeaderExcludedFromLayout(header));
 };

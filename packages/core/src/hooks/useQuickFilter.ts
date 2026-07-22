@@ -4,6 +4,7 @@ import HeaderObject, { Accessor } from "../types/HeaderObject";
 import { getNestedValue } from "../utils/rowUtils";
 import CellValue from "../types/CellValue";
 import { parseSmartFilter, matchesSimpleFilter } from "../utils/quickFilterUtils";
+import { isHeaderExcludedFromLayout } from "../utils/cellUtils";
 
 interface FilterRowsWithQuickFilterProps {
   rows: Row[];
@@ -31,8 +32,8 @@ export const filterRowsWithQuickFilter = ({ rows, headers, quickFilter }: Filter
 
     // Determine which columns to search
     const searchableHeaders = headers.filter((header) => {
-      // Skip hidden columns
-      if (header.hide || header.excludeFromRender) return false;
+      // Skip columns that are not part of the rendered table
+      if (isHeaderExcludedFromLayout(header)) return false;
 
       // If specific columns are provided, only search those
       if (columns && columns.length > 0) {

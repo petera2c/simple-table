@@ -71,6 +71,12 @@ export interface SimpleTableConfig {
   externalFilterHandling?: boolean;
   externalSortHandling?: boolean;
   footerRenderer?: (props: FooterRendererProps) => HTMLElement | string | null;
+  /**
+   * @see SimpleTableProps.footerRenderKey
+   * Included in the custom-footer reuse key so external footer state can bust
+   * the scroll-safe cache without replacing the `footerRenderer` function.
+   */
+  footerRenderKey?: string | number;
   /** Placement of the pagination footer. Default `"bottom"`. */
   footerPosition?: FooterPosition;
   headerDropdown?: VanillaHeaderDropdown;

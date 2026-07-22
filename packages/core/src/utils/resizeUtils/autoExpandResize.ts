@@ -3,6 +3,7 @@ import type { Pinned } from "../../types/Pinned";
 import { getAllVisibleLeafHeaders } from "../headerWidthUtils";
 import { MIN_COLUMN_WIDTH, getMaxPinnedSectionWidth } from "../../consts/column-constraints";
 import { distributeCompensationProportionally } from "./compensation";
+import { isHeaderExcludedFromLayout } from "../cellUtils";
 
 /**
  * Handle resize with autoExpandColumns enabled.
@@ -83,8 +84,12 @@ export const handleResizeWithAutoExpand = ({
     if (!rootPinned || containerWidth <= 0 || positiveDelta <= 0) {
       return positiveDelta;
     }
-    const hasPinnedLeft = headers.some((h) => h.pinned === "left" && !h.hide);
-    const hasPinnedRight = headers.some((h) => h.pinned === "right" && !h.hide);
+    const hasPinnedLeft = headers.some(
+      (h) => h.pinned === "left" && !isHeaderExcludedFromLayout(h),
+    );
+    const hasPinnedRight = headers.some(
+      (h) => h.pinned === "right" && !isHeaderExcludedFromLayout(h),
+    );
     // The policy max (a % of the container) is the correct, sufficient constraint
     // on how wide a pinned section may grow.
     const maxSectionWidth = getMaxPinnedSectionWidth(

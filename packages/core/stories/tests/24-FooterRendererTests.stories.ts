@@ -5,7 +5,8 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { ColumnDef } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
+import type { FooterRendererProps, Row } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -181,5 +182,132 @@ export const FooterPrevDisabledOnFirstPage = {
     );
     expect(prevBtn).toBeTruthy();
     expect(prevBtn?.disabled).toBe(true);
+  },
+};
+
+// Custom footers are reused across scroll renders when pagination inputs are
+// unchanged. Consumers with external footer state (loading, etc.) need either
+// `footerRenderKey` or an `update({ rows })` to bust that cache — without
+// replacing the footerRenderer function identity on every tick.
+export const CustomFooterRespectsFooterRenderKey = {
+  render: () => {
+    let status = "idle";
+    const footerRenderer = (_props: FooterRendererProps): HTMLElement => {
+      const el = document.createElement("div");
+      el.className = "custom-footer-status";
+      el.dataset.status = status;
+      el.textContent = `status:${status}`;
+      return el;
+    };
+
+    const wrapper = document.createElement("div");
+    wrapper.style.padding = "1rem";
+
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "footer-render-key-trigger";
+    trigger.textContent = "Set loading";
+    wrapper.appendChild(trigger);
+
+    const tableContainer = document.createElement("div");
+    wrapper.appendChild(tableContainer);
+
+    const rows = createData(5) as Row[];
+    const table = new SimpleTableVanilla(tableContainer, {
+      columns: headers,
+      rows,
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      footerRenderer,
+      footerRenderKey: status,
+    });
+    table.mount();
+
+    trigger.addEventListener("click", () => {
+      status = "loading";
+      table.update({ footerRenderKey: status });
+    });
+
+    (wrapper as HTMLDivElement & { _table?: SimpleTableVanilla })._table = table;
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const footer = () =>
+      canvasElement.querySelector(".custom-footer-status") as HTMLElement | null;
+
+    expect(footer()?.dataset.status).toBe("idle");
+    expect(footer()?.textContent).toBe("status:idle");
+
+    const trigger = canvasElement.querySelector(
+      ".footer-render-key-trigger",
+    ) as HTMLButtonElement | null;
+    expect(trigger).toBeTruthy();
+    trigger!.click();
+
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+    expect(footer()?.dataset.status).toBe("loading");
+    expect(footer()?.textContent).toBe("status:loading");
+  },
+};
+
+export const CustomFooterRefreshesOnRowsUpdateSameCount = {
+  render: () => {
+    let label = "first";
+    const footerRenderer = (_props: FooterRendererProps): HTMLElement => {
+      const el = document.createElement("div");
+      el.className = "custom-footer-label";
+      el.textContent = label;
+      return el;
+    };
+
+    const wrapper = document.createElement("div");
+    wrapper.style.padding = "1rem";
+
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "footer-rows-update-trigger";
+    trigger.textContent = "Swap rows";
+    wrapper.appendChild(trigger);
+
+    const tableContainer = document.createElement("div");
+    wrapper.appendChild(tableContainer);
+
+    let rows = createData(5) as Row[];
+    const table = new SimpleTableVanilla(tableContainer, {
+      columns: headers,
+      rows,
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      footerRenderer,
+    });
+    table.mount();
+
+    trigger.addEventListener("click", () => {
+      // Same length, new row identities — pagination key unchanged, but update({ rows })
+      // must still re-invoke the custom footer (infinite-scroll skeleton swap case).
+      label = "second";
+      rows = createData(5).map((r) => ({ ...r, name: `Swapped ${r.name}` })) as Row[];
+      table.update({ rows });
+    });
+
+    (wrapper as HTMLDivElement & { _table?: SimpleTableVanilla })._table = table;
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const footer = () =>
+      canvasElement.querySelector(".custom-footer-label") as HTMLElement | null;
+    expect(footer()?.textContent).toBe("first");
+
+    const trigger = canvasElement.querySelector(
+      ".footer-rows-update-trigger",
+    ) as HTMLButtonElement | null;
+    expect(trigger).toBeTruthy();
+    trigger!.click();
+
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    expect(footer()?.textContent).toBe("second");
   },
 };

@@ -2,23 +2,24 @@
  * Shared helpers for vanilla stories (examples and tests).
  */
 import { SimpleTableVanilla } from "../src/index";
-import type { ColumnDef, Row, SimpleTableConfig } from "../src/index";
+import type { ColumnDef, Row, SimpleTableConfigInput } from "../src/index";
 
 /** Instance type of the table (class is a value; use InstanceType<typeof C> for the type of instances). */
 type TableInstance = InstanceType<typeof SimpleTableVanilla>;
 
 /**
  * Config passed through to {@link SimpleTableVanilla}, minus `columns` /
- * `rows` which are supplied as the first two arguments of
+ * `defaultHeaders` / `rows` which are supplied as the first two arguments of
  * {@link renderVanillaTable}.
  *
- * Keys are constrained to {@link SimpleTableConfig} so typos and misplaced
- * props (e.g. top-level `rowHeight` instead of `customTheme.rowHeight`) fail
- * at compile time. Values stay loose (`unknown`) so story callbacks that are
- * slightly narrower than the public types still typecheck.
+ * Keys are constrained to {@link SimpleTableConfigInput} so consumer aliases
+ * (e.g. `enableColumnEditor`) and typos / misplaced props (e.g. top-level
+ * `rowHeight` instead of `customTheme.rowHeight`) fail at compile time.
+ * Values stay loose (`unknown`) so story callbacks that are slightly narrower
+ * than the public types still typecheck.
  */
 export type RenderVanillaTableOptions = {
-  [K in keyof Omit<SimpleTableConfig, "columns" | "rows">]?: unknown;
+  [K in keyof Omit<SimpleTableConfigInput, "columns" | "defaultHeaders" | "rows">]?: unknown;
 };
 
 export interface RenderVanillaTableResult {
@@ -51,7 +52,7 @@ export function renderVanillaTable(
     columns: headers,
     rows: data,
     ...options,
-  } as SimpleTableConfig);
+  } as SimpleTableConfigInput);
   table.mount();
   wrapper._table = table;
 

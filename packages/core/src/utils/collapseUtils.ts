@@ -1,5 +1,6 @@
 import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
 import { flattenAllHeaders, flattenHeaders } from "./headerUtils";
+import { isHeaderExcludedFromLayout } from "./headerLayoutUtils";
 
 /**
  * Find the parent header that contains the given child header
@@ -72,9 +73,10 @@ export const hasCollapsibleChildren = (header: HeaderObject): boolean => {
 
 /**
  * Number of visible leaf (bottom-level) columns a header spans, for
- * `aria-colspan` on grouped/nested header cells. Leaf headers that are hidden
- * (`hide`) or suppressed by their parent's collapsed state are excluded so the
- * announced span matches the columns actually rendered. Leaf headers return 1.
+ * `aria-colspan` on grouped/nested header cells. Leaf headers excluded from
+ * layout (`hide` / `excludeFromRender`) or suppressed by their parent's
+ * collapsed state are omitted so the announced span matches the columns
+ * actually rendered. Leaf headers return 1.
  */
 export const getHeaderColspan = (
   header: HeaderObject,
@@ -85,7 +87,7 @@ export const getHeaderColspan = (
   const leaves = flattenHeaders(header.children);
   let span = 0;
   for (const leaf of leaves) {
-    if (leaf.hide) continue;
+    if (isHeaderExcludedFromLayout(leaf)) continue;
     if (shouldHideWhenParentCollapsed(leaf, rootHeaders, collapsedHeaders)) continue;
     span += 1;
   }

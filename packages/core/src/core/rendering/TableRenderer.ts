@@ -149,6 +149,16 @@ export class TableRenderer {
     this.sectionRenderer.invalidateCache(type);
   }
 
+  /**
+   * Force the next footer paint to re-invoke `footerRenderer`.
+   * Used when `update({ rows })` (or an explicit footer key/renderer change)
+   * may have changed footer content even though pagination totals did not.
+   */
+  invalidateCustomFooterCache(): void {
+    this.lastCustomFooterRenderer = null;
+    this.lastCustomFooterKey = null;
+  }
+
   /** See {@link SectionRenderer.getCurrentBodyLayouts}. */
   getCurrentBodyLayouts(): Map<HTMLElement, Map<string, CellPosition>> {
     return this.sectionRenderer.getCurrentBodyLayouts();
@@ -883,9 +893,14 @@ export class TableRenderer {
       // the container and re-invokes the renderer; with an async adapter the
       // new content lands a frame later, leaving a 0px footer that collapses
       // the body's scroll overflow and snaps scrollTop back to 0.
+      //
+      // `footerRenderKey` lets consumers bust this cache for external state
+      // (e.g. loading) without replacing the renderer function. Intentional
+      // `update({ rows | footerRenderer | footerRenderKey })` also clears the
+      // cache via {@link invalidateCustomFooterCache}.
       const customFooterKey = `${currentPage}|${totalRows}|${rowsPerPage}|${totalPages}|${
         deps.config.hideFooter ? 1 : 0
-      }`;
+      }|${deps.config.footerRenderKey ?? ""}`;
       if (
         container.childNodes.length > 0 &&
         this.lastCustomFooterRenderer === deps.config.footerRenderer &&

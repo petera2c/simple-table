@@ -13,7 +13,7 @@ import {
 } from "../consts/general-consts";
 import { MIN_COLUMN_WIDTH } from "../consts/column-constraints";
 import HeaderObject, { Accessor, DEFAULT_SHOW_WHEN } from "../types/HeaderObject";
-import { getCellId } from "./cellUtils";
+import { getCellId, isHeaderExcludedFromLayout } from "./cellUtils";
 import { getNestedValue } from "./rowUtils";
 import { hasCollapsibleChildren } from "./collapseUtils";
 
@@ -114,12 +114,12 @@ export const findLeafHeaders = (
   header: HeaderObject,
   collapsedHeaders?: Set<Accessor>,
 ): HeaderObject[] => {
-  // Skip headers that are not part of the rendered table. `excludeFromRender`
-  // columns (e.g. CSV-export-only) are never laid out by SectionRenderer, so
-  // they must not contribute to section/row width either — otherwise the body
-  // row container ends up wider than the rendered cells by the sum of their
+  // Skip headers that are not part of the rendered table. Excluded columns
+  // (hide / excludeFromRender) are never laid out by SectionRenderer, so they
+  // must not contribute to section/row width either — otherwise the body row
+  // container ends up wider than the rendered cells by the sum of their
   // widths, producing an empty horizontal-scroll region.
-  if (header.hide || header.excludeFromRender) {
+  if (isHeaderExcludedFromLayout(header)) {
     return [];
   }
 
@@ -187,7 +187,8 @@ export const isAutoWidth = (header: HeaderObject): boolean =>
   typeof header.width === "string" && header.width.trim().toLowerCase() === "auto";
 
 function parseWidthSpec(header: HeaderObject): WidthSpec | null {
-  if (header.hide) return null;
+  // Export-only / hidden columns are not part of the rendered width pool.
+  if (isHeaderExcludedFromLayout(header)) return null;
   if (typeof header.width === "number") return { type: "px", value: header.width };
   if (typeof header.width !== "string") return null;
   const s = header.width.trim();
@@ -209,7 +210,9 @@ function parseWidthSpec(header: HeaderObject): WidthSpec | null {
 function getLeafHeadersForNormalization(headers: HeaderObject[]): HeaderObject[] {
   const leaves: HeaderObject[] = [];
   const visit = (h: HeaderObject): void => {
-    if (h.hide) return;
+    // Keep in sync with findLeafHeaders: excluded columns must not enter the
+    // fr/% normalization pool or they steal pixels from visible columns.
+    if (isHeaderExcludedFromLayout(h)) return;
     if (!h.children || h.children.length === 0) {
       leaves.push(h);
       return;
@@ -355,9 +358,9 @@ export function normalizeHeaderWidths(
  * Get actual width of a header in pixels
  */
 export const getHeaderWidthInPixels = (header: HeaderObject): number => {
-  // Headers excluded from the rendered table (hidden or export-only) take up no
-  // rendered width; see findLeafHeaders for why this matters for row width.
-  if (header.hide || header.excludeFromRender) {
+  // Headers excluded from the rendered table take up no rendered width; see
+  // findLeafHeaders for why this matters for row width.
+  if (isHeaderExcludedFromLayout(header)) {
     return 0;
   }
 
@@ -411,7 +414,7 @@ export const getAllVisibleLeafHeaders = (
 ): HeaderObject[] => {
   const leafHeaders: HeaderObject[] = [];
   headers.forEach((header) => {
-    if (!header.hide) {
+    if (!isHeaderExcludedFromLayout(header)) {
       leafHeaders.push(...findLeafHeaders(header, collapsedHeaders));
     }
   });
