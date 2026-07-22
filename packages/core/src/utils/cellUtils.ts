@@ -2,6 +2,9 @@ import HeaderObject, { Accessor } from "../types/HeaderObject";
 import { Pinned } from "../types/Pinned";
 import { RowId } from "../types/RowId";
 import { shouldHideWhenParentCollapsed } from "./collapseUtils";
+import { isHeaderExcludedFromLayout } from "./headerLayoutUtils";
+
+export { isHeaderExcludedFromLayout } from "./headerLayoutUtils";
 
 export const getCellId = ({ accessor, rowId }: { accessor: Accessor; rowId: RowId }) => {
   return `${rowId}-${accessor}`;
@@ -21,7 +24,7 @@ export const displayCell = ({
   rootPinned?: Pinned;
 }) => {
   // Check if manually hidden or excluded from render
-  if (header.hide || header.excludeFromRender || rootPinned !== pinned) return null;
+  if (isHeaderExcludedFromLayout(header) || rootPinned !== pinned) return null;
 
   // Check if parent is collapsed and this child should be hidden
   if (

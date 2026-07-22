@@ -3,7 +3,7 @@ import type { Pinned } from "../../types/Pinned";
 import { DEFAULT_SHOW_WHEN } from "../../types/HeaderObject";
 import { findLeafHeaders, getHeaderWidthInPixels } from "../headerWidthUtils";
 import { findParentHeader } from "../collapseUtils";
-import { getCellId } from "../cellUtils";
+import { getCellId, isHeaderExcludedFromLayout } from "../cellUtils";
 import { syncHorizontalScrollbarLayout } from "../horizontalScrollbarRenderer";
 import { recalculateAllSectionWidths } from "./sectionWidths";
 
@@ -38,7 +38,8 @@ export const updateColumnWidthsInDOM = (
   const pinnedRightHeaders: HeaderObject[] = [];
 
   headers.forEach((header) => {
-    if (header.hide) return;
+    // Match SectionRenderer / findLeafHeaders: excluded columns are not laid out.
+    if (isHeaderExcludedFromLayout(header)) return;
     const pinned = getRootPinned(header, headers);
     if (pinned === "left") {
       pinnedLeftHeaders.push(header);
@@ -55,12 +56,14 @@ export const updateColumnWidthsInDOM = (
     currentLeft: number,
     positions: Map<string, { left: number; width: number }>,
   ): number => {
+    if (isHeaderExcludedFromLayout(header)) return currentLeft;
+
     const startLeft = currentLeft;
 
     if (header.children && header.children.length > 0) {
       const isCollapsed = collapsedHeaders?.has(header.accessor as string);
       const visibleChildren = header.children.filter((child) => {
-        if (child.hide) return false;
+        if (isHeaderExcludedFromLayout(child)) return false;
         const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
         if (isCollapsed) return showWhen === "parentCollapsed" || showWhen === "always";
         return showWhen === "parentExpanded" || showWhen === "always";
@@ -69,8 +72,7 @@ export const updateColumnWidthsInDOM = (
       // singleRowChildren: parent gets its own column, then each child (matches main columnUtils / RenderCells)
       if (header.singleRowChildren) {
         const parentWidth =
-          overrideWidths?.get(header.accessor as string) ??
-          (typeof header.width === "number" ? header.width : getHeaderWidthInPixels(header));
+          overrideWidths?.get(header.accessor as string) ?? getHeaderWidthInPixels(header);
         positions.set(header.accessor, { left: startLeft, width: parentWidth });
         currentLeft = startLeft + parentWidth;
         visibleChildren.forEach((child) => {
@@ -87,10 +89,10 @@ export const updateColumnWidthsInDOM = (
       const parentWidth = currentLeft - startLeft;
       positions.set(header.accessor, { left: startLeft, width: parentWidth });
     } else {
-      // Leaf: prefer override (e.g. just-set resize), then numeric header.width, else getHeaderWidthInPixels (DOM can be stale)
+      // Leaf: prefer override (e.g. just-set resize), else getHeaderWidthInPixels
+      // (returns 0 for hide/excludeFromRender; handles numeric and string widths).
       const width =
-        overrideWidths?.get(header.accessor as string) ??
-        (typeof header.width === "number" ? header.width : getHeaderWidthInPixels(header));
+        overrideWidths?.get(header.accessor as string) ?? getHeaderWidthInPixels(header);
       positions.set(header.accessor, { left: currentLeft, width });
       currentLeft += width;
     }

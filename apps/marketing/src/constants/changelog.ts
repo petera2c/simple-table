@@ -11,6 +11,28 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_0_3: ChangelogEntry = {
+  version: "4.0.3",
+  date: "2026-07-21",
+  title: "excludeFromRender layout and custom footers",
+  description:
+    "Columns with excludeFromRender no longer reserve layout width, and custom footers can refresh from external state.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Columns with excludeFromRender: true no longer inflate row width, shift neighbors after resize, or steal space from fr columns — layout, section widths, and pinned-section math all skip them consistently with hide.",
+      link: "/docs/column-visibility",
+    },
+    {
+      type: "feature",
+      description:
+        "Added footerRenderKey so custom footerRenderer output can refresh when external state changes (e.g. loading) without changing the footer function identity. Updating rows also busts the custom footer cache when the row count is unchanged.",
+      link: "/docs/footer-renderer",
+    },
+  ],
+};
+
 export const v4_0_2: ChangelogEntry = {
   version: "4.0.2",
   date: "2026-07-21",
@@ -2333,6 +2355,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_0_3,
   v4_0_2,
   v4_0_1,
   v4_0_0,

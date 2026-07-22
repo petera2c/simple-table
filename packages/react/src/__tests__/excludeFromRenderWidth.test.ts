@@ -1,23 +1,30 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 
 // Import the core width math directly from source (the vitest alias maps
-// `simple-table-core` -> core/src/index.ts, but this util is internal and not
-// re-exported, so reach it by relative path).
+// `simple-table-core` -> core/src/index.ts, but these utils are internal and not
+// re-exported, so reach them by relative path).
 import { recalculateAllSectionWidths } from "../../../core/src/utils/resizeUtils/sectionWidths";
+import { updateColumnWidthsInDOM } from "../../../core/src/utils/resizeUtils/domUpdates";
+import { normalizeHeaderWidths } from "../../../core/src/utils/headerWidthUtils";
+import { getCellId } from "../../../core/src/utils/cellUtils";
 import type HeaderObject from "../../../core/src/types/HeaderObject";
 
-// Regression test for the `excludeFromRender` width bug.
+// Regression tests for the `excludeFromRender` width bug.
 //
 // A column with `excludeFromRender: true` is correctly skipped from cell/header
 // LAYOUT (SectionRenderer.processHeader bails on `header.excludeFromRender`),
-// but its width is still summed into the body section width because
-// `recalculateAllSectionWidths` -> `findLeafHeaders` / `getHeaderWidthInPixels`
-// only skip `header.hide`, not `header.excludeFromRender`.
+// but several width paths historically still counted its configured width:
+//   1. recalculateAllSectionWidths / findLeafHeaders (section/row width)
+//   2. updateColumnWidthsInDOM (resize/autofit position walk)
+//   3. normalizeHeaderWidths leaf collection (fr/% pool with containerWidth)
 //
-// Result: the body row container is wider than the rendered cells by exactly
-// the sum of all `excludeFromRender` column widths, producing an empty
-// horizontal-scroll region after the last visible column (runaway scroll in
-// scrollParent mode, clipped-but-wrong in internal-scroll mode).
+// Result: empty horizontal-scroll space, shifted cells after resize, or fr
+// columns starved by export-only px widths.
+
+afterEach(() => {
+  document.body.innerHTML = "";
+});
+
 describe("recalculateAllSectionWidths — excludeFromRender columns", () => {
   it("does not add excludeFromRender column widths to the body (main) section width", () => {
     const headers: HeaderObject[] = [
@@ -47,5 +54,104 @@ describe("recalculateAllSectionWidths — excludeFromRender columns", () => {
 
     expect(leftContentWidth).toBe(200);
     expect(mainWidth).toBe(250);
+  });
+
+  it("matches the influencers shape: pinned left + excludeFromRender in main with a width", () => {
+    const headers: HeaderObject[] = [
+      { accessor: "__index__", label: "#", width: 70, pinned: "left" },
+      { accessor: "name", label: "Influencer", width: 400, pinned: "left" },
+      // Accidental production case: excluded from render but still has width: 150.
+      { accessor: "id", label: "Internal ID", width: 150, excludeFromRender: true },
+      { accessor: "ranks.score_100", label: "Score", width: 150 },
+      {
+        accessor: "followers",
+        label: "Followers",
+        width: 390,
+        children: [
+          { accessor: "profiles.tiktok_followers", label: "TikTok", width: 130 },
+          { accessor: "profiles.youtube_followers", label: "YouTube", width: 130 },
+          { accessor: "profiles.instagram_followers", label: "Instagram", width: 130 },
+        ],
+      },
+    ];
+
+    const { leftContentWidth, mainWidth } = recalculateAllSectionWidths({ headers });
+
+    expect(leftContentWidth).toBe(470);
+    // Score + three follower leaves — the excluded `id` (150) must not be added.
+    expect(mainWidth).toBe(150 + 390);
+  });
+});
+
+describe("updateColumnWidthsInDOM — excludeFromRender columns", () => {
+  it("does not advance subsequent cell left offsets by an excludeFromRender width", () => {
+    // Influencers-shaped main section: export-only `id` sits between visible leaves.
+    // After resize/autofit, updateColumnWidthsInDOM walks headers to set left/width.
+    // It must skip excludeFromRender the same way SectionRenderer does — otherwise
+    // every cell after `id` is shifted right by 150px (empty gap, no cell).
+    const nameId = getCellId({ accessor: "name", rowId: "header" });
+    const scoreId = getCellId({ accessor: "ranks.score_100", rowId: "header" });
+    const emailId = getCellId({ accessor: "email", rowId: "header" });
+
+    const container = document.createElement("div");
+    container.className = "st-body-container";
+    Object.assign(container.style, { width: "900px", position: "relative" });
+
+    for (const [id, left, width] of [
+      [nameId, 0, 200],
+      [scoreId, 200, 150],
+      [emailId, 350, 250],
+    ] as const) {
+      const cell = document.createElement("div");
+      cell.id = id;
+      Object.assign(cell.style, {
+        position: "absolute",
+        left: `${left}px`,
+        width: `${width}px`,
+      });
+      container.appendChild(cell);
+    }
+    document.body.appendChild(container);
+
+    const headers: HeaderObject[] = [
+      { accessor: "name", label: "Name", width: 200, pinned: "left" },
+      { accessor: "id", label: "Internal ID", width: 150, excludeFromRender: true },
+      { accessor: "ranks.score_100", label: "Score", width: 150 },
+      { accessor: "email", label: "Email", width: 250 },
+    ];
+
+    updateColumnWidthsInDOM(headers);
+
+    const score = document.getElementById(scoreId)!;
+    const email = document.getElementById(emailId)!;
+
+    // Main section positions restart at 0. Score is the first visible main leaf.
+    expect(parseFloat(score.style.left)).toBe(0);
+    expect(parseFloat(email.style.left)).toBe(150);
+    // Bug symptom: lefts become 150 / 300 when the excluded column advances currentLeft.
+    expect(parseFloat(score.style.left)).not.toBe(150);
+  });
+});
+
+describe("normalizeHeaderWidths — excludeFromRender columns", () => {
+  it("does not let excludeFromRender px widths steal from the fr pool", () => {
+    const headers: HeaderObject[] = [
+      { accessor: "a", label: "A", width: "1fr" },
+      { accessor: "secret", label: "Secret", width: 200, excludeFromRender: true },
+      { accessor: "b", label: "B", width: "1fr" },
+    ];
+
+    const normalized = normalizeHeaderWidths(headers, { containerWidth: 400 });
+    const a = normalized.find((h) => h.accessor === "a");
+    const b = normalized.find((h) => h.accessor === "b");
+    const secret = normalized.find((h) => h.accessor === "secret");
+
+    // Visible fr columns should split the full 400px. The excluded 200px column
+    // must not shrink them to 100px each.
+    expect(a?.width).toBe(200);
+    expect(b?.width).toBe(200);
+    // Excluded column may keep its configured width for CSV/export, but must not
+    // participate in the fr pool. Width may remain 200 or be untouched.
+    expect(secret?.excludeFromRender).toBe(true);
   });
 });

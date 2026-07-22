@@ -2,6 +2,7 @@ import type HeaderObject from "../../types/HeaderObject";
 import { findLeafHeaders, getHeaderWidthInPixels } from "../headerWidthUtils";
 import { getMaxPinnedSectionPercent } from "../../consts/column-constraints";
 import { calculatePinnedWidth } from "../headerUtils";
+import { isHeaderExcludedFromLayout } from "../cellUtils";
 
 /**
  * Width of the *visible* portion of the main (non-pinned) section: the container
@@ -47,8 +48,10 @@ export const recalculateAllSectionWidths = ({
   let mainWidth = 0;
 
   headers.forEach((header) => {
-    // Skip hidden headers
-    if (header.hide) {
+    // Skip headers that are not part of the rendered table. `findLeafHeaders`
+    // also filters these, but bail early so top-level excluded columns never
+    // touch section width math.
+    if (isHeaderExcludedFromLayout(header)) {
       return;
     }
 

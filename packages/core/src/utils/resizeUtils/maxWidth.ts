@@ -1,6 +1,7 @@
 import type HeaderObject from "../../types/HeaderObject";
 import { findLeafHeaders, getHeaderWidthInPixels, getHeaderMinWidth } from "../headerWidthUtils";
 import { getMaxPinnedSectionPercent } from "../../consts/column-constraints";
+import { isHeaderExcludedFromLayout } from "../cellUtils";
 
 /**
  * Calculate the maximum allowable width for a header based on container constraints
@@ -32,8 +33,12 @@ export const calculateMaxHeaderWidth = ({
   }
 
   // Check if we have both pinned sections to apply appropriate constraints
-  const hasPinnedLeft = headers.some((h) => h.pinned === "left" && !h.hide);
-  const hasPinnedRight = headers.some((h) => h.pinned === "right" && !h.hide);
+  const hasPinnedLeft = headers.some(
+    (h) => h.pinned === "left" && !isHeaderExcludedFromLayout(h),
+  );
+  const hasPinnedRight = headers.some(
+    (h) => h.pinned === "right" && !isHeaderExcludedFromLayout(h),
+  );
 
   // Get the appropriate max percent based on number of pinned sections
   // Use containerWidth (st-body-container width) for responsive breakpoints
@@ -49,7 +54,7 @@ export const calculateMaxHeaderWidth = ({
     (h) => h.pinned === header.pinned && h.accessor !== header.accessor,
   );
   const currentPinnedSectionWidth = pinnedHeaders.reduce((sum, h) => {
-    if (h.hide) return sum;
+    if (isHeaderExcludedFromLayout(h)) return sum;
     const leafHeaders = findLeafHeaders(h, collapsedHeaders);
     return (
       sum +

@@ -12,6 +12,7 @@ import { CustomTheme } from "../types/CustomTheme";
 import { createBodyCellElement } from "./bodyCell/styling";
 import { AbsoluteBodyCell, CellRenderContext } from "./bodyCell/types";
 import { rowIdToString } from "./rowUtils";
+import { isHeaderExcludedFromLayout } from "./cellUtils";
 
 export interface StickyParentsContainerProps {
   calculatedHeaderHeight: number;
@@ -170,7 +171,7 @@ const getLeafHeaders = (
   const leaves: HeaderObject[] = [];
 
   const processHeader = (header: HeaderObject): void => {
-    if (header.hide || header.excludeFromRender) return;
+    if (isHeaderExcludedFromLayout(header)) return;
 
     const isCollapsed = collapsedHeaders.has(header.accessor);
     const hasChildren = header.children && header.children.length > 0;

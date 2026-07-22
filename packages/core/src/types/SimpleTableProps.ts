@@ -94,6 +94,15 @@ export interface SimpleTableProps {
   externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
   externalSortHandling?: boolean; // Flag to let consumer handle sort logic completely
   footerRenderer?: (props: FooterRendererProps) => HTMLElement | string | null; // Custom footer renderer
+  /**
+   * Cache key for a custom `footerRenderer`. Include any external state the
+   * footer reads (e.g. a loading flag) so the footer re-renders when that
+   * state changes even if page/row-count inputs are unchanged.
+   *
+   * Scroll-driven re-renders still reuse the previous footer DOM when this key
+   * (and pagination inputs) are stable — that avoids scroll-snap regressions.
+   */
+  footerRenderKey?: string | number;
   footerPosition?: FooterPosition; // Pagination footer placement (default "bottom")
   headerDropdown?: HeaderDropdown; // Custom dropdown component for headers
   height?: string | number; // Height of the table

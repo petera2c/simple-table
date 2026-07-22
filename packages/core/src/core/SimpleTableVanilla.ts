@@ -32,6 +32,7 @@ import { calculateScrollbarWidth } from "../hooks/scrollbarWidth";
 import { generateRowId, rowIdToString } from "../utils/rowUtils";
 import { untrackCellByRow } from "../utils/bodyCell/styling";
 import { deepClone } from "../utils/generalUtils";
+import { isHeaderExcludedFromLayout } from "../utils/cellUtils";
 import {
   calculateHeaderContentWidth,
   getAllVisibleLeafHeaders,
@@ -382,7 +383,7 @@ export class SimpleTableVanilla {
   private buildVisibilityKey(headers: HeaderObject[]): string {
     const parts: string[] = [];
     const walk = (header: HeaderObject, pinnedAncestor: string | undefined): void => {
-      if (header.hide || header.excludeFromRender) return;
+      if (isHeaderExcludedFromLayout(header)) return;
       const pinned = header.pinned ?? pinnedAncestor ?? "main";
       if (header.children && header.children.length > 0) {
         for (const child of header.children) walk(child, pinned);
@@ -477,7 +478,7 @@ export class SimpleTableVanilla {
   private collectAccordionRenderableAccessors(): Set<string> {
     const set = new Set<string>();
     const visit = (header: HeaderObject): void => {
-      if (header.hide || header.excludeFromRender) return;
+      if (isHeaderExcludedFromLayout(header)) return;
       set.add(String(header.accessor));
       if (!header.children || header.children.length === 0) return;
       const isCollapsed = this.collapsedHeaders.has(header.accessor);
@@ -1883,6 +1884,18 @@ export class SimpleTableVanilla {
 
     if (config.footerPosition !== undefined) {
       this.domManager.syncFooterPosition(this.config.footerPosition);
+    }
+
+    // Custom footers are reused across scroll-driven renders when pagination
+    // inputs are unchanged. Bust that cache on intentional updates that can
+    // change footer content without changing totalRows (e.g. skeleton → data
+    // with the same length, or external loading state via footerRenderKey).
+    if (
+      config.rows !== undefined ||
+      config.footerRenderer !== undefined ||
+      config.footerRenderKey !== undefined
+    ) {
+      this.renderOrchestrator.invalidateCustomFooterCache();
     }
 
     if (config.customTheme !== undefined) {

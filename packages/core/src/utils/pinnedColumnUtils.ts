@@ -1,6 +1,7 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import { PinnedSectionsState } from "../types/PinnedSectionsState";
 import { PanelSection } from "../types/PanelSection";
+import { isHeaderExcludedFromLayout } from "./cellUtils";
 
 export type { PinnedSectionsState, PanelSection };
 
@@ -47,7 +48,7 @@ export function hasEssentialPrefixOrder(
 ): boolean {
   let sawNonEssential = false;
   for (const h of siblings) {
-    if (h.isSelectionColumn || h.excludeFromRender) continue;
+    if (h.isSelectionColumn || isHeaderExcludedFromLayout(h)) continue;
     const ess = isHeaderEssential(h, essentialAccessors);
     if (ess && sawNonEssential) return false;
     if (!ess) sawNonEssential = true;

@@ -20,6 +20,10 @@ import {
   renderInfrastructureExample,
   infrastructureExampleDefaults,
 } from "../examples/infrastructure/InfrastructureExample";
+import {
+  renderInfluencersExample,
+  influencersExampleDefaults,
+} from "../examples/influencers/InfluencersExample";
 import { renderLeadsExample, leadsExampleDefaults } from "../examples/leads/LeadsExample";
 import {
   renderManufacturingExample,
@@ -88,6 +92,19 @@ export const Infrastructure: StoryObj = {
   render: (args) => renderInfrastructureExample(args),
   parameters: {
     docs: { description: { story: "Infrastructure/assets table with status and metrics." } },
+  },
+};
+
+export const Influencers: StoryObj = {
+  ...storyArgs(influencersExampleDefaults),
+  render: (args) => renderInfluencersExample(args),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Chartmetric influencers stress replica: nested headers, custom cell renderers, top footer, infinite scroll, and an excludeFromRender column that still declares width: 150 (layout repro).",
+      },
+    },
   },
 };
 

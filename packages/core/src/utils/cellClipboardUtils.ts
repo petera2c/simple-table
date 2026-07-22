@@ -2,6 +2,7 @@ import Cell from "../types/Cell";
 import HeaderObject from "../types/HeaderObject";
 import type TableRowType from "../types/TableRow";
 import { rowIdToString, getNestedValue, setNestedValue } from "./rowUtils";
+import { isHeaderExcludedFromLayout } from "./cellUtils";
 
 interface CellRegistryEntry {
   updateContent: (newValue: any) => void;
@@ -18,7 +19,7 @@ export const copySelectedCellsToClipboard = (
 ): string => {
   // Filter out hidden headers and columns excluded from render
   const flattenedLeafHeaders = leafHeaders.filter(
-    (header) => !header.hide && !header.excludeFromRender
+    (header) => !isHeaderExcludedFromLayout(header)
   );
 
   // Create a mapping of column indices to accessors and headers for quick lookup
@@ -130,7 +131,7 @@ export const pasteClipboardDataToCells = (
   if (rows.length === 0) return { updatedCells, warningCells };
 
   const flattenedLeafHeaders = leafHeaders.filter(
-    (header) => !header.hide && !header.excludeFromRender
+    (header) => !isHeaderExcludedFromLayout(header)
   );
 
   // Resolve table row index from rowId so paste works when initialFocusedCell has virtualized rowIndex
@@ -232,7 +233,7 @@ export const deleteSelectedCellsContent = (
   const warningCells = new Set<string>();
 
   const flattenedLeafHeaders = leafHeaders.filter(
-    (header) => !header.hide && !header.excludeFromRender
+    (header) => !isHeaderExcludedFromLayout(header)
   );
   const colIndexToAccessor = new Map<number, string>();
   flattenedLeafHeaders.forEach((header, index) => {

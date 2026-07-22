@@ -1,6 +1,7 @@
 import HeaderObject, { Accessor } from "../types/HeaderObject";
 import { Pinned } from "../types/Pinned";
 import { getAllVisibleLeafHeaders } from "../utils/headerWidthUtils";
+import { isHeaderExcludedFromLayout } from "../utils/cellUtils";
 import { PreviousValueTracker } from "../hooks/previousValue";
 
 interface AutoScaleConfig {
@@ -190,7 +191,7 @@ export const applyAutoScaleToHeaders = (
   }
 
   const scaleHeader = (header: HeaderObject, rootPinned?: Pinned): HeaderObject => {
-    if (header.hide) return header;
+    if (isHeaderExcludedFromLayout(header)) return header;
 
     const currentRootPinned = rootPinned ?? header.pinned;
     const scaledChildren = header.children?.map((child) => scaleHeader(child, currentRootPinned));

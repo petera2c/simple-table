@@ -1,7 +1,7 @@
 // Main orchestrator for body cell rendering
 // This file coordinates all body cell rendering modules
 
-import { getCellId } from "./cellUtils";
+import { getCellId, isHeaderExcludedFromLayout } from "./cellUtils";
 import { AbsoluteBodyCell, CellRenderContext } from "./bodyCell/types";
 import { getRenderedCells } from "./bodyCell/eventTracking";
 import {
@@ -63,7 +63,7 @@ const collectVisibleLeafAccessors = (headers: HeaderObject[]): Set<string> => {
   const visible = new Set<string>();
   const walk = (list: HeaderObject[]): void => {
     for (const header of list) {
-      if (header.hide || header.excludeFromRender) continue;
+      if (isHeaderExcludedFromLayout(header)) continue;
       visible.add(String(header.accessor));
       if (header.children?.length) walk(header.children);
     }
