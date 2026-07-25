@@ -1,7 +1,7 @@
 "use client";
 
 import React, { ReactNode, useState, useEffect, useMemo } from "react";
-import { Typography, Table, Space, Card, Button, Tooltip, Alert } from "antd";
+import { Typography, Table, Space, Card, Button, Tooltip } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import NextLink from "next/link";
@@ -13,7 +13,7 @@ import { SIMPLE_TABLE_INFO } from "@/constants/packageInfo";
 import { getStackBlitzUrl } from "@/utils/getStackBlitzUrl";
 import { useFramework } from "@/providers/FrameworkProvider";
 
-const { Title, Paragraph, Text, Link } = Typography;
+const { Title, Paragraph } = Typography;
 
 interface PerformanceMetricsProps {
   competitor: string;
@@ -148,25 +148,6 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
         </div>
 
         <div className="flex flex-col gap-8">
-        {/* AI Disclaimer */}
-        <div>
-          <Alert
-            message="AI-Assisted Content"
-            description={
-              <Text>
-                This comparison guide was created with AI assistance. While we strive for accuracy,
-                if you notice any incorrect information, please{" "}
-                <Link href="mailto:peter@peteryng.com" strong>
-                  contact us
-                </Link>{" "}
-                so we can correct it promptly.
-              </Text>
-            }
-            type="info"
-            showIcon
-          />
-        </div>
-
         {/* Comparison Table */}
         <Card
           className="shadow-sm dark:bg-gray-800 dark:border-gray-700"
