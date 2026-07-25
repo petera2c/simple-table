@@ -566,6 +566,513 @@ export function columnSelectionSnippets(): Record<Framework, string> {
   };
 }
 
+export type RowSelectionSnippetOptions = {
+  rowSelectionMode?: "single" | "multiple";
+  selectRowOnClick?: boolean;
+  showRowSelectionColumn?: boolean;
+  selectableCells?: boolean;
+  includeOnChange?: boolean;
+};
+
+function rowSelectionLines(
+  framework: Framework,
+  options: RowSelectionSnippetOptions
+): string[] {
+  const {
+    rowSelectionMode,
+    selectRowOnClick,
+    showRowSelectionColumn,
+    selectableCells,
+    includeOnChange,
+  } = options;
+
+  const lines: string[] = [];
+
+  if (framework === "vanilla") {
+    lines.push("columns", "rows", "enableRowSelection: true");
+    if (rowSelectionMode) lines.push(`rowSelectionMode: "${rowSelectionMode}"`);
+    if (selectRowOnClick) lines.push("selectRowOnClick: true");
+    if (showRowSelectionColumn === false) lines.push("showRowSelectionColumn: false");
+    if (selectableCells === false) lines.push("selectableCells: false");
+    lines.push(`getRowId: ({ row }) => String(row.id)`);
+    if (includeOnChange) {
+      lines.push(`onRowSelectionChange: ({ row, isSelected, selectedRows }) => {
+    // ...
+  }`);
+    }
+    return lines;
+  }
+
+  if (framework === "vue") {
+    lines.push(':columns="columns"', ':rows="rows"', ':enable-row-selection="true"');
+    if (rowSelectionMode) lines.push(`row-selection-mode="${rowSelectionMode}"`);
+    if (selectRowOnClick) lines.push(':select-row-on-click="true"');
+    if (showRowSelectionColumn === false) lines.push(':show-row-selection-column="false"');
+    if (selectableCells === false) lines.push(':selectable-cells="false"');
+    lines.push(':get-row-id="(ctx) => String(ctx.row.id)"');
+    if (includeOnChange) lines.push(':on-row-selection-change="handleRowSelectionChange"');
+    return lines;
+  }
+
+  if (framework === "angular") {
+    lines.push('[columns]="columns"', '[rows]="rows"', '[enableRowSelection]="true"');
+    if (rowSelectionMode) lines.push(`rowSelectionMode="${rowSelectionMode}"`);
+    if (selectRowOnClick) lines.push('[selectRowOnClick]="true"');
+    if (showRowSelectionColumn === false) lines.push('[showRowSelectionColumn]="false"');
+    if (selectableCells === false) lines.push('[selectableCells]="false"');
+    lines.push('[getRowId]="getRowId"');
+    if (includeOnChange) lines.push('[onRowSelectionChange]="handleRowSelectionChange"');
+    return lines;
+  }
+
+  if (framework === "svelte") {
+    lines.push("{columns}", "{rows}", "enableRowSelection={true}");
+    if (rowSelectionMode) lines.push(`rowSelectionMode="${rowSelectionMode}"`);
+    if (selectRowOnClick) lines.push("selectRowOnClick={true}");
+    if (showRowSelectionColumn === false) lines.push("showRowSelectionColumn={false}");
+    if (selectableCells === false) lines.push("selectableCells={false}");
+    lines.push("getRowId={({ row }) => String(row.id)}");
+    if (includeOnChange) {
+      lines.push("onRowSelectionChange={handleRowSelectionChange}");
+    }
+    return lines;
+  }
+
+  // react / solid
+  const rowsExpr = framework === "solid" ? "rows={rows()}" : "rows={rows}";
+  lines.push("enableRowSelection", "columns={columns}", rowsExpr);
+  if (rowSelectionMode) lines.push(`rowSelectionMode="${rowSelectionMode}"`);
+  if (selectRowOnClick) lines.push("selectRowOnClick");
+  if (showRowSelectionColumn === false) lines.push("showRowSelectionColumn={false}");
+  if (selectableCells === false) lines.push("selectableCells={false}");
+  lines.push("getRowId={({ row }) => String(row.id)}");
+  if (includeOnChange) {
+    lines.push(`onRowSelectionChange={({ row, isSelected, selectedRows }) => {
+    // ...
+  }}`);
+  }
+  return lines;
+}
+
+export function rowSelectionSnippets(
+  options: RowSelectionSnippetOptions = {}
+): Record<Framework, string> {
+  return Object.fromEntries(
+    FRAMEWORKS.map((fw) => {
+      const lines = rowSelectionLines(fw, options);
+      if (fw === "vanilla") {
+        return [
+          fw,
+          `new SimpleTableVanilla(container, {
+  ${lines.join(",\n  ")},
+});`,
+        ];
+      }
+      if (fw === "angular") {
+        return [
+          fw,
+          `<simple-table
+  ${lines.join("\n  ")}
+></simple-table>`,
+        ];
+      }
+      return [
+        fw,
+        `<SimpleTable
+  ${lines.join("\n  ")}
+/>`,
+      ];
+    })
+  ) as Record<Framework, string>;
+}
+
+export function programmaticRowSelectionSnippets(): Record<Framework, string> {
+  return {
+    react: `tableRef.current?.selectRow("1", true);
+tableRef.current?.toggleRowSelection("2");
+const selected = tableRef.current?.getSelectedRowsData();
+tableRef.current?.clearRowSelection();`,
+    solid: `tableRef.selectRow("1", true);
+tableRef.toggleRowSelection("2");
+const selected = tableRef.getSelectedRowsData();
+tableRef.clearRowSelection();`,
+    vue: `tableRef.value?.selectRow("1", true);
+tableRef.value?.toggleRowSelection("2");
+const selected = tableRef.value?.getSelectedRowsData();
+tableRef.value?.clearRowSelection();`,
+    angular: `this.tableRef.selectRow("1", true);
+this.tableRef.toggleRowSelection("2");
+const selected = this.tableRef.getSelectedRowsData();
+this.tableRef.clearRowSelection();`,
+    svelte: `tableRef.selectRow("1", true);
+tableRef.toggleRowSelection("2");
+const selected = tableRef.getSelectedRowsData();
+tableRef.clearRowSelection();`,
+    vanilla: `table.selectRow("1", true);
+table.toggleRowSelection("2");
+const selected = table.getSelectedRowsData();
+table.clearRowSelection();`,
+  };
+}
+
+export type RowGroupingSnippetOptions = {
+  expandAll?: boolean;
+  enableStickyParents?: boolean;
+};
+
+function rowGroupingTableLines(
+  framework: Framework,
+  options: RowGroupingSnippetOptions
+): string[] {
+  const { expandAll, enableStickyParents } = options;
+  const lines: string[] = [];
+
+  if (framework === "vanilla") {
+    lines.push(
+      "columns",
+      "rows",
+      'rowGrouping: ["divisions", "departments"]',
+      "getRowId: ({ row }) => String(row.id)"
+    );
+    if (expandAll !== undefined) lines.push(`expandAll: ${expandAll}`);
+    if (enableStickyParents) lines.push("enableStickyParents: true");
+    return lines;
+  }
+
+  if (framework === "vue") {
+    lines.push(
+      ':columns="columns"',
+      ':rows="rows"',
+      ':row-grouping="[\'divisions\', \'departments\']"',
+      ':get-row-id="(ctx) => String(ctx.row.id)"'
+    );
+    if (expandAll !== undefined) lines.push(`:expand-all="${expandAll}"`);
+    if (enableStickyParents) lines.push(':enable-sticky-parents="true"');
+    return lines;
+  }
+
+  if (framework === "angular") {
+    lines.push(
+      '[columns]="columns"',
+      '[rows]="rows"',
+      '[rowGrouping]="[\'divisions\', \'departments\']"',
+      '[getRowId]="getRowId"'
+    );
+    if (expandAll !== undefined) lines.push(`[expandAll]="${expandAll}"`);
+    if (enableStickyParents) lines.push('[enableStickyParents]="true"');
+    return lines;
+  }
+
+  if (framework === "svelte") {
+    lines.push(
+      "{columns}",
+      "{rows}",
+      'rowGrouping={["divisions", "departments"]}',
+      "getRowId={({ row }) => String(row.id)}"
+    );
+    if (expandAll !== undefined) lines.push(`expandAll={${expandAll}}`);
+    if (enableStickyParents) lines.push("enableStickyParents={true}");
+    return lines;
+  }
+
+  // react / solid
+  const rowsExpr = framework === "solid" ? "rows={rows()}" : "rows={rows}";
+  lines.push(
+    "columns={columns}",
+    rowsExpr,
+    'rowGrouping={["divisions", "departments"]}',
+    "getRowId={({ row }) => String(row.id)}"
+  );
+  if (expandAll !== undefined) {
+    lines.push(expandAll ? "expandAll" : "expandAll={false}");
+  }
+  if (enableStickyParents) lines.push("enableStickyParents");
+  return lines;
+}
+
+export function rowGroupingSnippets(
+  options: RowGroupingSnippetOptions = {}
+): Record<Framework, string> {
+  return Object.fromEntries(
+    FRAMEWORKS.map((fw) => {
+      const lines = rowGroupingTableLines(fw, options);
+      if (fw === "vanilla") {
+        return [
+          fw,
+          `new SimpleTableVanilla(container, {
+  ${lines.join(",\n  ")},
+});`,
+        ];
+      }
+      if (fw === "angular") {
+        return [
+          fw,
+          `<simple-table
+  ${lines.join("\n  ")}
+></simple-table>`,
+        ];
+      }
+      return [
+        fw,
+        `<SimpleTable
+  ${lines.join("\n  ")}
+/>`,
+      ];
+    })
+  ) as Record<Framework, string>;
+}
+
+export function onRowGroupExpandSnippets(): Record<Framework, string> {
+  const handler = `async ({ row, isExpanded, groupingKey, setLoading, setError, setEmpty, rowIndexPath }) => {
+    if (!isExpanded) return;
+    setLoading(true);
+    try {
+      const children = await fetchChildren(row.id, groupingKey);
+      setLoading(false);
+      if (children.length === 0) {
+        setEmpty(true, "No data");
+        return;
+      }
+      // update rows using rowIndexPath / groupingKey
+    } catch (error) {
+      setLoading(false);
+      setError(error.message);
+    }
+  }`;
+
+  return {
+    react: `<SimpleTable
+  columns={columns}
+  rows={rows}
+  rowGrouping={["stores", "products"]}
+  getRowId={({ row }) => String(row.id)}
+  onRowGroupExpand={${handler}}
+/>`,
+    solid: `<SimpleTable
+  columns={columns}
+  rows={rows()}
+  rowGrouping={["stores", "products"]}
+  getRowId={({ row }) => String(row.id)}
+  onRowGroupExpand={${handler}}
+/>`,
+    vue: `<SimpleTable
+  :columns="columns"
+  :rows="rows"
+  :row-grouping="['stores', 'products']"
+  :get-row-id="(ctx) => String(ctx.row.id)"
+  :on-row-group-expand="handleRowGroupExpand"
+/>`,
+    angular: `<simple-table
+  [columns]="columns"
+  [rows]="rows"
+  [rowGrouping]="['stores', 'products']"
+  [getRowId]="getRowId"
+  [onRowGroupExpand]="handleRowGroupExpand"
+></simple-table>`,
+    svelte: `<SimpleTable
+  {columns}
+  {rows}
+  rowGrouping={["stores", "products"]}
+  getRowId={({ row }) => String(row.id)}
+  onRowGroupExpand={handleRowGroupExpand}
+/>`,
+    vanilla: `new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  rowGrouping: ["stores", "products"],
+  getRowId: ({ row }) => String(row.id),
+  onRowGroupExpand: ${handler},
+});`,
+  };
+}
+
+export function programmaticRowGroupingSnippets(): Record<Framework, string> {
+  return {
+    react: `tableRef.current?.expandAll();
+tableRef.current?.collapseAll();
+tableRef.current?.expandDepth(0);
+tableRef.current?.setExpandedDepths(new Set([0, 1]));
+tableRef.current?.toggleDepth(0);`,
+    solid: `tableRef.expandAll();
+tableRef.collapseAll();
+tableRef.expandDepth(0);
+tableRef.setExpandedDepths(new Set([0, 1]));
+tableRef.toggleDepth(0);`,
+    vue: `tableRef.value?.expandAll();
+tableRef.value?.collapseAll();
+tableRef.value?.expandDepth(0);
+tableRef.value?.setExpandedDepths(new Set([0, 1]));
+tableRef.value?.toggleDepth(0);`,
+    angular: `this.tableRef.expandAll();
+this.tableRef.collapseAll();
+this.tableRef.expandDepth(0);
+this.tableRef.setExpandedDepths(new Set([0, 1]));
+this.tableRef.toggleDepth(0);`,
+    svelte: `tableRef.expandAll();
+tableRef.collapseAll();
+tableRef.expandDepth(0);
+tableRef.setExpandedDepths(new Set([0, 1]));
+tableRef.toggleDepth(0);`,
+    vanilla: `table.expandAll();
+table.collapseAll();
+table.expandDepth(0);
+table.setExpandedDepths(new Set([0, 1]));
+table.toggleDepth(0);`,
+  };
+}
+
+export function nestedTablesSnippets(): Record<Framework, string> {
+  return {
+    react: `<SimpleTable
+  columns={companyColumns}
+  rows={rows}
+  rowGrouping={["divisions"]}
+  getRowId={({ row }) => String(row.id)}
+/>`,
+    solid: `<SimpleTable
+  columns={companyColumns}
+  rows={rows()}
+  rowGrouping={["divisions"]}
+  getRowId={({ row }) => String(row.id)}
+/>`,
+    vue: `<SimpleTable
+  :columns="companyColumns"
+  :rows="rows"
+  :row-grouping="['divisions']"
+  :get-row-id="(ctx) => String(ctx.row.id)"
+/>`,
+    angular: `<simple-table
+  [columns]="companyColumns"
+  [rows]="rows"
+  [rowGrouping]="['divisions']"
+  [getRowId]="getRowId"
+></simple-table>`,
+    svelte: `<SimpleTable
+  columns={companyColumns}
+  {rows}
+  rowGrouping={["divisions"]}
+  getRowId={({ row }) => String(row.id)}
+/>`,
+    vanilla: `new SimpleTableVanilla(container, {
+  columns: companyColumns,
+  rows,
+  rowGrouping: ["divisions"],
+  getRowId: ({ row }) => String(row.id),
+});`,
+  };
+}
+
+export type PivotSnippetOptions = {
+  rows?: string[];
+  columns?: string[];
+  values?: string;
+  showRowTotals?: boolean;
+  showColumnTotals?: boolean;
+  showGrandTotal?: boolean;
+};
+
+function pivotConfigLiteral(options: PivotSnippetOptions): string {
+  const rows = options.rows ?? ["region"];
+  const columns = options.columns ?? ["quarter"];
+  const values =
+    options.values ??
+    `[{ accessor: "sales", aggregation: { type: "sum" } }]`;
+  const extras: string[] = [];
+  if (options.showRowTotals === false) extras.push("showRowTotals: false");
+  if (options.showColumnTotals === false) extras.push("showColumnTotals: false");
+  if (options.showGrandTotal === false) extras.push("showGrandTotal: false");
+
+  const rowsLit = `[${rows.map((r) => `"${r}"`).join(", ")}]`;
+  const colsLit = `[${columns.map((c) => `"${c}"`).join(", ")}]`;
+  const lines = [`rows: ${rowsLit}`, `columns: ${colsLit}`, `values: ${values}`, ...extras];
+  return `{
+    ${lines.join(",\n    ")},
+  }`;
+}
+
+export function pivotSnippets(options: PivotSnippetOptions = {}): Record<Framework, string> {
+  const config = pivotConfigLiteral(options);
+  return {
+    react: `<SimpleTable
+  columns={headers}
+  rows={flatRows}
+  pivot={${config}}
+/>`,
+    solid: `<SimpleTable
+  columns={headers}
+  rows={flatRows()}
+  pivot={${config}}
+/>`,
+    vue: `<SimpleTable
+  :columns="headers"
+  :rows="flatRows"
+  :pivot="pivotConfig"
+/>`,
+    angular: `<simple-table
+  [columns]="headers"
+  [rows]="flatRows"
+  [pivot]="pivotConfig"
+></simple-table>`,
+    svelte: `<SimpleTable
+  columns={headers}
+  rows={flatRows}
+  pivot={${config}}
+/>`,
+    vanilla: `new SimpleTableVanilla(container, {
+  columns: headers,
+  rows: flatRows,
+  pivot: ${config},
+});`,
+  };
+}
+
+export function programmaticPivotSnippets(): Record<Framework, string> {
+  return {
+    react: `tableRef.current?.setPivot({
+  rows: ["region"],
+  columns: ["quarter"],
+  values: [{ accessor: "sales", aggregation: { type: "sum" } }],
+});
+const active = tableRef.current?.getPivot();
+tableRef.current?.setPivot(null); // back to source grid`,
+    solid: `tableRef.setPivot({
+  rows: ["region"],
+  columns: ["quarter"],
+  values: [{ accessor: "sales", aggregation: { type: "sum" } }],
+});
+const active = tableRef.getPivot();
+tableRef.setPivot(null); // back to source grid`,
+    vue: `tableRef.value?.setPivot({
+  rows: ["region"],
+  columns: ["quarter"],
+  values: [{ accessor: "sales", aggregation: { type: "sum" } }],
+});
+const active = tableRef.value?.getPivot();
+tableRef.value?.setPivot(null); // back to source grid`,
+    angular: `this.tableRef.setPivot({
+  rows: ["region"],
+  columns: ["quarter"],
+  values: [{ accessor: "sales", aggregation: { type: "sum" } }],
+});
+const active = this.tableRef.getPivot();
+this.tableRef.setPivot(null); // back to source grid`,
+    svelte: `tableRef.setPivot({
+  rows: ["region"],
+  columns: ["quarter"],
+  values: [{ accessor: "sales", aggregation: { type: "sum" } }],
+});
+const active = tableRef.getPivot();
+tableRef.setPivot(null); // back to source grid`,
+    vanilla: `table.setPivot({
+  rows: ["region"],
+  columns: ["quarter"],
+  values: [{ accessor: "sales", aggregation: { type: "sum" } }],
+});
+const active = table.getPivot();
+table.setPivot(null); // back to source grid`,
+  };
+}
+
 /** Save and restore left / main / right pin bands via TableAPI. */
 export function pinnedStateSnippets(): Record<Framework, string> {
   return {

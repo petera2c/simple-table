@@ -411,11 +411,11 @@ const rows = [
 ];
 
 const RowGroupingDemo = ({
-  expandAll,
+  expandAll = true,
   height = "400px",
   theme,
 }: {
-  expandAll: boolean;
+  expandAll?: boolean;
   height?: string | number;
   theme?: Theme;
 }) => {
@@ -443,95 +443,47 @@ const RowGroupingDemo = ({
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-      <div
-        style={{
-          padding: "12px",
-          display: "flex",
-          gap: "8px",
-          flexWrap: "wrap",
-          alignItems: "center",
-        }}
-      >
-        <span style={{ fontSize: "13px", fontWeight: "600", marginRight: "8px" }}>
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-2 p-3">
+        <span className="text-sm font-semibold text-gray-800 dark:text-gray-200 mr-2">
           Control Expansion:
         </span>
         <button
+          type="button"
           onClick={handleExpandAll}
-          style={{
-            padding: "6px 12px",
-            background: "#28a745",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "12px",
-            fontWeight: "500",
-          }}
+          className="px-3 py-1.5 text-xs font-medium text-white rounded bg-green-600 hover:bg-green-700"
           title="tableRef.current?.expandAll()"
         >
           Expand All
         </button>
         <button
+          type="button"
           onClick={handleCollapseAll}
-          style={{
-            padding: "6px 12px",
-            background: "#dc3545",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "12px",
-            fontWeight: "500",
-          }}
+          className="px-3 py-1.5 text-xs font-medium text-white rounded bg-red-600 hover:bg-red-700"
           title="tableRef.current?.collapseAll()"
         >
           Collapse All
         </button>
         <button
+          type="button"
           onClick={handleExpandDivisions}
-          style={{
-            padding: "6px 12px",
-            background: "#007bff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "12px",
-            fontWeight: "500",
-          }}
+          className="px-3 py-1.5 text-xs font-medium text-white rounded bg-blue-600 hover:bg-blue-700"
           title="tableRef.current?.expandDepth(0)"
         >
           Only Divisions
         </button>
         <button
+          type="button"
           onClick={handleExpandAll2Levels}
-          style={{
-            padding: "6px 12px",
-            background: "#6c757d",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "12px",
-            fontWeight: "500",
-          }}
+          className="px-3 py-1.5 text-xs font-medium text-white rounded bg-gray-600 hover:bg-gray-700"
           title="tableRef.current?.setExpandedDepths(new Set([0, 1]))"
         >
           Divisions + Departments
         </button>
         <button
+          type="button"
           onClick={handleToggleDivisions}
-          style={{
-            padding: "6px 12px",
-            background: "#6f42c1",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontSize: "12px",
-            fontWeight: "500",
-          }}
+          className="px-3 py-1.5 text-xs font-medium text-white rounded bg-violet-600 hover:bg-violet-700"
           title="tableRef.current?.toggleDepth(0)"
         >
           Toggle Divisions

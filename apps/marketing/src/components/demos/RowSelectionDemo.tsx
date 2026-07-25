@@ -219,52 +219,25 @@ const RowSelectionDemo = ({
   };
 
   return (
-    <div>
-      <div
-        style={{
-          marginBottom: "16px",
-          padding: "12px",
-          backgroundColor: "#f8f9fa",
-          borderRadius: "6px",
-          fontSize: "14px",
-          border: "1px solid #e9ecef",
-        }}
-      >
-        <h3 style={{ margin: "0 0 8px 0", fontSize: "16px", color: "#495057" }}>
+    <div className="space-y-4">
+      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+        <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-2">
           Library Management Demo
         </h3>
-        <p style={{ margin: "0 0 8px 0", color: "#6c757d" }}>
+        <p className="text-sm text-blue-800 dark:text-blue-200 mb-1">
           • Click the header checkbox to select/deselect all books
         </p>
-        <p style={{ margin: "0 0 8px 0", color: "#6c757d" }}>
+        <p className="text-sm text-blue-800 dark:text-blue-200 mb-2">
           • Click individual row checkboxes to select specific books
         </p>
-        <div
-          style={{
-            marginTop: "8px",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          }}
-        >
-          <strong style={{ color: "#495057" }}>Selected Books:</strong>{" "}
+        <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+          <strong className="text-sm text-blue-900 dark:text-blue-100">Selected Books:</strong>
           {selectedRowsInfo.length > 0 ? (
-            <span
-              style={{
-                fontSize: "12px",
-                color: "#6c757d",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
+            <span className="text-xs text-blue-800 dark:text-blue-200 overflow-hidden text-ellipsis whitespace-nowrap">
               ({selectedRowsInfo.map((book) => book.title).join(", ")})
             </span>
           ) : (
-            <span style={{ fontSize: "12px", color: "#6c757d" }}>None</span>
+            <span className="text-xs text-blue-800 dark:text-blue-200">None</span>
           )}
         </div>
       </div>
