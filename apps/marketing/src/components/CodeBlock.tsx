@@ -15,8 +15,18 @@ import {
   type Framework,
 } from "@/constants/frameworks";
 import FrameworkIcon from "./FrameworkIcon";
+import { trackCopyInstallCommand } from "@/lib/analytics";
 
 type ThemeType = "dark" | "light";
+
+function detectPackageManager(code: string): string | null {
+  const trimmed = code.trim().toLowerCase();
+  if (trimmed.startsWith("npm install") || trimmed.startsWith("npm i ")) return "npm";
+  if (trimmed.startsWith("yarn add") || trimmed.startsWith("yarn install")) return "yarn";
+  if (trimmed.startsWith("pnpm add") || trimmed.startsWith("pnpm install")) return "pnpm";
+  if (trimmed.startsWith("bun add") || trimmed.startsWith("bun install")) return "bun";
+  return null;
+}
 
 interface CodeBlockProps {
   className?: string;
@@ -63,6 +73,7 @@ const CodePane = ({
   showThemeToggle,
   theme,
   onToggleTheme,
+  framework,
 }: {
   code: string;
   language: string;
@@ -71,11 +82,20 @@ const CodePane = ({
   showThemeToggle: boolean;
   theme: ThemeType;
   onToggleTheme: () => void;
+  framework?: Framework;
 }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(code).then(() => {
+      const packageManager = detectPackageManager(code);
+      if (packageManager) {
+        trackCopyInstallCommand({
+          package_manager: packageManager,
+          framework,
+          code_preview: code.trim(),
+        });
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
@@ -234,6 +254,7 @@ const CodeBlock = ({
                 showThemeToggle={showThemeToggle}
                 theme={theme}
                 onToggleTheme={toggleTheme}
+                framework={fw}
               />
             </div>
           ))}
@@ -258,6 +279,7 @@ const CodeBlock = ({
         showThemeToggle={showThemeToggle}
         theme={theme}
         onToggleTheme={toggleTheme}
+        framework={framework}
       />
     </div>
   );

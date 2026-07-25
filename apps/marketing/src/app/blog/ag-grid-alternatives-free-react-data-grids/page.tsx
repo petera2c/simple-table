@@ -1211,15 +1211,16 @@ export default function AgGridAlternativesPage() {
 
       {/* Call to Action */}
       <CallToActionCard
+        location="blog_ag_grid_alternatives"
         title="Ready to replace AG Grid with Simple Table?"
-        description="Join thousands of developers who've ditched AG Grid's enterprise fees for Simple Table's powerful, free alternative. Get the same features without the vendor lock-in or price tag. Install in seconds, ship in minutes."
+        description="Join thousands of developers who've ditched AG Grid's enterprise fees for Simple Table. Try the live crypto demo, then see commercial pricing when you're ready to ship."
         primaryButton={{
-          text: "Get Started Free",
-          href: "/docs/installation",
+          text: "Try the live demo",
+          href: "/examples/crypto",
         }}
         secondaryButton={{
-          text: "See Live Examples",
-          href: DEFAULT_EXAMPLE_PATH,
+          text: "See pricing",
+          href: "/pricing",
         }}
       />
     </BlogLayout>

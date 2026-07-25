@@ -44,6 +44,25 @@ const InstallationContent = () => {
       <CodeBlock className="mb-4" code={commands.yarn} language="bash" />
       <CodeBlock className="mb-4" code={commands.pnpm} language="bash" />
 
+      <motion.div
+        className="mb-8 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        <p className="text-sm text-gray-800 dark:text-gray-200">
+          <strong>Commercial use:</strong> Free for pre-revenue and side projects. When your product
+          earns revenue, upgrade to Pro for a commercial license and priority support.{" "}
+          <Link
+            href="/pricing"
+            className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
+          >
+            See pricing
+          </Link>
+          .
+        </p>
+      </motion.div>
+
       <motion.h2
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}

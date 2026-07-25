@@ -3,7 +3,7 @@
 import { Button, Tooltip } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PageWrapper from "@/components/PageWrapper";
-import { faCode, faBox, faStar, faTable } from "@fortawesome/free-solid-svg-icons";
+import { faCode, faBox, faStar } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -20,8 +20,8 @@ import type { Theme } from "@simple-table/react";
 import { useFramework, FRAMEWORKS, FRAMEWORK_LABELS } from "@/providers/FrameworkProvider";
 import { getStackBlitzUrl } from "@/utils/getStackBlitzUrl";
 import FrameworkIcon from "@/components/FrameworkIcon";
-import { DEFAULT_EXAMPLE_PATH } from "@/constants/global";
 import { mapWebsiteThemeToTableTheme } from "@/utils/themeMapper";
+import { trackCtaClick } from "@/lib/analytics";
 
 // Dynamically import heavy components that are below the fold or conditional.
 // `loading` is required with `ssr: true` so Next wraps React.lazy in Suspense;
@@ -66,7 +66,23 @@ export default function HomeContent() {
   const tableTheme = selectedTheme ? selectedTheme : mapWebsiteThemeToTableTheme(theme);
 
   const handleDocumentationClick = () => {
+    trackCtaClick({
+      cta_id: "homepage_get_started",
+      cta_text: "Get Started",
+      destination: "/docs/installation",
+      location: "homepage_hero",
+    });
     router.push("/docs/installation");
+  };
+
+  const handlePricingClick = () => {
+    trackCtaClick({
+      cta_id: "homepage_see_pricing",
+      cta_text: "See pricing",
+      destination: "/pricing",
+      location: "homepage_hero",
+    });
+    router.push("/pricing");
   };
 
   return (
@@ -141,11 +157,10 @@ export default function HomeContent() {
 
               <Button
                 size="large"
-                onClick={() => router.push(DEFAULT_EXAMPLE_PATH)}
+                onClick={handlePricingClick}
                 className="hover:scale-105 transition-transform"
               >
-                <FontAwesomeIcon icon={faTable} className="mr-2" />
-                Live Examples
+                See pricing
               </Button>
             </motion.div>
           </motion.div>

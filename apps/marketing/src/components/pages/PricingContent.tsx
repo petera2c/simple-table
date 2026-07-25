@@ -13,11 +13,12 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "antd";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { openStripeCheckout } from "@/utils/stripe";
 import { STRIPE_CUSTOMER_PORTAL_URL } from "@/constants/stripe";
 import { SIMPLE_TABLE_PRICING } from "@/constants/simpleTablePricing";
 import ContactModal from "@/components/ContactModal";
+import { trackCtaClick, trackViewPricing } from "@/lib/analytics";
 
 interface PlanFeature {
   text: string;
@@ -43,6 +44,20 @@ const PLAN_CAPACITY_NOTE = "One license per product · unlimited users";
 const PricingContent: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(true);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
+  useEffect(() => {
+    trackViewPricing("pricing_page");
+  }, []);
+
+  const openContact = (ctaId: string, ctaText: string) => {
+    trackCtaClick({
+      cta_id: ctaId,
+      cta_text: ctaText,
+      destination: "contact_modal",
+      location: "pricing_page",
+    });
+    setIsContactModalOpen(true);
+  };
 
   const plans: Plan[] = useMemo(
     () => [
@@ -104,11 +119,24 @@ const PricingContent: React.FC = () => {
 
   const handleGetStarted = (planName: string) => {
     if (planName === "FREE") {
+      trackCtaClick({
+        cta_id: "pricing_install_free",
+        cta_text: "Install free",
+        destination: "/docs/installation",
+        location: "pricing_page",
+      });
       window.location.assign("/docs/installation");
       return;
     }
+    const product = planName === "ENTERPRISE" ? "enterprise" : "pro";
+    trackCtaClick({
+      cta_id: `pricing_start_${product}`,
+      cta_text: planName === "ENTERPRISE" ? "Start Enterprise" : "Start Pro",
+      destination: "stripe_checkout",
+      location: "pricing_page",
+    });
     try {
-      openStripeCheckout(planName === "ENTERPRISE" ? "enterprise" : "pro", isAnnual);
+      openStripeCheckout(product, isAnnual);
     } catch (error) {
       console.error("Error starting checkout:", error);
       alert("There was an error starting the checkout process. Please try again.");
@@ -140,8 +168,19 @@ const PricingContent: React.FC = () => {
           <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white mb-3">
             Simple Pricing
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-6">
+          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-4">
             Free until you earn revenue. Then Pro — one price per product, not per developer.
+          </p>
+
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+            Need Enterprise or a custom quote?{" "}
+            <button
+              type="button"
+              onClick={() => openContact("pricing_talk_to_us_hero", "Talk to us")}
+              className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
+            >
+              Talk to us
+            </button>
           </p>
 
           <div className="max-w-3xl mx-auto mb-8 grid sm:grid-cols-2 gap-3 text-left">
@@ -303,18 +342,6 @@ const PricingContent: React.FC = () => {
           ))}
         </motion.section>
 
-        <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-          Features are the same on every tier. Free is Community License (zero revenue). Pro and
-          Enterprise add a commercial EULA and support.{" "}
-          <a href="/legal/license" className="text-blue-600 dark:text-blue-400 hover:underline">
-            Community License
-          </a>
-          {" · "}
-          <a href="/legal/eula" className="text-blue-600 dark:text-blue-400 hover:underline">
-            EULA
-          </a>
-        </p>
-
         <motion.section
           className="mt-12 max-w-xl mx-auto"
           initial={{ opacity: 0, y: 16 }}
@@ -350,7 +377,7 @@ const PricingContent: React.FC = () => {
           <Button
             type="primary"
             size="large"
-            onClick={() => setIsContactModalOpen(true)}
+            onClick={() => openContact("pricing_contact_us", "Contact us")}
             className="h-11 px-8"
           >
             <FontAwesomeIcon icon={faEnvelope} className="mr-2" />

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Modal, Input, Button, App } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faUser, faBuilding, faComment } from "@fortawesome/free-solid-svg-icons";
+import { trackContactSubmit } from "@/lib/analytics";
 
 const { TextArea } = Input;
 
@@ -50,6 +51,7 @@ const ContactModal = ({ isOpen, onClose }: ContactModalProps) => {
       const data = await response.json();
 
       if (response.ok) {
+        trackContactSubmit("contact_modal");
         message.success({
           content: "Message sent successfully! We'll get back to you within 24 hours.",
         });

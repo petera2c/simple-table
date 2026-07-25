@@ -4,10 +4,12 @@ import React from "react";
 import Link from "next/link";
 import { useThemeContext } from "@/providers/ThemeProvider";
 import { getExampleUrl } from "@/utils/getExampleUrl";
+import { trackCtaClick } from "@/lib/analytics";
 
 interface CallToActionCardProps {
   title: string;
   description: string;
+  location?: string;
   primaryButton: {
     text: string;
     href: string;
@@ -23,6 +25,7 @@ interface CallToActionCardProps {
 export default function CallToActionCard({
   title,
   description,
+  location = "blog_cta",
   primaryButton,
   secondaryButton,
 }: CallToActionCardProps) {
@@ -31,9 +34,11 @@ export default function CallToActionCard({
   const ButtonComponent = ({
     button,
     isPrimary,
+    ctaId,
   }: {
     button: typeof primaryButton;
     isPrimary: boolean;
+    ctaId: string;
   }) => {
     const baseClasses = "w-full sm:w-auto px-6 py-3 rounded-lg font-medium transition-colors";
     const primaryClasses = isPrimary
@@ -46,6 +51,15 @@ export default function CallToActionCard({
       href = getExampleUrl(href, theme);
     }
 
+    const handleClick = () => {
+      trackCtaClick({
+        cta_id: ctaId,
+        cta_text: button.text,
+        destination: button.href,
+        location,
+      });
+    };
+
     if (button.external) {
       return (
         <a
@@ -53,6 +67,7 @@ export default function CallToActionCard({
           target="_blank"
           rel="noopener noreferrer"
           className={`${baseClasses} ${primaryClasses}`}
+          onClick={handleClick}
         >
           {button.text}
         </a>
@@ -60,7 +75,7 @@ export default function CallToActionCard({
     }
 
     return (
-      <Link href={href} className={`${baseClasses} ${primaryClasses}`}>
+      <Link href={href} className={`${baseClasses} ${primaryClasses}`} onClick={handleClick}>
         {button.text}
       </Link>
     );
@@ -73,8 +88,12 @@ export default function CallToActionCard({
       <p className="text-white text-base md:text-lg mb-4 md:mb-6">{description}</p>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <ButtonComponent button={primaryButton} isPrimary={true} />
-        <ButtonComponent button={secondaryButton} isPrimary={false} />
+        <ButtonComponent button={primaryButton} isPrimary={true} ctaId={`${location}_primary`} />
+        <ButtonComponent
+          button={secondaryButton}
+          isPrimary={false}
+          ctaId={`${location}_secondary`}
+        />
       </div>
     </section>
   );

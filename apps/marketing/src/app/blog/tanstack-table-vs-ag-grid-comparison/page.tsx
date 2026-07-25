@@ -1190,15 +1190,16 @@ export default function TanStackVsAgGridPage() {
 
       {/* Call to Action */}
       <CallToActionCard
+        location="blog_tanstack_vs_ag_grid"
         title="Skip the tradeoffs. Choose Simple Table."
-        description="Get TanStack Table's features with a built-in UI. Get AG Grid's completeness without the price tag. Simple Table delivers the best of both worlds in one lightweight, free package."
+        description="Get TanStack Table's features with a built-in UI. Get AG Grid's completeness without the price tag. Try the live crypto demo, then see commercial pricing when you're ready to ship."
         primaryButton={{
-          text: "Try Simple Table Free",
-          href: "/docs/installation",
+          text: "Try the live demo",
+          href: "/examples/crypto",
         }}
         secondaryButton={{
-          text: "Compare All Features",
-          href: "/comparisons/simple-table-vs-ag-grid",
+          text: "See pricing",
+          href: "/pricing",
         }}
       />
       </BlogLayout>

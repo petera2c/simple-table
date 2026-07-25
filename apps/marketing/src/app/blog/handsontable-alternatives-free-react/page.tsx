@@ -1229,15 +1229,16 @@ export default function HandsontableAlternativesPage() {
 
       {/* Call to Action */}
       <CallToActionCard
+        location="blog_handsontable_alternatives"
         title="Replace Handsontable with Simple Table today"
-        description={`Escape license fees and bundle bloat. Simple Table gives you spreadsheet-like features in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—4x lighter than Handsontable—source-available and free for pre-revenue teams. Join developers who've already made the switch.`}
+        description={`Escape license fees and bundle bloat. Simple Table gives you spreadsheet-like features in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—4x lighter than Handsontable—source-available and free for pre-revenue teams. Try the live demo, then see pricing.`}
         primaryButton={{
-          text: "Get Started Free",
-          href: "/docs/installation",
+          text: "Try the live demo",
+          href: "/examples/crypto",
         }}
         secondaryButton={{
-          text: "See Live Demos",
-          href: DEFAULT_EXAMPLE_PATH,
+          text: "See pricing",
+          href: "/pricing",
         }}
       />
       </BlogLayout>

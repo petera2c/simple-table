@@ -949,14 +949,15 @@ export default function AgGridPricingPage() {
 
       {/* Call to Action */}
       <CallToActionCard
+        location="blog_ag_grid_pricing"
         title="Skip the $25K+ AG Grid bill. Start with Simple Table's FREE tier."
-        description="Install free for pre-revenue teams (same features). Upgrade to Pro for a commercial EULA + priority support when you earn revenue — per product, not per developer. Try the live CRM demo or compare benchmarks before you buy."
+        description="Install free for pre-revenue teams (same features). Upgrade to Pro for a commercial EULA + priority support when you earn revenue — per product, not per developer. Try the live crypto demo, then check pricing before you buy."
         primaryButton={{
-          text: "Install Free (Docs)",
-          href: "/docs/installation",
+          text: "Try the live demo",
+          href: "/examples/crypto",
         }}
         secondaryButton={{
-          text: "View Pricing",
+          text: "See pricing",
           href: "/pricing",
         }}
       />
