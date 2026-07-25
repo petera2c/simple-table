@@ -51,6 +51,9 @@ export type TablePropOptions = {
   enableColumnEditor?: boolean;
   enableColumnEditorInitOpen?: boolean;
   externalSortHandling?: boolean;
+  selectableCells?: boolean;
+  selectableColumns?: boolean;
+  copyHeadersToClipboard?: boolean;
   initialSortColumn?: string;
   initialSortDirection?: "asc" | "desc";
 };
@@ -61,7 +64,10 @@ type BoolTableProp =
   | "columnReordering"
   | "enableColumnEditor"
   | "enableColumnEditorInitOpen"
-  | "externalSortHandling";
+  | "externalSortHandling"
+  | "selectableCells"
+  | "selectableColumns"
+  | "copyHeadersToClipboard";
 
 const BOOL_PROP_KEBAB: Record<BoolTableProp, string> = {
   autoExpandColumns: "auto-expand-columns",
@@ -70,6 +76,9 @@ const BOOL_PROP_KEBAB: Record<BoolTableProp, string> = {
   enableColumnEditor: "enable-column-editor",
   enableColumnEditorInitOpen: "enable-column-editor-init-open",
   externalSortHandling: "external-sort-handling",
+  selectableCells: "selectable-cells",
+  selectableColumns: "selectable-columns",
+  copyHeadersToClipboard: "copy-headers-to-clipboard",
 };
 
 function pushBoolProp(
@@ -111,6 +120,9 @@ function pushTableBoolProps(
     options.enableColumnEditorInitOpen
   );
   pushBoolProp(framework, target, "externalSortHandling", options.externalSortHandling);
+  pushBoolProp(framework, target, "selectableCells", options.selectableCells);
+  pushBoolProp(framework, target, "selectableColumns", options.selectableColumns);
+  pushBoolProp(framework, target, "copyHeadersToClipboard", options.copyHeadersToClipboard);
 }
 
 function pushSortProps(framework: Framework, target: string[], options: TablePropOptions) {
@@ -1236,6 +1248,140 @@ const columnEditorConfig = {
     },
   },
 });`,
+  };
+}
+
+/** Status badge cellRenderer examples (per framework). */
+export function cellRendererSnippets(): Record<Framework, string> {
+  return {
+    react: `const StatusCell = ({ value }) => {
+  const status = String(value);
+  const color = status === "active" ? "#10B981" : "#6B7280";
+  return <span style={{ color, fontWeight: 600 }}>{status}</span>;
+};
+
+const columns = [
+  { accessor: "status", label: "Status", width: 120, cellRenderer: StatusCell },
+];`,
+    solid: `const StatusCell = (props) => {
+  const status = String(props.value);
+  const color = status === "active" ? "#10B981" : "#6B7280";
+  return <span style={{ color, "font-weight": "600" }}>{status}</span>;
+};
+
+const columns = [
+  { accessor: "status", label: "Status", width: 120, cellRenderer: StatusCell },
+];`,
+    vue: `import { h } from "vue";
+
+const StatusCell = ({ value }) => {
+  const status = String(value);
+  const color = status === "active" ? "#10B981" : "#6B7280";
+  return h("span", { style: { color, fontWeight: "600" } }, status);
+};
+
+const columns = [
+  { accessor: "status", label: "Status", width: 120, cellRenderer: StatusCell },
+];`,
+    angular: `// status-cell.component.ts
+@Component({
+  standalone: true,
+  selector: "app-status-cell",
+  template: \`<span [style.color]="color" style="font-weight:600">{{ status }}</span>\`,
+})
+export class StatusCellComponent {
+  @Input() value!: unknown;
+  get status() { return String(this.value); }
+  get color() { return this.status === "active" ? "#10B981" : "#6B7280"; }
+}
+
+// column def
+{ accessor: "status", label: "Status", width: 120, cellRenderer: StatusCellComponent }`,
+    svelte: `<!-- StatusCell.svelte -->
+<script lang="ts">
+  import type { CellRendererProps } from "@simple-table/svelte";
+  let { value }: CellRendererProps = $props();
+  const status = $derived(String(value));
+  const color = $derived(status === "active" ? "#10B981" : "#6B7280");
+</script>
+<span style="color:{color};font-weight:600">{status}</span>
+
+<!-- column def -->
+{ accessor: "status", label: "Status", width: 120, cellRenderer: StatusCell }`,
+    vanilla: `const StatusCell = ({ value }) => {
+  const status = String(value);
+  const color = status === "active" ? "#10B981" : "#6B7280";
+  const span = document.createElement("span");
+  span.style.color = color;
+  span.style.fontWeight = "600";
+  span.textContent = status;
+  return span;
+};
+
+const columns = [
+  { accessor: "status", label: "Status", width: 120, cellRenderer: StatusCell },
+];`,
+  };
+}
+
+/** Wrap valueFormatter output in a cellRenderer. */
+export function cellRendererFormattedValueSnippets(): Record<Framework, string> {
+  return {
+    react: `{
+  accessor: "salary",
+  label: "Salary",
+  type: "number",
+  valueFormatter: ({ value }) =>
+    typeof value === "number" ? \`$\${value.toLocaleString()}\` : "",
+  cellRenderer: ({ formattedValue }) => (
+    <strong>{formattedValue}</strong>
+  ),
+}`,
+    solid: `{
+  accessor: "salary",
+  label: "Salary",
+  type: "number",
+  valueFormatter: (props) =>
+    typeof props.value === "number" ? \`$\${props.value.toLocaleString()}\` : "",
+  cellRenderer: (props) => <strong>{props.formattedValue}</strong>,
+}`,
+    vue: `{
+  accessor: "salary",
+  label: "Salary",
+  type: "number",
+  valueFormatter: ({ value }) =>
+    typeof value === "number" ? \`$\${value.toLocaleString()}\` : "",
+  cellRenderer: ({ formattedValue }) => h("strong", String(formattedValue ?? "")),
+}`,
+    angular: `// Prefer formatting in the cell component, or pass formattedValue via @Input()
+{
+  accessor: "salary",
+  label: "Salary",
+  type: "number",
+  valueFormatter: ({ value }) =>
+    typeof value === "number" ? \`$\${value.toLocaleString()}\` : "",
+  cellRenderer: SalaryCellComponent, // @Input() formattedValue
+}`,
+    svelte: `{
+  accessor: "salary",
+  label: "Salary",
+  type: "number",
+  valueFormatter: ({ value }) =>
+    typeof value === "number" ? \`$\${value.toLocaleString()}\` : "",
+  cellRenderer: SalaryCell, // receives formattedValue as a prop
+}`,
+    vanilla: `{
+  accessor: "salary",
+  label: "Salary",
+  type: "number",
+  valueFormatter: ({ value }) =>
+    typeof value === "number" ? \`$\${value.toLocaleString()}\` : "",
+  cellRenderer: ({ formattedValue }) => {
+    const el = document.createElement("strong");
+    el.textContent = String(formattedValue ?? "");
+    return el;
+  },
+}`,
   };
 }
 
