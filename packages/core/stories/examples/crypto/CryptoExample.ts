@@ -32,11 +32,11 @@ function pickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function applyRowPatch(api: TableAPI, rowIndex: number, patch: Partial<Row>) {
+function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Row>) {
   for (const accessor of Object.keys(patch)) {
     const newValue = patch[accessor];
     if (newValue === undefined) continue;
-    api.updateData({ accessor, rowIndex, newValue: newValue as CellValue });
+    api.updateData({ accessor, rowId, newValue: newValue as CellValue });
   }
 }
 
@@ -44,12 +44,8 @@ function applyRowPatch(api: TableAPI, rowIndex: number, patch: Partial<Row>) {
  * Simulates a live market feed: each tick nudges price / 24h change / sparkline
  * on a few visible rows via `updateData` (cell flash + filter/sort recompute).
  */
-function startCryptoTicker(getApi: () => TableAPI | null | undefined, rows: Row[]): () => void {
+function startCryptoTicker(getApi: () => TableAPI | null | undefined): () => void {
   let isActive = true;
-  const idToIndex = new Map<string, number>();
-  for (let i = 0; i < rows.length; i++) {
-    idToIndex.set(String(rows[i]!.id), i);
-  }
 
   const tick = () => {
     if (!isActive) return;
@@ -60,8 +56,8 @@ function startCryptoTicker(getApi: () => TableAPI | null | undefined, rows: Row[
     if (!visible.length) return;
 
     for (const vr of pickRandomSubset(visible, ROWS_PER_TICK)) {
-      const idx = idToIndex.get(String(vr.row.id));
-      if (idx === undefined) continue;
+      const rowId = vr.row.id as string | number | undefined;
+      if (rowId === undefined || rowId === null || rowId === "") continue;
 
       const currentPrice = vr.row.price as number;
       if (typeof currentPrice !== "number") continue;
@@ -80,7 +76,7 @@ function startCryptoTicker(getApi: () => TableAPI | null | undefined, rows: Row[
         patch.priceHistory = [...history.slice(1), newPriceRounded];
       }
 
-      applyRowPatch(api, idx, patch);
+      applyRowPatch(api, rowId, patch);
     }
   };
 
@@ -111,7 +107,7 @@ export function renderCryptoExample(args?: Partial<UniversalVanillaArgs>): HTMLE
     tableContainer,
   );
 
-  const stopTicker = startCryptoTicker(() => table.getAPI(), data);
+  const stopTicker = startCryptoTicker(() => table.getAPI());
   const originalDestroy = table.destroy.bind(table);
   table.destroy = () => {
     stopTicker();

@@ -1,13 +1,39 @@
 "use client";
 
+import type { ReactNode } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
 import PageWrapper from "@/components/PageWrapper";
+import CodeBlock from "@/components/CodeBlock";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
 import LoadingStateDemo from "@/components/demos/LoadingStateDemo";
+import { isLoadingSnippets, type CodeByFramework } from "@/constants/docsSnippets";
+
+type LoadingPattern = {
+  title: string;
+  body: ReactNode;
+  codeByFramework: CodeByFramework;
+};
+
+const LOADING_PATTERNS: LoadingPattern[] = [
+  {
+    title: "Show skeleton loaders",
+    body: (
+      <>
+        Set{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isLoading</code> while
+        fetching. With no rows, the table fills with skeleton rows. Clear{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">rows</code> when you want
+        a full-table reload.
+      </>
+    ),
+    codeByFramework: isLoadingSnippets(),
+  },
+];
 
 const LOADING_STATE_PROPS: PropInfo[] = [
   {
@@ -15,15 +41,9 @@ const LOADING_STATE_PROPS: PropInfo[] = [
     name: "isLoading",
     required: false,
     description:
-      "When true with no rows, shows a full page of skeleton loaders. When true with existing rows, keeps that data visible and appends skeleton rows below (useful for pagination / infinite scroll). Clear rows for a full-table reload.",
+      "When true with no rows, shows a full page of skeleton loaders. When true with existing rows, keeps that data visible and appends skeleton rows below. Clear rows for a full-table reload.",
     type: "boolean",
-    example: `const [isLoading, setIsLoading] = useState(true);
-
-<SimpleTable
-  isLoading={isLoading}
-  rows={data}
-  // ... other props
-/>`,
+    example: `isLoading={isLoading}`,
   },
 ];
 
@@ -36,146 +56,105 @@ const LoadingStateContent = () => {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="p-2 bg-indigo-100 rounded-lg">
-          <FontAwesomeIcon icon={faSpinner} className="text-indigo-600 text-2xl" />
+        <div className="p-2 bg-blue-100 rounded-lg">
+          <FontAwesomeIcon icon={faSpinner} className="text-blue-600 text-2xl" />
         </div>
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Loading State</h1>
       </motion.div>
 
-      {/* Demo Section */}
-      <motion.div
-        className="mb-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
-        <LivePreview
-          demoId="loading-state"
-          height="450px"
-          Preview={LoadingStateDemo}
-        />
-      </motion.div>
-
       <motion.p
-        className="text-gray-700 dark:text-gray-300 mb-6 text-lg"
+        className="text-gray-700 dark:text-gray-300 mb-8 text-lg"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Simple Table provides a built-in loading state with skeleton rows while data is fetched.
-        An empty table shows a full skeleton page; if rows are already loaded, those stay visible
-        and skeletons append below—ideal for pagination and infinite scroll. Clear rows when you
-        want a full-table reload. Scroll the demo above to load more and see skeletons append under
-        existing rows.
+        Show skeleton rows while data loads with{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isLoading</code>.
       </motion.p>
 
-      {/* Basic Usage Section */}
+      <motion.div
+        className="space-y-8 mb-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.25 }}
+      >
+        {LOADING_PATTERNS.map((pattern) => (
+          <section key={pattern.title}>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+              {pattern.title}
+            </h2>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{pattern.body}</p>
+            <CodeBlock codeByFramework={pattern.codeByFramework} showLineNumbers={false} />
+          </section>
+        ))}
+      </motion.div>
+
+      <motion.div
+        className="mb-8 p-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.28 }}
+      >
+        <h3 className="font-semibold text-gray-800 dark:text-white mb-1 text-sm">
+          Loading more rows
+        </h3>
+        <p className="text-gray-700 dark:text-gray-300 text-sm">
+          If rows are already loaded,{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">isLoading</code> keeps
+          them visible and appends skeleton rows below — useful with{" "}
+          <Link
+            href="/docs/pagination"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Pagination
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/docs/infinite-scroll"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Infinite Scroll
+          </Link>
+          .
+        </p>
+      </motion.div>
+
       <motion.h2
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        Basic Usage
+        Example
       </motion.h2>
-
-      <motion.div
-        className="mb-4"
+      <motion.p
+        className="text-gray-700 dark:text-gray-300 mb-4 text-sm"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+        transition={{ duration: 0.5, delay: 0.32 }}
       >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          To enable the loading state, simply pass the{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            isLoading
-          </code>{" "}
-          prop and set it to{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            true
-          </code>{" "}
-          while your data is loading. When the data arrives, set it back to{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            false
-          </code>
-          .
-        </p>
-
-        <PropTable props={LOADING_STATE_PROPS} title="Loading State Configuration" />
+        Scroll to load more and watch skeletons append under existing rows. Use Code or StackBlitz
+        for the full example.
+      </motion.p>
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.35 }}
+      >
+        <LivePreview demoId="loading-state" height="400px" Preview={LoadingStateDemo} />
       </motion.div>
 
-      {/* Customization Section */}
       <motion.h2
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.7 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
       >
-        Customizing the Loading Skeleton
+        Props
       </motion.h2>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.8 }}
-      >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          You can customize the appearance of the loading skeleton using CSS. The skeleton elements
-          have the{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            st-loading-skeleton
-          </code>{" "}
-          class which you can target in your CSS.
-        </p>
-
-        <div className="bg-green-50 dark:bg-green-900/30 border-l-4 border-green-400 dark:border-green-700 p-4 rounded-lg shadow-sm mb-6">
-          <h4 className="font-bold text-gray-800 dark:text-white mb-2">
-            CSS Variable for Customization
-          </h4>
-          <p className="text-gray-700 dark:text-gray-300 mb-3">
-            You can customize the skeleton background color using the CSS variable:
-          </p>
-          <code className="block bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm text-gray-800 dark:text-gray-200">
-            --st-loading-skeleton-bg-color
-          </code>
-          <p className="text-gray-700 dark:text-gray-300 mt-3 mb-3">
-            Or target the skeleton elements directly using the{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-              st-loading-skeleton
-            </code>{" "}
-            class:
-          </p>
-        </div>
-
-        <div className="bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 dark:border-yellow-700 p-4 rounded-lg shadow-sm">
-          <h4 className="font-bold text-gray-800 dark:text-white mb-2">💡 Pro Tip</h4>
-          <p className="text-gray-700 dark:text-gray-300">
-            Pass{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-              isLoading
-            </code>{" "}
-            together with{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-              onLoadMore
-            </code>{" "}
-            or pagination so loaded rows stay visible while skeleton rows append below. See the{" "}
-            <a
-              href="/docs/infinite-scroll"
-              className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-            >
-              Infinite Scroll
-            </a>{" "}
-            and{" "}
-            <a
-              href="/docs/pagination"
-              className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-            >
-              Pagination
-            </a>{" "}
-            docs for more.
-          </p>
-        </div>
-      </motion.div>
+      <PropTable props={LOADING_STATE_PROPS} title="Loading State Configuration" />
 
       <DocNavigationButtons />
     </PageWrapper>

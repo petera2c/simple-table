@@ -84,7 +84,7 @@ export const UpdateDataAPIPrice = {
     expect(testTableApi).toBeTruthy();
     const initialPrice = getCellValue(0, "price");
     expect(initialPrice).toBeTruthy();
-    testTableApi?.updateData({ accessor: "price", rowIndex: 0, newValue: 99.99 });
+    testTableApi?.updateData({ accessor: "price", rowId: 1, newValue: 99.99 });
     await new Promise((r) => setTimeout(r, 200));
     const updatedPrice = getCellValue(0, "price");
     expect(updatedPrice).toBe("$99.99");
@@ -99,7 +99,7 @@ export const FlashAnimationDetection = {
     await new Promise((r) => setTimeout(r, 500));
     expect(testTableApi).toBeTruthy();
     expect(hasCellUpdatingClass(1, "price")).toBe(false);
-    testTableApi?.updateData({ accessor: "price", rowIndex: 1, newValue: 88.88 });
+    testTableApi?.updateData({ accessor: "price", rowId: 2, newValue: 88.88 });
     await new Promise((r) => setTimeout(r, 50));
     expect(hasCellUpdatingClass(1, "price")).toBe(true);
     await new Promise((r) => setTimeout(r, 1000));
@@ -115,7 +115,7 @@ export const UpdateDataAPIStock = {
     expect(testTableApi).toBeTruthy();
     const initialStock = getCellValue(0, "stock");
     expect(initialStock).toBeTruthy();
-    testTableApi?.updateData({ accessor: "stock", rowIndex: 0, newValue: 100 });
+    testTableApi?.updateData({ accessor: "stock", rowId: 1, newValue: 100 });
     await new Promise((r) => setTimeout(r, 200));
     const updatedStock = getCellValue(0, "stock");
     expect(updatedStock).toBe("100");
@@ -131,7 +131,7 @@ export const UpdateDataAPISales = {
     expect(testTableApi).toBeTruthy();
     const initialSales = getCellValue(0, "sales");
     expect(initialSales).toBeTruthy();
-    testTableApi?.updateData({ accessor: "sales", rowIndex: 0, newValue: 500 });
+    testTableApi?.updateData({ accessor: "sales", rowId: 1, newValue: 500 });
     await new Promise((r) => setTimeout(r, 200));
     const updatedSales = getCellValue(0, "sales");
     expect(updatedSales).toBe("500");
@@ -148,9 +148,9 @@ export const MultipleCellUpdates = {
     expect(getCellValue(0, "price")).toBeTruthy();
     expect(getCellValue(1, "price")).toBeTruthy();
     expect(getCellValue(2, "stock")).toBeTruthy();
-    testTableApi?.updateData({ accessor: "price", rowIndex: 0, newValue: 11.11 });
-    testTableApi?.updateData({ accessor: "price", rowIndex: 1, newValue: 22.22 });
-    testTableApi?.updateData({ accessor: "stock", rowIndex: 2, newValue: 999 });
+    testTableApi?.updateData({ accessor: "price", rowId: 1, newValue: 11.11 });
+    testTableApi?.updateData({ accessor: "price", rowId: 2, newValue: 22.22 });
+    testTableApi?.updateData({ accessor: "stock", rowId: 3, newValue: 999 });
     await new Promise((r) => setTimeout(r, 200));
     expect(getCellValue(0, "price")).toBe("$11.11");
     expect(getCellValue(1, "price")).toBe("$22.22");

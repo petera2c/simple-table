@@ -262,9 +262,10 @@ export class TableAPIImpl {
      * Cache `Row → currently-rendered TableRow` keyed by the rowsToRender array
      * reference. The cell registry is keyed off each rendered row's positional
      * `rowId` (which changes after sort/filter), but consumers of `updateData`
-     * pass `rowIndex` as the index into the unsorted `localRows`. This map lets
-     * us resolve the row's *current* display rowId so the registry lookup hits
-     * regardless of sort/filter state.
+     * pass `rowIndex` as the index into the unsorted `localRows` (or `rowId`
+     * resolved via {@link getLocalRowIndexByIdMap}). This map lets us resolve
+     * the row's *current* display rowId so the registry lookup hits regardless
+     * of sort/filter state.
      */
     let displayedTableRowCache: {
       rowsRef: TableRow[];
@@ -284,37 +285,86 @@ export class TableAPIImpl {
       return displayedTableRowCache.map.get(row);
     };
 
+    /**
+     * `rowId → index in localRows` for O(1) `updateData({ rowId })` lookups.
+     * Rebuilt when the source `localRows` array reference changes (new rows
+     * prop / replace). Sort and filter do not reorder `localRows`, so they do
+     * not invalidate this map.
+     */
+    let localRowIndexByIdCache: {
+      rowsRef: Row[];
+      getRowId: SimpleTableConfig["getRowId"];
+      map: Map<string, number>;
+    } | null = null;
+    const getLocalRowIndexByIdMap = (): Map<string, number> => {
+      const rows = context.localRows;
+      const getRowId = context.config.getRowId;
+      if (
+        localRowIndexByIdCache &&
+        localRowIndexByIdCache.rowsRef === rows &&
+        localRowIndexByIdCache.getRowId === getRowId
+      ) {
+        return localRowIndexByIdCache.map;
+      }
+      const map = new Map<string, number>();
+      for (let index = 0; index < rows.length; index++) {
+        const row = rows[index];
+        if (!getRowId) continue;
+        const id = getRowId({
+          row,
+          depth: 0,
+          index,
+          rowPath: [index],
+          rowIndexPath: [index],
+        });
+        if (id === undefined || id === null || id === "") continue;
+        map.set(String(id), index);
+      }
+      localRowIndexByIdCache = { rowsRef: rows, getRowId, map };
+      return map;
+    };
+
+    const resolveUpdateRowIndex = (props: UpdateDataProps): number | undefined => {
+      if (props.rowId !== undefined && props.rowId !== null && props.rowId !== "") {
+        return getLocalRowIndexByIdMap().get(String(props.rowId));
+      }
+      if (typeof props.rowIndex === "number") return props.rowIndex;
+      return undefined;
+    };
+
     return {
       updateData: (props: UpdateDataProps) => {
-        const { rowIndex, accessor, newValue } = props;
-        if (rowIndex >= 0 && rowIndex < context.localRows.length) {
-          const row = context.localRows[rowIndex];
-          setNestedValue(row, accessor, newValue);
-
-          // Resolve the row's STABLE identity (`stableRowKey ?? positional
-          // rowId`) so the cell registry key matches exactly what `styling.ts`
-          // registered. The registry is keyed by the stable identity (not the
-          // positional rowId), so the lookup hits regardless of sort/filter
-          // order without any re-keying. When the row isn't currently in
-          // `rowsToRender` (e.g. virtualized off screen) we recompute the same
-          // stable key `flattenRows` would produce; if the cell isn't rendered
-          // the lookup simply misses, which is correct.
-          const displayedRow = getDisplayedTableRow(row);
-          const rowIdentity = displayedRow
-            ? (displayedRow.stableRowKey ?? rowIdToString(displayedRow.rowId))
-            : generateStableRowKey({
-                getRowId: context.config.getRowId,
-                row,
-                depth: 0,
-                index: rowIndex,
-                rowPath: [rowIndex],
-                rowIndexPath: [rowIndex],
-              });
-          const key = getCellId({ accessor, rowId: rowIdentity });
-          pendingUpdateDataByKey.set(key, newValue);
-          pendingLiveAccessors.add(String(accessor));
-          scheduleUpdateDataFlush();
+        const { accessor, newValue } = props;
+        const rowIndex = resolveUpdateRowIndex(props);
+        if (rowIndex === undefined || rowIndex < 0 || rowIndex >= context.localRows.length) {
+          return;
         }
+        const row = context.localRows[rowIndex];
+        setNestedValue(row, accessor, newValue);
+
+        // Resolve the row's STABLE identity (`stableRowKey ?? positional
+        // rowId`) so the cell registry key matches exactly what `styling.ts`
+        // registered. The registry is keyed by the stable identity (not the
+        // positional rowId), so the lookup hits regardless of sort/filter
+        // order without any re-keying. When the row isn't currently in
+        // `rowsToRender` (e.g. virtualized off screen) we recompute the same
+        // stable key `flattenRows` would produce; if the cell isn't rendered
+        // the lookup simply misses, which is correct.
+        const displayedRow = getDisplayedTableRow(row);
+        const rowIdentity = displayedRow
+          ? (displayedRow.stableRowKey ?? rowIdToString(displayedRow.rowId))
+          : generateStableRowKey({
+              getRowId: context.config.getRowId,
+              row,
+              depth: 0,
+              index: rowIndex,
+              rowPath: [rowIndex],
+              rowIndexPath: [rowIndex],
+            });
+        const key = getCellId({ accessor, rowId: rowIdentity });
+        pendingUpdateDataByKey.set(key, newValue);
+        pendingLiveAccessors.add(String(accessor));
+        scheduleUpdateDataFlush();
       },
 
       setHeaderRename: (props: SetHeaderRenameProps) => {

@@ -20,11 +20,11 @@ function infraPickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function infraApplyRowPatch(api: TableAPI, rowIndex: number, patch: Partial<Row>) {
+function infraApplyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Row>) {
   for (const accessor of Object.keys(patch)) {
     const newValue = patch[accessor];
     if (newValue === undefined) continue;
-    api.updateData({ accessor, rowIndex, newValue: newValue as CellValue });
+    api.updateData({ accessor, rowId, newValue: newValue as CellValue });
   }
 }
 
@@ -84,12 +84,8 @@ function infraComputeMetricPatch(row: Row, slot: InfraMetricSlot): Partial<Row> 
   }
 }
 
-function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined, rows: Row[]): () => void {
+function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined): () => void {
   let isActive = true;
-  const idToIndex = new Map<string, number>();
-  for (let i = 0; i < rows.length; i++) {
-    idToIndex.set(String(rows[i]!.id), i);
-  }
   const tick = () => {
     if (!isActive) return;
     const api = getApi();
@@ -99,13 +95,13 @@ function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined, ro
     const picks = infraPickRandomSubset(visible, INFRA_ROWS_PER_TICK);
     let usedCpuSparkline = false;
     for (const vr of picks) {
-      const idx = idToIndex.get(String(vr.row.id));
-      if (idx === undefined) continue;
+      const rowId = vr.row.id as string | number | undefined;
+      if (rowId === undefined || rowId === null || rowId === "") continue;
       let slot = Math.floor(Math.random() * 7) as InfraMetricSlot;
       if (slot === 0 && usedCpuSparkline) slot = (1 + Math.floor(Math.random() * 6)) as InfraMetricSlot;
       if (slot === 0) usedCpuSparkline = true;
       const patch = infraComputeMetricPatch(vr.row, slot);
-      if (patch) infraApplyRowPatch(api, idx, patch);
+      if (patch) infraApplyRowPatch(api, rowId, patch);
     }
   };
   tick();
@@ -163,7 +159,7 @@ export default function InfrastructureDemo(props: { height?: string | number; th
   });
 
   onMount(() => {
-    cleanupFn = startInfraDemoLiveUpdates(() => tableRef, data);
+    cleanupFn = startInfraDemoLiveUpdates(() => tableRef);
   });
 
   onCleanup(() => cleanupFn?.());
@@ -175,6 +171,7 @@ export default function InfrastructureDemo(props: { height?: string | number; th
       columnResizing
       columns={getHeaders(props.theme)}
       enableColumnEditor
+      getRowId={({ row }) => (row as { id: string | number }).id}
       height={props.height ?? "400px"}
       ref={(api) => (tableRef = api)}
       rows={data}

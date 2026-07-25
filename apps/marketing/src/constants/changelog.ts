@@ -11,6 +11,22 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_0_6: ChangelogEntry = {
+  version: "4.0.6",
+  date: "2026-07-25",
+  title: "Update cells by row id",
+  description:
+    "Live updates can target a row by stable id instead of finding its index in the source array.",
+  changes: [
+    {
+      type: "feature",
+      description:
+        "TableAPI.updateData accepts rowId (from getRowId) in addition to rowIndex. When both are passed, rowId wins. The table keeps an internal id→source-index map so updates stay correct after sort or filter.",
+      link: "/docs/live-updates",
+    },
+  ],
+};
+
 export const v4_0_5: ChangelogEntry = {
   version: "4.0.5",
   date: "2026-07-22",
@@ -2349,6 +2365,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_0_6,
   v4_0_5,
   v4_0_3,
   v4_0_1,

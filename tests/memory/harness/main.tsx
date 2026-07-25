@@ -179,7 +179,7 @@ const harness: LeakHarness = {
         const base = (data[idx][accessor] as number) ?? 0;
         const next = Math.round((base + ((tick % 9) - 4) * 0.01) * 100) / 100;
         data[idx][accessor] = next;
-        api.updateData({ accessor, rowIndex: idx, newValue: next });
+        api.updateData({ accessor, rowId: id, newValue: next });
 
         made++;
         if (made >= totalUpdates) break;

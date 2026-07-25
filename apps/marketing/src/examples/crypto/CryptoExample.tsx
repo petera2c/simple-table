@@ -33,6 +33,7 @@ export default function CryptoExample({
       customTheme={{ headerHeight: 40, rowHeight: 64 }}
       columns={HEADERS}
       enableColumnEditor
+      getRowId={({ row }) => (row as { id: string | number }).id}
       icons={icons}
       rows={data}
       selectableCells

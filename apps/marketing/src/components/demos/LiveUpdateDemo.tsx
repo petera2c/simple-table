@@ -243,7 +243,7 @@ const LiveUpdateDemo = ({
 
             tableRef.current?.updateData({
               accessor: "price",
-              rowIndex: actualRowIndex,
+              rowId,
               newValue: newPrice,
             });
           }
@@ -258,7 +258,7 @@ const LiveUpdateDemo = ({
 
             tableRef.current?.updateData({
               accessor: "stock",
-              rowIndex: actualRowIndex,
+              rowId,
               newValue: newStock,
             });
 
@@ -269,7 +269,7 @@ const LiveUpdateDemo = ({
               currentData[actualRowIndex].stockHistory = updatedStockHistory;
               tableRef.current?.updateData({
                 accessor: "stockHistory",
-                rowIndex: actualRowIndex,
+                rowId,
                 newValue: updatedStockHistory,
               });
             }
@@ -286,7 +286,7 @@ const LiveUpdateDemo = ({
 
               tableRef.current?.updateData({
                 accessor: "sales",
-                rowIndex: actualRowIndex,
+                rowId,
                 newValue: newSales,
               });
 
@@ -346,7 +346,7 @@ const LiveUpdateDemo = ({
           currentData[rowIndex].salesHistory = updatedSalesHistory;
           tableRef.current?.updateData({
             accessor: "salesHistory",
-            rowIndex,
+            rowId,
             newValue: updatedSalesHistory,
           });
 
@@ -377,6 +377,7 @@ const LiveUpdateDemo = ({
       columns={headers}
       rows={initialData}
       ref={tableRef}
+      getRowId={({ row }) => (row as { id: number }).id}
       height={height}
       theme={theme}
     />

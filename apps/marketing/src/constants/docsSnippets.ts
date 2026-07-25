@@ -53,6 +53,8 @@ export type TablePropOptions = {
   enableColumnEditorInitOpen?: boolean;
   externalSortHandling?: boolean;
   enablePagination?: boolean;
+  isLoading?: boolean;
+  cellUpdateFlash?: boolean;
   selectableCells?: boolean;
   selectableColumns?: boolean;
   copyHeadersToClipboard?: boolean;
@@ -68,6 +70,8 @@ type BoolTableProp =
   | "enableColumnEditorInitOpen"
   | "externalSortHandling"
   | "enablePagination"
+  | "isLoading"
+  | "cellUpdateFlash"
   | "selectableCells"
   | "selectableColumns"
   | "copyHeadersToClipboard";
@@ -80,6 +84,8 @@ const BOOL_PROP_KEBAB: Record<BoolTableProp, string> = {
   enableColumnEditorInitOpen: "enable-column-editor-init-open",
   externalSortHandling: "external-sort-handling",
   enablePagination: "enable-pagination",
+  isLoading: "is-loading",
+  cellUpdateFlash: "cell-update-flash",
   selectableCells: "selectable-cells",
   selectableColumns: "selectable-columns",
   copyHeadersToClipboard: "copy-headers-to-clipboard",
@@ -125,6 +131,8 @@ function pushTableBoolProps(
   );
   pushBoolProp(framework, target, "externalSortHandling", options.externalSortHandling);
   pushBoolProp(framework, target, "enablePagination", options.enablePagination);
+  pushBoolProp(framework, target, "isLoading", options.isLoading);
+  pushBoolProp(framework, target, "cellUpdateFlash", options.cellUpdateFlash);
   pushBoolProp(framework, target, "selectableCells", options.selectableCells);
   pushBoolProp(framework, target, "selectableColumns", options.selectableColumns);
   pushBoolProp(framework, target, "copyHeadersToClipboard", options.copyHeadersToClipboard);
@@ -1353,6 +1361,411 @@ export class StatusCellComponent {
 const columns = [
   { accessor: "status", label: "Status", width: 120, cellRenderer: StatusCell },
 ];`,
+  };
+}
+
+/** Live cell updates via TableAPI.updateData + cellUpdateFlash. */
+export function liveUpdateSnippets(): Record<Framework, string> {
+  return {
+    react: `const tableRef = useRef(null);
+
+<SimpleTable
+  ref={tableRef}
+  columns={columns}
+  rows={rows}
+  getRowId={({ row }) => row.id}
+  cellUpdateFlash
+/>
+
+// Update the price cell on the row with this id.
+tableRef.current?.updateData({
+  accessor: "price",
+  rowId: targetId,
+  newValue: 29.99,
+});`,
+    solid: `let tableRef;
+
+<SimpleTable
+  ref={(api) => (tableRef = api)}
+  columns={columns}
+  rows={rows()}
+  getRowId={({ row }) => row.id}
+  cellUpdateFlash
+/>
+
+// Update the price cell on the row with this id.
+tableRef?.updateData({
+  accessor: "price",
+  rowId: targetId,
+  newValue: 29.99,
+});`,
+    vue: `const tableRef = ref(null);
+const getRowId = ({ row }) => row.id;
+
+<SimpleTable
+  ref="tableRef"
+  :columns="columns"
+  :rows="rows"
+  :get-row-id="getRowId"
+  :cell-update-flash="true"
+/>
+
+// Update the price cell on the row with this id.
+tableRef.value?.getAPI()?.updateData({
+  accessor: "price",
+  rowId: targetId,
+  newValue: 29.99,
+});`,
+    angular: `@ViewChild("simpleTable") tableRef!: SimpleTableComponent;
+getRowId = ({ row }: { row: { id: number } }) => row.id;
+
+<simple-table
+  #simpleTable
+  [columns]="columns"
+  [rows]="rows"
+  [getRowId]="getRowId"
+  [cellUpdateFlash]="true"
+></simple-table>
+
+// Update the price cell on the row with this id.
+this.tableRef.getAPI()?.updateData({
+  accessor: "price",
+  rowId: targetId,
+  newValue: 29.99,
+});`,
+    svelte: `let tableRef;
+
+<SimpleTable
+  bind:this={tableRef}
+  {columns}
+  {rows}
+  getRowId={({ row }) => row.id}
+  cellUpdateFlash={true}
+/>
+
+// Update the price cell on the row with this id.
+tableRef.getAPI()?.updateData({
+  accessor: "price",
+  rowId: targetId,
+  newValue: 29.99,
+});`,
+    vanilla: `const table = new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  getRowId: ({ row }) => row.id,
+  cellUpdateFlash: true,
+});
+
+// Update the price cell on the row with this id.
+table.getAPI().updateData({
+  accessor: "price",
+  rowId: targetId,
+  newValue: 29.99,
+});`,
+  };
+}
+
+/** Infinite scroll: append rows in onLoadMore. */
+export function infiniteScrollSnippets(): Record<Framework, string> {
+  return {
+    react: `const [rows, setRows] = useState(initialRows);
+const [isLoading, setIsLoading] = useState(false);
+
+const handleLoadMore = async () => {
+  if (isLoading) return;
+  setIsLoading(true);
+  setRows((prev) => [...prev, ...(await fetchMore(prev.length))]);
+  setIsLoading(false);
+};
+
+<SimpleTable
+  columns={columns}
+  rows={rows}
+  height="400px"
+  onLoadMore={handleLoadMore}
+  isLoading={isLoading}
+/>`,
+    solid: `const [rows, setRows] = createSignal(initialRows);
+const [isLoading, setIsLoading] = createSignal(false);
+
+const handleLoadMore = async () => {
+  if (isLoading()) return;
+  setIsLoading(true);
+  setRows([...rows(), ...(await fetchMore(rows().length))]);
+  setIsLoading(false);
+};
+
+<SimpleTable
+  columns={columns}
+  rows={rows()}
+  height="400px"
+  onLoadMore={handleLoadMore}
+  isLoading={isLoading()}
+/>`,
+    vue: `<script setup>
+import { ref } from "vue";
+const rows = ref(initialRows);
+const isLoading = ref(false);
+
+const handleLoadMore = async () => {
+  if (isLoading.value) return;
+  isLoading.value = true;
+  rows.value = [...rows.value, ...(await fetchMore(rows.value.length))];
+  isLoading.value = false;
+};
+</script>
+
+<template>
+  <SimpleTable
+    :columns="columns"
+    :rows="rows"
+    height="400px"
+    :on-load-more="handleLoadMore"
+    :is-loading="isLoading"
+  />
+</template>`,
+    angular: `rows = initialRows;
+isLoading = false;
+
+handleLoadMore = async () => {
+  if (this.isLoading) return;
+  this.isLoading = true;
+  this.rows = [...this.rows, ...(await fetchMore(this.rows.length))];
+  this.isLoading = false;
+};
+
+<simple-table
+  [columns]="columns"
+  [rows]="rows"
+  height="400px"
+  [onLoadMore]="handleLoadMore"
+  [isLoading]="isLoading"
+></simple-table>`,
+    svelte: `<script>
+  let rows = $state(initialRows);
+  let isLoading = $state(false);
+
+  const handleLoadMore = async () => {
+    if (isLoading) return;
+    isLoading = true;
+    rows = [...rows, ...(await fetchMore(rows.length))];
+    isLoading = false;
+  };
+</script>
+
+<SimpleTable
+  {columns}
+  {rows}
+  height="400px"
+  onLoadMore={handleLoadMore}
+  isLoading={isLoading}
+/>`,
+    vanilla: `let rows = initialRows;
+
+const table = new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  height: "400px",
+  isLoading: false,
+  onLoadMore: async () => {
+    table.update({ isLoading: true });
+    rows = [...rows, ...(await fetchMore(rows.length))];
+    table.update({ rows, isLoading: false });
+  },
+});`,
+  };
+}
+
+/** Infinite scroll driven by the page (or an external scroller). */
+export function infiniteScrollWindowSnippets(): Record<Framework, string> {
+  return {
+    react: `<SimpleTable
+  columns={columns}
+  rows={rows}
+  scrollParent="window"
+  onLoadMore={handleLoadMore}
+  isLoading={isLoading}
+/>`,
+    solid: `<SimpleTable
+  columns={columns}
+  rows={rows()}
+  scrollParent="window"
+  onLoadMore={handleLoadMore}
+  isLoading={isLoading()}
+/>`,
+    vue: `<SimpleTable
+  :columns="columns"
+  :rows="rows"
+  scroll-parent="window"
+  :on-load-more="handleLoadMore"
+  :is-loading="isLoading"
+/>`,
+    angular: `<simple-table
+  [columns]="columns"
+  [rows]="rows"
+  scrollParent="window"
+  [onLoadMore]="handleLoadMore"
+  [isLoading]="isLoading"
+></simple-table>`,
+    svelte: `<SimpleTable
+  {columns}
+  {rows}
+  scrollParent="window"
+  onLoadMore={handleLoadMore}
+  isLoading={isLoading}
+/>`,
+    vanilla: `new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  scrollParent: "window",
+  onLoadMore: handleLoadMore,
+});`,
+  };
+}
+
+/** Custom tableEmptyStateRenderer when there are no rows. */
+export function tableEmptyStateSnippets(): Record<Framework, string> {
+  return {
+    react: `const EmptyState = () => (
+  <div style={{ padding: 48, textAlign: "center", color: "#6b7280" }}>
+    No data available
+  </div>
+);
+
+<SimpleTable
+  columns={columns}
+  rows={[]}
+  tableEmptyStateRenderer={<EmptyState />}
+/>`,
+    solid: `const EmptyState = () => (
+  <div style={{ padding: "48px", "text-align": "center", color: "#6b7280" }}>
+    No data available
+  </div>
+);
+
+<SimpleTable
+  columns={columns}
+  rows={[]}
+  tableEmptyStateRenderer={<EmptyState />}
+/>`,
+    vue: `import { h } from "vue";
+
+const emptyState = h(
+  "div",
+  { style: { padding: "48px", textAlign: "center", color: "#6b7280" } },
+  "No data available",
+);
+
+<SimpleTable
+  :columns="columns"
+  :rows="[]"
+  :table-empty-state-renderer="emptyState"
+/>`,
+    angular: `// empty-state.component.ts — template: "No data available"
+
+emptyStateEl = wrapAngularRenderer(
+  EmptyStateComponent,
+  this.appRef,
+  this.envInjector,
+)({});
+
+<simple-table
+  [columns]="columns"
+  [rows]="[]"
+  [tableEmptyStateRenderer]="emptyStateEl"
+></simple-table>`,
+    svelte: `<!-- EmptyState.svelte -->
+<div style="padding: 48px; text-align: center; color: #6b7280">
+  No data available
+</div>
+
+<SimpleTable
+  {columns}
+  rows={[]}
+  tableEmptyStateRenderer={EmptyState}
+/>`,
+    vanilla: `const empty = document.createElement("div");
+empty.style.cssText = "padding:48px;text-align:center;color:#6b7280";
+empty.textContent = "No data available";
+
+new SimpleTableVanilla(container, {
+  columns,
+  rows: [],
+  tableEmptyStateRenderer: empty,
+});`,
+  };
+}
+
+/** Toggle isLoading while fetching rows. */
+export function isLoadingSnippets(): Record<Framework, string> {
+  return {
+    react: `const [rows, setRows] = useState([]);
+const [isLoading, setIsLoading] = useState(true);
+
+useEffect(() => {
+  fetchRows().then((data) => {
+    setRows(data);
+    setIsLoading(false);
+  });
+}, []);
+
+<SimpleTable columns={columns} rows={rows} isLoading={isLoading} />`,
+    solid: `const [rows, setRows] = createSignal([]);
+const [isLoading, setIsLoading] = createSignal(true);
+
+onMount(async () => {
+  setRows(await fetchRows());
+  setIsLoading(false);
+});
+
+<SimpleTable columns={columns} rows={rows()} isLoading={isLoading()} />`,
+    vue: `<script setup>
+import { onMounted, ref } from "vue";
+const rows = ref([]);
+const isLoading = ref(true);
+
+onMounted(async () => {
+  rows.value = await fetchRows();
+  isLoading.value = false;
+});
+</script>
+
+<template>
+  <SimpleTable :columns="columns" :rows="rows" :is-loading="isLoading" />
+</template>`,
+    angular: `rows = [];
+isLoading = true;
+
+async ngOnInit() {
+  this.rows = await fetchRows();
+  this.isLoading = false;
+}
+
+<simple-table
+  [columns]="columns"
+  [rows]="rows"
+  [isLoading]="isLoading"
+></simple-table>`,
+    svelte: `<script>
+  let rows = $state([]);
+  let isLoading = $state(true);
+
+  $effect(async () => {
+    rows = await fetchRows();
+    isLoading = false;
+  });
+</script>
+
+<SimpleTable {columns} {rows} isLoading={isLoading} />`,
+    vanilla: `const table = new SimpleTableVanilla(container, {
+  columns,
+  rows: [],
+  isLoading: true,
+});
+
+fetchRows().then((rows) => {
+  table.update({ rows, isLoading: false });
+});`,
   };
 }
 

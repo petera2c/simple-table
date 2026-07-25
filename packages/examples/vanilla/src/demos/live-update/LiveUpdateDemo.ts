@@ -10,6 +10,7 @@ export function renderLiveUpdateDemo(
   const table = new SimpleTableVanilla(container, {
     columns: liveUpdateConfig.headers,
     rows: liveUpdateConfig.rows,
+    getRowId: ({ row }) => (row as { id: number }).id,
     height: options?.height ?? "400px",
     theme: options?.theme,
   });
@@ -33,22 +34,22 @@ export function renderLiveUpdateDemo(
         if (typeof product.price === "number") {
           const newPrice = parseFloat((product.price * (0.95 + Math.random() * 0.1)).toFixed(2));
           currentData[idx].price = newPrice;
-          api.updateData({ accessor: "price", rowIndex: idx, newValue: newPrice });
+          api.updateData({ accessor: "price", rowId, newValue: newPrice });
         }
         if (typeof product.stock === "number") {
           const newStock = Math.max(0, product.stock + Math.floor((Math.random() - 0.5) * 6));
           currentData[idx].stock = newStock;
-          api.updateData({ accessor: "stock", rowIndex: idx, newValue: newStock });
+          api.updateData({ accessor: "stock", rowId, newValue: newStock });
           if (Array.isArray(product.stockHistory)) {
             const updated = [...product.stockHistory.slice(1), newStock];
             currentData[idx].stockHistory = updated;
-            api.updateData({ accessor: "stockHistory", rowIndex: idx, newValue: updated });
+            api.updateData({ accessor: "stockHistory", rowId, newValue: updated });
           }
         }
         if (Math.random() < 0.6 && typeof product.sales === "number") {
           const inc = Math.floor(Math.random() * 3) + 1;
           currentData[idx].sales = product.sales + inc;
-          api.updateData({ accessor: "sales", rowIndex: idx, newValue: currentData[idx].sales });
+          api.updateData({ accessor: "sales", rowId, newValue: currentData[idx].sales });
           currentPeriodSales.set(rowId, (currentPeriodSales.get(rowId) || 0) + inc);
         }
         scheduleUpdate();
@@ -83,7 +84,7 @@ export function renderLiveUpdateDemo(
         const sp = currentPeriodSales.get(rid) || 0;
         const updated = [...row.salesHistory.slice(1), sp];
         currentData[i].salesHistory = updated;
-        api.updateData({ accessor: "salesHistory", rowIndex: i, newValue: updated });
+        api.updateData({ accessor: "salesHistory", rowId: rid, newValue: updated });
         currentPeriodSales.set(rid, 0);
       }
     });

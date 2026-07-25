@@ -18,13 +18,13 @@ function pickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function applyRowPatch(api: TableAPI, rowIndex: number, patch: Partial<Row>) {
+function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Row>) {
   for (const accessor of Object.keys(patch)) {
     const newValue = patch[accessor];
     if (newValue === undefined) continue;
     api.updateData({
       accessor,
-      rowIndex,
+      rowId,
       newValue: newValue as CellValue,
     });
   }
@@ -96,13 +96,9 @@ function computeMetricPatch(row: Row, slot: MetricSlot): Partial<Row> | null {
  * Drives “live server metrics” without O(visible rows) concurrent `setTimeout` chains.
  * A single interval samples a few visible rows per tick and applies one metric patch each.
  */
-export function useServerMetricsUpdates(tableRef: RefObject<TableAPI>, data: Row[]) {
+export function useServerMetricsUpdates(tableRef: RefObject<TableAPI | null>, _data: Row[]) {
   useEffect(() => {
     let isActive = true;
-    const idToIndex = new Map<string, number>();
-    for (let i = 0; i < data.length; i++) {
-      idToIndex.set(String(data[i]!.id), i);
-    }
 
     const tick = () => {
       if (!isActive) return;
@@ -116,9 +112,8 @@ export function useServerMetricsUpdates(tableRef: RefObject<TableAPI>, data: Row
       let usedCpuSparkline = false;
 
       for (const vr of picks) {
-        const rowId = String(vr.row.id);
-        const idx = idToIndex.get(rowId);
-        if (idx === undefined) continue;
+        const rowId = vr.row.id as string | number | undefined;
+        if (rowId === undefined || rowId === null || rowId === "") continue;
 
         let slot = Math.floor(Math.random() * 7) as MetricSlot;
         if (slot === 0 && usedCpuSparkline) {
@@ -130,7 +125,7 @@ export function useServerMetricsUpdates(tableRef: RefObject<TableAPI>, data: Row
 
         const patch = computeMetricPatch(vr.row, slot);
         if (patch) {
-          applyRowPatch(api, idx, patch);
+          applyRowPatch(api, rowId, patch);
         }
       }
     };
@@ -142,5 +137,5 @@ export function useServerMetricsUpdates(tableRef: RefObject<TableAPI>, data: Row
       isActive = false;
       clearInterval(intervalId);
     };
-  }, [tableRef, data]);
+  }, [tableRef]);
 }

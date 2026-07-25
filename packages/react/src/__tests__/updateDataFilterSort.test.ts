@@ -183,4 +183,75 @@ describe("updateData — filter and sort", () => {
     });
     expect(visibleProductNamesInOrder()).toEqual(["Widget A", "Widget B"]);
   });
+
+  it("updates by rowId even after sort changes visible order", async () => {
+    const rows = [
+      { id: 1, product: "Widget A", price: 10 },
+      { id: 2, product: "Widget B", price: 20 },
+      { id: 3, product: "Widget C", price: 30 },
+    ];
+    const headers: ColumnDef[] = [
+      { accessor: "product", label: "Product", width: 180, type: "string" },
+      { accessor: "price", label: "Price", width: 120, type: "number" },
+    ];
+
+    const table = mountTable({ columns: headers, rows });
+    const api = table.getAPI();
+
+    await api.applySortState({ accessor: "price", direction: "desc" });
+    await waitFor(() => visibleProductNamesInOrder()[0] === "Widget C");
+
+    // Target Widget A by business id — not by visible index 0 (now Widget C).
+    api.updateData({ accessor: "price", rowId: 1, newValue: 99 });
+    await flushMicrotasks();
+    await waitFor(() => (rows[0].price as number) === 99);
+    expect(rows[0].price).toBe(99);
+    expect(rows[2].price).toBe(30);
+
+    await waitFor(() => {
+      const order = api.getVisibleRows().map((vr) => (vr.row as { product: string }).product);
+      return order[0] === "Widget A";
+    });
+    expect(api.getVisibleRows().map((vr) => (vr.row as { product: string }).product)).toEqual([
+      "Widget A",
+      "Widget C",
+      "Widget B",
+    ]);
+  });
+
+  it("prefers rowId when both rowId and rowIndex are provided", async () => {
+    const rows = [
+      { id: 1, product: "Widget A", price: 10 },
+      { id: 2, product: "Widget B", price: 20 },
+    ];
+    const headers: ColumnDef[] = [
+      { accessor: "product", label: "Product", width: 180, type: "string" },
+      { accessor: "price", label: "Price", width: 120, type: "number" },
+    ];
+
+    const table = mountTable({ columns: headers, rows });
+    const api = table.getAPI();
+
+    // rowIndex 0 would be Widget A; rowId 2 must win.
+    api.updateData({ accessor: "price", rowId: 2, rowIndex: 0, newValue: 77 });
+    await flushMicrotasks();
+    await waitFor(() => (rows[1].price as number) === 77);
+    expect(rows[0].price).toBe(10);
+    expect(rows[1].price).toBe(77);
+  });
+
+  it("no-ops when rowId is unknown", async () => {
+    const rows = [{ id: 1, product: "Widget A", price: 10 }];
+    const headers: ColumnDef[] = [
+      { accessor: "product", label: "Product", width: 180, type: "string" },
+      { accessor: "price", label: "Price", width: 120, type: "number" },
+    ];
+
+    const table = mountTable({ columns: headers, rows });
+    const api = table.getAPI();
+
+    api.updateData({ accessor: "price", rowId: "missing", newValue: 99 });
+    await flushMicrotasks();
+    expect(rows[0].price).toBe(10);
+  });
 });

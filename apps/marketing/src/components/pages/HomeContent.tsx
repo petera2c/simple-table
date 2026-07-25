@@ -193,7 +193,7 @@ export default function HomeContent() {
               </Button>
             </Tooltip>
           </motion.div>
-          <div className="flex items-center gap-4 flex-wrap">
+          <div className="hidden md:flex items-center gap-4 flex-wrap">
             <motion.div
               className="flex items-center gap-2"
               initial={{ opacity: 0, x: 20 }}

@@ -1,13 +1,41 @@
 "use client";
 
+import type { ReactNode } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInbox } from "@fortawesome/free-solid-svg-icons";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
 import PageWrapper from "@/components/PageWrapper";
-import PropTable, { type PropInfo } from "@/components/PropTable";
+import CodeBlock from "@/components/CodeBlock";
 import LivePreview from "@/components/LivePreview";
+import PropTable, { type PropInfo } from "@/components/PropTable";
 import EmptyStateDemo from "@/components/demos/EmptyStateDemo";
+import { tableEmptyStateSnippets, type CodeByFramework } from "@/constants/docsSnippets";
+
+type EmptyPattern = {
+  title: string;
+  body: ReactNode;
+  codeByFramework: CodeByFramework;
+};
+
+const EMPTY_PATTERNS: EmptyPattern[] = [
+  {
+    title: "Custom empty state",
+    body: (
+      <>
+        Pass{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+          tableEmptyStateRenderer
+        </code>{" "}
+        to replace the blank body when{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">rows</code> is empty
+        (no data or filters match nothing).
+      </>
+    ),
+    codeByFramework: tableEmptyStateSnippets(),
+  },
+];
 
 const EMPTY_STATE_PROPS: PropInfo[] = [
   {
@@ -15,17 +43,9 @@ const EMPTY_STATE_PROPS: PropInfo[] = [
     name: "tableEmptyStateRenderer",
     required: false,
     description:
-      "Custom content to display in the table body when there are no rows to display. This can occur when filters return no results or when no data is provided.",
-    type: "ReactNode",
-    example: `<SimpleTable
-  tableEmptyStateRenderer={
-    <div className="flex flex-col items-center p-8">
-      <span className="text-gray-500">No results found</span>
-      <button onClick={clearFilters}>Clear filters</button>
-    </div>
-  }
-  // ... other props
-/>`,
+      "Custom content shown in the table body when there are no rows. Framework adapters accept components or elements; vanilla accepts a string or DOM node.",
+    type: "ReactNode | HTMLElement | string | null",
+    example: `tableEmptyStateRenderer={<EmptyState />}`,
   },
 ];
 
@@ -38,113 +58,98 @@ const EmptyStateContent = () => {
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="p-2 bg-indigo-100 rounded-lg">
-          <FontAwesomeIcon icon={faInbox} className="text-indigo-600 text-2xl" />
+        <div className="p-2 bg-blue-100 rounded-lg">
+          <FontAwesomeIcon icon={faInbox} className="text-blue-600 text-2xl" />
         </div>
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Empty State</h1>
       </motion.div>
 
-      {/* Demo Section */}
-      <motion.div
-        className="mb-8"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-      >
-        <LivePreview
-          demoId="empty-state"
-          height="450px"
-          Preview={EmptyStateDemo}
-        />
-      </motion.div>
-
       <motion.p
-        className="text-gray-700 dark:text-gray-300 mb-6 text-lg"
+        className="text-gray-700 dark:text-gray-300 mb-8 text-lg"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Customize what users see when your table has no data to display. Whether it&apos;s an empty
-        dataset, filtered results returning nothing, or data that hasn&apos;t loaded yet—provide
-        helpful context instead of a blank table.
+        Customize what users see when the table has no rows with{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+          tableEmptyStateRenderer
+        </code>
+        .
       </motion.p>
 
-      {/* Basic Usage Section */}
+      <motion.div
+        className="space-y-8 mb-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.25 }}
+      >
+        {EMPTY_PATTERNS.map((pattern) => (
+          <section key={pattern.title}>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+              {pattern.title}
+            </h2>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{pattern.body}</p>
+            <CodeBlock codeByFramework={pattern.codeByFramework} showLineNumbers={false} />
+          </section>
+        ))}
+      </motion.div>
+
+      <motion.div
+        className="mb-8 p-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.28 }}
+      >
+        <h3 className="font-semibold text-gray-800 dark:text-white mb-1 text-sm">
+          Loading vs empty
+        </h3>
+        <p className="text-gray-700 dark:text-gray-300 text-sm">
+          While fetching data, use{" "}
+          <Link
+            href="/docs/loading-state"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            isLoading
+          </Link>{" "}
+          instead — the empty renderer only applies when there are no rows and loading is off.
+        </p>
+      </motion.div>
+
       <motion.h2
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        Basic Usage
+        Example
       </motion.h2>
-
+      <motion.p
+        className="text-gray-700 dark:text-gray-300 mb-4 text-sm"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.32 }}
+      >
+        An empty table with a custom message. Use Code or StackBlitz for the full example.
+      </motion.p>
       <motion.div
         className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+        transition={{ duration: 0.5, delay: 0.35 }}
       >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          Pass any React component to{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            tableEmptyStateRenderer
-          </code>{" "}
-          to display custom content when the table has no rows:
-        </p>
-
-        <PropTable props={EMPTY_STATE_PROPS} title="Empty State Configuration" />
+        <LivePreview demoId="empty-state" height="400px" Preview={EmptyStateDemo} />
       </motion.div>
 
-      {/* Use Cases Section */}
       <motion.h2
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
       >
-        Common Use Cases
+        Props
       </motion.h2>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
-      >
-        <ul className="list-disc pl-5 space-y-3 text-gray-700 dark:text-gray-300 mb-6">
-          <li>
-            <strong>No search results</strong> — Show a &quot;No results found&quot; message with a
-            button to clear filters
-          </li>
-          <li>
-            <strong>Empty dataset</strong> — Display onboarding guidance like &quot;Add your first
-            item&quot; with a call-to-action
-          </li>
-          <li>
-            <strong>Permission restricted</strong> — Inform users they don&apos;t have access to
-            view this data
-          </li>
-          <li>
-            <strong>Error state</strong> — Show an error message with a retry button when data
-            fetching fails
-          </li>
-        </ul>
-
-        <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-400 dark:border-blue-700 p-4 rounded-lg shadow-sm">
-          <h3 className="font-bold text-gray-800 dark:text-white mb-2">💡 Pro Tip</h3>
-          <p className="text-gray-700 dark:text-gray-300">
-            This prop only affects the table body when there are no rows. For loading states while
-            data is being fetched, use the{" "}
-            <a
-              href="/docs/loading-state"
-              className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-            >
-              isLoading
-            </a>{" "}
-            prop instead.
-          </p>
-        </div>
-      </motion.div>
+      <PropTable props={EMPTY_STATE_PROPS} title="Empty State Configuration" />
 
       <DocNavigationButtons />
     </PageWrapper>

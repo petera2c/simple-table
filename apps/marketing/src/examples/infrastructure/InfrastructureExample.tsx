@@ -57,6 +57,7 @@ export default function InfrastructureExample({
       columnResizing
       columns={HEADERS}
       enableColumnEditor
+      getRowId={({ row }) => (row as { id: number }).id}
       height={height ? height : "60dvh"}
       icons={icons}
       rows={data}

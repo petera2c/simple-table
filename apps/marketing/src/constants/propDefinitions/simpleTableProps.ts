@@ -984,10 +984,10 @@ useEffect(() => {
 // Export table data to CSV
 tableRef.current?.exportToCSV({ filename: "data.csv" });
 
-// Update cell data programmatically
+// Update cell data programmatically (prefer rowId with getRowId)
 tableRef.current?.updateData({
   accessor: "status",
-  rowIndex: 0,
+  rowId: 1,
   newValue: "active"
 });`,
   },

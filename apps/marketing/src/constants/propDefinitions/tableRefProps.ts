@@ -28,23 +28,21 @@ tableRef.current?.exportToCSV({
     name: "updateData",
     required: false,
     description:
-      "Programmatically update a specific cell value in the table. Useful for live updates and real-time data changes. Triggers cellUpdateFlash animation if enabled.",
-    type: "(params: { accessor: Accessor; rowIndex: number; newValue: CellValue }) => void",
-    example: `// Update a single cell
+      "Programmatically update a cell. Prefer rowId (requires getRowId); rowIndex targets the source rows array. Triggers cellUpdateFlash when enabled.",
+    type: "(params: { accessor: Accessor; newValue: CellValue; rowId?: RowId; rowIndex?: number }) => void",
+    example: `// Preferred: update by stable row id
 tableRef.current?.updateData({
   accessor: "price",
-  rowIndex: 2,
+  rowId: 42,
   newValue: 29.99
 });
 
-// Update based on condition
-if (stockLow) {
-  tableRef.current?.updateData({
-    accessor: "status",
-    rowIndex: 5,
-    newValue: "Low Stock"
-  });
-}`,
+// Or by index into your source rows array
+tableRef.current?.updateData({
+  accessor: "status",
+  rowIndex: 5,
+  newValue: "Low Stock"
+});`,
   },
   {
     key: "setHeaderRename",

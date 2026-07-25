@@ -16,11 +16,11 @@ function pickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function applyRowPatch(api: TableAPI, rowIndex: number, patch: Partial<Row>) {
+function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Row>) {
   for (const accessor of Object.keys(patch)) {
     const newValue = patch[accessor];
     if (newValue === undefined) continue;
-    api.updateData({ accessor, rowIndex, newValue: newValue as CellValue });
+    api.updateData({ accessor, rowId, newValue: newValue as CellValue });
   }
 }
 
@@ -29,13 +29,9 @@ function applyRowPatch(api: TableAPI, rowIndex: number, patch: Partial<Row>) {
  * coins, recomputes the 24h change, and pushes a new point onto the sparkline
  * history. Uses `updateData` so only the affected cells re-render (and flash).
  */
-export function useCryptoTicker(tableRef: RefObject<TableAPI>, data: Row[]) {
+export function useCryptoTicker(tableRef: RefObject<TableAPI | null>, _data: Row[]) {
   useEffect(() => {
     let isActive = true;
-    const idToIndex = new Map<string, number>();
-    for (let i = 0; i < data.length; i++) {
-      idToIndex.set(String(data[i]!.id), i);
-    }
 
     const tick = () => {
       if (!isActive) return;
@@ -46,8 +42,8 @@ export function useCryptoTicker(tableRef: RefObject<TableAPI>, data: Row[]) {
       if (!visible.length) return;
 
       for (const vr of pickRandomSubset(visible, ROWS_PER_TICK)) {
-        const idx = idToIndex.get(String(vr.row.id));
-        if (idx === undefined) continue;
+        const rowId = vr.row.id as string | number | undefined;
+        if (rowId === undefined || rowId === null || rowId === "") continue;
 
         const currentPrice = vr.row.price as number;
         if (typeof currentPrice !== "number") continue;
@@ -66,7 +62,7 @@ export function useCryptoTicker(tableRef: RefObject<TableAPI>, data: Row[]) {
           patch.priceHistory = [...history.slice(1), newPriceRounded];
         }
 
-        applyRowPatch(api, idx, patch);
+        applyRowPatch(api, rowId, patch);
       }
     };
 
@@ -75,5 +71,5 @@ export function useCryptoTicker(tableRef: RefObject<TableAPI>, data: Row[]) {
       isActive = false;
       clearInterval(intervalId);
     };
-  }, [tableRef, data]);
+  }, [tableRef]);
 }

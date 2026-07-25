@@ -55,7 +55,7 @@ export default function ExampleControls({ codeButton, sandboxButton }: ExampleCo
           />
         </div>
 
-        <div className="flex flex-col gap-1">
+        <div className="hidden md:flex flex-col gap-1">
           <span className="text-sm text-gray-600 dark:text-gray-300">Theme</span>
           <ThemeSelector
             currentTheme={currentTheme}
@@ -74,7 +74,7 @@ export default function ExampleControls({ codeButton, sandboxButton }: ExampleCo
           />
         </div>
 
-        <div className="flex flex-col gap-1">
+        <div className="hidden md:flex flex-col gap-1">
           <span className="text-sm text-gray-600 dark:text-gray-300">Icons</span>
           <IconLibrarySelector
             currentIconLibrary={currentIconLibrary}

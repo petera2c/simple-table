@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { Theme, TableAPI, Row, CellValue } from "simple-table-core";
-import { cryptoConfig, cryptoData } from "./crypto.demo-data";
+import { cryptoConfig } from "./crypto.demo-data";
 import "simple-table-core/styles.css";
 
 const TICK_MS = 90;
@@ -17,22 +17,22 @@ function pickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function applyRowPatch(api: TableAPI, rowIndex: number, patch: Partial<Row>) {
+function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Row>) {
   for (const accessor of Object.keys(patch)) {
     const newValue = patch[accessor];
     if (newValue === undefined) continue;
-    api.updateData({ accessor, rowIndex, newValue: newValue as CellValue });
+    api.updateData({ accessor, rowId, newValue: newValue as CellValue });
   }
 }
 
-function runTick(getApi: () => TableAPI | null | undefined, idToIndex: Map<string, number>) {
+function runTick(getApi: () => TableAPI | null | undefined) {
   const api = getApi();
   if (!api) return;
   const visible = api.getVisibleRows();
   if (!visible.length) return;
   for (const vr of pickRandomSubset(visible, ROWS_PER_TICK)) {
-    const idx = idToIndex.get(String(vr.row.id));
-    if (idx === undefined) continue;
+    const rowId = vr.row.id as string | number | undefined;
+    if (rowId === undefined || rowId === null || rowId === "") continue;
     const currentPrice = vr.row.price as number;
     if (typeof currentPrice !== "number") continue;
     const drift = (Math.random() - 0.5) * 0.012;
@@ -46,7 +46,7 @@ function runTick(getApi: () => TableAPI | null | undefined, idToIndex: Map<strin
     if (Array.isArray(history) && history.length > 0) {
       patch.priceHistory = [...history.slice(1), newPriceRounded];
     }
-    applyRowPatch(api, idx, patch);
+    applyRowPatch(api, rowId, patch);
   }
 }
 
@@ -57,6 +57,7 @@ export function renderCryptoDemo(
   const table = new SimpleTableVanilla(container, {
     columns: cryptoConfig.headers,
     rows: cryptoConfig.rows,
+    getRowId: ({ row }) => (row as { id: string | number }).id,
     height: options?.height ?? "70dvh",
     theme: options?.theme,
     columnReordering: true,
@@ -67,9 +68,7 @@ export function renderCryptoDemo(
     customTheme: { headerHeight: 40, rowHeight: 48 },
   });
 
-  const idToIndex = new Map<string, number>();
-  for (let i = 0; i < cryptoData.length; i++) idToIndex.set(String(cryptoData[i]!.id), i);
-  const intervalId = setInterval(() => runTick(() => table.getAPI(), idToIndex), TICK_MS);
+  const intervalId = setInterval(() => runTick(() => table.getAPI()), TICK_MS);
   const originalDestroy = table.destroy.bind(table);
   table.destroy = () => {
     clearInterval(intervalId);

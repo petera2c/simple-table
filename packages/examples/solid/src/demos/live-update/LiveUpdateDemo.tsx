@@ -27,22 +27,22 @@ export default function LiveUpdateDemo(props: { height?: string | number; theme?
           if (typeof product.price === "number") {
             const newPrice = parseFloat((product.price * (0.95 + Math.random() * 0.1)).toFixed(2));
             currentData[idx].price = newPrice;
-            tableRef.updateData({ accessor: "price", rowIndex: idx, newValue: newPrice });
+            tableRef.updateData({ accessor: "price", rowId, newValue: newPrice });
           }
           if (typeof product.stock === "number") {
             const newStock = Math.max(0, product.stock + Math.floor((Math.random() - 0.5) * 6));
             currentData[idx].stock = newStock;
-            tableRef.updateData({ accessor: "stock", rowIndex: idx, newValue: newStock });
+            tableRef.updateData({ accessor: "stock", rowId, newValue: newStock });
             if (Array.isArray(product.stockHistory)) {
               const updated = [...product.stockHistory.slice(1), newStock];
               currentData[idx].stockHistory = updated;
-              tableRef.updateData({ accessor: "stockHistory", rowIndex: idx, newValue: updated });
+              tableRef.updateData({ accessor: "stockHistory", rowId, newValue: updated });
             }
           }
           if (Math.random() < 0.6 && typeof product.sales === "number") {
             const inc = Math.floor(Math.random() * 3) + 1;
             currentData[idx].sales = product.sales + inc;
-            tableRef.updateData({ accessor: "sales", rowIndex: idx, newValue: currentData[idx].sales });
+            tableRef.updateData({ accessor: "sales", rowId, newValue: currentData[idx].sales });
             currentPeriodSales.set(rowId, (currentPeriodSales.get(rowId) || 0) + inc);
           }
           scheduleUpdate();
@@ -76,7 +76,7 @@ export default function LiveUpdateDemo(props: { height?: string | number; theme?
           const sp = currentPeriodSales.get(rid) || 0;
           const updated = [...row.salesHistory.slice(1), sp];
           currentData[i].salesHistory = updated;
-          tableRef!.updateData({ accessor: "salesHistory", rowIndex: i, newValue: updated });
+          tableRef!.updateData({ accessor: "salesHistory", rowId: rid, newValue: updated });
           currentPeriodSales.set(rid, 0);
         }
       });
@@ -101,6 +101,7 @@ export default function LiveUpdateDemo(props: { height?: string | number; theme?
       ref={(api) => (tableRef = api)}
       columns={liveUpdateConfig.headers}
       rows={liveUpdateConfig.rows}
+      getRowId={({ row }) => (row as { id: number }).id}
       height={props.height ?? "400px"}
       theme={props.theme}
     />

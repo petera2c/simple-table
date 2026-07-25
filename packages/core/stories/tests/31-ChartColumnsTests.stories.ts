@@ -209,7 +209,7 @@ export const ChartLiveUpdate = {
     updateBtn.setAttribute("data-testid", "update-chart-btn");
     updateBtn.textContent = "Update Chart Data";
     updateBtn.onclick = () => {
-      table.getAPI().updateData({ accessor: "trend", rowIndex: 0, newValue: [50, 60, 70, 80, 90] });
+      table.getAPI().updateData({ accessor: "trend", rowId: 1, newValue: [50, 60, 70, 80, 90] });
     };
 
     const wrapper = document.createElement("div");

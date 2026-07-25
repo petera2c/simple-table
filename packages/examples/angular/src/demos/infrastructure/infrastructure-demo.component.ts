@@ -139,6 +139,7 @@ function getHeaders(theme?: Theme): AngularColumnDef[] {
       [columnResizing]="true"
       [columns]="headers"
       [enableColumnEditor]="true"
+      [getRowId]="getRowId"
       [height]="height"
       [rows]="rows"
       [selectableCells]="true"
@@ -153,11 +154,12 @@ export class InfrastructureDemoComponent implements AfterViewInit, OnDestroy {
 
   readonly rows: Row[] = infrastructureData;
   readonly headers: AngularColumnDef[] = getHeaders();
+  readonly getRowId = ({ row }: { row: Row }) => (row as { id: string | number }).id;
 
   private cleanupFn?: () => void;
 
   ngAfterViewInit(): void {
-    this.cleanupFn = startInfraDemoLiveUpdates(() => this.tableRef?.getAPI() ?? null, this.rows);
+    this.cleanupFn = startInfraDemoLiveUpdates(() => this.tableRef?.getAPI() ?? null);
   }
 
   ngOnDestroy(): void {
