@@ -49,6 +49,9 @@ export type TablePropOptions = {
   columnReordering?: boolean;
   enableColumnEditor?: boolean;
   enableColumnEditorInitOpen?: boolean;
+  externalSortHandling?: boolean;
+  initialSortColumn?: string;
+  initialSortDirection?: "asc" | "desc";
 };
 
 type BoolTableProp =
@@ -56,7 +59,8 @@ type BoolTableProp =
   | "columnResizing"
   | "columnReordering"
   | "enableColumnEditor"
-  | "enableColumnEditorInitOpen";
+  | "enableColumnEditorInitOpen"
+  | "externalSortHandling";
 
 const BOOL_PROP_KEBAB: Record<BoolTableProp, string> = {
   autoExpandColumns: "auto-expand-columns",
@@ -64,6 +68,7 @@ const BOOL_PROP_KEBAB: Record<BoolTableProp, string> = {
   columnReordering: "column-reordering",
   enableColumnEditor: "enable-column-editor",
   enableColumnEditorInitOpen: "enable-column-editor-init-open",
+  externalSortHandling: "external-sort-handling",
 };
 
 function pushBoolProp(
@@ -104,6 +109,31 @@ function pushTableBoolProps(
     "enableColumnEditorInitOpen",
     options.enableColumnEditorInitOpen
   );
+  pushBoolProp(framework, target, "externalSortHandling", options.externalSortHandling);
+}
+
+function pushSortProps(framework: Framework, target: string[], options: TablePropOptions) {
+  const { initialSortColumn, initialSortDirection } = options;
+  if (!initialSortColumn && !initialSortDirection) return;
+
+  if (framework === "vanilla") {
+    if (initialSortColumn) target.push(`initialSortColumn: "${initialSortColumn}"`);
+    if (initialSortDirection) target.push(`initialSortDirection: "${initialSortDirection}"`);
+    return;
+  }
+  if (framework === "vue") {
+    if (initialSortColumn) target.push(`initial-sort-column="${initialSortColumn}"`);
+    if (initialSortDirection) target.push(`initial-sort-direction="${initialSortDirection}"`);
+    return;
+  }
+  if (framework === "angular") {
+    if (initialSortColumn) target.push(`initialSortColumn="${initialSortColumn}"`);
+    if (initialSortDirection) target.push(`initialSortDirection="${initialSortDirection}"`);
+    return;
+  }
+  // react, solid, svelte
+  if (initialSortColumn) target.push(`initialSortColumn="${initialSortColumn}"`);
+  if (initialSortDirection) target.push(`initialSortDirection="${initialSortDirection}"`);
 }
 
 export function tableSnippet(framework: Framework, options: TablePropOptions = {}): string {
@@ -114,6 +144,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     if (height) lines.push(`height: "${height}"`);
     if (maxHeight) lines.push(`maxHeight: "${maxHeight}"`);
     if (scrollParent) lines.push(`scrollParent: "${scrollParent}"`);
+    pushSortProps(framework, lines, options);
     pushTableBoolProps(framework, lines, options);
     return `new SimpleTableVanilla(container, {
   ${lines.join(",\n  ")},
@@ -125,6 +156,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     if (height) attrs.push(`height="${height}"`);
     if (maxHeight) attrs.push(`max-height="${maxHeight}"`);
     if (scrollParent) attrs.push(`scroll-parent="${scrollParent}"`);
+    pushSortProps(framework, attrs, options);
     pushTableBoolProps(framework, attrs, options);
     return `<SimpleTable\n  ${attrs.join("\n  ")}\n/>`;
   }
@@ -134,6 +166,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     if (height) attrs.push(`height="${height}"`);
     if (maxHeight) attrs.push(`maxHeight="${maxHeight}"`);
     if (scrollParent) attrs.push(`scrollParent="${scrollParent}"`);
+    pushSortProps(framework, attrs, options);
     pushTableBoolProps(framework, attrs, options);
     return `<simple-table\n  ${attrs.join("\n  ")}\n></simple-table>`;
   }
@@ -143,6 +176,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     if (height) attrs.push(`height="${height}"`);
     if (maxHeight) attrs.push(`maxHeight="${maxHeight}"`);
     if (scrollParent) attrs.push(`scrollParent="${scrollParent}"`);
+    pushSortProps(framework, attrs, options);
     pushTableBoolProps(framework, attrs, options);
     return `<SimpleTable ${attrs.join(" ")} />`;
   }
@@ -152,6 +186,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
   if (height) attrs.push(`height="${height}"`);
   if (maxHeight) attrs.push(`maxHeight="${maxHeight}"`);
   if (scrollParent) attrs.push(`scrollParent="${scrollParent}"`);
+  pushSortProps(framework, attrs, options);
   pushTableBoolProps(framework, attrs, options);
   return `<SimpleTable ${attrs.join(" ")} />`;
 }
@@ -388,6 +423,184 @@ const ROW_RENDERER_BODY = `({ components }) => (
     {components.dragIcon}
   </div>
 )`;
+
+/** External sort: table UI only; you sort rows yourself. */
+export function externalSortSnippets(): Record<Framework, string> {
+  return {
+    react: `<SimpleTable
+  externalSortHandling
+  columns={columns}
+  rows={sortedRows}
+  onSortChange={(sort) => {
+    // fetch or sort sortedRows from sort.key / sort.direction
+  }}
+/>`,
+    solid: `<SimpleTable
+  externalSortHandling
+  columns={columns}
+  rows={sortedRows()}
+  onSortChange={(sort) => {
+    // fetch or sort sortedRows from sort.key / sort.direction
+  }}
+/>`,
+    vue: `<SimpleTable
+  :external-sort-handling="true"
+  :columns="columns"
+  :rows="sortedRows"
+  :on-sort-change="handleSortChange"
+/>`,
+    angular: `<simple-table
+  [externalSortHandling]="true"
+  [columns]="columns"
+  [rows]="sortedRows"
+  [onSortChange]="handleSortChange"
+></simple-table>`,
+    svelte: `<SimpleTable
+  externalSortHandling={true}
+  {columns}
+  rows={sortedRows}
+  onSortChange={handleSortChange}
+/>`,
+    vanilla: `new SimpleTableVanilla(container, {
+  columns,
+  rows: sortedRows,
+  externalSortHandling: true,
+  onSortChange: (sort) => {
+    // fetch or sort sortedRows from sort.key / sort.direction
+  },
+});`,
+  };
+}
+
+export function externalFilterSnippets(): Record<Framework, string> {
+  return {
+    react: `<SimpleTable
+  externalFilterHandling
+  columns={columns}
+  rows={filteredRows}
+  onFilterChange={(filters) => {
+    // fetch or filter filteredRows from filters
+  }}
+/>`,
+    solid: `<SimpleTable
+  externalFilterHandling
+  columns={columns}
+  rows={filteredRows()}
+  onFilterChange={(filters) => {
+    // fetch or filter filteredRows from filters
+  }}
+/>`,
+    vue: `<SimpleTable
+  :external-filter-handling="true"
+  :columns="columns"
+  :rows="filteredRows"
+  :on-filter-change="handleFilterChange"
+/>`,
+    angular: `<simple-table
+  [externalFilterHandling]="true"
+  [columns]="columns"
+  [rows]="filteredRows"
+  [onFilterChange]="handleFilterChange"
+></simple-table>`,
+    svelte: `<SimpleTable
+  externalFilterHandling={true}
+  {columns}
+  rows={filteredRows}
+  onFilterChange={handleFilterChange}
+/>`,
+    vanilla: `new SimpleTableVanilla(container, {
+  columns,
+  rows: filteredRows,
+  externalFilterHandling: true,
+  onFilterChange: (filters) => {
+    // fetch or filter filteredRows from filters
+  },
+});`,
+  };
+}
+
+export function columnSelectionSnippets(): Record<Framework, string> {
+  return {
+    react: `<SimpleTable
+  selectableColumns
+  columns={columns}
+  rows={rows}
+  onColumnSelect={(column) => {
+    // column.accessor, column.label, ...
+  }}
+/>`,
+    solid: `<SimpleTable
+  selectableColumns
+  columns={columns}
+  rows={rows()}
+  onColumnSelect={(column) => {
+    // column.accessor, column.label, ...
+  }}
+/>`,
+    vue: `<SimpleTable
+  :selectable-columns="true"
+  :columns="columns"
+  :rows="rows"
+  :on-column-select="handleColumnSelect"
+/>`,
+    angular: `<simple-table
+  [selectableColumns]="true"
+  [columns]="columns"
+  [rows]="rows"
+  [onColumnSelect]="handleColumnSelect"
+></simple-table>`,
+    svelte: `<SimpleTable
+  selectableColumns={true}
+  {columns}
+  {rows}
+  onColumnSelect={handleColumnSelect}
+/>`,
+    vanilla: `new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  selectableColumns: true,
+  onColumnSelect: (column) => {
+    // column.accessor, column.label, ...
+  },
+});`,
+  };
+}
+
+/** Save and restore left / main / right pin bands via TableAPI. */
+export function pinnedStateSnippets(): Record<Framework, string> {
+  return {
+    react: `// Save
+const pinned = tableRef.current?.getPinnedState();
+
+// Restore
+await tableRef.current?.applyPinnedState(pinned);`,
+    solid: `// Save
+const pinned = tableRef.getPinnedState();
+
+// Restore
+await tableRef.applyPinnedState(pinned);`,
+    vue: `// Save
+const pinned = tableRef.value?.getPinnedState();
+
+// Restore
+await tableRef.value?.applyPinnedState(pinned);`,
+    angular: `// Save
+const pinned = this.tableRef.getPinnedState();
+
+// Restore
+await this.tableRef.applyPinnedState(pinned);`,
+    svelte: `// Save
+const pinned = tableRef.getPinnedState();
+
+// Restore
+await tableRef.applyPinnedState(pinned);`,
+    vanilla: `// Save
+const pinned = table.getPinnedState();
+
+// Restore
+await table.applyPinnedState(pinned);`,
+  };
+}
 
 /** Customize each column-editor row via columnEditorConfig.rowRenderer. */
 export function customColumnEditorRowSnippets(): Record<Framework, string> {

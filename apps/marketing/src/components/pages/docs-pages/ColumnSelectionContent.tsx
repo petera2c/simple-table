@@ -1,45 +1,56 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import ColumnSelectionDemo from "@/components/demos/ColumnSelectionDemo";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
 import PageWrapper from "@/components/PageWrapper";
+import CodeBlock from "@/components/CodeBlock";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
+import { columnSelectionSnippets, type CodeByFramework } from "@/constants/docsSnippets";
+
+type SelectionPattern = {
+  title: string;
+  body: ReactNode;
+  codeByFramework: CodeByFramework;
+};
+
+const SELECTION_PATTERNS: SelectionPattern[] = [
+  {
+    title: "Enable column selection",
+    body: (
+      <>
+        Set{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">selectableColumns</code>{" "}
+        and handle{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">onColumnSelect</code>.
+        Click a header to select that column (highlights the column).
+      </>
+    ),
+    codeByFramework: columnSelectionSnippets(),
+  },
+];
 
 const COLUMN_SELECTION_PROPS: PropInfo[] = [
   {
     key: "selectableColumns",
     name: "selectableColumns",
     required: false,
-    description:
-      "Enables column selection functionality. When true, users can click on column headers to select them.",
+    description: "Enables clicking column headers to select them.",
     type: "boolean",
-    example: `<SimpleTable
-  selectableColumns={true}
-  onColumnSelect={handleColumnSelect}
-  // ... other props
-/>`,
+    example: `selectableColumns={true}`,
   },
   {
     key: "onColumnSelect",
     name: "onColumnSelect",
     required: false,
     description:
-      "Callback function triggered when a column is selected. With `@simple-table/react`, receives `ReactColumnDef`. Angular, Svelte, and Solid adapters use `AngularColumnDef`, `SvelteColumnDef`, and `SolidColumnDef` respectively.",
-    type: "(header: ReactColumnDef) => void",
-    example: `const handleColumnSelect = (header: ReactColumnDef) => {
-  console.log('Selected column:', header.label);
-  console.log('Column accessor:', header.accessor);
-  console.log('Column type:', header.type);
-};
-
-<SimpleTable
-  onColumnSelect={handleColumnSelect}
-  // ... other props
-/>`,
+      "Fires when a column header is selected. Receives the framework column def (e.g. ReactColumnDef).",
+    type: "(header: ColumnDef) => void",
+    example: `onColumnSelect={(column) => { /* ... */ }}`,
   },
 ];
 
@@ -59,27 +70,33 @@ const ColumnSelectionContent = () => {
       </motion.div>
 
       <motion.p
-        className="text-gray-700 dark:text-gray-300 mb-6 text-lg"
+        className="text-gray-700 dark:text-gray-300 mb-8 text-lg"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Column selection allows users to interact with table columns by clicking on their headers.
-        This feature is useful for building interactive table interfaces where users need to select
-        columns for operations like filtering, sorting, or data analysis.
+        Let users select columns by clicking headers — useful for analysis tools or column-scoped
+        actions.
       </motion.p>
 
       <motion.div
-        className="mb-8"
+        className="space-y-8 mb-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
+        transition={{ duration: 0.5, delay: 0.25 }}
       >
-        <LivePreview
-          demoId="column-selection"
-          height="400px"
-          Preview={(props) => <ColumnSelectionDemo {...props} />}
-        />
+        {SELECTION_PATTERNS.map((pattern) => (
+          <section key={pattern.title}>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+              {pattern.title}
+            </h2>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{pattern.body}</p>
+            <CodeBlock
+              codeByFramework={pattern.codeByFramework}
+              showLineNumbers={false}
+            />
+          </section>
+        ))}
       </motion.div>
 
       <motion.h2
@@ -88,41 +105,27 @@ const ColumnSelectionContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        Basic Column Selection
+        Example
       </motion.h2>
-
       <motion.div
         className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.35 }}
+      >
+        <LivePreview demoId="column-selection" height="400px" Preview={ColumnSelectionDemo} />
+      </motion.div>
+
+      <motion.h2
+        className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.4 }}
       >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          To enable column selection in Simple Table, you need to:
-        </p>
+        Props
+      </motion.h2>
 
-        <ol className="list-decimal pl-8 space-y-2 text-gray-700 dark:text-gray-300 mb-6">
-          <li>
-            Set the{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-              selectableColumns
-            </code>{" "}
-            prop to{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-              true
-            </code>
-          </li>
-          <li>
-            Provide an{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-              onColumnSelect
-            </code>{" "}
-            callback function to handle selection events
-          </li>
-        </ol>
-
-        <PropTable props={COLUMN_SELECTION_PROPS} title="Column Selection Properties" />
-      </motion.div>
+      <PropTable props={COLUMN_SELECTION_PROPS} title="Column Selection Configuration" />
 
       <DocNavigationButtons />
     </PageWrapper>

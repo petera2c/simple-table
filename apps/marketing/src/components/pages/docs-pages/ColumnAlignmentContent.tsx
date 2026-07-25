@@ -1,13 +1,56 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAlignCenter } from "@fortawesome/free-solid-svg-icons";
 import ColumnAlignmentDemo from "@/components/demos/ColumnAlignmentDemo";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
 import PageWrapper from "@/components/PageWrapper";
+import CodeBlock from "@/components/CodeBlock";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
+import { forAllFrameworks, type CodeByFramework } from "@/constants/docsSnippets";
+
+type AlignPattern = {
+  title: string;
+  body: ReactNode;
+  codeByFramework: CodeByFramework;
+};
+
+const ALIGN_PATTERNS: AlignPattern[] = [
+  {
+    title: "Left (default)",
+    body: "Best for names, descriptions, and other text. Omit align or set it explicitly to left.",
+    codeByFramework: forAllFrameworks(`{
+  accessor: "name",
+  label: "Full Name",
+  width: "1fr",
+  align: "left",
+}`),
+  },
+  {
+    title: "Center",
+    body: "Use for status badges, icons, and other short indicators.",
+    codeByFramework: forAllFrameworks(`{
+  accessor: "status",
+  label: "Status",
+  width: 100,
+  align: "center",
+}`),
+  },
+  {
+    title: "Right",
+    body: "Use for numbers, currency, and percentages so values line up vertically.",
+    codeByFramework: forAllFrameworks(`{
+  accessor: "price",
+  label: "Price",
+  width: 120,
+  type: "number",
+  align: "right",
+}`),
+  },
+];
 
 const COLUMN_ALIGNMENT_PROPS: PropInfo[] = [
   {
@@ -15,30 +58,13 @@ const COLUMN_ALIGNMENT_PROPS: PropInfo[] = [
     name: "ColumnDef.align",
     required: false,
     description:
-      "Controls the horizontal alignment of content within the column for both header and cell content.",
+      "Horizontal alignment for header and cell content in the column. Defaults to left.",
     type: "enum",
     link: "/docs/api-reference#union-types",
     enumValues: ["left", "center", "right"],
-    example: `// Left alignment (default)
-{ 
-  accessor: "name", 
-  label: "Full Name", 
-  align: "left" 
-}
-
-// Center alignment for status indicators
-{ 
-  accessor: "status", 
-  label: "Status", 
-  align: "center" 
-}
-
-// Right alignment for numeric values
-{ 
-  accessor: "price", 
-  label: "Price", 
-  align: "right" 
-}`,
+    example: `align: "left"
+align: "center"
+align: "right"`,
   },
 ];
 
@@ -58,26 +84,34 @@ const ColumnAlignmentContent = () => {
       </motion.div>
 
       <motion.p
-        className="text-gray-700 dark:text-gray-300 mb-6 text-lg"
+        className="text-gray-700 dark:text-gray-300 mb-8 text-lg"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Column alignment allows you to control how content is positioned horizontally within each
-        column, improving readability and visual organization of your data.
+        Control horizontal alignment of header and cell content with{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">align</code>.
       </motion.p>
 
       <motion.div
-        className="mb-8"
+        className="space-y-8 mb-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
+        transition={{ duration: 0.5, delay: 0.25 }}
       >
-        <LivePreview
-          demoId="column-alignment"
-          height="400px"
-          Preview={ColumnAlignmentDemo}
-        />
+        {ALIGN_PATTERNS.map((pattern) => (
+          <section key={pattern.title}>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+              {pattern.title}
+            </h2>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{pattern.body}</p>
+            <CodeBlock
+              codeByFramework={pattern.codeByFramework}
+              language="typescript"
+              showLineNumbers={false}
+            />
+          </section>
+        ))}
       </motion.div>
 
       <motion.h2
@@ -86,71 +120,27 @@ const ColumnAlignmentContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        Basic Usage
+        Example
       </motion.h2>
-
       <motion.div
         className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+        transition={{ duration: 0.5, delay: 0.35 }}
       >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          Control column alignment by setting the <code>align</code> property in your header
-          definitions:
-        </p>
-
-        <PropTable props={COLUMN_ALIGNMENT_PROPS} title="Column Alignment Configuration" />
+        <LivePreview demoId="column-alignment" height="400px" Preview={ColumnAlignmentDemo} />
       </motion.div>
 
       <motion.h2
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
       >
-        Best Practices
+        Props
       </motion.h2>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
-      >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          Consider these guidelines for optimal column alignment:
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-            <h3 className="font-semibold text-gray-800 dark:text-white mb-2">Text Content</h3>
-            <p className="text-gray-700 dark:text-gray-300">
-              Left-align text content such as names, descriptions, and other textual data for easier
-              reading.
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-            <h3 className="font-semibold text-gray-800 dark:text-white mb-2">Numeric Values</h3>
-            <p className="text-gray-700 dark:text-gray-300">
-              Right-align numbers, currencies, and percentages to make decimal points align
-              vertically.
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-            <h3 className="font-semibold text-gray-800 dark:text-white mb-2">Headers</h3>
-            <p className="text-gray-700 dark:text-gray-300">
-              Match the header alignment with its column content for consistency.
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm">
-            <h3 className="font-semibold text-gray-800 dark:text-white mb-2">Status Indicators</h3>
-            <p className="text-gray-700 dark:text-gray-300">
-              Center-align status badges, icons, and other indicator elements to create visual
-              focus.
-            </p>
-          </div>
-        </div>
-      </motion.div>
+      <PropTable props={COLUMN_ALIGNMENT_PROPS} title="Column Alignment Configuration" />
 
       <DocNavigationButtons />
     </PageWrapper>

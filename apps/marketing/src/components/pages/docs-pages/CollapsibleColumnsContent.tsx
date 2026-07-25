@@ -1,143 +1,175 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFolderMinus } from "@fortawesome/free-solid-svg-icons";
 import CollapsibleColumnsDemo from "@/components/demos/CollapsibleColumnsDemo";
 import SingleRowChildrenDemo from "@/components/demos/SingleRowChildrenDemo";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
 import PageWrapper from "@/components/PageWrapper";
-import { faFolderMinus } from "@fortawesome/free-solid-svg-icons";
+import CodeBlock from "@/components/CodeBlock";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
+import { forAllFrameworks, type CodeByFramework } from "@/constants/docsSnippets";
+
+type CollapsePattern = {
+  title: string;
+  body: ReactNode;
+  codeByFramework: CodeByFramework;
+  language?: string;
+};
+
+const COLLAPSE_PATTERNS: CollapsePattern[] = [
+  {
+    title: "Enable collapsible groups",
+    body: (
+      <>
+        Set{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">collapsible: true</code>{" "}
+        on a parent with{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">children</code>. Users
+        click the header arrow to hide or show the group.
+      </>
+    ),
+    codeByFramework: forAllFrameworks(`{
+  accessor: "sales",
+  label: "Sales",
+  collapsible: true,
+  children: [
+    { accessor: "q1", label: "Q1", width: 90, type: "number" },
+    { accessor: "q2", label: "Q2", width: 90, type: "number" },
+    { accessor: "q3", label: "Q3", width: 90, type: "number" },
+    { accessor: "q4", label: "Q4", width: 90, type: "number" },
+  ],
+}`),
+    language: "typescript",
+  },
+  {
+    title: "Start collapsed",
+    body: (
+      <>
+        Use{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">collapseDefault</code> so
+        the group loads collapsed — useful when details should stay optional.
+      </>
+    ),
+    codeByFramework: forAllFrameworks(`{
+  accessor: "details",
+  label: "Details",
+  collapsible: true,
+  collapseDefault: true,
+  children: [
+    { accessor: "note", label: "Note", width: 160 },
+    { accessor: "owner", label: "Owner", width: 120 },
+  ],
+}`),
+    language: "typescript",
+  },
+  {
+    title: "Control child visibility",
+    body: (
+      <>
+        Use{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">showWhen</code> on child
+        columns:{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">parentExpanded</code>{" "}
+        (default),{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">parentCollapsed</code>,
+        or{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">always</code>. Common
+        pattern: summary when collapsed, detail when expanded.
+      </>
+    ),
+    codeByFramework: forAllFrameworks(`{
+  accessor: "sales",
+  label: "Sales",
+  collapsible: true,
+  children: [
+    { accessor: "total", label: "Total", showWhen: "parentCollapsed" },
+    { accessor: "q1", label: "Q1", showWhen: "parentExpanded" },
+    { accessor: "q2", label: "Q2", showWhen: "parentExpanded" },
+  ],
+}`),
+    language: "typescript",
+  },
+  {
+    title: "Single-row children",
+    body: (
+      <>
+        Set{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+          singleRowChildren: true
+        </code>{" "}
+        so the parent header sits beside its children (same row) instead of above them — the parent
+        acts like a column that collapses its neighbors.
+      </>
+    ),
+    codeByFramework: forAllFrameworks(`{
+  accessor: "personalInfo",
+  label: "Personal Info",
+  collapsible: true,
+  singleRowChildren: true,
+  children: [
+    { accessor: "firstName", label: "First Name", width: 120 },
+    { accessor: "lastName", label: "Last Name", width: 120 },
+    { accessor: "email", label: "Email", width: 200 },
+  ],
+}`),
+    language: "typescript",
+  },
+];
 
 const COLLAPSIBLE_COLUMNS_PROPS: PropInfo[] = [
   {
     key: "collapsible",
-    name: "collapsible",
+    name: "ColumnDef.collapsible",
     required: false,
-    description:
-      "Enables collapsible functionality for a column group. When true, users can click the collapse arrow in the header to hide/show child columns.",
+    description: "Enables expand/collapse on a parent column that has children.",
     type: "boolean",
-    example: `<SimpleTable
-  columns={[
-    {
-      accessor: "groupName",
-      label: "Group Header",
-      collapsible: true,
-      children: [
-        { accessor: "child1", label: "Child 1" },
-        { accessor: "child2", label: "Child 2" }
-      ]
-    }
-  ]}
-  // ... other props
-/>`,
+    example: `collapsible: true`,
   },
   {
     key: "collapseDefault",
-    name: "collapseDefault",
+    name: "ColumnDef.collapseDefault",
     required: false,
-    description:
-      "When true, the collapsible column starts in a collapsed state on initial load. Only applies to columns with collapsible: true. Perfect for showing summary data first while keeping details available.",
+    description: "Starts the group collapsed. Only applies when collapsible is true.",
     type: "boolean",
-    example: `{
-  accessor: "details",
-  label: "Detailed Info",
-  collapsible: true,
-  collapseDefault: true,  // Starts collapsed
-  children: [
-    { accessor: "detail1", label: "Detail 1" },
-    { accessor: "detail2", label: "Detail 2" }
-  ]
-}`,
-  },
-  {
-    key: "singleRowChildren",
-    name: "singleRowChildren",
-    required: false,
-    description:
-      "When true, the parent header appears horizontally beside its child headers (in the same row) instead of above them. This makes the parent act like a regular column that can collapse its sibling columns, rather than appearing as a nested group header. Only applies to collapsible columns.",
-    type: "boolean",
-    example: `{
-  accessor: "personalInfo",
-  label: "Personal Info",
-  collapsible: true,
-  singleRowChildren: true, // Parent header appears beside children (not above)
-  children: [
-    { accessor: "firstName", label: "First Name", width: 120 },
-    { accessor: "lastName", label: "Last Name", width: 120 },
-    { accessor: "email", label: "Email", width: 200 }
-  ]
-}
-// With singleRowChildren: true
-//   Headers: [Personal Info] [First Name] [Last Name] [Email] (side-by-side)
-// Without singleRowChildren (default nested structure)
-//   Headers:         [Personal Info spanning full width]
-//           [First Name] [Last Name] [Email] (children below parent)`,
+    example: `collapseDefault: true`,
   },
   {
     key: "showWhen",
-    name: "showWhen",
+    name: "ColumnDef.showWhen",
+    required: false,
+    description: "When a child column is visible relative to the parent's collapse state.",
+    type: "enum",
+    enumValues: ["parentExpanded", "parentCollapsed", "always"],
+    example: `showWhen: "parentCollapsed"`,
+  },
+  {
+    key: "singleRowChildren",
+    name: "ColumnDef.singleRowChildren",
     required: false,
     description:
-      'Controls when a child column is visible in collapsible groups. Can be "parentCollapsed" (only visible when collapsed), "parentExpanded" (only visible when expanded), or "always" (visible in both states). Note: This is an alternative approach to singleRowChildren.',
-    type: 'ShowWhen ("parentCollapsed" | "parentExpanded" | "always")',
-    example: `{
-  accessor: "groupName",
-  label: "Group Header",
-  collapsible: true,
-  children: [
-    {
-      accessor: "alwaysVisible",
-      label: "Always Visible",
-      showWhen: "always" // Visible in both states
-    },
-    {
-      accessor: "summary",
-      label: "Summary",
-      showWhen: "parentCollapsed" // Only when collapsed
-    },
-    {
-      accessor: "details",
-      label: "Details",
-      showWhen: "parentExpanded" // Only when expanded
-    }
-  ]
-}`,
+      "Renders the parent header beside its children in one row instead of nested above them.",
+    type: "boolean",
+    example: `singleRowChildren: true`,
   },
   {
     key: "icons.headerExpand",
     name: "icons.headerExpand",
     required: false,
-    description:
-      "Custom icon component for the expand state of collapsible column headers. Shows when a column group can be expanded to reveal child columns.",
+    description: "Custom expand icon for collapsible headers.",
     type: "ReactNode",
-    example: `import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
-
-<SimpleTable
-  icons={{
-    headerExpand: <FontAwesomeIcon icon={faChevronRight} className="text-blue-600" />
-  }}
-  // ... other props
-/>`,
+    example: `icons={{ headerExpand: <ExpandIcon /> }}`,
   },
   {
     key: "icons.headerCollapse",
     name: "icons.headerCollapse",
     required: false,
-    description:
-      "Custom icon component for the collapse state of collapsible column headers. Shows when a column group can be collapsed to hide child columns.",
+    description: "Custom collapse icon for collapsible headers.",
     type: "ReactNode",
-    example: `import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
-
-<SimpleTable
-  icons={{
-    headerCollapse: <FontAwesomeIcon icon={faChevronDown} className="text-blue-600" />
-  }}
-  // ... other props
-/>`,
+    example: `icons={{ headerCollapse: <CollapseIcon /> }}`,
   },
 ];
 
@@ -157,21 +189,48 @@ const CollapsibleColumnsContent = () => {
       </motion.div>
 
       <motion.p
-        className="text-gray-700 dark:text-gray-300 mb-6 text-lg"
+        className="text-gray-700 dark:text-gray-300 mb-8 text-lg"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Collapsible columns allow users to dynamically hide and show grouped columns to optimize
-        screen space and focus on relevant data. Click the arrow icons in column headers to collapse
-        entire column groups while keeping important columns visible.
+        Hide and show column groups to save space — click the header arrow to collapse or expand.
       </motion.p>
 
+      <motion.div
+        className="space-y-8 mb-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.25 }}
+      >
+        {COLLAPSE_PATTERNS.map((pattern) => (
+          <section key={pattern.title}>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+              {pattern.title}
+            </h2>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{pattern.body}</p>
+            <CodeBlock
+              codeByFramework={pattern.codeByFramework}
+              language={pattern.language}
+              showLineNumbers={false}
+            />
+          </section>
+        ))}
+      </motion.div>
+
+      <motion.h2
+        className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        Example
+      </motion.h2>
       <motion.div
         className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
+        transition={{ duration: 0.5, delay: 0.35 }}
       >
         <LivePreview
           demoId="collapsible-columns"
@@ -184,113 +243,24 @@ const CollapsibleColumnsContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
-      >
-        Basic Implementation
-      </motion.h2>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.4 }}
       >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          Collapsible columns are created by adding the{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            collapsible: true
-          </code>{" "}
-          property to a parent column with{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            children
-          </code>{" "}
-          columns. Users can click the arrow icon in the header to collapse the column group.
-        </p>
-
-        <PropTable props={COLLAPSIBLE_COLUMNS_PROPS} title="Collapsible Columns Configuration" />
-      </motion.div>
-
-      <motion.h2
-        className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
-      >
-        Collapse Behaviors
+        Single-row children example
       </motion.h2>
-
+      <motion.p
+        className="text-gray-700 dark:text-gray-300 mb-4 text-sm"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.42 }}
+      >
+        Parent header sits in the same row as its children.
+      </motion.p>
       <motion.div
+        className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
-        className="mb-6"
+        transition={{ duration: 0.5, delay: 0.45 }}
       >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          Collapsible columns support different behaviors when collapsed:
-        </p>
-
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-            Visibility Control
-          </h3>
-          <div className="space-y-4 text-gray-700 dark:text-gray-300">
-            <p className="text-sm">
-              Control when child columns are visible using the{" "}
-              <code className="bg-gray-200 dark:bg-gray-600 px-1 py-0.5 rounded">showWhen</code>{" "}
-              attribute:
-            </p>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <code className="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-sm">
-                  showWhen: "parentExpanded"
-                </code>
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  - Visible when parent is expanded
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <code className="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-sm">
-                  showWhen: "parentCollapsed"
-                </code>
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  - Visible when parent is collapsed
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <code className="bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded text-sm">
-                  showWhen: "always"
-                </code>
-                <span className="text-sm text-gray-600 dark:text-gray-400">- Always visible</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
-      <motion.h2
-        className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.7 }}
-      >
-        Single Row Children
-      </motion.h2>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.8 }}
-        className="mb-6"
-      >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          By default, collapsible columns create a nested header structure where the parent header
-          appears above its children. Using{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            singleRowChildren: true
-          </code>
-          , you can display the parent header beside its children in the same row, making it appear
-          as a regular column that collapses adjacent columns.
-        </p>
-
         <LivePreview
           demoId="single-row-children"
           height="400px"
@@ -302,111 +272,12 @@ const CollapsibleColumnsContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.9 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
       >
-        Custom Styling
+        Props
       </motion.h2>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 1.0 }}
-      >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          You can customize the appearance of collapsible columns using CSS classes and variables.
-          This allows you to style sub-headers and sub-cells differently from regular columns.
-        </p>
-
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">CSS Classes</h3>
-          <div className="space-y-4">
-            <div className="bg-white dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-              <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                Sub-Header Styling
-              </h4>
-              <code className="block bg-gray-100 dark:bg-gray-900 p-3 rounded text-sm text-gray-800 dark:text-gray-200 mb-2">
-                .st-header-cell.st-sub-header
-              </code>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Targets child header cells within collapsible column groups.
-              </p>
-            </div>
-
-            <div className="bg-white dark:bg-gray-700 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-              <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                Sub-Cell Styling
-              </h4>
-              <code className="block bg-gray-100 dark:bg-gray-900 p-3 rounded text-sm text-gray-800 dark:text-gray-200 mb-2">
-                .st-cell.st-sub-cell
-              </code>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Targets body cells within collapsible column groups.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
-            CSS Variables
-          </h3>
-          <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
-            Use these CSS variables to customize the background colors of sub-headers and sub-cells.
-            See the{" "}
-            <a
-              href="/docs/custom-theme"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              Custom Theme
-            </a>{" "}
-            documentation for more details.
-          </p>
-          <div className="space-y-3">
-            <div className="bg-white dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600">
-              <code className="text-sm text-gray-800 dark:text-gray-200">
-                --st-sub-header-background-color
-              </code>
-            </div>
-            <div className="bg-white dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600">
-              <code className="text-sm text-gray-800 dark:text-gray-200">
-                --st-sub-cell-background-color
-              </code>
-            </div>
-            <div className="bg-white dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600">
-              <code className="text-sm text-gray-800 dark:text-gray-200">
-                --st-sub-cell-hover-background-color
-              </code>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                New in v1.8.6: Controls hover state for sub-cells
-              </p>
-            </div>
-            <div className="bg-white dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600">
-              <code className="text-sm text-gray-800 dark:text-gray-200">
-                --st-dragging-sub-header-background-color
-              </code>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                New in v1.8.6: Controls background color when dragging sub-headers
-              </p>
-            </div>
-            <div className="bg-white dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600">
-              <code className="text-sm text-gray-800 dark:text-gray-200">
-                --st-selected-sub-cell-background-color
-              </code>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                New in v1.8.6: Controls background color for selected sub-cells
-              </p>
-            </div>
-            <div className="bg-white dark:bg-gray-700 p-3 rounded border border-gray-200 dark:border-gray-600">
-              <code className="text-sm text-gray-800 dark:text-gray-200">
-                --st-selected-sub-cell-color
-              </code>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                New in v1.8.6: Controls text color for selected sub-cells
-              </p>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+      <PropTable props={COLLAPSIBLE_COLUMNS_PROPS} title="Collapsible Columns Configuration" />
 
       <DocNavigationButtons />
     </PageWrapper>
