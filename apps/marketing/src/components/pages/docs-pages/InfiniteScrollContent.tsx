@@ -191,7 +191,12 @@ const InfiniteScrollContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.35 }}
       >
-        <LivePreview demoId="infinite-scroll" height="400px" Preview={InfiniteScrollDemo} />
+        <LivePreview
+          demoId="infinite-scroll"
+          height={430}
+          demoHeight={400}
+          Preview={InfiniteScrollDemo}
+        />
       </motion.div>
 
       <motion.h2

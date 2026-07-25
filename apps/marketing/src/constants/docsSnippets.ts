@@ -1364,6 +1364,417 @@ const columns = [
   };
 }
 
+/**
+ * Map React-style `tableRef.current?.…` API calls to each framework’s ref / getAPI pattern.
+ * Pass code that uses `tableRef.current?` as the call site.
+ */
+export function tableApiCallSnippets(code: string): Record<Framework, string> {
+  return {
+    react: code,
+    solid: code.replaceAll("tableRef.current?", "tableRef"),
+    vue: code.replaceAll("tableRef.current?", "tableRef.value?.getAPI()?"),
+    angular: code.replaceAll("tableRef.current?", "this.tableRef.getAPI()?"),
+    svelte: code.replaceAll("tableRef.current?", "tableRef.getAPI()?"),
+    vanilla: code.replaceAll("tableRef.current?", "table.getAPI()"),
+  };
+}
+
+/** Wire a ref / instance so you can call TableAPI methods. */
+export function tableApiAccessSnippets(): Record<Framework, string> {
+  return {
+    react: `const tableRef = useRef(null);
+
+<SimpleTable ref={tableRef} columns={columns} rows={rows} />
+
+tableRef.current?.getVisibleRows();`,
+    solid: `let tableRef;
+
+<SimpleTable
+  ref={(api) => (tableRef = api)}
+  columns={columns}
+  rows={rows()}
+/>
+
+tableRef?.getVisibleRows();`,
+    vue: `const tableRef = ref(null);
+
+<SimpleTable ref="tableRef" :columns="columns" :rows="rows" />
+
+tableRef.value?.getAPI()?.getVisibleRows();`,
+    angular: `@ViewChild("simpleTable") tableRef!: SimpleTableComponent;
+
+<simple-table
+  #simpleTable
+  [columns]="columns"
+  [rows]="rows"
+></simple-table>
+
+this.tableRef.getAPI()?.getVisibleRows();`,
+    svelte: `let tableRef;
+
+<SimpleTable bind:this={tableRef} {columns} {rows} />
+
+tableRef.getAPI()?.getVisibleRows();`,
+    vanilla: `const table = new SimpleTableVanilla(container, {
+  columns,
+  rows,
+});
+
+table.getAPI().getVisibleRows();`,
+  };
+}
+
+/** Read visible / all rows and current headers. */
+export function tableApiReadDataSnippets(): Record<Framework, string> {
+  return tableApiCallSnippets(`const visible = tableRef.current?.getVisibleRows();
+const all = tableRef.current?.getAllRows();
+const headers = tableRef.current?.getHeaders();`);
+}
+
+/** Sort, filter, quick filter, and paginate via the API. */
+export function tableApiControlSnippets(): Record<Framework, string> {
+  return tableApiCallSnippets(`await tableRef.current?.applySortState({
+  accessor: "price",
+  direction: "desc",
+});
+
+await tableRef.current?.applyFilter({
+  accessor: "status",
+  operator: "equals",
+  value: "Available",
+});
+
+await tableRef.current?.clearAllFilters();
+tableRef.current?.setQuickFilter("keyboard");
+await tableRef.current?.setPage(2);`);
+}
+
+/** Short .theme-custom CSS variables example (same for every framework). */
+export function customThemeCssSnippets(): Record<Framework, string> {
+  return forAllFrameworks(`.theme-custom {
+  --st-header-background-color: #7c3aed;
+  --st-header-label-color: #fff;
+  --st-odd-row-background-color: #fffbeb;
+  --st-even-row-background-color: #fef3c7;
+  --st-hover-row-background-color: #fde68a;
+  --st-selected-cell-background-color: #f5f3ff;
+}`);
+}
+
+/** Import a custom theme stylesheet. */
+export function customThemeImportSnippets(): Record<Framework, string> {
+  return forAllFrameworks(`import "./my-table-theme.css";`);
+}
+
+/** Layout dimensions that affect virtualization (customTheme prop). */
+export function customThemeLayoutSnippets(): Record<Framework, string> {
+  return {
+    react: `<SimpleTable
+  customTheme={{ rowHeight: 32, headerHeight: 40 }}
+  columns={columns}
+  rows={rows}
+/>`,
+    solid: `<SimpleTable
+  customTheme={{ rowHeight: 32, headerHeight: 40 }}
+  columns={columns}
+  rows={rows()}
+/>`,
+    vue: `<SimpleTable
+  :custom-theme="{ rowHeight: 32, headerHeight: 40 }"
+  :columns="columns"
+  :rows="rows"
+/>`,
+    angular: `<simple-table
+  [customTheme]="{ rowHeight: 32, headerHeight: 40 }"
+  [columns]="columns"
+  [rows]="rows"
+></simple-table>`,
+    svelte: `<SimpleTable
+  customTheme={{ rowHeight: 32, headerHeight: 40 }}
+  {columns}
+  {rows}
+/>`,
+    vanilla: `new SimpleTableVanilla(container, {
+  customTheme: { rowHeight: 32, headerHeight: 40 },
+  columns,
+  rows,
+});`,
+  };
+}
+
+/** Override all icons via the icons prop. */
+export function customIconsSnippets(): Record<Framework, string> {
+  return {
+    react: `const icons = {
+  sortUp: <SortUpIcon />,
+  sortDown: <SortDownIcon />,
+  filter: <FilterIcon />,
+  expand: <ExpandIcon />,
+  headerExpand: <HeaderExpandIcon />,
+  headerCollapse: <HeaderCollapseIcon />,
+  prev: <PrevIcon />,
+  next: <NextIcon />,
+  drag: <DragIcon />,
+  pinnedLeftIcon: <PinLeftIcon />,
+  pinnedRightIcon: <PinRightIcon />,
+};
+
+<SimpleTable
+  icons={icons}
+  columns={columns}
+  rows={rows}
+/>`,
+    solid: `const icons = {
+  sortUp: <SortUpIcon />,
+  sortDown: <SortDownIcon />,
+  filter: <FilterIcon />,
+  expand: <ExpandIcon />,
+  headerExpand: <HeaderExpandIcon />,
+  headerCollapse: <HeaderCollapseIcon />,
+  prev: <PrevIcon />,
+  next: <NextIcon />,
+  drag: <DragIcon />,
+  pinnedLeftIcon: <PinLeftIcon />,
+  pinnedRightIcon: <PinRightIcon />,
+};
+
+<SimpleTable
+  icons={icons}
+  columns={columns}
+  rows={rows()}
+/>`,
+    vue: `import { h } from "vue";
+
+const icons = {
+  sortUp: h(SortUpIcon),
+  sortDown: h(SortDownIcon),
+  filter: h(FilterIcon),
+  expand: h(ExpandIcon),
+  headerExpand: h(HeaderExpandIcon),
+  headerCollapse: h(HeaderCollapseIcon),
+  prev: h(PrevIcon),
+  next: h(NextIcon),
+  drag: h(DragIcon),
+  pinnedLeftIcon: h(PinLeftIcon),
+  pinnedRightIcon: h(PinRightIcon),
+};
+
+<SimpleTable
+  :icons="icons"
+  :columns="columns"
+  :rows="rows"
+/>`,
+    angular: `icons: AngularIconsConfig = {
+  sortUp: SortUpIconComponent,
+  sortDown: SortDownIconComponent,
+  filter: FilterIconComponent,
+  expand: ExpandIconComponent,
+  headerExpand: HeaderExpandIconComponent,
+  headerCollapse: HeaderCollapseIconComponent,
+  prev: PrevIconComponent,
+  next: NextIconComponent,
+  drag: DragIconComponent,
+  pinnedLeftIcon: PinLeftIconComponent,
+  pinnedRightIcon: PinRightIconComponent,
+};
+
+<simple-table
+  [icons]="icons"
+  [columns]="columns"
+  [rows]="rows"
+></simple-table>`,
+    svelte: `const icons = {
+  sortUp: SortUpIcon,
+  sortDown: SortDownIcon,
+  filter: FilterIcon,
+  expand: ExpandIcon,
+  headerExpand: HeaderExpandIcon,
+  headerCollapse: HeaderCollapseIcon,
+  prev: PrevIcon,
+  next: NextIcon,
+  drag: DragIcon,
+  pinnedLeftIcon: PinLeftIcon,
+  pinnedRightIcon: PinRightIcon,
+};
+
+<SimpleTable {icons} {columns} {rows} />`,
+    vanilla: `const icons = {
+  sortUp: createSvgIcon("M12 19V5M5 12l7-7 7 7"),
+  sortDown: createSvgIcon("M12 5v14M19 12l-7 7-7-7"),
+  filter: createSvgIcon("M3 4h18l-7 8.5V18l-4 2V12.5L3 4z"),
+  expand: createSvgIcon("M9 5l7 7-7 7"),
+  headerExpand: createSvgIcon("M9 5l7 7-7 7"),
+  headerCollapse: createSvgIcon("M19 9l-7 7-7-7"),
+  prev: createSvgIcon("M15 19l-7-7 7-7"),
+  next: createSvgIcon("M9 5l7 7-7 7"),
+  drag: createSvgIcon("M9 5h2M13 5h2M9 12h2M13 12h2M9 19h2M13 19h2"),
+  pinnedLeftIcon: createSvgIcon("M12 17v5M9 10.76V7a3 3 0 116 0v3.76"),
+  pinnedRightIcon: createSvgIcon("M12 17v5M9 10.76V7a3 3 0 116 0v3.76"),
+};
+
+new SimpleTableVanilla(container, {
+  icons,
+  columns,
+  rows,
+});`,
+  };
+}
+
+/** Apply a built-in theme via the theme prop. */
+export function themeSnippets(theme: string = "modern-dark"): Record<Framework, string> {
+  return {
+    react: `<SimpleTable
+  theme="${theme}"
+  columns={columns}
+  rows={rows}
+/>`,
+    solid: `<SimpleTable
+  theme="${theme}"
+  columns={columns}
+  rows={rows()}
+/>`,
+    vue: `<SimpleTable
+  theme="${theme}"
+  :columns="columns"
+  :rows="rows"
+/>`,
+    angular: `<simple-table
+  theme="${theme}"
+  [columns]="columns"
+  [rows]="rows"
+></simple-table>`,
+    svelte: `<SimpleTable
+  theme="${theme}"
+  {columns}
+  {rows}
+/>`,
+    vanilla: `new SimpleTableVanilla(container, {
+  theme: "${theme}",
+  columns,
+  rows,
+});`,
+  };
+}
+
+/** Toggle hover, zebra rows/columns, and column borders. */
+export function themeStylingFlagsSnippets(): Record<Framework, string> {
+  return {
+    react: `<SimpleTable
+  theme="light"
+  hoverRowBackground
+  oddEvenRowBackground
+  columnBorders
+  oddColumnBackground
+  columns={columns}
+  rows={rows}
+/>`,
+    solid: `<SimpleTable
+  theme="light"
+  hoverRowBackground
+  oddEvenRowBackground
+  columnBorders
+  oddColumnBackground
+  columns={columns}
+  rows={rows()}
+/>`,
+    vue: `<SimpleTable
+  theme="light"
+  :hover-row-background="true"
+  :odd-even-row-background="true"
+  :column-borders="true"
+  :odd-column-background="true"
+  :columns="columns"
+  :rows="rows"
+/>`,
+    angular: `<simple-table
+  theme="light"
+  [hoverRowBackground]="true"
+  [oddEvenRowBackground]="true"
+  [columnBorders]="true"
+  [oddColumnBackground]="true"
+  [columns]="columns"
+  [rows]="rows"
+></simple-table>`,
+    svelte: `<SimpleTable
+  theme="light"
+  hoverRowBackground={true}
+  oddEvenRowBackground={true}
+  columnBorders={true}
+  oddColumnBackground={true}
+  {columns}
+  {rows}
+/>`,
+    vanilla: `new SimpleTableVanilla(container, {
+  theme: "light",
+  hoverRowBackground: true,
+  oddEvenRowBackground: true,
+  columnBorders: true,
+  oddColumnBackground: true,
+  columns,
+  rows,
+});`,
+  };
+}
+
+/** Call TableAPI.exportToCSV from a button / handler. */
+export function exportToCSVSnippets(): Record<Framework, string> {
+  return {
+    react: `const tableRef = useRef(null);
+
+<button onClick={() => tableRef.current?.exportToCSV({ filename: "report.csv" })}>
+  Export CSV
+</button>
+
+<SimpleTable ref={tableRef} columns={columns} rows={rows} />`,
+    solid: `let tableRef;
+
+<button onClick={() => tableRef?.exportToCSV({ filename: "report.csv" })}>
+  Export CSV
+</button>
+
+<SimpleTable
+  ref={(api) => (tableRef = api)}
+  columns={columns}
+  rows={rows()}
+/>`,
+    vue: `const tableRef = ref(null);
+
+<button @click="tableRef?.getAPI()?.exportToCSV({ filename: 'report.csv' })">
+  Export CSV
+</button>
+
+<SimpleTable ref="tableRef" :columns="columns" :rows="rows" />`,
+    angular: `@ViewChild("simpleTable") tableRef!: SimpleTableComponent;
+
+exportCsv() {
+  this.tableRef.getAPI()?.exportToCSV({ filename: "report.csv" });
+}
+
+<button (click)="exportCsv()">Export CSV</button>
+
+<simple-table
+  #simpleTable
+  [columns]="columns"
+  [rows]="rows"
+></simple-table>`,
+    svelte: `let tableRef;
+
+<button onclick={() => tableRef.getAPI()?.exportToCSV({ filename: "report.csv" })}>
+  Export CSV
+</button>
+
+<SimpleTable bind:this={tableRef} {columns} {rows} />`,
+    vanilla: `const table = new SimpleTableVanilla(container, {
+  columns,
+  rows,
+});
+
+button.addEventListener("click", () => {
+  table.getAPI().exportToCSV({ filename: "report.csv" });
+});`,
+  };
+}
+
 /** Live cell updates via TableAPI.updateData + cellUpdateFlash. */
 export function liveUpdateSnippets(): Record<Framework, string> {
   return {
