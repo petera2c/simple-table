@@ -1,13 +1,54 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ColumnResizingDemo from "@/components/demos/ColumnResizingDemo";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
 import PageWrapper from "@/components/PageWrapper";
 import { faLeftRight } from "@fortawesome/free-solid-svg-icons";
+import CodeBlock from "@/components/CodeBlock";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
+import {
+  persistColumnWidthSnippets,
+  tableSnippets,
+  type CodeByFramework,
+} from "@/constants/docsSnippets";
+
+type ResizePattern = {
+  title: string;
+  body: ReactNode;
+  codeByFramework: CodeByFramework;
+};
+
+const RESIZE_PATTERNS: ResizePattern[] = [
+  {
+    title: "Enable resizing",
+    body: (
+      <>
+        Set{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">columnResizing</code> to
+        let users drag header dividers. Double-click a handle to auto-fit that column to its
+        content.
+      </>
+    ),
+    codeByFramework: tableSnippets({ height: "400px", columnResizing: true }),
+  },
+  {
+    title: "Persist column widths",
+    body: (
+      <>
+        Use{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+          onColumnWidthChange
+        </code>{" "}
+        to save widths whenever the user resizes or auto-fits a column.
+      </>
+    ),
+    codeByFramework: persistColumnWidthSnippets(),
+  },
+];
 
 const COLUMN_RESIZING_PROPS: PropInfo[] = [
   {
@@ -15,33 +56,26 @@ const COLUMN_RESIZING_PROPS: PropInfo[] = [
     name: "columnResizing",
     required: false,
     description:
-      "Enables column resizing functionality. When true, users can resize columns by dragging the column dividers in the header row. Users can also double-click resize handles to automatically fit columns to their content width.",
+      "Enables dragging header dividers to resize columns. Double-click a handle to auto-fit that column to its content.",
     type: "boolean",
-    example: `<SimpleTable
-  columnResizing={true}
-  // ... other props
-/>`,
+    example: `columnResizing={true}`,
   },
   {
     key: "onColumnWidthChange",
     name: "onColumnWidthChange",
     required: false,
     description:
-      "Callback triggered when column widths change through user resizing or double-click auto-sizing. With `@simple-table/react`, receives `ReactColumnDef[]`. Angular, Svelte, and Solid adapters use `AngularColumnDef[]`, `SvelteColumnDef[]`, and `SolidColumnDef[]` respectively.",
-    type: "(headers: ReactColumnDef[]) => void",
+      "Fires after resize or double-click auto-size with the updated column defs. Use it to persist widths.",
+    type: "(headers: ColumnDef[]) => void",
     link: "/docs/api-reference#simple-table-props",
-    example: `<SimpleTable
-  columnResizing={true}
-  onColumnWidthChange={(headers) => {
-    // Save column widths to localStorage
-    const widths = headers.reduce((acc, header) => {
-      acc[header.accessor] = header.width;
-      return acc;
-    }, {});
-    localStorage.setItem('columnWidths', JSON.stringify(widths));
-  }}
-  // ... other props
-/>`,
+    example: `onColumnWidthChange={(headers) => {
+  localStorage.setItem(
+    "columnWidths",
+    JSON.stringify(
+      Object.fromEntries(headers.map((h) => [h.accessor, h.width]))
+    )
+  );
+}}`,
   },
 ];
 
@@ -61,34 +95,29 @@ const ColumnResizingContent = () => {
       </motion.div>
 
       <motion.p
-        className="text-gray-700 dark:text-gray-300 mb-6 text-lg"
+        className="text-gray-700 dark:text-gray-300 mb-8 text-lg"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Column resizing allows users to adjust column widths to better view and interact with data
-        according to their preferences.
+        Let users adjust column widths by dragging header dividers — or double-click to auto-fit.
       </motion.p>
 
       <motion.div
-        className="mb-8"
+        className="space-y-8 mb-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
+        transition={{ duration: 0.5, delay: 0.25 }}
       >
-        <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-400 dark:border-blue-700 p-4 rounded-lg shadow-sm mb-4">
-          <h3 className="font-bold text-gray-800 dark:text-white mb-2">Interactive Demo</h3>
-          <p className="text-gray-700 dark:text-gray-300 text-sm">
-            Try resizing columns by dragging the dividers or double-clicking them to auto-fit. Your
-            column widths are automatically saved to localStorage and will persist when you refresh
-            the page!
-          </p>
-        </div>
-        <LivePreview
-          demoId="column-resizing"
-          height="400px"
-          Preview={ColumnResizingDemo}
-        />
+        {RESIZE_PATTERNS.map((pattern) => (
+          <section key={pattern.title}>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+              {pattern.title}
+            </h2>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{pattern.body}</p>
+            <CodeBlock codeByFramework={pattern.codeByFramework} showLineNumbers={false} />
+          </section>
+        ))}
       </motion.div>
 
       <motion.h2
@@ -97,92 +126,35 @@ const ColumnResizingContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        Basic Implementation
+        Example
       </motion.h2>
-
+      <motion.p
+        className="text-gray-700 dark:text-gray-300 mb-4 text-sm"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.32 }}
+      >
+        Drag dividers or double-click to auto-fit. This demo saves widths to localStorage.
+      </motion.p>
       <motion.div
+        className="mb-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.35 }}
+      >
+        <LivePreview demoId="column-resizing" height="400px" Preview={ColumnResizingDemo} />
+      </motion.div>
+
+      <motion.h2
+        className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.4 }}
       >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          Column resizing is enabled by adding the{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            columnResizing
-          </code>{" "}
-          prop to the SimpleTable component. Users can resize columns by dragging the column
-          dividers in the header row.
-        </p>
-
-        <PropTable props={COLUMN_RESIZING_PROPS} title="Column Resizing Configuration" />
-      </motion.div>
-
-      <motion.h2
-        className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700 mt-8"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
-      >
-        Double-Click Auto-Size
+        Props
       </motion.h2>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.6 }}
-      >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          When column resizing is enabled, users can double-click on any resize handle to
-          automatically fit that column to its content width. This provides a quick way to optimize
-          column sizes without manual dragging.
-        </p>
-
-        <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-400 dark:border-blue-700 p-4 rounded-lg shadow-sm mb-6">
-          <h3 className="font-bold text-gray-800 dark:text-white mb-2">Tip</h3>
-          <p className="text-gray-700 dark:text-gray-300">
-            The auto-size feature calculates the optimal width based on the column's content,
-            including both the header text and cell values. This is especially useful for columns
-            with varying content lengths.
-          </p>
-        </div>
-      </motion.div>
-
-      <motion.h2
-        className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700 mt-8"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.7 }}
-      >
-        Persisting Column Widths
-      </motion.h2>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.8 }}
-      >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          Use the{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            onColumnWidthChange
-          </code>{" "}
-          callback to save user column width preferences. This callback is triggered whenever
-          columns are resized (either by dragging or double-clicking) and receives the updated
-          headers array with new width values.
-        </p>
-
-        <div className="bg-yellow-50 dark:bg-yellow-900/30 border-l-4 border-yellow-400 dark:border-yellow-700 p-4 rounded-lg shadow-sm mb-6">
-          <h3 className="font-bold text-gray-800 dark:text-white mb-2">Note</h3>
-          <p className="text-gray-700 dark:text-gray-300">
-            When{" "}
-            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-              autoExpandColumns
-            </code>{" "}
-            is enabled, the resize handle is removed from the last column since all columns scale
-            proportionally to fill the container width.
-          </p>
-        </div>
-      </motion.div>
+      <PropTable props={COLUMN_RESIZING_PROPS} title="Column Resizing Configuration" />
 
       <DocNavigationButtons />
     </PageWrapper>

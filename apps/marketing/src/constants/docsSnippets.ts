@@ -45,19 +45,60 @@ export type TablePropOptions = {
   maxHeight?: string;
   scrollParent?: string;
   autoExpandColumns?: boolean;
+  columnResizing?: boolean;
+  columnReordering?: boolean;
 };
 
+type BoolTableProp = "autoExpandColumns" | "columnResizing" | "columnReordering";
+
+const BOOL_PROP_KEBAB: Record<BoolTableProp, string> = {
+  autoExpandColumns: "auto-expand-columns",
+  columnResizing: "column-resizing",
+  columnReordering: "column-reordering",
+};
+
+function pushBoolProp(
+  framework: Framework,
+  target: string[],
+  name: BoolTableProp,
+  value: boolean | undefined
+) {
+  if (value === undefined) return;
+  if (framework === "vanilla") {
+    target.push(`${name}: ${value}`);
+    return;
+  }
+  if (framework === "vue") {
+    target.push(`:${BOOL_PROP_KEBAB[name]}="${value}"`);
+    return;
+  }
+  if (framework === "angular") {
+    target.push(`[${name}]="${value}"`);
+    return;
+  }
+  // react, solid, svelte
+  target.push(`${name}={${value}}`);
+}
+
+function pushTableBoolProps(
+  framework: Framework,
+  target: string[],
+  options: TablePropOptions
+) {
+  pushBoolProp(framework, target, "autoExpandColumns", options.autoExpandColumns);
+  pushBoolProp(framework, target, "columnResizing", options.columnResizing);
+  pushBoolProp(framework, target, "columnReordering", options.columnReordering);
+}
+
 export function tableSnippet(framework: Framework, options: TablePropOptions = {}): string {
-  const { height, maxHeight, scrollParent, autoExpandColumns } = options;
+  const { height, maxHeight, scrollParent } = options;
 
   if (framework === "vanilla") {
     const lines = ["columns", "rows"];
     if (height) lines.push(`height: "${height}"`);
     if (maxHeight) lines.push(`maxHeight: "${maxHeight}"`);
     if (scrollParent) lines.push(`scrollParent: "${scrollParent}"`);
-    if (autoExpandColumns !== undefined) {
-      lines.push(`autoExpandColumns: ${autoExpandColumns}`);
-    }
+    pushTableBoolProps(framework, lines, options);
     return `new SimpleTableVanilla(container, {
   ${lines.join(",\n  ")},
 });`;
@@ -68,9 +109,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     if (height) attrs.push(`height="${height}"`);
     if (maxHeight) attrs.push(`max-height="${maxHeight}"`);
     if (scrollParent) attrs.push(`scroll-parent="${scrollParent}"`);
-    if (autoExpandColumns !== undefined) {
-      attrs.push(`:auto-expand-columns="${autoExpandColumns}"`);
-    }
+    pushTableBoolProps(framework, attrs, options);
     return `<SimpleTable\n  ${attrs.join("\n  ")}\n/>`;
   }
 
@@ -79,9 +118,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     if (height) attrs.push(`height="${height}"`);
     if (maxHeight) attrs.push(`maxHeight="${maxHeight}"`);
     if (scrollParent) attrs.push(`scrollParent="${scrollParent}"`);
-    if (autoExpandColumns !== undefined) {
-      attrs.push(`[autoExpandColumns]="${autoExpandColumns}"`);
-    }
+    pushTableBoolProps(framework, attrs, options);
     return `<simple-table\n  ${attrs.join("\n  ")}\n></simple-table>`;
   }
 
@@ -90,9 +127,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     if (height) attrs.push(`height="${height}"`);
     if (maxHeight) attrs.push(`maxHeight="${maxHeight}"`);
     if (scrollParent) attrs.push(`scrollParent="${scrollParent}"`);
-    if (autoExpandColumns !== undefined) {
-      attrs.push(`autoExpandColumns={${autoExpandColumns}}`);
-    }
+    pushTableBoolProps(framework, attrs, options);
     return `<SimpleTable ${attrs.join(" ")} />`;
   }
 
@@ -101,10 +136,139 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
   if (height) attrs.push(`height="${height}"`);
   if (maxHeight) attrs.push(`maxHeight="${maxHeight}"`);
   if (scrollParent) attrs.push(`scrollParent="${scrollParent}"`);
-  if (autoExpandColumns !== undefined) {
-    attrs.push(`autoExpandColumns={${autoExpandColumns}}`);
-  }
+  pushTableBoolProps(framework, attrs, options);
   return `<SimpleTable ${attrs.join(" ")} />`;
+}
+
+const PERSIST_HANDLER = `const handleColumnWidthChange = (headers) => {
+  const widths = Object.fromEntries(
+    headers.map((h) => [h.accessor, h.width])
+  );
+  localStorage.setItem("columnWidths", JSON.stringify(widths));
+};`;
+
+/** Persist resized widths via onColumnWidthChange (per framework). */
+export function persistColumnWidthSnippets(): Record<Framework, string> {
+  return {
+    react: `${PERSIST_HANDLER}
+
+<SimpleTable
+  columnResizing
+  columns={columns}
+  rows={rows}
+  onColumnWidthChange={handleColumnWidthChange}
+/>`,
+    solid: `${PERSIST_HANDLER}
+
+<SimpleTable
+  columnResizing
+  columns={columns}
+  rows={rows}
+  onColumnWidthChange={handleColumnWidthChange}
+/>`,
+    vue: `<script setup>
+${PERSIST_HANDLER}
+</script>
+
+<template>
+  <SimpleTable
+    :column-resizing="true"
+    :columns="columns"
+    :rows="rows"
+    @column-width-change="handleColumnWidthChange"
+  />
+</template>`,
+    angular: `${PERSIST_HANDLER}
+
+<simple-table
+  [columnResizing]="true"
+  [columns]="columns"
+  [rows]="rows"
+  [onColumnWidthChange]="handleColumnWidthChange"
+></simple-table>`,
+    svelte: `<script>
+  ${PERSIST_HANDLER}
+</script>
+
+<SimpleTable
+  columnResizing={true}
+  {columns}
+  {rows}
+  onColumnWidthChange={handleColumnWidthChange}
+/>`,
+    vanilla: `${PERSIST_HANDLER}
+
+new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  columnResizing: true,
+  onColumnWidthChange: handleColumnWidthChange,
+});`,
+  };
+}
+
+const ORDER_HANDLER = `const handleColumnOrderChange = (headers) => {
+  setColumns(headers);
+};`;
+
+/** Handle column reorder via onColumnOrderChange (per framework). */
+export function persistColumnOrderSnippets(): Record<Framework, string> {
+  return {
+    react: `${ORDER_HANDLER}
+
+<SimpleTable
+  columnReordering
+  columns={columns}
+  rows={rows}
+  onColumnOrderChange={handleColumnOrderChange}
+/>`,
+    solid: `${ORDER_HANDLER}
+
+<SimpleTable
+  columnReordering
+  columns={columns}
+  rows={rows}
+  onColumnOrderChange={handleColumnOrderChange}
+/>`,
+    vue: `<script setup>
+${ORDER_HANDLER}
+</script>
+
+<template>
+  <SimpleTable
+    :column-reordering="true"
+    :columns="columns"
+    :rows="rows"
+    @column-order-change="handleColumnOrderChange"
+  />
+</template>`,
+    angular: `${ORDER_HANDLER}
+
+<simple-table
+  [columnReordering]="true"
+  [columns]="columns"
+  [rows]="rows"
+  (columnOrderChange)="handleColumnOrderChange($event)"
+></simple-table>`,
+    svelte: `<script>
+  ${ORDER_HANDLER}
+</script>
+
+<SimpleTable
+  columnReordering={true}
+  {columns}
+  {rows}
+  onColumnOrderChange={handleColumnOrderChange}
+/>`,
+    vanilla: `${ORDER_HANDLER}
+
+new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  columnReordering: true,
+  onColumnOrderChange: handleColumnOrderChange,
+});`,
+  };
 }
 
 export function tableSnippets(options: TablePropOptions = {}): Record<Framework, string> {
