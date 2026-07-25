@@ -161,7 +161,6 @@ const ColumnEditorCustomRendererDemo = ({
 }) => {
   const tableRef = useRef<TableAPI>(null);
   const columns = headers;
-  console.log("columns", columns);
 
   const customRenderer = ({
     searchSection,
@@ -208,25 +207,23 @@ const ColumnEditorCustomRendererDemo = ({
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <SimpleTable
-        autoExpandColumns
-        columns={headers}
-        rows={sampleData}
-        columnResizing
-        columnReordering
-        enableColumnEditor
-        columnEditorConfig={{
-          text: "Columns",
-          searchEnabled: true,
-          searchPlaceholder: "Search columns...",
-          customRenderer,
-        }}
-        height={height}
-        theme={theme}
-        ref={tableRef}
-      />
-    </div>
+    <SimpleTable
+      autoExpandColumns
+      columns={headers}
+      rows={sampleData}
+      columnResizing
+      columnReordering
+      enableColumnEditor
+      columnEditorConfig={{
+        text: "Columns",
+        searchEnabled: true,
+        searchPlaceholder: "Search columns...",
+        customRenderer,
+      }}
+      height={height}
+      theme={theme}
+      ref={tableRef}
+    />
   );
 };
 

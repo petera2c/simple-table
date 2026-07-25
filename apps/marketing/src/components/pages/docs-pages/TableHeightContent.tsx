@@ -180,22 +180,11 @@ export default function TableHeightContent() {
         </p>
       </motion.div>
 
-      <motion.h2
-        className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+      <motion.div
+        className="mb-8 p-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.45 }}
-      >
-        Props
-      </motion.h2>
-
-      <PropTable props={TABLE_HEIGHT_PROPS} title="Height Configuration" />
-
-      <motion.div
-        className="mt-6 mb-8 p-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
       >
         <h3 className="font-semibold text-gray-800 dark:text-white mb-1 text-sm">
           Rarely needed: customTheme header/footer height
@@ -211,6 +200,17 @@ export default function TableHeightContent() {
           .
         </p>
       </motion.div>
+
+      <motion.h2
+        className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+      >
+        Props
+      </motion.h2>
+
+      <PropTable props={TABLE_HEIGHT_PROPS} title="Height Configuration" />
 
       <DocNavigationButtons />
     </PageWrapper>

@@ -47,14 +47,23 @@ export type TablePropOptions = {
   autoExpandColumns?: boolean;
   columnResizing?: boolean;
   columnReordering?: boolean;
+  enableColumnEditor?: boolean;
+  enableColumnEditorInitOpen?: boolean;
 };
 
-type BoolTableProp = "autoExpandColumns" | "columnResizing" | "columnReordering";
+type BoolTableProp =
+  | "autoExpandColumns"
+  | "columnResizing"
+  | "columnReordering"
+  | "enableColumnEditor"
+  | "enableColumnEditorInitOpen";
 
 const BOOL_PROP_KEBAB: Record<BoolTableProp, string> = {
   autoExpandColumns: "auto-expand-columns",
   columnResizing: "column-resizing",
   columnReordering: "column-reordering",
+  enableColumnEditor: "enable-column-editor",
+  enableColumnEditorInitOpen: "enable-column-editor-init-open",
 };
 
 function pushBoolProp(
@@ -88,6 +97,13 @@ function pushTableBoolProps(
   pushBoolProp(framework, target, "autoExpandColumns", options.autoExpandColumns);
   pushBoolProp(framework, target, "columnResizing", options.columnResizing);
   pushBoolProp(framework, target, "columnReordering", options.columnReordering);
+  pushBoolProp(framework, target, "enableColumnEditor", options.enableColumnEditor);
+  pushBoolProp(
+    framework,
+    target,
+    "enableColumnEditorInitOpen",
+    options.enableColumnEditorInitOpen
+  );
 }
 
 export function tableSnippet(framework: Framework, options: TablePropOptions = {}): string {
@@ -275,4 +291,181 @@ export function tableSnippets(options: TablePropOptions = {}): Record<Framework,
   return Object.fromEntries(
     FRAMEWORKS.map((fw) => [fw, tableSnippet(fw, options)])
   ) as Record<Framework, string>;
+}
+
+const CUSTOM_RENDERER_BODY = `({ searchSection, listSection, resetColumns }) => (
+  <>
+    {searchSection}
+    {listSection}
+    <button type="button" onClick={resetColumns}>Reset</button>
+  </>
+)`;
+
+/** Replace the default column editor popout via columnEditorConfig.customRenderer. */
+export function customColumnEditorLayoutSnippets(): Record<Framework, string> {
+  return {
+    react: `<SimpleTable
+  enableColumnEditor
+  columns={columns}
+  rows={rows}
+  columnEditorConfig={{
+    customRenderer: ${CUSTOM_RENDERER_BODY},
+  }}
+/>`,
+    solid: `<SimpleTable
+  enableColumnEditor
+  columns={columns}
+  rows={rows}
+  columnEditorConfig={{
+    customRenderer: ${CUSTOM_RENDERER_BODY},
+  }}
+/>`,
+    vue: `<script setup>
+const columnEditorConfig = {
+  customRenderer: ({ searchSection, listSection, resetColumns }) => [
+    searchSection,
+    listSection,
+    // optional: your own reset control calling resetColumns()
+  ],
+};
+</script>
+
+<template>
+  <SimpleTable
+    :enable-column-editor="true"
+    :column-editor-config="columnEditorConfig"
+    :columns="columns"
+    :rows="rows"
+  />
+</template>`,
+    angular: `columnEditorConfig = {
+  customRenderer: ({ searchSection, listSection, resetColumns }) => {
+    // return a custom layout using searchSection + listSection
+  },
+};
+
+<simple-table
+  [enableColumnEditor]="true"
+  [columnEditorConfig]="columnEditorConfig"
+  [columns]="columns"
+  [rows]="rows"
+></simple-table>`,
+    svelte: `<script>
+  const columnEditorConfig = {
+    customRenderer: ({ searchSection, listSection, resetColumns }) => {
+      // return a custom layout using searchSection + listSection
+    },
+  };
+</script>
+
+<SimpleTable
+  enableColumnEditor={true}
+  columnEditorConfig={columnEditorConfig}
+  {columns}
+  {rows}
+/>`,
+    vanilla: `new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  enableColumnEditor: true,
+  columnEditorConfig: {
+    customRenderer: ({ searchSection, listSection, resetColumns }) => {
+      const root = document.createElement("div");
+      if (searchSection) root.appendChild(searchSection);
+      if (listSection) root.appendChild(listSection);
+      // optional: add a reset button that calls resetColumns()
+      return root;
+    },
+  },
+});`,
+  };
+}
+
+const ROW_RENDERER_BODY = `({ components }) => (
+  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+    {components.checkbox}
+    {components.labelContent}
+    {components.dragIcon}
+  </div>
+)`;
+
+/** Customize each column-editor row via columnEditorConfig.rowRenderer. */
+export function customColumnEditorRowSnippets(): Record<Framework, string> {
+  return {
+    react: `<SimpleTable
+  enableColumnEditor
+  columns={columns}
+  rows={rows}
+  columnEditorConfig={{
+    rowRenderer: ${ROW_RENDERER_BODY},
+  }}
+/>`,
+    solid: `<SimpleTable
+  enableColumnEditor
+  columns={columns}
+  rows={rows}
+  columnEditorConfig={{
+    rowRenderer: ${ROW_RENDERER_BODY},
+  }}
+/>`,
+    vue: `<script setup>
+const columnEditorConfig = {
+  rowRenderer: ({ components }) => {
+    // return a custom row using components.checkbox, labelContent, dragIcon, pinControl
+  },
+};
+</script>
+
+<template>
+  <SimpleTable
+    :enable-column-editor="true"
+    :column-editor-config="columnEditorConfig"
+    :columns="columns"
+    :rows="rows"
+  />
+</template>`,
+    angular: `columnEditorConfig = {
+  rowRenderer: ({ components }) => {
+    // return a custom row using components.checkbox, labelContent, dragIcon, pinControl
+  },
+};
+
+<simple-table
+  [enableColumnEditor]="true"
+  [columnEditorConfig]="columnEditorConfig"
+  [columns]="columns"
+  [rows]="rows"
+></simple-table>`,
+    svelte: `<script>
+  const columnEditorConfig = {
+    rowRenderer: ({ components }) => {
+      // return a custom row using components.checkbox, labelContent, dragIcon, pinControl
+    },
+  };
+</script>
+
+<SimpleTable
+  enableColumnEditor={true}
+  columnEditorConfig={columnEditorConfig}
+  {columns}
+  {rows}
+/>`,
+    vanilla: `new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  enableColumnEditor: true,
+  columnEditorConfig: {
+    rowRenderer: ({ components }) => {
+      const row = document.createElement("div");
+      row.style.display = "flex";
+      row.style.gap = "8px";
+      row.style.alignItems = "center";
+      if (components.checkbox) row.appendChild(components.checkbox);
+      if (components.labelContent) row.appendChild(components.labelContent);
+      if (components.dragIcon) row.appendChild(components.dragIcon);
+      return row;
+    },
+  },
+});`,
+  };
 }
