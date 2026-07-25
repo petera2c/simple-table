@@ -700,14 +700,14 @@ tableRef.clearRowSelection();`,
 tableRef.value?.toggleRowSelection("2");
 const selected = tableRef.value?.getSelectedRowsData();
 tableRef.value?.clearRowSelection();`,
-    angular: `this.tableRef.selectRow("1", true);
-this.tableRef.toggleRowSelection("2");
-const selected = this.tableRef.getSelectedRowsData();
-this.tableRef.clearRowSelection();`,
-    svelte: `tableRef.selectRow("1", true);
-tableRef.toggleRowSelection("2");
-const selected = tableRef.getSelectedRowsData();
-tableRef.clearRowSelection();`,
+    angular: `this.tableRef.getAPI()?.selectRow("1", true);
+this.tableRef.getAPI()?.toggleRowSelection("2");
+const selected = this.tableRef.getAPI()?.getSelectedRowsData();
+this.tableRef.getAPI()?.clearRowSelection();`,
+    svelte: `tableRef.getAPI()?.selectRow("1", true);
+tableRef.getAPI()?.toggleRowSelection("2");
+const selected = tableRef.getAPI()?.getSelectedRowsData();
+tableRef.getAPI()?.clearRowSelection();`,
     vanilla: `table.selectRow("1", true);
 table.toggleRowSelection("2");
 const selected = table.getSelectedRowsData();
@@ -903,16 +903,16 @@ tableRef.value?.collapseAll();
 tableRef.value?.expandDepth(0);
 tableRef.value?.setExpandedDepths(new Set([0, 1]));
 tableRef.value?.toggleDepth(0);`,
-    angular: `this.tableRef.expandAll();
-this.tableRef.collapseAll();
-this.tableRef.expandDepth(0);
-this.tableRef.setExpandedDepths(new Set([0, 1]));
-this.tableRef.toggleDepth(0);`,
-    svelte: `tableRef.expandAll();
-tableRef.collapseAll();
-tableRef.expandDepth(0);
-tableRef.setExpandedDepths(new Set([0, 1]));
-tableRef.toggleDepth(0);`,
+    angular: `this.tableRef.getAPI()?.expandAll();
+this.tableRef.getAPI()?.collapseAll();
+this.tableRef.getAPI()?.expandDepth(0);
+this.tableRef.getAPI()?.setExpandedDepths(new Set([0, 1]));
+this.tableRef.getAPI()?.toggleDepth(0);`,
+    svelte: `tableRef.getAPI()?.expandAll();
+tableRef.getAPI()?.collapseAll();
+tableRef.getAPI()?.expandDepth(0);
+tableRef.getAPI()?.setExpandedDepths(new Set([0, 1]));
+tableRef.getAPI()?.toggleDepth(0);`,
     vanilla: `table.expandAll();
 table.collapseAll();
 table.expandDepth(0);
@@ -990,6 +990,19 @@ function pivotConfigLiteral(options: PivotSnippetOptions): string {
   }`;
 }
 
+/** Field catalog for pivot — labels/types for source fields (not the pivoted headers). */
+export const PIVOT_HEADERS_SNIPPET = `const headers = [
+  { accessor: "region", label: "Region", type: "string" },
+  { accessor: "quarter", label: "Quarter", type: "string" },
+  { accessor: "sales", label: "Sales", type: "number" },
+];`;
+
+export const PIVOT_FLAT_ROWS_SNIPPET = `const flatRows = [
+  { region: "North", quarter: "Q1", sales: 120000 },
+  { region: "North", quarter: "Q2", sales: 145000 },
+  { region: "South", quarter: "Q1", sales: 98000 },
+];`;
+
 export function pivotSnippets(options: PivotSnippetOptions = {}): Record<Framework, string> {
   const config = pivotConfigLiteral(options);
   return {
@@ -1003,12 +1016,20 @@ export function pivotSnippets(options: PivotSnippetOptions = {}): Record<Framewo
   rows={flatRows()}
   pivot={${config}}
 />`,
-    vue: `<SimpleTable
-  :columns="headers"
-  :rows="flatRows"
-  :pivot="pivotConfig"
-/>`,
-    angular: `<simple-table
+    vue: `<script setup>
+const pivotConfig = ${config};
+</script>
+
+<template>
+  <SimpleTable
+    :columns="headers"
+    :rows="flatRows"
+    :pivot="pivotConfig"
+  />
+</template>`,
+    angular: `pivotConfig = ${config};
+
+<simple-table
   [columns]="headers"
   [rows]="flatRows"
   [pivot]="pivotConfig"
@@ -1049,20 +1070,20 @@ tableRef.setPivot(null); // back to source grid`,
 });
 const active = tableRef.value?.getPivot();
 tableRef.value?.setPivot(null); // back to source grid`,
-    angular: `this.tableRef.setPivot({
+    angular: `this.tableRef.getAPI()?.setPivot({
   rows: ["region"],
   columns: ["quarter"],
   values: [{ accessor: "sales", aggregation: { type: "sum" } }],
 });
-const active = this.tableRef.getPivot();
-this.tableRef.setPivot(null); // back to source grid`,
-    svelte: `tableRef.setPivot({
+const active = this.tableRef.getAPI()?.getPivot();
+this.tableRef.getAPI()?.setPivot(null); // back to source grid`,
+    svelte: `tableRef.getAPI()?.setPivot({
   rows: ["region"],
   columns: ["quarter"],
   values: [{ accessor: "sales", aggregation: { type: "sum" } }],
 });
-const active = tableRef.getPivot();
-tableRef.setPivot(null); // back to source grid`,
+const active = tableRef.getAPI()?.getPivot();
+tableRef.getAPI()?.setPivot(null); // back to source grid`,
     vanilla: `table.setPivot({
   rows: ["region"],
   columns: ["quarter"],
@@ -1092,15 +1113,15 @@ const pinned = tableRef.value?.getPinnedState();
 // Restore
 await tableRef.value?.applyPinnedState(pinned);`,
     angular: `// Save
-const pinned = this.tableRef.getPinnedState();
+const pinned = this.tableRef.getAPI()?.getPinnedState();
 
 // Restore
-await this.tableRef.applyPinnedState(pinned);`,
+await this.tableRef.getAPI()?.applyPinnedState(pinned);`,
     svelte: `// Save
-const pinned = tableRef.getPinnedState();
+const pinned = tableRef.getAPI()?.getPinnedState();
 
 // Restore
-await tableRef.applyPinnedState(pinned);`,
+await tableRef.getAPI()?.applyPinnedState(pinned);`,
     vanilla: `// Save
 const pinned = table.getPinnedState();
 

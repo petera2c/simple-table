@@ -8,6 +8,7 @@ import NestedTablesDemo from "@/components/demos/NestedTablesDemo";
 import DynamicNestedTablesDemo from "@/components/demos/DynamicNestedTablesDemo";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
 import PageWrapper from "@/components/PageWrapper";
+import DocsSteps, { type DocsStep } from "@/components/DocsSteps";
 import CodeBlock from "@/components/CodeBlock";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
@@ -25,21 +26,35 @@ type NestedPattern = {
   language?: string;
 };
 
-const NESTED_PATTERNS: NestedPattern[] = [
+const NESTED_STEPS: DocsStep[] = [
   {
-    title: "Add nestedTable to an expandable column",
+    title: "Define child columns",
     body: (
       <>
         Unlike{" "}
         <a href="/docs/row-grouping" className="text-blue-600 dark:text-blue-400 hover:underline">
           row grouping
         </a>
-        , nested tables give each level its own columns. Set{" "}
+        , each level can have its own column set.
+      </>
+    ),
+    codeByFramework: forAllFrameworks(`const divisionColumns = [
+  { accessor: "divisionId", label: "Division ID", width: 120 },
+  { accessor: "revenue", label: "Revenue", width: 120, type: "number" },
+  { accessor: "headcount", label: "Headcount", width: 110, type: "number" },
+  { accessor: "location", label: "Location", width: "1fr" },
+];`),
+    language: "typescript",
+  },
+  {
+    title: "Add nestedTable to an expandable column",
+    body: (
+      <>
+        Set{" "}
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">expandable: true</code>{" "}
         and{" "}
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">nestedTable</code> with
-        the child{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">columns</code>.
+        those child columns.
       </>
     ),
     codeByFramework: forAllFrameworks(`{
@@ -54,25 +69,12 @@ const NESTED_PATTERNS: NestedPattern[] = [
     language: "typescript",
   },
   {
-    title: "Wire rowGrouping on the parent table",
+    title: "Shape nested data",
     body: (
       <>
-        Still pass{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">rowGrouping</code> for
-        the nested array keys, plus{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">getRowId</code> for
-        stable expansion.
-      </>
-    ),
-    codeByFramework: nestedTablesSnippets(),
-  },
-  {
-    title: "Data shape",
-    body: (
-      <>
-        Same as row grouping: nest child arrays under the{" "}
+        Nest child arrays under the{" "}
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">rowGrouping</code> keys.
-        Child field names match the nested table columns.
+        Child fields match the nested table columns.
       </>
     ),
     codeByFramework: forAllFrameworks(`{
@@ -82,7 +84,6 @@ const NESTED_PATTERNS: NestedPattern[] = [
     {
       divisionId: "D-1",
       revenue: 1200000,
-      profitMargin: 0.18,
       headcount: 42,
       location: "Austin",
     },
@@ -90,6 +91,21 @@ const NESTED_PATTERNS: NestedPattern[] = [
 }`),
     language: "typescript",
   },
+  {
+    title: "Wire rowGrouping on the parent table",
+    body: (
+      <>
+        Pass{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">rowGrouping</code> and{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">getRowId</code> so
+        expansion stays stable.
+      </>
+    ),
+    codeByFramework: nestedTablesSnippets(),
+  },
+];
+
+const NESTED_PATTERNS: NestedPattern[] = [
   {
     title: "Configure the nested table",
     body: (
@@ -141,7 +157,7 @@ const NESTED_PATTERNS: NestedPattern[] = [
 }
 
 // Parent table
-rowGrouping={["divisions", "teams"]}`),
+rowGrouping: ["divisions", "teams"]`),
     language: "typescript",
   },
   {
@@ -233,16 +249,33 @@ const NestedTablesContent = () => {
       </motion.p>
 
       <motion.div
-        className="space-y-8 mb-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.25 }}
       >
+        <DocsSteps steps={NESTED_STEPS} />
+      </motion.div>
+
+      <motion.h2
+        className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.28 }}
+      >
+        Patterns
+      </motion.h2>
+
+      <motion.div
+        className="space-y-8 mb-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
         {NESTED_PATTERNS.map((pattern) => (
           <section key={pattern.title}>
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
               {pattern.title}
-            </h2>
+            </h3>
             <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{pattern.body}</p>
             <CodeBlock
               codeByFramework={pattern.codeByFramework}
@@ -257,7 +290,7 @@ const NestedTablesContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
+        transition={{ duration: 0.5, delay: 0.35 }}
       >
         Example
       </motion.h2>
@@ -265,7 +298,7 @@ const NestedTablesContent = () => {
         className="text-gray-700 dark:text-gray-300 mb-4 text-sm"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.32 }}
+        transition={{ duration: 0.5, delay: 0.37 }}
       >
         Pre-loaded divisions under each company.
       </motion.p>
@@ -273,7 +306,7 @@ const NestedTablesContent = () => {
         className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.35 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
       >
         <LivePreview
           demoId="nested-tables"
@@ -287,7 +320,7 @@ const NestedTablesContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+        transition={{ duration: 0.5, delay: 0.45 }}
       >
         Dynamic loading example
       </motion.h2>
@@ -295,7 +328,7 @@ const NestedTablesContent = () => {
         className="text-gray-700 dark:text-gray-300 mb-4 text-sm"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.42 }}
+        transition={{ duration: 0.5, delay: 0.47 }}
       >
         Divisions load when a company row expands.
       </motion.p>
@@ -303,7 +336,7 @@ const NestedTablesContent = () => {
         className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.45 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
       >
         <LivePreview
           demoId="dynamic-nested-tables"
@@ -317,7 +350,7 @@ const NestedTablesContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
+        transition={{ duration: 0.5, delay: 0.55 }}
       >
         Props
       </motion.h2>

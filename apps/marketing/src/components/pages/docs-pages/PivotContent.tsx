@@ -7,11 +7,14 @@ import { faTableCells } from "@fortawesome/free-solid-svg-icons";
 import PivotDemo from "@/components/demos/PivotDemo";
 import PageWrapper from "@/components/PageWrapper";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
+import DocsSteps, { type DocsStep } from "@/components/DocsSteps";
 import CodeBlock from "@/components/CodeBlock";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
 import {
   forAllFrameworks,
+  PIVOT_FLAT_ROWS_SNIPPET,
+  PIVOT_HEADERS_SNIPPET,
   pivotSnippets,
   programmaticPivotSnippets,
   type CodeByFramework,
@@ -24,30 +27,49 @@ type PivotPattern = {
   language?: string;
 };
 
-const PIVOT_PATTERNS: PivotPattern[] = [
+const PIVOT_STEPS: DocsStep[] = [
   {
-    title: "Basic matrix pivot",
+    title: "Define the field catalog",
     body: (
       <>
-        Pass flat{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">rows</code> and a field
-        catalog in{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">columns</code>. Set{" "}
+        Pass source fields in{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">columns</code> — labels,
+        types, and formatters for the fact data. While pivot is active, the grid shows generated
+        headers instead of this catalog as columns.
+      </>
+    ),
+    codeByFramework: forAllFrameworks(PIVOT_HEADERS_SNIPPET),
+    language: "typescript",
+  },
+  {
+    title: "Provide flat rows",
+    body: "Use a flat fact table — one object per measure row, not a pre-nested tree.",
+    codeByFramework: forAllFrameworks(PIVOT_FLAT_ROWS_SNIPPET),
+    language: "typescript",
+  },
+  {
+    title: "Set pivot",
+    body: (
+      <>
+        Configure{" "}
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">pivot</code> with row
-        dims, column dims, and at least one value measure. While pivot is on, consumer{" "}
+        dims, column dims, and at least one value. Consumer{" "}
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">rowGrouping</code> is
-        ignored.
+        ignored while pivot is on.
       </>
     ),
     codeByFramework: pivotSnippets(),
   },
+];
+
+const PIVOT_PATTERNS: PivotPattern[] = [
   {
     title: "Nested row dimensions",
     body: (
       <>
         Multiple{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">pivot.rows</code>{" "}
-        fields become an expandable tree (e.g. region → product).
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">pivot.rows</code> fields
+        become an expandable tree (e.g. region → product).
       </>
     ),
     codeByFramework: forAllFrameworks(`{
@@ -269,16 +291,33 @@ const PivotContent = () => {
       </motion.p>
 
       <motion.div
-        className="space-y-8 mb-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.25 }}
       >
+        <DocsSteps steps={PIVOT_STEPS} />
+      </motion.div>
+
+      <motion.h2
+        className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.28 }}
+      >
+        Patterns
+      </motion.h2>
+
+      <motion.div
+        className="space-y-8 mb-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
         {PIVOT_PATTERNS.map((pattern) => (
           <section key={pattern.title}>
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
               {pattern.title}
-            </h2>
+            </h3>
             <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{pattern.body}</p>
             <CodeBlock
               codeByFramework={pattern.codeByFramework}
@@ -293,7 +332,7 @@ const PivotContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
+        transition={{ duration: 0.5, delay: 0.35 }}
       >
         Example
       </motion.h2>
@@ -301,7 +340,7 @@ const PivotContent = () => {
         className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.35 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
       >
         <LivePreview demoId="pivot" height="auto" demoHeight="auto" Preview={PivotDemo} />
       </motion.div>
@@ -310,7 +349,7 @@ const PivotContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+        transition={{ duration: 0.5, delay: 0.45 }}
       >
         Props
       </motion.h2>

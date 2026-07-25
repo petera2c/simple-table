@@ -13,6 +13,7 @@ import {
 } from "@/components/demos/RowSelectionVariantsDemo";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
 import PageWrapper from "@/components/PageWrapper";
+import DocsSteps, { type DocsStep } from "@/components/DocsSteps";
 import CodeBlock from "@/components/CodeBlock";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
@@ -29,7 +30,7 @@ type SelectionPattern = {
   codeByFramework: CodeByFramework;
 };
 
-const SELECTION_PATTERNS: SelectionPattern[] = [
+const SELECTION_STEPS: DocsStep[] = [
   {
     title: "Enable checkbox selection",
     body: (
@@ -44,6 +45,26 @@ const SELECTION_PATTERNS: SelectionPattern[] = [
     ),
     codeByFramework: rowSelectionSnippets(),
   },
+  {
+    title: "Handle selection changes",
+    body: (
+      <>
+        Use{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+          onRowSelectionChange
+        </code>{" "}
+        for updates, or read selected rows from the table ref with{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+          getSelectedRowsData()
+        </code>
+        .
+      </>
+    ),
+    codeByFramework: rowSelectionSnippets({ includeOnChange: true }),
+  },
+];
+
+const SELECTION_PATTERNS: SelectionPattern[] = [
   {
     title: "Single selection",
     body: (
@@ -80,23 +101,6 @@ const SELECTION_PATTERNS: SelectionPattern[] = [
       showRowSelectionColumn: false,
       selectableCells: false,
     }),
-  },
-  {
-    title: "Handle selection changes",
-    body: (
-      <>
-        Use{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
-          onRowSelectionChange
-        </code>{" "}
-        for updates, or read selected rows from the table ref with{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
-          getSelectedRowsData()
-        </code>
-        .
-      </>
-    ),
-    codeByFramework: rowSelectionSnippets({ includeOnChange: true }),
   },
   {
     title: "Programmatic selection",
@@ -207,16 +211,33 @@ const RowSelectionContent = () => {
       </motion.p>
 
       <motion.div
-        className="space-y-8 mb-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.25 }}
       >
+        <DocsSteps steps={SELECTION_STEPS} />
+      </motion.div>
+
+      <motion.h2
+        className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.28 }}
+      >
+        Patterns
+      </motion.h2>
+
+      <motion.div
+        className="space-y-8 mb-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
         {SELECTION_PATTERNS.map((pattern) => (
           <section key={pattern.title}>
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
               {pattern.title}
-            </h2>
+            </h3>
             <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{pattern.body}</p>
             <CodeBlock
               codeByFramework={pattern.codeByFramework}
@@ -230,7 +251,7 @@ const RowSelectionContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
+        transition={{ duration: 0.5, delay: 0.35 }}
       >
         Checkbox selection example
       </motion.h2>
@@ -238,7 +259,7 @@ const RowSelectionContent = () => {
         className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.35 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
       >
         <LivePreview
           demoId="row-selection"
@@ -252,7 +273,7 @@ const RowSelectionContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+        transition={{ duration: 0.5, delay: 0.45 }}
       >
         Single selection example
       </motion.h2>
@@ -260,7 +281,7 @@ const RowSelectionContent = () => {
         className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.42 }}
+        transition={{ duration: 0.5, delay: 0.47 }}
       >
         <LivePreview
           demoId="row-selection-single"
@@ -274,7 +295,7 @@ const RowSelectionContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.45 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
       >
         Click to select example
       </motion.h2>
@@ -282,7 +303,7 @@ const RowSelectionContent = () => {
         className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.48 }}
+        transition={{ duration: 0.5, delay: 0.52 }}
       >
         <LivePreview
           demoId="row-selection-click"
@@ -296,7 +317,7 @@ const RowSelectionContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
+        transition={{ duration: 0.5, delay: 0.55 }}
       >
         Programmatic selection example
       </motion.h2>
@@ -304,7 +325,7 @@ const RowSelectionContent = () => {
         className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.52 }}
+        transition={{ duration: 0.5, delay: 0.57 }}
       >
         <LivePreview
           demoId="row-selection-api"
@@ -318,7 +339,7 @@ const RowSelectionContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.55 }}
+        transition={{ duration: 0.5, delay: 0.6 }}
       >
         Props
       </motion.h2>

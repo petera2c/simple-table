@@ -8,6 +8,7 @@ import RowGroupingDemo from "@/components/demos/RowGroupingDemo";
 import DynamicRowLoadingDemo from "@/components/demos/DynamicRowLoadingDemo";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
 import PageWrapper from "@/components/PageWrapper";
+import DocsSteps, { type DocsStep } from "@/components/DocsSteps";
 import CodeBlock from "@/components/CodeBlock";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
@@ -26,7 +27,7 @@ type GroupingPattern = {
   language?: string;
 };
 
-const GROUPING_PATTERNS: GroupingPattern[] = [
+const GROUPING_STEPS: DocsStep[] = [
   {
     title: "Mark the expandable column",
     body: (
@@ -45,30 +46,16 @@ const GROUPING_PATTERNS: GroupingPattern[] = [
     language: "typescript",
   },
   {
-    title: "Set rowGrouping and nested data",
+    title: "Shape nested data",
     body: (
       <>
-        Pass{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">rowGrouping</code> as the
-        nested array property names (in depth order), and nest those arrays on each row. Use{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">getRowId</code> so
-        expansion stays stable across sort and updates. Child rows share the same columns — for
-        different columns per level, see{" "}
+        Nest child arrays under property names you will list in{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">rowGrouping</code>.
+        Child rows share the same columns — for different columns per level, see{" "}
         <a href="/docs/nested-tables" className="text-blue-600 dark:text-blue-400 hover:underline">
           Nested Tables
         </a>
         .
-      </>
-    ),
-    codeByFramework: rowGroupingSnippets(),
-  },
-  {
-    title: "Data shape",
-    body: (
-      <>
-        Each{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">rowGrouping</code> key
-        is an array of child rows on the parent object.
       </>
     ),
     codeByFramework: forAllFrameworks(`{
@@ -87,6 +74,22 @@ const GROUPING_PATTERNS: GroupingPattern[] = [
 }`),
     language: "typescript",
   },
+  {
+    title: "Set rowGrouping",
+    body: (
+      <>
+        Pass{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">rowGrouping</code> in
+        depth order, plus{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">getRowId</code> so
+        expansion stays stable across sort and updates.
+      </>
+    ),
+    codeByFramework: rowGroupingSnippets(),
+  },
+];
+
+const GROUPING_PATTERNS: GroupingPattern[] = [
   {
     title: "Start expanded",
     body: (
@@ -255,16 +258,33 @@ const RowGroupingContent = () => {
       </motion.p>
 
       <motion.div
-        className="space-y-8 mb-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.25 }}
       >
+        <DocsSteps steps={GROUPING_STEPS} />
+      </motion.div>
+
+      <motion.h2
+        className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.28 }}
+      >
+        Patterns
+      </motion.h2>
+
+      <motion.div
+        className="space-y-8 mb-10"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
         {GROUPING_PATTERNS.map((pattern) => (
           <section key={pattern.title}>
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+            <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
               {pattern.title}
-            </h2>
+            </h3>
             <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">{pattern.body}</p>
             <CodeBlock
               codeByFramework={pattern.codeByFramework}
@@ -279,7 +299,7 @@ const RowGroupingContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.3 }}
+        transition={{ duration: 0.5, delay: 0.35 }}
       >
         Example
       </motion.h2>
@@ -287,7 +307,7 @@ const RowGroupingContent = () => {
         className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.35 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
       >
         <LivePreview
           demoId="row-grouping"
@@ -301,7 +321,7 @@ const RowGroupingContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.4 }}
+        transition={{ duration: 0.5, delay: 0.45 }}
       >
         Dynamic loading example
       </motion.h2>
@@ -309,7 +329,7 @@ const RowGroupingContent = () => {
         className="text-gray-700 dark:text-gray-300 mb-4 text-sm"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.42 }}
+        transition={{ duration: 0.5, delay: 0.47 }}
       >
         Children load when a parent expands (regions → stores → products).
       </motion.p>
@@ -317,7 +337,7 @@ const RowGroupingContent = () => {
         className="mb-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.45 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
       >
         <LivePreview
           demoId="dynamic-row-loading"
@@ -330,7 +350,7 @@ const RowGroupingContent = () => {
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.5 }}
+        transition={{ duration: 0.5, delay: 0.55 }}
       >
         Props
       </motion.h2>
