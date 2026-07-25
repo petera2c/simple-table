@@ -9,13 +9,14 @@ import { useFramework } from "@/providers/FrameworkProvider";
 import { useDemoCodeMap } from "@/providers/DemoCodeProvider";
 import {
   FRAMEWORKS,
-  FRAMEWORK_LABELS,
   FRAMEWORK_LANGUAGE,
   FRAMEWORK_LANGUAGE_LABEL,
   type Framework,
 } from "@/constants/frameworks";
-import FrameworkIcon from "./FrameworkIcon";
+import type { CodeByFramework } from "@/constants/docsSnippets";
 import { trackCopyInstallCommand } from "@/lib/analytics";
+
+export type { CodeByFramework };
 
 type ThemeType = "dark" | "light";
 
@@ -31,8 +32,11 @@ function detectPackageManager(code: string): string | null {
 interface CodeBlockProps {
   className?: string;
   code?: string;
+  /** Inline per-framework snippets (tabs + all variants in HTML). */
+  codeByFramework?: CodeByFramework;
   demoId?: string;
   initialTheme?: ThemeType;
+  /** Override Prism language for every pane (e.g. bash install commands). */
   language?: string;
   showLineNumbers?: boolean;
   showThemeToggle?: boolean;
@@ -190,74 +194,61 @@ const CodePane = ({
 const CodeBlock = ({
   className = "",
   code = "",
+  codeByFramework,
   demoId,
   initialTheme = "dark",
   language,
   showLineNumbers = true,
   showThemeToggle = true,
 }: CodeBlockProps) => {
-  const { framework, setFramework } = useFramework();
+  const { framework } = useFramework();
   const [theme, setTheme] = useState<ThemeType>(initialTheme);
 
   // Server-preloaded per-framework code (docs pages). Falls back to client fetch when absent.
-  const codeMap = useDemoCodeMap(demoId);
-  const fetchedCode = useDemoCode(codeMap ? undefined : demoId);
+  const demoCodeMap = useDemoCodeMap(demoId);
+  const fetchedCode = useDemoCode(demoCodeMap ? undefined : demoId);
 
   const toggleTheme = () => {
     setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
-  // All framework variants are rendered into the HTML (SEO/LLM crawlers see every
-  // snippet); only the active framework's pane is visible.
-  if (codeMap) {
-    const available = FRAMEWORKS.filter((fw) => codeMap[fw]);
+  // Prefer demo txt-demos map, then inline codeByFramework. Framework comes from the
+  // header selector only — no per-snippet tabs. All variants stay in the HTML
+  // (SEO/LLM crawlers); only the active framework's pane is visible.
+  const frameworkMap = demoCodeMap ?? codeByFramework;
+  if (frameworkMap) {
+    const available = FRAMEWORKS.filter((fw) => frameworkMap[fw]);
     if (available.length > 0) {
-      const activeFramework: Framework = codeMap[framework]
+      const activeFramework: Framework = frameworkMap[framework]
         ? framework
         : available[0];
 
       return (
         <div className={`flex flex-col ${className}`}>
-          <div
-            className="flex flex-wrap gap-1.5 mb-2"
-            role="tablist"
-            aria-label="Framework code examples"
-          >
-            {available.map((fw) => (
-              <button
+          {available.map((fw) => {
+            const paneLanguage = language ?? FRAMEWORK_LANGUAGE[fw];
+            const paneLabel = language
+              ? LANGUAGE_DISPLAY_NAMES[language] || language.toUpperCase()
+              : FRAMEWORK_LANGUAGE_LABEL[fw];
+
+            return (
+              <div
                 key={fw}
-                role="tab"
-                aria-selected={fw === activeFramework}
-                onClick={() => setFramework(fw)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-sm transition-colors ${
-                  fw === activeFramework
-                    ? "bg-blue-600 text-white font-medium"
-                    : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                }`}
+                className={`grow min-h-0 ${fw === activeFramework ? "" : "hidden"}`}
               >
-                <FrameworkIcon framework={fw} size={14} />
-                {FRAMEWORK_LABELS[fw]}
-              </button>
-            ))}
-          </div>
-          {available.map((fw) => (
-            <div
-              key={fw}
-              role="tabpanel"
-              className={`grow min-h-0 ${fw === activeFramework ? "" : "hidden"}`}
-            >
-              <CodePane
-                code={codeMap[fw] as string}
-                language={FRAMEWORK_LANGUAGE[fw]}
-                languageLabel={FRAMEWORK_LANGUAGE_LABEL[fw]}
-                showLineNumbers={showLineNumbers}
-                showThemeToggle={showThemeToggle}
-                theme={theme}
-                onToggleTheme={toggleTheme}
-                framework={fw}
-              />
-            </div>
-          ))}
+                <CodePane
+                  code={frameworkMap[fw] as string}
+                  language={paneLanguage}
+                  languageLabel={paneLabel}
+                  showLineNumbers={showLineNumbers}
+                  showThemeToggle={showThemeToggle}
+                  theme={theme}
+                  onToggleTheme={toggleTheme}
+                  framework={fw}
+                />
+              </div>
+            );
+          })}
         </div>
       );
     }
