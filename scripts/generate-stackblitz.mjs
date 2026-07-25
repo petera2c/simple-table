@@ -57,6 +57,8 @@ const DEMO_LIST = [
   { id: "dynamic-row-loading", label: "Dynamic Row Loading" },
   { id: "charts", label: "Charts" },
   { id: "live-update", label: "Live Update" },
+  { id: "animations", label: "Animations" },
+  { id: "pivot", label: "Pivot" },
   { id: "crm", label: "CRM" },
   { id: "infrastructure", label: "Infrastructure" },
   { id: "music", label: "Music" },
@@ -65,6 +67,8 @@ const DEMO_LIST = [
   { id: "hr", label: "HR" },
   { id: "sales", label: "Sales" },
   { id: "analytics", label: "Analytics" },
+  { id: "crypto", label: "Crypto" },
+  { id: "soccer", label: "Soccer" },
 ];
 
 const ACRONYM_MAP = { crm: "CRM", hr: "HR" };
