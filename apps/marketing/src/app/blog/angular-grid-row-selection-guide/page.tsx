@@ -83,7 +83,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Add row selection to your Angular grid"
-      ctaDescription="Simple Table for Angular ships single, multi, and checkbox selection in one source-available package—free for pre-revenue teams, ~70 kB gzipped, signals-native, accessible."
+      ctaDescription="Simple Table for Angular ships single, multi, and checkbox selection in one source-available package—free for pre-revenue teams, 84.6 kB gzipped, signals-native, accessible."
       docsHref="/docs/row-selection"
     />
   );

@@ -69,7 +69,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "Column resizing in SolidJS is a one-line prop on Simple Table. TanStack Solid Table is headless and requires DIY handles; Kobalte doesn't ship a grid.",
-        "If you need resize alongside virtualization, pinning, and grouping, Simple Table for Solid is the focused source-available pick—signals-native, ~70 kB gzipped.",
+        "If you need resize alongside virtualization, pinning, and grouping, Simple Table for Solid is the focused source-available pick—signals-native, 84.6 kB gzipped.",
       ]}
       relatedLinks={[
         { href: "/blog/solidjs-data-grid-simple-table", label: "Pillar guide: best free SolidJS data grid in 2026" },
@@ -77,7 +77,7 @@ export default function Page() {
         { href: "/frameworks/solid", label: "Solid integration hub" },
       ]}
       ctaTitle="Add column resizing to your Solid grid"
-      ctaDescription="Simple Table for Solid ships resize, pinning, grouping, and editing in one source-available package—~70 kB gzipped, signals-native, Solid-Start ready."
+      ctaDescription="Simple Table for Solid ships resize, pinning, grouping, and editing in one source-available package—84.6 kB gzipped, signals-native, Solid-Start ready."
       docsHref="/docs/column-resizing"
     />
   );

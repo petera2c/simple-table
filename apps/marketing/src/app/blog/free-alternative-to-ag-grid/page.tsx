@@ -114,7 +114,7 @@ export default function FreeAlternativeToAgGridPage() {
                   </span>
                 </div>
                 <p className="text-amber-700 dark:text-amber-300 mb-3">
-                  $1,000 per year per developer, plus $750 per license! That was way out of my
+                  About $999 per developer per year for AG Grid Enterprise—that was way out of my
                   budget of $0.00.
                 </p>
                 <p className="text-amber-700 dark:text-amber-300">
@@ -168,8 +168,9 @@ export default function FreeAlternativeToAgGridPage() {
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 So, I decided to build my own solution:{" "}
                 <span className="font-bold text-blue-600 dark:text-blue-400">Simple Table</span>, a
-                lightweight ({SIMPLE_TABLE_INFO.bundleSizeMinGzip}) React data grid that's free for
-                everyone.
+                lightweight ({SIMPLE_TABLE_INFO.bundleSizeMinGzip}) React data grid that&apos;s free
+                for pre-revenue teams under the Simple Table Community License (source-available),
+                with Pro/Enterprise for revenue-generating use.
               </p>
 
               <p className="mb-2 text-gray-700 dark:text-gray-300">
@@ -197,9 +198,9 @@ export default function FreeAlternativeToAgGridPage() {
                   </span>
                 </div>
                 <p className="text-green-700 dark:text-green-300">
-                  At just {SIMPLE_TABLE_INFO.bundleSizeMinGzip} and completely free, Simple Table is
-                  designed to be accessible for developers like me who can't afford pricey
-                  Enterprise licenses.
+                  At just {SIMPLE_TABLE_INFO.bundleSizeMinGzip} and free for pre-revenue use under
+                  the Community License, Simple Table is designed to be accessible for developers
+                  like me who can&apos;t afford pricey Enterprise licenses.
                 </p>
               </div>
             </div>

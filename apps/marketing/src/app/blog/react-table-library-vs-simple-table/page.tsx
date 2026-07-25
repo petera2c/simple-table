@@ -67,9 +67,9 @@ export default function ReactTableLibraryVsSimpleTablePage() {
 
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
           React Table Library (by Robin Wieruch) offers plugin-based composability in 28KB (requires
-          Emotion CSS-in-JS). Simple Table delivers built-in features with zero dependencies in
-          42KB. This comparison helps you choose between headless flexibility and integrated
-          convenience.
+          Emotion CSS-in-JS). Simple Table delivers built-in features with zero dependencies in{" "}
+          {SIMPLE_TABLE_INFO.bundleSizeMinGzip}. This comparison helps you choose between headless
+          flexibility and integrated convenience.
         </p>
         <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
           <strong>Simple Table</strong> pairs a shared core with official adapters for{" "}
@@ -98,7 +98,7 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   React Table Library requires <strong>@emotion/react</strong> (CSS-in-JS library)
                   as a peer dependency. This adds ~10-15KB to your bundle. Effective total: ~38-43KB
-                  vs Simple Table's 42KB standalone.
+                  vs Simple Table's 84.6 kB standalone.
                 </p>
               </div>
 
@@ -174,10 +174,10 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
                       Bundle Size (min+gzip)
                     </td>
-                    <td className="p-3 text-green-600 dark:text-green-400">
+                    <td className="p-3 text-green-600 dark:text-green-400 font-bold">
                       {REACT_TABLE_LIBRARY_INFO.bundleSizeMinGzip}*
                     </td>
-                    <td className="p-3 text-green-600 dark:text-green-400">
+                    <td className="p-3 text-amber-600 dark:text-amber-400">
                       {SIMPLE_TABLE_INFO.bundleSizeMinGzip}
                     </td>
                   </tr>
@@ -238,15 +238,16 @@ export default function ReactTableLibraryVsSimpleTablePage() {
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
             <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
               <FontAwesomeIcon icon={faBolt} className="text-yellow-500" />
-              Bundle Size: Nearly Identical After Dependencies
+              Bundle Size: React Table Library Is Lighter
             </h2>
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 React Table Library's core is <strong>~28KB min+gzipped</strong>, but it requires{" "}
                 <strong>@emotion/react</strong> as a peer dependency, adding ~10-15KB. Effective
-                total: <strong>~38-43KB</strong>. Simple Table is <strong>42KB standalone</strong>{" "}
-                with zero dependencies. Bundle sizes are nearly identical.
+                total: <strong>~38-43KB</strong>. Simple Table is{" "}
+                <strong>{SIMPLE_TABLE_INFO.bundleSizeMinGzip} standalone</strong> with zero
+                dependencies—larger on package size, but batteries-included with no CSS-in-JS peer.
               </p>
 
               <div className="bg-linear-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border border-purple-300 dark:border-purple-700 rounded-lg p-6 mb-6">
@@ -264,9 +265,9 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6">
                       <div
                         className="bg-linear-to-r from-purple-500 to-pink-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                        style={{ width: "98%" }}
+                        style={{ width: "48%" }}
                       >
-                        98%
+                        ~48%
                       </div>
                     </div>
                   </div>
@@ -275,7 +276,9 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                       <span className="font-semibold text-gray-900 dark:text-gray-100">
                         Simple Table (zero dependencies)
                       </span>
-                      <span className="text-gray-700 dark:text-gray-300">42 KB</span>
+                      <span className="text-gray-700 dark:text-gray-300">
+                        {SIMPLE_TABLE_INFO.bundleSizeMinGzip}
+                      </span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6">
                       <div
@@ -288,9 +291,9 @@ export default function ReactTableLibraryVsSimpleTablePage() {
                   </div>
                   <div className="pt-2 border-t border-gray-300 dark:border-gray-600">
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                      <strong>Size difference: Negligible (~2-4 KB)</strong> — Bundle size is not a
-                      deciding factor. Choose based on architecture preference (headless vs
-                      integrated).
+                      <strong>Size difference: Simple Table is larger</strong> (~84.6 kB vs
+                      ~38-43KB). Choose Simple Table for integrated features and zero dependencies;
+                      choose React Table Library if you want a smaller, composable headless stack.
                     </p>
                   </div>
                 </div>
@@ -870,8 +873,8 @@ export default function ReactTableLibraryVsSimpleTablePage() {
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                React Table Library and Simple Table are nearly identical in bundle size (~38-43KB
-                vs 42KB) but diverge in philosophy:
+                React Table Library is lighter on package size (~38-43KB with Emotion vs{" "}
+                {SIMPLE_TABLE_INFO.bundleSizeMinGzip}), but the libraries diverge in philosophy:
               </p>
 
               <div className="bg-linear-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border-2 border-purple-300 dark:border-purple-700 rounded-lg p-6 mb-6">

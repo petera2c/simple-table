@@ -79,7 +79,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Add filtering to your Vue 3 grid"
-      ctaDescription="Simple Table for Vue ships column filters, quick filter, and custom predicates in one source-available package—~70 kB gzipped, Composition-API-friendly."
+      ctaDescription="Simple Table for Vue ships column filters, quick filter, and custom predicates in one source-available package—84.6 kB gzipped, Composition-API-friendly."
       docsHref="/docs/column-filtering"
     />
   );

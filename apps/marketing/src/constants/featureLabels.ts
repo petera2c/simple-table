@@ -91,7 +91,7 @@ export const FEATURE_LABELS: Record<string, { label: string; tooltip: string }> 
   },
   cellHighlighting: {
     label: "Cell Highlighting",
-    tooltip: "Highlight cells and select cell ranges",
+    tooltip: "Visually highlight the active or focused cell",
   },
   cellClicking: {
     label: "Cell Clicking",
@@ -124,8 +124,8 @@ export const FEATURE_LABELS: Record<string, { label: string; tooltip: string }> 
     tooltip: "Two-way data binding with React state",
   },
   spreadsheetContextMenu: {
-    label: "Context Menu",
-    tooltip: "Right-click context menu for spreadsheet operations",
+    label: "Spreadsheet Context Menu",
+    tooltip: "Right-click context menu for spreadsheet operations (insert/delete cells, etc.)",
   },
   spreadsheetComments: {
     label: "Comments",
@@ -183,8 +183,8 @@ export const FEATURE_LABELS: Record<string, { label: string; tooltip: string }> 
 
   // Advanced UI Features
   uiContextMenu: {
-    label: "Context Menu",
-    tooltip: "Right-click context menu",
+    label: "Grid Context Menu",
+    tooltip: "Right-click context menu for grid actions (copy, export, pin, etc.)",
   },
   uiStatusBar: {
     label: "Status Bar",

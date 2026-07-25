@@ -78,7 +78,7 @@ export default function Page() {
         { href: "/frameworks/svelte", label: "Svelte integration hub" },
       ]}
       ctaTitle="Add tree data to your Svelte grid"
-      ctaDescription="Simple Table for Svelte ships tree data, virtualization, pinning, and editing in one source-available package—~70 kB gzipped, Svelte 5 runes ready."
+      ctaDescription="Simple Table for Svelte ships tree data, virtualization, pinning, and editing in one source-available package—84.6 kB gzipped, Svelte 5 runes ready."
       docsHref="/docs/nested-tables"
     />
   );

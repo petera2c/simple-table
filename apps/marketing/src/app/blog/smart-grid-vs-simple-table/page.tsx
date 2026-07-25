@@ -74,7 +74,7 @@ export default function SmartGridVsSimpleTablePage() {
 
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
           Smart React Grid (by HTML Elements) costs $399-$1,499 with AI-powered filtering and
-          enterprise features. Simple Table is free for pre-revenue teams (source-available) at 42KB with zero dependencies. This
+          enterprise features. Simple Table is free for pre-revenue teams (source-available) at 84.6 kB with zero dependencies. This
           comparison helps you decide if AI features and commercial support justify the cost.
         </p>
         <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
@@ -138,7 +138,7 @@ export default function SmartGridVsSimpleTablePage() {
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 <strong>Simple Table</strong> offers a free tier for zero-revenue companies
                 (source-available under the Simple Table Community License) and a Pro plan ($85/month or $850/year) for revenue-generating businesses.
-                At 42KB with zero dependencies, it delivers core data grid
+                At 84.6 kB with zero dependencies, it delivers core data grid
                 functionality—virtualization, grouping, pinning, filtering, sorting—at a fraction of
                 Smart Grid's cost. For broader context,{" "}
                 <Link
@@ -711,7 +711,7 @@ export default function SmartGridVsSimpleTablePage() {
                   <li>
                     ✓ PRO: $850/year for commercial use (vs $1,499 for Smart Grid Team License)
                   </li>
-                  <li>✓ 42KB bundle, zero dependencies, native React</li>
+                  <li>✓ 84.6 kB bundle, zero dependencies, native React</li>
                   <li>✓ All core features (virtualization, grouping, pinning, filtering)</li>
                   <li>✓ No vendor lock-in, open-source freedom</li>
                   <li>✓ Saves $649 vs Smart Grid (for commercial use)</li>

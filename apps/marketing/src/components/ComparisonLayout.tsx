@@ -147,8 +147,9 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
           </Paragraph>
         </div>
 
+        <div className="flex flex-col gap-8">
         {/* AI Disclaimer */}
-        <div className="mb-8">
+        <div>
           <Alert
             message="AI-Assisted Content"
             description={
@@ -168,7 +169,7 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
 
         {/* Comparison Table */}
         <Card
-          className="mb-8 shadow-sm dark:bg-gray-800 dark:border-gray-700"
+          className="shadow-sm dark:bg-gray-800 dark:border-gray-700"
           styles={isMobile ? { body: { padding: "12px 8px" } } : undefined}
         >
           <Title
@@ -224,7 +225,7 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
 
         {/* Performance Metrics */}
         <Card
-          className="mb-8 shadow-sm dark:bg-gray-800 dark:border-gray-700"
+          className="shadow-sm dark:bg-gray-800 dark:border-gray-700"
           styles={isMobile ? { body: { padding: "12px 8px" } } : undefined}
         >
           <Title
@@ -271,7 +272,7 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
 
         {/* Summary */}
         <Card
-          className="mb-8 shadow-sm dark:bg-gray-800 dark:border-gray-700"
+          className="shadow-sm dark:bg-gray-800 dark:border-gray-700"
           styles={isMobile ? { body: { padding: "12px 8px" } } : undefined}
         >
           <Title
@@ -287,9 +288,9 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
           </Paragraph>
         </Card>
 
-        {/* Conversion CTAs */}
+        {/* Single conversion CTA */}
         <Card
-          className="mb-8 shadow-sm dark:bg-gray-800 dark:border-gray-700 border-blue-200 dark:border-blue-800"
+          className="shadow-sm dark:bg-gray-800 dark:border-gray-700 border-blue-200 dark:border-blue-800"
           styles={isMobile ? { body: { padding: "12px 8px" } } : undefined}
         >
           <Title
@@ -301,71 +302,38 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
             Try Simple Table next
           </Title>
           <Paragraph className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-            Open a live sandbox, compare pricing to {competitorName}, or read how teams evaluate
-            Simple Table in production.
+            Install free for pre-revenue use, or see how pricing compares to {competitorName}.
           </Paragraph>
           <Space direction={isMobile ? "vertical" : "horizontal"} className="w-full mb-4" wrap>
             <Button type="primary" href="/docs/installation" size="large">
-              Install from docs
-            </Button>
-            <Button href={stackBlitzUrl} target="_blank" rel="noopener noreferrer" size="large">
-              Open StackBlitz demo
+              Get started
             </Button>
             <Button href="/pricing" size="large">
-              View pricing
+              See pricing
             </Button>
-            <Button href="/benchmarks" size="large">
-              See benchmarks
+            <Button href={stackBlitzUrl} target="_blank" rel="noopener noreferrer" size="large">
+              Live demo
             </Button>
           </Space>
-          <Paragraph className="text-base text-gray-600 dark:text-gray-400 mb-0">
-            Proof:{" "}
+          <Paragraph className="text-sm text-gray-600 dark:text-gray-400 mb-0">
             <NextLink
               href="/case-studies/chartmetric"
               className="text-blue-600 dark:text-blue-400 hover:underline"
             >
               ChartMetric case study
             </NextLink>
-          </Paragraph>
-        </Card>
-
-        {/* Feature Requests */}
-        <Card
-          className="mb-8 shadow-sm dark:bg-gray-800 dark:border-gray-700"
-          styles={isMobile ? { body: { padding: "12px 8px" } } : undefined}
-        >
-          <Title
-            level={2}
-            className={`${
-              isMobile ? "text-xl" : "text-2xl"
-            } font-semibold text-gray-900 dark:text-white mb-4`}
-          >
-            Missing a Feature?
-          </Title>
-          <Paragraph className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-            We're constantly working to improve Simple Table. If you need a feature that's not yet
-            available, let us know! We prioritize features based on community demand.
-          </Paragraph>
-          <Space direction={isMobile ? "vertical" : "horizontal"} className="w-full">
-            <Button
-              type="primary"
-              href="https://discord.gg/RvKHCfg3PC"
+            {" · "}
+            <a
+              href="https://github.com/petera2c/simple-table/issues"
               target="_blank"
               rel="noopener noreferrer"
-              size="large"
+              className="text-blue-600 dark:text-blue-400 hover:underline"
             >
-              Join Discord Community
-            </Button>
-            <Button
-              href="https://github.com/petera2c/simple-table"
-              target="_blank"
-              rel="noopener noreferrer"
-              size="large"
-            >
-              Star on GitHub
-            </Button>
-          </Space>
+              Request a feature
+            </a>
+          </Paragraph>
         </Card>
+        </div>
       </div>
     </PageWrapper>
   );

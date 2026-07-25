@@ -79,7 +79,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Add row selection to your Vue 3 grid"
-      ctaDescription="Simple Table for Vue ships single, multi, and checkbox selection in one source-available package—~70 kB gzipped, Composition-API-friendly, Nuxt-ready."
+      ctaDescription="Simple Table for Vue ships single, multi, and checkbox selection in one source-available package—84.6 kB gzipped, Composition-API-friendly, Nuxt-ready."
       docsHref="/docs/row-selection"
     />
   );

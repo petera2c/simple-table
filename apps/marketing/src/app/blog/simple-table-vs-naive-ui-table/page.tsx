@@ -45,7 +45,7 @@ export default function Page() {
         { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Vue 3 + TypeScript", competitor: { value: "Yes (TS-first)", tone: "good" }, simpleTable: { value: "Yes (TS-first)", tone: "good" } },
         { feature: "Composition API + <script setup>", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (idiomatic)", tone: "good" } },
-        { feature: "Bundle size (gzipped)", competitor: { value: "150–300 kB (suite + theme)", tone: "neutral" }, simpleTable: { value: "~70 kB", tone: "good" } },
+        { feature: "Bundle size (gzipped)", competitor: { value: "150–300 kB (suite + theme)", tone: "neutral" }, simpleTable: { value: "84.6 kB", tone: "good" } },
         { feature: "Row virtualization", competitor: { value: "virtual-scroll prop", tone: "good" }, simpleTable: { value: "Built-in", tone: "good" } },
         { feature: "Column pinning", competitor: { value: "fixed: 'left' / 'right'", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Row grouping with aggregations", competitor: { value: "Tree mode (manual aggregations)", tone: "neutral" }, simpleTable: { value: "Built-in", tone: "good" } },
@@ -67,7 +67,7 @@ export default function Page() {
           items: [
             "Naive UI is pulled in just for n-data-table.",
             "You want grouping with aggregations and inline editing as built-in primitives.",
-            "You want a smaller bundle (~70 kB) without dropping virtualization.",
+            "You want a smaller bundle (84.6 kB) without dropping virtualization.",
             "You also build React / Angular / Svelte / Solid surfaces and want a shared engine.",
           ],
         },
@@ -110,7 +110,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Need the grid, not the suite?"
-      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—~70 kB gzipped, idiomatic Vue 3."
+      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—84.6 kB gzipped, idiomatic Vue 3."
     />
   );
 }

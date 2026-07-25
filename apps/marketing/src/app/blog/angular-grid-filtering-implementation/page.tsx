@@ -83,7 +83,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Add filtering to your Angular grid"
-      ctaDescription="Simple Table for Angular ships column filters, quick filter, and custom predicates in one source-available package—free for pre-revenue teams, ~70 kB gzipped, signals-native."
+      ctaDescription="Simple Table for Angular ships column filters, quick filter, and custom predicates in one source-available package—free for pre-revenue teams, 84.6 kB gzipped, signals-native."
       docsHref="/docs/column-filtering"
     />
   );

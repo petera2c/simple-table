@@ -338,8 +338,8 @@ export default function CompetitorBlogLayout(props: CompetitorBlogLayoutProps) {
         <CallToActionCard
           title={props.ctaTitle}
           description={props.ctaDescription}
-          primaryButton={{ text: "View documentation", href: "/docs/installation" }}
-          secondaryButton={{ text: "Try interactive demo", href: "/examples" }}
+          primaryButton={{ text: "Get started", href: "/docs/installation" }}
+          secondaryButton={{ text: "See pricing", href: "/pricing" }}
         />
       </BlogLayout>
     </>

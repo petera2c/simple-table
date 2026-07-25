@@ -65,7 +65,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
           React Data Table Component offers a straightforward, declarative table with basic features
           in 94KB. Simple Table delivers enterprise-grade features like virtualization, row
-          grouping, and column pinning in 42KB. This comparison helps you choose between simplicity
+          grouping, and column pinning in 84.6 kB. This comparison helps you choose between simplicity
           and power.
         </p>
         <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
@@ -105,7 +105,8 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 <strong>Simple Table</strong> takes a different approach: maximum power in minimal
-                size. Despite being 2× smaller (42KB vs 94KB), it includes{" "}
+                size. Despite being similar in size—slightly smaller at 84.6 kB vs 94KB (~1.1×)—it
+                includes{" "}
                 <Link
                   href="/blog/handling-one-million-rows"
                   className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
@@ -180,10 +181,10 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
                       Bundle Size (min+gzip)
                     </td>
-                    <td className="p-3 text-amber-600 dark:text-amber-400">
+                    <td className="p-3 text-gray-700 dark:text-gray-300">
                       {REACT_DATA_TABLE_COMPONENT_INFO.bundleSizeMinGzip}*
                     </td>
-                    <td className="p-3 text-green-600 dark:text-green-400 font-bold">
+                    <td className="p-3 text-gray-700 dark:text-gray-300 font-bold">
                       {SIMPLE_TABLE_INFO.bundleSizeMinGzip}
                     </td>
                   </tr>
@@ -253,14 +254,15 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
             <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
               <FontAwesomeIcon icon={faBolt} className="text-yellow-500" />
-              Bundle Size: Simple Table is 2× Smaller
+              Bundle Size: Similar; Simple Table Slightly Smaller
             </h2>
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 React Data Table Component weighs <strong>~94KB min+gzipped</strong>, while Simple
-                Table is just <strong>42KB</strong>—2.2× smaller. This is surprising because Simple
-                Table includes advanced features React Data Table Component lacks.
+                Table is <strong>84.6 kB</strong>—about 1.1× smaller (roughly similar). Bundle size
+                is not a major differentiator; Simple Table's advantage is advanced features React
+                Data Table Component lacks.
               </p>
 
               <div className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border border-blue-300 dark:border-blue-700 rounded-lg p-6 mb-6">
@@ -289,21 +291,22 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                       <span className="font-semibold text-gray-900 dark:text-gray-100">
                         Simple Table
                       </span>
-                      <span className="text-gray-700 dark:text-gray-300">42 KB</span>
+                      <span className="text-gray-700 dark:text-gray-300">84.6 kB</span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6">
                       <div
                         className="bg-linear-to-r from-green-500 to-teal-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                        style={{ width: "45%" }}
+                        style={{ width: "90%" }}
                       >
-                        45%
+                        90%
                       </div>
                     </div>
                   </div>
                   <div className="pt-2 border-t border-gray-300 dark:border-gray-600">
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                      <strong>Size difference: 52 KB</strong> —Simple Table saves enough to load
-                      another small library or custom code.
+                      <strong>Size difference: ~9 KB</strong> — a modest savings. Choose Simple
+                      Table for features (virtualization, grouping, pinning), not for a dramatic
+                      size win.
                     </p>
                   </div>
                 </div>
@@ -314,10 +317,9 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                   Real-World Impact
                 </h4>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  On a 3G connection (750 Kbps), React Data Table Component adds ~1 second to load
-                  time vs Simple Table. For mobile users or bandwidth-constrained markets, this
-                  matters. Simple Table's smaller size improves Time to Interactive (TTI) and Core
-                  Web Vitals scores.
+                  On a 3G connection the ~9KB difference is minor. For mobile users, Simple Table's
+                  real advantage is built-in virtualization and richer grid features—not a large
+                  bundle-size gap.
                 </p>
               </div>
             </div>
@@ -719,7 +721,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                         className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
-                        Want <strong>smallest bundle size</strong> (42KB vs 94KB)
+                        Want <strong>smallest bundle size</strong> (84.6 kB vs 94KB)
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
@@ -871,7 +873,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                   <li>✓ Best for prototypes, MVPs, and basic use cases</li>
                   <li>✓ Minimal configuration, fast setup</li>
                   <li>✓ Solid TypeScript support</li>
-                  <li>△ 94KB bundle (2× larger than Simple Table)</li>
+                  <li>△ 94KB bundle (similar / slightly larger than Simple Table)</li>
                   <li>✗ No virtualization, grouping, or pinning</li>
                   <li>✗ Last updated 1 year ago</li>
                 </ul>
@@ -882,7 +884,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
                   Simple Table: Enterprise Features, Minimal Size
                 </h3>
                 <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                  <li>✓ 42KB—2× smaller than React Data Table Component</li>
+                  <li>✓ 84.6 kB—similar / slightly smaller than React Data Table Component</li>
                   <li>✓ Built-in virtualization (handles 1M+ rows)</li>
                   <li>✓ Row grouping, column pinning, resizing</li>
                   <li>✓ Actively maintained (2026)</li>
@@ -894,9 +896,9 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 <strong>Our recommendation:</strong> For rapid prototyping and simple tables, React
                 Data Table Component gets you started quickly. But for production apps—especially
-                with large datasets or complex requirements—Simple Table's 2× smaller bundle,
-                built-in virtualization, and enterprise features make it the better long-term
-                choice.
+                with large datasets or complex requirements—Simple Table's built-in virtualization
+                and enterprise features (in a similar / slightly smaller package) make it the better
+                long-term choice.
               </p>
 
               <p className="text-gray-700 dark:text-gray-300">
@@ -957,7 +959,7 @@ export default function ReactDataTableComponentVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Get enterprise features in a compact package"
-        description={`Simple Table delivers virtualization, row grouping, column pinning, and more in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—2× smaller than React Data Table Component. Ideal for production apps with complex requirements and large datasets; official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
+        description={`Simple Table delivers virtualization, row grouping, column pinning, and more in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—similar / slightly smaller than React Data Table Component (~94KB). Ideal for production apps with complex requirements and large datasets; official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

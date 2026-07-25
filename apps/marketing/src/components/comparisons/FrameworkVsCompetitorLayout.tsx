@@ -157,12 +157,12 @@ export default function FrameworkVsCompetitorLayout(props: FrameworkVsCompetitor
           ))}
         </section>
 
-        <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 items-stretch">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm h-full flex flex-col">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
               Choose Simple Table for {fw.label} when…
             </h2>
-            <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+            <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 flex-1">
               {props.whyChooseSimpleTable.map((bullet) => (
                 <li key={bullet} className="flex items-start gap-2">
                   <FontAwesomeIcon icon={faCheck} className="mt-1 text-green-500" aria-hidden="true" />
@@ -171,11 +171,11 @@ export default function FrameworkVsCompetitorLayout(props: FrameworkVsCompetitor
               ))}
             </ul>
           </div>
-          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm h-full flex flex-col">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
               Choose {props.competitorName} when…
             </h2>
-            <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+            <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300 flex-1">
               {props.whyChooseCompetitor.map((bullet) => (
                 <li key={bullet} className="flex items-start gap-2">
                   <FontAwesomeIcon

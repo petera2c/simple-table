@@ -39,6 +39,7 @@ import {
   HANDSONTABLE_INFO,
   TANSTACK_TABLE_INFO,
   AG_GRID_COMMUNITY_INFO,
+  AG_GRID_ENTERPRISE_INFO,
 } from "@/constants/packageInfo";
 
 const FAQS: { question: string; answer: string }[] = [
@@ -50,7 +51,7 @@ const FAQS: { question: string; answer: string }[] = [
   {
     question: "What is the best free alternative to Handsontable for React?",
     answer:
-      "For most React teams, Simple Table is the closest drop-in: it delivers spreadsheet-style editing, sorting, filtering, virtualization, and row grouping in roughly 42KB (about 4x lighter than Handsontable) and is source-available with a free tier for pre-revenue teams. React Data Grid (Adazzle) and TanStack Table are solid MIT-licensed options too.",
+      "For most React teams, Simple Table is the closest drop-in: it delivers spreadsheet-style editing, sorting, filtering, virtualization, and row grouping in roughly 84.6 kB (about 3.4× lighter than Handsontable) and is source-available with a free tier for pre-revenue teams. React Data Grid (Adazzle) and TanStack Table are solid MIT-licensed options too.",
   },
   {
     question: "Why do developers migrate away from Handsontable?",
@@ -405,7 +406,7 @@ export default function HandsontableAlternativesPage() {
             <p className="mb-6 text-gray-700 dark:text-gray-300 text-lg">
               Simple Table is a solid Handsontable alternative for teams who want spreadsheet-like
               functionality with a permissive license. At {SIMPLE_TABLE_INFO.bundleSizeMinGzip},
-              it's about <strong>4x lighter than Handsontable</strong> while providing the core
+              it's about <strong>3.4× lighter than Handsontable</strong> while providing the core
               editing features most applications need—all source-available and free for pre-revenue teams.
             </p>
 
@@ -432,8 +433,8 @@ export default function HandsontableAlternativesPage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>4x lighter:</strong> {SIMPLE_TABLE_INFO.bundleSizeMinGzip} vs{" "}
-                      {HANDSONTABLE_INFO.bundleSizeMinGzip} — significantly smaller bundle
+                      <strong>~3.4× lighter:</strong> {SIMPLE_TABLE_INFO.bundleSizeMinGzip} vs{" "}
+                      {HANDSONTABLE_INFO.bundleSizeMinGzip} — meaningfully smaller bundle
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -958,9 +959,11 @@ export default function HandsontableAlternativesPage() {
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 text-gray-700 dark:text-gray-300">AG Grid Enterprise</td>
-                    <td className="p-3 text-red-600 dark:text-red-400">~200KB+</td>
+                    <td className="p-3 text-red-600 dark:text-red-400">
+                      {AG_GRID_ENTERPRISE_INFO.bundleSizeMinGzip}
+                    </td>
                     <td className="p-3 text-red-600 dark:text-red-400">Commercial</td>
-                    <td className="p-3 text-red-600 dark:text-red-400 font-bold">$5,000+/yr</td>
+                    <td className="p-3 text-red-600 dark:text-red-400 font-bold">$999+/dev/yr</td>
                     <td className="p-3 text-gray-700 dark:text-gray-300">✓ Advanced</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700 bg-red-50 dark:bg-red-900/20">
@@ -1097,7 +1100,7 @@ export default function HandsontableAlternativesPage() {
                     className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
-                    <strong>Performance:</strong> About 4x smaller bundle (
+                    <strong>Performance:</strong> About 3.4× smaller bundle (
                     {SIMPLE_TABLE_INFO.bundleSizeMinGzip} vs {HANDSONTABLE_INFO.bundleSizeMinGzip})
                   </span>
                 </li>
@@ -1231,7 +1234,7 @@ export default function HandsontableAlternativesPage() {
       <CallToActionCard
         location="blog_handsontable_alternatives"
         title="Replace Handsontable with Simple Table today"
-        description={`Escape license fees and bundle bloat. Simple Table gives you spreadsheet-like features in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—4x lighter than Handsontable—source-available and free for pre-revenue teams. Try the live demo, then see pricing.`}
+        description={`Escape license fees and bundle bloat. Simple Table gives you spreadsheet-like features in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—about 3.4× lighter than Handsontable—source-available and free for pre-revenue teams. Try the live demo, then see pricing.`}
         primaryButton={{
           text: "Try the live demo",
           href: "/examples/crypto",

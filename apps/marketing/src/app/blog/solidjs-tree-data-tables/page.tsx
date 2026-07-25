@@ -77,7 +77,7 @@ export default function Page() {
         { href: "/frameworks/solid", label: "Solid integration hub" },
       ]}
       ctaTitle="Add tree data to your Solid grid"
-      ctaDescription="Simple Table for Solid ships tree data, virtualization, pinning, and editing in one source-available package—~70 kB gzipped, signals-native."
+      ctaDescription="Simple Table for Solid ships tree data, virtualization, pinning, and editing in one source-available package—84.6 kB gzipped, signals-native."
       docsHref="/docs/nested-tables"
     />
   );

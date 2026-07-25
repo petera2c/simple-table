@@ -19,7 +19,11 @@ import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
 import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
-import { SIMPLE_TABLE_INFO, KA_TABLE_INFO } from "@/constants/packageInfo";
+import {
+  SIMPLE_TABLE_INFO,
+  KA_TABLE_INFO,
+  AG_GRID_COMMUNITY_INFO,
+} from "@/constants/packageInfo";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -160,10 +164,10 @@ export default function KaTableVsSimpleTablePage() {
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
                       Bundle Size (min+gzip)
                     </td>
-                    <td className="p-3 text-amber-600 dark:text-amber-400">
+                    <td className="p-3 text-green-600 dark:text-green-400 font-bold">
                       {KA_TABLE_INFO.bundleSizeMinGzip}
                     </td>
-                    <td className="p-3 text-green-600 dark:text-green-400 font-bold">
+                    <td className="p-3 text-amber-600 dark:text-amber-400">
                       {SIMPLE_TABLE_INFO.bundleSizeMinGzip}
                     </td>
                   </tr>
@@ -228,45 +232,45 @@ export default function KaTableVsSimpleTablePage() {
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
             <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
               <FontAwesomeIcon icon={faBolt} className="text-amber-500" />
-              Bundle Size: Both Lightweight, Simple Table Smaller
+              Bundle Size: Both Lightweight; ka-table Wins on Size
             </h2>
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 Both libraries are lightweight with zero runtime dependencies, making them excellent
-                choices for bundle-conscious projects.
+                choices for bundle-conscious projects. On package size alone, ka-table is lighter.
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-300 dark:border-blue-700 rounded-lg p-6">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                    ka-table
-                  </h3>
-                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
-                      Complete Package
-                    </div>
-                    <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                      {KA_TABLE_INFO.bundleSizeMinGzip}
-                    </div>
-                    <div className="text-xs text-blue-600 dark:text-blue-400 mt-2">
-                      ✓ Zero dependencies, includes all features
-                    </div>
-                  </div>
-                </div>
-
                 <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-900/30 dark:to-teal-900/30 border border-green-300 dark:border-green-700 rounded-lg p-6">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                    Simple Table
+                    ka-table
                   </h3>
                   <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-green-200 dark:border-green-700">
                     <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
                       Complete Package
                     </div>
                     <div className="text-3xl font-bold text-green-600 dark:text-green-400">
-                      {SIMPLE_TABLE_INFO.bundleSizeMinGzip}
+                      {KA_TABLE_INFO.bundleSizeMinGzip}
                     </div>
                     <div className="text-xs text-green-600 dark:text-green-400 mt-2">
+                      ✓ Zero dependencies, includes all features
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 border border-blue-300 dark:border-blue-700 rounded-lg p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    Simple Table
+                  </h3>
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                      Complete Package
+                    </div>
+                    <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                      {SIMPLE_TABLE_INFO.bundleSizeMinGzip}
+                    </div>
+                    <div className="text-xs text-blue-600 dark:text-blue-400 mt-2">
                       ✓ Zero dependencies, built-in virtualization
                     </div>
                   </div>
@@ -278,10 +282,12 @@ export default function KaTableVsSimpleTablePage() {
                   Bundle Size Verdict
                 </h4>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  Simple Table is 30% smaller ({SIMPLE_TABLE_INFO.bundleSizeMinGzip} vs{" "}
-                  {KA_TABLE_INFO.bundleSizeMinGzip}). Both are lightweight compared to enterprise
-                  grids like AG Grid (298KB). For most apps, this ~18KB difference won't matter—pick
-                  based on state management philosophy, not bundle size alone.
+                  ka-table is lighter ({KA_TABLE_INFO.bundleSizeMinGzip} vs{" "}
+                  {SIMPLE_TABLE_INFO.bundleSizeMinGzip}). Both are still lightweight compared to
+                  enterprise grids like AG Grid Community (
+                  {AG_GRID_COMMUNITY_INFO.bundleSizeMinGzip}). For most apps, this ~25KB difference
+                  won&apos;t matter—pick based on features and API philosophy, not bundle size
+                  alone.
                 </p>
               </div>
             </div>
@@ -756,6 +762,16 @@ export default function KaTableVsSimpleTablePage() {
                         Your team is <strong>experienced with reducer patterns</strong>
                       </span>
                     </li>
+                    <li className="flex items-start gap-2">
+                      <FontAwesomeIcon
+                        icon={faCheckCircle}
+                        className="text-blue-500 mt-1 shrink-0"
+                      />
+                      <span>
+                        You want the <strong>smaller package</strong> (~{KA_TABLE_INFO.bundleSizeMinGzip}{" "}
+                        vs {SIMPLE_TABLE_INFO.bundleSizeMinGzip})
+                      </span>
+                    </li>
                   </ul>
                 </div>
 
@@ -798,7 +814,8 @@ export default function KaTableVsSimpleTablePage() {
                         className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
-                        You want a <strong>smaller bundle</strong> (~18KB lighter)
+                        You prioritize a <strong>simpler API and more built-in features</strong> over
+                        the smallest possible bundle
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
@@ -960,10 +977,11 @@ export default function KaTableVsSimpleTablePage() {
                   Bundle Size Context
                 </h3>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  Simple Table is 30% smaller ({SIMPLE_TABLE_INFO.bundleSizeMinGzip} vs{" "}
-                  {KA_TABLE_INFO.bundleSizeMinGzip}), but both are lightweight. For most apps, the
-                  ~18KB difference won't impact performance. Choose based on developer experience
-                  and state management needs, not bundle size alone.
+                  ka-table is lighter ({KA_TABLE_INFO.bundleSizeMinGzip} vs{" "}
+                  {SIMPLE_TABLE_INFO.bundleSizeMinGzip}), but both are lightweight. For most apps,
+                  the ~25KB difference won't impact performance. Choose based on developer experience
+                  and state management needs, not bundle size alone—Simple Table wins on features and
+                  API simplicity, not size.
                 </p>
               </div>
 
@@ -1023,14 +1041,14 @@ export default function KaTableVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Build React tables without reducer boilerplate"
-        description={`Simple Table delivers complete data grid functionality in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—30% smaller than ka-table. Get sorting, filtering, pagination, grouping, virtualization, and more with a pragmatic, batteries-included API. No Redux patterns required. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
+        description={`Simple Table delivers complete data grid functionality in ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} with a pragmatic, batteries-included API—no Redux patterns required. ka-table is lighter on package size (${KA_TABLE_INFO.bundleSizeMinGzip}); Simple Table wins on features and developer experience. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
-          text: "View Documentation",
+          text: "Get started",
           href: "/docs/installation",
         }}
         secondaryButton={{
-          text: "Try Interactive Demo",
-          href: "/examples",
+          text: "See pricing",
+          href: "/pricing",
         }}
       />
     </BlogLayout>

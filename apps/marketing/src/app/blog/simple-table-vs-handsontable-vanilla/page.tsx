@@ -68,7 +68,7 @@ export default function Page() {
             "You're building a commercial product and don't want to pay license fees.",
             "Your UX is closer to a data grid than a spreadsheet.",
             "You want source-available licensing that's free for pre-revenue teams, with Pro/Enterprise for revenue-generating use.",
-            "Bundle size matters (~50 kB gzipped) and grouping with aggregations is a primary feature.",
+            "Bundle size matters (84.6 kB gzipped) and grouping with aggregations is a primary feature.",
           ],
         },
       }}
@@ -111,7 +111,7 @@ export default function Page() {
         { href: "/frameworks/vanilla", label: "Vanilla TypeScript hub" },
       ]}
       ctaTitle="Need a source-available vanilla data grid?"
-      ctaDescription="simple-table-core ships virtualization, pinning, grouping, and editing in one source-available package—~50 kB gzipped, TypeScript-first."
+      ctaDescription="simple-table-core ships virtualization, pinning, grouping, and editing in one source-available package—84.6 kB gzipped, TypeScript-first."
     />
   );
 }

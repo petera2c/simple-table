@@ -38,7 +38,7 @@ export default function Page() {
       dateModified={simpleTableVsNgxDatatablePost.updatedAt}
       introParagraphs={[
         "@swimlane/ngx-datatable was a first choice for Angular data grids for nearly a decade. It works, it's familiar, and it's installed in thousands of production Angular apps. But two things have changed: Angular's standalone components and signals have shifted what 'idiomatic' means, and ngx-datatable's release cadence has slowed enough that teams are routinely waiting on Angular-version compatibility patches.",
-        "Simple Table for Angular is the source-available alternative built specifically for modern Angular. @simple-table/angular is a standalone component that supports Angular 17, 18, and 19, plays well with signals, and ships virtualization, pinning, grouping with aggregations, and inline editing in one ~70 kB gzipped package.",
+        "Simple Table for Angular is the source-available alternative built specifically for modern Angular. @simple-table/angular is a standalone component that supports Angular 17, 18, and 19, plays well with signals, and ships virtualization, pinning, grouping with aggregations, and inline editing in one 84.6 kB gzipped package.",
         "This article walks through the real differences between ngx-datatable and Simple Table for Angular—API ergonomics, feature parity, performance, and migration cost—so you can decide whether your existing ngx-datatable app should keep upgrading or jump.",
       ]}
       comparisonRows={[
@@ -51,7 +51,7 @@ export default function Page() {
         { feature: "Column pinning (left / right)", competitor: { value: "No", tone: "bad" }, simpleTable: { value: "Built-in", tone: "good" } },
         { feature: "Row grouping with aggregations", competitor: { value: "Manual / DIY", tone: "bad" }, simpleTable: { value: "Built-in", tone: "good" } },
         { feature: "Inline cell editing", competitor: { value: "Template-based", tone: "neutral" }, simpleTable: { value: "Built-in", tone: "good" } },
-        { feature: "Bundle size (gzipped)", competitor: { value: "~140 kB", tone: "neutral" }, simpleTable: { value: "~70 kB", tone: "good" } },
+        { feature: "Bundle size (gzipped)", competitor: { value: "~140 kB", tone: "neutral" }, simpleTable: { value: "84.6 kB", tone: "good" } },
       ]}
       whyChoose={{
         competitor: {
@@ -68,7 +68,7 @@ export default function Page() {
             "You're migrating to Angular 17/18/19 standalone components and signals.",
             "You need column pinning, row grouping with aggregations, or inline editing without writing a renderer pipeline.",
             "You're tired of waiting for the next ngx-datatable Angular-version compatibility release.",
-            "You want a smaller bundle (~70 kB vs ~140 kB).",
+            "You want a smaller bundle (84.6 kB vs ~140 kB).",
             "You also build React / Vue / Svelte / Solid surfaces and want one shared engine.",
           ],
         },
@@ -120,7 +120,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Move from ngx-datatable to a modern Angular grid"
-      ctaDescription="Simple Table for Angular is signals-friendly, source-available (free for pre-revenue teams), ~70 kB gzipped, and ships pinning, grouping, and inline editing. Try it in StackBlitz or follow the migration guide."
+      ctaDescription="Simple Table for Angular is signals-friendly, source-available (free for pre-revenue teams), 84.6 kB gzipped, and ships pinning, grouping, and inline editing. Try it in StackBlitz or follow the migration guide."
     />
   );
 }

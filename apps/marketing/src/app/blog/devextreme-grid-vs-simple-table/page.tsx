@@ -68,7 +68,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
 
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
           DevExtreme React Grid (by DevExpress) costs $899/year with 80+ premium components and
-          enterprise support. Simple Table is free for pre-revenue teams (source-available) at 42KB with zero dependencies. This
+          enterprise support. Simple Table is free for pre-revenue teams (source-available) at 84.6 kB with zero dependencies. This
           comparison helps you decide if premium features justify the annual cost.
         </p>
         <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
@@ -122,7 +122,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 <strong>Simple Table</strong> offers a free tier for zero-revenue companies
                 (source-available under the Simple Table Community License) and a Pro plan ($85/month or $850/year) for revenue-generating businesses.
-                At 42KB with zero dependencies, it delivers core data grid features—virtualization,
+                At 84.6 kB with zero dependencies, it delivers core data grid features—virtualization,
                 sorting, filtering, pagination, grouping, column pinning—at a fraction of enterprise
                 costs. For broader context,{" "}
                 <Link
@@ -901,7 +901,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <li>
                     ✓ PRO: $850/year for commercial use (vs $4,495/year for DevExtreme 5-dev team)
                   </li>
-                  <li>✓ 42KB bundle, zero dependencies</li>
+                  <li>✓ 84.6 kB bundle, zero dependencies</li>
                   <li>✓ Core features (virtualization, grouping, pinning, filtering)</li>
                   <li>✓ No vendor lock-in, open-source freedom</li>
                   <li>✓ Saves $11,937 over 3 years vs DevExtreme (commercial use)</li>

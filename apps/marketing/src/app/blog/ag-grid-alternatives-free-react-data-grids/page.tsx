@@ -34,6 +34,7 @@ import ExampleLink from "@/components/ExampleLink";
 import {
   SIMPLE_TABLE_INFO,
   AG_GRID_COMMUNITY_INFO,
+  AG_GRID_ENTERPRISE_INFO,
   TANSTACK_TABLE_INFO,
   MATERIAL_REACT_TABLE_INFO,
 } from "@/constants/packageInfo";
@@ -119,8 +120,9 @@ export default function AgGridAlternativesPage() {
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 For projects with budget constraints or those that don't need the full enterprise
                 feature set, you might be looking for alternatives. The good news? The React
-                ecosystem offers several excellent options that are completely free and may better
-                fit your specific needs. Curious why we built one of them? Read the{" "}
+                ecosystem offers several excellent options—including MIT-licensed libraries and
+                Community License products free for pre-revenue teams—that may better fit your
+                specific needs. Curious why we built one of them? Read the{" "}
                 <Link
                   href="/blog/free-alternative-to-ag-grid"
                   className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
@@ -132,8 +134,8 @@ export default function AgGridAlternativesPage() {
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 In this comprehensive guide, we'll explore 7 production-ready AG Grid alternatives
-                that won't cost you a dime. Whether you need a lightweight solution or a
-                feature-packed powerhouse, there's an option here that will fit your needs
+                that avoid per-developer Enterprise fees. Whether you need a lightweight solution
+                or a feature-packed powerhouse, there's an option here that will fit your needs
                 perfectly.
               </p>
             </div>
@@ -486,7 +488,8 @@ export default function AgGridAlternativesPage() {
               </h4>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 Simple Table offers the core features most projects need with an intuitive API and
-                small bundle size—completely free.
+                small bundle size—free for pre-revenue teams under the Community License
+                (source-available).
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
                 <Link href="/docs/installation">
@@ -1057,7 +1060,9 @@ export default function AgGridAlternativesPage() {
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 text-gray-700 dark:text-gray-300">AG Grid Enterprise</td>
-                    <td className="p-3 text-red-600 dark:text-red-400">~200KB+</td>
+                    <td className="p-3 text-red-600 dark:text-red-400">
+                      {AG_GRID_ENTERPRISE_INFO.bundleSizeMinGzip}
+                    </td>
                     <td className="p-3 text-red-600 dark:text-red-400 font-bold">$999+/dev/year</td>
                     <td className="p-3 text-gray-700 dark:text-gray-300">
                       Complex enterprise needs

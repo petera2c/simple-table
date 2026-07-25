@@ -305,7 +305,7 @@ export default function MantineDatatableVsSimpleTablePage() {
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   On a slow 3G connection: Mantine DataTable stack (~195KB for new Mantine apps)
                   takes ~5-6 seconds to download. Simple Table (
-                  {SIMPLE_TABLE_INFO.bundleSizeMinGzip}) takes ~1.2 seconds. For mobile-first apps
+                  {SIMPLE_TABLE_INFO.bundleSizeMinGzip}) takes ~2.4 seconds. For mobile-first apps
                   or emerging markets, this is critical.
                 </p>
               </div>
@@ -811,8 +811,8 @@ export default function MantineDatatableVsSimpleTablePage() {
                     emerging markets. Need virtualization for large datasets.
                   </p>
                   <p className="text-sm font-semibold text-green-600 dark:text-green-400">
-                    ✅ Recommendation: <strong>Simple Table</strong> — 4× smaller bundle, built-in
-                    virtualization
+                    ✅ Recommendation: <strong>Simple Table</strong> — ~2.3× smaller than the full
+                    Mantine stack, built-in virtualization
                   </p>
                 </div>
 
@@ -881,7 +881,8 @@ export default function MantineDatatableVsSimpleTablePage() {
                     <span className="font-semibold">NO, not using Mantine:</span>
                     <span>
                       Simple Table gives you all features without 100KB+ of Mantine UI overhead.
-                      It's 4× smaller and works with any CSS framework.
+                      It's ~2.3× smaller than the full Mantine stack and works with any CSS
+                      framework.
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -900,8 +901,8 @@ export default function MantineDatatableVsSimpleTablePage() {
                 </h3>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   For apps not using Mantine UI: Mantine DataTable stack = ~195KB. Simple Table ={" "}
-                  {SIMPLE_TABLE_INFO.bundleSizeMinGzip}. That's a <strong>4× difference</strong>{" "}
-                  that directly impacts load time, especially on mobile.
+                  {SIMPLE_TABLE_INFO.bundleSizeMinGzip}. That's about a{" "}
+                  <strong>2.3× difference</strong> that impacts load time, especially on mobile.
                 </p>
               </div>
 
@@ -960,7 +961,7 @@ export default function MantineDatatableVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Build React tables without Mantine UI overhead"
-        description={`Simple Table delivers complete data grid functionality in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—4× smaller than Mantine DataTable with dependencies. Get sorting, filtering, pagination, grouping, virtualization, and more without locking into Mantine UI. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
+        description={`Simple Table delivers complete data grid functionality in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—about 2.3× smaller than Mantine DataTable with dependencies (~195KB). Get sorting, filtering, pagination, grouping, virtualization, and more without locking into Mantine UI. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

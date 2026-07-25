@@ -32,6 +32,7 @@ import { tanstackVsAgGridPost } from "@/constants/blogPosts";
 import {
   SIMPLE_TABLE_INFO,
   AG_GRID_COMMUNITY_INFO,
+  AG_GRID_ENTERPRISE_INFO,
   TANSTACK_TABLE_INFO,
 } from "@/constants/packageInfo";
 
@@ -64,7 +65,7 @@ const FAQS: { question: string; answer: string }[] = [
   {
     question: "Is there a free alternative that already includes a UI?",
     answer:
-      "Yes. Simple Table is a source-available React data grid that ships a complete UI plus virtualization, column pinning, row grouping, and inline editing in roughly 42KB, giving you AG Grid-style features without the license fee and without building the UI yourself like with TanStack Table.",
+      "Yes. Simple Table is a source-available React data grid that ships a complete UI plus virtualization, column pinning, row grouping, and inline editing in roughly 84.6 kB, giving you AG Grid-style features without the license fee and without building the UI yourself like with TanStack Table.",
   },
 ];
 
@@ -555,8 +556,9 @@ export default function TanStackVsAgGridPage() {
                       className="text-red-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>AG Grid:</strong> Heavy out of the box. Enterprise version adds even
-                      more weight (~200KB+). Impacts mobile performance significantly.
+                      <strong>AG Grid:</strong> Heavy out of the box. Enterprise is{" "}
+                      {AG_GRID_ENTERPRISE_INFO.bundleSizeMinGzip}. Impacts mobile performance
+                      significantly.
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -1060,7 +1062,8 @@ export default function TanStackVsAgGridPage() {
                     <li className="flex items-center gap-2">
                       <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />
                       <span>
-                        <strong>100% free forever</strong> (unlike AG Grid)
+                        <strong>Free for pre-revenue</strong> under Community License (unlike AG
+                        Grid Enterprise)
                       </span>
                     </li>
                     <li className="flex items-center gap-2">

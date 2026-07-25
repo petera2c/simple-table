@@ -50,7 +50,7 @@ export default function Page() {
         { feature: "Row grouping with aggregations", competitor: { value: "Build yourself", tone: "bad" }, simpleTable: { value: "Built-in", tone: "good" } },
         { feature: "Inline cell editing", competitor: { value: "Build yourself", tone: "bad" }, simpleTable: { value: "Built-in", tone: "good" } },
         { feature: "Theme via Material tokens", competitor: { value: "Native Material", tone: "good" }, simpleTable: { value: "CSS variables (Material-compatible)", tone: "good" } },
-        { feature: "Bundle size (gzipped)", competitor: { value: "~50 kB (excludes virtualization, sort, paginate helpers)", tone: "neutral" }, simpleTable: { value: "~70 kB (everything included)", tone: "good" } },
+        { feature: "Bundle size (gzipped)", competitor: { value: "~50 kB (excludes virtualization, sort, paginate helpers)", tone: "neutral" }, simpleTable: { value: "84.6 kB (everything included)", tone: "good" } },
       ]}
       whyChoose={{
         competitor: {
@@ -118,7 +118,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Stop building grid plumbing on top of mat-table"
-      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and inline editing—Material-compatible theming via CSS variables, ~70 kB gzipped, source-available (free for pre-revenue teams)."
+      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and inline editing—Material-compatible theming via CSS variables, 84.6 kB gzipped, source-available (free for pre-revenue teams)."
     />
   );
 }

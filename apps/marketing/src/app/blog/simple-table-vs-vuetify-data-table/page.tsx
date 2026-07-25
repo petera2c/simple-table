@@ -30,7 +30,7 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={simpleTableVsVuetifyDataTablePost.slug}
       title={simpleTableVsVuetifyDataTablePost.title}
-      subtitle="Vuetify v-data-table is fine if you live in Vuetify. Pulling in the entire Vuetify runtime, theme, and Sass for one data grid is a lot. Simple Table for Vue is a focused, source-available Vue 3 data grid that ships virtualization, pinning, grouping, and editing in ~70 kB."
+      subtitle="Vuetify v-data-table is fine if you live in Vuetify. Pulling in the entire Vuetify runtime, theme, and Sass for one data grid is a lot. Simple Table for Vue is a focused, source-available Vue 3 data grid that ships virtualization, pinning, grouping, and editing in 84.6 kB."
       competitorName="Vuetify v-data-table"
       framework="vue"
       heroBadges={["Comparison", "Bundle size", "Decision Guide"]}
@@ -43,7 +43,7 @@ export default function Page() {
       ]}
       comparisonRows={[
         { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
-        { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite + theme + icons)", tone: "bad" }, simpleTable: { value: "~70 kB", tone: "good" } },
+        { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite + theme + icons)", tone: "bad" }, simpleTable: { value: "84.6 kB", tone: "good" } },
         { feature: "Vue 3 + Composition API + <script setup>", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (idiomatic)", tone: "good" } },
         { feature: "Nuxt 3 / Nuxt 4 SSR", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Row + column virtualization", competitor: { value: "Partial (virtual mode)", tone: "neutral" }, simpleTable: { value: "Yes (built-in)", tone: "good" } },
@@ -68,7 +68,7 @@ export default function Page() {
             "You pulled in Vuetify mainly for v-data-table—you can drop the rest.",
             "You want true row + column virtualization for 100k+ rows.",
             "You want column pinning, grouping with aggregations, and inline editing as built-in primitives.",
-            "Bundle size matters—target ~70 kB instead of 200–400+ kB.",
+            "Bundle size matters—target 84.6 kB instead of 200–400+ kB.",
             "You also build React / Angular / Svelte / Solid surfaces and want a shared engine.",
           ],
         },
@@ -93,7 +93,7 @@ export default function Page() {
           title: "Greenfield Nuxt 3 / Nuxt 4 SaaS",
           body: "New Nuxt project, lean bundle is non-negotiable.",
           recommendation: "simpleTable",
-          recommendationLabel: "Pick Simple Table for Vue—idiomatic Composition API, ~70 kB gzipped.",
+          recommendationLabel: "Pick Simple Table for Vue—idiomatic Composition API, 84.6 kB gzipped.",
         },
         {
           emoji: "📈",
@@ -120,7 +120,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Drop the Vuetify runtime, keep the data grid"
-      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—~70 kB gzipped, idiomatic for Vue 3, Nuxt 3, and Nuxt 4."
+      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—84.6 kB gzipped, idiomatic for Vue 3, Nuxt 3, and Nuxt 4."
     />
   );
 }

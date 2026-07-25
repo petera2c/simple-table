@@ -38,14 +38,14 @@ export default function Page() {
       dateModified={simpleTableVsAgGridAngularPost.updatedAt}
       introParagraphs={[
         "Angular teams choosing a data grid in 2026 keep landing on the same question: do we live with AG Grid's bundle size and Enterprise license fees, or pick something lighter? AG Grid is genuinely powerful, but a lot of the features Angular shops want—row grouping with aggregations, pivoting, master/detail, integrated charts—live behind the $999+/developer/year Enterprise tier.",
-        "Simple Table for Angular is the source-available alternative built around modern Angular. It ships as @simple-table/angular, runs natively in standalone components, plays well with signals, and supports Angular 17, 18, and 19 without zone-tweak workarounds. You get virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline cell editing in a single ~70 kB gzipped package—free for pre-revenue teams, with Pro/Enterprise for revenue-generating use.",
+        "Simple Table for Angular is the source-available alternative built around modern Angular. It ships as @simple-table/angular, runs natively in standalone components, plays well with signals, and supports Angular 17, 18, and 19 without zone-tweak workarounds. You get virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline cell editing in a single 84.6 kB gzipped package—free for pre-revenue teams, with Pro/Enterprise for revenue-generating use.",
         "This article is the side-by-side that helps Angular teams decide. We break down license cost, bundle size, idiomatic Angular API, virtualization behavior, grouping/aggregation parity, and the migration path so you can confidently pick the right grid for your stack.",
         "If you're skimming, the executive summary is: AG Grid Angular is the safer pick if your team already uses it heavily and depends on Enterprise-only features like pivoting or integrated charts. For everyone else—new Angular projects, teams that want signals-friendly ergonomics, or teams trying to escape Enterprise renewals—Simple Table for Angular wins on cost, bundle size, and developer experience.",
       ]}
       comparisonRows={[
         { feature: "License", competitor: { value: "MIT (Community) + commercial Enterprise", tone: "neutral" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Per-developer cost", competitor: { value: "$999+ /year (Enterprise)", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
-        { feature: "Bundle size (gzipped, typical app)", competitor: { value: "200–400+ kB", tone: "bad" }, simpleTable: { value: "~70 kB", tone: "good" } },
+        { feature: "Bundle size (gzipped, typical app)", competitor: { value: "200–400+ kB", tone: "bad" }, simpleTable: { value: "84.6 kB", tone: "good" } },
         { feature: "Standalone components", competitor: { value: "Supported", tone: "neutral" }, simpleTable: { value: "First-class", tone: "good" } },
         { feature: "Signals-native API", competitor: { value: "Partial", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Row + column virtualization (1M+ rows)", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (built-in)", tone: "good" } },
@@ -70,7 +70,7 @@ export default function Page() {
           items: [
             "You want grouping, aggregations, and tree data free for pre-revenue teams (source-available)—no Enterprise license to renew.",
             "You're starting a new Angular 17/18/19 project with standalone components and signals.",
-            "Your bundle budget is tight (target ~70 kB vs 200–400+ kB).",
+            "Your bundle budget is tight (target 84.6 kB vs 200–400+ kB).",
             "You also build React / Vue / Svelte / Solid surfaces and want one shared engine and data shape.",
             "You want to theme via CSS variables and avoid pulling in a foreign design system.",
           ],
@@ -132,7 +132,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Drop the AG Grid Enterprise renewal"
-      ctaDescription="Simple Table for Angular gives you grouping, pinning, virtualization, and inline editing free for pre-revenue teams (source-available)—signals-native, ~70 kB gzipped, Pro/Enterprise for revenue-generating use. Try it in StackBlitz or follow the install guide."
+      ctaDescription="Simple Table for Angular gives you grouping, pinning, virtualization, and inline editing free for pre-revenue teams (source-available)—signals-native, 84.6 kB gzipped, Pro/Enterprise for revenue-generating use. Try it in StackBlitz or follow the install guide."
     />
   );
 }

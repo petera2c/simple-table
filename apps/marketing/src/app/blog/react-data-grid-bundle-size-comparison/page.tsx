@@ -29,6 +29,7 @@ import ExampleLink from "@/components/ExampleLink";
 import {
   SIMPLE_TABLE_INFO,
   AG_GRID_COMMUNITY_INFO,
+  AG_GRID_ENTERPRISE_INFO,
   TANSTACK_TABLE_INFO,
   MATERIAL_REACT_TABLE_INFO,
   HANDSONTABLE_INFO,
@@ -476,8 +477,8 @@ export default function BundleSizeComparisonPage() {
                 </div>
                 <div className="bg-red-100 dark:bg-red-900/40 border border-red-300 dark:border-red-700 rounded p-3">
                   <p className="text-sm text-red-800 dark:text-red-300">
-                    <strong>3x larger than Simple Table!</strong> AG Grid Enterprise adds even more
-                    weight (~200KB+).
+                    <strong>3x larger than Simple Table!</strong> AG Grid Enterprise is{" "}
+                    {AG_GRID_ENTERPRISE_INFO.bundleSizeMinGzip}.
                   </p>
                 </div>
               </div>
@@ -906,8 +907,9 @@ export default function BundleSizeComparisonPage() {
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 When bundle size is a priority,{" "}
                 <strong>Simple Table at {SIMPLE_TABLE_INFO.bundleSizeMinGzip}</strong> offers an
-                excellent balance of size and features. It's about 3x smaller than AG Grid while
-                providing the core functionality most applications need—and it's completely free.
+                excellent balance of size and features. It&apos;s about 3x smaller than AG Grid
+                while providing the core functionality most applications need—free for pre-revenue
+                teams under the Community License (source-available).
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">

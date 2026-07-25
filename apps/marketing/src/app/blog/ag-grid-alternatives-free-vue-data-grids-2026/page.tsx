@@ -46,7 +46,7 @@ export default function Page() {
         { feature: "Per-developer fees", competitor: { value: "AG Enterprise: $999+", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
         { feature: "Vue 3 + Composition API", competitor: { value: "All viable options", tone: "good" }, simpleTable: { value: "Idiomatic", tone: "good" } },
         { feature: "Nuxt 3 / Nuxt 4 SSR", competitor: { value: "Most options", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
-        { feature: "Bundle size (gzipped)", competitor: { value: "50–400+ kB depending on choice", tone: "neutral" }, simpleTable: { value: "~70 kB", tone: "good" } },
+        { feature: "Bundle size (gzipped)", competitor: { value: "50–400+ kB depending on choice", tone: "neutral" }, simpleTable: { value: "84.6 kB", tone: "good" } },
         { feature: "Built-in row virtualization", competitor: { value: "Mixed (none / config / separate component)", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Built-in column pinning", competitor: { value: "Most options", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Built-in grouping + aggregations", competitor: { value: "Mostly manual / DIY", tone: "bad" }, simpleTable: { value: "Yes (source-available)", tone: "good" } },
@@ -67,7 +67,7 @@ export default function Page() {
           items: [
             "You want a focused source-available grid without a design system runtime tax.",
             "Grouping with aggregations and inline editing should be primitives, not slot gymnastics.",
-            "Bundle size matters: ~70 kB gzipped without losing features.",
+            "Bundle size matters: 84.6 kB gzipped without losing features.",
             "You also build React / Angular / Svelte / Solid surfaces and want a shared engine.",
             "You want idiomatic Vue 3 Composition API + <script setup> + Nuxt 3.",
           ],
@@ -79,7 +79,7 @@ export default function Page() {
           title: "Greenfield Nuxt 3 SaaS, no design system yet",
           body: "Lean bundle is a goal; you'll layer Tailwind for design.",
           recommendation: "simpleTable",
-          recommendationLabel: "Pick Simple Table for Vue—~70 kB and fully featured.",
+          recommendationLabel: "Pick Simple Table for Vue—84.6 kB and fully featured.",
         },
         {
           emoji: "🎨",
@@ -111,7 +111,7 @@ export default function Page() {
         },
       ]}
       faqs={[
-        { question: "What's the best free Vue 3 data grid in 2026?", answer: "For most new Vue 3 / Nuxt projects, Simple Table for Vue—source-available (free for pre-revenue teams), idiomatic Composition API, ~70 kB gzipped, virtualization + pinning + grouping + editing in one package. Stay on the design-system grid (Vuetify, PrimeVue, Element Plus, Naive UI) if you're invested in that suite." },
+        { question: "What's the best free Vue 3 data grid in 2026?", answer: "For most new Vue 3 / Nuxt projects, Simple Table for Vue—source-available (free for pre-revenue teams), idiomatic Composition API, 84.6 kB gzipped, virtualization + pinning + grouping + editing in one package. Stay on the design-system grid (Vuetify, PrimeVue, Element Plus, Naive UI) if you're invested in that suite." },
         { question: "Is AG Grid Community enough for Vue?", answer: "It depends. AG Grid Community covers virtualization, pinning, sort, and filter—but row grouping with aggregations, pivoting, and tree data are Enterprise-only. Many Vue teams discover the gap mid-project." },
         { question: "Which alternative has the smallest bundle?", answer: "Simple Table for Vue and Vue Good Table are the lightest standalone options. The design-system grids (Vuetify, PrimeVue, Element Plus, Naive UI) carry their suite's runtime, theme, and icon costs." },
         { question: "How hard is migration from Vuetify or PrimeVue?", answer: "Hours to a few days per table. Map column children to ColumnDefs; convert slot templates to cellRenderer Vue components; keep the rest of the suite if you want." },
@@ -129,7 +129,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Pick the right Vue 3 data grid for 2026"
-      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—~70 kB gzipped, idiomatic Vue 3, Nuxt 3, Nuxt 4."
+      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—84.6 kB gzipped, idiomatic Vue 3, Nuxt 3, Nuxt 4."
     />
   );
 }

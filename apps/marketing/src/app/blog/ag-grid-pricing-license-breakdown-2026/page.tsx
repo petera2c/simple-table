@@ -13,7 +13,6 @@ import {
   faLightbulb,
   faTrophy,
   faBalanceScale,
-  faRocket,
   faTimesCircle,
   faMoneyBillWave,
   faClock,
@@ -24,7 +23,11 @@ import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
 import Link from "next/link";
-import { SIMPLE_TABLE_INFO } from "@/constants/packageInfo";
+import {
+  SIMPLE_TABLE_INFO,
+  AG_GRID_COMMUNITY_INFO,
+  AG_GRID_ENTERPRISE_INFO,
+} from "@/constants/packageInfo";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.blogPosts.agGridPricing2026.title,
@@ -252,8 +255,8 @@ export default function AgGridPricingPage() {
                     </h4>
                     <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
                       <li>• Per-developer pricing</li>
-                      <li>• Annual subscription (no perpetual)</li>
-                      <li>• Includes updates & support</li>
+                      <li>• Perpetual license with 1 year of updates</li>
+                      <li>• Renew for continued updates & support</li>
                       <li>• Development + production use</li>
                       <li>• Covers all projects</li>
                       <li>• Named developer licenses</li>
@@ -441,12 +444,12 @@ export default function AgGridPricingPage() {
               <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4">
                 <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
                   <FontAwesomeIcon icon={faClock} className="text-amber-500" />
-                  1. Annual Renewal Lock-In
+                  1. Annual Update Renewal
                 </h3>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  AG Grid Enterprise is subscription-only. There's no perpetual license option. Stop
-                  paying, and your app's grid features stop working in production. You're locked in
-                  as long as your app needs those features.
+                  AG Grid Enterprise is a perpetual license with 1 year of updates and support.
+                  After that year, you can keep using the version you have, but you need to renew
+                  to get new updates and support. Ongoing costs still scale with your team size.
                 </p>
               </div>
 
@@ -494,9 +497,10 @@ export default function AgGridPricingPage() {
                   5. Performance Overhead
                 </h3>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  AG Grid Community is ~140KB min+gzip. Enterprise is even larger (~200KB+). For
-                  mobile users or performance-sensitive apps, this impacts load times and Core Web
-                  Vitals. You might need to invest in performance optimization.
+                  AG Grid Community is {AG_GRID_COMMUNITY_INFO.bundleSizeMinGzip} min+gzip.
+                  Enterprise is {AG_GRID_ENTERPRISE_INFO.bundleSizeMinGzip}. For mobile users or
+                  performance-sensitive apps, this impacts load times and Core Web Vitals. You
+                  might need to invest in performance optimization.
                 </p>
               </div>
             </div>
@@ -642,7 +646,8 @@ export default function AgGridPricingPage() {
             </h2>
 
             <p className="mb-6 text-gray-700 dark:text-gray-300">
-              Before committing to AG Grid Enterprise, consider these completely free alternatives:
+              Before committing to AG Grid Enterprise, consider these lower-cost alternatives
+              (including free and Community License options):
             </p>
 
             <div className="space-y-6">
@@ -662,8 +667,8 @@ export default function AgGridPricingPage() {
 
                 <p className="text-gray-700 dark:text-gray-300 mb-4">
                   A lightweight ({SIMPLE_TABLE_INFO.bundleSizeMinGzip}), batteries-included React
-                  data grid with a generous free tier and optional PRO plan ($85/mo) for enhanced
-                  support. All core features included in FREE.
+                  data grid—free for pre-revenue teams under the Simple Table Community License
+                  (source-available), with Pro/Enterprise for revenue-generating use.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -714,21 +719,6 @@ export default function AgGridPricingPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-3">
-                  <Link
-                    href="/docs/installation"
-                    className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
-                  >
-                    <FontAwesomeIcon icon={faRocket} className="mr-2" />
-                    Get Started Free
-                  </Link>
-                  <Link
-                    href="/comparisons/simple-table-vs-ag-grid"
-                    className="inline-block px-6 py-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold transition-colors"
-                  >
-                    Compare Features
-                  </Link>
-                </div>
               </div>
 
               {/* TanStack Table */}
@@ -874,11 +864,11 @@ export default function AgGridPricingPage() {
                   <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                     <li>
                       • You need row grouping, aggregation, column pinning, and other "enterprise"
-                      features—for free
+                      features under a Community License (free for pre-revenue teams)
                     </li>
                     <li>• You're building customer-facing apps where performance matters</li>
                     <li>• You want quick setup without configuration complexity</li>
-                    <li>• You want to avoid vendor lock-in and recurring costs</li>
+                    <li>• You want to avoid per-developer renewal costs</li>
                     <li>• Your team is 1-10 developers</li>
                   </ul>
                 </div>
@@ -904,43 +894,34 @@ export default function AgGridPricingPage() {
                   Bottom Line: Start Free, Upgrade Only If Necessary
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 mb-3">
-                  For <strong>90% of React applications</strong>, a free alternative like Simple
-                  Table provides everything you need. Start there, save thousands, and only consider
-                  AG Grid Enterprise if you hit a specific feature wall. Your CFO (and your team)
-                  will thank you.
+                  For <strong>90% of React applications</strong>, an alternative like Simple Table
+                  provides everything you need. Start there, save thousands, and only consider AG
+                  Grid Enterprise if you hit a specific feature wall. Your CFO (and your team) will
+                  thank you.
                 </p>
-                <div className="flex gap-3 mt-4 flex-wrap">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
+                  Related:{" "}
                   <Link
                     href="/comparisons/simple-table-vs-ag-grid"
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                    className="text-gray-700 dark:text-gray-300 underline hover:no-underline"
                   >
-                    → Detailed feature comparison
+                    feature comparison
                   </Link>
+                  {" · "}
                   <Link
-                    href="/benchmarks"
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                    href="/blog/ag-grid-alternatives-free-react-data-grids"
+                    className="text-gray-700 dark:text-gray-300 underline hover:no-underline"
                   >
-                    → Bundle & performance benchmarks
+                    AG Grid alternatives
                   </Link>
-                  <Link
-                    href="/case-studies/chartmetric"
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-                  >
-                    → ChartMetric case study
-                  </Link>
-                  <Link
-                    href="/examples/crm"
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-                  >
-                    → Live CRM demo
-                  </Link>
+                  {" · "}
                   <Link
                     href="/blog/react-data-grid-bundle-size-comparison"
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                    className="text-gray-700 dark:text-gray-300 underline hover:no-underline"
                   >
-                    → Bundle size comparison
+                    bundle size comparison
                   </Link>
-                </div>
+                </p>
               </div>
             </div>
           </div>
@@ -951,10 +932,10 @@ export default function AgGridPricingPage() {
       <CallToActionCard
         location="blog_ag_grid_pricing"
         title="Skip the $25K+ AG Grid bill. Start with Simple Table's FREE tier."
-        description="Install free for pre-revenue teams (same features). Upgrade to Pro for a commercial EULA + priority support when you earn revenue — per product, not per developer. Try the live crypto demo, then check pricing before you buy."
+        description="Install free for pre-revenue teams (same features). Upgrade to Pro for a commercial EULA + priority support when you earn revenue — per product, not per developer."
         primaryButton={{
-          text: "Try the live demo",
-          href: "/examples/crypto",
+          text: "Get started",
+          href: "/docs/installation",
         }}
         secondaryButton={{
           text: "See pricing",

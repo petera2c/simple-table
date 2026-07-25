@@ -43,7 +43,7 @@ export default function Page() {
       ]}
       comparisonRows={[
         { feature: "License", competitor: { value: "MIT (with paid Pro)", tone: "neutral" }, simpleTable: { value: "Community License", tone: "good" } },
-        { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite + theme + icons)", tone: "bad" }, simpleTable: { value: "~70 kB", tone: "good" } },
+        { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite + theme + icons)", tone: "bad" }, simpleTable: { value: "84.6 kB", tone: "good" } },
         { feature: "Standalone components", competitor: { value: "Yes (Angular 17+)", tone: "good" }, simpleTable: { value: "First-class", tone: "good" } },
         { feature: "Signals-native API", competitor: { value: "Partial", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Row + column virtualization", competitor: { value: "Yes (virtualScroll)", tone: "good" }, simpleTable: { value: "Yes (built-in)", tone: "good" } },
@@ -94,7 +94,7 @@ export default function Page() {
           title: "New Angular 19 app, lean by default",
           body: "Greenfield, signals everywhere, want minimum runtime overhead.",
           recommendation: "simpleTable",
-          recommendationLabel: "Pick Simple Table for Angular—~70 kB and idiomatic signals.",
+          recommendationLabel: "Pick Simple Table for Angular—84.6 kB and idiomatic signals.",
         },
         {
           emoji: "🏗️",
@@ -119,7 +119,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Drop the PrimeNG runtime, keep the data grid"
-      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and editing in ~70 kB gzipped—signals-native, source-available (free for pre-revenue teams), no design system required."
+      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and editing in 84.6 kB gzipped—signals-native, source-available (free for pre-revenue teams), no design system required."
     />
   );
 }

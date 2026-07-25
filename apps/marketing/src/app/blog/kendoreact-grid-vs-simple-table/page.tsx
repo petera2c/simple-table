@@ -72,7 +72,7 @@ export default function KendoReactGridVsSimpleTablePage() {
 
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
           KendoReact Grid (by Progress/Telerik) costs $649-$1,199/year with 120+ premium components
-          and a limited free tier. Simple Table is free for pre-revenue teams (source-available) at 42KB with zero dependencies.
+          and a limited free tier. Simple Table is free for pre-revenue teams (source-available) at 84.6 kB with zero dependencies.
           This           comparison helps you evaluate commercial licensing vs open-source freedom.
         </p>
         <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
@@ -137,7 +137,7 @@ export default function KendoReactGridVsSimpleTablePage() {
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 <strong>Simple Table</strong> offers a free tier for zero-revenue companies
                 (source-available under the Simple Table Community License) and a Pro plan ($85/month or $850/year) for revenue-generating businesses.
-                At 42KB with zero dependencies, it provides core data grid
+                At 84.6 kB with zero dependencies, it provides core data grid
                 functionality—virtualization, grouping, pinning, filtering, sorting—at dramatically
                 lower costs than KendoReact. For broader comparisons,{" "}
                 <Link
@@ -720,7 +720,7 @@ export default function KendoReactGridVsSimpleTablePage() {
                     ✓ PRO: $850/year for commercial use (vs $3,245-$5,995/year for KendoReact 5-dev
                     team)
                   </li>
-                  <li>✓ 42KB bundle, zero dependencies</li>
+                  <li>✓ 84.6 kB bundle, zero dependencies</li>
                   <li>✓ All core features (virtualization, grouping, pinning, filtering)</li>
                   <li>✓ No vendor lock-in, open-source freedom</li>
                   <li>✓ Saves $7,185-$15,435 over 3 years vs KendoReact</li>

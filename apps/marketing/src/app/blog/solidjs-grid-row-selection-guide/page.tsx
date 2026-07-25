@@ -77,7 +77,7 @@ export default function Page() {
         { href: "/frameworks/solid", label: "Solid integration hub" },
       ]}
       ctaTitle="Add row selection to your Solid grid"
-      ctaDescription="Simple Table for Solid ships single, multi, and checkbox selection in one source-available package—~70 kB gzipped, signals-native."
+      ctaDescription="Simple Table for Solid ships single, multi, and checkbox selection in one source-available package—84.6 kB gzipped, signals-native."
       docsHref="/docs/row-selection"
     />
   );

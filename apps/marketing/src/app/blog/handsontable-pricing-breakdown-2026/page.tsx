@@ -13,7 +13,6 @@ import {
   faLightbulb,
   faTrophy,
   faBalanceScale,
-  faRocket,
   faTimesCircle,
   faMoneyBillWave,
   faClock,
@@ -509,9 +508,10 @@ export default function HandsontablePricingPage() {
                   1. Annual Renewal Lock-In
                 </h3>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  Handsontable is subscription-only. Stop paying, and you can't use it in
-                  production anymore. You're locked in as long as your app needs the spreadsheet
-                  functionality.
+                  Paid Handsontable tiers (Standard from $999/dev/year) are annual licenses. Hobby
+                  is free for non-commercial use only. For commercial projects, stop renewing and
+                  you lose the right to use paid builds in production—you&apos;re locked in as long
+                  as your app needs the spreadsheet functionality.
                 </p>
               </div>
 
@@ -707,7 +707,8 @@ export default function HandsontablePricingPage() {
             </h2>
 
             <p className="mb-6 text-gray-700 dark:text-gray-300">
-              Before committing to Handsontable, consider these completely free alternatives:
+              Before committing to Handsontable, consider these lower-cost alternatives (including
+              MIT-licensed libraries and Community License options free for pre-revenue teams):
             </p>
 
             <div className="space-y-6">
@@ -727,8 +728,8 @@ export default function HandsontablePricingPage() {
 
                 <p className="text-gray-700 dark:text-gray-300 mb-4">
                   A lightweight ({SIMPLE_TABLE_INFO.bundleSizeMinGzip}), batteries-included React
-                  data grid with a generous free tier and optional PRO plan ($85/mo) for enhanced
-                  support. All core features included in FREE.
+                  data grid—free for pre-revenue teams under the Simple Table Community License
+                  (source-available), with Pro/Enterprise for revenue-generating use.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -781,21 +782,6 @@ export default function HandsontablePricingPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-3">
-                  <Link
-                    href="/docs/installation"
-                    className="inline-block px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
-                  >
-                    <FontAwesomeIcon icon={faRocket} className="mr-2" />
-                    Get Started Free
-                  </Link>
-                  <Link
-                    href="/comparisons/simple-table-vs-handsontable"
-                    className="inline-block px-6 py-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold transition-colors"
-                  >
-                    Compare Features
-                  </Link>
-                </div>
               </div>
 
               {/* TanStack Table */}
@@ -934,7 +920,10 @@ export default function HandsontablePricingPage() {
                     <li>• You want quick setup without configuration complexity</li>
                     <li>• You want to avoid vendor lock-in and recurring costs</li>
                     <li>• Your team is 1-10 developers</li>
-                    <li>• You need all features free without license fees</li>
+                    <li>
+                      • You want Community License pricing (free for pre-revenue) instead of
+                      per-developer spreadsheet licenses
+                    </li>
                   </ul>
                 </div>
 
@@ -959,43 +948,34 @@ export default function HandsontablePricingPage() {
                   Bottom Line: Start Free, Upgrade Only If Necessary
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 mb-3">
-                  For <strong>90% of React applications</strong>, a free alternative like Simple
-                  Table provides everything you need. Start there, save thousands, and only
-                  consider Handsontable if you hit a specific feature wall. Your CFO (and your
-                  team) will thank you.
+                  For <strong>90% of React applications</strong>, an alternative like Simple Table
+                  provides everything you need. Start there, save thousands, and only consider
+                  Handsontable if you hit a specific feature wall. Your CFO (and your team) will
+                  thank you.
                 </p>
-                <div className="flex gap-3 mt-4 flex-wrap">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
+                  Related:{" "}
                   <Link
                     href="/comparisons/simple-table-vs-handsontable"
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                    className="text-gray-700 dark:text-gray-300 underline hover:no-underline"
                   >
-                    → Detailed feature comparison
+                    feature comparison
                   </Link>
-                  <Link
-                    href="/benchmarks"
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-                  >
-                    → Bundle & performance benchmarks
-                  </Link>
-                  <Link
-                    href="/case-studies/chartmetric"
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-                  >
-                    → ChartMetric case study
-                  </Link>
-                  <Link
-                    href="/examples/crm"
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-                  >
-                    → Live CRM demo
-                  </Link>
+                  {" · "}
                   <Link
                     href="/blog/handsontable-alternatives-free-react"
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                    className="text-gray-700 dark:text-gray-300 underline hover:no-underline"
                   >
-                    → Handsontable alternatives guide
+                    Handsontable alternatives
                   </Link>
-                </div>
+                  {" · "}
+                  <Link
+                    href="/benchmarks"
+                    className="text-gray-700 dark:text-gray-300 underline hover:no-underline"
+                  >
+                    benchmarks
+                  </Link>
+                </p>
               </div>
             </div>
           </div>
@@ -1005,13 +985,13 @@ export default function HandsontablePricingPage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Skip the $22K+ Handsontable bill. Start with Simple Table's FREE tier."
-        description="Install free for pre-revenue teams (same features). Upgrade to Pro for a commercial EULA + priority support when you earn revenue — per product, not per developer. Compare live demos and benchmarks before committing to spreadsheet-grid licensing."
+        description="Install free for pre-revenue teams (same features). Upgrade to Pro for a commercial EULA + priority support when you earn revenue — per product, not per developer."
         primaryButton={{
-          text: "Install Free (Docs)",
+          text: "Get started",
           href: "/docs/installation",
         }}
         secondaryButton={{
-          text: "View Pricing",
+          text: "See pricing",
           href: "/pricing",
         }}
       />

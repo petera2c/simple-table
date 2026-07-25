@@ -268,7 +268,8 @@ export default function AntDesignTableVsSimpleTablePage() {
                 </h4>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   On a slow 3G connection, {ANT_DESIGN_TABLE_INFO.bundleSizeMinGzip} takes ~3-4
-                  seconds to download. {SIMPLE_TABLE_INFO.bundleSizeMinGzip} takes ~0.4 seconds. For
+                  seconds to download. {SIMPLE_TABLE_INFO.bundleSizeMinGzip} takes roughly ~1 second.
+                  For
                   customer-facing apps, mobile-first products, or emerging markets, this difference
                   matters.
                 </p>
@@ -406,7 +407,7 @@ export default function AntDesignTableVsSimpleTablePage() {
                     row grouping
                   </Link>
                   . Simple Table ships a multi-framework core with more comprehensive features
-                  built-in, at 1/4 the bundle size. See the{" "}
+                  built-in, at about 1/5 the bundle size of the full Ant Design package. See the{" "}
                   <Link
                     href="/comparisons/simple-table-vs-ant-design"
                     className="text-blue-600 dark:text-blue-400 hover:underline"
@@ -765,7 +766,7 @@ export default function AntDesignTableVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Build lightweight, feature-rich tables without design system overhead"
-        description={`Simple Table delivers complete data grid functionality in just 24KB—3× smaller than Ant Design Table with dependencies. Get sorting, filtering, pagination, grouping, and more without compromising on features. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
+        description={`Simple Table delivers complete data grid functionality in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—about 5× smaller than Ant Design (${ANT_DESIGN_TABLE_INFO.bundleSizeMinGzip}) when you are not already on the design system. Get sorting, filtering, pagination, grouping, and more without compromising on features. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

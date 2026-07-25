@@ -46,7 +46,7 @@ export default function Page() {
         { feature: "Approach", competitor: { value: "Headless / suite / styled <table>", tone: "neutral" }, simpleTable: { value: "Batteries-included", tone: "good" } },
         { feature: "Svelte 4 support", competitor: { value: "All viable options", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Svelte 5 / runes support", competitor: { value: "Mixed", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
-        { feature: "Bundle size (gzipped)", competitor: { value: "20–200+ kB depending on choice", tone: "neutral" }, simpleTable: { value: "~70 kB", tone: "good" } },
+        { feature: "Bundle size (gzipped)", competitor: { value: "20–200+ kB depending on choice", tone: "neutral" }, simpleTable: { value: "84.6 kB", tone: "good" } },
         { feature: "Built-in row virtualization", competitor: { value: "Mixed (none / yes / suite-tied)", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Built-in column pinning", competitor: { value: "Mixed", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Built-in grouping + aggregations", competitor: { value: "Mostly manual or DIY", tone: "bad" }, simpleTable: { value: "Yes", tone: "good" } },
@@ -102,7 +102,7 @@ export default function Page() {
         },
       ]}
       faqs={[
-        { question: "What's the best Svelte data grid in 2026?", answer: "For most teams, Simple Table for Svelte. It's source-available (free for pre-revenue teams), batteries-included, runes-ready, and ~70 kB gzipped. Stay headless if you want full UI control; use suite grids if you've adopted that suite." },
+        { question: "What's the best Svelte data grid in 2026?", answer: "For most teams, Simple Table for Svelte. It's source-available (free for pre-revenue teams), batteries-included, runes-ready, and 84.6 kB gzipped. Stay headless if you want full UI control; use suite grids if you've adopted that suite." },
         { question: "Is svelte-headless-table dead?", answer: "No, but it's evolved more slowly than the broader Svelte ecosystem. Runes support is community-led." },
         { question: "Does Simple Table for Svelte support SvelteKit SSR?", answer: "Yes. ESM-first, SSR-friendly, works with @sveltejs/adapter-* out of the box." },
       ]}
@@ -118,7 +118,7 @@ export default function Page() {
         { href: "/frameworks/svelte", label: "Svelte integration hub" },
       ]}
       ctaTitle="Pick the right Svelte data grid for 2026"
-      ctaDescription="Simple Table for Svelte ships virtualization, pinning, grouping, and editing in one source-available package—runes-ready, ~70 kB gzipped."
+      ctaDescription="Simple Table for Svelte ships virtualization, pinning, grouping, and editing in one source-available package—runes-ready, 84.6 kB gzipped."
     />
   );
 }

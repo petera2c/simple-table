@@ -46,7 +46,7 @@ export default function Page() {
         { feature: "Approach", competitor: { value: "Headless (BYO UI)", tone: "neutral" }, simpleTable: { value: "Batteries-included", tone: "good" } },
         { feature: "Solid signals integration", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "First-class", tone: "good" } },
         { feature: "Solid-Start support", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
-        { feature: "Bundle size (gzipped)", competitor: { value: "~14 kB core (UI not included)", tone: "neutral" }, simpleTable: { value: "~70 kB (full grid)", tone: "good" } },
+        { feature: "Bundle size (gzipped)", competitor: { value: "~14 kB core (UI not included)", tone: "neutral" }, simpleTable: { value: "84.6 kB (full grid)", tone: "good" } },
         { feature: "Built-in row virtualization", competitor: { value: "No (BYO virtualizer)", tone: "bad" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Built-in column pinning", competitor: { value: "State only (BYO UI)", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Row grouping + aggregations", competitor: { value: "State only (BYO UI)", tone: "neutral" }, simpleTable: { value: "Built-in", tone: "good" } },
@@ -118,7 +118,7 @@ export default function Page() {
         { href: "/frameworks/solid", label: "Solid integration hub" },
       ]}
       ctaTitle="Want a batteries-included Solid data grid?"
-      ctaDescription="Simple Table for Solid ships virtualization, pinning, grouping, and editing in one source-available package—signals-native, ~70 kB gzipped."
+      ctaDescription="Simple Table for Solid ships virtualization, pinning, grouping, and editing in one source-available package—signals-native, 84.6 kB gzipped."
     />
   );
 }

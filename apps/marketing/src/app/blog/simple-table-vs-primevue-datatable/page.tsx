@@ -43,7 +43,7 @@ export default function Page() {
       ]}
       comparisonRows={[
         { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
-        { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite + theme + icons)", tone: "bad" }, simpleTable: { value: "~70 kB", tone: "good" } },
+        { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite + theme + icons)", tone: "bad" }, simpleTable: { value: "84.6 kB", tone: "good" } },
         { feature: "Vue 3 + Composition API + <script setup>", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (idiomatic)", tone: "good" } },
         { feature: "Nuxt 3 / Nuxt 4 SSR", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Row virtualization", competitor: { value: "virtualScrollerOptions (config)", tone: "neutral" }, simpleTable: { value: "Built-in", tone: "good" } },
@@ -69,7 +69,7 @@ export default function Page() {
             "PrimeVue DataTable is your only PrimeVue component—you can drop the rest.",
             "You want true virtualization without virtualScrollerOptions wiring.",
             "You want grouping with aggregations and inline editing as built-in primitives, not slot gymnastics.",
-            "Bundle size matters—target ~70 kB instead of 200–400+ kB.",
+            "Bundle size matters—target 84.6 kB instead of 200–400+ kB.",
             "You also build React / Angular / Svelte / Solid surfaces and want a shared engine.",
           ],
         },
@@ -94,7 +94,7 @@ export default function Page() {
           title: "Greenfield Nuxt 3 / Nuxt 4 app",
           body: "New project, lean bundle, idiomatic Composition API.",
           recommendation: "simpleTable",
-          recommendationLabel: "Pick Simple Table for Vue—~70 kB gzipped, no design system tax.",
+          recommendationLabel: "Pick Simple Table for Vue—84.6 kB gzipped, no design system tax.",
         },
         {
           emoji: "📈",
@@ -112,7 +112,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "PrimeVue DataTable is the right call if PrimeVue is your design system. Simple Table for Vue wins when DataTable is the only PrimeVue piece you actually need.",
-        "You keep your other PrimeVue components if you want, you cut the data grid down to ~70 kB, and you trade slot-template patterns for declarative props with cellRenderers.",
+        "You keep your other PrimeVue components if you want, you cut the data grid down to 84.6 kB, and you trade slot-template patterns for declarative props with cellRenderers.",
       ]}
       relatedLinks={[
         { href: "/comparisons/simple-table-vs-primevue-datatable", label: "Detailed comparison: Simple Table vs PrimeVue DataTable" },
@@ -121,7 +121,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Drop the PrimeVue runtime, keep the data grid"
-      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—~70 kB gzipped, idiomatic for Vue 3, Nuxt 3, and Nuxt 4."
+      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—84.6 kB gzipped, idiomatic for Vue 3, Nuxt 3, and Nuxt 4."
     />
   );
 }

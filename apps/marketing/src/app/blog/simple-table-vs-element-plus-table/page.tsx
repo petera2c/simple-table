@@ -43,7 +43,7 @@ export default function Page() {
       ]}
       comparisonRows={[
         { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
-        { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite + theme + icons)", tone: "bad" }, simpleTable: { value: "~70 kB", tone: "good" } },
+        { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite + theme + icons)", tone: "bad" }, simpleTable: { value: "84.6 kB", tone: "good" } },
         { feature: "Vue 3 + Composition API", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (idiomatic)", tone: "good" } },
         { feature: "Nuxt 3 / Nuxt 4 SSR", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Row virtualization", competitor: { value: "el-table-v2 (separate component)", tone: "neutral" }, simpleTable: { value: "Built-in", tone: "good" } },
@@ -68,7 +68,7 @@ export default function Page() {
             "Element Plus el-table is the only Element Plus piece you actually use heavily.",
             "You want true row + column virtualization in the same component as the rest of your features.",
             "You want grouping with aggregations and inline editing as built-in primitives.",
-            "Bundle size matters—target ~70 kB instead of 200–400+ kB.",
+            "Bundle size matters—target 84.6 kB instead of 200–400+ kB.",
             "You also build React / Angular / Svelte / Solid surfaces and want a shared engine.",
           ],
         },
@@ -111,7 +111,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Outgrowing el-table?"
-      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—~70 kB gzipped, idiomatic Vue 3."
+      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—84.6 kB gzipped, idiomatic Vue 3."
     />
   );
 }

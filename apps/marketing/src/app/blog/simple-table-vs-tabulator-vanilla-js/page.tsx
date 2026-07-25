@@ -46,7 +46,7 @@ export default function Page() {
         { feature: "TypeScript", competitor: { value: "Definitions exist", tone: "neutral" }, simpleTable: { value: "First-class (strict)", tone: "good" } },
         { feature: "ESM-first packaging", competitor: { value: "Mixed", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Framework portability", competitor: { value: "Standalone only", tone: "neutral" }, simpleTable: { value: "Same engine, 5 framework adapters", tone: "good" } },
-        { feature: "Bundle size (gzipped)", competitor: { value: "~80–120 kB", tone: "good" }, simpleTable: { value: "~50 kB", tone: "good" } },
+        { feature: "Bundle size (gzipped)", competitor: { value: "~80–120 kB", tone: "good" }, simpleTable: { value: "84.6 kB", tone: "good" } },
         { feature: "Built-in row virtualization", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Column pinning", competitor: { value: "Yes (frozen columns)", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Row grouping + aggregations", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Built-in", tone: "good" } },
@@ -69,7 +69,7 @@ export default function Page() {
             "You want TypeScript-first ergonomics with strict types.",
             "You're using ESM packaging, modern bundlers (Vite, esbuild), and tree-shaking.",
             "You may add React / Vue / Angular / Svelte / Solid surfaces later and want one engine.",
-            "Bundle size matters: ~50 kB gzipped without losing virtualization or grouping.",
+            "Bundle size matters: 84.6 kB gzipped without losing virtualization or grouping.",
           ],
         },
       }}
@@ -112,7 +112,7 @@ export default function Page() {
         { href: "/frameworks/vanilla", label: "Vanilla TypeScript hub" },
       ]}
       ctaTitle="Want a TypeScript-first vanilla data grid?"
-      ctaDescription="simple-table-core ships virtualization, pinning, grouping, and editing in one source-available package—~50 kB gzipped, ESM-first, with framework adapters for React, Vue, Angular, Svelte, and Solid."
+      ctaDescription="simple-table-core ships virtualization, pinning, grouping, and editing in one source-available package—84.6 kB gzipped, ESM-first, with framework adapters for React, Vue, Angular, Svelte, and Solid."
     />
   );
 }

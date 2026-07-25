@@ -77,7 +77,7 @@ export default function Page() {
         { href: "/frameworks/solid", label: "Solid integration hub" },
       ]}
       ctaTitle="Add column pinning to your Solid grid"
-      ctaDescription="Simple Table for Solid ships left/right pinning, virtualization, and grouping in one source-available package—~70 kB gzipped, signals-native."
+      ctaDescription="Simple Table for Solid ships left/right pinning, virtualization, and grouping in one source-available package—84.6 kB gzipped, signals-native."
       docsHref="/docs/column-pinning"
     />
   );

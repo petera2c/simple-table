@@ -46,7 +46,7 @@ export default function Page() {
         { feature: "Standalone usage", competitor: { value: "Assumes SVAR ecosystem", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Svelte 4 support", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Svelte 5 / runes support", competitor: { value: "Mixed / evolving", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
-        { feature: "Bundle size (gzipped)", competitor: { value: "100–200+ kB (suite)", tone: "neutral" }, simpleTable: { value: "~70 kB", tone: "good" } },
+        { feature: "Bundle size (gzipped)", competitor: { value: "100–200+ kB (suite)", tone: "neutral" }, simpleTable: { value: "84.6 kB", tone: "good" } },
         { feature: "Built-in row virtualization", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Column pinning", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Row grouping + aggregations", competitor: { value: "Yes (suite-tied)", tone: "good" }, simpleTable: { value: "Built-in", tone: "good" } },
@@ -109,7 +109,7 @@ export default function Page() {
         { href: "/frameworks/svelte", label: "Svelte integration hub" },
       ]}
       ctaTitle="Want a focused Svelte data grid?"
-      ctaDescription="Simple Table for Svelte ships virtualization, pinning, grouping, and editing in one source-available package—free for pre-revenue teams, runes-ready, ~70 kB gzipped."
+      ctaDescription="Simple Table for Svelte ships virtualization, pinning, grouping, and editing in one source-available package—free for pre-revenue teams, runes-ready, 84.6 kB gzipped."
     />
   );
 }

@@ -108,7 +108,7 @@ export default function Page() {
         { href: "/frameworks/solid", label: "Solid integration hub" },
       ]}
       ctaTitle="Need a Solid data grid?"
-      ctaDescription="Simple Table for Solid ships virtualization, pinning, grouping, and editing in one source-available package—signals-native, ~70 kB gzipped."
+      ctaDescription="Simple Table for Solid ships virtualization, pinning, grouping, and editing in one source-available package—signals-native, 84.6 kB gzipped."
     />
   );
 }

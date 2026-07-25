@@ -90,7 +90,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Add column resizing to your Angular grid"
-      ctaDescription="Simple Table for Angular ships resize, pinning, grouping, and editing in one source-available package—free for pre-revenue teams, ~70 kB gzipped, signals-native, standalone-component-friendly."
+      ctaDescription="Simple Table for Angular ships resize, pinning, grouping, and editing in one source-available package—free for pre-revenue teams, 84.6 kB gzipped, signals-native, standalone-component-friendly."
       docsHref="/docs/column-resizing"
     />
   );

@@ -173,7 +173,7 @@ export default function VanillaTypeScriptDataGridPillarPage() {
         {
           question: "How does it compare with Handsontable?",
           answer:
-            "Handsontable Community is licensed for non-commercial use only; Handsontable Pro is paid. simple-table-core is free for individuals and zero-revenue projects under the Simple Table Community License, with simple per-product pricing for revenue-generating teams.",
+            "Handsontable Hobby is free for non-commercial use only; paid tiers start at Standard ($999/developer/year). simple-table-core is free for individuals and zero-revenue projects under the Simple Table Community License, with simple per-product pricing for revenue-generating teams.",
         },
         {
           question: "How does it compare with jSpreadsheet?",

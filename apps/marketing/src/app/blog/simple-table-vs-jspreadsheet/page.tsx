@@ -110,7 +110,7 @@ export default function Page() {
         { href: "/frameworks/vanilla", label: "Vanilla TypeScript hub" },
       ]}
       ctaTitle="Need a vanilla TypeScript data grid?"
-      ctaDescription="simple-table-core ships virtualization, pinning, grouping, and editing in one source-available package—~50 kB gzipped, framework-agnostic."
+      ctaDescription="simple-table-core ships virtualization, pinning, grouping, and editing in one source-available package—84.6 kB gzipped, framework-agnostic."
     />
   );
 }

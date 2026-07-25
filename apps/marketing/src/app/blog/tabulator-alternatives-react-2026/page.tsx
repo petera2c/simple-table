@@ -450,7 +450,7 @@ table.setData(newData);`}
                       Disadvantages
                     </h4>
                     <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
-                      <li>✗ Large bundle size (140KB+)</li>
+                      <li>✗ Large bundle size ({AG_GRID_COMMUNITY_INFO.bundleSizeMinGzip})</li>
                       <li>✗ Enterprise features cost $999+/dev</li>
                       <li>✗ Steep learning curve</li>
                       <li>✗ Complex API</li>
@@ -820,7 +820,7 @@ table.setData(newData);`}
                     </li>
                     <li className="flex items-center gap-2">
                       <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />
-                      <span>100% free forever</span>
+                      <span>Free for pre-revenue (Community License)</span>
                     </li>
                   </ul>
                 </div>

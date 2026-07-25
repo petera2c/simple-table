@@ -44,7 +44,7 @@ export default function Page() {
       comparisonRows={[
         { feature: "License", competitor: { value: "Commercial ($649+ /dev/year)", tone: "bad" }, simpleTable: { value: "Community License", tone: "good" } },
         { feature: "Annual renewal", competitor: { value: "Required", tone: "bad" }, simpleTable: { value: "None", tone: "good" } },
-        { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite)", tone: "bad" }, simpleTable: { value: "~70 kB", tone: "good" } },
+        { feature: "Bundle size (gzipped)", competitor: { value: "200–400+ kB (suite)", tone: "bad" }, simpleTable: { value: "84.6 kB", tone: "good" } },
         { feature: "Standalone components", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "First-class", tone: "good" } },
         { feature: "Signals support", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (idiomatic)", tone: "good" } },
         { feature: "Row virtualization", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (built-in)", tone: "good" } },
@@ -120,7 +120,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Drop the Kendo renewal, keep the data grid"
-      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and editing in one source-available package—free for pre-revenue teams, ~70 kB gzipped, signals-native."
+      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and editing in one source-available package—free for pre-revenue teams, 84.6 kB gzipped, signals-native."
     />
   );
 }

@@ -79,7 +79,7 @@ export default function Page() {
         { href: "/frameworks/vanilla", label: "Vanilla TS integration hub" },
       ]}
       ctaTitle="Add tree data to your vanilla TS grid"
-      ctaDescription="simple-table-core ships tree data, virtualization, pinning, and editing in one source-available package—~70 kB gzipped, strict TypeScript, ESM-first."
+      ctaDescription="simple-table-core ships tree data, virtualization, pinning, and editing in one source-available package—84.6 kB gzipped, strict TypeScript, ESM-first."
       docsHref="/docs/nested-tables"
     />
   );

@@ -64,23 +64,25 @@ export default function ComparisonsSection() {
         ))}
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
         {visibleComparisons.map((comparison, index) => (
-          <Link key={comparison.link} href={comparison.link}>
+          <Link key={comparison.link} href={comparison.link} className="block h-full">
             <motion.div
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow cursor-pointer h-full"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-shadow cursor-pointer h-full flex flex-col"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: Math.min(index, 8) * 0.05 }}
               viewport={{ once: true }}
             >
               <div className="h-2 bg-linear-to-r from-blue-500 to-indigo-600"></div>
-              <div className="p-4 sm:p-5 lg:p-6">
+              <div className="p-4 sm:p-5 lg:p-6 flex flex-col flex-1">
                 <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">
                   {comparison.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-4">{comparison.description}</p>
-                <div className="flex justify-end">
+                <p className="text-gray-600 dark:text-gray-300 mb-4 flex-1">
+                  {comparison.description}
+                </p>
+                <div className="flex justify-end mt-auto">
                   <span className="text-blue-600 dark:text-blue-400 hover:underline font-medium text-sm">
                     Read comparison →
                   </span>

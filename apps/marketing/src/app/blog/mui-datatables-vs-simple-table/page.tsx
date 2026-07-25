@@ -190,10 +190,10 @@ export default function MuiDatatablesVsSimpleTablePage() {
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
                       Bundle Size (min+gzip)
                     </td>
-                    <td className="p-3 text-amber-600 dark:text-amber-400">
+                    <td className="p-3 text-gray-700 dark:text-gray-300">
                       {MUI_DATATABLES_INFO.bundleSizeMinGzip}*
                     </td>
-                    <td className="p-3 text-green-600 dark:text-green-400 font-bold">
+                    <td className="p-3 text-gray-700 dark:text-gray-300 font-bold">
                       {SIMPLE_TABLE_INFO.bundleSizeMinGzip}
                     </td>
                   </tr>
@@ -593,15 +593,15 @@ export default function MuiDatatablesVsSimpleTablePage() {
                     Option 1: Switch to Simple Table (Recommended)
                   </h3>
                   <p className="text-gray-700 dark:text-gray-300 mb-4">
-                    <strong>Best for:</strong> Maximum flexibility, smallest bundle, no framework
-                    lock-in
+                    <strong>Best for:</strong> Maximum flexibility, no Material-UI lock-in, similar
+                    package size
                   </p>
                   <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                     <li className="flex items-start gap-2">
                       <span className="font-semibold">✓ Pros:</span>
                       <span>
-                        No Material-UI dependency, 2× smaller bundle, actively maintained, works
-                        with any CSS framework
+                        No Material-UI dependency, similar / slightly smaller package size,
+                        actively maintained, works with any CSS framework
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
@@ -732,7 +732,8 @@ export default function MuiDatatablesVsSimpleTablePage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      Need <strong>smallest bundle size</strong> (42KB vs 88KB)
+                      Prefer a <strong>similar / slightly smaller package</strong> (84.6 kB vs 88KB)
+                      without Material-UI
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -799,7 +800,10 @@ export default function MuiDatatablesVsSimpleTablePage() {
               </p>
               <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1 mb-4">
                 <li>✓ Active maintenance and security updates</li>
-                <li>✓ 2× smaller bundle ({SIMPLE_TABLE_INFO.bundleSizeMinGzip} vs 88KB)</li>
+                <li>
+                  ✓ Similar / slightly smaller package ({SIMPLE_TABLE_INFO.bundleSizeMinGzip} vs
+                  88KB)
+                </li>
                 <li>✓ Works with any React version and CSS framework</li>
                 <li>✓ Built-in virtualization, pinning, grouping</li>
                 <li>✓ Modern TypeScript, React 18+ compatible</li>
@@ -866,7 +870,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Choose actively maintained React tables"
-        description={`Simple Table delivers complete data grid functionality in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—2× smaller than MUI-Datatables. Get sorting, filtering, pagination, grouping, virtualization, and more with active maintenance and security updates. No Material-UI dependency; official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
+        description={`Simple Table delivers complete data grid functionality in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—similar / slightly smaller than MUI-Datatables (88KB). Get sorting, filtering, pagination, grouping, virtualization, and more with active maintenance and security updates. No Material-UI dependency; official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

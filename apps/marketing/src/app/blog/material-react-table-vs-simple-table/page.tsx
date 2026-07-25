@@ -174,10 +174,10 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
                       Bundle Size (min+gzip)
                     </td>
-                    <td className="p-3 text-amber-600 dark:text-amber-400">
+                    <td className="p-3 text-green-600 dark:text-green-400 font-bold">
                       {MATERIAL_REACT_TABLE_INFO.bundleSizeMinGzip}*
                     </td>
-                    <td className="p-3 text-green-600 dark:text-green-400 font-bold">
+                    <td className="p-3 text-amber-600 dark:text-amber-400">
                       {SIMPLE_TABLE_INFO.bundleSizeMinGzip}
                     </td>
                   </tr>
@@ -316,7 +316,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   On a slow 3G connection: Material React Table stack (~217KB for new MUI apps)
                   takes ~6-7 seconds to download. Simple Table (
-                  {SIMPLE_TABLE_INFO.bundleSizeMinGzip}) takes ~0.9 seconds. For mobile-first apps
+                  {SIMPLE_TABLE_INFO.bundleSizeMinGzip}) takes ~2.5 seconds. For mobile-first apps
                   or emerging markets, this is critical.
                 </p>
               </div>
@@ -470,7 +470,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                   >
                     built-in virtualization
                   </Link>{" "}
-                  and smaller bundle size. See the{" "}
+                  and a smaller footprint than the full MUI stack. See the{" "}
                   <Link
                     href="/comparisons/simple-table-vs-material-react"
                     className="text-blue-600 dark:text-blue-400 hover:underline"
@@ -863,8 +863,8 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     emerging markets.
                   </p>
                   <p className="text-sm font-semibold text-green-600 dark:text-green-400">
-                    ✅ Recommendation: <strong>Simple Table</strong> — 6× smaller bundle = much
-                    faster load
+                    ✅ Recommendation: <strong>Simple Table</strong> — ~2.6× smaller than the full
+                    MUI stack = faster load
                   </p>
                 </div>
 
@@ -933,7 +933,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                     <span className="font-semibold">NO, not using MUI:</span>
                     <span>
                       Simple Table gives you all features without 150KB+ of Material-UI overhead.
-                      It's 6× smaller and works with any CSS framework.
+                      It's ~2.6× smaller than the full MUI stack and works with any CSS framework.
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -952,8 +952,10 @@ export default function MaterialReactTableVsSimpleTablePage() {
                 </h3>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   For apps not using Material-UI: Material React Table stack = ~217KB. Simple Table
-                  = {SIMPLE_TABLE_INFO.bundleSizeMinGzip}. That's a <strong>6× difference</strong>{" "}
-                  that directly impacts load time, especially on mobile.
+                  = {SIMPLE_TABLE_INFO.bundleSizeMinGzip}. That's about a{" "}
+                  <strong>2.6× difference</strong> versus the full stack (MRT package alone is{" "}
+                  {MATERIAL_REACT_TABLE_INFO.bundleSizeMinGzip}—smaller than Simple Table). The
+                  stack comparison still matters for load time on mobile.
                 </p>
               </div>
 
@@ -1018,7 +1020,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Build React tables without Material-UI overhead"
-        description={`Simple Table delivers complete data grid functionality in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—6× smaller than Material React Table with dependencies. Get sorting, filtering, pagination, grouping, virtualization, and more without locking into Material-UI. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
+        description={`Simple Table delivers complete data grid functionality in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—about 2.6× smaller than Material React Table with the full MUI stack (~217KB). Get sorting, filtering, pagination, grouping, virtualization, and more without locking into Material-UI. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

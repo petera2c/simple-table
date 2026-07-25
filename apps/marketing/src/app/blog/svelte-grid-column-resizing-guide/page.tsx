@@ -78,7 +78,7 @@ export default function Page() {
         { href: "/frameworks/svelte", label: "Svelte integration hub" },
       ]}
       ctaTitle="Add column resizing to your Svelte grid"
-      ctaDescription="Simple Table for Svelte ships resize, pinning, grouping, and editing in one source-available package—~70 kB gzipped, Svelte 5 runes ready."
+      ctaDescription="Simple Table for Svelte ships resize, pinning, grouping, and editing in one source-available package—84.6 kB gzipped, Svelte 5 runes ready."
       docsHref="/docs/column-resizing"
     />
   );

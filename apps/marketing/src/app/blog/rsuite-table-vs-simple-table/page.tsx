@@ -67,7 +67,7 @@ export default function RsuiteTableVsSimpleTablePage() {
 
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
           RSuite Table is part of the RSuite enterprise UI library with 102KB overhead and design
-          system integration. Simple Table is framework-agnostic at 42KB. This comparison helps you
+          system integration. Simple Table is framework-agnostic at 84.6 kB. This comparison helps you
           choose between UI suite consistency and standalone flexibility.
         </p>
         <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
@@ -118,8 +118,8 @@ export default function RsuiteTableVsSimpleTablePage() {
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 <strong>Simple Table</strong> is a standalone data grid with zero dependencies. It's
                 not tied to any design system, giving you freedom to style it however you want.
-                Despite being 2.4× smaller (42KB vs 102KB), it includes features RSuite Table
-                lacks—like row grouping and column pinning. For more comparisons,{" "}
+                Despite being modestly smaller (~1.2×; 84.6 kB vs 102KB), it includes features
+                RSuite Table lacks—like row grouping and column pinning. For more comparisons,{" "}
                 <Link
                   href="/blog/ag-grid-alternatives-free-react-data-grids"
                   className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
@@ -239,14 +239,14 @@ export default function RsuiteTableVsSimpleTablePage() {
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
             <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
               <FontAwesomeIcon icon={faBolt} className="text-yellow-500" />
-              Bundle Size: Simple Table is 2.4× Smaller
+              Bundle Size: Simple Table is ~1.2× Smaller
             </h2>
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                RSuite Table weighs <strong>~102KB min+gzipped</strong>—the largest among free React
-                table libraries we've compared. Simple Table is <strong>42KB</strong>, 2.4× smaller.
-                This 60KB difference impacts initial page load significantly.
+                RSuite Table weighs <strong>~102KB min+gzipped</strong>. Simple Table is{" "}
+                <strong>84.6 kB</strong>—about 1.2× smaller. The ~17KB difference is modest; the
+                real advantage is features and zero RSuite lock-in, not a dramatic size win.
               </p>
 
               <div className="bg-linear-to-r from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 border border-orange-300 dark:border-orange-700 rounded-lg p-6 mb-6">
@@ -275,22 +275,22 @@ export default function RsuiteTableVsSimpleTablePage() {
                       <span className="font-semibold text-gray-900 dark:text-gray-100">
                         Simple Table
                       </span>
-                      <span className="text-gray-700 dark:text-gray-300">42 KB</span>
+                      <span className="text-gray-700 dark:text-gray-300">84.6 kB</span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6">
                       <div
                         className="bg-linear-to-r from-green-500 to-teal-500 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                        style={{ width: "41%" }}
+                        style={{ width: "83%" }}
                       >
-                        41%
+                        83%
                       </div>
                     </div>
                   </div>
                   <div className="pt-2 border-t border-gray-300 dark:border-gray-600">
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                      <strong>Size difference: 60 KB</strong> — RSuite Table's overhead is 143% of
-                      Simple Table's entire bundle. On slower connections, this translates to 1-2
-                      seconds longer load time.
+                      <strong>Size difference: ~17 KB</strong> — RSuite Table is about 20% larger
+                      than Simple Table. A modest savings; choose Simple Table for features and
+                      framework independence more than for bundle size alone.
                     </p>
                   </div>
                 </div>
@@ -303,8 +303,8 @@ export default function RsuiteTableVsSimpleTablePage() {
                 <p className="text-sm text-gray-700 dark:text-gray-300">
                   If you're already using RSuite components (Buttons, Forms, Modals, etc.), the
                   table fits seamlessly into your design system. However, if you're only using the
-                  table, you're paying a 60KB premium for design system integration you don't fully
-                  utilize.
+                  table, you're paying a modest ~17KB premium for design system integration you
+                  don't fully utilize.
                 </p>
               </div>
             </div>
@@ -757,7 +757,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                         className="text-green-500 mt-1 shrink-0"
                       />
                       <span>
-                        Need <strong>smallest bundle</strong> (42KB vs 102KB)
+                        Need <strong>smallest bundle</strong> (84.6 kB vs 102KB)
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
@@ -849,7 +849,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                         Simple Table
                       </h4>
                       <p className="text-sm text-gray-700 dark:text-gray-300">
-                        <strong>Perfect fit.</strong> 42KB standalone, style with Tailwind CSS as
+                        <strong>Perfect fit.</strong> 84.6 kB standalone, style with Tailwind CSS as
                         needed. No framework lock-in, no design system to fight.
                       </p>
                     </div>
@@ -920,7 +920,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                   <li>✓ Consistent enterprise design language</li>
                   <li>✓ Built-in RTL, accessibility, and theming</li>
                   <li>✓ Excellent cell/row spanning support</li>
-                  <li>✗ 102KB bundle (2.4× larger than Simple Table)</li>
+                  <li>✗ 102KB bundle (~1.2× larger than Simple Table)</li>
                   <li>✗ Framework lock-in if only using table</li>
                   <li>✗ No row grouping or column reordering</li>
                 </ul>
@@ -931,7 +931,7 @@ export default function RsuiteTableVsSimpleTablePage() {
                   Simple Table: Framework-Agnostic Power
                 </h3>
                 <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                  <li>✓ 42KB—2.4× smaller than RSuite Table</li>
+                  <li>✓ 84.6 kB—~1.2× smaller than RSuite Table</li>
                   <li>✓ Zero dependencies, works with any design system</li>
                   <li>✓ Row grouping, column reordering built-in</li>
                   <li>✓ Actively maintained (2026)</li>
@@ -944,8 +944,8 @@ export default function RsuiteTableVsSimpleTablePage() {
                 <strong>Our recommendation:</strong> If you're building an enterprise app with
                 RSuite components everywhere, RSuite Table is the natural choice—design consistency
                 matters. But if you're not using RSuite, or only need the table, you're paying a
-                60KB premium (143% overhead) for design system integration you don't use. Simple
-                Table delivers more features in 2.4× less space with no framework lock-in.
+                modest ~17KB premium for design system integration you don't use. Simple Table
+                delivers more features in a slightly smaller package with no framework lock-in.
               </p>
 
               <p className="text-gray-700 dark:text-gray-300">
@@ -1006,7 +1006,7 @@ export default function RsuiteTableVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Get enterprise features without the ecosystem lock-in"
-        description={`Simple Table delivers virtualization, row grouping, column pinning, and more in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—2.4× smaller than RSuite Table. Zero dependencies on RSuite; official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
+        description={`Simple Table delivers virtualization, row grouping, column pinning, and more in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—about 1.2× smaller than RSuite Table. Zero dependencies on RSuite; official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

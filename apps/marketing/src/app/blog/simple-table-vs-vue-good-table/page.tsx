@@ -50,7 +50,7 @@ export default function Page() {
         { feature: "Column pinning", competitor: { value: "No", tone: "bad" }, simpleTable: { value: "Built-in", tone: "good" } },
         { feature: "Row grouping with aggregations", competitor: { value: "Manual / DIY", tone: "bad" }, simpleTable: { value: "Built-in", tone: "good" } },
         { feature: "Inline cell editing", competitor: { value: "Slot-based", tone: "neutral" }, simpleTable: { value: "Built-in", tone: "good" } },
-        { feature: "Bundle size (gzipped)", competitor: { value: "~50 kB", tone: "good" }, simpleTable: { value: "~70 kB", tone: "good" } },
+        { feature: "Bundle size (gzipped)", competitor: { value: "~50 kB", tone: "good" }, simpleTable: { value: "84.6 kB", tone: "good" } },
       ]}
       whyChoose={{
         competitor: {
@@ -117,7 +117,7 @@ export default function Page() {
         { href: "/frameworks/vue", label: "Vue integration hub" },
       ]}
       ctaTitle="Outgrowing Vue Good Table?"
-      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—~70 kB gzipped, idiomatic Vue 3."
+      ctaDescription="Simple Table for Vue ships virtualization, pinning, grouping, and editing in one source-available package—84.6 kB gzipped, idiomatic Vue 3."
     />
   );
 }
