@@ -305,9 +305,9 @@ export const QUICK_FILTER_CONFIG_PROPS: PropInfo[] = [
     name: "useFormattedValue",
     required: false,
     description:
-      "Whether to search the formatted value (from valueFormatter) instead of the raw value. Defaults to false.",
+      "Whether to search the formatted value (from valueFormatter) instead of the raw value. Defaults to true.",
     type: "boolean",
-    example: `{ useFormattedValue: true }`,
+    example: `{ useFormattedValue: false }`,
   },
   {
     key: "onChange",
@@ -341,14 +341,6 @@ export const QUICK_FILTER_GETTER_PROPS: PropInfo[] = [
     description: "The column accessor.",
     type: "Accessor",
     example: `({ accessor }) => accessor`,
-  },
-  {
-    key: "formattedValue",
-    name: "formattedValue",
-    required: false,
-    description: "The formatted value if a valueFormatter is defined.",
-    type: "string | number | boolean | string[] | number[] | null | undefined",
-    example: `({ formattedValue }) => formattedValue?.toString() || ""`,
   },
 ];
 

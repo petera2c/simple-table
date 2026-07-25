@@ -45,12 +45,14 @@ export type TablePropOptions = {
   maxHeight?: string;
   scrollParent?: string;
   rowHeight?: number;
+  rowsPerPage?: number;
   autoExpandColumns?: boolean;
   columnResizing?: boolean;
   columnReordering?: boolean;
   enableColumnEditor?: boolean;
   enableColumnEditorInitOpen?: boolean;
   externalSortHandling?: boolean;
+  enablePagination?: boolean;
   selectableCells?: boolean;
   selectableColumns?: boolean;
   copyHeadersToClipboard?: boolean;
@@ -65,6 +67,7 @@ type BoolTableProp =
   | "enableColumnEditor"
   | "enableColumnEditorInitOpen"
   | "externalSortHandling"
+  | "enablePagination"
   | "selectableCells"
   | "selectableColumns"
   | "copyHeadersToClipboard";
@@ -76,6 +79,7 @@ const BOOL_PROP_KEBAB: Record<BoolTableProp, string> = {
   enableColumnEditor: "enable-column-editor",
   enableColumnEditorInitOpen: "enable-column-editor-init-open",
   externalSortHandling: "external-sort-handling",
+  enablePagination: "enable-pagination",
   selectableCells: "selectable-cells",
   selectableColumns: "selectable-columns",
   copyHeadersToClipboard: "copy-headers-to-clipboard",
@@ -120,9 +124,32 @@ function pushTableBoolProps(
     options.enableColumnEditorInitOpen
   );
   pushBoolProp(framework, target, "externalSortHandling", options.externalSortHandling);
+  pushBoolProp(framework, target, "enablePagination", options.enablePagination);
   pushBoolProp(framework, target, "selectableCells", options.selectableCells);
   pushBoolProp(framework, target, "selectableColumns", options.selectableColumns);
   pushBoolProp(framework, target, "copyHeadersToClipboard", options.copyHeadersToClipboard);
+}
+
+function pushRowsPerPageProp(
+  framework: Framework,
+  target: string[],
+  rowsPerPage: number | undefined
+) {
+  if (rowsPerPage === undefined) return;
+  if (framework === "vanilla") {
+    target.push(`rowsPerPage: ${rowsPerPage}`);
+    return;
+  }
+  if (framework === "vue") {
+    target.push(`:rows-per-page="${rowsPerPage}"`);
+    return;
+  }
+  if (framework === "angular") {
+    target.push(`[rowsPerPage]="${rowsPerPage}"`);
+    return;
+  }
+  // react, solid, svelte
+  target.push(`rowsPerPage={${rowsPerPage}}`);
 }
 
 function pushSortProps(framework: Framework, target: string[], options: TablePropOptions) {
@@ -172,7 +199,7 @@ function pushRowHeightProp(
 }
 
 export function tableSnippet(framework: Framework, options: TablePropOptions = {}): string {
-  const { height, maxHeight, scrollParent, rowHeight } = options;
+  const { height, maxHeight, scrollParent, rowHeight, rowsPerPage } = options;
 
   if (framework === "vanilla") {
     const lines = ["columns", "rows"];
@@ -180,6 +207,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     if (maxHeight) lines.push(`maxHeight: "${maxHeight}"`);
     if (scrollParent) lines.push(`scrollParent: "${scrollParent}"`);
     pushRowHeightProp(framework, lines, rowHeight);
+    pushRowsPerPageProp(framework, lines, rowsPerPage);
     pushSortProps(framework, lines, options);
     pushTableBoolProps(framework, lines, options);
     return `new SimpleTableVanilla(container, {
@@ -193,6 +221,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     if (maxHeight) attrs.push(`max-height="${maxHeight}"`);
     if (scrollParent) attrs.push(`scroll-parent="${scrollParent}"`);
     pushRowHeightProp(framework, attrs, rowHeight);
+    pushRowsPerPageProp(framework, attrs, rowsPerPage);
     pushSortProps(framework, attrs, options);
     pushTableBoolProps(framework, attrs, options);
     return `<SimpleTable\n  ${attrs.join("\n  ")}\n/>`;
@@ -204,6 +233,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     if (maxHeight) attrs.push(`maxHeight="${maxHeight}"`);
     if (scrollParent) attrs.push(`scrollParent="${scrollParent}"`);
     pushRowHeightProp(framework, attrs, rowHeight);
+    pushRowsPerPageProp(framework, attrs, rowsPerPage);
     pushSortProps(framework, attrs, options);
     pushTableBoolProps(framework, attrs, options);
     return `<simple-table\n  ${attrs.join("\n  ")}\n></simple-table>`;
@@ -215,6 +245,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     if (maxHeight) attrs.push(`maxHeight="${maxHeight}"`);
     if (scrollParent) attrs.push(`scrollParent="${scrollParent}"`);
     pushRowHeightProp(framework, attrs, rowHeight);
+    pushRowsPerPageProp(framework, attrs, rowsPerPage);
     pushSortProps(framework, attrs, options);
     pushTableBoolProps(framework, attrs, options);
     return `<SimpleTable ${attrs.join(" ")} />`;
@@ -226,6 +257,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
   if (maxHeight) attrs.push(`maxHeight="${maxHeight}"`);
   if (scrollParent) attrs.push(`scrollParent="${scrollParent}"`);
   pushRowHeightProp(framework, attrs, rowHeight);
+  pushRowsPerPageProp(framework, attrs, rowsPerPage);
   pushSortProps(framework, attrs, options);
   pushTableBoolProps(framework, attrs, options);
   return `<SimpleTable ${attrs.join(" ")} />`;
@@ -1324,6 +1356,452 @@ const columns = [
   };
 }
 
+/** Server-side pagination: supply page rows + totalRowCount. */
+export function serverSidePaginationSnippets(): Record<Framework, string> {
+  return {
+    react: `const [rows, setRows] = useState([]);
+const [isLoading, setIsLoading] = useState(false);
+
+const handlePageChange = async (page) => {
+  setIsLoading(true);
+  setRows(await fetchPage(page));
+  setIsLoading(false);
+};
+
+<SimpleTable
+  columns={columns}
+  rows={rows}
+  enablePagination
+  serverSidePagination
+  rowsPerPage={25}
+  totalRowCount={1000}
+  isLoading={isLoading}
+  onPageChange={handlePageChange}
+/>`,
+    solid: `const [rows, setRows] = createSignal([]);
+const [isLoading, setIsLoading] = createSignal(false);
+
+const handlePageChange = async (page) => {
+  setIsLoading(true);
+  setRows(await fetchPage(page));
+  setIsLoading(false);
+};
+
+<SimpleTable
+  columns={columns}
+  rows={rows()}
+  enablePagination
+  serverSidePagination
+  rowsPerPage={25}
+  totalRowCount={1000}
+  isLoading={isLoading()}
+  onPageChange={handlePageChange}
+/>`,
+    vue: `<script setup>
+import { ref } from "vue";
+const rows = ref([]);
+const isLoading = ref(false);
+
+const handlePageChange = async (page) => {
+  isLoading.value = true;
+  rows.value = await fetchPage(page);
+  isLoading.value = false;
+};
+</script>
+
+<template>
+  <SimpleTable
+    :columns="columns"
+    :rows="rows"
+    :enable-pagination="true"
+    :server-side-pagination="true"
+    :rows-per-page="25"
+    :total-row-count="1000"
+    :is-loading="isLoading"
+    :on-page-change="handlePageChange"
+  />
+</template>`,
+    angular: `rows = [];
+isLoading = false;
+
+handlePageChange = async (page: number) => {
+  this.isLoading = true;
+  this.rows = await fetchPage(page);
+  this.isLoading = false;
+};
+
+<simple-table
+  [columns]="columns"
+  [rows]="rows"
+  [enablePagination]="true"
+  [serverSidePagination]="true"
+  [rowsPerPage]="25"
+  [totalRowCount]="1000"
+  [isLoading]="isLoading"
+  [onPageChange]="handlePageChange"
+></simple-table>`,
+    svelte: `<script>
+  let rows = $state([]);
+  let isLoading = $state(false);
+
+  const handlePageChange = async (page) => {
+    isLoading = true;
+    rows = await fetchPage(page);
+    isLoading = false;
+  };
+</script>
+
+<SimpleTable
+  {columns}
+  {rows}
+  enablePagination={true}
+  serverSidePagination={true}
+  rowsPerPage={25}
+  totalRowCount={1000}
+  isLoading={isLoading}
+  onPageChange={handlePageChange}
+/>`,
+    vanilla: `let rows = [];
+
+const table = new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  enablePagination: true,
+  serverSidePagination: true,
+  rowsPerPage: 25,
+  totalRowCount: 1000,
+  onPageChange: async (page) => {
+    table.update({ isLoading: true });
+    rows = await fetchPage(page);
+    table.update({ rows, isLoading: false });
+  },
+});`,
+  };
+}
+
+/** Custom footerRenderer with pagination controls (per framework). */
+export function footerRendererSnippets(): Record<Framework, string> {
+  return {
+    react: `const FooterBar = ({
+  currentPage, totalPages, startRow, endRow, totalRows,
+  hasPrevPage, hasNextPage, onPrevPage, onNextPage,
+}) => (
+  <div style={{ display: "flex", justifyContent: "space-between", padding: 12 }}>
+    <span>Showing {startRow}-{endRow} of {totalRows}</span>
+    <div>
+      <button disabled={!hasPrevPage} onClick={onPrevPage}>Prev</button>
+      <span> {currentPage} / {totalPages} </span>
+      <button disabled={!hasNextPage} onClick={() => void onNextPage()}>Next</button>
+    </div>
+  </div>
+);
+
+<SimpleTable
+  columns={columns}
+  rows={rows}
+  enablePagination
+  rowsPerPage={10}
+  footerRenderer={FooterBar}
+/>`,
+    solid: `const FooterBar = (props) => (
+  <div style={{ display: "flex", "justify-content": "space-between", padding: "12px" }}>
+    <span>
+      Showing {props.startRow}-{props.endRow} of {props.totalRows}
+    </span>
+    <div>
+      <button disabled={!props.hasPrevPage} onClick={props.onPrevPage}>Prev</button>
+      <span> {props.currentPage} / {props.totalPages} </span>
+      <button disabled={!props.hasNextPage} onClick={() => void props.onNextPage()}>
+        Next
+      </button>
+    </div>
+  </div>
+);
+
+<SimpleTable
+  columns={columns}
+  rows={rows()}
+  enablePagination
+  rowsPerPage={10}
+  footerRenderer={FooterBar}
+/>`,
+    vue: `import { h } from "vue";
+
+const FooterBar = (fp) =>
+  h("div", { style: { display: "flex", justifyContent: "space-between", padding: "12px" } }, [
+    h("span", \`Showing \${fp.startRow}-\${fp.endRow} of \${fp.totalRows}\`),
+    h("div", [
+      h("button", { disabled: !fp.hasPrevPage, onClick: fp.onPrevPage }, "Prev"),
+      h("span", \` \${fp.currentPage} / \${fp.totalPages} \`),
+      h("button", {
+        disabled: !fp.hasNextPage,
+        onClick: () => { void fp.onNextPage(); },
+      }, "Next"),
+    ]),
+  ]);
+
+<SimpleTable
+  :columns="columns"
+  :rows="rows"
+  :enable-pagination="true"
+  :rows-per-page="10"
+  :footer-renderer="FooterBar"
+/>`,
+    angular: `// footer-bar.component.ts — @Input() currentPage, totalPages, …
+// Template: Prev / page / Next wired to onPrevPage / onNextPage
+
+<simple-table
+  [columns]="columns"
+  [rows]="rows"
+  [enablePagination]="true"
+  [rowsPerPage]="10"
+  [footerRenderer]="FooterBarComponent"
+></simple-table>`,
+    svelte: `<!-- FooterBar.svelte -->
+<script lang="ts">
+  import type { FooterRendererProps } from "@simple-table/svelte";
+  let {
+    currentPage, totalPages, startRow, endRow, totalRows,
+    hasPrevPage, hasNextPage, onPrevPage, onNextPage,
+  }: FooterRendererProps = $props();
+</script>
+<div style="display:flex;justify-content:space-between;padding:12px">
+  <span>Showing {startRow}-{endRow} of {totalRows}</span>
+  <div>
+    <button disabled={!hasPrevPage} onclick={onPrevPage}>Prev</button>
+    <span> {currentPage} / {totalPages} </span>
+    <button disabled={!hasNextPage} onclick={() => void onNextPage()}>Next</button>
+  </div>
+</div>
+
+<SimpleTable
+  {columns}
+  {rows}
+  enablePagination={true}
+  rowsPerPage={10}
+  footerRenderer={FooterBar}
+/>`,
+    vanilla: `const footerRenderer = ({
+  currentPage, totalPages, startRow, endRow, totalRows,
+  hasPrevPage, hasNextPage, onPrevPage, onNextPage,
+}) => {
+  const el = document.createElement("div");
+  el.style.cssText = "display:flex;justify-content:space-between;padding:12px";
+  el.innerHTML = \`
+    <span>Showing \${startRow}-\${endRow} of \${totalRows}</span>
+    <div>
+      <button \${!hasPrevPage ? "disabled" : ""} data-prev>Prev</button>
+      <span> \${currentPage} / \${totalPages} </span>
+      <button \${!hasNextPage ? "disabled" : ""} data-next>Next</button>
+    </div>
+  \`;
+  el.querySelector("[data-prev]")?.addEventListener("click", onPrevPage);
+  el.querySelector("[data-next]")?.addEventListener("click", () => { void onNextPage(); });
+  return el;
+};
+
+new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  enablePagination: true,
+  rowsPerPage: 10,
+  footerRenderer,
+});`,
+  };
+}
+
+export function footerPositionSnippets(): Record<Framework, string> {
+  return {
+    react: `<SimpleTable
+  columns={columns}
+  rows={rows}
+  enablePagination
+  footerPosition="top"
+  footerRenderer={FooterBar}
+/>`,
+    solid: `<SimpleTable
+  columns={columns}
+  rows={rows()}
+  enablePagination
+  footerPosition="top"
+  footerRenderer={FooterBar}
+/>`,
+    vue: `<SimpleTable
+  :columns="columns"
+  :rows="rows"
+  :enable-pagination="true"
+  footer-position="top"
+  :footer-renderer="FooterBar"
+/>`,
+    angular: `<simple-table
+  [columns]="columns"
+  [rows]="rows"
+  [enablePagination]="true"
+  footerPosition="top"
+  [footerRenderer]="FooterBarComponent"
+></simple-table>`,
+    svelte: `<SimpleTable
+  {columns}
+  {rows}
+  enablePagination={true}
+  footerPosition="top"
+  footerRenderer={FooterBar}
+/>`,
+    vanilla: `new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  enablePagination: true,
+  footerPosition: "top",
+  footerRenderer,
+});`,
+  };
+}
+
+/** Custom headerRenderer examples (per framework). */
+export function headerRendererSnippets(): Record<Framework, string> {
+  return {
+    react: `const StatusHeader = ({ header }) => (
+  <span style={{ fontWeight: 600 }}>{header.label}</span>
+);
+
+const columns = [
+  { accessor: "status", label: "Status", width: 120, headerRenderer: StatusHeader },
+];`,
+    solid: `const StatusHeader = (props) => (
+  <span style={{ "font-weight": "600" }}>{props.header.label}</span>
+);
+
+const columns = [
+  { accessor: "status", label: "Status", width: 120, headerRenderer: StatusHeader },
+];`,
+    vue: `import { h } from "vue";
+
+const StatusHeader = ({ header }) =>
+  h("span", { style: { fontWeight: "600" } }, header.label);
+
+const columns = [
+  { accessor: "status", label: "Status", width: 120, headerRenderer: StatusHeader },
+];`,
+    angular: `// status-header.component.ts
+@Component({
+  standalone: true,
+  selector: "app-status-header",
+  template: \`<span style="font-weight:600">{{ header.label }}</span>\`,
+})
+export class StatusHeaderComponent {
+  @Input() header!: { label: string };
+}
+
+// column def
+{ accessor: "status", label: "Status", width: 120, headerRenderer: StatusHeaderComponent }`,
+    svelte: `<!-- StatusHeader.svelte -->
+<script lang="ts">
+  import type { HeaderRendererProps } from "@simple-table/svelte";
+  let { header }: HeaderRendererProps = $props();
+</script>
+<span style="font-weight:600">{header.label}</span>
+
+<!-- column def -->
+{ accessor: "status", label: "Status", width: 120, headerRenderer: StatusHeader }`,
+    vanilla: `const StatusHeader = ({ header }) => {
+  const span = document.createElement("span");
+  span.style.fontWeight = "600";
+  span.textContent = header.label;
+  return span;
+};
+
+const columns = [
+  { accessor: "status", label: "Status", width: 120, headerRenderer: StatusHeader },
+];`,
+  };
+}
+
+/** Reorder built-in header components (sort/filter/label). */
+export function headerRendererComponentsSnippets(): Record<Framework, string> {
+  return {
+    react: `{
+  accessor: "name",
+  label: "Name",
+  sortable: true,
+  filterable: true,
+  headerRenderer: ({ components }) => (
+    <>
+      {components?.labelContent}
+      {components?.sortIcon}
+      {components?.filterIcon}
+    </>
+  ),
+}`,
+    solid: `{
+  accessor: "name",
+  label: "Name",
+  sortable: true,
+  filterable: true,
+  headerRenderer: (props) => (
+    <>
+      {props.components?.labelContent}
+      {props.components?.sortIcon}
+      {props.components?.filterIcon}
+    </>
+  ),
+}`,
+    vue: `import { h } from "vue";
+
+{
+  accessor: "name",
+  label: "Name",
+  sortable: true,
+  filterable: true,
+  headerRenderer: ({ components }) =>
+    h("div", { style: { display: "flex", gap: "4px", alignItems: "center" } }, [
+      components?.labelContent,
+      components?.sortIcon,
+      components?.filterIcon,
+    ].filter(Boolean)),
+}`,
+    angular: `// header-layout.component.ts — receive @Input() components
+// Template: place labelContent, sortIcon, filterIcon in your order
+
+{
+  accessor: "name",
+  label: "Name",
+  sortable: true,
+  filterable: true,
+  headerRenderer: HeaderLayoutComponent,
+}`,
+    svelte: `<!-- HeaderLayout.svelte — place components.labelContent / sortIcon / filterIcon -->
+<script lang="ts">
+  import type { HeaderRendererProps } from "@simple-table/svelte";
+  let { components }: HeaderRendererProps = $props();
+</script>
+
+<!-- column def -->
+{ accessor: "name", label: "Name", sortable: true, filterable: true, headerRenderer: HeaderLayout }`,
+    vanilla: `{
+  accessor: "name",
+  label: "Name",
+  sortable: true,
+  filterable: true,
+  headerRenderer: ({ components }) => {
+    const row = document.createElement("div");
+    row.style.display = "flex";
+    row.style.gap = "4px";
+    row.style.alignItems = "center";
+    if (components?.labelContent) {
+      if (typeof components.labelContent === "string") {
+        row.append(components.labelContent);
+      } else {
+        row.appendChild(components.labelContent);
+      }
+    }
+    if (components?.sortIcon instanceof Node) row.appendChild(components.sortIcon);
+    if (components?.filterIcon instanceof Node) row.appendChild(components.filterIcon);
+    return row;
+  },
+}`,
+  };
+}
+
 /** Wrap valueFormatter output in a cellRenderer. */
 export function cellRendererFormattedValueSnippets(): Record<Framework, string> {
   return {
@@ -1382,6 +1860,224 @@ export function cellRendererFormattedValueSnippets(): Record<Framework, string> 
     return el;
   },
 }`,
+  };
+}
+
+export type QuickFilterSnippetOptions = {
+  mode?: "simple" | "smart";
+  columns?: string[];
+  caseSensitive?: boolean;
+};
+
+function quickFilterObjectLiteral(
+  options: QuickFilterSnippetOptions,
+  textExpr: string,
+  quote: '"' | "'" = '"'
+): string {
+  const { mode = "simple", columns, caseSensitive } = options;
+  const parts = [`text: ${textExpr}`, `mode: ${quote}${mode}${quote}`];
+  if (caseSensitive !== undefined) parts.push(`caseSensitive: ${caseSensitive}`);
+  if (columns) parts.push(`columns: ${JSON.stringify(columns)}`);
+  return `{ ${parts.join(", ")} }`;
+}
+
+/** Controlled quickFilter with searchText state (per framework). */
+export function quickFilterSnippets(
+  options: QuickFilterSnippetOptions = {}
+): Record<Framework, string> {
+  const jsConfig = quickFilterObjectLiteral(options, "searchText");
+  const solidConfig = quickFilterObjectLiteral(options, "searchText()");
+  const attrConfig = quickFilterObjectLiteral(options, "searchText", "'");
+
+  return {
+    react: `const [searchText, setSearchText] = useState("");
+
+<input value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+<SimpleTable
+  columns={columns}
+  rows={rows}
+  quickFilter={${jsConfig}}
+/>`,
+    solid: `const [searchText, setSearchText] = createSignal("");
+
+<input
+  value={searchText()}
+  onInput={(e) => setSearchText(e.currentTarget.value)}
+/>
+<SimpleTable
+  columns={columns}
+  rows={rows()}
+  quickFilter={${solidConfig}}
+/>`,
+    vue: `<script setup>
+import { ref } from "vue";
+const searchText = ref("");
+</script>
+
+<template>
+  <input v-model="searchText" />
+  <SimpleTable
+    :columns="columns"
+    :rows="rows"
+    :quick-filter="${attrConfig}"
+  />
+</template>`,
+    angular: `searchText = "";
+
+<input [(ngModel)]="searchText" />
+<simple-table
+  [columns]="columns"
+  [rows]="rows"
+  [quickFilter]="${attrConfig}"
+></simple-table>`,
+    svelte: `<script>
+  let searchText = $state("");
+</script>
+
+<input bind:value={searchText} />
+<SimpleTable
+  {columns}
+  {rows}
+  quickFilter={${jsConfig}}
+/>`,
+    vanilla: `let searchText = "";
+
+const table = new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  quickFilter: ${jsConfig},
+});
+
+input.addEventListener("input", (e) => {
+  searchText = e.target.value;
+  table.update({ quickFilter: ${jsConfig} });
+});`,
+  };
+}
+
+export function programmaticQuickFilterSnippets(): Record<Framework, string> {
+  return {
+    react: `tableRef.current?.setQuickFilter("engineering");
+tableRef.current?.setQuickFilter(""); // clear`,
+    solid: `tableRef.setQuickFilter("engineering");
+tableRef.setQuickFilter(""); // clear`,
+    vue: `tableRef.value?.setQuickFilter("engineering");
+tableRef.value?.setQuickFilter(""); // clear`,
+    angular: `this.tableRef.getAPI()?.setQuickFilter("engineering");
+this.tableRef.getAPI()?.setQuickFilter(""); // clear`,
+    svelte: `tableRef.getAPI()?.setQuickFilter("engineering");
+tableRef.getAPI()?.setQuickFilter(""); // clear`,
+    vanilla: `table.setQuickFilter("engineering");
+table.setQuickFilter(""); // clear`,
+  };
+}
+
+export type AnimationsSnippetOptions = {
+  enabled?: boolean;
+  duration?: number;
+  easing?: string;
+};
+
+/** Table with animations config (per framework). */
+export function animationsSnippets(
+  options: AnimationsSnippetOptions
+): Record<Framework, string> {
+  const parts: string[] = [];
+  if (options.enabled !== undefined) parts.push(`enabled: ${options.enabled}`);
+  if (options.duration !== undefined) parts.push(`duration: ${options.duration}`);
+  if (options.easing !== undefined) parts.push(`easing: "${options.easing}"`);
+  const objectBody = parts.join(", ");
+
+  return {
+    react: `<SimpleTable
+  columns={columns}
+  rows={rows}
+  animations={{ ${objectBody} }}
+/>`,
+    solid: `<SimpleTable
+  columns={columns}
+  rows={rows()}
+  animations={{ ${objectBody} }}
+/>`,
+    vue: `<SimpleTable
+  :columns="columns"
+  :rows="rows"
+  :animations="{ ${objectBody} }"
+/>`,
+    angular: `<simple-table
+  [columns]="columns"
+  [rows]="rows"
+  [animations]="{ ${objectBody} }"
+></simple-table>`,
+    svelte: `<SimpleTable
+  {columns}
+  {rows}
+  animations={{ ${objectBody} }}
+/>`,
+    vanilla: `new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  animations: { ${objectBody} },
+});`,
+  };
+}
+
+const CELL_CLICK_HANDLER = `const handleCellClick = ({ accessor, value, row, rowIndex, colIndex }) => {
+  // open a detail view, navigate, filter, etc.
+  console.log(accessor, value, row.id, rowIndex, colIndex);
+};`;
+
+/** Handle cell clicks via onCellClick (per framework). */
+export function onCellClickSnippets(): Record<Framework, string> {
+  return {
+    react: `${CELL_CLICK_HANDLER}
+
+<SimpleTable
+  columns={columns}
+  rows={rows}
+  onCellClick={handleCellClick}
+/>`,
+    solid: `${CELL_CLICK_HANDLER}
+
+<SimpleTable
+  columns={columns}
+  rows={rows()}
+  onCellClick={handleCellClick}
+/>`,
+    vue: `<script setup>
+${CELL_CLICK_HANDLER}
+</script>
+
+<template>
+  <SimpleTable
+    :columns="columns"
+    :rows="rows"
+    :on-cell-click="handleCellClick"
+  />
+</template>`,
+    angular: `${CELL_CLICK_HANDLER}
+
+<simple-table
+  [columns]="columns"
+  [rows]="rows"
+  [onCellClick]="handleCellClick"
+></simple-table>`,
+    svelte: `<script>
+  ${CELL_CLICK_HANDLER}
+</script>
+
+<SimpleTable
+  {columns}
+  {rows}
+  onCellClick={handleCellClick}
+/>`,
+    vanilla: `${CELL_CLICK_HANDLER}
+
+new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  onCellClick: handleCellClick,
+});`,
   };
 }
 
