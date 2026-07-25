@@ -14,11 +14,11 @@ const SimpleVsSyncfusion = () => {
   const introText = (
     <>
       Syncfusion has established itself as a comprehensive enterprise UI component suite, offering
-      over 80 components including their DataGrid. With a commercial license requirement for most
-      businesses—priced at $995/developer/year (though free for companies with less than $1M in
-      annual revenue)—Syncfusion represents a significant investment in a full-featured ecosystem.
-      However, many development teams find themselves using only a fraction of the component suite,
-      primarily needing just the data grid functionality. This is where{" "}
+      1,600+ components including their DataGrid. Paid licenses are sold via custom quote (team
+      plans are common); a Community License remains free for qualifying companies under $1M annual
+      revenue (with headcount limits). Syncfusion represents a significant investment in a
+      full-featured ecosystem. However, many development teams find themselves using only a fraction
+      of the suite, primarily needing just the data grid. This is where{" "}
       <Text className="text-lg text-inherit" strong>
         Simple Table
       </Text>{" "}
@@ -31,7 +31,15 @@ const SimpleVsSyncfusion = () => {
       >
         {SIMPLE_TABLE_INFO.bundleSizeMinGzip}
       </Link>{" "}
-      compared to Syncfusion's{" "}
+      compared to Syncfusion DataGrid (
+      <Link
+        className="text-[length:inherit]"
+        href={SYNCFUSION_GRID_INFO.bundlePhobiaUrl}
+        target="_blank"
+      >
+        {SYNCFUSION_GRID_INFO.npmPackage}
+      </Link>
+      ) at{" "}
       <Link
         className="text-[length:inherit]"
         href={SYNCFUSION_GRID_INFO.bundlePhobiaUrl}
@@ -39,12 +47,10 @@ const SimpleVsSyncfusion = () => {
       >
         {SYNCFUSION_GRID_INFO.bundleSizeMinGzip}
       </Link>{" "}
-      (minified + gzipped), Simple Table delivers exceptional performance with core data grid
-      features that rival Syncfusion's capabilities—all while remaining completely free. This
-      comparison examines whether you can achieve your data grid goals without the licensing costs,
-      bundle overhead, and component library lock-in that Syncfusion demands. We'll break down the
-      true cost of ownership and help you determine if Simple Table can deliver the
-      enterprise-level functionality your application needs without the enterprise price tag.
+      (minified + gzipped), Simple Table delivers core data grid features under a Community License
+      for pre-revenue teams (Pro when you earn revenue). This comparison examines whether you can
+      achieve your data grid goals without Syncfusion suite lock-in, custom-quote licensing, and
+      DataGrid bundle overhead.
     </>
   );
 
@@ -54,9 +60,9 @@ const SimpleVsSyncfusion = () => {
         <Text className="text-lg text-inherit" strong>
           Simple Table
         </Text>{" "}
-        is a lightweight, free alternative to Syncfusion, offering essential features like
-        virtualization, infinite scroll, row grouping, and advanced filtering, with a significantly
-        smaller bundle size (
+        is a lightweight alternative to Syncfusion DataGrid—Community License for pre-revenue
+        teams—offering virtualization, infinite scroll, row grouping, and advanced filtering, with a
+        significantly smaller bundle size (
         <Link
           className="text-[length:inherit]"
           href={SIMPLE_TABLE_INFO.bundlePhobiaUrl}
@@ -64,34 +70,33 @@ const SimpleVsSyncfusion = () => {
         >
           {SIMPLE_TABLE_INFO.bundleSizeMinGzip} minified + gzipped
         </Link>
-        ). It's ideal for projects needing a powerful, performant data grid without the overhead of
-        an entire component suite or licensing fees.
+        ). It's ideal for projects needing a powerful data grid without an entire component suite.
       </Text>
       <Text className="text-lg mb-4 block text-inherit">
         <Text className="text-lg text-inherit" strong>
           Syncfusion DataGrid
         </Text>{" "}
-        is part of a comprehensive UI component suite with advanced data grid capabilities. The{" "}
+        ({SYNCFUSION_GRID_INFO.npmPackage}) is part of a comprehensive UI component suite. The
+        DataGrid package is{" "}
         <Link
           className="text-[length:inherit]"
           href={SYNCFUSION_GRID_INFO.bundlePhobiaUrl}
           target="_blank"
         >
-          DataGrid package
-        </Link>{" "}
-        is {SYNCFUSION_GRID_INFO.bundleSizeMinGzip} (minified + gzipped) and requires a commercial
-        license at {getPricingString(SYNCFUSION_GRID_INFO)} (free for companies with less than $1M
-        revenue). While feature-rich, the combined bundle size, licensing costs, and tight
-        integration with the broader Syncfusion ecosystem make it better suited for enterprises
-        already invested in the Syncfusion platform.
+          {SYNCFUSION_GRID_INFO.bundleSizeMinGzip} (minified + gzipped)
+        </Link>
+        . Paid plans are {getPricingString(SYNCFUSION_GRID_INFO)}; a Community License is available
+        for qualifying companies under $1M revenue (≤5 developers, ≤10 employees). Bundle size,
+        suite coupling, and licensing make it better suited for teams already invested in
+        Syncfusion.
       </Text>
       <Text className="text-lg block text-inherit">
-        If you're looking for a free, lightweight solution with solid features,{" "}
+        If you want a focused grid with a Community License for pre-revenue use,{" "}
         <Link className="text-[length:inherit]" href="https://www.simple-table.com">
           try Simple Table
         </Link>
-        . For teams already using Syncfusion components or needing specialized enterprise features,
-        Syncfusion DataGrid might be worth the investment.
+        . For teams already using Syncfusion components or needing specialized suite features,
+        Syncfusion DataGrid may be worth the investment.
       </Text>
     </>
   );

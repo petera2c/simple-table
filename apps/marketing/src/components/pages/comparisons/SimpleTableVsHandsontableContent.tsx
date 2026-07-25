@@ -62,7 +62,8 @@ const SimpleTableVsHandsontableContent = () => {
           • Users expect Excel-like context menus and keyboard shortcuts
         </Text>
         <Text className="text-base mb-4 block text-inherit">
-          • Budget allows for $590+ annual licensing per developer
+          • Budget allows for {getPricingString(HANDSONTABLE_INFO)} (Standard; Hobby license is
+          free for non-commercial use only)
         </Text>
 
         <Text className="text-lg mb-3 block text-inherit font-semibold">
@@ -95,7 +96,8 @@ const SimpleTableVsHandsontableContent = () => {
           difference)
         </Text>
         <Text className="text-base mb-4 block text-inherit">
-          • Prefer open-source solutions without licensing restrictions
+          • Prefer a Community License for pre-revenue teams (Pro when you earn revenue) over
+          per-developer commercial spreadsheet licensing
         </Text>
       </div>
 
@@ -103,9 +105,10 @@ const SimpleTableVsHandsontableContent = () => {
         <Text className="text-lg text-inherit" strong>
           Simple Table
         </Text>{" "}
-        is a lightweight, free alternative to Handsontable, offering essential features like
-        virtualization, cell editing, and column management. It's ideal for projects that need basic
-        spreadsheet functionality without the overhead of advanced features or commercial licensing.
+        is a lightweight alternative to Handsontable—free for pre-revenue teams under the Community
+        License—offering essential features like virtualization, cell editing, and column
+        management. It's ideal for projects that need basic spreadsheet-like functionality without
+        Handsontable's commercial per-developer licensing.
       </Text>
       <Text className="text-lg mb-4 block text-inherit">
         <Text className="text-lg text-inherit" strong>

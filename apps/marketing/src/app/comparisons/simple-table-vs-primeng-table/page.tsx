@@ -37,7 +37,7 @@ export default function SimpleTableVsPrimengTablePage() {
       ]}
       introParagraphs={[
         "PrimeNG's <p-table> is the well-known Angular component table from PrimeFaces. It's full-featured, but it ships as part of a much larger UI library—pulling in PrimeNG runtime, theming primitives, and PrimeIcons. If you only need a data grid, that's a lot of dependencies for one component.",
-        "Simple Table for Angular gives you a focused, source-available data grid that sits on Angular 17+ standalone components. It ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing in a single ~70 kB gzipped package.",
+        "Simple Table for Angular gives you a focused, source-available data grid that sits on Angular 17+ standalone components. It ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing in a single 84.6 kB gzipped package.",
         "This comparison helps you decide whether to keep adding PrimeNG just for the table—or swap it for a slimmer, idiomatic Angular grid.",
       ]}
       whyChooseSimpleTable={[
@@ -54,7 +54,7 @@ export default function SimpleTableVsPrimengTablePage() {
       ]}
       featureRows={[
         { feature: "Standalone-component support (Angular 17+)", simpleTable: { verdict: "yes", note: "Native standalone." }, competitor: { verdict: "yes", note: "Standalone provider available." } },
-        { feature: "Bundle size (gzipped)", simpleTable: { verdict: "yes", note: "~70 kB total." }, competitor: { verdict: "partial", note: "Adds PrimeNG runtime + theme assets." } },
+        { feature: "Bundle size (gzipped)", simpleTable: { verdict: "yes", note: "84.6 kB total." }, competitor: { verdict: "partial", note: "Adds PrimeNG runtime + theme assets." } },
         { feature: "Row + column virtualization (1M+ rows)", simpleTable: { verdict: "yes", note: "Built-in." }, competitor: { verdict: "partial", note: "scrollable + virtualScroll mode; less robust at extremes." } },
         { feature: "Column pinning (left / right)", simpleTable: { verdict: "yes", note: "Built-in, runtime drag." }, competitor: { verdict: "partial", note: "frozenColumns supported; less ergonomic." } },
         { feature: "Row grouping with aggregations", simpleTable: { verdict: "yes", note: "Built-in." }, competitor: { verdict: "partial", note: "rowGroupMode='subheader' available; aggregations are manual." } },
@@ -64,7 +64,7 @@ export default function SimpleTableVsPrimengTablePage() {
         { feature: "License", simpleTable: { verdict: "yes", note: "Community License." }, competitor: { verdict: "yes", note: "MIT." } },
       ]}
       bundleSizeNote={
-        <>Bundle: Simple Table for Angular ships ~70 kB gzipped including the engine and Angular bindings. PrimeNG&apos;s @primeng/table requires the broader primeng package + theme assets, typically adding 200–400 kB depending on which theme is loaded.</>
+        <>Bundle: Simple Table for Angular ships 84.6 kB gzipped including the engine and Angular bindings. PrimeNG&apos;s @primeng/table requires the broader primeng package + theme assets, typically adding 200–400 kB depending on which theme is loaded.</>
       }
       installCommand="npm install @simple-table/angular"
       migrationCallout={<>PrimeNG&apos;s <code>columns</code> + <code>value</code> inputs map to Simple Table&apos;s <code>columns</code> + <code>rows</code>. Cell templates with <code>pTemplate=&quot;body&quot;</code> become standalone components passed as renderers.</>}

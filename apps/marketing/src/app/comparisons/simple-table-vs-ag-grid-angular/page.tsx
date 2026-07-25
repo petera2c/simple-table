@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { faBolt, faDollarSign, faShieldHalved, faTrophy } from "@fortawesome/free-solid-svg-icons";
 import FrameworkVsCompetitorLayout from "@/components/comparisons/FrameworkVsCompetitorLayout";
 import { SEO_STRINGS } from "@/constants/strings/seo";
+import {
+  AG_GRID_TOTAL_SIZE,
+  SIMPLE_TABLE_INFO,
+} from "@/constants/packageInfo";
 
 const TITLE = "Simple Table vs AG Grid Angular: Free Angular Data Grid Comparison";
 const DESCRIPTION =
@@ -48,7 +52,7 @@ export default function SimpleTableVsAgGridAngularPage() {
         { icon: faShieldHalved, label: "Standalone components" },
       ]}
       introParagraphs={[
-        "AG Grid Angular is the de-facto enterprise data grid for Angular: deep feature surface, mature pivoting, and decades of refinement. It also hides the most-requested features—pinning, grouping, integrated charts, status bar, server-side row model—behind AG Grid Enterprise, a paid commercial license that scales per developer.",
+        "AG Grid Angular is the de-facto enterprise data grid for Angular: deep feature surface, mature pivoting, and decades of refinement. Community includes core grid features such as column pinning, sorting, filtering, and the Infinite Row Model. AG Grid Enterprise (per-developer commercial license) unlocks grouping, aggregations, tree data, pivoting, integrated charts, status bar, master/detail, and the Server-Side Row Model.",
         "Simple Table for Angular ships those same headline features (virtualization for 1M+ rows, pinning, row grouping with aggregations, inline cell editing, custom renderers, themes) under the Simple Table Community License, free for pre-revenue and bootstrapped teams. It's published as @simple-table/angular and supports Angular 17+ standalone components, signals, Ivy AOT, and TypeScript strict mode out of the box.",
         "If you're choosing an Angular data grid in 2026 without an enterprise budget, this comparison covers exactly when each library is the right call.",
       ]}
@@ -56,7 +60,7 @@ export default function SimpleTableVsAgGridAngularPage() {
         "You ship Angular 17+ standalone components and want a data grid that's a single import—no module wiring.",
         "You don't have an AG Grid Enterprise license and don't want the per-developer renewal.",
         "You need virtualization, pinning, grouping, and editing free for pre-revenue teams (source-available).",
-        "You want a small bundle (~70 kB gzipped) instead of AG Grid Community + Enterprise (~1 MB total).",
+        `You want a small bundle (${SIMPLE_TABLE_INFO.bundleSizeMinGzip} gzipped) instead of a typical AG Grid Enterprise install (${AG_GRID_TOTAL_SIZE} gzipped).`,
         "You want a single library that also covers your React, Vue, Svelte, Solid, and vanilla TS apps via @simple-table adapters.",
       ]}
       whyChooseCompetitor={[
@@ -79,7 +83,10 @@ export default function SimpleTableVsAgGridAngularPage() {
         {
           feature: "Column pinning (left / right)",
           simpleTable: { verdict: "yes", note: "Source-available, free for pre-revenue teams." },
-          competitor: { verdict: "partial", note: "Community only allows basic pinning; advanced lock-position is Enterprise." },
+          competitor: {
+            verdict: "yes",
+            note: "Column pinning is Community. lockPinned menu controls are Enterprise-oriented.",
+          },
         },
         {
           feature: "Row grouping with aggregations",
@@ -123,13 +130,21 @@ export default function SimpleTableVsAgGridAngularPage() {
         },
       ]}
       pricingRows={[
-        { tier: "Free / OSS", simpleTable: "Source-available, full feature surface", competitor: "Community only (no pinning lock, no grouping aggregations, no tree data, no pivoting, no charts)" },
+        {
+          tier: "Free / OSS",
+          simpleTable: "Source-available, full feature surface (Community License for pre-revenue)",
+          competitor:
+            "Community MIT (pinning, Infinite Row Model, core grid). Enterprise for grouping, aggregations, tree data, pivoting, charts",
+        },
         { tier: "Single dev / startup", simpleTable: "Free for pre-revenue teams", competitor: "AG Grid Enterprise: per-developer license" },
         { tier: "Team license", simpleTable: "Pro tier (predictable, team pricing)", competitor: "AG Grid Enterprise scales per dev" },
       ]}
       bundleSizeNote={
         <>
-          Bundle: Simple Table for Angular ships ~70 kB gzipped including the engine and Angular bindings. AG Grid Community + Enterprise together is ~1 MB minified before gzip. For Angular apps where bundle budget matters (PWAs, SSR cold starts), the difference is meaningful.
+          Bundle (minified + gzipped, Bundlephobia): Simple Table core is{" "}
+          {SIMPLE_TABLE_INFO.bundleSizeMinGzip}. A typical AG Grid Enterprise install (
+          {AG_GRID_TOTAL_SIZE}) is substantially larger. For Angular apps where bundle budget
+          matters (PWAs, SSR cold starts), the difference is meaningful.
         </>
       }
       installCommand="npm install @simple-table/angular"
@@ -143,7 +158,7 @@ export default function SimpleTableVsAgGridAngularPage() {
         {
           question: "Is Simple Table really a free alternative to AG Grid Angular?",
           answer:
-            "Yes. Simple Table ships under the Simple Table Community License for pre-revenue and bootstrapped projects, and it includes column pinning, row grouping with aggregations, virtualization, and inline editing—features that require an AG Grid Enterprise license. There is a Pro/Enterprise tier for revenue-generating teams to support ongoing development, but it is per-team rather than per-developer.",
+            "Yes for pre-revenue teams under the Community License. Simple Table includes column pinning, row grouping with aggregations, virtualization, and inline editing. On AG Grid, pinning and core grid features are Community; grouping, aggregations, tree data, and pivoting require Enterprise. Simple Table Pro/Enterprise is per product rather than per developer.",
         },
         {
           question: "Does Simple Table support Angular 17+ standalone components?",
@@ -152,8 +167,7 @@ export default function SimpleTableVsAgGridAngularPage() {
         },
         {
           question: "How big is the bundle compared to AG Grid Angular?",
-          answer:
-            "Simple Table for Angular is ~70 kB gzipped. AG Grid Community + AG Grid Enterprise add ~1 MB minified to your bundle.",
+          answer: `Simple Table core is ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} minified + gzipped (Bundlephobia). A typical AG Grid Enterprise install is about ${AG_GRID_TOTAL_SIZE} gzipped.`,
         },
         {
           question: "Can I migrate gradually from AG Grid to Simple Table?",

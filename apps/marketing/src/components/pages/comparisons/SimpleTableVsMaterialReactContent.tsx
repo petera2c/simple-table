@@ -23,12 +23,14 @@ const SimpleTableVsMaterialReactContent = () => {
         Simple Table
       </Text>{" "}
       offers a compelling alternative for teams seeking advanced data grid features without the
-      Material-UI dependency. At just {SIMPLE_TABLE_INFO.bundleSizeMinGzip} compared to Material
-      React Table's {MATERIAL_REACT_TABLE_INFO.bundleSizeMinGzip}, Simple Table delivers comparable
-      functionality with a significantly lighter footprint. While it doesn't come with Material
-      Design styling out of the box, its flexible theming system makes it possible to achieve
-      Material Design aesthetics if desired. This comparison examines the trade-offs between
-      Material React Table's pre-built MUI integration and Simple Table's lightweight,
+      Material-UI dependency. Material React Table's npm package is{" "}
+      {MATERIAL_REACT_TABLE_INFO.bundleSizeMinGzip} (minified + gzipped) before Material-UI peer
+      dependencies; Simple Table is {SIMPLE_TABLE_INFO.bundleSizeMinGzip} as a standalone grid with
+      no design-system runtime required. If you already ship MUI, MRT's integration can outweigh a
+      smaller core package; if you want to avoid MUI peer weight, Simple Table stays self-contained.
+      While it doesn't come with Material Design styling out of the box, its flexible theming system
+      makes it possible to achieve Material Design aesthetics if desired. This comparison examines
+      the trade-offs between Material React Table's pre-built MUI integration and Simple Table's
       framework-agnostic approach to help you determine which solution best fits your project's
       needs.
     </>
@@ -66,8 +68,8 @@ const SimpleTableVsMaterialReactContent = () => {
         >
           {MATERIAL_REACT_TABLE_INFO.bundleSizeMinGzip} (minified + gzipped)
         </a>
-        , making it a middle-ground option between Simple Table's minimal footprint and
-        full-featured enterprise solutions.
+        , plus Material-UI peers—making it the natural choice when you already depend on MUI, and
+        heavier when you do not.
       </Text>
       <Text className="text-lg block text-inherit">
         If you need a lightweight, framework-agnostic table with advanced features and don't require

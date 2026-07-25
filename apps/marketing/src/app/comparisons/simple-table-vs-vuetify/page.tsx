@@ -37,7 +37,7 @@ export default function SimpleTableVsVuetifyPage() {
       ]}
       introParagraphs={[
         "Vuetify's <v-data-table> is the most-used Vue 3 data table because Vuetify is a popular UI library—but the table inherits the entire Vuetify runtime, theming, and Material Design opinions. If you don't want Vuetify, you don't get v-data-table.",
-        "Simple Table for Vue ships @simple-table/vue: a focused, source-available Vue 3 data grid that works in Composition API + <script setup>, Nuxt 3/4, and any Vite-powered Vue app. It includes virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing in ~70 kB gzipped.",
+        "Simple Table for Vue ships @simple-table/vue: a focused, source-available Vue 3 data grid that works in Composition API + <script setup>, Nuxt 3/4, and any Vite-powered Vue app. It includes virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing in 84.6 kB gzipped.",
         "This comparison helps you decide whether you really want Vuetify for one component, or whether a slimmer dedicated data grid is the better fit.",
       ]}
       whyChooseSimpleTable={[
@@ -55,7 +55,7 @@ export default function SimpleTableVsVuetifyPage() {
       ]}
       featureRows={[
         { feature: "Vue 3 + <script setup> + TypeScript", simpleTable: { verdict: "yes", note: "Idiomatic Composition API." }, competitor: { verdict: "yes", note: "Composition API." } },
-        { feature: "Bundle size (gzipped)", simpleTable: { verdict: "yes", note: "~70 kB total." }, competitor: { verdict: "partial", note: "v-data-table requires Vuetify runtime; full bundle 200–400 kB depending on tree-shaking." } },
+        { feature: "Bundle size (gzipped)", simpleTable: { verdict: "yes", note: "84.6 kB total." }, competitor: { verdict: "partial", note: "v-data-table requires Vuetify runtime; full bundle 200–400 kB depending on tree-shaking." } },
         { feature: "Row + column virtualization (1M+ rows)", simpleTable: { verdict: "yes", note: "Built-in." }, competitor: { verdict: "partial", note: "v-data-table-virtual offers row virtualization." } },
         { feature: "Column pinning (left / right)", simpleTable: { verdict: "yes", note: "Built-in." }, competitor: { verdict: "partial", note: "Sticky-column hacks; not first-class." } },
         { feature: "Row grouping with aggregations", simpleTable: { verdict: "yes", note: "Built-in." }, competitor: { verdict: "partial", note: "groupBy with custom slots; aggregations are manual." } },
@@ -64,7 +64,7 @@ export default function SimpleTableVsVuetifyPage() {
         { feature: "Nuxt 3 SSR support", simpleTable: { verdict: "yes", note: "SSR-friendly." }, competitor: { verdict: "yes", note: "@nuxtjs/vuetify or auto-imports." } },
         { feature: "License", simpleTable: { verdict: "yes", note: "Community License." }, competitor: { verdict: "yes", note: "MIT." } },
       ]}
-      bundleSizeNote={<>v-data-table is bundled inside Vuetify; even with tree-shaking, expect 200–400 kB gzipped for a typical Vuetify install. Simple Table for Vue is ~70 kB gzipped, no extra design system.</>}
+      bundleSizeNote={<>v-data-table is bundled inside Vuetify; even with tree-shaking, expect 200–400 kB gzipped for a typical Vuetify install. Simple Table for Vue is 84.6 kB gzipped, no extra design system.</>}
       installCommand="npm install @simple-table/vue"
       migrationCallout={<>Vuetify&apos;s <code>:headers</code> + <code>:items</code> map to Simple Table&apos;s <code>:columns</code> + <code>:rows</code>. Slot templates (<code>#item.column</code>) become Vue components passed as renderers.</>}
       faqs={[

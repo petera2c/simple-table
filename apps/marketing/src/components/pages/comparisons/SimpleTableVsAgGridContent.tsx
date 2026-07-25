@@ -42,19 +42,20 @@ const SimpleVsAgGrid = () => {
       >
         {AG_GRID_COMMUNITY_INFO.bundleSizeMinGzip}
       </Link>{" "}
-      (or {AG_GRID_TOTAL_SIZE} total with{" "}
+      (or about {AG_GRID_TOTAL_SIZE} for a typical{" "}
       <Link
         className="text-[length:inherit]"
         href={AG_GRID_ENTERPRISE_INFO.bundlePhobiaUrl}
         target="_blank"
       >
         Enterprise
-      </Link>
-      , minified + gzipped), Simple Table delivers blazing-fast performance with core data grid
-      features that rival AG Grid's Community edition—and surpass many of its Enterprise
-      capabilities—all while remaining completely free. This comparison examines whether you can
-      achieve your data grid goals without the complexity, licensing costs, and bundle overhead that
-      AG Grid Enterprise demands. We'll break down the true cost of ownership and help you determine
+      </Link>{" "}
+      package install, minified + gzipped), Simple Table delivers blazing-fast performance with core
+      data grid
+      features that rival AG Grid's Community edition—and cover many Enterprise paywalled
+      capabilities—under a Community License for pre-revenue teams (Pro when you earn revenue). This
+      comparison examines whether you can achieve your data grid goals without the complexity,
+      per-developer licensing costs, and bundle overhead that AG Grid Enterprise demands. We'll break down the true cost of ownership and help you determine
       if Simple Table can deliver the enterprise-level functionality your application needs. For a
       detailed pricing breakdown, see our{" "}
       <NextLink
@@ -80,8 +81,9 @@ const SimpleVsAgGrid = () => {
         <Text className="text-lg text-inherit" strong>
           Simple Table
         </Text>{" "}
-        is a lightweight, free alternative to AG Grid, offering essential features like
-        virtualization, infinite scroll, and column filters, with a smaller bundle size (
+        is a lightweight alternative to AG Grid—Community License for pre-revenue teams—offering
+        essential features like virtualization, infinite scroll, and column filters, with a smaller
+        bundle size (
         <Link
           className="text-[length:inherit]"
           href={SIMPLE_TABLE_INFO.bundlePhobiaUrl}
@@ -113,17 +115,18 @@ const SimpleVsAgGrid = () => {
         >
           Enterprise edition
         </Link>{" "}
-        (additional {AG_GRID_ENTERPRISE_INFO.bundleSizeMinGzip}, totaling {AG_GRID_TOTAL_SIZE}) at{" "}
-        {getPricingString(AG_GRID_ENTERPRISE_INFO)}. The combined bundle size and steeper learning
-        curve make it better suited for complex, enterprise-level applications. Simple Table
-        includes declarative matrix pivoting in the free feature set.
+        (typically {AG_GRID_TOTAL_SIZE} gzipped for the Enterprise package on Bundlephobia) at{" "}
+        {getPricingString(AG_GRID_ENTERPRISE_INFO)}. Bundle size and steeper learning curve make it
+        better suited for complex, enterprise-level applications. Simple Table includes declarative
+        matrix pivoting under the Community License for pre-revenue teams.
       </Text>
       <Text className="text-lg block text-inherit mb-4">
-        If you're looking for a free, lightweight solution with solid features,{" "}
+        If you want a lightweight grid with a Community License for pre-revenue use,{" "}
         <Link className="text-[length:inherit]" href="https://www.simple-table.com">
           try Simple Table
         </Link>
-        . For enterprise needs, AG Grid might be worth the investment.
+        . For Enterprise-only AG Grid features (Pivot Panel UI, integrated charts, SSRM), AG Grid
+        may be worth the investment.
       </Text>
       <Text className="text-base block text-inherit">
         <strong>Related reading:</strong>{" "}
@@ -176,16 +179,15 @@ const SimpleVsAgGrid = () => {
             >
               {AG_GRID_COMMUNITY_INFO.bundleSizeMinGzip} Community
             </Link>
-            {" + "}
+            {" · "}
             <Link
               className="text-[length:inherit]"
               href={AG_GRID_ENTERPRISE_INFO.bundlePhobiaUrl}
               target="_blank"
             >
-              {AG_GRID_ENTERPRISE_INFO.bundleSizeMinGzip} Enterprise
+              {AG_GRID_TOTAL_SIZE} Enterprise package
             </Link>
-            {" = "}
-            {AG_GRID_TOTAL_SIZE} total (minified + gzipped)
+            {" (minified + gzipped)"}
           </>
         ),
       }}

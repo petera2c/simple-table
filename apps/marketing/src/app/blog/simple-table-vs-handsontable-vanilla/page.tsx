@@ -43,7 +43,7 @@ export default function Page() {
       ]}
       comparisonRows={[
         { feature: "License", competitor: { value: "Non-commercial / Commercial", tone: "bad" }, simpleTable: { value: "Community License", tone: "good" } },
-        { feature: "Per-developer fees (commercial use)", competitor: { value: "$590+/dev/year", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
+        { feature: "Per-developer fees (commercial use)", competitor: { value: "From $999/dev/year (Standard)", tone: "bad" }, simpleTable: { value: "$0 pre-revenue / Pro when you earn", tone: "good" } },
         { feature: "Type of component", competitor: { value: "Spreadsheet UI", tone: "neutral" }, simpleTable: { value: "Data grid", tone: "good" } },
         { feature: "TypeScript-first", competitor: { value: "Definitions exist", tone: "neutral" }, simpleTable: { value: "Yes (strict)", tone: "good" } },
         { feature: "Cell formulas (=A1+B1)", competitor: { value: "Yes (HyperFormula)", tone: "good" }, simpleTable: { value: "No", tone: "neutral" } },

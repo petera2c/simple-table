@@ -78,5 +78,5 @@ export const BENCHMARK_METHODOLOGY = {
     "For scroll FPS: load a virtualized grid with N rows (10k / 100k / 1M), scroll for 5 seconds, record average FPS in Chrome Performance.",
     "Keep viewport height, row height, and column count constant across libraries.",
   ],
-  lastReviewed: "2026-07-20",
+  lastReviewed: "2026-07-24",
 };

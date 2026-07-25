@@ -182,13 +182,13 @@ export const simpleTableFeatures: FeatureMapping = {
 
 // Feature mappings for AG Grid
 // Naming notes:
-// - infiniteScroll -> "Infinite Row Model" (Enterprise)
+// - infiniteScroll -> "Infinite Row Model" (Community; prefer SSRM on Enterprise)
 // - columnAdvancedFiltering -> "Advanced Filter" or "Set Filter" (Enterprise)
 // - rowGrouping -> "Row Grouping" (Enterprise)
 // - rowExpansion -> "Master Detail" (Enterprise)
 export const agGridFeatures: FeatureMapping = {
   virtualization: "free", // AG Grid: "Row Virtualization"
-  infiniteScroll: "paid", // AG Grid: "Infinite Row Model"
+  infiniteScroll: "free", // AG Grid: "Infinite Row Model" (Community; SSRM is Enterprise)
 
   // Column Features
   columnResizing: "free",
@@ -439,8 +439,8 @@ export const handsontableFeatures: FeatureMapping = {
   uiAdvancedTooltips: "not-available",
 
   // Integration Features
-  integrationExcelExport: "not-available",
-  integrationExcelImport: "not-available",
+  integrationExcelExport: "paid",
+  integrationExcelImport: "paid",
   integrationCsvExport: "paid",
   integrationCsvImport: "paid",
   integrationClipboardOperations: "paid",
@@ -448,8 +448,8 @@ export const handsontableFeatures: FeatureMapping = {
   integrationAccessibility: "paid",
 
   // Theming Features
-  themingMultipleThemes: "not-available",
-  themingCustomIcons: "not-available",
+  themingMultipleThemes: "paid",
+  themingCustomIcons: "paid",
 
   // Developer Experience Features
   developerTypeScriptSupport: "paid",
@@ -558,8 +558,9 @@ export const materialReactFeatures: FeatureMapping = {
 
 // Feature mappings for TanStack Table
 // Note: TanStack Table is a headless UI library - it provides logic/state management
-// but no UI components. Features marked as "free" mean the logic is provided,
-// but you must implement your own UI. "not-available" means no built-in logic support.
+// but no UI components. Features marked as "free" mean the logic/API is provided
+// (you still implement UI). "not-available" means no first-party API for that concern
+// (you can still build it yourself in your UI layer).
 // Naming notes:
 // - virtualization -> Use separate @tanstack/react-virtual library
 // - columnResizing -> "Column Sizing" API
@@ -591,22 +592,22 @@ export const tanstackFeatures: FeatureMapping = {
   columnAggregationFunctions: "free", // TanStack: "Grouping" with aggregation
   columnSelection: "not-available",
   columnCollapsible: "not-available",
-  columnEditing: "not-available", // No editing logic, implement yourself
+  columnEditing: "not-available", // No first-party editing API — DIY in your UI
 
   // Row Features
   rowSelection: "free", // TanStack: "Row Selection" API
   rowGrouping: "free", // TanStack: "Grouping" API
-  rowAdjustableHeight: "not-available",
+  rowAdjustableHeight: "not-available", // No first-party API — DIY in your UI
   rowExpansion: "free", // TanStack: "Expanding" API
 
   // Cell Features
-  cellEditing: "not-available", // No editing logic
-  cellHighlighting: "not-available", // No styling logic
-  cellClicking: "not-available", // Handle events in your UI layer
+  cellEditing: "not-available", // No first-party editing API — DIY in your UI
+  cellHighlighting: "not-available", // No first-party styling API — DIY in your UI
+  cellClicking: "not-available", // No first-party click API — handle in your UI
   cellCustomRenderers: "free", // TanStack: "cell" function in columns
-  cellLiveUpdates: "not-available", // Handle in your state management
-  cellFormatting: "not-available", // Implement in cell renderer
-  cellValidation: "not-available",
+  cellLiveUpdates: "not-available", // No first-party API — use your state management
+  cellFormatting: "not-available", // No first-party formatter — implement in cell renderer
+  cellValidation: "not-available", // No first-party validation API — DIY
 
   // Spreadsheet Features
   spreadsheetFormulas: "not-available",
@@ -658,9 +659,11 @@ export const tanstackFeatures: FeatureMapping = {
   undoRedo: "not-available",
 };
 
-// Feature mappings for Syncfusion DataGrid
+// Feature mappings for Syncfusion DataGrid (@syncfusion/ej2-grids)
 // Note: Syncfusion is a commercial component suite with free community license
-// for companies with less than $1M USD in annual revenue
+// for qualifying companies under $1M USD annual revenue (≤5 developers, ≤10 employees).
+// Paid plans are custom-quoted. Features marked "paid" are licensed commercially
+// (or free under Community License when eligible).
 // Naming notes:
 // - virtualization -> Built-in virtual scrolling
 // - columnReordering -> "allowReordering"
@@ -777,7 +780,7 @@ export const tabulatorFeatures: FeatureMapping = {
   columnAggregationFunctions: "free", // Tabulator: Column calculations
   columnSelection: "not-available",
   columnCollapsible: "free", // Tabulator: Toggle column groups
-  columnEditing: "not-available",
+  columnEditing: "free", // Via cell editors on columns
 
   // Row Features
   rowSelection: "free", // Tabulator: "selectable" rows

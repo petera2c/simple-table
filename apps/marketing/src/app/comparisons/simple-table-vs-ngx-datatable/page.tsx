@@ -113,7 +113,7 @@ export default function SimpleTableVsNgxDatatablePage() {
       ]}
       bundleSizeNote={
         <>
-          Bundle: ~70 kB gzipped for @simple-table/angular vs. ~120 kB minified for @swimlane/ngx-datatable plus an Angular CDK Scrolling dependency.
+          Bundle: 84.6 kB gzipped for @simple-table/angular vs. ~120 kB minified for @swimlane/ngx-datatable plus an Angular CDK Scrolling dependency.
         </>
       }
       installCommand="npm install @simple-table/angular"

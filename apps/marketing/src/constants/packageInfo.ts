@@ -1,6 +1,8 @@
 /**
  * Package information constants for table libraries
  * Single source of truth for bundle sizes, pricing, and URLs
+ *
+ * Bundle sizes: minified + gzipped from Bundlephobia (reviewed 2026-07-24).
  */
 
 import { SIMPLE_TABLE_ANNUAL_COST_RANGE } from "@/constants/simpleTablePricing";
@@ -45,8 +47,8 @@ export const SIMPLE_TABLE_INFO: PackageInfo = {
 export const AG_GRID_COMMUNITY_INFO: PackageInfo = {
   name: "AG Grid Community",
   npmPackage: "ag-grid-community",
-  bundleSizeMinGzip: "298.2 kB",
-  bundleSizeMinGzipKB: 298.2,
+  bundleSizeMinGzip: "338.0 kB",
+  bundleSizeMinGzipKB: 338.0,
   bundlePhobiaUrl: "https://bundlephobia.com/package/ag-grid-community",
   pricing: {
     free: true,
@@ -57,29 +59,31 @@ export const AG_GRID_COMMUNITY_INFO: PackageInfo = {
 export const AG_GRID_ENTERPRISE_INFO: PackageInfo = {
   name: "AG Grid Enterprise",
   npmPackage: "ag-grid-enterprise",
-  bundleSizeMinGzip: "230.9 kB",
-  bundleSizeMinGzipKB: 230.9,
+  // Bundlephobia measures the enterprise package including its community dependency.
+  bundleSizeMinGzip: "665.4 kB",
+  bundleSizeMinGzipKB: 665.4,
   bundlePhobiaUrl: "https://bundlephobia.com/package/ag-grid-enterprise",
   pricing: {
     free: false,
     paidTier: {
       name: "Enterprise",
       pricePerDeveloperPerYear: 999,
-      additionalInfo: "Plus $750 per additional deployment license",
+      additionalInfo: "Per-developer license; perpetual with 1 year of updates (see AG Grid pricing)",
     },
   },
   officialWebsite: "https://www.ag-grid.com/license-pricing",
 };
 
-export const AG_GRID_TOTAL_SIZE = "529.1 kB";
-export const AG_GRID_TOTAL_SIZE_KB = 529.1;
+/** Typical AG Grid Enterprise install size (enterprise package on Bundlephobia). */
+export const AG_GRID_TOTAL_SIZE = "665.4 kB";
+export const AG_GRID_TOTAL_SIZE_KB = 665.4;
 
 // TanStack Table
 export const TANSTACK_TABLE_INFO: PackageInfo = {
   name: "TanStack Table",
   npmPackage: "@tanstack/react-table",
-  bundleSizeMinGzip: "15.2 kB",
-  bundleSizeMinGzipKB: 15.2,
+  bundleSizeMinGzip: "14.6 kB",
+  bundleSizeMinGzipKB: 14.6,
   bundlePhobiaUrl: "https://bundlephobia.com/package/@tanstack/react-table",
   pricing: {
     free: true,
@@ -91,15 +95,15 @@ export const TANSTACK_TABLE_INFO: PackageInfo = {
 export const HANDSONTABLE_INFO: PackageInfo = {
   name: "Handsontable",
   npmPackage: "handsontable",
-  bundleSizeMinGzip: "247.1 kB",
-  bundleSizeMinGzipKB: 247.1,
+  bundleSizeMinGzip: "286.2 kB",
+  bundleSizeMinGzipKB: 286.2,
   bundlePhobiaUrl: "https://bundlephobia.com/package/handsontable",
   pricing: {
     free: false,
     paidTier: {
-      name: "Commercial",
-      pricePerDeveloperPerYear: 990,
-      additionalInfo: "Free for non-commercial use",
+      name: "Standard",
+      pricePerDeveloperPerYear: 999,
+      additionalInfo: "Hobby license free for non-commercial use; Priority from $1,299/developer",
     },
   },
   officialWebsite: "https://handsontable.com/pricing",
@@ -109,8 +113,8 @@ export const HANDSONTABLE_INFO: PackageInfo = {
 export const MATERIAL_REACT_TABLE_INFO: PackageInfo = {
   name: "Material React Table",
   npmPackage: "material-react-table",
-  bundleSizeMinGzip: "51.8 kB",
-  bundleSizeMinGzipKB: 51.8,
+  bundleSizeMinGzip: "57.1 kB",
+  bundleSizeMinGzipKB: 57.1,
   bundlePhobiaUrl: "https://bundlephobia.com/package/material-react-table",
   pricing: {
     free: true,
@@ -118,12 +122,12 @@ export const MATERIAL_REACT_TABLE_INFO: PackageInfo = {
   officialWebsite: "https://www.material-react-table.com",
 };
 
-// Ant Design Table
+// Ant Design Table — size is the full `antd` package (design system), not table-only
 export const ANT_DESIGN_TABLE_INFO: PackageInfo = {
   name: "Ant Design Table",
   npmPackage: "antd",
-  bundleSizeMinGzip: "126.3 kB",
-  bundleSizeMinGzipKB: 126.3,
+  bundleSizeMinGzip: "428.0 kB",
+  bundleSizeMinGzipKB: 428.0,
   bundlePhobiaUrl: "https://bundlephobia.com/package/antd",
   pricing: {
     free: true,
@@ -131,20 +135,17 @@ export const ANT_DESIGN_TABLE_INFO: PackageInfo = {
   officialWebsite: "https://ant.design/components/table",
 };
 
-// Syncfusion
+// Syncfusion DataGrid
 export const SYNCFUSION_GRID_INFO: PackageInfo = {
-  name: "Syncfusion Spreadsheet",
-  npmPackage: "@syncfusion/ej2-spreadsheet",
-  bundleSizeMinGzip: "1 MB",
-  bundleSizeMinGzipKB: 1000,
-  bundlePhobiaUrl: "https://bundlephobia.com/package/@syncfusion/ej2-spreadsheet",
+  name: "Syncfusion DataGrid",
+  npmPackage: "@syncfusion/ej2-grids",
+  bundleSizeMinGzip: "760.0 kB",
+  bundleSizeMinGzipKB: 760.0,
+  bundlePhobiaUrl: "https://bundlephobia.com/package/@syncfusion/ej2-grids",
   pricing: {
     free: false,
-    paidTier: {
-      name: "Commercial",
-      pricePerDeveloperPerYear: 995,
-      additionalInfo: "Free for companies with less than $1M revenue",
-    },
+    cost: "Custom quote",
+    hasFreeTier: true,
   },
   officialWebsite: "https://www.syncfusion.com/react-components/react-data-grid",
 };
@@ -153,8 +154,8 @@ export const SYNCFUSION_GRID_INFO: PackageInfo = {
 export const TABULATOR_INFO: PackageInfo = {
   name: "Tabulator",
   npmPackage: "tabulator-tables",
-  bundleSizeMinGzip: "98.9 kB",
-  bundleSizeMinGzipKB: 98.9,
+  bundleSizeMinGzip: "99.9 kB",
+  bundleSizeMinGzipKB: 99.9,
   bundlePhobiaUrl: "https://bundlephobia.com/package/tabulator-tables",
   pricing: {
     free: true,
@@ -175,8 +176,8 @@ export const REACT_TABULATOR_INFO: PackageInfo = {
   officialWebsite: "http://tabulator.info/docs/5.5/frameworks#react",
 };
 
-export const TABULATOR_TOTAL_SIZE = "103.2 kB";
-export const TABULATOR_TOTAL_SIZE_KB = 103.2;
+export const TABULATOR_TOTAL_SIZE = "104.2 kB";
+export const TABULATOR_TOTAL_SIZE_KB = 104.2;
 
 // ka-table
 export const KA_TABLE_INFO: PackageInfo = {

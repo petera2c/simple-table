@@ -54,7 +54,7 @@ export default function SimpleTableVsPrimeVueDataTablePage() {
       ]}
       featureRows={[
         { feature: "Vue 3 + <script setup> + TypeScript", simpleTable: { verdict: "yes" }, competitor: { verdict: "yes" } },
-        { feature: "Bundle size (gzipped)", simpleTable: { verdict: "yes", note: "~70 kB total." }, competitor: { verdict: "partial", note: "DataTable requires PrimeVue runtime + theme + PrimeIcons." } },
+        { feature: "Bundle size (gzipped)", simpleTable: { verdict: "yes", note: "84.6 kB total." }, competitor: { verdict: "partial", note: "DataTable requires PrimeVue runtime + theme + PrimeIcons." } },
         { feature: "Row + column virtualization (1M+ rows)", simpleTable: { verdict: "yes", note: "Built-in." }, competitor: { verdict: "partial", note: "virtualScrollerOptions; configurable but more wiring." } },
         { feature: "Column pinning (left / right)", simpleTable: { verdict: "yes", note: "Built-in." }, competitor: { verdict: "yes", note: "frozenColumns supported." } },
         { feature: "Row grouping with aggregations", simpleTable: { verdict: "yes", note: "Built-in." }, competitor: { verdict: "partial", note: "rowGroupMode='subheader' available; manual aggregations." } },
@@ -63,7 +63,7 @@ export default function SimpleTableVsPrimeVueDataTablePage() {
         { feature: "Theme via CSS variables", simpleTable: { verdict: "yes", note: "Bring-your-own theme." }, competitor: { verdict: "partial", note: "PrimeVue themes (Aura, Lara, Material)." } },
         { feature: "License", simpleTable: { verdict: "yes", note: "Community License." }, competitor: { verdict: "yes", note: "MIT." } },
       ]}
-      bundleSizeNote={<>PrimeVue DataTable is bundled inside primevue. Including the table + a theme + PrimeIcons typically adds 200–400 kB gzipped. Simple Table for Vue is ~70 kB gzipped with no extra design system.</>}
+      bundleSizeNote={<>PrimeVue DataTable is bundled inside primevue. Including the table + a theme + PrimeIcons typically adds 200–400 kB gzipped. Simple Table for Vue is 84.6 kB gzipped with no extra design system.</>}
       installCommand="npm install @simple-table/vue"
       migrationCallout={<>PrimeVue&apos;s <code>:value</code> and <code>&lt;Column&gt;</code> children map to Simple Table&apos;s <code>:rows</code> + <code>:columns</code>. Body templates become Vue components passed as renderers.</>}
       faqs={[

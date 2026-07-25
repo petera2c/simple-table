@@ -114,7 +114,7 @@ export default function HandsontablePricingPage() {
                     </h4>
                     <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
                       <li>• Evaluation: Free for 90 days (full features)</li>
-                      <li>• Standard: From $899/year (per developer)</li>
+                      <li>• Standard: From $999/year (per developer)</li>
                       <li>• Priority: From $1,299/year (per developer)</li>
                       <li>• Enterprise: Custom pricing (typically $20K+/year)</li>
                       <li className="pt-2 border-t border-amber-300 dark:border-amber-700">
@@ -202,7 +202,7 @@ export default function HandsontablePricingPage() {
                   <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Standard</h3>
                   <div className="text-right">
                     <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                      From $899
+                      From $999
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">
                       per developer per year
@@ -373,7 +373,7 @@ export default function HandsontablePricingPage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">$899</div>
+                    <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">$999</div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">per year</div>
                     <div className="text-xs text-gray-500 dark:text-gray-500">~$75/month</div>
                   </div>
@@ -400,10 +400,10 @@ export default function HandsontablePricingPage() {
                   </div>
                   <div className="text-right">
                     <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                      $4,495
+                      $4,995
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">per year</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500">~$375/month</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-500">~$416/month</div>
                   </div>
                 </div>
                 <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
@@ -417,7 +417,7 @@ export default function HandsontablePricingPage() {
                   <div className="flex items-center gap-2">
                     <FontAwesomeIcon icon={faUsers} className="text-blue-500" />
                     <span>
-                      Cost per developer: <strong>$899/year each</strong>
+                      Cost per developer: <strong>$999/year each</strong>
                     </span>
                   </div>
                 </div>
@@ -436,7 +436,7 @@ export default function HandsontablePricingPage() {
                   </div>
                   <div className="text-right">
                     <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
-                      $8,990
+                      $9,990
                     </div>
                     <div className="text-sm text-gray-600 dark:text-gray-400">per year</div>
                     <div className="text-xs text-gray-500 dark:text-gray-500">~$749/month</div>
@@ -521,7 +521,7 @@ export default function HandsontablePricingPage() {
                   2. Team Growth = License Growth
                 </h3>
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  Hire 2 more frontend developers? That's an extra $1,798/year (Standard tier). As
+                  Hire 2 more frontend developers? That's an extra $1,998/year (Standard tier). As
                   your team scales, so does your Handsontable bill.
                 </p>
               </div>
@@ -575,12 +575,12 @@ export default function HandsontablePricingPage() {
                   <strong>5-developer team (Standard tier):</strong>
                 </p>
                 <ul className="ml-4 space-y-1">
-                  <li>• Licenses: $22,475 (5 years × $4,495)</li>
+                  <li>• Licenses: $24,975 (5 years × $4,995)</li>
                   <li>• Initial implementation: ~$15,000 (3 weeks × $5K/week)</li>
                   <li>• Maintenance/updates: ~$5,000/year = $25,000</li>
                   <li className="pt-2 border-t border-red-300 dark:border-red-700">
                     <strong className="text-red-600 dark:text-red-400">
-                      Total: $62,475+ over 5 years
+                      Total: $64,975+ over 5 years
                     </strong>
                   </li>
                 </ul>
@@ -757,7 +757,7 @@ export default function HandsontablePricingPage() {
                         <span className="text-gray-700 dark:text-gray-300">
                           Handsontable (5 devs):
                         </span>
-                        <span className="font-bold text-red-600 dark:text-red-400">$22,475</span>
+                        <span className="font-bold text-red-600 dark:text-red-400">$24,975</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-700 dark:text-gray-300">Simple Table FREE:</span>
@@ -774,7 +774,7 @@ export default function HandsontablePricingPage() {
                           You Save (FREE tier):
                         </span>
                         <span className="font-bold text-green-600 dark:text-green-400 text-lg">
-                          $22,475
+                          $24,975
                         </span>
                       </div>
                     </div>
