@@ -44,6 +44,7 @@ export type TablePropOptions = {
   height?: string;
   maxHeight?: string;
   scrollParent?: string;
+  rowHeight?: number;
   autoExpandColumns?: boolean;
   columnResizing?: boolean;
   columnReordering?: boolean;
@@ -136,14 +137,37 @@ function pushSortProps(framework: Framework, target: string[], options: TablePro
   if (initialSortDirection) target.push(`initialSortDirection="${initialSortDirection}"`);
 }
 
+function pushRowHeightProp(
+  framework: Framework,
+  target: string[],
+  rowHeight: number | undefined
+) {
+  if (rowHeight === undefined) return;
+  if (framework === "vanilla") {
+    target.push(`customTheme: { rowHeight: ${rowHeight} }`);
+    return;
+  }
+  if (framework === "vue") {
+    target.push(`:custom-theme="{ rowHeight: ${rowHeight} }"`);
+    return;
+  }
+  if (framework === "angular") {
+    target.push(`[customTheme]="{ rowHeight: ${rowHeight} }"`);
+    return;
+  }
+  // react, solid, svelte
+  target.push(`customTheme={{ rowHeight: ${rowHeight} }}`);
+}
+
 export function tableSnippet(framework: Framework, options: TablePropOptions = {}): string {
-  const { height, maxHeight, scrollParent } = options;
+  const { height, maxHeight, scrollParent, rowHeight } = options;
 
   if (framework === "vanilla") {
     const lines = ["columns", "rows"];
     if (height) lines.push(`height: "${height}"`);
     if (maxHeight) lines.push(`maxHeight: "${maxHeight}"`);
     if (scrollParent) lines.push(`scrollParent: "${scrollParent}"`);
+    pushRowHeightProp(framework, lines, rowHeight);
     pushSortProps(framework, lines, options);
     pushTableBoolProps(framework, lines, options);
     return `new SimpleTableVanilla(container, {
@@ -156,6 +180,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     if (height) attrs.push(`height="${height}"`);
     if (maxHeight) attrs.push(`max-height="${maxHeight}"`);
     if (scrollParent) attrs.push(`scroll-parent="${scrollParent}"`);
+    pushRowHeightProp(framework, attrs, rowHeight);
     pushSortProps(framework, attrs, options);
     pushTableBoolProps(framework, attrs, options);
     return `<SimpleTable\n  ${attrs.join("\n  ")}\n/>`;
@@ -166,6 +191,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     if (height) attrs.push(`height="${height}"`);
     if (maxHeight) attrs.push(`maxHeight="${maxHeight}"`);
     if (scrollParent) attrs.push(`scrollParent="${scrollParent}"`);
+    pushRowHeightProp(framework, attrs, rowHeight);
     pushSortProps(framework, attrs, options);
     pushTableBoolProps(framework, attrs, options);
     return `<simple-table\n  ${attrs.join("\n  ")}\n></simple-table>`;
@@ -176,6 +202,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     if (height) attrs.push(`height="${height}"`);
     if (maxHeight) attrs.push(`maxHeight="${maxHeight}"`);
     if (scrollParent) attrs.push(`scrollParent="${scrollParent}"`);
+    pushRowHeightProp(framework, attrs, rowHeight);
     pushSortProps(framework, attrs, options);
     pushTableBoolProps(framework, attrs, options);
     return `<SimpleTable ${attrs.join(" ")} />`;
@@ -186,6 +213,7 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
   if (height) attrs.push(`height="${height}"`);
   if (maxHeight) attrs.push(`maxHeight="${maxHeight}"`);
   if (scrollParent) attrs.push(`scrollParent="${scrollParent}"`);
+  pushRowHeightProp(framework, attrs, rowHeight);
   pushSortProps(framework, attrs, options);
   pushTableBoolProps(framework, attrs, options);
   return `<SimpleTable ${attrs.join(" ")} />`;
@@ -1207,6 +1235,70 @@ const columnEditorConfig = {
       return row;
     },
   },
+});`,
+  };
+}
+
+const CELL_EDIT_HANDLER = `const handleCellEdit = ({ accessor, newValue, row }) => {
+  setRows((prev) =>
+    prev.map((r) => (r.id === row.id ? { ...r, [accessor]: newValue } : r))
+  );
+};`;
+
+/** Persist edits via onCellEdit (per framework). */
+export function onCellEditSnippets(): Record<Framework, string> {
+  return {
+    react: `${CELL_EDIT_HANDLER}
+
+<SimpleTable
+  columns={columns}
+  rows={rows}
+  onCellEdit={handleCellEdit}
+/>`,
+    solid: `const handleCellEdit = ({ accessor, newValue, row }) => {
+  setRows((prev) =>
+    prev.map((r) => (r.id === row.id ? { ...r, [accessor]: newValue } : r))
+  );
+};
+
+<SimpleTable
+  columns={columns}
+  rows={rows()}
+  onCellEdit={handleCellEdit}
+/>`,
+    vue: `<script setup>
+${CELL_EDIT_HANDLER}
+</script>
+
+<template>
+  <SimpleTable
+    :columns="columns"
+    :rows="rows"
+    @cell-edit="handleCellEdit"
+  />
+</template>`,
+    angular: `${CELL_EDIT_HANDLER}
+
+<simple-table
+  [columns]="columns"
+  [rows]="rows"
+  (cellEdit)="handleCellEdit($event)"
+></simple-table>`,
+    svelte: `<script>
+  ${CELL_EDIT_HANDLER}
+</script>
+
+<SimpleTable
+  {columns}
+  {rows}
+  onCellEdit={handleCellEdit}
+/>`,
+    vanilla: `${CELL_EDIT_HANDLER}
+
+new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  onCellEdit: handleCellEdit,
 });`,
   };
 }

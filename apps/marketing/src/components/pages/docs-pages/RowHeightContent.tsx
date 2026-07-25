@@ -6,9 +6,11 @@ import { faArrowsUpDown } from "@fortawesome/free-solid-svg-icons";
 import RowHeightDemo from "@/components/demos/RowHeightDemo";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
 import PageWrapper from "@/components/PageWrapper";
+import CodeBlock from "@/components/CodeBlock";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
 import Link from "next/link";
+import { tableSnippets } from "@/constants/docsSnippets";
 
 const ROW_HEIGHT_PROPS: PropInfo[] = [
   {
@@ -16,31 +18,9 @@ const ROW_HEIGHT_PROPS: PropInfo[] = [
     name: "customTheme.rowHeight",
     required: false,
     description:
-      "Sets the height of all rows in the table. Accepts a numeric value representing pixels. Passed via the customTheme prop.",
+      "Height of every data row in pixels. Defaults to 32. Passed via customTheme — the virtualization engine uses this value for layout.",
     type: "number",
-    example: `// Standard row height
-<SimpleTable
-  customTheme={{
-    rowHeight: 40,
-  }}
-  // ... other props
-/>
-
-// Compact rows
-<SimpleTable
-  customTheme={{
-    rowHeight: 32,
-  }}
-  // ... other props
-/>
-
-// Large rows for better readability
-<SimpleTable
-  customTheme={{
-    rowHeight: 56,
-  }}
-  // ... other props
-/>`,
+    example: `customTheme={{ rowHeight: 40 }}`,
   },
 ];
 
@@ -60,26 +40,34 @@ export default function RowHeightContent() {
       </motion.div>
 
       <motion.p
-        className="text-gray-700 dark:text-gray-300 mb-6 text-lg"
+        className="text-gray-700 dark:text-gray-300 mb-8 text-lg"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        The Simple Table component allows you to customize the height of rows to accommodate
-        different types of content and design requirements. This page explains how to configure and
-        use the row height feature.
+        Set row height with{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+          customTheme.rowHeight
+        </code>
+        .
       </motion.p>
 
       <motion.div
-        className="mb-4"
+        className="mb-10"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
+        transition={{ duration: 0.5, delay: 0.25 }}
       >
-        <LivePreview
-          demoId="row-height"
-          height="400px"
-          Preview={RowHeightDemo}
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-2">
+          Set row height
+        </h2>
+        <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+          Pass a pixel value via{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">customTheme</code>.
+        </p>
+        <CodeBlock
+          codeByFramework={tableSnippets({ rowHeight: 40 })}
+          showLineNumbers={false}
         />
       </motion.div>
 
@@ -89,43 +77,64 @@ export default function RowHeightContent() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        Using Row Height
+        Example
       </motion.h2>
+      <motion.p
+        className="text-gray-700 dark:text-gray-300 mb-4 text-sm"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.32 }}
+      >
+        Compact rows (32px). Use Code or StackBlitz for the full example.
+      </motion.p>
+      <motion.div
+        className="mb-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.35 }}
+      >
+        <LivePreview demoId="row-height" height="400px" Preview={RowHeightDemo} />
+      </motion.div>
 
       <motion.div
-        className="mb-4"
+        className="mb-8 p-4 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-lg"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.4 }}
       >
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          You can specify the height of rows in a Simple Table using the{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            customTheme.rowHeight
+        <h3 className="font-semibold text-gray-800 dark:text-white mb-1 text-sm">
+          Header and footer height
+        </h3>
+        <p className="text-gray-700 dark:text-gray-300 text-sm">
+          Match header/footer sizing with{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+            customTheme.headerHeight
           </code>{" "}
-          property. This property accepts a numeric value representing the height in pixels and is passed via the{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-            customTheme
-          </code>{" "}
-          prop.
+          and{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+            customTheme.footerHeight
+          </code>
+          . Full list on{" "}
+          <Link
+            href="/docs/custom-theme"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+          >
+            Custom Theme
+          </Link>
+          .
         </p>
-
-        <PropTable props={ROW_HEIGHT_PROPS} title="Row Height Configuration" />
-
-        <div className="bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-400 dark:border-blue-700 p-4 rounded-lg shadow-sm mt-6">
-          <h3 className="font-bold text-gray-800 dark:text-white mb-2">Learn More</h3>
-          <p className="text-gray-700 dark:text-gray-300">
-            The <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">customTheme</code> prop controls layout dimensions that affect the table's virtualization engine. For a complete guide to all customTheme properties and how they work, see the{" "}
-            <Link
-              href="/docs/custom-theme"
-              className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-            >
-              Custom Theme
-            </Link>{" "}
-            documentation.
-          </p>
-        </div>
       </motion.div>
+
+      <motion.h2
+        className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.45 }}
+      >
+        Props
+      </motion.h2>
+
+      <PropTable props={ROW_HEIGHT_PROPS} title="Row Height Configuration" />
 
       <DocNavigationButtons />
     </PageWrapper>
