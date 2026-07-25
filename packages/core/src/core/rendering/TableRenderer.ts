@@ -379,9 +379,14 @@ export class TableRenderer {
       });
       deps.pinnedLeftHeaderRef.current = leftSection as HTMLDivElement;
       sectionsToKeep.push(leftSection);
-      // Always append (appendChild moves existing nodes) so order stays left → main → right
-      // when pinned-left appears after a frame with only main (avoids [main, left] in DOM).
-      container.appendChild(leftSection as HTMLElement);
+      // Only insert if not already a child — appendChild on an already-mounted
+      // node detaches + reinserts it and cancels CSS transitions on descendants
+      // (e.g. header shrink-out when hiding a column from the column editor).
+      // Use insertBefore at position 0 so a newly created pinned-left section
+      // lands before an already-present main section ([left, main] order).
+      if (leftSection.parentElement !== container) {
+        container.insertBefore(leftSection as HTMLElement, container.firstChild);
+      }
       // Update colIndex for next section
       currentColIndex = this.sectionRenderer.getNextColIndex("left");
     }
@@ -398,7 +403,18 @@ export class TableRenderer {
       });
       deps.mainHeaderRef.current = mainSection as HTMLDivElement;
       sectionsToKeep.push(mainSection);
-      container.appendChild(mainSection as HTMLElement);
+      // Insert main before an already-present pinned-right section so
+      // [left, main, right] order is preserved when main goes from empty
+      // to populated. Skip moving existing children so in-flight header
+      // width transitions are not cancelled.
+      if (mainSection.parentElement !== container) {
+        const existingRight = deps.pinnedRightHeaderRef.current;
+        if (existingRight && existingRight.parentElement === container) {
+          container.insertBefore(mainSection as HTMLElement, existingRight);
+        } else {
+          container.appendChild(mainSection as HTMLElement);
+        }
+      }
       // Update colIndex for next section
       currentColIndex = this.sectionRenderer.getNextColIndex("main");
     }
@@ -416,7 +432,9 @@ export class TableRenderer {
       });
       deps.pinnedRightHeaderRef.current = rightSection as HTMLDivElement;
       sectionsToKeep.push(rightSection);
-      container.appendChild(rightSection as HTMLElement);
+      if (rightSection.parentElement !== container) {
+        container.appendChild(rightSection as HTMLElement);
+      }
     }
 
     // Remove any orphaned sections (like React unmounting components)
@@ -664,9 +682,8 @@ export class TableRenderer {
       // and consumes all available width, so a leftSection appended after
       // an already-present main section is visually pushed past the scroll
       // viewport — the user sees the pinned header but the pinned cells
-      // appear missing. Header sections avoid this by always re-appending
-      // to fix document order; body sections can't because that would
-      // cancel running cell transitions.
+      // appear missing. Existing children are intentionally not moved so
+      // in-flight cell transitions aren't cancelled.
       if (leftSection.parentElement !== container) {
         container.insertBefore(leftSection as HTMLElement, container.firstChild);
       }
