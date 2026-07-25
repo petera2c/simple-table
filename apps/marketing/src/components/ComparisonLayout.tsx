@@ -13,7 +13,7 @@ import { SIMPLE_TABLE_INFO } from "@/constants/packageInfo";
 import { getStackBlitzUrl } from "@/utils/getStackBlitzUrl";
 import { useFramework } from "@/providers/FrameworkProvider";
 
-const { Title, Paragraph } = Typography;
+const { Title, Paragraph, Link } = Typography;
 
 interface PerformanceMetricsProps {
   competitor: string;
