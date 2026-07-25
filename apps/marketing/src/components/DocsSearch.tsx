@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import Fuse from "fuse.js";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Input, Empty, Tag } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { docsSearchIndex, type SearchableDoc } from "@/constants/docsSearchIndex";
+import { createDocsSearchFuse, getDocsSearchSnippet } from "@/utils/docsSearchFuse";
 import PageWrapper from "./PageWrapper";
 import { useClickOutside } from "@/hooks/useClickOutside";
 
@@ -21,7 +21,7 @@ interface DocsSearchProps {
 const highlightMatches = (
   text: string,
   matches: readonly any[] | undefined,
-  fieldName: string
+  fieldName: string,
 ): React.ReactNode => {
   if (!matches || matches.length === 0) {
     return text;
@@ -40,7 +40,7 @@ const highlightMatches = (
     if (match.indices) {
       // Filter out very short matches (single characters) to reduce noise
       const validIndices = match.indices.filter(
-        ([start, end]: [number, number]) => end - start >= 1
+        ([start, end]: [number, number]) => end - start >= 1,
       );
       indices.push(...validIndices);
     }
@@ -86,7 +86,7 @@ const highlightMatches = (
         className="bg-yellow-100 dark:bg-yellow-900/40 text-inherit font-semibold rounded px-0.5"
       >
         {text.substring(start, end + 1)}
-      </mark>
+      </mark>,
     );
 
     lastIndex = end + 1;
@@ -100,6 +100,37 @@ const highlightMatches = (
   return <>{parts}</>;
 };
 
+/** Highlight query tokens in a snippet (works for excerpts where Fuse indices don't apply). */
+const highlightQueryInText = (text: string, query: string): React.ReactNode => {
+  const tokens = query
+    .toLowerCase()
+    .split(/[\s/|,–—:_-]+/)
+    .map((t) => t.trim())
+    .filter((t) => t.length >= 3);
+  if (tokens.length === 0) return text;
+
+  const pattern = new RegExp(`(${tokens.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "gi");
+  const parts = text.split(pattern);
+  if (parts.length === 1) return text;
+
+  return (
+    <>
+      {parts.map((part, idx) =>
+        tokens.some((t) => part.toLowerCase() === t) ? (
+          <mark
+            key={`snippet-${idx}`}
+            className="bg-yellow-100 dark:bg-yellow-900/40 text-inherit font-semibold rounded px-0.5"
+          >
+            {part}
+          </mark>
+        ) : (
+          <span key={`snippet-${idx}`}>{part}</span>
+        ),
+      )}
+    </>
+  );
+};
+
 const DocsSearch: React.FC<DocsSearchProps> = ({
   placeholder = "Search documentation...",
   autoFocus = false,
@@ -110,25 +141,8 @@ const DocsSearch: React.FC<DocsSearchProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  // Configure Fuse.js for fuzzy search
-  const fuse = useMemo(() => {
-    return new Fuse(docsSearchIndex, {
-      keys: [
-        { name: "title", weight: 3 },
-        { name: "keywords", weight: 2 },
-        { name: "description", weight: 1.5 },
-        { name: "headings", weight: 1.2 },
-        { name: "content", weight: 0.5 },
-      ],
-      threshold: 0.3, // More strict matching (was 0.4)
-      includeScore: true,
-      includeMatches: true,
-      minMatchCharLength: 3, // Require at least 3 characters to match (was 2)
-      ignoreLocation: true,
-      distance: 100, // Limit how far apart matched characters can be
-      findAllMatches: false, // Only find best matches
-    });
-  }, []);
+  // Same Fuse config as scripts/test-docs-search.ts
+  const fuse = useMemo(() => createDocsSearchFuse(docsSearchIndex), [docsSearchIndex]);
 
   // Perform search
   const searchResults = useMemo(() => {
@@ -248,7 +262,10 @@ const DocsSearch: React.FC<DocsSearchProps> = ({
                     {highlightMatches(result.doc.title, result.matches, "title")}
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
-                    {highlightMatches(result.doc.description, result.matches, "description")}
+                    {highlightQueryInText(
+                      getDocsSearchSnippet(result.doc, result.matches, query).text,
+                      query,
+                    )}
                   </div>
                 </Link>
               ))

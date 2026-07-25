@@ -6,12 +6,9 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDiscord } from "@fortawesome/free-brands-svg-icons";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import PageWrapper from "@/components/PageWrapper";
 import { trackPurchaseComplete } from "@/lib/analytics";
 import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
-
-const SUPPORT_EMAIL = "peter@peteryng.com";
 
 function CheckoutSuccessInner() {
   const searchParams = useSearchParams();
@@ -30,42 +27,23 @@ function CheckoutSuccessInner() {
         </h1>
         <p className="text-gray-600 dark:text-gray-300 mb-8">
           Your Simple Table license is active. Install from the docs, or manage billing anytime from
-          the pricing page.
+          the pricing page. Please join our Discord — it&apos;s the best way to stay in contact with
+          our team and resolve issues quickly.
         </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
-          <Link href="/docs/installation">
-            <Button type="primary" size="large">
-              Go to installation
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <a
+            href={TECHNICAL_STRINGS.links.discord}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex"
+          >
+            <Button type="primary" size="large" icon={<FontAwesomeIcon icon={faDiscord} />}>
+              Join Discord
             </Button>
+          </a>
+          <Link href="/docs/installation">
+            <Button size="large">Go to installation</Button>
           </Link>
-          <Link href="/pricing">
-            <Button size="large">Back to pricing</Button>
-          </Link>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 px-5 py-6 text-left">
-          <p className="text-gray-800 dark:text-gray-100 font-semibold mb-2">Need help?</p>
-          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-            Join our Discord for the fastest support — I&apos;m usually there and can help you get
-            set up quickly. Email works too if you prefer.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <a
-              href={TECHNICAL_STRINGS.links.discord}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex"
-            >
-              <Button type="primary" size="large" icon={<FontAwesomeIcon icon={faDiscord} />}>
-                Join Discord
-              </Button>
-            </a>
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="inline-flex">
-              <Button size="large" icon={<FontAwesomeIcon icon={faEnvelope} />}>
-                {SUPPORT_EMAIL}
-              </Button>
-            </a>
-          </div>
         </div>
       </div>
     </PageWrapper>

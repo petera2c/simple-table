@@ -3,8 +3,8 @@
  *
  * Sources of truth:
  * - docsNavigation.ts → page list, paths, sections
- * - docsSeo.ts + SEO_STRINGS → title, description, keywords
- * - docs-pages/*Content.tsx → headings + searchable content
+ * - docsSeo.ts + SEO_STRINGS → result title / description (display only)
+ * - docs-pages/*Content.tsx → all searchable text (headings, body copy, props)
  */
 import fs from "fs";
 import path from "path";
@@ -44,22 +44,105 @@ function uniqueStrings(values: string[]): string[] {
   return [...new Set(values.map((v) => v.trim()).filter(Boolean))];
 }
 
-function stripJsxNoise(text: string): string {
+function decodeHtmlEntities(text: string): string {
   return text
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&#123;/g, "{")
+    .replace(/&#125;/g, "}");
+}
+
+function stripJsxNoise(text: string): string {
+  return decodeHtmlEntities(text)
+    .replace(/\{["'] ["']\}/g, " ")
     .replace(/\{[^}]*\}/g, " ")
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
 
+/** Significant words from a heading for keyword boost (Fuse weights keywords higher). */
+function keywordTokensFromHeading(heading: string): string[] {
+  return heading
+    .split(/[\s/|,–—:_-]+/)
+    .map((w) => w.trim())
+    .filter((w) => w.length >= 4 && /[a-zA-Z]/.test(w));
+}
+
+/** Pull a quoted / backtick string starting at `source[start]` (must be on a quote). */
+function readQuotedString(source: string, start: number): string | null {
+  const quote = source[start];
+  if (quote !== '"' && quote !== "'" && quote !== "`") return null;
+
+  let i = start + 1;
+  let value = "";
+  while (i < source.length) {
+    const ch = source[i];
+    if (ch === "\\") {
+      value += source[i + 1] ?? "";
+      i += 2;
+      continue;
+    }
+    if (ch === quote) {
+      return value;
+    }
+    // Template interpolations — keep surrounding text, skip expression
+    if (quote === "`" && ch === "$" && source[i + 1] === "{") {
+      let depth = 1;
+      i += 2;
+      while (i < source.length && depth > 0) {
+        if (source[i] === "{") depth += 1;
+        else if (source[i] === "}") depth -= 1;
+        i += 1;
+      }
+      value += " ";
+      continue;
+    }
+    value += ch;
+    i += 1;
+  }
+  return null;
+}
+
+/** Match `key: "..." | '...' | \`...\`` including multiline values. */
+function extractKeyedStrings(source: string, key: string): string[] {
+  const results: string[] = [];
+  const keyRegex = new RegExp(`\\b${key}\\s*:\\s*`, "g");
+  let keyMatch: RegExpExecArray | null;
+  while ((keyMatch = keyRegex.exec(source)) !== null) {
+    let i = keyMatch.index + keyMatch[0].length;
+    while (i < source.length && /\s/.test(source[i])) i += 1;
+    const quoted = readQuotedString(source, i);
+    if (quoted?.trim()) results.push(quoted.trim());
+  }
+  return results;
+}
+
+function looksLikeProse(text: string): boolean {
+  if (text.length < 4 || text.length > 800) return false;
+  if (!/[a-zA-Z]{3,}/.test(text)) return false;
+  if (text.includes("import ") || text.includes("from \"")) return false;
+  if (text.includes("http://") || text.includes("https://")) return false;
+  if (text.includes("className")) return false;
+  if (text.includes("codeByFramework") || text.includes("PropInfo")) return false;
+  // Skip dense code / JSX attribute dumps
+  if ((text.match(/[{}<>]/g) ?? []).length > 6) return false;
+  return true;
+}
+
 function extractTextFromComponent(componentPath: string): {
   headings: string[];
   content: string;
+  terms: string[];
 } {
   try {
     const source = fs.readFileSync(componentPath, "utf-8");
     const headings: string[] = [];
     const paragraphs: string[] = [];
+    const terms: string[] = [];
 
     // Explicit JSX headings
     const headingRegex = /<h[123][^>]*>([\s\S]*?)<\/h[123]>/g;
@@ -70,58 +153,99 @@ function extractTextFromComponent(componentPath: string): {
     }
 
     // Pattern / DocsStep titles: title: "Export to CSV"
-    const titleLiteralRegex = /\btitle:\s*["']([^"']{3,80})["']/g;
-    while ((match = titleLiteralRegex.exec(source)) !== null) {
-      const title = match[1].trim();
-      if (title && !title.includes("http") && !title.includes("className")) {
+    for (const title of extractKeyedStrings(source, "title")) {
+      if (title.length >= 3 && title.length <= 120 && !title.includes("http") && looksLikeProse(title)) {
+        headings.push(title);
+      } else if (title.length >= 3 && title.length <= 120 && !title.includes("http") && !title.includes("className")) {
+        // Short titles like "Override icons" are prose enough
         headings.push(title);
       }
     }
 
-    // Paragraphs
-    const paragraphRegex = /<p[^>]*>([\s\S]*?)<\/p>/g;
-    while ((match = paragraphRegex.exec(source)) !== null) {
-      const paragraphContent = stripJsxNoise(match[1]);
-      if (paragraphContent) paragraphs.push(paragraphContent);
+    // Pattern body strings when body is a plain string (not JSX)
+    for (const body of extractKeyedStrings(source, "body")) {
+      if (looksLikeProse(body)) paragraphs.push(body);
     }
 
-    // List items
-    const listItemRegex = /<li[^>]*>([\s\S]*?)<\/li>/g;
-    while ((match = listItemRegex.exec(source)) !== null) {
-      const listItemContent = stripJsxNoise(match[1]);
-      if (listItemContent) paragraphs.push(listItemContent);
+    // Paragraphs / list items / motion wrappers with visible copy.
+    // Require a tag boundary after the name so <Link> does not match as <li>.
+    const blockRegex =
+      /<(?:p|li|motion\.p)(?:\s[^>]*)?>([\s\S]*?)<\/(?:p|li|motion\.p)>/g;
+    while ((match = blockRegex.exec(source)) !== null) {
+      const blockContent = stripJsxNoise(match[1]);
+      if (blockContent) paragraphs.push(blockContent);
     }
 
-    // PropInfo name/key literals (API surface for search)
-    const propNameRegex = /\b(?:name|key):\s*["']([A-Za-z][A-Za-z0-9_.]{2,60})["']/g;
-    while ((match = propNameRegex.exec(source)) !== null) {
-      paragraphs.push(match[1]);
-    }
-
-    // Longer prose string literals (intro copy, descriptions)
-    const stringLiteralRegex = /["'`]([^"'`]{20,}?)["'`]/g;
-    while ((match = stringLiteralRegex.exec(source)) !== null) {
-      const stringContent = match[1].trim();
-      if (
-        stringContent &&
-        !stringContent.includes("import") &&
-        !stringContent.includes("http") &&
-        !stringContent.includes("className") &&
-        !stringContent.includes("=") &&
-        stringContent.length < 500 &&
-        /[a-z]{3,}/i.test(stringContent)
-      ) {
-        paragraphs.push(stringContent);
+    // Inline <code>…</code> — index in content only (not keywords), so cross-links
+    // like Animations → cellUpdateFlash don't outrank the prop's home page.
+    const codeRegex = /<code[^>]*>([\s\S]*?)<\/code>/g;
+    while ((match = codeRegex.exec(source)) !== null) {
+      const codeText = stripJsxNoise(match[1]);
+      if (codeText.length >= 2 && codeText.length <= 80) {
+        paragraphs.push(codeText);
       }
     }
 
+    // JSX text nodes (pattern bodies, notes) — catches prose that isn't in <p>
+    const textNodeRegex = />([^<{][^<]*)</g;
+    while ((match = textNodeRegex.exec(source)) !== null) {
+      const nodeText = stripJsxNoise(match[1]);
+      if (
+        looksLikeProse(nodeText) &&
+        !nodeText.startsWith("import ") &&
+        !nodeText.includes("className") &&
+        !nodeText.includes("codeByFramework") &&
+        !/^\),/.test(nodeText)
+      ) {
+        paragraphs.push(nodeText);
+      }
+    }
+
+    // PropInfo name/key literals (API surface for search)
+    for (const propName of [
+      ...extractKeyedStrings(source, "name"),
+      ...extractKeyedStrings(source, "key"),
+    ]) {
+      if (/^[A-Za-z][A-Za-z0-9_.]{2,60}$/.test(propName)) {
+        terms.push(propName);
+        paragraphs.push(propName);
+      }
+    }
+
+    // Prop descriptions / examples (visible in PropTable)
+    for (const description of extractKeyedStrings(source, "description")) {
+      if (looksLikeProse(description) || description.length >= 12) {
+        paragraphs.push(description);
+      }
+    }
+    for (const example of extractKeyedStrings(source, "example")) {
+      if (example.length >= 3 && example.length <= 200) {
+        paragraphs.push(example);
+      }
+    }
+
+    // Longer prose string literals used as visible copy
+    for (const key of ["label", "note", "subtitle", "heading", "text"]) {
+      for (const value of extractKeyedStrings(source, key)) {
+        if (looksLikeProse(value)) paragraphs.push(value);
+      }
+    }
+
+    const uniqueHeadings = uniqueStrings(headings);
+    const pageTerms = uniqueStrings([
+      ...terms,
+      ...uniqueHeadings,
+      ...uniqueHeadings.flatMap(keywordTokensFromHeading),
+    ]);
+
     return {
-      headings: uniqueStrings(headings),
+      headings: uniqueHeadings,
       content: uniqueStrings(paragraphs).join(" "),
+      terms: pageTerms,
     };
   } catch (error) {
     console.error(`Error extracting text from ${componentPath}:`, error);
-    return { headings: [], content: "" };
+    return { headings: [], content: "", terms: [] };
   }
 }
 
@@ -148,15 +272,17 @@ function generateSearchIndex(): void {
 
       console.log(`Processing: ${docId}`);
 
-      const { headings, content } = extractTextFromComponent(componentPath);
+      const { headings, content, terms } = extractTextFromComponent(componentPath);
       const seo = getDocSeoEntry(docId);
 
       searchIndex.push({
         id: docId,
         path: subsection.path,
+        // SEO title/description for result card display only — not stuffed for ranking.
         title: seo?.title ?? subsection.label,
         description: seo?.description ?? `Documentation for ${subsection.label}`,
-        keywords: seo?.keywords ?? ["simple-table", "documentation", subsection.label],
+        // Keywords come from visible page terms (pattern titles, props), not SEO_STRINGS.
+        keywords: terms.length > 0 ? terms : [subsection.label],
         content,
         section: section.label,
         headings,

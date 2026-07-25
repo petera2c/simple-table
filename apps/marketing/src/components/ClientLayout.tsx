@@ -18,9 +18,9 @@ const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
         <Header />
         <div
           id="main-scroll-container"
-          className="w-full grow z-10 text-gray-800 dark:text-white overflow-auto"
+          className="w-full grow z-10 text-gray-800 dark:text-white overflow-auto flex flex-col"
         >
-          <main className="grow">{children}</main>
+          <main className="grow shrink-0">{children}</main>
           <Footer />
         </div>
       </div>
