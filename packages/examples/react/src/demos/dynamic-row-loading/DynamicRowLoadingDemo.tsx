@@ -1,40 +1,63 @@
 import { useState, useCallback } from "react";
-import {SimpleTable} from "@simple-table/react";import type { Theme, OnRowGroupExpandProps } from "@simple-table/react";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme, OnRowGroupExpandProps } from "@simple-table/react";
 import {
   dynamicRowLoadingConfig,
   generateInitialRegions,
   fetchStoresForRegion,
   fetchProductsForStore,
 } from "./dynamic-row-loading.demo-data";
-import type { DynamicRegion, DynamicStore } from "./dynamic-row-loading.demo-data";
+import type { DynamicRegion, DynamicTreeRow } from "./dynamic-row-loading.demo-data";
 import "@simple-table/react/styles.css";
 
-const DynamicRowLoadingDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {
+const DynamicRowLoadingDemo = ({
+  height = "400px",
+  theme,
+}: {
+  height?: string | number;
+  theme?: Theme;
+}) => {
   const [rows, setRows] = useState<DynamicRegion[]>(() => generateInitialRegions());
 
   const handleRowExpand = useCallback(
-    async ({ row, depth, groupingKey, isExpanded, setLoading, setError, setEmpty, rowIndexPath }: OnRowGroupExpandProps) => {
+    async ({
+      row,
+      depth,
+      groupingKey,
+      isExpanded,
+      setLoading,
+      setError,
+      setEmpty,
+      rowIndexPath,
+    }: OnRowGroupExpandProps<DynamicTreeRow>) => {
       if (!isExpanded) return;
-      if (groupingKey && row[groupingKey] && (row[groupingKey] as unknown[]).length > 0) return;
+      if (groupingKey && row[groupingKey as keyof DynamicTreeRow] != null) {
+        const nested = row[groupingKey as keyof DynamicTreeRow];
+        if (Array.isArray(nested) && nested.length > 0) return;
+      }
 
       try {
-        if (depth === 0 && groupingKey === "stores") {
+        if (depth === 0 && groupingKey === "stores" && row.type === "region") {
           setLoading(true);
-          const region = row as DynamicRegion;
-          const stores = await fetchStoresForRegion(region.id);
+          const stores = await fetchStoresForRegion(row.id);
           setLoading(false);
-          if (stores.length === 0) { setEmpty(true, "No stores found for this region"); return; }
+          if (stores.length === 0) {
+            setEmpty(true, "No stores found for this region");
+            return;
+          }
           setRows((prevRows) => {
             const newRows = [...prevRows];
             newRows[rowIndexPath[0]].stores = stores;
             return newRows;
           });
-        } else if (depth === 1 && groupingKey === "products") {
+        } else if (depth === 1 && groupingKey === "products" && row.type === "store") {
           setLoading(true);
-          const store = row as DynamicStore;
-          const products = await fetchProductsForStore(store.id);
+          const products = await fetchProductsForStore(row.id);
           setLoading(false);
-          if (products.length === 0) { setEmpty(true, "No products found for this store"); return; }
+          if (products.length === 0) {
+            setEmpty(true, "No products found for this store");
+            return;
+          }
           setRows((prevRows) => {
             const newRows = [...prevRows];
             const region = newRows[rowIndexPath[0]];
@@ -53,7 +76,7 @@ const DynamicRowLoadingDemo = ({ height = "400px", theme }: { height?: string | 
   );
 
   return (
-    <SimpleTable
+    <SimpleTable<DynamicTreeRow>
       columnResizing={dynamicRowLoadingConfig.tableProps.columnResizing}
       columns={dynamicRowLoadingConfig.headers}
       enableColumnEditor={dynamicRowLoadingConfig.tableProps.enableColumnEditor}

@@ -1,8 +1,7 @@
 // Self-contained demo table setup for this example.
-import type { ReactColumnDef, Row } from "@simple-table/react";
+import type { ReactColumnDef } from "@simple-table/react";
 
-
-export interface DynamicRegion extends Row {
+export interface DynamicRegion {
   id: string;
   name: string;
   type: "region";
@@ -14,7 +13,7 @@ export interface DynamicRegion extends Row {
   stores?: DynamicStore[];
 }
 
-export interface DynamicStore extends Row {
+export interface DynamicStore {
   id: string;
   name: string;
   type: "store";
@@ -26,7 +25,7 @@ export interface DynamicStore extends Row {
   products?: DynamicProduct[];
 }
 
-export interface DynamicProduct extends Row {
+export interface DynamicProduct {
   id: string;
   name: string;
   type: "product";
@@ -37,7 +36,10 @@ export interface DynamicProduct extends Row {
   lastUpdate: string;
 }
 
-export const dynamicRowLoadingHeaders: ReactColumnDef[] = [
+/** Row union across grouping depths (region → store → product). */
+export type DynamicTreeRow = DynamicRegion | DynamicStore | DynamicProduct;
+
+export const dynamicRowLoadingHeaders: ReactColumnDef<DynamicTreeRow>[] = [
   { accessor: "name", label: "Name", width: 280, expandable: true, type: "string", pinned: "left" },
   { accessor: "type", label: "Type", width: 100, type: "string" },
   {
@@ -195,7 +197,7 @@ export const dynamicRowLoadingConfig = {
   headers: dynamicRowLoadingHeaders,
   tableProps: {
     rowGrouping: ["stores", "products"] as string[],
-    getRowId: ({ row }: { row: Record<string, unknown> }) => row.id as string,
+    getRowId: ({ row }: { row: DynamicTreeRow }) => row.id,
     expandAll: false,
     columnResizing: true,
     selectableCells: true,
