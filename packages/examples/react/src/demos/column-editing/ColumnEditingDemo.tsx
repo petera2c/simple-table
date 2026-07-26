@@ -4,13 +4,13 @@ import type { Theme, ReactColumnDef } from "@simple-table/react";
 import {
   columnEditingData,
   columnEditingHeaders,
-  type ColumnEditingEmployee,
+  type ColumnEditingEmployee
 } from "./column-editing.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnEditingDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -31,7 +31,7 @@ const ColumnEditingDemo = ({
       accessor: `custom-${n}`,
       label: `Custom ${n}`,
       width: 120,
-      type: "string",
+      type: "string"
     };
     setAdditionalColumns((prev) => [...prev, col]);
     setLastAdded(col.label);
@@ -53,7 +53,7 @@ const ColumnEditingDemo = ({
             padding: "6px 14px",
             borderRadius: "4px",
             cursor: "pointer",
-            fontSize: "13px",
+            fontSize: "13px"
           }}
         >
           + Add Column
@@ -62,7 +62,7 @@ const ColumnEditingDemo = ({
           <span style={{ marginLeft: 12, color: "#64748b", fontSize: 13 }}>Added: {lastAdded}</span>
         )}
       </div>
-      <SimpleTable<ColumnEditingEmployee>
+      <SimpleTable
         columns={headers}
         getRowId={({ row }) => row.id}
         rows={columnEditingData}
