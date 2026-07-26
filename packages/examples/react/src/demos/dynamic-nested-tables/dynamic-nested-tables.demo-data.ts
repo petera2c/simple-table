@@ -90,4 +90,4 @@ export const dynamicNestedTablesConfig = {
     expandAll: false,
     autoExpandColumns: true,
   },
-} as const;
+};

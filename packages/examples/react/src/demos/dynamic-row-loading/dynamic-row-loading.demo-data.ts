@@ -132,7 +132,7 @@ const generateStoresForRegion = (regionId: string): DynamicStore[] => {
     return {
       id: storeId,
       name: STORE_NAMES[storeIndex % STORE_NAMES.length],
-      type: "store" as const,
+      type: "store",
       totalSales,
       totalRevenue: totalSales * avgPrice,
       avgRating: getRandomRating(storeId),
@@ -152,7 +152,7 @@ const generateProductsForStore = (storeId: string): DynamicProduct[] => {
     return {
       id: productId,
       name: PRODUCT_NAMES[(startIndex + i) % PRODUCT_NAMES.length],
-      type: "product" as const,
+      type: "product",
       totalSales,
       totalRevenue: totalSales * avgPrice,
       avgRating: getRandomRating(productId),
@@ -183,7 +183,7 @@ export const generateInitialRegions = (): DynamicRegion[] => {
     return {
       id: regionId,
       name,
-      type: "region" as const,
+      type: "region",
       totalSales,
       totalRevenue,
       activeStores: getRandomInt(regionId, 3, 4),
@@ -204,4 +204,4 @@ export const dynamicRowLoadingConfig = {
     oddEvenRowBackground: true,
     enableColumnEditor: true,
   },
-} as const;
+};

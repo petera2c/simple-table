@@ -97,4 +97,4 @@ export const nestedTablesConfig = {
     columnResizing: true,
     autoExpandColumns: true,
   },
-} as const;
+};

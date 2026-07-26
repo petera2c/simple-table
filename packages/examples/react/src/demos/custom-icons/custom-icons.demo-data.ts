@@ -47,4 +47,4 @@ export const customIconsHeaders: ReactColumnDef<SoftwareRelease>[] = [
 export const customIconsConfig = {
   headers: customIconsHeaders,
   rows: customIconsData,
-} as const;
+};

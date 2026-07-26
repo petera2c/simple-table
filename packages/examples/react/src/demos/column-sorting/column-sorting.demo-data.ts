@@ -149,6 +149,10 @@ export const columnSortingConfig = {
   rows: COLUMN_SORTING_DATA,
   tableProps: {
     initialSortColumn: "age",
-    initialSortDirection: "desc" as const,
+    initialSortDirection: "desc",
+  } satisfies {
+    initialSortColumn: string;
+    initialSortDirection: "asc" | "desc";
   },
-} as const;
+};
+

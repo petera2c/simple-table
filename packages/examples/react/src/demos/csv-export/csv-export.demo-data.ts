@@ -84,4 +84,4 @@ export const csvExportConfig = {
   headers: csvExportHeaders,
   rows: csvExportData,
   tableProps: { enableColumnEditor: true, selectableCells: true, customTheme: { rowHeight: 32 } },
-} as const;
+};

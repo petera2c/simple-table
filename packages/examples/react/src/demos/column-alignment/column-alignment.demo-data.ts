@@ -35,4 +35,4 @@ export const columnAlignmentData: ColumnAlignmentPlayer[] = [
 export const columnAlignmentConfig = {
   headers: columnAlignmentHeaders,
   rows: columnAlignmentData,
-} as const;
+};

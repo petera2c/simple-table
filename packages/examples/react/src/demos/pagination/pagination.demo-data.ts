@@ -58,4 +58,4 @@ export const paginationConfig = {
     rowsPerPage: PAGINATION_ROWS_PER_PAGE,
     enablePagination: true,
   },
-} as const;
+};

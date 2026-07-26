@@ -134,4 +134,4 @@ export const quickStartConfig = {
     selectableCells: true,
     customTheme: { rowHeight: 32 },
   },
-} as const;
+};

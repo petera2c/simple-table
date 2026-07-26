@@ -227,4 +227,4 @@ export const columnFilteringHeaders: ReactColumnDef<ColumnFilteringEmployee>[] =
 export const columnFilteringConfig = {
   headers: columnFilteringHeaders,
   rows: COLUMN_FILTERING_DATA,
-} as const;
+};

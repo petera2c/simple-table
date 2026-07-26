@@ -62,7 +62,7 @@ const DEPARTMENTS = [
   "Customer Success",
 ];
 
-const STATUSES = ["Active", "On Leave", "Remote", "Onsite"] as const;
+const STATUSES = ["Active", "On Leave", "Remote", "Onsite"];
 
 export function generateWindowScrollRows(
   startIndex: number,

@@ -53,4 +53,4 @@ export const rowSelectionConfig = {
     columnReordering: true,
     selectableCells: true,
   },
-} as const;
+};

@@ -228,4 +228,4 @@ export const cryptoData = generateCryptoData(200);
 export const cryptoConfig = {
   headers: cryptoHeaders,
   rows: cryptoData,
-} as const;
+};

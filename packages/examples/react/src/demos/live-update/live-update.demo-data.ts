@@ -67,4 +67,4 @@ export const liveUpdateData: LiveUpdateProduct[] = [
 export const liveUpdateConfig = {
   headers: liveUpdateHeaders,
   rows: liveUpdateData,
-} as const;
+};

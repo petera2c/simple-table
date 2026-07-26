@@ -123,4 +123,4 @@ export const HR_STATUS_COLOR_MAP: Record<string, HRTagColorKey> = {
 export const hrConfig = {
   headers: hrHeaders,
   rows: hrData,
-} as const;
+};

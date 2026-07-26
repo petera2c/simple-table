@@ -128,6 +128,6 @@ export const cellClickingHeaders: ReactColumnDef<ProjectTask>[] = [
 export const cellClickingConfig = {
   headers: cellClickingHeaders,
   rows: cellClickingData,
-} as const;
+};
 
 export { STATUSES as CELL_CLICKING_STATUSES };

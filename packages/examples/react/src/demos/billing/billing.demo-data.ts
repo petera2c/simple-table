@@ -213,4 +213,4 @@ export const billingHeaders: ReactColumnDef<BillingRow>[] = [
 export const billingConfig = {
   headers: billingHeaders,
   rows: billingData,
-} as const;
+};

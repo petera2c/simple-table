@@ -44,4 +44,4 @@ export const animationsConfig = {
   headers: animationsHeaders,
   rows: animationsData,
   tableProps: { columnReordering: true, enableColumnEditor: true, enableColumnEditorInitOpen: true },
-} as const;
+};

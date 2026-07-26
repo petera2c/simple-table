@@ -135,4 +135,4 @@ export const externalFilterConfig = {
   headers: externalFilterHeaders,
   rows: externalFilterData,
   tableProps: { externalFilterHandling: true, columnResizing: true },
-} as const;
+};

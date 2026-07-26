@@ -36,4 +36,4 @@ export const rowHeightConfig = {
   headers: rowHeightHeaders,
   rows: rowHeightData,
   tableProps: { customTheme: { rowHeight: 32 } },
-} as const;
+};

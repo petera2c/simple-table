@@ -39,4 +39,4 @@ export const loadingStateHeaders: ReactColumnDef<LoadingStateEmployee>[] = [
 export const loadingStateConfig = {
   headers: loadingStateHeaders,
   rows: loadingStateData,
-} as const;
+};

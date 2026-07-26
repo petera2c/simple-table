@@ -40,4 +40,4 @@ export const tableHeightData: HeightDemoEmployee[] = [
 export const tableHeightConfig = {
   headers: tableHeightHeaders,
   rows: tableHeightData,
-} as const;
+};
