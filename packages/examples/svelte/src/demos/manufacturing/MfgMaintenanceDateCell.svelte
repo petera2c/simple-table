@@ -3,12 +3,11 @@
   import type { ManufacturingRow } from "./manufacturing.demo-data";
   import { hasStations } from "./mfg-helpers";
 
-  let { row }: CellRendererProps = $props();
-  const d = $derived(row as unknown as ManufacturingRow);
+  let { row }: CellRendererProps<ManufacturingRow> = $props();
 
   const tag = $derived.by(() => {
     if (hasStations(row)) return null;
-    const [year, month, day] = d.maintenanceDate.split("-").map(Number);
+    const [year, month, day] = row.maintenanceDate.split("-").map(Number);
     const date = new Date(year, month - 1, day);
     const today = new Date();
     const diffDays = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));

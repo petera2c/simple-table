@@ -3,10 +3,9 @@
   import { getHRThemeColors } from "./hr.demo-data";
   import type { HREmployee } from "./hr.demo-data";
 
-  let { row, theme }: CellRendererProps = $props();
-  const d = $derived(row as unknown as HREmployee);
+  let { row, theme }: CellRendererProps<HREmployee> = $props();
   const c = $derived(getHRThemeColors(theme));
-  const initials = $derived(`${d.firstName?.charAt(0) || ""}${d.lastName?.charAt(0) || ""}`);
+  const initials = $derived(`${row.firstName?.charAt(0) || ""}${row.lastName?.charAt(0) || ""}`);
 </script>
 
 <div style="display:flex;align-items:center;">
@@ -16,7 +15,7 @@
     {initials}
   </div>
   <div style="margin-left:8px;">
-    <div>{d.fullName}</div>
-    <div style="font-size:12px;color:{c.grayMuted};">{d.position}</div>
+    <div>{row.fullName}</div>
+    <div style="font-size:12px;color:{c.grayMuted};">{row.position}</div>
   </div>
 </div>

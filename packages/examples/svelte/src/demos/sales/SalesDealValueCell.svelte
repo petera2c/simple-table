@@ -3,20 +3,19 @@
   import { getThemeColors } from "./sales.demo-data";
   import type { SalesRow } from "./sales.demo-data";
 
-  let { row, theme }: CellRendererProps = $props();
+  let { row, theme }: CellRendererProps<SalesRow> = $props();
   const colors = $derived(getThemeColors(theme));
   const style = $derived.by(() => {
     if (row.dealValue === "—") return { text: "—", color: "", weight: "" };
-    const d = row as unknown as SalesRow;
     let color = colors.gray;
     let fontWeight = "normal";
-    if (d.dealValue > 100000) {
+    if (row.dealValue > 100000) {
       color = colors.success.high.color;
       fontWeight = colors.success.high.fontWeight;
-    } else if (d.dealValue > 50000) color = colors.success.medium;
-    else if (d.dealValue > 10000) color = colors.success.low;
+    } else if (row.dealValue > 50000) color = colors.success.medium;
+    else if (row.dealValue > 10000) color = colors.success.low;
     return {
-      text: `$${d.dealValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      text: `$${row.dealValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       color,
       weight: fontWeight,
     };

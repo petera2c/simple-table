@@ -1,8 +1,21 @@
 // Self-contained demo table setup for this example.
 import type { SvelteColumnDef } from "@simple-table/svelte";
 
+/** Platform → category → creator nesting used by rowGrouping. */
+export type AggregateFunctionsRow = {
+  id: number;
+  name: string;
+  status: string;
+  followers?: number;
+  revenue?: string;
+  rating?: number;
+  contentCount?: number;
+  avgViewTime?: number;
+  categories?: AggregateFunctionsRow[];
+  creators?: AggregateFunctionsRow[];
+};
 
-export const aggregateFunctionsHeaders: SvelteColumnDef[] = [
+export const aggregateFunctionsHeaders: SvelteColumnDef<AggregateFunctionsRow>[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   {
     accessor: "followers",
@@ -66,7 +79,7 @@ export const aggregateFunctionsHeaders: SvelteColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, type: "string" },
 ];
 
-export const aggregateFunctionsData = [
+export const aggregateFunctionsData: AggregateFunctionsRow[] = [
   {
     id: 1,
     name: "StreamFlix",
@@ -187,7 +200,7 @@ export const aggregateFunctionsConfig = {
   headers: aggregateFunctionsHeaders,
   rows: aggregateFunctionsData,
   tableProps: {
-    rowGrouping: ["categories", "creators"] as string[],
+    rowGrouping: ["categories", "creators"],
     columnResizing: true,
   },
-} as const;
+};

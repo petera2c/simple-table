@@ -2,8 +2,7 @@
   import type { CellRendererProps } from "@simple-table/svelte";
   import type { InfrastructureServer } from "./infrastructure.demo-data";
 
-  let { row }: CellRendererProps = $props();
-  const d = $derived(row as unknown as InfrastructureServer);
+  let { row }: CellRendererProps<InfrastructureServer> = $props();
 </script>
 
-{d.diskUsage.toFixed(1)}%
+{row.diskUsage.toFixed(1)}%

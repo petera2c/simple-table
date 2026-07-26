@@ -3,9 +3,8 @@
   import { getMusicThemeColors } from "./music.demo-data";
   import type { MusicArtist } from "./music.demo-data";
 
-  let { row, theme }: CellRendererProps = $props();
-  const d = $derived(row as unknown as MusicArtist);
+  let { row, theme }: CellRendererProps<MusicArtist> = $props();
   const c = $derived(getMusicThemeColors(theme));
 </script>
 
-<span style="color:{c.gray};">{d.reachFollowersRatio.toFixed(1)}x</span>
+<span style="color:{c.gray};">{row.reachFollowersRatio.toFixed(1)}x</span>

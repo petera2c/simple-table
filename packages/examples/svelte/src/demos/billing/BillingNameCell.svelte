@@ -2,12 +2,11 @@
   import type { CellRendererProps } from "@simple-table/svelte";
   import type { BillingRow } from "./billing.demo-data";
 
-  let { row }: CellRendererProps = $props();
-  const d = $derived(row as unknown as BillingRow);
+  let { row }: CellRendererProps<BillingRow> = $props();
 </script>
 
-{#if d.type === "account"}
-  <span style="font-weight: 600">{d.name}</span>
+{#if row.type === "account"}
+  <span style="font-weight: 600">{row.name}</span>
 {:else}
-  {d.name}
+  {row.name}
 {/if}

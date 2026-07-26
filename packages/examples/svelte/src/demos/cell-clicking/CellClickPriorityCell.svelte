@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { CellRendererProps } from "@simple-table/svelte";
+  import type { ProjectTask } from "./cell-clicking.demo-data";
 
-  let { row }: CellRendererProps = $props();
-  const p = $derived(String((row as Record<string, unknown>).priority));
+  let { row }: CellRendererProps<ProjectTask> = $props();
+  const p = $derived(String(row.priority));
   const color = $derived(p === "High" ? "#ef4444" : p === "Medium" ? "#f59e0b" : "#10b981");
 </script>
 

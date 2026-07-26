@@ -1,12 +1,16 @@
 <script lang="ts">
-  import {SimpleTable} from "@simple-table/svelte";  import type { Theme } from "@simple-table/svelte";
+  import { SimpleTable } from "@simple-table/svelte";
+  import type { Theme, GetRowIdParams } from "@simple-table/svelte";
   import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "./pagination.demo-data";
+  import type { HotelStaff } from "./pagination.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height, theme }: { height?: string | number; theme?: Theme } = $props();
 
-  let rows = $state(paginationData.slice(0, PAGINATION_ROWS_PER_PAGE));
+  let rows = $state<HotelStaff[]>(paginationData.slice(0, PAGINATION_ROWS_PER_PAGE));
   let isLoading = $state(false);
+
+  const getRowId = ({ row }: GetRowIdParams<HotelStaff>) => row.id;
 
   const onNextPage = async (pageIndex: number) => {
     const startIndex = pageIndex * PAGINATION_ROWS_PER_PAGE;
@@ -33,6 +37,7 @@
   {isLoading}
   {onNextPage}
   {rows}
+  getRowId={getRowId}
   rowsPerPage={PAGINATION_ROWS_PER_PAGE}
   enablePagination={true}
   {theme}

@@ -3,11 +3,10 @@
   import { getInfraStatusColors } from "./infrastructure.demo-data";
   import type { InfrastructureServer } from "./infrastructure.demo-data";
 
-  let { row, theme }: CellRendererProps = $props();
-  const d = $derived(row as unknown as InfrastructureServer);
+  let { row, theme }: CellRendererProps<InfrastructureServer> = $props();
   const t = $derived(theme || "light");
-  const s = $derived(getInfraStatusColors(d.status, t));
-  const label = $derived(d.status.charAt(0).toUpperCase() + d.status.slice(1));
+  const s = $derived(getInfraStatusColors(row.status, t));
+  const label = $derived(row.status.charAt(0).toUpperCase() + row.status.slice(1));
 </script>
 
 <div

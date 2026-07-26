@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { CellRendererProps } from "@simple-table/svelte";
+  import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 
-  let { value }: CellRendererProps = $props();
+  let { value }: CellRendererProps<CellRendererEmployee> = $props();
   const status = $derived(String(value));
   const meta = $derived.by(() => {
     const map: Record<string, { icon: string; color: string }> = {

@@ -1,6 +1,17 @@
 // Self-contained demo table setup for this example.
 import type { SvelteColumnDef } from "@simple-table/svelte";
 
+export interface CsvProduct {
+  id: string;
+  sku: string;
+  product: string;
+  category: string;
+  price: number;
+  stock: number;
+  sold: number;
+  revenue: number;
+  actions: string;
+}
 
 const CATEGORY_CODES: Record<string, string> = {
   electronics: "ELEC",
@@ -9,7 +20,7 @@ const CATEGORY_CODES: Record<string, string> = {
   appliances: "APPL",
 };
 
-export const csvExportData = [
+export const csvExportData: CsvProduct[] = [
   { id: "db-1001", sku: "PRD-1001", product: "Wireless Keyboard", category: "Electronics", price: 49.99, stock: 145, sold: 234, revenue: 11697.66, actions: "" },
   { id: "db-1002", sku: "PRD-1002", product: "Ergonomic Mouse", category: "Electronics", price: 29.99, stock: 89, sold: 456, revenue: 13675.44, actions: "" },
   { id: "db-1003", sku: "PRD-1003", product: "USB-C Hub", category: "Electronics", price: 39.99, stock: 234, sold: 178, revenue: 7118.22, actions: "" },
@@ -24,7 +35,7 @@ export const csvExportData = [
   { id: "db-4003", sku: "PRD-4003", product: "Desk Lamp LED", category: "Appliances", price: 44.99, stock: 201, sold: 198, revenue: 8908.02, actions: "" },
 ];
 
-export const csvExportHeaders: SvelteColumnDef[] = [
+export const csvExportHeaders: SvelteColumnDef<CsvProduct>[] = [
   { accessor: "id", label: "Internal ID", width: 80, type: "string", excludeFromRender: true },
   { accessor: "sku", label: "SKU", width: 100, sortable: true, type: "string" },
   { accessor: "product", label: "Product Name", minWidth: 120, width: "1fr", sortable: true, type: "string" },
@@ -73,4 +84,4 @@ export const csvExportConfig = {
   headers: csvExportHeaders,
   rows: csvExportData,
   tableProps: { enableColumnEditor: true, selectableCells: true, customTheme: { rowHeight: 32 } },
-} as const;
+};

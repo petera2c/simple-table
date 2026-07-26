@@ -42,7 +42,7 @@ export function generateCRMData(count: number = 100): CRMLead[] {
 
 export const crmData = generateCRMData(100);
 
-export const crmHeaders: SvelteColumnDef[] = [
+export const crmHeaders: SvelteColumnDef<CRMLead>[] = [
   {
     accessor: "name",
     label: "CONTACT",
@@ -174,4 +174,4 @@ export const CRM_THEME_COLORS_DARK = {
 export const crmConfig = {
   headers: crmHeaders,
   rows: crmData,
-} as const;
+};

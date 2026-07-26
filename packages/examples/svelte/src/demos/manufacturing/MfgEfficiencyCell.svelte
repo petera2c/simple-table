@@ -3,9 +3,8 @@
   import type { ManufacturingRow } from "./manufacturing.demo-data";
   import { hasStations } from "./mfg-helpers";
 
-  let { row }: CellRendererProps = $props();
-  const d = $derived(row as unknown as ManufacturingRow);
-  const eff = $derived(d.efficiency);
+  let { row }: CellRendererProps<ManufacturingRow> = $props();
+  const eff = $derived(row.efficiency);
   const parent = $derived(hasStations(row));
   const color = $derived(eff >= 90 ? "#52c41a" : eff >= 75 ? "#1890ff" : "#ff4d4f");
 </script>

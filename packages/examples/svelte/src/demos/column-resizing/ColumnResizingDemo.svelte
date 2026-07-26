@@ -1,13 +1,16 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteColumnDef } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef, GetRowIdParams } from "@simple-table/svelte";
   import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
+  import type { OceanStaff } from "./column-resizing.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  let headers: SvelteColumnDef[] = $state([...columnResizingHeaders]);
+  let headers: SvelteColumnDef<OceanStaff>[] = $state([...columnResizingHeaders]);
   let saveMessage = $state("");
+
+  const getRowId = ({ row }: GetRowIdParams<OceanStaff>) => row.id;
 
   $effect(() => {
     try {
@@ -19,7 +22,7 @@
     } catch { /* ignore */ }
   });
 
-  function handleColumnWidthChange(updatedHeaders: SvelteColumnDef[]) {
+  function handleColumnWidthChange(updatedHeaders: SvelteColumnDef<OceanStaff>[]) {
     try {
       const widthMap: Record<string, unknown> = {};
       for (const h of updatedHeaders) widthMap[h.accessor] = h.width;
@@ -44,6 +47,7 @@
     columnResizing={true}
     columns={headers}
     rows={columnResizingData}
+    getRowId={getRowId}
     {height}
     {theme}
     onColumnWidthChange={handleColumnWidthChange}

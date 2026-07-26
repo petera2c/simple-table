@@ -1,5 +1,6 @@
 <script lang="ts">
-  import {SimpleTable} from "@simple-table/svelte";  import type { Theme, OnRowGroupExpandProps } from "@simple-table/svelte";
+  import { SimpleTable } from "@simple-table/svelte";
+  import type { Theme, OnRowGroupExpandProps, GetRowIdParams } from "@simple-table/svelte";
   import {
     dynamicNestedTablesConfig,
     dynamicNestedTablesData,
@@ -11,6 +12,7 @@
   let { height = "500px", theme }: { height?: string | number; theme?: Theme } = $props();
 
   let rows = $state<DynamicCompany[]>([...dynamicNestedTablesData]);
+  const getRowId = ({ row }: GetRowIdParams<DynamicCompany>) => row.id;
 
   async function handleCompanyExpand({
     row,
@@ -20,14 +22,13 @@
     setLoading,
     setError,
     setEmpty,
-  }: OnRowGroupExpandProps) {
+  }: OnRowGroupExpandProps<DynamicCompany>) {
     if (!isExpanded) return;
     try {
       if (groupingKey === "divisions") {
-        const company = row as DynamicCompany;
-        if (company.divisions && company.divisions.length > 0) return;
+        if (row.divisions && row.divisions.length > 0) return;
         setLoading(true);
-        const divisions = await fetchDivisionsForCompany(company.id);
+        const divisions = await fetchDivisionsForCompany(row.id);
         if (divisions.length === 0) {
           setEmpty(true, "No divisions found for this company");
           return;
@@ -47,9 +48,9 @@
   autoExpandColumns={dynamicNestedTablesConfig.tableProps.autoExpandColumns}
   columns={dynamicNestedTablesConfig.headers}
   expandAll={dynamicNestedTablesConfig.tableProps.expandAll}
+  {getRowId}
   {height}
   rowGrouping={dynamicNestedTablesConfig.tableProps.rowGrouping}
-  getRowId={dynamicNestedTablesConfig.tableProps.getRowId}
   rows={rows}
   onRowGroupExpand={handleCompanyExpand}
   {theme}

@@ -2,8 +2,8 @@
   import type { CellRendererProps } from "@simple-table/svelte";
   import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 
-  let { row }: CellRendererProps = $props();
-  const members = $derived((row as unknown as CellRendererEmployee).teamMembers);
+  let { row }: CellRendererProps<CellRendererEmployee> = $props();
+  const members = $derived(row.teamMembers);
 
   function initials(name: string): string {
     return name.split(" ").map((n) => n[0]).join("").toUpperCase();

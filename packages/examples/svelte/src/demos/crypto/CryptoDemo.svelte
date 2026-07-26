@@ -1,14 +1,17 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, TableAPI, Row, CellValue } from "@simple-table/svelte";
+  import type { Theme, TableAPI, CellValue, GetRowIdParams } from "@simple-table/svelte";
   import { cryptoConfig } from "./crypto.demo-data";
+  import type { CryptoCoin } from "./crypto.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "70dvh", theme }: { height?: string | number; theme?: Theme } = $props();
-  let tableRef: any;
+  let tableRef = $state<{ getAPI: () => TableAPI<CryptoCoin> | null } | null>(null);
 
   const TICK_MS = 90;
   const ROWS_PER_TICK = 6;
+
+  const getRowId = ({ row }: GetRowIdParams<CryptoCoin>) => row.id;
 
   function pickRandomSubset<T>(arr: T[], n: number): T[] {
     const copy = [...arr];
@@ -21,34 +24,29 @@
     return copy.slice(0, Math.min(n, copy.length));
   }
 
-  function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Row>) {
-    for (const accessor of Object.keys(patch)) {
+  function applyRowPatch(api: TableAPI<CryptoCoin>, rowId: string | number, patch: Partial<CryptoCoin>) {
+    for (const accessor of Object.keys(patch) as Array<keyof CryptoCoin>) {
       const newValue = patch[accessor];
       if (newValue === undefined) continue;
       api.updateData({ accessor, rowId, newValue: newValue as CellValue });
     }
   }
 
-  function runTick(getApi: () => TableAPI | null | undefined) {
+  function runTick(getApi: () => TableAPI<CryptoCoin> | null | undefined) {
     const api = getApi();
     if (!api) return;
     const visible = api.getVisibleRows();
     if (!visible.length) return;
     for (const vr of pickRandomSubset(visible, ROWS_PER_TICK)) {
-      const rowId = vr.row.id as string | number | undefined;
-      if (rowId === undefined || rowId === null || rowId === "") continue;
-      const currentPrice = vr.row.price as number;
-      if (typeof currentPrice !== "number") continue;
+      const rowId = vr.row.id;
       const drift = (Math.random() - 0.5) * 0.012;
-      const newPrice = Math.max(currentPrice * (1 + drift), currentPrice * 0.0001);
+      const newPrice = Math.max(vr.row.price * (1 + drift), vr.row.price * 0.0001);
       const round = newPrice >= 1 ? 1e2 : 1e6;
       const newPriceRounded = Math.round(newPrice * round) / round;
-      const currentChange = (vr.row.change24h as number) ?? 0;
-      const newChange = Math.round((currentChange + drift * 100) * 100) / 100;
-      const history = vr.row.priceHistory as number[];
-      const patch: Partial<Row> = { price: newPriceRounded, change24h: newChange };
-      if (Array.isArray(history) && history.length > 0) {
-        patch.priceHistory = [...history.slice(1), newPriceRounded];
+      const newChange = Math.round((vr.row.change24h + drift * 100) * 100) / 100;
+      const patch: Partial<CryptoCoin> = { price: newPriceRounded, change24h: newChange };
+      if (vr.row.priceHistory.length > 0) {
+        patch.priceHistory = [...vr.row.priceHistory.slice(1), newPriceRounded];
       }
       applyRowPatch(api, rowId, patch);
     }
@@ -56,7 +54,7 @@
 
   $effect(() => {
     if (!tableRef) return;
-    const intervalId = setInterval(() => runTick(() => tableRef?.getAPI?.() ?? null), TICK_MS);
+    const intervalId = setInterval(() => runTick(() => tableRef?.getAPI() ?? null), TICK_MS);
     return () => clearInterval(intervalId);
   });
 </script>
@@ -65,7 +63,7 @@
   bind:this={tableRef}
   columns={cryptoConfig.headers}
   rows={cryptoConfig.rows}
-  getRowId={({ row }) => (row as { id: string | number }).id}
+  {getRowId}
   {height}
   {theme}
   columnReordering

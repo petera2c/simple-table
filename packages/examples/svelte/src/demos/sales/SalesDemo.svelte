@@ -1,8 +1,15 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteColumnDef, CellChangeProps, Row } from "@simple-table/svelte";
+  import type {
+    Theme,
+    SvelteColumnDef,
+    SvelteCellRenderer,
+    CellChangeProps,
+    GetRowIdParams,
+  } from "@simple-table/svelte";
   import { salesHeadersCore, salesSampleRows } from "./sales.demo-data";
+  import type { SalesRow } from "./sales.demo-data";
   import SalesDealValueCell from "./SalesDealValueCell.svelte";
   import SalesIsWonCell from "./SalesIsWonCell.svelte";
   import SalesCommissionCell from "./SalesCommissionCell.svelte";
@@ -18,7 +25,7 @@
     return h;
   }
 
-  const renderers: Record<string, unknown> = {
+  const renderers: Partial<Record<string, SvelteCellRenderer<SalesRow>>> = {
     dealValue: SalesDealValueCell,
     isWon: SalesIsWonCell,
     commission: SalesCommissionCell,
@@ -26,20 +33,23 @@
     dealProfit: SalesDealProfitCell,
   };
 
-  function applyCellComponents(hdrs: SvelteColumnDef[]): SvelteColumnDef[] {
-    return hdrs.map((h) => ({
-      ...h,
-      ...(renderers[h.accessor as string] ? { cellRenderer: renderers[h.accessor as string] } : {}),
-      ...(h.children ? { children: applyCellComponents(h.children as SvelteColumnDef[]) } : {}),
-    }));
+  function applyCellComponents(hdrs: SvelteColumnDef<SalesRow>[]): SvelteColumnDef<SalesRow>[] {
+    return hdrs.map((h) => {
+      const cellRenderer = renderers[String(h.accessor)];
+      return {
+        ...h,
+        ...(cellRenderer ? { cellRenderer } : {}),
+        ...(h.children ? { children: applyCellComponents(h.children) } : {}),
+      };
+    });
   }
 
-  const headers = $derived(
-    applyCellComponents(JSON.parse(JSON.stringify(salesHeadersCore)) as SvelteColumnDef[]),
-  );
+  const headers = $derived(applyCellComponents(salesHeadersCore));
 
-  let data = $state<Row[]>(salesSampleRows.map((r) => ({ ...r })) as Row[]);
+  let data = $state<SalesRow[]>(salesSampleRows.map((r) => ({ ...r })));
   let isMobile = $state(false);
+
+  const getRowId = ({ row }: GetRowIdParams<SalesRow>) => row.id;
 
   function checkMobile() {
     isMobile = window.innerWidth < 768;
@@ -54,14 +64,15 @@
     window.removeEventListener("resize", checkMobile);
   });
 
-  function handleCellEdit({ accessor, newValue, row }: CellChangeProps) {
-    data = data.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item)) as Row[];
+  function handleCellEdit({ accessor, newValue, row }: CellChangeProps<SalesRow>) {
+    data = data.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item));
   }
 </script>
 
 <SimpleTable
   columns={headers}
   rows={data}
+  {getRowId}
   height={formatTableHeight(height)}
   {theme}
   autoExpandColumns={!isMobile}

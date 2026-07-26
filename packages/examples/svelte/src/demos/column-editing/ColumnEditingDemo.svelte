@@ -1,22 +1,25 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteColumnDef } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef, GetRowIdParams } from "@simple-table/svelte";
   import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
+  import type { ColumnEditingEmployee } from "./column-editing.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  let additionalColumns: SvelteColumnDef[] = $state([]);
+  let additionalColumns: SvelteColumnDef<ColumnEditingEmployee>[] = $state([]);
   let lastAdded = $state("");
+
+  const getRowId = ({ row }: GetRowIdParams<ColumnEditingEmployee>) => row.id;
 
   function addColumn() {
     const n = additionalColumns.length + 1;
-    const col: SvelteColumnDef = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
+    const col: SvelteColumnDef<ColumnEditingEmployee> = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
     additionalColumns = [...additionalColumns, col];
     lastAdded = col.label;
   }
 
-  function handleHeaderEdit(_header: SvelteColumnDef, newLabel: string) {
+  function handleHeaderEdit(_header: SvelteColumnDef<ColumnEditingEmployee>, newLabel: string) {
     lastAdded = `Renamed to: ${newLabel}`;
   }
 
@@ -38,6 +41,7 @@
   <SimpleTable
     columns={headers}
     rows={columnEditingData}
+    getRowId={getRowId}
     {height}
     {theme}
     enableHeaderEditing={true}

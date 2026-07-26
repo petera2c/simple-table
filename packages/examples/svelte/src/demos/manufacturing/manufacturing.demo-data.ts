@@ -83,7 +83,7 @@ export function generateManufacturingData(count: number = 8): ManufacturingRow[]
 
 export const manufacturingData = generateManufacturingData(8);
 
-export const manufacturingHeaders: SvelteColumnDef[] = [
+export const manufacturingHeaders: SvelteColumnDef<ManufacturingRow>[] = [
   { accessor: "productLine", label: "Production Line", width: 180, expandable: true, sortable: true, editable: false, align: "left", type: "string" },
   { accessor: "station", label: "Workstation", width: 150, sortable: true, editable: false, align: "left", type: "string" },
   { accessor: "machineType", label: "Machine Type", width: 150, sortable: true, editable: false, align: "left", type: "string" },
@@ -122,4 +122,4 @@ export function getManufacturingStatusColors(status: string, theme?: string) {
 export const manufacturingConfig = {
   headers: manufacturingHeaders,
   rows: manufacturingData,
-} as const;
+};
