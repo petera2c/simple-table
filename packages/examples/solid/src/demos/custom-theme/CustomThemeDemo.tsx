@@ -7,6 +7,7 @@ export default function CustomThemeDemo(props: { height?: string | number; theme
   return (
     <SimpleTable
       columns={customThemeConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={customThemeConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme ?? "custom"}

@@ -1,5 +1,6 @@
 import { createSignal, createMemo } from "solid-js";
-import {SimpleTable} from "@simple-table/solid";import type {
+import { SimpleTable } from "@simple-table/solid";
+import type {
   Theme,
   SolidColumnDef,
   CellRendererProps,
@@ -20,11 +21,11 @@ export default function RowSelectionDemo(props: {
     return books.length > 0 ? books.map((b) => b.title).join(", ") : "None";
   });
 
-  const headers: SolidColumnDef[] = rowSelectionConfig.headers.map((h) => {
+  const headers: SolidColumnDef<LibraryBook>[] = rowSelectionConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: (cr: CellRendererProps) => {
+        cellRenderer: (cr: CellRendererProps<LibraryBook>) => {
           const s = String(cr.row.status);
           const color = s === "Available" ? "#16a34a" : s === "Checked Out" ? "#ea580c" : "#dc2626";
           return <span style={{ color, "font-weight": "bold" }}>{s}</span>;
@@ -34,7 +35,7 @@ export default function RowSelectionDemo(props: {
     return h;
   });
 
-  const handleSelectionChange = (selection: RowSelectionChangeProps) => {
+  const handleSelectionChange = (selection: RowSelectionChangeProps<LibraryBook>) => {
     const selected = rowSelectionData.filter((book) =>
       selection.selectedRows.has(String(book.id)),
     );
@@ -65,6 +66,7 @@ export default function RowSelectionDemo(props: {
 
       <SimpleTable
         columns={headers}
+        getRowId={({ row }) => row.id}
         rows={rowSelectionConfig.rows}
         height={props.height ?? "348px"}
         theme={props.theme}

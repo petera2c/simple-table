@@ -1,16 +1,27 @@
 import { createSignal, createMemo } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme, SolidColumnDef } from "@simple-table/solid";
-import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
+import {
+  columnEditingData,
+  columnEditingHeaders,
+  type ColumnEditingEmployee,
+} from "./column-editing.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function ColumnEditingDemo(props: { height?: string | number; theme?: Theme }) {
-  const [additionalColumns, setAdditionalColumns] = createSignal<SolidColumnDef[]>([]);
+  const [additionalColumns, setAdditionalColumns] = createSignal<
+    SolidColumnDef<ColumnEditingEmployee>[]
+  >([]);
   const [lastAdded, setLastAdded] = createSignal("");
 
   const addColumn = () => {
     const n = additionalColumns().length + 1;
-    const col: SolidColumnDef = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
+    const col: SolidColumnDef<ColumnEditingEmployee> = {
+      accessor: `custom-${n}`,
+      label: `Custom ${n}`,
+      width: 120,
+      type: "string",
+    };
     setAdditionalColumns([...additionalColumns(), col]);
     setLastAdded(col.label);
   };
@@ -41,12 +52,15 @@ export default function ColumnEditingDemo(props: { height?: string | number; the
       </div>
       <SimpleTable
         columns={headers()}
+        getRowId={({ row }) => row.id}
         rows={columnEditingData}
         height={props.height ?? "400px"}
         theme={props.theme}
         enableHeaderEditing
         selectableColumns
-        onHeaderEdit={(_header, newLabel) => setLastAdded(`Renamed to: ${newLabel}`)}
+        onHeaderEdit={(_header: SolidColumnDef<ColumnEditingEmployee>, newLabel: string) =>
+          setLastAdded(`Renamed to: ${newLabel}`)
+        }
       />
     </div>
   );

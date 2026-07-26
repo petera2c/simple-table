@@ -1,6 +1,6 @@
 import { createSignal, For } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { SolidColumnDef, FooterRendererProps, CellChangeProps } from "@simple-table/solid";
+import type { SolidColumnDef, FooterRendererProps, CellChangeProps, CellRendererProps } from "@simple-table/solid";
 import {
   crmData,
   CRM_THEME_COLORS_LIGHT,
@@ -60,13 +60,13 @@ const FitButtons = (props: { colors: typeof CRM_THEME_COLORS_LIGHT }) => {
   );
 };
 
-function getCRMHeaders(isDark: boolean): SolidColumnDef[] {
+function getCRMHeaders(isDark: boolean): SolidColumnDef<CRMLead>[] {
   const colors = isDark ? CRM_THEME_COLORS_DARK : CRM_THEME_COLORS_LIGHT;
   return [
     {
       accessor: "name", label: "CONTACT", width: "2fr", minWidth: 290, sortable: true, editable: true, type: "string",
-      cellRenderer: ({ row }) => {
-        const d = row as unknown as CRMLead;
+      cellRenderer: ({ row }: CellRendererProps<CRMLead>) => {
+        const d = row;
         const initials = d.name.split(" ").map((n) => n[0]).join("").toUpperCase();
         return (
           <div style={{ display: "flex", "align-items": "center", gap: "12px" }}>
@@ -82,16 +82,16 @@ function getCRMHeaders(isDark: boolean): SolidColumnDef[] {
     },
     {
       accessor: "signal", label: "SIGNAL", width: "3fr", minWidth: 340, sortable: true, editable: true, type: "string",
-      cellRenderer: ({ row }) => (
+      cellRenderer: ({ row }: CellRendererProps<CRMLead>) => (
         <div>
           <div style={{ color: colors.textSecondary, "margin-bottom": "4px", "font-size": "0.875rem" }}>🧠 Just engaged with a <a href="#" onClick={(e) => e.preventDefault()} style={{ color: "#0077b5", "text-decoration": "underline" }}>post</a></div>
-          <div style={{ "font-size": "12px", color: colors.textTertiary }}><span style={{ "font-weight": "600" }}>Keyword:</span> {(row as unknown as CRMLead).signal}</div>
+          <div style={{ "font-size": "12px", color: colors.textTertiary }}><span style={{ "font-weight": "600" }}>Keyword:</span> {row.signal}</div>
         </div>
       ),
     },
     {
       accessor: "aiScore", label: "AI SCORE", width: "1fr", minWidth: 100, sortable: true, align: "center", type: "number",
-      cellRenderer: ({ row }) => <div style={{ "font-size": "0.875rem" }}>{"🔥".repeat((row as unknown as CRMLead).aiScore)}</div>,
+      cellRenderer: ({ row }: CellRendererProps<CRMLead>) => <div style={{ "font-size": "0.875rem" }}>{"🔥".repeat(row.aiScore)}</div>,
     },
     {
       accessor: "emailStatus", label: "EMAIL", width: "1.5fr", minWidth: 210, sortable: true, align: "center", type: "enum",
@@ -100,13 +100,13 @@ function getCRMHeaders(isDark: boolean): SolidColumnDef[] {
     },
     {
       accessor: "timeAgo", label: "IMPORT", width: "1fr", minWidth: 100, sortable: true, align: "center", type: "string",
-      cellRenderer: ({ row }) => <div style={{ "font-size": "13px", color: colors.textSecondary }}>{(row as unknown as CRMLead).timeAgo}</div>,
+      cellRenderer: ({ row }: CellRendererProps<CRMLead>) => <div style={{ "font-size": "13px", color: colors.textSecondary }}>{row.timeAgo}</div>,
     },
     {
       accessor: "list", label: "LIST", width: "1.2fr", minWidth: 160, sortable: true, align: "center", type: "enum",
       enumOptions: [{ label: "Leads", value: "Leads" }, { label: "Hot Leads", value: "Hot Leads" }, { label: "Warm Leads", value: "Warm Leads" }, { label: "Cold Leads", value: "Cold Leads" }, { label: "Enterprise", value: "Enterprise" }, { label: "SMB", value: "SMB" }, { label: "Nurture", value: "Nurture" }],
       valueGetter: ({ row }) => { const list = String(row.list); const m: Record<string, number> = { "Hot Leads": 1, "Warm Leads": 2, Enterprise: 3, Leads: 4, SMB: 5, "Cold Leads": 6, Nurture: 7 }; return m[list] || 999; },
-      cellRenderer: ({ row }) => <a href="#" onClick={(e) => e.preventDefault()} style={{ cursor: "pointer", "font-size": "0.875rem", color: colors.link, "text-decoration": "none", "font-weight": "600" }}>{(row as unknown as CRMLead).list}</a>,
+      cellRenderer: ({ row }: CellRendererProps<CRMLead>) => <a href="#" onClick={(e) => e.preventDefault()} style={{ cursor: "pointer", "font-size": "0.875rem", color: colors.link, "text-decoration": "none", "font-weight": "600" }}>{row.list}</a>,
     },
     { accessor: "_fit", label: "Fit", width: "1fr", align: "center", minWidth: 120, cellRenderer: () => <FitButtons colors={colors} /> },
     { accessor: "_contactNow", label: "", width: "1.2fr", minWidth: 160, cellRenderer: () => <a href="#" onClick={(e) => e.preventDefault()} style={{ cursor: "pointer", "font-size": "0.875rem", color: colors.link, "text-decoration": "none", "font-weight": "600" }}>Contact Now</a> },
@@ -119,7 +119,7 @@ export default function CRMDemo(props: { height?: string | number; theme?: CrmSh
   const [rowsPerPage, setRowsPerPage] = createSignal(100);
   const footerColors = () => isDark() ? CRM_FOOTER_COLORS_DARK : CRM_FOOTER_COLORS_LIGHT;
 
-  const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
+  const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps<CRMLead>) => {
     setData((prev) => prev.map((item) => item.id === row.id ? { ...item, [accessor]: newValue } : item));
   };
 
@@ -130,6 +130,7 @@ export default function CRMDemo(props: { height?: string | number; theme?: CrmSh
         columnResizing
         columns={getCRMHeaders(isDark())}
         enableRowSelection
+        getRowId={({ row }) => row.id}
         customTheme={{ headerHeight: 48, rowHeight: 92 }}
         height={props.height ?? "400px"}
         onCellEdit={handleCellEdit}

@@ -1,8 +1,16 @@
 // Self-contained demo table setup for this example.
-import type { SolidColumnDef, Row } from "@simple-table/solid";
+import type { SolidColumnDef } from "@simple-table/solid";
 
+export interface HeaderEmployee {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  salary: number;
+  department: string;
+}
 
-export const headerRendererData: Row[] = [
+export const headerRendererData: HeaderEmployee[] = [
   { id: 1, name: "Alice Johnson", email: "alice@example.com", role: "Engineer", salary: 125000, department: "Engineering" },
   { id: 2, name: "Bob Martinez", email: "bob@example.com", role: "Designer", salary: 98000, department: "Design" },
   { id: 3, name: "Clara Chen", email: "clara@example.com", role: "PM", salary: 115000, department: "Product" },
@@ -13,7 +21,7 @@ export const headerRendererData: Row[] = [
   { id: 8, name: "Henry Patel", email: "henry@example.com", role: "Lead", salary: 145000, department: "Engineering" },
 ];
 
-export const headerRendererHeaders: SolidColumnDef[] = [
+export const headerRendererHeaders: SolidColumnDef<HeaderEmployee>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number", sortable: true },
   { accessor: "name", label: "Employee Name", width: 180, type: "string", sortable: true },
   { accessor: "email", label: "Email Address", width: 200, type: "string" },
@@ -29,4 +37,4 @@ export const headerRendererConfig = {
     selectableCells: true,
     columnResizing: true,
   },
-} as const;
+};

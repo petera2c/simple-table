@@ -22,6 +22,7 @@ export default function ColumnVisibilityDemo(props: { height?: string | number; 
   return (
     <SimpleTable
       columns={headers()}
+      getRowId={({ row }) => row.id}
       rows={columnVisibilityConfig.rows}
       enableColumnEditor
       enableColumnEditorInitOpen

@@ -1,13 +1,20 @@
 // Self-contained demo table setup for this example.
-import type { SolidColumnDef, Row } from "@simple-table/solid";
+import type { SolidColumnDef } from "@simple-table/solid";
 
+export interface InfiniteScrollEmployee {
+  id: number;
+  name: string;
+  email: string;
+  department: string;
+  salary: number;
+}
 
 const FIRST_NAMES = ["Elena", "Kai", "Amara", "Santiago", "Priya", "Magnus", "Zara", "Luca", "Sarah", "Olumide", "Isabella", "Dmitri"];
 const LAST_NAMES = ["Vasquez", "Tanaka", "Okafor", "Rodriguez", "Chakraborty", "Eriksson", "Al-Rashid", "Rossi", "Kim", "Adebayo", "Chen", "Volkov"];
 const DEPARTMENTS = ["Engineering", "AI Research", "UX Design", "DevOps", "Marketing", "Product", "Sales", "Finance"];
 
-export function generateInfiniteScrollData(startIndex: number, count: number): Row[] {
-  const rows: Row[] = [];
+export function generateInfiniteScrollData(startIndex: number, count: number): InfiniteScrollEmployee[] {
+  const rows: InfiniteScrollEmployee[] = [];
   for (let i = 0; i < count; i++) {
     const idx = startIndex + i;
     const first = FIRST_NAMES[idx % FIRST_NAMES.length];
@@ -23,7 +30,7 @@ export function generateInfiniteScrollData(startIndex: number, count: number): R
   return rows;
 }
 
-export const infiniteScrollHeaders: SolidColumnDef[] = [
+export const infiniteScrollHeaders: SolidColumnDef<InfiniteScrollEmployee>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120 },
   { accessor: "email", label: "Email", width: 250 },
@@ -41,4 +48,4 @@ export const infiniteScrollHeaders: SolidColumnDef[] = [
 export const infiniteScrollConfig = {
   headers: infiniteScrollHeaders,
   rows: generateInfiniteScrollData(0, 30),
-} as const;
+};

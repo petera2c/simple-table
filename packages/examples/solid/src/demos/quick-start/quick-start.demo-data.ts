@@ -1,9 +1,16 @@
 // Self-contained demo table setup for this example.
-import type { Row } from "@simple-table/solid";
 import type { SolidColumnDef } from "@simple-table/solid";
 
+export interface QuickStartEmployee {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+  startDate: string;
+}
 
-export const QUICK_START_DATA: Row[] = [
+export const QUICK_START_DATA: QuickStartEmployee[] = [
   {
     id: 1,
     name: "Marcus Rodriguez",
@@ -103,7 +110,7 @@ export const QUICK_START_DATA: Row[] = [
 ];
 
 
-export const quickStartHeaders: SolidColumnDef[] = [
+export const quickStartHeaders: SolidColumnDef<QuickStartEmployee>[] = [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   {
     accessor: "name",
@@ -127,4 +134,4 @@ export const quickStartConfig = {
     selectableCells: true,
     customTheme: { rowHeight: 32 },
   },
-} as const;
+};

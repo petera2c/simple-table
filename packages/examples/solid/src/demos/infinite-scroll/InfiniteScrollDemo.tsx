@@ -1,18 +1,23 @@
 import { createSignal, createMemo } from "solid-js";
-import {SimpleTable} from "@simple-table/solid";import type { Theme, Row } from "@simple-table/solid";
-import { infiniteScrollConfig, generateInfiniteScrollData } from "./infinite-scroll.demo-data";
+import { SimpleTable } from "@simple-table/solid";
+import type { Theme } from "@simple-table/solid";
+import {
+  infiniteScrollConfig,
+  generateInfiniteScrollData,
+  type InfiniteScrollEmployee,
+} from "./infinite-scroll.demo-data";
 import "@simple-table/solid/styles.css";
 
 const MAX_ROWS = 200;
 const BATCH_SIZE = 15;
 
 export default function InfiniteScrollDemo(props: { height?: string | number; theme?: Theme }) {
-  const [rows, setRows] = createSignal<Row[]>(generateInfiniteScrollData(0, 30) as Row[]);
+  const [rows, setRows] = createSignal<InfiniteScrollEmployee[]>(generateInfiniteScrollData(0, 30));
   const [loading, setLoading] = createSignal(false);
   const [hasMore, setHasMore] = createSignal(true);
 
   const statusText = createMemo(() =>
-    `${rows().length} rows loaded${hasMore() ? "" : " (all loaded)"}`
+    `${rows().length} rows loaded${hasMore() ? "" : " (all loaded)"}`,
   );
 
   const handleLoadMore = () => {
@@ -20,7 +25,7 @@ export default function InfiniteScrollDemo(props: { height?: string | number; th
     setLoading(true);
     setTimeout(() => {
       setRows((prev) => {
-        const newRows = generateInfiniteScrollData(prev.length, BATCH_SIZE) as Row[];
+        const newRows = generateInfiniteScrollData(prev.length, BATCH_SIZE);
         const updated = [...prev, ...newRows];
         if (updated.length >= MAX_ROWS) setHasMore(false);
         return updated;
@@ -36,6 +41,7 @@ export default function InfiniteScrollDemo(props: { height?: string | number; th
       </div>
       <SimpleTable
         columns={infiniteScrollConfig.headers}
+        getRowId={({ row }) => row.id}
         rows={rows()}
         onLoadMore={handleLoadMore}
         isLoading={loading()}

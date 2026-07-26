@@ -1,5 +1,6 @@
-import {SimpleTable} from "@simple-table/solid";import type { Theme, TableAPI } from "@simple-table/solid";
-import { rowGroupingConfig } from "./row-grouping.demo-data";
+import { SimpleTable } from "@simple-table/solid";
+import type { Theme, TableAPI } from "@simple-table/solid";
+import { rowGroupingConfig, type OrgUnit } from "./row-grouping.demo-data";
 import "@simple-table/solid/styles.css";
 
 const btnStyle = (color: string) => ({
@@ -14,7 +15,7 @@ const btnStyle = (color: string) => ({
 });
 
 export default function RowGroupingDemo(props: { height?: string | number; theme?: Theme }) {
-  let tableRef: TableAPI | undefined;
+  let tableRef: TableAPI<OrgUnit> | undefined;
 
   return (
     <div style={{ display: "flex", "flex-direction": "column", gap: "12px" }}>
@@ -31,8 +32,8 @@ export default function RowGroupingDemo(props: { height?: string | number; theme
         columns={rowGroupingConfig.headers}
         rows={rowGroupingConfig.rows}
         rowGrouping={rowGroupingConfig.tableProps.rowGrouping}
-        enableStickyParents={true}
-        getRowId={rowGroupingConfig.tableProps.getRowId}
+        enableStickyParents={rowGroupingConfig.tableProps.enableStickyParents}
+        getRowId={({ row }) => row.id}
         columnResizing
         height={props.height ?? "400px"}
         theme={props.theme}

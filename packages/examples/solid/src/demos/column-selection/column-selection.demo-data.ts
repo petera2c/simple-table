@@ -1,8 +1,16 @@
 // Self-contained demo table setup for this example.
 import type { SolidColumnDef } from "@simple-table/solid";
 
+export interface TeamMember {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+  email: string;
+}
 
-export const columnSelectionHeaders: SolidColumnDef[] = [
+export const columnSelectionHeaders: SolidColumnDef<TeamMember>[] = [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   { accessor: "name", label: "Name", minWidth: 120, width: "1fr", sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },
@@ -30,4 +38,4 @@ export const columnSelectionConfig = {
   headers: columnSelectionHeaders,
   rows: columnSelectionData,
   tableProps: { selectableColumns: true },
-} as const;
+};

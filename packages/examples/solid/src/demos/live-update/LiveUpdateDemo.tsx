@@ -1,45 +1,48 @@
 import { onMount, onCleanup } from "solid-js";
-import {SimpleTable} from "@simple-table/solid";import type { Theme, TableAPI } from "@simple-table/solid";
-import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
+import { SimpleTable } from "@simple-table/solid";
+import type { Theme, TableAPI } from "@simple-table/solid";
+import {
+  liveUpdateConfig,
+  liveUpdateData,
+  type LiveUpdateProduct,
+} from "./live-update.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function LiveUpdateDemo(props: { height?: string | number; theme?: Theme }) {
-  let tableRef: TableAPI | undefined;
+  let tableRef: TableAPI<LiveUpdateProduct> | undefined;
   let cleanupFn: (() => void) | undefined;
 
   onMount(() => {
     if (!tableRef) return;
-    const currentData = JSON.parse(JSON.stringify(liveUpdateData));
-    const timerMap = new Map<string | number, ReturnType<typeof setTimeout>>();
-    const currentPeriodSales = new Map<string | number, number>();
+    const currentData: LiveUpdateProduct[] = JSON.parse(JSON.stringify(liveUpdateData));
+    const timerMap = new Map<number, ReturnType<typeof setTimeout>>();
+    const currentPeriodSales = new Map<number, number>();
     let isActive = true;
 
-    const createRowTimer = (rowId: string | number) => {
+    const createRowTimer = (rowId: number) => {
       const scheduleUpdate = () => {
         if (!isActive) return;
         const interval = 300 + Math.random() * 700;
         const timerId = setTimeout(() => {
           if (!isActive || !tableRef) return;
-          const idx = currentData.findIndex((r: (typeof liveUpdateData)[number]) => r.id === rowId);
+          const idx = currentData.findIndex((r) => r.id === rowId);
           if (idx === -1) return;
           const product = currentData[idx];
 
-          if (typeof product.price === "number") {
-            const newPrice = parseFloat((product.price * (0.95 + Math.random() * 0.1)).toFixed(2));
-            currentData[idx].price = newPrice;
-            tableRef.updateData({ accessor: "price", rowId, newValue: newPrice });
+          const newPrice = parseFloat((product.price * (0.95 + Math.random() * 0.1)).toFixed(2));
+          currentData[idx].price = newPrice;
+          tableRef.updateData({ accessor: "price", rowId, newValue: newPrice });
+
+          const newStock = Math.max(0, product.stock + Math.floor((Math.random() - 0.5) * 6));
+          currentData[idx].stock = newStock;
+          tableRef.updateData({ accessor: "stock", rowId, newValue: newStock });
+          if (product.stockHistory.length > 0) {
+            const updated = [...product.stockHistory.slice(1), newStock];
+            currentData[idx].stockHistory = updated;
+            tableRef.updateData({ accessor: "stockHistory", rowId, newValue: updated });
           }
-          if (typeof product.stock === "number") {
-            const newStock = Math.max(0, product.stock + Math.floor((Math.random() - 0.5) * 6));
-            currentData[idx].stock = newStock;
-            tableRef.updateData({ accessor: "stock", rowId, newValue: newStock });
-            if (Array.isArray(product.stockHistory)) {
-              const updated = [...product.stockHistory.slice(1), newStock];
-              currentData[idx].stockHistory = updated;
-              tableRef.updateData({ accessor: "stockHistory", rowId, newValue: updated });
-            }
-          }
-          if (Math.random() < 0.6 && typeof product.sales === "number") {
+
+          if (Math.random() < 0.6) {
             const inc = Math.floor(Math.random() * 3) + 1;
             currentData[idx].sales = product.sales + inc;
             tableRef.updateData({ accessor: "sales", rowId, newValue: currentData[idx].sales });
@@ -55,7 +58,9 @@ export default function LiveUpdateDemo(props: { height?: string | number; theme?
     const syncTimers = () => {
       if (!tableRef) return;
       const visibleRows = tableRef.getVisibleRows();
-      const visibleIds = new Set(visibleRows.map((vr) => vr.row.id as string | number));
+      const visibleIds = new Set(
+        visibleRows.map((vr) => vr.row.id).filter((id): id is number => typeof id === "number"),
+      );
       timerMap.forEach((tid, rid) => {
         if (!visibleIds.has(rid)) {
           clearTimeout(tid);
@@ -63,15 +68,15 @@ export default function LiveUpdateDemo(props: { height?: string | number; theme?
         }
       });
       visibleRows.forEach((vr) => {
-        const rid = vr.row.id as string | number;
-        if (!timerMap.has(rid)) createRowTimer(rid);
+        const rowId = vr.row.id;
+        if (typeof rowId === "number" && !timerMap.has(rowId)) createRowTimer(rowId);
       });
     };
 
     const salesRotate = setInterval(() => {
       if (!tableRef || !isActive) return;
-      currentData.forEach((row: (typeof liveUpdateData)[number], i: number) => {
-        if (Array.isArray(row.salesHistory)) {
+      currentData.forEach((row, i) => {
+        if (row.salesHistory.length > 0) {
           const rid = row.id;
           const sp = currentPeriodSales.get(rid) || 0;
           const updated = [...row.salesHistory.slice(1), sp];
@@ -100,8 +105,8 @@ export default function LiveUpdateDemo(props: { height?: string | number; theme?
     <SimpleTable
       ref={(api) => (tableRef = api)}
       columns={liveUpdateConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={liveUpdateConfig.rows}
-      getRowId={({ row }) => (row as { id: number }).id}
       height={props.height ?? "400px"}
       theme={props.theme}
     />

@@ -1,5 +1,6 @@
 import { createEffect, createSignal, onCleanup } from "solid-js";
-import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidColumnDef, CellChangeProps } from "@simple-table/solid";
+import { SimpleTable } from "@simple-table/solid";
+import type { Theme, SolidColumnDef, CellChangeProps, CellRendererProps } from "@simple-table/solid";
 import { getThemeColors, salesHeadersCore, salesSampleRows, type SalesRow } from "./sales.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -9,15 +10,14 @@ function formatTableHeight(height?: string | number | null): string {
   return height;
 }
 
-function getHeaders(): SolidColumnDef[] {
-  const headers = JSON.parse(JSON.stringify(salesHeadersCore));
+function getHeaders(): SolidColumnDef<SalesRow>[] {
+  const headers = JSON.parse(JSON.stringify(salesHeadersCore)) as SolidColumnDef<SalesRow>[];
 
-  const addRenderers = (hdrs: SolidColumnDef[]) => {
+  const addRenderers = (hdrs: SolidColumnDef<SalesRow>[]) => {
     for (const h of hdrs) {
       if (h.accessor === "dealValue") {
-        h.cellRenderer = ({ row, theme }) => {
-          if (row.dealValue === "—") return "—";
-          const value = row.dealValue as number;
+        h.cellRenderer = ({ row, theme }: CellRendererProps<SalesRow>) => {
+          const value = row.dealValue;
           const colors = getThemeColors(theme);
           let style: Record<string, string> = { color: colors.gray };
           if (value > 100000) style = { ...colors.success.high };
@@ -32,10 +32,8 @@ function getHeaders(): SolidColumnDef[] {
         };
       }
       if (h.accessor === "isWon") {
-        h.cellRenderer = ({ row }) => {
-          if (row.isWon === "—") return "—";
-          const d = row as unknown as SalesRow;
-          const s = d.isWon
+        h.cellRenderer = ({ row }: CellRendererProps<SalesRow>) => {
+          const s = row.isWon
             ? { bg: "#f6ffed", text: "#2a6a0d" }
             : { bg: "#fff1f0", text: "#a8071a" };
           return (
@@ -50,24 +48,22 @@ function getHeaders(): SolidColumnDef[] {
                 display: "inline-block",
               }}
             >
-              {d.isWon ? "Won" : "Lost"}
+              {row.isWon ? "Won" : "Lost"}
             </span>
           );
         };
       }
       if (h.accessor === "commission") {
-        h.cellRenderer = ({ row, theme }) => {
-          if (row.commission === "—") return "—";
-          const value = row.commission as number;
+        h.cellRenderer = ({ row, theme }: CellRendererProps<SalesRow>) => {
+          const value = row.commission;
           const colors = getThemeColors(theme);
           if (value === 0) return <span style={{ color: colors.grayMuted }}>$0.00</span>;
           return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         };
       }
       if (h.accessor === "profitMargin") {
-        h.cellRenderer = ({ row, theme }) => {
-          if (row.profitMargin === "—") return "—";
-          const value = row.profitMargin as number;
+        h.cellRenderer = ({ row, theme }: CellRendererProps<SalesRow>) => {
+          const value = row.profitMargin;
           const colors = getThemeColors(theme);
           let colorStyle: Record<string, string> = { color: colors.gray };
           if (value >= 0.7) colorStyle = { ...colors.success.high };
@@ -109,9 +105,8 @@ function getHeaders(): SolidColumnDef[] {
         };
       }
       if (h.accessor === "dealProfit") {
-        h.cellRenderer = ({ row, theme }) => {
-          if (row.dealProfit === "—") return "—";
-          const value = row.dealProfit as number;
+        h.cellRenderer = ({ row, theme }: CellRendererProps<SalesRow>) => {
+          const value = row.dealProfit;
           const colors = getThemeColors(theme);
           if (value === 0) return <span style={{ color: colors.grayMuted }}>$0.00</span>;
           let style: Record<string, string> = { color: colors.gray };
@@ -126,7 +121,7 @@ function getHeaders(): SolidColumnDef[] {
           );
         };
       }
-      if (h.children) addRenderers(h.children as SolidColumnDef[]);
+      if (h.children) addRenderers(h.children as SolidColumnDef<SalesRow>[]);
     }
   };
   addRenderers(headers);
@@ -146,7 +141,7 @@ export default function SalesDemo(props: { height?: string | number | null; them
     onCleanup(() => window.removeEventListener("resize", check));
   });
 
-  const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
+  const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps<SalesRow>) => {
     setRows((prev) =>
       prev.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item)),
     );
@@ -159,6 +154,7 @@ export default function SalesDemo(props: { height?: string | number | null; them
       columnReordering
       columns={HEADERS}
       enableColumnEditor
+      getRowId={({ row }) => row.id}
       height={formatTableHeight(props.height ?? null)}
       initialSortColumn="dealValue"
       initialSortDirection="desc"

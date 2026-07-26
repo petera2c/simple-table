@@ -1,8 +1,15 @@
 // Self-contained demo table setup for this example.
 import type { SolidColumnDef } from "@simple-table/solid";
 
+export interface ArchitectStaff {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+}
 
-export const rowHeightHeaders: SolidColumnDef[] = [
+export const rowHeightHeaders: SolidColumnDef<ArchitectStaff>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 150, width: "1fr", type: "string" },
   { accessor: "age", label: "Age", width: 100, type: "string" },
@@ -10,7 +17,7 @@ export const rowHeightHeaders: SolidColumnDef[] = [
   { accessor: "department", label: "Department", minWidth: 180, width: "1fr", type: "string" },
 ];
 
-export const rowHeightData = [
+export const rowHeightData: ArchitectStaff[] = [
   { id: 1, name: "Valentina Romano", age: 34, role: "Principal Architect", department: "Design" },
   { id: 2, name: "Mateo Fernandez", age: 29, role: "Project Architect", department: "Design" },
   { id: 3, name: "Amira Okafor", age: 41, role: "Design Director", department: "Leadership" },
@@ -29,4 +36,4 @@ export const rowHeightConfig = {
   headers: rowHeightHeaders,
   rows: rowHeightData,
   tableProps: { customTheme: { rowHeight: 32 } },
-} as const;
+};

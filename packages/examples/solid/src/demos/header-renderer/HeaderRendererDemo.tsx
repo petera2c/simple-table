@@ -1,6 +1,6 @@
 import { createSignal, createMemo } from "solid-js";
 import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidColumnDef, HeaderRendererProps } from "@simple-table/solid";
-import { headerRendererConfig } from "./header-renderer.demo-data";
+import { headerRendererConfig, type HeaderEmployee } from "./header-renderer.demo-data";
 import "@simple-table/solid/styles.css";
 
 type SortDir = "asc" | "desc" | null;
@@ -15,8 +15,9 @@ export default function HeaderRendererDemo(props: { height?: string | number; th
     const dir = sortDirection();
     if (!acc || !dir) return [...headerRendererConfig.rows];
     return [...headerRendererConfig.rows].sort((a, b) => {
-      const aVal = a[acc];
-      const bVal = b[acc];
+      const key = acc as keyof HeaderEmployee;
+      const aVal = a[key];
+      const bVal = b[key];
       if (aVal === bVal) return 0;
       const cmp = typeof aVal === "number" && typeof bVal === "number"
         ? aVal - bVal
@@ -25,11 +26,11 @@ export default function HeaderRendererDemo(props: { height?: string | number; th
     });
   });
 
-  const headers = createMemo((): SolidColumnDef[] =>
+  const headers = createMemo((): SolidColumnDef<HeaderEmployee>[] =>
     headerRendererConfig.headers.map((h) => ({
       ...h,
       sortable: false,
-      headerRenderer: ({ accessor }: HeaderRendererProps) => {
+      headerRenderer: ({ accessor }: HeaderRendererProps<HeaderEmployee>) => {
         const isSorted = sortAccessor() === accessor;
         const dir = isSorted ? sortDirection() : null;
         const indicator = dir === "asc" ? " ▲" : dir === "desc" ? " ▼" : "";
@@ -71,6 +72,7 @@ export default function HeaderRendererDemo(props: { height?: string | number; th
   return (
     <SimpleTable
       columns={headers()}
+      getRowId={({ row }) => row.id}
       rows={sortedData()}
       height={props.height ?? "400px"}
       theme={props.theme}

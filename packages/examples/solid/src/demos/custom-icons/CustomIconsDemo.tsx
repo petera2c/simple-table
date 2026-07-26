@@ -1,8 +1,8 @@
-import {SimpleTable} from "@simple-table/solid";import type { Theme } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidIconsConfig } from "@simple-table/solid";
 import { customIconsConfig } from "./custom-icons.demo-data";
 import "@simple-table/solid/styles.css";
 
-const customIcons = {
+const customIcons: SolidIconsConfig = {
   sortUp: (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 19V5M5 12l7-7 7 7" />
@@ -39,6 +39,7 @@ export default function CustomIconsDemo(props: { height?: string | number; theme
   return (
     <SimpleTable
       columns={customIconsConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={customIconsConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

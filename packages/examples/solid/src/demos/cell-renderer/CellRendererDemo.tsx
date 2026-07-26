@@ -16,8 +16,8 @@ const getInitials = (name: string) =>
     .join("")
     .toUpperCase();
 
-const TeamCell = (props: CellRendererProps) => {
-  const members = (props.row as CellRendererEmployee).teamMembers;
+const TeamCell = (props: CellRendererProps<CellRendererEmployee>) => {
+  const members = props.row.teamMembers;
   return (
     <div style={{ display: "flex", "align-items": "center", gap: "6px" }}>
       {members.map((m) => (
@@ -46,7 +46,7 @@ const TeamCell = (props: CellRendererProps) => {
   );
 };
 
-const WebsiteCell = (props: CellRendererProps) => {
+const WebsiteCell = (props: CellRendererProps<CellRendererEmployee>) => {
   const url = String(props.value);
   return (
     <span>
@@ -65,7 +65,7 @@ const WebsiteCell = (props: CellRendererProps) => {
   );
 };
 
-const StatusCell = (props: CellRendererProps) => {
+const StatusCell = (props: CellRendererProps<CellRendererEmployee>) => {
   const status = String(props.value);
   const map: Record<string, { icon: string; color: string }> = {
     active: { icon: "✓", color: "#10B981" },
@@ -80,7 +80,7 @@ const StatusCell = (props: CellRendererProps) => {
   );
 };
 
-const ProgressCell = (props: CellRendererProps) => {
+const ProgressCell = (props: CellRendererProps<CellRendererEmployee>) => {
   const pct = Number(props.value) || 0;
   const color = pct < 30 ? "#EF4444" : pct < 70 ? "#F59E0B" : "#10B981";
   return (
@@ -108,7 +108,7 @@ const ProgressCell = (props: CellRendererProps) => {
   );
 };
 
-const RatingCell = (props: CellRendererProps) => {
+const RatingCell = (props: CellRendererProps<CellRendererEmployee>) => {
   const rating = Number(props.value) || 0;
   const full = Math.floor(rating);
   const hasHalf = rating % 1 >= 0.25;
@@ -125,7 +125,7 @@ const RatingCell = (props: CellRendererProps) => {
   );
 };
 
-const VerifiedCell = (props: CellRendererProps) => {
+const VerifiedCell = (props: CellRendererProps<CellRendererEmployee>) => {
   const yes = Boolean(props.value);
   return (
     <span style={{ color: yes ? "#10B981" : "#EF4444", "font-weight": "600" }}>
@@ -134,8 +134,9 @@ const VerifiedCell = (props: CellRendererProps) => {
   );
 };
 
-const TagsCell = (props: CellRendererProps) => {
-  const tags = Array.isArray(props.value) ? (props.value as string[]) : [];
+const TagsCell = (props: CellRendererProps<CellRendererEmployee>) => {
+  const raw = Array.isArray(props.value) ? props.value : [];
+  const tags = raw.filter((t): t is string => typeof t === "string");
   return (
     <div style={{ display: "flex", gap: "4px", "flex-wrap": "nowrap", overflow: "hidden" }}>
       {tags.map((tag) => (
@@ -158,7 +159,7 @@ const TagsCell = (props: CellRendererProps) => {
   );
 };
 
-const RENDERER_MAP: Record<string, SolidCellRenderer> = {
+const RENDERER_MAP: Partial<Record<string, SolidCellRenderer<CellRendererEmployee>>> = {
   teamMembers: TeamCell,
   website: WebsiteCell,
   status: StatusCell,
@@ -168,15 +169,16 @@ const RENDERER_MAP: Record<string, SolidCellRenderer> = {
   tags: TagsCell,
 };
 
-const HEADERS: SolidColumnDef[] = cellRendererConfig.headers.map((h) => {
-  const fn = RENDERER_MAP[String(h.accessor)];
-  return fn !== undefined ? { ...h, cellRenderer: fn } : h;
+const HEADERS: SolidColumnDef<CellRendererEmployee>[] = cellRendererConfig.headers.map((h) => {
+  const cellRenderer = RENDERER_MAP[String(h.accessor)];
+  return cellRenderer ? { ...h, cellRenderer } : h;
 });
 
 export default function CellRendererDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
       columns={HEADERS}
+      getRowId={({ row }) => row.id}
       rows={cellRendererConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}
