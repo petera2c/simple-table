@@ -1,13 +1,13 @@
 import { useState } from "react";
 import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { tableHeightConfig, type HeightDemoEmployee } from "./table-height.demo-data";
+import { tableHeightConfig } from "./table-height.demo-data";
 import "@simple-table/react/styles.css";
 
 const heights = ["200px", "300px", "400px"] as const;
 
 const TableHeightDemo = ({
   height: _height,
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -29,14 +29,14 @@ const TableHeightDemo = ({
               color: selectedHeight === h ? "#fff" : "#374151",
               cursor: "pointer",
               fontSize: 14,
-              fontWeight: 500,
+              fontWeight: 500
             }}
           >
             {h}
           </button>
         ))}
       </div>
-      <SimpleTable<HeightDemoEmployee>
+      <SimpleTable
         columns={tableHeightConfig.headers}
         rows={tableHeightConfig.rows}
         height={selectedHeight}
