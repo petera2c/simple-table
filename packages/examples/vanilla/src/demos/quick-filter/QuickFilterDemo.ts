@@ -1,12 +1,15 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, QuickFilterMode } from "simple-table-core";
+import type { QuickFilterEmployee } from "./quick-filter.demo-data";
+import type { Theme, QuickFilterMode, GetRowIdParams } from "simple-table-core";
 import { quickFilterConfig } from "./quick-filter.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<QuickFilterEmployee>) => row.id;
 export function renderQuickFilterDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<QuickFilterEmployee> {
   let searchText = "";
   let filterMode: QuickFilterMode = "simple";
   let caseSensitive = false;
@@ -32,6 +35,7 @@ export function renderQuickFilterDemo(
   container.appendChild(wrapper);
 
   const table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: quickFilterConfig.headers,
     rows: quickFilterConfig.rows,
     height: options?.height ?? "400px",

@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, ColumnDef, CellRenderer } from "simple-table-core";
+import type { Theme, ColumnDef, CellRenderer, CellRendererProps, GetRowIdParams } from "simple-table-core";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "simple-table-core/styles.css";
@@ -13,9 +13,9 @@ const html = (str: string): Node => {
 const getInitials = (name: string) =>
   name.split(" ").map((n) => n[0]).join("").toUpperCase();
 
-const RENDERERS: Record<string, CellRenderer> = {
-  teamMembers: ({ row }) => {
-    const members = (row as CellRendererEmployee).teamMembers;
+const RENDERERS: Record<string, CellRenderer<CellRendererEmployee>> = {
+  teamMembers: ({ row }: CellRendererProps<CellRendererEmployee>) => {
+    const members = row.teamMembers;
     return html(
       `<div style="display:flex;align-items:center;gap:6px">${members
         .map(
@@ -73,7 +73,7 @@ const RENDERERS: Record<string, CellRenderer> = {
   },
 
   tags: ({ value }) => {
-    const tags = Array.isArray(value) ? (value as string[]) : [];
+    const tags = Array.isArray(value) ? value.filter((tag): tag is string => typeof tag === "string") : [];
     return html(
       `<div style="display:flex;gap:4px;flex-wrap:nowrap;overflow:hidden">${tags
         .map(
@@ -85,16 +85,19 @@ const RENDERERS: Record<string, CellRenderer> = {
   },
 };
 
+
+const getRowId = ({ row }: GetRowIdParams<CellRendererEmployee>) => row.id;
 export function renderCellRendererDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
-): SimpleTableVanilla {
-  const headers: ColumnDef[] = cellRendererConfig.headers.map((h) => {
-    const renderer = RENDERERS[h.accessor as string];
+): SimpleTableVanilla<CellRendererEmployee> {
+  const headers: ColumnDef<CellRendererEmployee>[] = cellRendererConfig.headers.map((h) => {
+    const renderer = RENDERERS[String(h.accessor)];
     return renderer ? { ...h, cellRenderer: renderer } : { ...h };
   });
 
   const table = new SimpleTableVanilla(container, {
+    getRowId,
     columns: headers,
     rows: cellRendererConfig.rows,
     height: options?.height ?? "400px",

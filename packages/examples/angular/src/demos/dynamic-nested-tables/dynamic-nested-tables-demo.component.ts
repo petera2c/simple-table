@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, OnRowGroupExpandProps, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, OnRowGroupExpandProps, Theme } from "@simple-table/angular";
 import {
   dynamicNestedTablesConfig,
   dynamicNestedTablesData,
@@ -19,7 +19,7 @@ import "@simple-table/angular/styles.css";
       [expandAll]="tableProps.expandAll"
       [height]="height"
       [rowGrouping]="tableProps.rowGrouping"
-      [getRowId]="tableProps.getRowId"
+      [getRowId]="getRowId"
       [rows]="rows"
       [onRowGroupExpand]="handleCompanyExpand"
       [theme]="theme"
@@ -30,7 +30,7 @@ export class DynamicNestedTablesDemoComponent {
   @Input() height: string | number = "500px";
   @Input() theme?: Theme;
 
-  headers: AngularColumnDef[] = dynamicNestedTablesConfig.headers;
+  headers: AngularColumnDef<DynamicCompany>[] = dynamicNestedTablesConfig.headers;
   rows: DynamicCompany[] = [...dynamicNestedTablesData];
   readonly tableProps = dynamicNestedTablesConfig.tableProps;
 
@@ -42,7 +42,7 @@ export class DynamicNestedTablesDemoComponent {
     setLoading,
     setError,
     setEmpty,
-  }: OnRowGroupExpandProps) => {
+  }: OnRowGroupExpandProps<DynamicCompany>) => {
     if (!isExpanded) return;
     try {
       if (groupingKey === "divisions") {
@@ -63,4 +63,6 @@ export class DynamicNestedTablesDemoComponent {
       setError(error instanceof Error ? error.message : "Failed to load divisions");
     }
   };
+
+  getRowId = ({ row }: GetRowIdParams<DynamicCompany>) => row.id;
 }

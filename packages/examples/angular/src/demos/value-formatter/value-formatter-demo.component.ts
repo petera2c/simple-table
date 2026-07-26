@@ -1,7 +1,8 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { valueFormatterConfig } from "./value-formatter.demo-data";
 import "@simple-table/angular/styles.css";
+import type { FormattedEmployee } from "./value-formatter.demo-data";
 
 @Component({
   selector: "value-formatter-demo",
@@ -9,6 +10,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -21,7 +23,9 @@ export class ValueFormatterDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = valueFormatterConfig.rows;
-  readonly headers: AngularColumnDef[] = valueFormatterConfig.headers;
+  readonly rows: FormattedEmployee[] = valueFormatterConfig.rows;
+  readonly headers: AngularColumnDef<FormattedEmployee>[] = valueFormatterConfig.headers;
   readonly selectableCellsProp = valueFormatterConfig.tableProps.selectableCells;
+
+  getRowId = ({ row }: GetRowIdParams<FormattedEmployee>) => row.id;
 }

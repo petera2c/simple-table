@@ -1,8 +1,9 @@
 import { Component, computed, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { headerDemoSortAccessor, headerDemoSortDirection } from "./header-demo-sort";
 import { headerRendererConfig } from "./header-renderer.demo-data";
+import type { HeaderEmployee } from "./header-renderer.demo-data";
 import { HeaderSortableHeaderComponent } from "./header-sortable-header.component";
 import "@simple-table/angular/styles.css";
 
@@ -12,6 +13,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="sortedData()"
       [columns]="headers()"
       [height]="height"
@@ -33,17 +35,19 @@ export class HeaderRendererDemoComponent {
       if (aVal === bVal) return 0;
       const cmp =
         typeof aVal === "number" && typeof bVal === "number"
-          ? (aVal as number) - (bVal as number)
+          ? aVal - bVal
           : String(aVal).localeCompare(String(bVal));
       return dir === "asc" ? cmp : -cmp;
     });
   });
 
-  readonly headers = computed((): AngularColumnDef[] =>
+  readonly headers = computed((): AngularColumnDef<HeaderEmployee>[] =>
     headerRendererConfig.headers.map((h) => ({
       ...h,
       sortable: false,
       headerRenderer: HeaderSortableHeaderComponent,
     })),
   );
+
+  getRowId = ({ row }: GetRowIdParams<HeaderEmployee>) => row.id;
 }

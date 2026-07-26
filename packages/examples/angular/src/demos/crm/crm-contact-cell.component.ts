@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import type { Row } from "@simple-table/angular";
+import type {  } from "@simple-table/angular";
 import type { CRMLead } from "./crm.demo-data";
 import { crmCellPalette } from "./crm-demo-context";
 
@@ -14,8 +14,8 @@ import { crmCellPalette } from "./crm-demo-context";
         {{ initials }}
       </div>
       <div style="display:flex;flex-direction:column;gap:2px;">
-        <span style="cursor:pointer;font-size:14px;font-weight:600;" [style.color]="palette().link">{{ d.name }}</span>
-        <div style="font-size:12px;" [style.color]="palette().textSecondary">{{ d.title }}</div>
+        <span style="cursor:pointer;font-size:14px;font-weight:600;" [style.color]="palette().link">{{ row.name }}</span>
+        <div style="font-size:12px;" [style.color]="palette().textSecondary">{{ row.title }}</div>
         <div style="font-size:12px;" [style.color]="palette().textSecondary">
           <span style="font-size:12px;" [style.color]="palette().textTertiary">&#64;</span>
           {{ " " + d.company }}
@@ -25,16 +25,12 @@ import { crmCellPalette } from "./crm-demo-context";
   `,
 })
 export class CrmContactCellComponent {
-  @Input({ required: true }) row!: Row;
+  @Input({ required: true }) row!: CRMLead;
 
   protected readonly palette = crmCellPalette;
 
-  get d(): CRMLead {
-    return this.row as unknown as CRMLead;
-  }
-
   get initials(): string {
-    return this.d.name
+    return this.row.name
       .split(" ")
       .map((n) => n[0])
       .join("")

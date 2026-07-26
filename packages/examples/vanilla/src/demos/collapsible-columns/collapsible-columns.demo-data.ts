@@ -1,8 +1,38 @@
 // Self-contained demo table setup for this example.
-import type { ColumnDef } from "simple-table-core";
+import type { CellRenderer, ColumnDef } from "simple-table-core";
 
+export interface CollapsibleSalesRep {
+  id: number;
+  name: string;
+  region: string;
+  q1Sales: number;
+  q2Sales: number;
+  q3Sales: number;
+  q4Sales: number;
+  totalSales: number;
+  avgQuarterly: number;
+  jan: number;
+  feb: number;
+  mar: number;
+  apr: number;
+  may: number;
+  jun: number;
+  jul: number;
+  aug: number;
+  sep: number;
+  oct: number;
+  nov: number;
+  dec: number;
+  avgMonthly: number;
+  bestMonth: number;
+  softwareSales: number;
+  hardwareSales: number;
+  servicesSales: number;
+  topCategory: string;
+  categoryCount: number;
+}
 
-export const collapsibleColumnsData = [
+export const collapsibleColumnsData: CollapsibleSalesRep[] = [
   { id: 1, name: "Alice Thompson", region: "North America", q1Sales: 245000, q2Sales: 289000, q3Sales: 312000, q4Sales: 298000, totalSales: 1144000, avgQuarterly: 286000, jan: 78000, feb: 82000, mar: 85000, apr: 89000, may: 95000, jun: 105000, jul: 98000, aug: 102000, sep: 112000, oct: 108000, nov: 95000, dec: 95000, avgMonthly: 95333, bestMonth: 112000, softwareSales: 456000, hardwareSales: 342000, servicesSales: 346000, topCategory: "Software", categoryCount: 3 },
   { id: 2, name: "Marcus Chen", region: "Asia Pacific", q1Sales: 189000, q2Sales: 234000, q3Sales: 287000, q4Sales: 276000, totalSales: 986000, avgQuarterly: 246500, jan: 58000, feb: 62000, mar: 69000, apr: 72000, may: 78000, jun: 84000, jul: 89000, aug: 95000, sep: 103000, oct: 98000, nov: 89000, dec: 89000, avgMonthly: 82166, bestMonth: 103000, softwareSales: 398000, hardwareSales: 298000, servicesSales: 290000, topCategory: "Software", categoryCount: 3 },
   { id: 3, name: "Sofia Rodriguez", region: "Europe", q1Sales: 198000, q2Sales: 245000, q3Sales: 267000, q4Sales: 289000, totalSales: 999000, avgQuarterly: 249750, jan: 62000, feb: 66000, mar: 70000, apr: 78000, may: 82000, jun: 85000, jul: 85000, aug: 88000, sep: 94000, oct: 96000, nov: 97000, dec: 96000, avgMonthly: 83250, bestMonth: 97000, softwareSales: 389000, hardwareSales: 312000, servicesSales: 298000, topCategory: "Software", categoryCount: 3 },
@@ -17,21 +47,38 @@ export const collapsibleColumnsData = [
   { id: 12, name: "Christopher Lee", region: "Europe", q1Sales: 167000, q2Sales: 189000, q3Sales: 212000, q4Sales: 234000, totalSales: 802000, avgQuarterly: 200500, jan: 52000, feb: 55000, mar: 60000, apr: 61000, may: 63000, jun: 65000, jul: 68000, aug: 71000, sep: 73000, oct: 76000, nov: 78000, dec: 80000, avgMonthly: 66833, bestMonth: 80000, softwareSales: 320000, hardwareSales: 241000, servicesSales: 241000, topCategory: "Software", categoryCount: 3 },
 ];
 
-const fmt = (accessor: string) => ({ row }: { row: Record<string, unknown> }) =>
-  `$${((row[accessor] as number) || 0).toLocaleString()}`;
+const fmtCurrency: CellRenderer<CollapsibleSalesRep, number> = ({ value }) =>
+  `$${(value ?? 0).toLocaleString()}`;
 
-const monthCol = (accessor: string, label: string): ColumnDef => ({
+type MonthKey =
+  | "jan"
+  | "feb"
+  | "mar"
+  | "apr"
+  | "may"
+  | "jun"
+  | "jul"
+  | "aug"
+  | "sep"
+  | "oct"
+  | "nov"
+  | "dec";
+
+const monthCol = (
+  accessor: MonthKey,
+  label: string,
+): ColumnDef<CollapsibleSalesRep, number> => ({
   accessor,
   label,
   width: 100,
-  showWhen: "parentExpanded" as const,
+  showWhen: "parentExpanded",
   sortable: true,
   align: "right",
   type: "number",
-  cellRenderer: fmt(accessor),
+  cellRenderer: fmtCurrency,
 });
 
-export const collapsibleColumnsHeaders: ColumnDef[] = [
+export const collapsibleColumnsHeaders: ColumnDef<CollapsibleSalesRep>[] = [
   { accessor: "id", label: "ID", width: 60, sortable: true },
   { accessor: "name", label: "Sales Rep", minWidth: 150, width: "1fr", sortable: true },
   { accessor: "region", label: "Region", width: 140, sortable: true },
@@ -42,11 +89,11 @@ export const collapsibleColumnsHeaders: ColumnDef[] = [
     collapsible: true,
     collapseDefault: true,
     children: [
-      { accessor: "totalSales", label: "Total Sales", width: 140, showWhen: "parentCollapsed" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("totalSales") },
-      { accessor: "q1Sales", label: "Q1", width: 120, showWhen: "parentExpanded" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("q1Sales") },
-      { accessor: "q2Sales", label: "Q2", width: 120, showWhen: "parentExpanded" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("q2Sales") },
-      { accessor: "q3Sales", label: "Q3", width: 120, showWhen: "parentExpanded" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("q3Sales") },
-      { accessor: "q4Sales", label: "Q4", width: 120, showWhen: "parentExpanded" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("q4Sales") },
+      { accessor: "totalSales", label: "Total Sales", width: 140, showWhen: "parentCollapsed", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
+      { accessor: "q1Sales", label: "Q1", width: 120, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
+      { accessor: "q2Sales", label: "Q2", width: 120, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
+      { accessor: "q3Sales", label: "Q3", width: 120, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
+      { accessor: "q4Sales", label: "Q4", width: 120, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
     ],
   },
   {
@@ -56,8 +103,8 @@ export const collapsibleColumnsHeaders: ColumnDef[] = [
     collapsible: true,
     collapseDefault: true,
     children: [
-      { accessor: "avgMonthly", label: "Avg Monthly", width: 130, showWhen: "parentCollapsed" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("avgMonthly") },
-      { accessor: "bestMonth", label: "Best Month", width: 130, showWhen: "parentCollapsed" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("bestMonth") },
+      { accessor: "avgMonthly", label: "Avg Monthly", width: 130, showWhen: "parentCollapsed", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
+      { accessor: "bestMonth", label: "Best Month", width: 130, showWhen: "parentCollapsed", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
       monthCol("jan", "Jan"), monthCol("feb", "Feb"), monthCol("mar", "Mar"),
       monthCol("apr", "Apr"), monthCol("may", "May"), monthCol("jun", "Jun"),
       monthCol("jul", "Jul"), monthCol("aug", "Aug"), monthCol("sep", "Sep"),
@@ -71,10 +118,10 @@ export const collapsibleColumnsHeaders: ColumnDef[] = [
     collapsible: true,
     collapseDefault: true,
     children: [
-      { accessor: "topCategory", label: "Top Category", width: 140, showWhen: "parentCollapsed" as const, sortable: true, type: "string" },
-      { accessor: "softwareSales", label: "Software", width: 130, showWhen: "parentExpanded" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("softwareSales") },
-      { accessor: "hardwareSales", label: "Hardware", width: 130, showWhen: "parentExpanded" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("hardwareSales") },
-      { accessor: "servicesSales", label: "Services", width: 130, showWhen: "parentExpanded" as const, sortable: true, align: "right", type: "number", cellRenderer: fmt("servicesSales") },
+      { accessor: "topCategory", label: "Top Category", width: 140, showWhen: "parentCollapsed", sortable: true, type: "string" },
+      { accessor: "softwareSales", label: "Software", width: 130, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
+      { accessor: "hardwareSales", label: "Hardware", width: 130, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
+      { accessor: "servicesSales", label: "Services", width: 130, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
     ],
   },
 ];
@@ -88,4 +135,4 @@ export const collapsibleColumnsConfig = {
     selectableCells: true,
     columnReordering: true,
   },
-} as const;
+};

@@ -1,8 +1,9 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { soccerConfig } from "./soccer.demo-data";
 import "@simple-table/angular/styles.css";
+import type { SoccerPlayer } from "./soccer.demo-data";
 
 @Component({
   selector: "soccer-demo",
@@ -10,6 +11,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [columns]="headers"
       [rows]="rows"
       [height]="height"
@@ -28,7 +30,9 @@ export class SoccerDemoComponent {
   @Input() height: string | number = "70dvh";
   @Input() theme?: Theme;
 
-  readonly headers: AngularColumnDef[] = soccerConfig.headers;
-  readonly rows: Row[] = soccerConfig.rows;
+  readonly headers: AngularColumnDef<SoccerPlayer>[] = soccerConfig.headers;
+  readonly rows: SoccerPlayer[] = soccerConfig.rows;
   readonly customTheme = { headerHeight: 40, rowHeight: 48 };
+
+  getRowId = ({ row }: GetRowIdParams<SoccerPlayer>) => row.id;
 }

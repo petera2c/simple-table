@@ -1,14 +1,17 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
+import type { PivotFact } from "./pivot.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import { pivotDemoConfig, pivotPresets } from "./pivot.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<PivotFact>) => row.id;
 export function renderPivotDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<PivotFact> {
   let activeId = pivotPresets[0].id;
-  let table: SimpleTableVanilla | null = null;
+  let table: SimpleTableVanilla<PivotFact> | null = null;
 
   const root = document.createElement("div");
   root.style.cssText = "display:flex;flex-direction:column;gap:12px;width:100%";
@@ -48,6 +51,7 @@ export function renderPivotDemo(
 
   const active = pivotPresets.find((p) => p.id === activeId) ?? pivotPresets[0];
   table = new SimpleTableVanilla(tableHost, {
+    getRowId,
     columns: pivotDemoConfig.headers,
     rows: pivotDemoConfig.rows,
     pivot: active.pivot,

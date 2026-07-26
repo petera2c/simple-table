@@ -1,7 +1,8 @@
 import { Component, Input, ViewChild } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularCellRenderer, AngularColumnDef, CellRendererProps, GetRowIdParams, Theme } from "@simple-table/angular";
 import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
 import "@simple-table/angular/styles.css";
+import type { ProgrammaticControlProduct } from "./programmatic-control.demo-data";
 
 @Component({
   selector: "programmatic-control-demo",
@@ -20,6 +21,7 @@ import "@simple-table/angular/styles.css";
         <button (click)="getInfo()">Get Table Info</button>
       </div>
       <simple-table
+      [getRowId]="getRowId"
         #simpleTable
         [rows]="rows"
         [columns]="headers"
@@ -35,13 +37,13 @@ export class ProgrammaticControlDemoComponent {
   @Input() theme?: Theme;
 
   statusMessage = "No status message";
-  readonly rows: Row[] = programmaticControlConfig.rows;
-  readonly headers: AngularColumnDef[] = programmaticControlConfig.headers.map((h) => {
+  readonly rows: ProgrammaticControlProduct[] = programmaticControlConfig.rows;
+  readonly headers: AngularColumnDef<ProgrammaticControlProduct>[] = programmaticControlConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-          const s = String(row.status);
+        cellRenderer: ({ row }: CellRendererProps<ProgrammaticControlProduct>) => {
+          const s = row.status;
           const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? { bg: "#f3f4f6", color: "#374151" };
           return `<span style="background:${colors.bg};color:${colors.color};padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold">${s}</span>`;
         },
@@ -78,8 +80,9 @@ export class ProgrammaticControlDemoComponent {
     const sortState = api.getSortState();
     const filterState = api.getFilterState();
     const totalValue = allRows.reduce((sum, r) => {
-      const data = r.row as { price?: number; stock?: number };
-      return sum + (Number(data.price) || 0) * (Number(data.stock) || 0);
+      const price = r.row.price;
+      const stock = r.row.stock;
+      return sum + (typeof price === "number" ? price : 0) * (typeof stock === "number" ? stock : 0);
     }, 0);
     const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
     alert(
@@ -87,4 +90,6 @@ export class ProgrammaticControlDemoComponent {
     );
     this.statusMessage = "Table info displayed";
   }
+
+  getRowId = ({ row }: GetRowIdParams<ProgrammaticControlProduct>) => row.id;
 }

@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, ColumnDef, CellClickProps } from "simple-table-core";
+import type { Theme, ColumnDef, CellClickProps, CellRendererProps, GetRowIdParams } from "simple-table-core";
 import {
   cellClickingHeaders,
   cellClickingData,
@@ -8,10 +8,12 @@ import {
 import type { ProjectTask } from "./cell-clicking.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<ProjectTask>) => row.id;
 export function renderCellClickingDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
-): SimpleTableVanilla {
+): SimpleTableVanilla<ProjectTask> {
   const isDark = options?.theme === "modern-dark" || options?.theme === "dark";
 
   const wrapper = document.createElement("div");
@@ -33,11 +35,11 @@ export function renderCellClickingDemo(
 
   let rows: ProjectTask[] = [...cellClickingData];
 
-  const headers: ColumnDef[] = cellClickingHeaders.map((h) => {
+  const headers: ColumnDef<ProjectTask>[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") {
       return {
         ...h,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+        cellRenderer: ({ row }: CellRendererProps<ProjectTask>) => {
           const p = String(row.priority);
           const color = p === "High" ? "#ef4444" : p === "Medium" ? "#f59e0b" : "#10b981";
           const el = document.createElement("span");
@@ -51,7 +53,7 @@ export function renderCellClickingDemo(
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+        cellRenderer: ({ row }: CellRendererProps<ProjectTask>) => {
           const s = String(row.status);
           const bg = s === "Completed" ? "#dcfce7" : s === "In Progress" ? "#fef3c7" : "#fee2e2";
           const c = s === "Completed" ? "#166534" : s === "In Progress" ? "#92400e" : "#991b1b";
@@ -122,13 +124,14 @@ export function renderCellClickingDemo(
   }
 
   const table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: headers,
     rows,
     height: options?.height ?? "320px",
     theme: options?.theme,
     columnResizing: true,
-    onCellClick: ({ accessor, rowIndex, value, row }: CellClickProps) => {
-      const task = row as ProjectTask;
+    onCellClick: ({ accessor, rowIndex, value, row }: CellClickProps<ProjectTask>) => {
+      const task = row;
       switch (accessor) {
         case "priority":
           updateBanner(`Filtering by ${value} priority`);

@@ -1,8 +1,9 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, PivotConfig, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, PivotConfig, Theme } from "@simple-table/angular";
 import { pivotDemoConfig, pivotPresets, type PivotPreset } from "./pivot.demo-data";
 import "@simple-table/angular/styles.css";
+import type { PivotFact } from "./pivot.demo-data";
 
 @Component({
   selector: "pivot-demo",
@@ -29,6 +30,7 @@ import "@simple-table/angular/styles.css";
         }
       </div>
       <simple-table
+      [getRowId]="getRowId"
         [rows]="rows"
         [columns]="headers"
         [pivot]="pivot"
@@ -45,8 +47,8 @@ export class PivotDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = pivotDemoConfig.rows;
-  readonly headers: AngularColumnDef[] = pivotDemoConfig.headers;
+  readonly rows: PivotFact[] = pivotDemoConfig.rows;
+  readonly headers: AngularColumnDef<PivotFact>[] = pivotDemoConfig.headers;
   readonly presets = pivotPresets;
 
   activeId = pivotPresets[0].id;
@@ -58,4 +60,6 @@ export class PivotDemoComponent {
     this.pivot = preset.pivot;
     this.nestedRows = preset.pivot.rows.length > 1;
   }
+
+  getRowId = ({ row }: GetRowIdParams<PivotFact>) => row.id;
 }

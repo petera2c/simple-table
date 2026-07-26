@@ -1,7 +1,8 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { columnFilteringConfig } from "./column-filtering.demo-data";
 import "@simple-table/angular/styles.css";
+import type { ColumnFilteringEmployee } from "./column-filtering.demo-data";
 
 @Component({
   selector: "column-filtering-demo",
@@ -9,6 +10,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -20,6 +22,8 @@ export class ColumnFilteringDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = columnFilteringConfig.rows;
-  readonly headers: AngularColumnDef[] = columnFilteringConfig.headers;
+  readonly rows: ColumnFilteringEmployee[] = columnFilteringConfig.rows;
+  readonly headers: AngularColumnDef<ColumnFilteringEmployee>[] = columnFilteringConfig.headers;
+
+  getRowId = ({ row }: GetRowIdParams<ColumnFilteringEmployee>) => row.id;
 }

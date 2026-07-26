@@ -1,8 +1,7 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef, Row } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
-
-export interface DynamicRegion extends Row {
+export interface DynamicRegion {
   id: string;
   name: string;
   type: "region";
@@ -14,7 +13,7 @@ export interface DynamicRegion extends Row {
   stores?: DynamicStore[];
 }
 
-export interface DynamicStore extends Row {
+export interface DynamicStore {
   id: string;
   name: string;
   type: "store";
@@ -26,7 +25,7 @@ export interface DynamicStore extends Row {
   products?: DynamicProduct[];
 }
 
-export interface DynamicProduct extends Row {
+export interface DynamicProduct {
   id: string;
   name: string;
   type: "product";
@@ -37,22 +36,25 @@ export interface DynamicProduct extends Row {
   lastUpdate: string;
 }
 
-export const dynamicRowLoadingHeaders: AngularColumnDef[] = [
+/** Row union across grouping depths (region → store → product). */
+export type DynamicTreeRow = DynamicRegion | DynamicStore | DynamicProduct;
+
+export const dynamicRowLoadingHeaders: AngularColumnDef<DynamicTreeRow>[] = [
   { accessor: "name", label: "Name", width: 280, expandable: true, type: "string", pinned: "left" },
   { accessor: "type", label: "Type", width: 100, type: "string" },
   {
     accessor: "totalSales", label: "Total Sales", width: 120, type: "number", align: "right",
     aggregation: { type: "sum" },
-    valueFormatter: ({ value }) => typeof value !== "number" ? "—" : value.toLocaleString(),
+    valueFormatter: ({ value }: ValueFormatterProps<DynamicTreeRow>) => typeof value !== "number" ? "—" : value.toLocaleString(),
   },
   {
     accessor: "totalRevenue", label: "Revenue", width: 140, type: "number", align: "right",
     aggregation: { type: "sum" },
-    valueFormatter: ({ value }) => typeof value !== "number" ? "—" : `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    valueFormatter: ({ value }: ValueFormatterProps<DynamicTreeRow>) => typeof value !== "number" ? "—" : `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
   },
   {
     accessor: "activeStores", label: "Stores", width: 100, type: "number", align: "right",
-    valueFormatter: ({ value }) => typeof value !== "number" ? "—" : value.toLocaleString(),
+    valueFormatter: ({ value }: ValueFormatterProps<DynamicTreeRow>) => typeof value !== "number" ? "—" : value.toLocaleString(),
   },
   { accessor: "avgRating", label: "Avg Rating", width: 120, type: "string", align: "center" },
   { accessor: "lastUpdate", label: "Last Updated", width: 130, type: "date" },
@@ -130,7 +132,7 @@ const generateStoresForRegion = (regionId: string): DynamicStore[] => {
     return {
       id: storeId,
       name: STORE_NAMES[storeIndex % STORE_NAMES.length],
-      type: "store" as const,
+      type: "store",
       totalSales,
       totalRevenue: totalSales * avgPrice,
       avgRating: getRandomRating(storeId),
@@ -150,7 +152,7 @@ const generateProductsForStore = (storeId: string): DynamicProduct[] => {
     return {
       id: productId,
       name: PRODUCT_NAMES[(startIndex + i) % PRODUCT_NAMES.length],
-      type: "product" as const,
+      type: "product",
       totalSales,
       totalRevenue: totalSales * avgPrice,
       avgRating: getRandomRating(productId),
@@ -181,7 +183,7 @@ export const generateInitialRegions = (): DynamicRegion[] => {
     return {
       id: regionId,
       name,
-      type: "region" as const,
+      type: "region",
       totalSales,
       totalRevenue,
       activeStores: getRandomInt(regionId, 3, 4),
@@ -194,12 +196,11 @@ export const generateInitialRegions = (): DynamicRegion[] => {
 export const dynamicRowLoadingConfig = {
   headers: dynamicRowLoadingHeaders,
   tableProps: {
-    rowGrouping: ["stores", "products"] as string[],
-    getRowId: ({ row }: { row: Record<string, unknown> }) => row.id as string,
+    rowGrouping: ["stores", "products"],
     expandAll: false,
     columnResizing: true,
     selectableCells: true,
     oddEvenRowBackground: true,
     enableColumnEditor: true,
   },
-} as const;
+};

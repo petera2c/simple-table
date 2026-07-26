@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef } from "@simple-table/angular";
+import type { AngularColumnDef, ValueGetterProps } from "@simple-table/angular";
 
 export interface ManufacturingRow {
   id: string;
@@ -83,13 +83,13 @@ export function generateManufacturingData(count: number = 8): ManufacturingRow[]
 
 export const manufacturingData = generateManufacturingData(8);
 
-export const manufacturingHeaders: AngularColumnDef[] = [
+export const manufacturingHeaders: AngularColumnDef<ManufacturingRow>[] = [
   { accessor: "productLine", label: "Production Line", width: 180, expandable: true, sortable: true, editable: false, align: "left", type: "string" },
   { accessor: "station", label: "Workstation", width: 150, sortable: true, editable: false, align: "left", type: "string" },
   { accessor: "machineType", label: "Machine Type", width: 150, sortable: true, editable: false, align: "left", type: "string" },
   {
     accessor: "status", label: "Status", width: 180, sortable: true, editable: false, align: "center", type: "string",
-    valueGetter: ({ row }) => {
+    valueGetter: ({ row }: ValueGetterProps<ManufacturingRow>) => {
       if (row.stations && Array.isArray(row.stations)) return 999;
       const priorityMap: Record<string, number> = { "Unplanned Downtime": 1, Idle: 2, Setup: 3, "Scheduled Maintenance": 4, Running: 5 };
       return priorityMap[String(row.status)] || 999;
@@ -122,4 +122,4 @@ export function getManufacturingStatusColors(status: string, theme?: string) {
 export const manufacturingConfig = {
   headers: manufacturingHeaders,
   rows: manufacturingData,
-} as const;
+};

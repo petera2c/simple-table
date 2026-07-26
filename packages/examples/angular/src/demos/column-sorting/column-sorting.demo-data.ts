@@ -1,9 +1,16 @@
 // Self-contained demo table setup for this example.
-import type { Row } from "@simple-table/angular";
-import type { AngularColumnDef } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
+export interface FacultyMember {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+  startDate: string;
+}
 
-export const COLUMN_SORTING_DATA: Row[] = [
+export const COLUMN_SORTING_DATA: FacultyMember[] = [
   {
     id: 1,
     name: "Dr. Elena Vasquez",
@@ -103,7 +110,7 @@ export const COLUMN_SORTING_DATA: Row[] = [
 ];
 
 
-export const columnSortingHeaders: AngularColumnDef[] = [
+export const columnSortingHeaders: AngularColumnDef<FacultyMember, any>[] = [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   { accessor: "name", label: "Name", width: 180, sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 80, sortable: true, type: "number" },
@@ -114,8 +121,8 @@ export const columnSortingHeaders: AngularColumnDef[] = [
     width: 180,
     sortable: true,
     type: "string",
-    valueFormatter: ({ value }) => {
-      return (value as string).charAt(0).toUpperCase() + (value as string).slice(1);
+    valueFormatter: ({ value }: ValueFormatterProps<FacultyMember, string>) => {
+      return value.charAt(0).toUpperCase() + value.slice(1);
     },
   },
   {
@@ -124,7 +131,7 @@ export const columnSortingHeaders: AngularColumnDef[] = [
     width: 140,
     sortable: true,
     type: "date",
-    valueFormatter: ({ value }) => {
+    valueFormatter: ({ value }: ValueFormatterProps<FacultyMember>) => {
       if (typeof value === "string") {
         return new Date(value).toLocaleDateString("en-US", {
           year: "numeric",
@@ -141,3 +148,4 @@ export const columnSortingConfig = {
   headers: columnSortingHeaders,
   rows: COLUMN_SORTING_DATA,
 };
+

@@ -1,9 +1,17 @@
 // Self-contained demo table setup for this example.
-import type { Row } from "simple-table-core";
-import type { ColumnDef } from "simple-table-core";
+import type { ColumnDef, CellRendererProps } from "simple-table-core";
 
+export interface ColumnFilteringEmployee {
+  id: number;
+  name: string;
+  department: string;
+  role: string;
+  salary: number;
+  startDate: string;
+  isActive: boolean;
+}
 
-export const COLUMN_FILTERING_DATA: Row[] = [
+export const COLUMN_FILTERING_DATA: ColumnFilteringEmployee[] = [
   {
     id: 1,
     name: "Bianca Rossi",
@@ -148,7 +156,7 @@ export const DEPARTMENT_OPTIONS = [
   { label: "Quality Assurance", value: "Quality Assurance" },
 ];
 
-export const columnFilteringHeaders: ColumnDef[] = [
+export const columnFilteringHeaders: ColumnDef<ColumnFilteringEmployee>[] = [
   {
     accessor: "id",
     label: "ID",
@@ -192,8 +200,8 @@ export const columnFilteringHeaders: ColumnDef[] = [
     type: "number",
     sortable: true,
     filterable: true,
-    cellRenderer: ({ row }) => {
-      const salary = row.salary as number;
+    cellRenderer: ({ row }: CellRendererProps<ColumnFilteringEmployee>) => {
+      const salary = row.salary;
       return `$${salary.toLocaleString()}`;
     },
   },
@@ -219,4 +227,4 @@ export const columnFilteringHeaders: ColumnDef[] = [
 export const columnFilteringConfig = {
   headers: columnFilteringHeaders,
   rows: COLUMN_FILTERING_DATA,
-} as const;
+};

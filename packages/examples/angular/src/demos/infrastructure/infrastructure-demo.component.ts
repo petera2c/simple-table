@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, Input, OnDestroy, ViewChild } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme, ValueGetterProps } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme, ValueGetterProps } from "@simple-table/angular";
 import { infrastructureData } from "./infrastructure.demo-data";
 import {
   InfraCpuCellComponent,
@@ -12,8 +12,9 @@ import {
 } from "./infrastructure-cell-components";
 import { startInfraDemoLiveUpdates } from "./infrastructure-live-updates";
 import "@simple-table/angular/styles.css";
+import type { InfrastructureServer } from "./infrastructure.demo-data";
 
-function getHeaders(theme?: Theme): AngularColumnDef[] {
+function getHeaders(theme?: Theme): AngularColumnDef<InfrastructureServer>[] {
   return [
     {
       accessor: "serverId",
@@ -118,7 +119,7 @@ function getHeaders(theme?: Theme): AngularColumnDef[] {
         { label: "Maintenance", value: "maintenance" },
         { label: "Offline", value: "offline" },
       ],
-      valueGetter: ({ row }: ValueGetterProps) => {
+      valueGetter: ({ row }: ValueGetterProps<InfrastructureServer>) => {
         const m: Record<string, number> = { critical: 1, offline: 2, warning: 3, maintenance: 4, online: 5 };
         return m[String(row.status)] || 999;
       },
@@ -152,9 +153,9 @@ export class InfrastructureDemoComponent implements AfterViewInit, OnDestroy {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = infrastructureData;
-  readonly headers: AngularColumnDef[] = getHeaders();
-  readonly getRowId = ({ row }: { row: Row }) => (row as { id: string | number }).id;
+  readonly rows: InfrastructureServer[] = infrastructureData;
+  readonly headers: AngularColumnDef<InfrastructureServer>[] = getHeaders();
+  readonly getRowId = ({ row }: GetRowIdParams<InfrastructureServer>) => row.id;
 
   private cleanupFn?: () => void;
 

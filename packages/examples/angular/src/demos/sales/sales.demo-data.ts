@@ -1,4 +1,4 @@
-import type { AngularColumnDef, ValueGetterProps } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps, ValueGetterProps } from "@simple-table/angular";
 
 type SuccessHighStyle = { color: string; fontWeight: "bold" };
 type ThemePalette = {
@@ -143,7 +143,7 @@ const SALES_SAMPLE_INBOUND: SalesInboundRow[] = [
 
 export const salesSampleRows: SalesRow[] = processSalesData(SALES_SAMPLE_INBOUND);
 
-export const salesHeadersCore: AngularColumnDef[] = [
+export const salesHeadersCore: AngularColumnDef<SalesRow, any>[] = [
   {
     accessor: "repName",
     label: "Sales Representative",
@@ -170,9 +170,8 @@ export const salesHeadersCore: AngularColumnDef[] = [
         align: "right",
         type: "number",
         tooltip: "The size of the deal in dollars",
-        valueFormatter: ({ value }) => {
-          if (value === "—") return "—";
-          return `$${(value as number).toLocaleString("en-US", {
+        valueFormatter: ({ value }: ValueFormatterProps<SalesRow, number>) => {
+          return `$${value.toLocaleString("en-US", {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
           })}`;
@@ -212,9 +211,9 @@ export const salesHeadersCore: AngularColumnDef[] = [
         align: "center",
         type: "date",
         tooltip: "The date the deal was closed",
-        valueFormatter: ({ value }) => {
+        valueFormatter: ({ value }: ValueFormatterProps<SalesRow, string>) => {
           if (!value) return "—";
-          const [year, month, day] = (value as string).split("-").map(Number);
+          const [year, month, day] = value.split("-").map(Number);
           const date = new Date(year, month - 1, day);
           return date.toLocaleDateString("en-US", {
             month: "short",
@@ -253,15 +252,11 @@ export const salesHeadersCore: AngularColumnDef[] = [
         align: "right",
         type: "number",
         tooltip: "The profit margin of the deal",
-        valueFormatter: ({ value }) => {
-          if (value === "—") return "—";
-          return `${((value as number) * 100).toFixed(1)}%`;
+        valueFormatter: ({ value }: ValueFormatterProps<SalesRow, number>) => {
+          return `${(value * 100).toFixed(1)}%`;
         },
         useFormattedValueForClipboard: true,
-        exportValueGetter: ({ value }) => {
-          if (value === "—") return "—";
-          return `${Math.round((value as number) * 100)}%`;
-        },
+        exportValueGetter: ({ value }) => `${Math.round(Number(value) * 100)}%`,
       },
       {
         accessor: "dealProfit",
@@ -292,8 +287,8 @@ export const salesHeadersCore: AngularColumnDef[] = [
           { label: "Training", value: "Training" },
           { label: "Support", value: "Support" },
         ],
-        valueGetter: ({ row }: ValueGetterProps) => {
-          const category = row.category as string;
+        valueGetter: ({ row }: ValueGetterProps<SalesRow>) => {
+          const category = row.category;
           const priorityMap: Record<string, number> = {
             Software: 1,
             Consulting: 2,
@@ -308,3 +303,44 @@ export const salesHeadersCore: AngularColumnDef[] = [
     ],
   },
 ];
+const FIRST_NAMES = [
+  "Sophie", "Akira", "Thomas", "Valentina", "Isabella", "Emily", "Olivia", "Marcus",
+  "Nina", "James", "Elena", "Chen", "Priya", "Lars", "Amélie", "Diego", "Fatima",
+  "Henrik", "Yuki", "Grace", "Liam", "Noah", "Mia", "Lucas", "Aria",
+];
+
+const LAST_NAMES = [
+  "Dubois", "Tanaka", "Müller", "Diaz", "Fernandez", "Davis", "Bennett", "Webb",
+  "Kowalski", "Okafor", "Rossi", "Wei", "Sharma", "Hansen", "Laurent", "Alvarez",
+  "Al-Farsi", "Berg", "Sato", "O'Malley", "Nguyen", "Schmidt", "Costa", "Ivanova", "Park",
+];
+
+const CATEGORIES = ["Software", "Hardware", "Services", "Consulting", "Training", "Support"];
+
+const pick = <T>(items: readonly T[]): T => items[Math.floor(Math.random() * items.length)];
+
+const randomBetween = (min: number, max: number) => min + Math.random() * (max - min);
+
+const randomCloseDate = () => {
+  const start = new Date(2026, 0, 1).getTime();
+  const end = new Date(2026, 11, 31).getTime();
+  const date = new Date(start + Math.random() * (end - start));
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+/** Generates `count` randomized inbound sales rows, then processes derived fields. */
+export function generateSalesData(count = 240): SalesRow[] {
+  const inbound: SalesInboundRow[] = Array.from({ length: count }, (_, index) => ({
+    id: `SALE-${index}`,
+    repName: `${pick(FIRST_NAMES)} ${pick(LAST_NAMES)}`,
+    dealSize: parseFloat(randomBetween(100, 250000).toFixed(2)),
+    isWon: Math.random() > 0.35,
+    profitMargin: parseFloat(randomBetween(0.25, 0.75).toFixed(2)),
+    closeDate: randomCloseDate(),
+    category: pick(CATEGORIES),
+  }));
+  return processSalesData(inbound);
+}

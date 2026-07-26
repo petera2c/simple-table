@@ -1,19 +1,35 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, ColumnDef, Row } from "simple-table-core";
+import type { HeaderEmployee } from "./header-renderer.demo-data";
+import type { Theme, ColumnDef, GetRowIdParams } from "simple-table-core";
 import { headerRendererConfig } from "./header-renderer.demo-data";
 import "simple-table-core/styles.css";
 
 type SortDir = "asc" | "desc" | null;
 const CYCLE: SortDir[] = ["asc", "desc", null];
 
+type HeaderKey = keyof HeaderEmployee;
+
+function isHeaderKey(accessor: string): accessor is HeaderKey {
+  return (
+    accessor === "id" ||
+    accessor === "name" ||
+    accessor === "email" ||
+    accessor === "role" ||
+    accessor === "salary" ||
+    accessor === "department"
+  );
+}
+
+const getRowId = ({ row }: GetRowIdParams<HeaderEmployee>) => row.id;
+
 export function renderHeaderRendererDemo(
   container: HTMLElement,
-  options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
-  let sortAccessor: string | null = null;
+  options?: { height?: string | number; theme?: Theme },
+): SimpleTableVanilla<HeaderEmployee> {
+  let sortAccessor: HeaderKey | null = null;
   let sortDirection: SortDir = null;
 
-  function getSortedData(): Row[] {
+  function getSortedData(): HeaderEmployee[] {
     if (!sortAccessor || !sortDirection) return [...headerRendererConfig.rows];
     const acc = sortAccessor;
     const dir = sortDirection;
@@ -21,14 +37,15 @@ export function renderHeaderRendererDemo(
       const aVal = a[acc];
       const bVal = b[acc];
       if (aVal === bVal) return 0;
-      const cmp = typeof aVal === "number" && typeof bVal === "number"
-        ? (aVal as number) - (bVal as number)
-        : String(aVal).localeCompare(String(bVal));
+      const cmp =
+        typeof aVal === "number" && typeof bVal === "number"
+          ? aVal - bVal
+          : String(aVal).localeCompare(String(bVal));
       return dir === "asc" ? cmp : -cmp;
     });
   }
 
-  function buildHeaders(): ColumnDef[] {
+  function buildHeaders(): ColumnDef<HeaderEmployee>[] {
     return headerRendererConfig.headers.map((h) => ({
       ...h,
       sortable: false,
@@ -47,14 +64,16 @@ export function renderHeaderRendererDemo(
           gap: "4px",
         });
         wrapper.addEventListener("click", () => {
+          if (!isHeaderKey(h.accessor)) return;
+
           if (!isSorted) {
-            sortAccessor = h.accessor as string;
+            sortAccessor = h.accessor;
             sortDirection = "asc";
           } else {
             const idx = CYCLE.indexOf(dir);
             const next = CYCLE[(idx + 1) % CYCLE.length];
             if (next) {
-              sortAccessor = h.accessor as string;
+              sortAccessor = h.accessor;
               sortDirection = next;
             } else {
               sortAccessor = null;
@@ -81,6 +100,7 @@ export function renderHeaderRendererDemo(
   }
 
   const table = new SimpleTableVanilla(container, {
+    getRowId,
     columns: buildHeaders(),
     rows: getSortedData(),
     height: options?.height ?? "400px",

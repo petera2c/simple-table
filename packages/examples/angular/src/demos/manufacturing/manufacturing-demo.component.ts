@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent, asRows } from "@simple-table/angular";
-import type { AngularCellRenderer, AngularColumnDef, Theme } from "@simple-table/angular";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { manufacturingConfig } from "./manufacturing.demo-data";
 import {
   MfgCycletimeCellComponent,
@@ -15,8 +15,9 @@ import {
   MfgUtilizationCellComponent,
 } from "./manufacturing-cell-components";
 import "@simple-table/angular/styles.css";
+import type { ManufacturingRow } from "./manufacturing.demo-data";
 
-const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
+const RENDERERS: Partial<Record<string, AngularCellRenderer<ManufacturingRow>>> = {
   productLine: MfgProductLineCellComponent,
   station: MfgStationCellComponent,
   status: MfgStatusCellComponent,
@@ -31,8 +32,8 @@ const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   maintenanceDate: MfgMaintenanceDateCellComponent,
 };
 
-function getHeaders(): AngularColumnDef[] {
-  return manufacturingConfig.headers.map((h): AngularColumnDef => {
+function getHeaders(): AngularColumnDef<ManufacturingRow>[] {
+  return manufacturingConfig.headers.map((h): AngularColumnDef<ManufacturingRow> => {
     const cellRenderer = RENDERERS[String(h.accessor)];
     return cellRenderer ? { ...h, cellRenderer } : { ...h };
   });
@@ -44,6 +45,7 @@ function getHeaders(): AngularColumnDef[] {
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [columnResizing]="true"
       [columnReordering]="true"
       [columns]="headers"
@@ -60,6 +62,8 @@ export class ManufacturingDemoComponent {
   @Input() theme?: Theme;
 
   readonly grouping = ["stations"];
-  readonly rows = asRows(manufacturingConfig.rows);
-  readonly headers: AngularColumnDef[] = getHeaders();
+  readonly rows: ManufacturingRow[] = [...manufacturingConfig.rows];
+  readonly headers: AngularColumnDef<ManufacturingRow>[] = getHeaders();
+
+  getRowId = ({ row }: GetRowIdParams<ManufacturingRow>) => row.id;
 }

@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps, ValueGetterProps } from "@simple-table/angular";
 
 export interface HREmployee {
   id: number;
@@ -55,11 +55,11 @@ export function generateHRData(count: number = 100): HREmployee[] {
 
 export const hrData = generateHRData(100);
 
-export const hrHeaders: AngularColumnDef[] = [
+export const hrHeaders: AngularColumnDef<HREmployee>[] = [
   { accessor: "fullName", label: "Employee", width: 220, sortable: true, editable: false, align: "left", pinned: "left", type: "string" },
   {
     accessor: "performanceScore", label: "Performance", width: 160, sortable: true, editable: true, align: "center", type: "number",
-    valueFormatter: ({ value }) => `${value}/100`,
+    valueFormatter: ({ value }: ValueFormatterProps<HREmployee>) => `${value}/100`,
     useFormattedValueForClipboard: true,
     exportValueGetter: ({ value }) => `${value}%`,
   },
@@ -79,7 +79,7 @@ export const hrHeaders: AngularColumnDef[] = [
   },
   { accessor: "hireDate", label: "Hire Date", width: 120, sortable: true, editable: true, align: "left", type: "date" },
   { accessor: "yearsOfService", label: "Service", width: 100, sortable: true, editable: false, align: "center", type: "number" },
-  { accessor: "salary", label: "Salary", width: 130, sortable: true, editable: true, align: "right", type: "number", valueFormatter: ({ value }) => { if (typeof value !== "number") return ""; return `$${value.toLocaleString()}`; }, useFormattedValueForClipboard: true, useFormattedValueForCSV: true },
+  { accessor: "salary", label: "Salary", width: 130, sortable: true, editable: true, align: "right", type: "number", valueFormatter: ({ value }: ValueFormatterProps<HREmployee>) => { if (typeof value !== "number") return ""; return `$${value.toLocaleString()}`; }, useFormattedValueForClipboard: true, useFormattedValueForCSV: true },
   {
     accessor: "status", label: "Status", width: 120, sortable: true, editable: true, align: "center", pinned: "right", type: "enum",
     enumOptions: [
@@ -87,7 +87,7 @@ export const hrHeaders: AngularColumnDef[] = [
       { label: "Probation", value: "Probation" }, { label: "Contract", value: "Contract" },
       { label: "Terminated", value: "Terminated" },
     ],
-    valueGetter: ({ row }) => {
+    valueGetter: ({ row }: ValueGetterProps<HREmployee>) => {
       const priorityMap: Record<string, number> = { Terminated: 1, Probation: 2, Contract: 3, "On Leave": 4, Active: 5 };
       return priorityMap[String(row.status)] || 999;
     },
@@ -123,4 +123,4 @@ export const HR_STATUS_COLOR_MAP: Record<string, HRTagColorKey> = {
 export const hrConfig = {
   headers: hrHeaders,
   rows: hrData,
-} as const;
+};

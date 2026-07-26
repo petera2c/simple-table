@@ -1,8 +1,16 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
+export interface LoadingStateEmployee {
+  id: number;
+  name: string;
+  age: number;
+  department: string;
+  salary: number;
+  status: string;
+}
 
-export const loadingStateData = [
+export const loadingStateData: LoadingStateEmployee[] = [
   { id: 1, name: "Dr. Elena Vasquez", age: 42, department: "AI Research", salary: 145000, status: "Active" },
   { id: 2, name: "Kai Tanaka", age: 29, department: "UX Design", salary: 95000, status: "Active" },
   { id: 3, name: "Amara Okafor", age: 35, department: "DevOps", salary: 125000, status: "On Leave" },
@@ -13,7 +21,7 @@ export const loadingStateData = [
   { id: 8, name: "Luca Rossi", age: 26, department: "Marketing", salary: 75000, status: "Active" },
 ];
 
-export const loadingStateHeaders: AngularColumnDef[] = [
+export const loadingStateHeaders: AngularColumnDef<LoadingStateEmployee, any>[] = [
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120 },
   { accessor: "age", label: "Age", width: 80, type: "number" },
   { accessor: "department", label: "Department", width: 150 },
@@ -23,7 +31,7 @@ export const loadingStateHeaders: AngularColumnDef[] = [
     width: 120,
     type: "number",
     align: "right",
-    valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
+    valueFormatter: ({ value }: ValueFormatterProps<LoadingStateEmployee, number>) => `$${value.toLocaleString()}`,
   },
   { accessor: "status", label: "Status", width: 120 },
 ];
@@ -31,4 +39,4 @@ export const loadingStateHeaders: AngularColumnDef[] = [
 export const loadingStateConfig = {
   headers: loadingStateHeaders,
   rows: loadingStateData,
-} as const;
+};

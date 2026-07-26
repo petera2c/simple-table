@@ -1,7 +1,8 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { tableHeightConfig } from "./table-height.demo-data";
 import "@simple-table/angular/styles.css";
+import type { HeightDemoEmployee } from "./table-height.demo-data";
 
 @Component({
   selector: "table-height-demo",
@@ -27,6 +28,7 @@ import "@simple-table/angular/styles.css";
         }
       </div>
       <simple-table
+      [getRowId]="getRowId"
         [rows]="rows"
         [columns]="headers"
         [height]="selectedHeight"
@@ -39,8 +41,10 @@ export class TableHeightDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = tableHeightConfig.rows;
-  readonly headers: AngularColumnDef[] = tableHeightConfig.headers;
+  readonly rows: HeightDemoEmployee[] = tableHeightConfig.rows;
+  readonly headers: AngularColumnDef<HeightDemoEmployee>[] = tableHeightConfig.headers;
   readonly heights = ["200px", "300px", "400px"];
   selectedHeight = "400px";
+
+  getRowId = ({ row }: GetRowIdParams<HeightDemoEmployee>) => row.id;
 }

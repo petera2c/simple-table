@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import type { Row, Theme } from "@simple-table/angular";
+import type { Theme } from "@simple-table/angular";
 import { getMusicThemeColors } from "./music.demo-data";
 import type { MusicArtist } from "./music.demo-data";
 import { MusicTagComponent } from "./music-tag.component";
@@ -12,7 +12,7 @@ import { MusicTagComponent } from "./music-tag.component";
     <div style="display:flex;align-items:center;gap:12px;">
       <div [attr.style]="avatarStyle">{{ initial }}</div>
       <div style="display:flex;flex-direction:column;gap:6px;flex:1;">
-        <span style="font-weight:500;font-size:14px;" [style.color]="c.gray">{{ d.artistName }}</span>
+        <span style="font-weight:500;font-size:14px;" [style.color]="c.gray">{{ row.artistName }}</span>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
           <demo-music-tag [text]="d.growthStatus" variant="default" [theme]="theme" />
           <demo-music-tag [text]="d.mood" variant="default" [theme]="theme" />
@@ -23,24 +23,20 @@ import { MusicTagComponent } from "./music-tag.component";
   `,
 })
 export class MusicArtistCellComponent {
-  @Input({ required: true }) row!: Row;
+  @Input({ required: true }) row!: MusicArtist;
   @Input() theme?: Theme;
-
-  get d(): MusicArtist {
-    return this.row as unknown as MusicArtist;
-  }
 
   get c(): Record<string, string> {
     return getMusicThemeColors(this.theme);
   }
 
   get initial(): string {
-    return this.d.artistName.charAt(0).toUpperCase();
+    return this.row.artistName.charAt(0).toUpperCase();
   }
 
   get avatarStyle(): string {
     let hash = 0;
-    const name = this.d.artistName;
+    const name = this.row.artistName;
     for (let i = 0; i < name.length; i++) {
       hash = name.charCodeAt(i) + ((hash << 5) - hash);
     }

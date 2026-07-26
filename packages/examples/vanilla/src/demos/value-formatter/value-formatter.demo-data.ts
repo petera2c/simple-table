@@ -1,8 +1,18 @@
 // Self-contained demo table setup for this example.
-import type { ColumnDef, Row } from "simple-table-core";
+import type { ColumnDef } from "simple-table-core";
 
+export interface FormattedEmployee {
+  id: number;
+  firstName: string;
+  lastName: string;
+  salary: number;
+  joinDate: string;
+  performanceScore: number;
+  balance: number;
+  department: string;
+}
 
-export const valueFormatterData: Row[] = [
+export const valueFormatterData: FormattedEmployee[] = [
   { id: 1, firstName: "Isabella", lastName: "Romano", salary: 125000, joinDate: "2021-03-15", performanceScore: 0.945, balance: 1250.50, department: "Engineering" },
   { id: 2, firstName: "Ethan", lastName: "McKenzie", salary: 98500, joinDate: "2022-07-22", performanceScore: 0.875, balance: -150.00, department: "Marketing" },
   { id: 3, firstName: "Zoe", lastName: "Patterson", salary: 110000, joinDate: "2020-01-10", performanceScore: 0.923, balance: 0, department: "Sales" },
@@ -26,28 +36,25 @@ const DEPARTMENT_CODES: Record<string, string> = {
   operations: "OPS",
 };
 
-export const valueFormatterHeaders: ColumnDef[] = [
+export const valueFormatterHeaders: ColumnDef<FormattedEmployee>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   {
     accessor: "firstName",
     label: "Name",
     width: 180,
     type: "string",
-    valueFormatter: ({ value, row }) => {
-      return `${value as string} ${row.lastName as string}`;
-    },
+    valueFormatter: ({ value, row }) => `${String(value)} ${row.lastName}`,
   },
   {
     accessor: "salary",
     label: "Salary",
     width: 140,
     type: "number",
-    valueFormatter: ({ value }) => {
-      return `$${(value as number).toLocaleString("en-US", {
+    valueFormatter: ({ value }) =>
+      `$${Number(value).toLocaleString("en-US", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      })}`;
-    },
+      })}`,
     useFormattedValueForClipboard: true,
     useFormattedValueForCSV: true,
   },
@@ -57,7 +64,7 @@ export const valueFormatterHeaders: ColumnDef[] = [
     width: 140,
     type: "date",
     valueFormatter: ({ value }) => {
-      const date = new Date(value as string);
+      const date = new Date(String(value));
       return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     },
   },
@@ -66,9 +73,9 @@ export const valueFormatterHeaders: ColumnDef[] = [
     label: "Performance",
     width: 130,
     type: "number",
-    valueFormatter: ({ value }) => `${((value as number) * 100).toFixed(1)}%`,
+    valueFormatter: ({ value }) => `${(Number(value) * 100).toFixed(1)}%`,
     useFormattedValueForClipboard: true,
-    exportValueGetter: ({ value }) => `${Math.round((value as number) * 100)}%`,
+    exportValueGetter: ({ value }) => `${Math.round(Number(value) * 100)}%`,
   },
   {
     accessor: "balance",
@@ -76,7 +83,7 @@ export const valueFormatterHeaders: ColumnDef[] = [
     width: 120,
     type: "number",
     valueFormatter: ({ value }) => {
-      const balance = value as number;
+      const balance = Number(value);
       if (balance === 0) return "\u2014";
       if (balance < 0) return `($${Math.abs(balance).toFixed(2)})`;
       return `$${balance.toFixed(2)}`;
@@ -87,11 +94,11 @@ export const valueFormatterHeaders: ColumnDef[] = [
     label: "Department",
     width: 150,
     type: "string",
-    valueFormatter: ({ value }) => (value as string).toUpperCase(),
+    valueFormatter: ({ value }) => String(value).toUpperCase(),
     exportValueGetter: ({ value }) => {
-      const str = (value as string).toLowerCase();
+      const str = String(value).toLowerCase();
       const code = DEPARTMENT_CODES[str] || "OTH";
-      return `${(value as string).toUpperCase()} (${code})`;
+      return `${String(value).toUpperCase()} (${code})`;
     },
   },
 ];
@@ -102,4 +109,4 @@ export const valueFormatterConfig = {
   tableProps: {
     selectableCells: true,
   },
-} as const;
+};

@@ -1,10 +1,9 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef } from "@simple-table/angular";
-import type { Row } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
 export type SoccerPosition = "GK" | "DEF" | "MID" | "FWD";
 
-export interface SoccerPlayer extends Row {
+export interface SoccerPlayer {
   id: string;
   rank: number;
   rankChange: number;
@@ -125,11 +124,11 @@ export function generateSoccerData(count = 200): SoccerPlayer[] {
   return players;
 }
 
-export const soccerHeaders: AngularColumnDef[] = [
+export const soccerHeaders: AngularColumnDef<SoccerPlayer>[] = [
   { accessor: "rank", label: "#", width: 56, align: "center", type: "number", pinned: "left", sortable: true, editable: false },
   {
     accessor: "name", label: "Player", width: 220, align: "left", type: "string", pinned: "left", sortable: true, editable: false,
-    valueFormatter: ({ value, row }) => `${row.nationFlag} ${value}`,
+    valueFormatter: ({ value, row }: ValueFormatterProps<SoccerPlayer>) => `${row.nationFlag} ${value}`,
   },
   { accessor: "clubShort", label: "Club", width: 80, type: "string", sortable: true, editable: false },
   {
@@ -141,7 +140,7 @@ export const soccerHeaders: AngularColumnDef[] = [
   },
   {
     accessor: "rating", label: "Rating", width: 90, align: "center", type: "number", sortable: true, editable: false,
-    valueFormatter: ({ value }) => typeof value === "number" ? value.toFixed(2) : "",
+    valueFormatter: ({ value }: ValueFormatterProps<SoccerPlayer>) => typeof value === "number" ? value.toFixed(2) : "",
   },
   {
     accessor: "formHistory", label: "Form", width: 140, align: "center", type: "lineAreaChart",
@@ -164,7 +163,7 @@ export const soccerHeaders: AngularColumnDef[] = [
     children: [
       {
         accessor: "passAccuracy", label: "Pass %", width: 90, align: "right", type: "number", sortable: true, editable: false, showWhen: "always",
-        valueFormatter: ({ value }) => typeof value === "number" ? `${value.toFixed(1)}%` : "",
+        valueFormatter: ({ value }: ValueFormatterProps<SoccerPlayer>) => typeof value === "number" ? `${value.toFixed(1)}%` : "",
       },
       { accessor: "passes", label: "Passes", width: 90, align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
       { accessor: "keyPasses", label: "Key Passes", width: 100, align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
@@ -185,4 +184,4 @@ export const soccerData = generateSoccerData(200);
 export const soccerConfig = {
   headers: soccerHeaders,
   rows: soccerData,
-} as const;
+};

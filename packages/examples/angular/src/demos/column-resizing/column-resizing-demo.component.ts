@@ -1,9 +1,10 @@
 import { NgIf } from "@angular/common";
 import { Component, Input, OnInit } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
 import "@simple-table/angular/styles.css";
+import type { OceanStaff } from "./column-resizing.demo-data";
 
 @Component({
   selector: "column-resizing-demo",
@@ -18,6 +19,7 @@ import "@simple-table/angular/styles.css";
         {{ saveMessage }}
       </div>
       <simple-table
+      [getRowId]="getRowId"
         [columnResizing]="true"
         [rows]="rows"
         [columns]="headers"
@@ -32,11 +34,11 @@ export class ColumnResizingDemoComponent implements OnInit {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = columnResizingData;
-  headers: AngularColumnDef[] = [...columnResizingHeaders];
+  readonly rows: OceanStaff[] = columnResizingData;
+  headers: AngularColumnDef<OceanStaff>[] = [...columnResizingHeaders];
   saveMessage = "";
 
-  handleColumnWidthChange = (updatedHeaders: AngularColumnDef[]) => {
+  handleColumnWidthChange = (updatedHeaders: AngularColumnDef<OceanStaff>[]) => {
     try {
       const widthMap: Record<string, unknown> = {};
       for (const h of updatedHeaders) widthMap[h.accessor] = h.width;

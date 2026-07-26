@@ -1,12 +1,31 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, TableFilterState } from "simple-table-core";
+import type { FilterableEmployee } from "./external-filter.demo-data";
+import type { Theme, TableFilterState, GetRowIdParams } from "simple-table-core";
 import { externalFilterConfig, matchesFilter } from "./external-filter.demo-data";
 import "simple-table-core/styles.css";
+
+
+const getRowId = ({ row }: GetRowIdParams<FilterableEmployee>) => row.id;
+
+type FilterableKey = keyof FilterableEmployee;
+
+function isFilterableKey(accessor: string): accessor is FilterableKey {
+  return (
+    accessor === "id" ||
+    accessor === "name" ||
+    accessor === "age" ||
+    accessor === "email" ||
+    accessor === "salary" ||
+    accessor === "department" ||
+    accessor === "active" ||
+    accessor === "location"
+  );
+}
 
 export function renderExternalFilterDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<FilterableEmployee> {
   let currentFilters: TableFilterState = {};
 
   const applyFilters = () => {
@@ -17,13 +36,14 @@ export function renderExternalFilterDemo(
     }
     const filtered = externalFilterConfig.rows.filter((row) =>
       entries.every(([accessor, filter]) =>
-        matchesFilter(row[accessor as keyof typeof row] as any, filter)
+        isFilterableKey(accessor) ? matchesFilter(row[accessor], filter) : true
       )
     );
     table.update({ rows: filtered });
   };
 
   const table = new SimpleTableVanilla(container, {
+    getRowId,
     columns: externalFilterConfig.headers,
     rows: externalFilterConfig.rows,
     externalFilterHandling: true,

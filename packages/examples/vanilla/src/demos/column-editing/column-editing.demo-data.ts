@@ -1,8 +1,16 @@
 // Self-contained demo table setup for this example.
 import type { ColumnDef } from "simple-table-core";
 
+export interface ColumnEditingEmployee {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+  email: string;
+}
 
-export const columnEditingHeaders: ColumnDef[] = [
+export const columnEditingHeaders: ColumnDef<ColumnEditingEmployee>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 120, width: "1fr", type: "string" },
   { accessor: "age", label: "Age", width: 100, type: "number" },
@@ -10,7 +18,7 @@ export const columnEditingHeaders: ColumnDef[] = [
   { accessor: "department", label: "Department", width: 150, type: "string" },
 ];
 
-export const columnEditingData = [
+export const columnEditingData: ColumnEditingEmployee[] = [
   { id: 1, name: "Marcus Rodriguez", age: 29, role: "Frontend Developer", department: "Engineering", email: "marcus.rodriguez@company.com" },
   { id: 2, name: "Sophia Chen", age: 27, role: "UX/UI Designer", department: "Design", email: "sophia.chen@company.com" },
   { id: 3, name: "Raj Patel", age: 34, role: "Engineering Manager", department: "Management", email: "raj.patel@company.com" },
@@ -29,4 +37,4 @@ export const columnEditingConfig = {
   headers: columnEditingHeaders,
   rows: columnEditingData,
   tableProps: { enableHeaderEditing: true, selectableColumns: true },
-} as const;
+};

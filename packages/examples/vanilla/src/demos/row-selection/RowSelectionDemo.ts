@@ -1,13 +1,15 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, ColumnDef } from "simple-table-core";
+import type { Theme, ColumnDef, CellRendererProps, GetRowIdParams } from "simple-table-core";
 import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
 import type { LibraryBook } from "./row-selection.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<LibraryBook>) => row.id;
 export function renderRowSelectionDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
-): SimpleTableVanilla {
+): SimpleTableVanilla<LibraryBook> {
   const wrapper = document.createElement("div");
   wrapper.style.cssText = "display:flex;flex-direction:column;gap:12px";
 
@@ -27,11 +29,11 @@ export function renderRowSelectionDemo(
 
   const titlesSpan = infoPanel.querySelector("#selected-titles")!;
 
-  const headers: ColumnDef[] = rowSelectionConfig.headers.map((h) => {
+  const headers: ColumnDef<LibraryBook>[] = rowSelectionConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+        cellRenderer: ({ row }: CellRendererProps<LibraryBook>) => {
           const s = String(row.status);
           const color = s === "Available" ? "#16a34a" : s === "Checked Out" ? "#ea580c" : "#dc2626";
           return `<span style="color:${color};font-weight:bold">${s}</span>`;
@@ -42,6 +44,7 @@ export function renderRowSelectionDemo(
   });
 
   const table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: headers,
     rows: rowSelectionConfig.rows,
     height: options?.height ?? "348px",

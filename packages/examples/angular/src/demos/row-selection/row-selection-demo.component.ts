@@ -1,7 +1,8 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, RowSelectionChangeProps, Theme } from "@simple-table/angular";
-import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, RowSelectionChangeProps, Theme } from "@simple-table/angular";
 import type { LibraryBook } from "./row-selection.demo-data";
+import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
 import "@simple-table/angular/styles.css";
 
 @Component({
@@ -23,6 +24,7 @@ import "@simple-table/angular/styles.css";
       </div>
 
       <simple-table
+      [getRowId]="getRowId"
         [rows]="rows"
         [columns]="headers"
         [height]="height"
@@ -40,8 +42,8 @@ export class RowSelectionDemoComponent {
   @Input() height: string | number = "348px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = rowSelectionConfig.rows;
-  readonly headers: AngularColumnDef[] = rowSelectionConfig.headers.map((h) => {
+  readonly rows: LibraryBook[] = rowSelectionConfig.rows;
+  readonly headers: AngularColumnDef<LibraryBook>[] = rowSelectionConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
@@ -63,9 +65,11 @@ export class RowSelectionDemoComponent {
       : "None";
   }
 
-  handleSelectionChange = (props: RowSelectionChangeProps): void => {
+  handleSelectionChange = (props: RowSelectionChangeProps<LibraryBook>): void => {
     this.selectedBooks = rowSelectionData.filter((book) =>
       props.selectedRows.has(String(book.id)),
     );
   };
+
+  getRowId = ({ row }: GetRowIdParams<LibraryBook>) => row.id;
 }

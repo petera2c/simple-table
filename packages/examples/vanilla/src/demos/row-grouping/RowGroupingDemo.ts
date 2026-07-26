@@ -1,12 +1,15 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
+import type { OrgUnit } from "./row-grouping.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import { rowGroupingConfig } from "./row-grouping.demo-data";
 import "simple-table-core/styles.css";
+
+const getRowId = ({ row }: GetRowIdParams<OrgUnit>) => row.id;
 
 export function renderRowGroupingDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<OrgUnit> {
   const wrapper = document.createElement("div");
   wrapper.style.cssText = "display:flex;flex-direction:column;gap:12px";
 
@@ -30,7 +33,7 @@ export function renderRowGroupingDemo(
     theme: options?.theme,
     rowGrouping: rowGroupingConfig.tableProps.rowGrouping,
     enableStickyParents: true,
-    getRowId: rowGroupingConfig.tableProps.getRowId,
+    getRowId,
     columnResizing: true,
   });
 

@@ -1,8 +1,11 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, Row } from "simple-table-core";
+import type { LoadingStateEmployee } from "./loading-state.demo-data";
+import type { Theme, Row, GetRowIdParams } from "simple-table-core";
 import { loadingStateConfig } from "./loading-state.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<LoadingStateEmployee>) => row.id;
 export function renderLoadingStateDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
@@ -26,8 +29,9 @@ export function renderLoadingStateDemo(
   let timer: ReturnType<typeof setTimeout> | null = null;
 
   const table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: loadingStateConfig.headers,
-    rows: [] as Row[],
+    rows: [] ,
     height: options?.height ?? "400px",
     theme: options?.theme,
     isLoading: true,
@@ -37,11 +41,11 @@ export function renderLoadingStateDemo(
     reloadBtn.textContent = "Loading\u2026";
     reloadBtn.disabled = true;
     reloadBtn.style.cursor = "not-allowed";
-    table.update({ rows: [] as Row[], isLoading: true });
+    table.update({ rows: [] , isLoading: true });
 
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
-      table.update({ rows: loadingStateConfig.rows as Row[], isLoading: false });
+      table.update({ rows: loadingStateConfig.rows , isLoading: false });
       reloadBtn.textContent = "Reload Data";
       reloadBtn.disabled = false;
       reloadBtn.style.cursor = "pointer";

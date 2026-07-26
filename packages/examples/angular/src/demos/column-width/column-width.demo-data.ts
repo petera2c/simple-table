@@ -1,8 +1,16 @@
 // Self-contained demo table setup for this example.
 import type { AngularColumnDef } from "@simple-table/angular";
 
+export interface StartupEmployee {
+  id: number;
+  name: string;
+  email: string;
+  age: number;
+  department: string;
+  salary: string;
+}
 
-export const columnWidthHeaders: AngularColumnDef[] = [
+export const columnWidthHeaders: AngularColumnDef<StartupEmployee>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, type: "string" },
   { accessor: "email", label: "Email", width: "1fr", minWidth: 180, type: "string" },
@@ -31,4 +39,4 @@ export const columnWidthConfig = {
   headers: columnWidthHeaders,
   rows: columnWidthData,
   tableProps: { columnResizing: true },
-} as const;
+};

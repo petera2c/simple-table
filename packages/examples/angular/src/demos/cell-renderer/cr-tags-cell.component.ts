@@ -1,5 +1,4 @@
 import { Component, Input } from "@angular/core";
-import type { CellValue } from "@simple-table/angular";
 
 @Component({
   standalone: true,
@@ -15,9 +14,9 @@ import type { CellValue } from "@simple-table/angular";
   `,
 })
 export class CrTagsCellComponent {
-  @Input() value!: CellValue;
+  @Input({ required: true }) value!: string[];
 
   get tags(): string[] {
-    return Array.isArray(this.value) ? (this.value as string[]) : [];
+    return Array.isArray(this.value) ? this.value : [];
   }
 }

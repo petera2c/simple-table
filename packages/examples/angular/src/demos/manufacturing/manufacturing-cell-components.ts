@@ -1,10 +1,10 @@
 import { Component, Input } from "@angular/core";
-import type { Row, Theme } from "@simple-table/angular";
+import type { Theme } from "@simple-table/angular";
 import { getManufacturingStatusColors } from "./manufacturing.demo-data";
 import type { ManufacturingRow } from "./manufacturing.demo-data";
 
-export function mfgHasStations(row: Record<string, unknown>): boolean {
-  return Boolean(row.stations && Array.isArray(row.stations));
+export function mfgHasStations(row: ManufacturingRow): boolean {
+  return Boolean(row.stations && row.stations.length > 0);
 }
 
 @Component({
@@ -12,21 +12,17 @@ export function mfgHasStations(row: Record<string, unknown>): boolean {
   selector: "demo-mfg-product-line",
   template: `
     @if (parent) {
-      <span style="font-weight:bold;">{{ d.productLine }}</span>
+      <span style="font-weight:bold;">{{ row.productLine }}</span>
     } @else {
-      {{ d.productLine }}
+      {{ row.productLine }}
     }
   `,
 })
 export class MfgProductLineCellComponent {
-  @Input({ required: true }) row!: Row;
-
-  get d(): ManufacturingRow {
-    return this.row as unknown as ManufacturingRow;
-  }
+  @Input({ required: true }) row!: ManufacturingRow;
 
   get parent(): boolean {
-    return mfgHasStations(this.row as Record<string, unknown>);
+    return mfgHasStations(this.row);
   }
 }
 
@@ -35,26 +31,22 @@ export class MfgProductLineCellComponent {
   selector: "demo-mfg-station",
   template: `
     @if (parent) {
-      <span style="color:#6b7280;">{{ d.id }}</span>
+      <span style="color:#6b7280;">{{ row.id }}</span>
     } @else {
       <div style="display:flex;align-items:center;gap:4px;">
         <span
           style="background:#dbeafe;color:#1d4ed8;font-size:0.75rem;font-weight:500;padding:2px 6px;border-radius:4px;"
-          >{{ d.id }}</span>
-        <span>{{ d.station }}</span>
+          >{{ row.id }}</span>
+        <span>{{ row.station }}</span>
       </div>
     }
   `,
 })
 export class MfgStationCellComponent {
-  @Input({ required: true }) row!: Row;
-
-  get d(): ManufacturingRow {
-    return this.row as unknown as ManufacturingRow;
-  }
+  @Input({ required: true }) row!: ManufacturingRow;
 
   get parent(): boolean {
-    return mfgHasStations(this.row as Record<string, unknown>);
+    return mfgHasStations(this.row);
   }
 }
 
@@ -67,26 +59,22 @@ export class MfgStationCellComponent {
         style="padding:4px 12px;font-size:12px;line-height:20px;border-radius:4px;display:inline-block;font-weight:600;"
         [style.background-color]="colors.bg"
         [style.color]="colors.text"
-        >{{ d.status }}</span>
+        >{{ row.status }}</span>
     } @else {
       —
     }
   `,
 })
 export class MfgStatusCellComponent {
-  @Input({ required: true }) row!: Row;
+  @Input({ required: true }) row!: ManufacturingRow;
   @Input() theme?: Theme;
 
-  get d(): ManufacturingRow {
-    return this.row as unknown as ManufacturingRow;
-  }
-
   get parent(): boolean {
-    return mfgHasStations(this.row as Record<string, unknown>);
+    return mfgHasStations(this.row);
   }
 
   get colors(): { bg: string; text: string } {
-    return getManufacturingStatusColors(this.d.status, this.theme);
+    return getManufacturingStatusColors(this.row.status, this.theme);
   }
 }
 
@@ -96,19 +84,11 @@ export class MfgStatusCellComponent {
   template: `<div [style.font-weight]="parent ? 'bold' : 'normal'">{{ value.toLocaleString() }}</div>`,
 })
 export class MfgNumberBoldParentCellComponent {
-  @Input({ required: true }) row!: Row;
-  @Input({ required: true }) accessor!: keyof ManufacturingRow;
-
-  get d(): ManufacturingRow {
-    return this.row as unknown as ManufacturingRow;
-  }
+  @Input({ required: true }) row!: ManufacturingRow;
+  @Input({ required: true }) value!: number;
 
   get parent(): boolean {
-    return mfgHasStations(this.row as Record<string, unknown>);
-  }
-
-  get value(): number {
-    return this.d[this.accessor] as number;
+    return mfgHasStations(this.row);
   }
 }
 
@@ -117,21 +97,17 @@ export class MfgNumberBoldParentCellComponent {
   selector: "demo-mfg-cycletime",
   template: `
     @if (parent) {
-      <span style="font-weight:bold;">{{ d.cycletime?.toFixed(1) }}</span>
+      <span style="font-weight:bold;">{{ row.cycletime?.toFixed(1) }}</span>
     } @else {
-      {{ d.cycletime }}
+      {{ row.cycletime }}
     }
   `,
 })
 export class MfgCycletimeCellComponent {
-  @Input({ required: true }) row!: Row;
-
-  get d(): ManufacturingRow {
-    return this.row as unknown as ManufacturingRow;
-  }
+  @Input({ required: true }) row!: ManufacturingRow;
 
   get parent(): boolean {
-    return mfgHasStations(this.row as Record<string, unknown>);
+    return mfgHasStations(this.row);
   }
 }
 
@@ -157,18 +133,14 @@ export class MfgCycletimeCellComponent {
   `,
 })
 export class MfgEfficiencyCellComponent {
-  @Input({ required: true }) row!: Row;
-
-  get d(): ManufacturingRow {
-    return this.row as unknown as ManufacturingRow;
-  }
+  @Input({ required: true }) row!: ManufacturingRow;
 
   get parent(): boolean {
-    return mfgHasStations(this.row as Record<string, unknown>);
+    return mfgHasStations(this.row);
   }
 
   get eff(): number {
-    return this.d.efficiency;
+    return this.row.efficiency;
   }
 
   get barColor(): string {
@@ -183,18 +155,14 @@ export class MfgEfficiencyCellComponent {
   template: `<span [style.color]="color" [style.font-weight]="parent ? 'bold' : 'normal'">{{ rate.toFixed(2) }}%</span>`,
 })
 export class MfgDefectRateCellComponent {
-  @Input({ required: true }) row!: Row;
-
-  get d(): ManufacturingRow {
-    return this.row as unknown as ManufacturingRow;
-  }
+  @Input({ required: true }) row!: ManufacturingRow;
 
   get parent(): boolean {
-    return mfgHasStations(this.row as Record<string, unknown>);
+    return mfgHasStations(this.row);
   }
 
   get rate(): number {
-    return this.d.defectRate;
+    return this.row.defectRate;
   }
 
   get color(): string {
@@ -209,18 +177,14 @@ export class MfgDefectRateCellComponent {
   template: `<span [style.color]="color" [style.font-weight]="parent ? 'bold' : 'normal'">{{ hours.toFixed(2) }}</span>`,
 })
 export class MfgDowntimeCellComponent {
-  @Input({ required: true }) row!: Row;
-
-  get d(): ManufacturingRow {
-    return this.row as unknown as ManufacturingRow;
-  }
+  @Input({ required: true }) row!: ManufacturingRow;
 
   get parent(): boolean {
-    return mfgHasStations(this.row as Record<string, unknown>);
+    return mfgHasStations(this.row);
   }
 
   get hours(): number {
-    return this.d.downtime;
+    return this.row.downtime;
   }
 
   get color(): string {
@@ -234,21 +198,17 @@ export class MfgDowntimeCellComponent {
   selector: "demo-mfg-utilization",
   template: `
     @if (parent) {
-      <span style="font-weight:bold;">{{ d.utilization?.toFixed(0) }}%</span>
+      <span style="font-weight:bold;">{{ row.utilization?.toFixed(0) }}%</span>
     } @else {
-      {{ d.utilization }}%
+      {{ row.utilization }}%
     }
   `,
 })
 export class MfgUtilizationCellComponent {
-  @Input({ required: true }) row!: Row;
-
-  get d(): ManufacturingRow {
-    return this.row as unknown as ManufacturingRow;
-  }
+  @Input({ required: true }) row!: ManufacturingRow;
 
   get parent(): boolean {
-    return mfgHasStations(this.row as Record<string, unknown>);
+    return mfgHasStations(this.row);
   }
 }
 
@@ -268,18 +228,14 @@ export class MfgUtilizationCellComponent {
   `,
 })
 export class MfgMaintenanceDateCellComponent {
-  @Input({ required: true }) row!: Row;
-
-  get d(): ManufacturingRow {
-    return this.row as unknown as ManufacturingRow;
-  }
+  @Input({ required: true }) row!: ManufacturingRow;
 
   get parent(): boolean {
-    return mfgHasStations(this.row as Record<string, unknown>);
+    return mfgHasStations(this.row);
   }
 
   get label(): string {
-    const [year, month, day] = this.d.maintenanceDate.split("-").map(Number);
+    const [year, month, day] = this.row.maintenanceDate.split("-").map(Number);
     const date = new Date(year!, month! - 1, day!);
     const today = new Date();
     const diffDays = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -287,7 +243,7 @@ export class MfgMaintenanceDateCellComponent {
   }
 
   get tagBg(): string {
-    const [year, month, day] = this.d.maintenanceDate.split("-").map(Number);
+    const [year, month, day] = this.row.maintenanceDate.split("-").map(Number);
     const date = new Date(year!, month! - 1, day!);
     const today = new Date();
     const diffDays = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -297,7 +253,7 @@ export class MfgMaintenanceDateCellComponent {
   }
 
   get tagFg(): string {
-    const [year, month, day] = this.d.maintenanceDate.split("-").map(Number);
+    const [year, month, day] = this.row.maintenanceDate.split("-").map(Number);
     const date = new Date(year!, month! - 1, day!);
     const today = new Date();
     const diffDays = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));

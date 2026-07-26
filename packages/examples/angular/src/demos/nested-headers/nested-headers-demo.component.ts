@@ -1,7 +1,8 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { nestedHeadersConfig } from "./nested-headers.demo-data";
 import "@simple-table/angular/styles.css";
+import type { StudentScores } from "./nested-headers.demo-data";
 
 @Component({
   selector: "nested-headers-demo",
@@ -9,6 +10,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -21,7 +23,9 @@ export class NestedHeadersDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = nestedHeadersConfig.rows;
-  readonly headers: AngularColumnDef[] = nestedHeadersConfig.headers;
+  readonly rows: StudentScores[] = nestedHeadersConfig.rows;
+  readonly headers: AngularColumnDef<StudentScores>[] = nestedHeadersConfig.headers;
   readonly columnResizing = nestedHeadersConfig.tableProps.columnResizing;
+
+  getRowId = ({ row }: GetRowIdParams<StudentScores>) => row.id;
 }

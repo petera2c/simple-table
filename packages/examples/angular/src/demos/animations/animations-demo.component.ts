@@ -1,8 +1,9 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { animationsConfig } from "./animations.demo-data";
 import "@simple-table/angular/styles.css";
+import type { AnimationsCrewMember } from "./animations.demo-data";
 
 @Component({
   selector: "animations-demo",
@@ -10,6 +11,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -25,10 +27,12 @@ export class AnimationsDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = animationsConfig.rows;
-  headers: AngularColumnDef[] = [...animationsConfig.headers];
+  readonly rows: AnimationsCrewMember[] = animationsConfig.rows;
+  headers: AngularColumnDef<AnimationsCrewMember>[] = [...animationsConfig.headers];
 
-  onColumnOrderChange(newHeaders: AngularColumnDef[]): void {
+  onColumnOrderChange(newHeaders: AngularColumnDef<AnimationsCrewMember>[]): void {
     this.headers = newHeaders;
   }
+
+  getRowId = ({ row }: GetRowIdParams<AnimationsCrewMember>) => row.id;
 }

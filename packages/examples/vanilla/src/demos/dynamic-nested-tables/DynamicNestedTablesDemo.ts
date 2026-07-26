@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, OnRowGroupExpandProps } from "simple-table-core";
+import type { Theme, OnRowGroupExpandProps, GetRowIdParams } from "simple-table-core";
 import {
   dynamicNestedTablesConfig,
   dynamicNestedTablesData,
@@ -8,10 +8,12 @@ import {
 import type { DynamicCompany } from "./dynamic-nested-tables.demo-data";
 import "simple-table-core/styles.css";
 
+const getRowId = ({ row }: GetRowIdParams<DynamicCompany>) => row.id;
+
 export function renderDynamicNestedTablesDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<DynamicCompany> {
   let rows: DynamicCompany[] = [...dynamicNestedTablesData];
 
   const handleCompanyExpand = async ({
@@ -22,11 +24,11 @@ export function renderDynamicNestedTablesDemo(
     setLoading,
     setError,
     setEmpty,
-  }: OnRowGroupExpandProps) => {
+  }: OnRowGroupExpandProps<DynamicCompany>) => {
     if (!isExpanded) return;
     try {
       if (groupingKey === "divisions") {
-        const company = row as DynamicCompany;
+        const company = row;
         if (company.divisions && company.divisions.length > 0) return;
         setLoading(true);
         const divisions = await fetchDivisionsForCompany(company.id);
@@ -49,7 +51,7 @@ export function renderDynamicNestedTablesDemo(
     expandAll: dynamicNestedTablesConfig.tableProps.expandAll,
     height: options?.height ?? "500px",
     rowGrouping: dynamicNestedTablesConfig.tableProps.rowGrouping,
-    getRowId: dynamicNestedTablesConfig.tableProps.getRowId,
+    getRowId,
     rows: rows,
     onRowGroupExpand: handleCompanyExpand,
     theme: options?.theme,

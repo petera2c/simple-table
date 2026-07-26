@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import type { Row, Theme } from "@simple-table/angular";
+import type { Theme } from "@simple-table/angular";
 import { getHRThemeColors } from "./hr.demo-data";
 import type { HREmployee } from "./hr.demo-data";
 
@@ -13,19 +13,15 @@ import type { HREmployee } from "./hr.demo-data";
   `,
 })
 export class HrHireDateCellComponent {
-  @Input({ required: true }) row!: Row;
+  @Input({ required: true }) row!: HREmployee;
   @Input() theme?: Theme;
-
-  get d(): HREmployee {
-    return this.row as unknown as HREmployee;
-  }
 
   get c() {
     return getHRThemeColors(this.theme);
   }
 
   get formatted(): string {
-    const raw = this.d.hireDate;
+    const raw = this.row.hireDate;
     if (!raw) return "";
     const [year, month, day] = raw.split("-").map(Number);
     const date = new Date(year!, month! - 1, day!);

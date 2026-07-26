@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularCellRenderer, AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import { CrProgressCellComponent } from "./cr-progress-cell.component";
 import { CrRatingCellComponent } from "./cr-rating-cell.component";
@@ -10,8 +10,9 @@ import { CrTeamMembersCellComponent } from "./cr-team-members-cell.component";
 import { CrVerifiedCellComponent } from "./cr-verified-cell.component";
 import { CrWebsiteCellComponent } from "./cr-website-cell.component";
 import "@simple-table/angular/styles.css";
+import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 
-const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
+const RENDERERS: Partial<Record<string, AngularCellRenderer<CellRendererEmployee>>> = {
   teamMembers: CrTeamMembersCellComponent,
   website: CrWebsiteCellComponent,
   status: CrStatusCellComponent,
@@ -27,6 +28,7 @@ const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -40,9 +42,11 @@ export class CellRendererDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = cellRendererConfig.rows;
-  readonly headers: AngularColumnDef[] = cellRendererConfig.headers.map((h): AngularColumnDef => {
+  readonly rows: CellRendererEmployee[] = cellRendererConfig.rows;
+  readonly headers: AngularColumnDef<CellRendererEmployee>[] = cellRendererConfig.headers.map((h): AngularColumnDef<CellRendererEmployee> => {
     const cellRenderer = RENDERERS[String(h.accessor)];
     return cellRenderer ? { ...h, cellRenderer } : { ...h };
   });
+
+  getRowId = ({ row }: GetRowIdParams<CellRendererEmployee>) => row.id;
 }

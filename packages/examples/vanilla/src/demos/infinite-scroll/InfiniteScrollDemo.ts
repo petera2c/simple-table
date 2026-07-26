@@ -1,15 +1,18 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, Row } from "simple-table-core";
+import type { InfiniteScrollEmployee } from "./infinite-scroll.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import { infiniteScrollConfig, generateInfiniteScrollData } from "./infinite-scroll.demo-data";
 import "simple-table-core/styles.css";
 
 const MAX_ROWS = 200;
 const BATCH_SIZE = 15;
 
+
+const getRowId = ({ row }: GetRowIdParams<InfiniteScrollEmployee>) => row.id;
 export function renderInfiniteScrollDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<InfiniteScrollEmployee> {
   const wrapper = document.createElement("div");
 
   const status = document.createElement("div");
@@ -21,7 +24,7 @@ export function renderInfiniteScrollDemo(
   wrapper.appendChild(tableContainer);
   container.appendChild(wrapper);
 
-  let rows: Row[] = generateInfiniteScrollData(0, 30) as Row[];
+  let rows: InfiniteScrollEmployee[] = generateInfiniteScrollData(0, 30);
   let loading = false;
   let hasMore = true;
 
@@ -31,6 +34,7 @@ export function renderInfiniteScrollDemo(
   updateStatus();
 
   const table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: infiniteScrollConfig.headers,
     rows,
     height: options?.height ?? "400px",
@@ -40,7 +44,7 @@ export function renderInfiniteScrollDemo(
       loading = true;
       table.update({ isLoading: true });
       setTimeout(() => {
-        const newRows = generateInfiniteScrollData(rows.length, BATCH_SIZE) as Row[];
+        const newRows = generateInfiniteScrollData(rows.length, BATCH_SIZE) ;
         rows = [...rows, ...newRows];
         if (rows.length >= MAX_ROWS) hasMore = false;
         loading = false;

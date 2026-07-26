@@ -1,15 +1,17 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, ColumnDef, CellRenderer, Row } from "simple-table-core";
+import type { Theme, ColumnDef, CellRenderer, Row, GetRowIdParams } from "simple-table-core";
 import { billingConfig } from "./billing.demo-data";
 import type { BillingRow } from "./billing.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<BillingRow>) => row.id;
 export function renderBillingDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
-): SimpleTableVanilla {
-  const nameRenderer: CellRenderer = ({ row }) => {
-    const d = row as unknown as BillingRow;
+): SimpleTableVanilla<BillingRow> {
+  const nameRenderer: CellRenderer<BillingRow> = ({ row }) => {
+    const d = row ;
     const name = d.name;
     if (d.type === "account") {
       const span = document.createElement("span");
@@ -20,7 +22,7 @@ export function renderBillingDemo(
     return name;
   };
 
-  const headers: ColumnDef[] = billingConfig.headers.map((h) => {
+  const headers: ColumnDef<BillingRow>[] = billingConfig.headers.map((h) => {
     if (h.accessor === "name") {
       return { ...h, cellRenderer: nameRenderer };
     }
@@ -28,6 +30,7 @@ export function renderBillingDemo(
   });
 
   const table = new SimpleTableVanilla(container, {
+    getRowId,
     columnReordering: true,
     columnResizing: true,
     columns: headers,
@@ -36,7 +39,7 @@ export function renderBillingDemo(
     initialSortColumn: "amount",
     initialSortDirection: "desc",
     rowGrouping: ["invoices", "charges"],
-    rows: billingConfig.rows as unknown as Row[],
+    rows: billingConfig.rows ,
     selectableCells: true,
     theme: options?.theme,
     oddColumnBackground: true,

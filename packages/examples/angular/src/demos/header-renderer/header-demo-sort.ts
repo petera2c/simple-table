@@ -1,13 +1,28 @@
 import { signal } from "@angular/core";
+import type { HeaderEmployee } from "./header-renderer.demo-data";
 
 export type HeaderDemoSortDir = "asc" | "desc" | null;
 
+type HeaderKey = keyof HeaderEmployee;
+
+function isHeaderKey(accessor: string): accessor is HeaderKey {
+  return (
+    accessor === "id" ||
+    accessor === "name" ||
+    accessor === "email" ||
+    accessor === "role" ||
+    accessor === "salary" ||
+    accessor === "department"
+  );
+}
+
 const CYCLE: HeaderDemoSortDir[] = ["asc", "desc", null];
 
-export const headerDemoSortAccessor = signal<string | null>(null);
+export const headerDemoSortAccessor = signal<HeaderKey | null>(null);
 export const headerDemoSortDirection = signal<HeaderDemoSortDir>(null);
 
 export function cycleHeaderDemoSort(accessor: string): void {
+  if (!isHeaderKey(accessor)) return;
   const currentAcc = headerDemoSortAccessor();
   const dir = headerDemoSortDirection();
   if (currentAcc !== accessor) {

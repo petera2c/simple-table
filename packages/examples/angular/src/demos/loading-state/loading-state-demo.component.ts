@@ -1,7 +1,8 @@
 import { Component, Input, OnInit, OnDestroy } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { loadingStateConfig } from "./loading-state.demo-data";
 import "@simple-table/angular/styles.css";
+import type { LoadingStateEmployee } from "./loading-state.demo-data";
 
 @Component({
   selector: "loading-state-demo",
@@ -20,6 +21,7 @@ import "@simple-table/angular/styles.css";
         </button>
       </div>
       <simple-table
+      [getRowId]="getRowId"
         [rows]="data"
         [columns]="headers"
         [height]="height"
@@ -33,8 +35,8 @@ export class LoadingStateDemoComponent implements OnInit, OnDestroy {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularColumnDef[] = loadingStateConfig.headers;
-  data: Row[] = [];
+  readonly headers: AngularColumnDef<LoadingStateEmployee>[] = loadingStateConfig.headers;
+  data: LoadingStateEmployee[] = [];
   isLoading = true;
   private timer: ReturnType<typeof setTimeout> | null = null;
 
@@ -51,7 +53,7 @@ export class LoadingStateDemoComponent implements OnInit, OnDestroy {
     this.data = [];
     if (this.timer) clearTimeout(this.timer);
     this.timer = setTimeout(() => {
-      this.data = loadingStateConfig.rows as Row[];
+      this.data = loadingStateConfig.rows ;
       this.isLoading = false;
     }, 2000);
   }

@@ -1,7 +1,6 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, Theme, ValueGetterProps } from "@simple-table/angular";
 
-/** Shell/wrapper theme from the demo app (not the same as the table's `theme` input). */
 export type CrmShellTheme = Theme | "custom-light" | "custom-dark";
 
 export type CRMLead = {
@@ -43,7 +42,7 @@ export function generateCRMData(count: number = 100): CRMLead[] {
 
 export const crmData = generateCRMData(100);
 
-export const crmHeaders: AngularColumnDef[] = [
+export const crmHeaders: AngularColumnDef<CRMLead>[] = [
   {
     accessor: "name",
     label: "CONTACT",
@@ -112,7 +111,7 @@ export const crmHeaders: AngularColumnDef[] = [
       { label: "SMB", value: "SMB" },
       { label: "Nurture", value: "Nurture" },
     ],
-    valueGetter: ({ row }) => {
+    valueGetter: ({ row }: ValueGetterProps<CRMLead>) => {
       const priorityMap: Record<string, number> = {
         "Hot Leads": 1, "Warm Leads": 2, Enterprise: 3, Leads: 4, SMB: 5, "Cold Leads": 6, Nurture: 7,
       };
@@ -175,4 +174,4 @@ export const CRM_THEME_COLORS_DARK = {
 export const crmConfig = {
   headers: crmHeaders,
   rows: crmData,
-} as const;
+};

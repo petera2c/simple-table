@@ -1,12 +1,15 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
+import type { HeightDemoEmployee } from "./table-height.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import { tableHeightConfig } from "./table-height.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<HeightDemoEmployee>) => row.id;
 export function renderTableHeightDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<HeightDemoEmployee> {
   const wrapper = document.createElement("div");
 
   const btnContainer = document.createElement("div");
@@ -21,6 +24,7 @@ export function renderTableHeightDemo(
   container.appendChild(wrapper);
 
   const table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: tableHeightConfig.headers,
     rows: tableHeightConfig.rows,
     height: selectedHeight,

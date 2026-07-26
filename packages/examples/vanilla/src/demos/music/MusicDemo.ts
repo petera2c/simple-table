@@ -1,9 +1,16 @@
-import { SimpleTableVanilla, asRows } from "simple-table-core";
-import type { Theme, ColumnDef, CellRenderer, CellRendererProps } from "simple-table-core";
+import { SimpleTableVanilla } from "simple-table-core";
+import type { Theme, ColumnDef, CellRenderer, CellRendererProps, GetRowIdParams } from "simple-table-core";
 import { musicData, getMusicThemeColors } from "./music.demo-data";
 import type { MusicArtist } from "./music.demo-data";
 import "simple-table-core/styles.css";
 import "./music-theme.css";
+
+function musicNumber(row: MusicArtist, key: keyof MusicArtist): number {
+  const value = row[key];
+  if (typeof value === "number") return value;
+  if (typeof value === "string") return Number(value) || 0;
+  return 0;
+}
 
 function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node | string)[]): HTMLElement {
   const e = document.createElement(tag);
@@ -60,11 +67,11 @@ function growthMetric(
   ]);
 }
 
-function buildMusicHeaders(theme?: string): ColumnDef[] {
+function buildMusicHeaders(theme?: string): ColumnDef<MusicArtist>[] {
   const c = getMusicThemeColors(theme);
 
-  const artistRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
+  const artistRenderer: CellRenderer<MusicArtist> = ({ row }: CellRendererProps<MusicArtist>) => {
+    const d = row;
     let hash = 0;
     for (let i = 0; i < d.artistName.length; i++) hash = d.artistName.charCodeAt(i) + ((hash << 5) - hash);
     const avatar = el("div", {
@@ -75,9 +82,9 @@ function buildMusicHeaders(theme?: string): ColumnDef[] {
     }, [d.artistName.charAt(0).toUpperCase()]);
 
     const tags = el("div", { display: "flex", gap: "6px", flexWrap: "wrap" }, [
-      tag(d.growthStatus, "default", c),
-      tag(d.mood, "default", c),
-      tag(d.genre, "default", c),
+      tag(String(d.growthStatus ?? ""), "default", c),
+      tag(String(d.mood ?? ""), "default", c),
+      tag(String(d.genre ?? ""), "default", c),
     ]);
 
     const info = el("div", { display: "flex", flexDirection: "column", gap: "6px", flex: "1" }, [
@@ -88,73 +95,95 @@ function buildMusicHeaders(theme?: string): ColumnDef[] {
     return el("div", { display: "flex", alignItems: "center", gap: "12px" }, [avatar, info]);
   };
 
-  const artistTypeRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
+  const artistTypeRenderer: CellRenderer<MusicArtist> = ({ row }: CellRendererProps<MusicArtist>) => {
+    const d = row;
     return el("div", { display: "flex", flexDirection: "column", gap: "4px" }, [
       el("div", { fontSize: "13px", color: c.gray }, [`${d.artistType}, ${d.pronouns}`]),
       el("div", { fontSize: "12px", color: c.gray }, [d.recordLabel]),
-      el("div", { fontSize: "12px", color: c.gray }, [`Lyrics Language: ${d.lyricsLanguage}`]),
+      el("div", { fontSize: "12px", color: c.gray }, [`Lyrics Language: ${String(d.lyricsLanguage ?? "")}`]),
     ]);
   };
 
-  const followersRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
+  const followersRenderer: CellRenderer<MusicArtist> = ({ row }) => {
+    const d = row;
     return el("div", { display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-start" }, [
-      el("div", { fontSize: "14px", color: c.gray }, [d.followersFormatted]),
-      tag(`↑ +${d.followersGrowthFormatted} (${d.followersGrowthPercent.toFixed(2)}%)`, "green", c),
+      el("div", { fontSize: "14px", color: c.gray }, [String(d.followersFormatted ?? "")]),
+      tag(
+        `↑ +${String(d.followersGrowthFormatted ?? "")} (${musicNumber(d, "followersGrowthPercent").toFixed(2)}%)`,
+        "green",
+        c,
+      ),
     ]);
   };
 
-  const playlistReachRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
-    const isPos = d.playlistReachChange >= 0;
-    const pct = Math.abs(d.playlistReachChangePercent).toFixed(2);
+  const playlistReachRenderer: CellRenderer<MusicArtist> = ({ row }) => {
+    const d = row;
+    const growth = musicNumber(d, "playlistReachChange");
+    const isPos = growth >= 0;
+    const pct = Math.abs(musicNumber(d, "playlistReachChangePercent")).toFixed(2);
     return el("div", { display: "flex", flexDirection: "column", gap: "4px" }, [
-      el("div", { fontSize: "14px", color: c.gray }, [d.playlistReachFormatted]),
-      tag(`${isPos ? "↑" : "↓"} ${isPos ? "+" : ""}${d.playlistReachChangeFormatted} (${pct}%)`, isPos ? "green" : "red", c),
+      el("div", { fontSize: "14px", color: c.gray }, [String(d.playlistReachFormatted ?? "")]),
+      tag(
+        `${isPos ? "↑" : "↓"} ${isPos ? "+" : ""}${String(d.playlistReachChangeFormatted ?? "")} (${pct}%)`,
+        isPos ? "green" : "red",
+        c,
+      ),
     ]);
   };
 
-  const playlistCountRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
+  const playlistCountRenderer: CellRenderer<MusicArtist> = ({ row }) => {
+    const d = row;
     return el("div", { display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-start" }, [
-      el("div", { fontSize: "14px", color: c.gray }, [d.playlistCount.toLocaleString()]),
-      tag(`↑ +${d.playlistCountGrowth} (${d.playlistCountGrowthPercent.toFixed(2)}%)`, "green", c),
+      el("div", { fontSize: "14px", color: c.gray }, [musicNumber(d, "playlistCount").toLocaleString()]),
+      tag(
+        `↑ +${musicNumber(d, "playlistCountGrowth")} (${musicNumber(d, "playlistCountGrowthPercent").toFixed(2)}%)`,
+        "green",
+        c,
+      ),
     ]);
   };
 
-  const monthlyListenersRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
-    const isPos = d.monthlyListenersChange >= 0;
-    const pct = Math.abs(d.monthlyListenersChangePercent).toFixed(2);
+  const monthlyListenersRenderer: CellRenderer<MusicArtist> = ({ row }) => {
+    const d = row;
+    const growth = musicNumber(d, "monthlyListenersChange");
+    const isPos = growth >= 0;
+    const pct = Math.abs(musicNumber(d, "monthlyListenersChangePercent")).toFixed(2);
     return el("div", { display: "flex", flexDirection: "column", gap: "4px" }, [
-      el("div", { fontSize: "14px", color: c.gray }, [d.monthlyListenersFormatted]),
-      tag(`${isPos ? "↑" : "↓"} ${isPos ? "+" : ""}${d.monthlyListenersChangeFormatted} (${pct}%)`, isPos ? "green" : "red", c),
+      el("div", { fontSize: "14px", color: c.gray }, [String(d.monthlyListenersFormatted ?? "")]),
+      tag(
+        `${isPos ? "↑" : "↓"} ${isPos ? "+" : ""}${String(d.monthlyListenersChangeFormatted ?? "")} (${pct}%)`,
+        isPos ? "green" : "red",
+        c,
+      ),
     ]);
   };
 
-  const popularityRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
-    const isPos = d.popularityChangePercent >= 0;
+  const popularityRenderer: CellRenderer<MusicArtist> = ({ row }) => {
+    const d = row;
+    const pct = musicNumber(d, "popularityChangePercent");
+    const isPos = pct >= 0;
     const wrapper = el("div", { display: "flex", justifyContent: "center" });
-    wrapper.appendChild(growthMetric(`${d.popularity}/100`, d.popularityChangePercent, c, { isPositive: isPos, showSign: false }));
+    wrapper.appendChild(
+      growthMetric(`${musicNumber(d, "popularity")}/100`, pct, c, { isPositive: isPos, showSign: false }),
+    );
     return wrapper;
   };
 
-  const conversionRateRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
-    return el("span", { color: c.gray }, [`${d.conversionRate.toFixed(2)}%`]);
+  const conversionRateRenderer: CellRenderer<MusicArtist> = ({ row }) => {
+    return el("span", { color: c.gray }, [`${musicNumber(row, "conversionRate").toFixed(2)}%`]);
   };
 
-  const ratioRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
-    return el("span", { color: c.gray }, [`${d.reachFollowersRatio.toFixed(1)}x`]);
+  const ratioRenderer: CellRenderer<MusicArtist> = ({ row }) => {
+    return el("span", { color: c.gray }, [`${musicNumber(row, "reachFollowersRatio").toFixed(1)}x`]);
   };
 
-  const growthCell = (valueKey: keyof MusicArtist, pctKey: keyof MusicArtist, signed: boolean): CellRenderer => ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
-    const val = d[valueKey] as number;
-    const pct = d[pctKey] as number;
+  const growthCell = (
+    valueKey: keyof MusicArtist,
+    pctKey: keyof MusicArtist,
+    signed: boolean,
+  ): CellRenderer<MusicArtist> => ({ row }) => {
+    const val = musicNumber(row, valueKey);
+    const pct = musicNumber(row, pctKey);
     return growthMetric(val, pct, c, { isPositive: signed ? val >= 0 : true, align: "right" });
   };
 
@@ -204,18 +233,21 @@ function buildMusicHeaders(theme?: string): ColumnDef[] {
   ];
 }
 
+
+const getRowId = ({ row }: GetRowIdParams<MusicArtist>) => row.id;
 export function renderMusicDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
-): SimpleTableVanilla {
+): SimpleTableVanilla<MusicArtist> {
   const wrapper = document.createElement("div");
   wrapper.className = "music-theme-container";
   wrapper.style.fontFamily = "Inter";
   container.appendChild(wrapper);
 
   const table = new SimpleTableVanilla(wrapper, {
+    getRowId,
     columns: buildMusicHeaders(options?.theme),
-    rows: asRows([...musicData]),
+    rows: [...musicData],
     height: options?.height ?? "400px",
     theme: options?.theme,
     selectableCells: true,

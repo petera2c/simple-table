@@ -1,8 +1,9 @@
 import { Component, Input } from "@angular/core";
 import { NgFor } from "@angular/common";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { themesConfig, AVAILABLE_THEMES } from "./themes.demo-data";
 import "@simple-table/angular/styles.css";
+import type { ThemeDemoStaff } from "./themes.demo-data";
 
 @Component({
   selector: "themes-demo",
@@ -27,6 +28,7 @@ import "@simple-table/angular/styles.css";
         </button>
       </div>
       <simple-table
+      [getRowId]="getRowId"
         [rows]="rows"
         [columns]="headers"
         [height]="height"
@@ -39,12 +41,14 @@ export class ThemesDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = themesConfig.rows;
-  readonly headers: AngularColumnDef[] = themesConfig.headers;
+  readonly rows: ThemeDemoStaff[] = themesConfig.rows;
+  readonly headers: AngularColumnDef<ThemeDemoStaff>[] = themesConfig.headers;
   readonly themes = AVAILABLE_THEMES;
   selectedTheme: Theme = "light";
 
   ngOnInit() {
     if (this.theme) this.selectedTheme = this.theme;
   }
+
+  getRowId = ({ row }: GetRowIdParams<ThemeDemoStaff>) => row.id;
 }

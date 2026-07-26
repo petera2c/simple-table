@@ -1,8 +1,9 @@
 import { Component, Input } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, QuickFilterMode, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, QuickFilterMode, Theme } from "@simple-table/angular";
 import { quickFilterConfig } from "./quick-filter.demo-data";
 import "@simple-table/angular/styles.css";
+import type { QuickFilterEmployee } from "./quick-filter.demo-data";
 
 @Component({
   selector: "quick-filter-demo",
@@ -58,6 +59,7 @@ import "@simple-table/angular/styles.css";
         </button>
       </div>
       <simple-table
+      [getRowId]="getRowId"
         [rows]="rows"
         [columns]="headers"
         [height]="height"
@@ -71,9 +73,11 @@ export class QuickFilterDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = quickFilterConfig.rows;
-  readonly headers: AngularColumnDef[] = quickFilterConfig.headers;
+  readonly rows: QuickFilterEmployee[] = quickFilterConfig.rows;
+  readonly headers: AngularColumnDef<QuickFilterEmployee>[] = quickFilterConfig.headers;
   searchText = "";
   filterMode: QuickFilterMode = "simple";
   caseSensitive = false;
+
+  getRowId = ({ row }: GetRowIdParams<QuickFilterEmployee>) => row.id;
 }
