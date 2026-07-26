@@ -1,5 +1,5 @@
 import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { emptyStateConfig, type EmptyEmployee } from "./empty-state.demo-data";
+import { emptyStateConfig } from "./empty-state.demo-data";
 import "@simple-table/react/styles.css";
 
 const EmptyIcon = () => (
@@ -19,7 +19,7 @@ const tableEmptyState = (
       justifyContent: "center",
       padding: "48px 24px",
       color: "#64748b",
-      gap: 12,
+      gap: 12
     }}
   >
     <EmptyIcon />
@@ -30,13 +30,13 @@ const tableEmptyState = (
 
 const EmptyStateDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable<EmptyEmployee>
+    <SimpleTable
       columns={emptyStateConfig.headers}
       rows={emptyStateConfig.rows}
       tableEmptyStateRenderer={tableEmptyState}
