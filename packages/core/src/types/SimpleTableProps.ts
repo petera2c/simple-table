@@ -1,7 +1,7 @@
-import { TableAPI } from "./TableAPI";
 import type ColumnDef from "./ColumnDef";
 import { Accessor } from "./ColumnDef";
 import Row from "./Row";
+import type { RowData } from "./Row";
 import {
   EmptyStateRenderer,
   ErrorStateRenderer,
@@ -29,25 +29,25 @@ import { AnimationsConfig } from "./AnimationsConfig";
 import type { FooterPosition } from "./FooterPosition";
 import type { PivotConfig } from "./PivotTypes";
 
-export interface SimpleTableProps {
+export interface SimpleTableProps<TData extends RowData = Row> {
   animations?: AnimationsConfig; // Cell animation configuration (FLIP-style on sort and programmatic column reorder). Defaults: enabled=true, duration=240ms, easing=cubic-bezier(0.2, 0.8, 0.2, 1).
   autoExpandColumns?: boolean; // Expand-only fill: stretch columns proportionally when their natural widths leave surplus space; never squeeze below natural width (horizontal scroll instead)
-  canExpandRowGroup?: (row: Row) => boolean; // Function to conditionally control if a row group can be expanded
+  canExpandRowGroup?: (row: TData) => boolean; // Function to conditionally control if a row group can be expanded
   cellUpdateFlash?: boolean; // Flag for flash animation after cell update
   className?: string; // Class name for the table
   columnBorders?: boolean; // Flag for showing column borders
   columnEditorConfig?: ColumnEditorConfig; // Configuration for the column editor drawer
   columnReordering?: boolean; // Flag for column reordering
   columnResizing?: boolean; // Flag for column resizing
-  /** Column definitions. */
-  columns?: ColumnDef[];
+  /** Column definitions. Mixed per-column TValue uses `any` on the column union. */
+  columns?: ColumnDef<TData, any>[];
   copyHeadersToClipboard?: boolean; // Flag for including column headers when copying cells to clipboard (default: false)
   customTheme?: CustomThemeProps; // Custom theme configuration for dimensions and spacing
   /** Show the column editor / visibility UI. */
   enableColumnEditor?: boolean;
   /** Open the column editor when the table loads. */
   enableColumnEditorInitOpen?: boolean;
-  emptyStateRenderer?: EmptyStateRenderer; // Custom renderer for empty states (for nested row states)
+  emptyStateRenderer?: EmptyStateRenderer<TData>; // Custom renderer for empty states (for nested row states)
   enableHeaderEditing?: boolean; // Flag for enabling header label editing when clicking already active headers
   /** Enable client-side pagination. */
   enablePagination?: boolean;
@@ -77,7 +77,7 @@ export interface SimpleTableProps {
    * Default true.
    */
   enableVirtualization?: boolean;
-  errorStateRenderer?: ErrorStateRenderer; // Custom renderer for error states
+  errorStateRenderer?: ErrorStateRenderer<TData>; // Custom renderer for error states
   expandAll?: boolean; // Flag for expanding all rows by default
   externalFilterHandling?: boolean; // Flag to let consumer handle filter logic completely
   externalSortHandling?: boolean; // Flag to let consumer handle sort logic completely
@@ -103,28 +103,28 @@ export interface SimpleTableProps {
   initialSortColumn?: string; // Accessor of the column to sort by on initial load
   initialSortDirection?: SortDirection; // Sort direction for initial sort
   isLoading?: boolean; // Flag for showing loading skeleton state
-  loadingStateRenderer?: LoadingStateRenderer; // Custom renderer for loading states
+  loadingStateRenderer?: LoadingStateRenderer<TData>; // Custom renderer for loading states
   maxHeight?: string | number; // Maximum height of the table (enables adaptive height with virtualization)
   /** Alternate column background. */
   oddColumnBackground?: boolean;
   /** Alternate odd/even row backgrounds. */
   oddEvenRowBackground?: boolean;
-  onCellClick?: (props: CellClickProps) => void;
-  onCellEdit?: (props: CellChangeProps) => void;
-  onColumnOrderChange?: (newHeaders: ColumnDef[]) => void;
-  onColumnSelect?: (header: ColumnDef) => void; // Callback when a column is selected/clicked
+  onCellClick?: (props: CellClickProps<TData>) => void;
+  onCellEdit?: (props: CellChangeProps<TData>) => void;
+  onColumnOrderChange?: (newHeaders: ColumnDef<TData, any>[]) => void;
+  onColumnSelect?: (header: ColumnDef<TData, any>) => void; // Callback when a column is selected/clicked
   onColumnVisibilityChange?: (visibilityState: ColumnVisibilityState) => void; // Callback when column visibility changes
-  onColumnWidthChange?: (headers: ColumnDef[]) => void; // Callback when column widths change (resize or auto-size)
+  onColumnWidthChange?: (headers: ColumnDef<TData, any>[]) => void; // Callback when column widths change (resize or auto-size)
   onFilterChange?: (filters: TableFilterState) => void; // Callback when filter is applied
   /** Called once when the table is ready. */
   onTableReady?: () => void;
-  onHeaderEdit?: (header: ColumnDef, newLabel: string) => void; // Callback when a header is edited
+  onHeaderEdit?: (header: ColumnDef<TData, any>, newLabel: string) => void; // Callback when a header is edited
   infiniteScrollThreshold?: number; // Pixel distance from the bottom of the scrollable area at which `onLoadMore` fires (default: 200)
   onLoadMore?: () => void; // Callback when user scrolls near bottom to load more data
   onNextPage?: OnNextPage; // Custom handler for next page
   onPageChange?: (page: number) => void | Promise<void>; // Callback when page changes (for server-side pagination)
-  onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>; // Callback when a row is expanded/collapsed
-  onRowSelectionChange?: (props: RowSelectionChangeProps) => void; // Callback when row selection changes
+  onRowGroupExpand?: (props: OnRowGroupExpandProps<TData>) => void | Promise<void>; // Callback when a row is expanded/collapsed
+  onRowSelectionChange?: (props: RowSelectionChangeProps<TData>) => void; // Callback when row selection changes
   onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
   /**
    * Declarative matrix pivot. When set, flat `rows` are reshaped into a
@@ -134,10 +134,15 @@ export interface SimpleTableProps {
   /** Fired when pivot config changes via TableAPI.setPivot. */
   onPivotChange?: (pivot: PivotConfig | null) => void;
   quickFilter?: QuickFilterConfig; // Global search configuration across all columns
-  rowButtons?: RowButton[]; // Array of buttons to show in each row
-  rowGrouping?: Accessor[]; // Array of property names that define row grouping hierarchy
-  getRowId?: GetRowId; // Stable business id for a row. Return null/undefined when the row has no id (pivot aggregates, loading) to use reference-based identity.
-  rows: Row[]; // Rows data
+  rowButtons?: RowButton<TData>[]; // Array of buttons to show in each row
+  /**
+   * Property names that define the row grouping hierarchy.
+   * Kept as plain accessors (string-friendly) so dynamic / heterogeneous nesting
+   * keys and pivot-injected keys remain valid.
+   */
+  rowGrouping?: Accessor[];
+  getRowId?: GetRowId<TData>; // Stable business id for a row. Return null/undefined when the row has no id (pivot aggregates, loading) to use reference-based identity.
+  rows: TData[]; // Rows data
   rowsPerPage?: number; // Rows per page
   scrollParent?: HTMLElement | "window" | (() => HTMLElement | null); // External scroll container that drives virtualization and onLoadMore when neither height nor maxHeight is set. Accepts an element, the string "window", or a getter (useful for refs that resolve after first render).
   selectableCells?: boolean; // Flag if can select cells

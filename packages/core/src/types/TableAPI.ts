@@ -2,6 +2,7 @@ import UpdateDataProps from "./UpdateCellProps";
 import ColumnDef, { Accessor } from "./ColumnDef";
 import TableRow from "./TableRow";
 import Row from "./Row";
+import type { RowData } from "./Row";
 import SortColumn, { SortDirection } from "./SortColumn";
 import { TableFilterState, FilterCondition } from "./FilterTypes";
 import Cell from "./Cell";
@@ -18,12 +19,12 @@ export interface ExportToCSVProps {
   filename?: string;
 }
 
-export type TableAPI = {
+export type TableAPI<TData extends RowData = Row> = {
   updateData: (props: UpdateDataProps) => void;
   setHeaderRename: (props: SetHeaderRenameProps) => void;
   getVisibleRows: () => TableRow[];
   getAllRows: () => TableRow[];
-  getHeaders: () => ColumnDef[];
+  getHeaders: () => ColumnDef<TData, any>[];
   exportToCSV: (props?: ExportToCSVProps) => void;
   getSortState: () => SortColumn | null;
   applySortState: (props?: { accessor: Accessor; direction?: SortDirection }) => Promise<void>;
@@ -67,9 +68,9 @@ export type TableAPI = {
    */
   getSelectedRows: () => Set<RowId>;
   /** Row data objects for currently selected rows (resolved from visible/current table rows). */
-  getSelectedRowsData: () => Row[];
+  getSelectedRowsData: () => TData[];
   /** Look up a row by row id in the current table rows. */
-  getRow: (rowId: RowId) => Row | undefined;
+  getRow: (rowId: RowId) => TData | undefined;
   selectRow: (rowId: RowId) => void;
   deselectRow: (rowId: RowId) => void;
   toggleRowSelection: (rowId: RowId) => void;
@@ -80,6 +81,10 @@ export type TableAPI = {
   getPivot: () => PivotConfig | null;
   /** Generated headers while pivot is active; otherwise current headers. */
   getPivotHeaders: () => ColumnDef[];
-  /** Post-pivot rows (pre-flatten) while pivot is active; otherwise source rows. */
+  /**
+   * Post-pivot rows (pre-flatten) while pivot is active; otherwise source rows.
+   * Always {@link Row} — pivot injects synthetic keys (e.g. `__pivotChildren`)
+   * that are not part of consumer `TData`.
+   */
   getPivotedRows: () => Row[];
 };
