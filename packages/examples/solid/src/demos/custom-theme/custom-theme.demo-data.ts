@@ -1,8 +1,16 @@
 // Self-contained demo table setup for this example.
-import type { SolidColumnDef, Row } from "@simple-table/solid";
+import type { SolidColumnDef } from "@simple-table/solid";
 
+export interface ThemeContact {
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+  city: string;
+  status: string;
+}
 
-export const customThemeData: Row[] = [
+export const customThemeData: ThemeContact[] = [
   { id: 1, name: "Alice Johnson", phone: "2125551234", email: "alice@corp.com", city: "New York", status: "active" },
   { id: 2, name: "Bob Martinez", phone: "3105559876", email: "bob@corp.com", city: "Los Angeles", status: "active" },
   { id: 3, name: "Clara Chen", phone: "4155553210", email: "clara@corp.com", city: "San Francisco", status: "inactive" },
@@ -20,7 +28,7 @@ function formatPhone(raw: string): string {
   return raw;
 }
 
-export const customThemeHeaders: SolidColumnDef[] = [
+export const customThemeHeaders: SolidColumnDef<ThemeContact>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 170, type: "string", sortable: true },
   {
@@ -39,10 +47,9 @@ export const customThemeConfig = {
   headers: customThemeHeaders,
   rows: customThemeData,
   tableProps: {
-    theme: "custom" as const,
     customTheme: {
       rowHeight: 40,
       headerHeight: 44,
     },
   },
-} as const;
+};

@@ -6,6 +6,7 @@ export default function SingleRowChildrenDemo(props: { height?: string | number;
   return (
     <SimpleTable
       columns={singleRowChildrenConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={singleRowChildrenConfig.rows}
       columnResizing={singleRowChildrenConfig.tableProps.columnResizing}
       selectableCells={singleRowChildrenConfig.tableProps.selectableCells}

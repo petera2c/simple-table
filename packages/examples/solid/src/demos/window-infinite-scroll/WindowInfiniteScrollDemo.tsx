@@ -1,9 +1,10 @@
 import { createMemo, createSignal } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { Row, Theme } from "@simple-table/solid";
+import type { Theme } from "@simple-table/solid";
 import {
   generateWindowScrollRows,
   windowScrollHeaders,
+  type WindowScrollEmployee,
 } from "./window-infinite-scroll.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -12,26 +13,15 @@ const BATCH_SIZE = 50;
 const MAX_ROWS = 5_000;
 const LOAD_DELAY_MS = 350;
 
-/**
- * Window-style infinite scroll demo.
- *
- * The table has no `height` / `maxHeight` — it grows to its natural size inside
- * whatever scroll parent surrounds it. `scrollParent` is a getter that resolves
- * to the nearest scrollable ancestor at render time (the demo shell wraps
- * everything in a scrollable `<main>`, so `window` itself doesn't scroll inside
- * this preview). In a typical app you'd just pass `scrollParent="window"`.
- *
- * As the user scrolls toward the bottom, `onLoadMore` appends a batch of rows
- * until the dataset cap is reached.
- */
 export default function WindowInfiniteScrollDemo(_props: {
-  // `height` is intentionally ignored — this demo is about *not* setting one.
   height?: string | number;
   theme?: Theme;
 }) {
   let wrapperRef: HTMLDivElement | undefined;
 
-  const [rows, setRows] = createSignal<Row[]>(generateWindowScrollRows(0, INITIAL_ROWS));
+  const [rows, setRows] = createSignal<WindowScrollEmployee[]>(
+    generateWindowScrollRows(0, INITIAL_ROWS),
+  );
   const [loading, setLoading] = createSignal(false);
   const [hasMore, setHasMore] = createSignal(true);
 
@@ -43,11 +33,7 @@ export default function WindowInfiniteScrollDemo(_props: {
     return `${rows().length.toLocaleString()} rows loaded · end of dataset`;
   });
 
-  // Getter form so we don't capture the wrapper before Solid attaches the ref.
-  // In a regular app outside this preview shell, pass scrollParent="window".
   const getScrollParent = () => wrapperRef?.parentElement ?? null;
-
-  const getRowId = (p: { row: Row }) => String((p.row as { id?: number })?.id);
 
   const handleLoadMore = () => {
     if (loading() || !hasMore()) return;
@@ -117,7 +103,7 @@ export default function WindowInfiniteScrollDemo(_props: {
         columns={windowScrollHeaders}
         rows={rows()}
         theme={_props.theme}
-        getRowId={getRowId}
+        getRowId={({ row }) => String(row.id)}
         scrollParent={getScrollParent}
         infiniteScrollThreshold={400}
         onLoadMore={handleLoadMore}

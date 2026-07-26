@@ -1,16 +1,16 @@
-import {SimpleTable, asRows} from "@simple-table/solid";import type { Theme, SolidColumnDef, CellRendererProps } from "@simple-table/solid";
+import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidColumnDef, CellRendererProps } from "@simple-table/solid";
 import { manufacturingConfig, getManufacturingStatusColors } from "./manufacturing.demo-data";
 import type { ManufacturingRow } from "./manufacturing.demo-data";
 import "@simple-table/solid/styles.css";
 
-function getHeaders(): SolidColumnDef[] {
+function getHeaders(): SolidColumnDef<ManufacturingRow>[] {
   const baseHeaders = [...manufacturingConfig.headers];
   return baseHeaders.map((h) => {
     if (h.accessor === "productLine") {
       return {
         ...h,
-        cellRenderer: ({ row }: CellRendererProps) => {
-          const d = row as unknown as ManufacturingRow;
+        cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
+          const d = row;
           const hasChildren = d.stations && Array.isArray(d.stations);
           return hasChildren ? <span style={{ "font-weight": "bold" }}>{d.productLine}</span> : d.productLine;
         },
@@ -19,8 +19,8 @@ function getHeaders(): SolidColumnDef[] {
     if (h.accessor === "station") {
       return {
         ...h,
-        cellRenderer: ({ row }: CellRendererProps) => {
-          const d = row as unknown as ManufacturingRow;
+        cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
+          const d = row;
           const hasChildren = d.stations && Array.isArray(d.stations);
           if (hasChildren) return <span style={{ color: "#6b7280" }}>{d.id}</span>;
           return (
@@ -35,8 +35,8 @@ function getHeaders(): SolidColumnDef[] {
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: ({ row, theme }: CellRendererProps) => {
-          const d = row as unknown as ManufacturingRow;
+        cellRenderer: ({ row, theme }: CellRendererProps<ManufacturingRow>) => {
+          const d = row;
           const hasChildren = d.stations && Array.isArray(d.stations);
           if (hasChildren) return "—";
           const colors = getManufacturingStatusColors(d.status, theme);
@@ -47,8 +47,8 @@ function getHeaders(): SolidColumnDef[] {
     if (h.accessor === "outputRate" || h.accessor === "defectCount" || h.accessor === "energy") {
       return {
         ...h,
-        cellRenderer: ({ row }: CellRendererProps) => {
-          const d = row as unknown as ManufacturingRow;
+        cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
+          const d = row;
           const hasChildren = d.stations && Array.isArray(d.stations);
           const value = d[h.accessor as keyof ManufacturingRow] as number;
           return <div style={hasChildren ? { "font-weight": "bold" } : {}}>{value.toLocaleString()}</div>;
@@ -58,8 +58,8 @@ function getHeaders(): SolidColumnDef[] {
     if (h.accessor === "cycletime") {
       return {
         ...h,
-        cellRenderer: ({ row }: CellRendererProps) => {
-          const d = row as unknown as ManufacturingRow;
+        cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
+          const d = row;
           const hasChildren = d.stations && Array.isArray(d.stations);
           if (hasChildren) return <span style={{ "font-weight": "bold" }}>{d.cycletime?.toFixed(1)}</span>;
           return <span>{String(d.cycletime)}</span>;
@@ -69,8 +69,8 @@ function getHeaders(): SolidColumnDef[] {
     if (h.accessor === "efficiency") {
       return {
         ...h,
-        cellRenderer: ({ row }: CellRendererProps) => {
-          const d = row as unknown as ManufacturingRow;
+        cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
+          const d = row;
           const hasChildren = d.stations && Array.isArray(d.stations);
           const color = d.efficiency >= 90 ? "#52c41a" : d.efficiency >= 75 ? "#1890ff" : "#ff4d4f";
           return (
@@ -87,8 +87,8 @@ function getHeaders(): SolidColumnDef[] {
     if (h.accessor === "defectRate") {
       return {
         ...h,
-        cellRenderer: ({ row }: CellRendererProps) => {
-          const d = row as unknown as ManufacturingRow;
+        cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
+          const d = row;
           const hasChildren = d.stations && Array.isArray(d.stations);
           const rate = typeof d.defectRate === "number" ? d.defectRate : parseFloat(String(d.defectRate));
           const color = rate < 1 ? "#16a34a" : rate < 3 ? "#f59e0b" : "#dc2626";
@@ -99,8 +99,8 @@ function getHeaders(): SolidColumnDef[] {
     if (h.accessor === "downtime") {
       return {
         ...h,
-        cellRenderer: ({ row }: CellRendererProps) => {
-          const d = row as unknown as ManufacturingRow;
+        cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
+          const d = row;
           const hasChildren = d.stations && Array.isArray(d.stations);
           const hours = typeof d.downtime === "number" ? d.downtime : parseFloat(String(d.downtime));
           const color = hours < 1 ? "#16a34a" : hours < 2 ? "#f59e0b" : "#dc2626";
@@ -111,8 +111,8 @@ function getHeaders(): SolidColumnDef[] {
     if (h.accessor === "utilization") {
       return {
         ...h,
-        cellRenderer: ({ row }: CellRendererProps) => {
-          const d = row as unknown as ManufacturingRow;
+        cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
+          const d = row;
           const hasChildren = d.stations && Array.isArray(d.stations);
           if (hasChildren) return <span style={{ "font-weight": "bold" }}>{d.utilization?.toFixed(0)}%</span>;
           return `${d.utilization}%`;
@@ -122,8 +122,8 @@ function getHeaders(): SolidColumnDef[] {
     if (h.accessor === "maintenanceDate") {
       return {
         ...h,
-        cellRenderer: ({ row }: CellRendererProps) => {
-          const d = row as unknown as ManufacturingRow;
+        cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
+          const d = row;
           const hasChildren = d.stations && Array.isArray(d.stations);
           if (hasChildren) return "—";
           const [year, month, day] = d.maintenanceDate.split("-").map(Number);
@@ -153,6 +153,6 @@ function getHeaders(): SolidColumnDef[] {
 
 export default function ManufacturingDemo(props: { height?: string | number; theme?: Theme }) {
   return (
-    <SimpleTable columnResizing columnReordering columns={getHeaders()} height={props.height ?? "400px"} rowGrouping={["stations"]} rows={asRows(manufacturingConfig.rows)} selectableCells theme={props.theme} />
+    <SimpleTable columnResizing columnReordering columns={getHeaders()} getRowId={({ row }) => row.id} height={props.height ?? "400px"} rowGrouping={["stations"]} rows={manufacturingConfig.rows} selectableCells theme={props.theme} />
   );
 }

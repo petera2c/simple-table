@@ -4,13 +4,13 @@ import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data"
 import type { HREmployee, HRTagColorKey } from "./hr.demo-data";
 import "@simple-table/solid/styles.css";
 
-function getHeaders(): SolidColumnDef[] {
+function getHeaders(): SolidColumnDef<HREmployee>[] {
   return hrConfig.headers.map((h) => {
       if (h.accessor === "fullName") {
         return {
           ...h,
-          cellRenderer: ({ row, theme }: CellRendererProps) => {
-            const d = row as unknown as HREmployee;
+          cellRenderer: ({ row, theme }: CellRendererProps<HREmployee>) => {
+            const d = row;
             const c = getHRThemeColors(theme);
             const initials = `${d.firstName?.charAt(0) || ""}${d.lastName?.charAt(0) || ""}`;
             return (
@@ -42,8 +42,8 @@ function getHeaders(): SolidColumnDef[] {
       if (h.accessor === "performanceScore") {
         return {
           ...h,
-          cellRenderer: ({ row, theme }: CellRendererProps) => {
-            const d = row as unknown as HREmployee;
+          cellRenderer: ({ row, theme }: CellRendererProps<HREmployee>) => {
+            const d = row;
             const c = getHRThemeColors(theme);
             const color =
               d.performanceScore >= 90
@@ -89,8 +89,8 @@ function getHeaders(): SolidColumnDef[] {
       if (h.accessor === "hireDate") {
         return {
           ...h,
-          cellRenderer: ({ row, theme }: CellRendererProps) => {
-            const d = row as unknown as HREmployee;
+          cellRenderer: ({ row, theme }: CellRendererProps<HREmployee>) => {
+            const d = row;
             if (!d.hireDate) return "";
             const [year, month, day] = d.hireDate.split("-").map(Number);
             const date = new Date(year, month - 1, day);
@@ -110,8 +110,8 @@ function getHeaders(): SolidColumnDef[] {
       if (h.accessor === "yearsOfService") {
         return {
           ...h,
-          cellRenderer: ({ row, theme }: CellRendererProps) => {
-            const d = row as unknown as HREmployee;
+          cellRenderer: ({ row, theme }: CellRendererProps<HREmployee>) => {
+            const d = row;
             if (d.yearsOfService === null) return "";
             const c = getHRThemeColors(theme);
             return <span style={{ color: c.gray }}>{`${d.yearsOfService} yrs`}</span>;
@@ -121,8 +121,8 @@ function getHeaders(): SolidColumnDef[] {
       if (h.accessor === "salary") {
         return {
           ...h,
-          cellRenderer: ({ row, theme }: CellRendererProps) => {
-            const d = row as unknown as HREmployee;
+          cellRenderer: ({ row, theme }: CellRendererProps<HREmployee>) => {
+            const d = row;
             const c = getHRThemeColors(theme);
             return <span style={{ color: c.gray }}>{`$${d.salary.toLocaleString()}`}</span>;
           },
@@ -131,8 +131,8 @@ function getHeaders(): SolidColumnDef[] {
       if (h.accessor === "status") {
         return {
           ...h,
-          cellRenderer: ({ row, theme }: CellRendererProps) => {
-            const d = row as unknown as HREmployee;
+          cellRenderer: ({ row, theme }: CellRendererProps<HREmployee>) => {
+            const d = row;
             if (!d.status) return "";
             const c = getHRThemeColors(theme);
             const colorKey: HRTagColorKey = HR_STATUS_COLOR_MAP[d.status] || "default";
@@ -165,7 +165,7 @@ export default function HRDemo(props: { height?: string | number; theme?: Theme 
   const heightNum = () => (typeof props.height === "number" ? props.height : 400);
   const howManyRowsCanFit = () => Math.floor(heightNum() / rowHeight);
 
-  const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
+  const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps<HREmployee>) => {
     setData((prev) =>
       prev.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item)),
     );
@@ -176,6 +176,7 @@ export default function HRDemo(props: { height?: string | number; theme?: Theme 
       columnReordering
       columnResizing
       columns={getHeaders()}
+      getRowId={({ row }) => row.id}
       onCellEdit={handleCellEdit}
       customTheme={{ rowHeight }}
       rows={data()}

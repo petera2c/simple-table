@@ -1,8 +1,7 @@
 // Self-contained demo table setup for this example.
 import type { SolidColumnDef } from "@simple-table/solid";
-import type { Row } from "@simple-table/solid";
 
-export interface CryptoCoin extends Row {
+export interface CryptoCoin {
   id: string;
   rank: number;
   name: string;
@@ -177,7 +176,7 @@ export function generateCryptoData(count = 200): CryptoCoin[] {
 const pct = ({ value }: { value: unknown }) =>
   typeof value === "number" ? formatSignedPercent(value) : "";
 
-export const cryptoHeaders: SolidColumnDef[] = [
+export const cryptoHeaders: SolidColumnDef<CryptoCoin>[] = [
   { accessor: "rank", label: "#", width: 56, align: "center", type: "number", pinned: "left", sortable: true, editable: false },
   {
     accessor: "name", label: "Asset", width: 200, align: "left", type: "string", pinned: "left", sortable: true, editable: false,
@@ -229,4 +228,4 @@ export const cryptoData = generateCryptoData(200);
 export const cryptoConfig = {
   headers: cryptoHeaders,
   rows: cryptoData,
-} as const;
+};

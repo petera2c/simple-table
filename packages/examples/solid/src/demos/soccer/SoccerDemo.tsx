@@ -7,6 +7,7 @@ export default function SoccerDemo(props: { height?: string | number; theme?: Th
   return (
     <SimpleTable
       columns={soccerConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={soccerConfig.rows}
       height={props.height ?? "70dvh"}
       theme={props.theme}

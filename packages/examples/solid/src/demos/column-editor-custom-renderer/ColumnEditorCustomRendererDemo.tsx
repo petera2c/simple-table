@@ -73,6 +73,7 @@ export default function ColumnEditorCustomRendererDemo(props: {
   return (
     <SimpleTable
       columns={columnEditorCustomRendererConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={columnEditorCustomRendererConfig.rows}
       enableColumnEditor
       columnEditorConfig={columnEditorConfig}

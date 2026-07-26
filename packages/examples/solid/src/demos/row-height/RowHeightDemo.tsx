@@ -6,6 +6,7 @@ export default function RowHeightDemo(props: { height?: string | number; theme?:
   return (
     <SimpleTable
       columns={rowHeightConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={rowHeightConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

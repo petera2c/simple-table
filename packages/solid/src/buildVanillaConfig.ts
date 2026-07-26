@@ -1,9 +1,10 @@
-import type { SimpleTableConfig, ColumnDef, ColumnEditorConfig, Row } from "simple-table-core";
-import { collectHeaderAccessors } from "simple-table-core";
+import type { SimpleTableConfig, ColumnDef, ColumnEditorConfig } from "simple-table-core";
+import { asRows, collectHeaderAccessors } from "simple-table-core";
 import type {
   SimpleTableSolidProps,
   SolidColumnDef,
   SolidColumnEditorConfig,
+  SolidDefaultRowData,
   SolidIconsConfig,
 } from "./types";
 import type { MountRegistry } from "./MountRegistry";
@@ -44,8 +45,8 @@ function transformColumnEditorConfig(
   };
 }
 
-function transformHeader(
-  header: ColumnDef | SolidColumnDef,
+function transformHeader<TData extends SolidDefaultRowData>(
+  header: SolidColumnDef<TData, any>,
   registry: MountRegistry,
 ): ColumnDef {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
@@ -76,6 +77,8 @@ function transformHeader(
   }
 
   if (nestedTable) {
+    // Recursively convert the nested table config. Rows are provided at
+    // render time by the vanilla core, so we supply an empty placeholder.
     const nestedConfig = { ...nestedTable, rows: [] } as unknown as SimpleTableSolidProps;
     transformed.nestedTable = buildVanillaConfig(nestedConfig, registry) as any;
   }
@@ -84,9 +87,9 @@ function transformHeader(
 }
 
 /** Resolve column definitions. */
-export function resolveSolidColumns(
-  config: Pick<SimpleTableSolidProps, "columns">,
-): ReadonlyArray<ColumnDef | SolidColumnDef> {
+export function resolveSolidColumns<TData extends SolidDefaultRowData = SolidDefaultRowData>(
+  config: Pick<SimpleTableSolidProps<TData>, "columns">,
+): ReadonlyArray<SolidColumnDef<TData, any>> {
   const headers = config.columns;
   if (!headers) {
     throw new Error("SimpleTable requires `columns`");
@@ -94,8 +97,8 @@ export function resolveSolidColumns(
   return headers;
 }
 
-export function buildVanillaConfig(
-  config: SimpleTableSolidProps,
+export function buildVanillaConfig<TData extends SolidDefaultRowData = SolidDefaultRowData>(
+  config: SimpleTableSolidProps<TData>,
   registry: MountRegistry,
 ): SimpleTableConfig {
   const {
@@ -129,9 +132,13 @@ export function buildVanillaConfig(
 
   registry.pruneRendererCaches(collectHeaderAccessors(columns));
 
+  // `rest` still carries TData-bound callbacks (getRowId, onCellEdit, …).
+  // Widen once here — the vanilla runtime is Row-shaped.
+  const shared = rest as SimpleTableConfig;
+
   const vanillaConfig: SimpleTableConfig = {
-    ...rest,
-    rows: rows as Row[],
+    ...shared,
+    rows: asRows(rows),
     columns: columns.map((header) => transformHeader(header, registry)),
     enableColumnEditor,
     enableColumnEditorInitOpen,
@@ -144,31 +151,24 @@ export function buildVanillaConfig(
     // discards any host element, so the registry disposes exactly the affected
     // Solid trees (including portals / floating UI).
     onRendererHostDiscard: registry.disposeHost,
-    ...(onColumnOrderChange
-      ? {
-          onColumnOrderChange: (headers: ColumnDef[]) =>
-            onColumnOrderChange(headers as unknown as SolidColumnDef[]),
-        }
-      : {}),
-    ...(onColumnWidthChange
-      ? {
-          onColumnWidthChange: (headers: ColumnDef[]) =>
-            onColumnWidthChange(headers as unknown as SolidColumnDef[]),
-        }
-      : {}),
-    ...(onHeaderEdit
-      ? {
-          onHeaderEdit: (header: ColumnDef, newLabel: string) =>
-            onHeaderEdit(header as unknown as SolidColumnDef, newLabel),
-        }
-      : {}),
-    ...(onColumnSelect
-      ? {
-          onColumnSelect: (header: ColumnDef) =>
-            onColumnSelect(header as unknown as SolidColumnDef),
-        }
-      : {}),
   };
+
+  if (onColumnOrderChange) {
+    vanillaConfig.onColumnOrderChange = (headers) =>
+      onColumnOrderChange(headers as unknown as SolidColumnDef<TData, any>[]);
+  }
+  if (onColumnWidthChange) {
+    vanillaConfig.onColumnWidthChange = (headers) =>
+      onColumnWidthChange(headers as unknown as SolidColumnDef<TData, any>[]);
+  }
+  if (onHeaderEdit) {
+    vanillaConfig.onHeaderEdit = (header, newLabel) =>
+      onHeaderEdit(header as unknown as SolidColumnDef<TData, any>, newLabel);
+  }
+  if (onColumnSelect) {
+    vanillaConfig.onColumnSelect = (header) =>
+      onColumnSelect(header as unknown as SolidColumnDef<TData, any>);
+  }
 
   if (footerRenderer !== undefined) {
     vanillaConfig.footerRenderer = wrapSolidRenderer(registry, footerRenderer) as any;

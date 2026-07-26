@@ -59,6 +59,7 @@ export default function QuickFilterDemo(props: { height?: string | number; theme
       </div>
       <SimpleTable
         columns={quickFilterConfig.headers}
+        getRowId={({ row }) => row.id}
         rows={quickFilterConfig.rows}
         height={props.height ?? "400px"}
         theme={props.theme}

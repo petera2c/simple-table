@@ -14,6 +14,7 @@ export default function EmptyStateDemo(props: { height?: string | number; theme?
   return (
     <SimpleTable
       columns={emptyStateConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={emptyStateConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

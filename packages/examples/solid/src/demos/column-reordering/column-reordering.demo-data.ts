@@ -1,8 +1,15 @@
 // Self-contained demo table setup for this example.
 import type { SolidColumnDef } from "@simple-table/solid";
 
+export interface CrewMember {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+}
 
-export const columnReorderingHeaders: SolidColumnDef[] = [
+export const columnReorderingHeaders: SolidColumnDef<CrewMember>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", type: "string" },
   { accessor: "age", label: "Age", width: 80, align: "right", type: "number" },
@@ -29,4 +36,4 @@ export const columnReorderingConfig = {
   headers: columnReorderingHeaders,
   rows: columnReorderingData,
   tableProps: { columnReordering: true },
-} as const;
+};

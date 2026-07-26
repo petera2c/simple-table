@@ -31,6 +31,7 @@ export default function ThemesDemo(props: { height?: string | number; theme?: Th
       </div>
       <SimpleTable
         columns={themesConfig.headers}
+        getRowId={({ row }) => row.id}
         rows={themesConfig.rows}
         height={props.height ?? "400px"}
         theme={selectedTheme()}

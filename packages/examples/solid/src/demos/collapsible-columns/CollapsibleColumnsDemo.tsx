@@ -9,6 +9,7 @@ export default function CollapsibleColumnsDemo(props: {
   return (
     <SimpleTable
       columns={collapsibleColumnsConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={collapsibleColumnsConfig.rows}
       columnResizing
       enableColumnEditor

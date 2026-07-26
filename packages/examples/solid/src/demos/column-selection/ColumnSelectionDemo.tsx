@@ -6,6 +6,7 @@ export default function ColumnSelectionDemo(props: { height?: string | number; t
   return (
     <SimpleTable
       columns={columnSelectionConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={columnSelectionConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

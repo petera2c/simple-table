@@ -1,7 +1,7 @@
 import { createEffect, createMemo, createSignal, For, onCleanup, Show } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
 import type { TableAPI, Theme } from "@simple-table/solid";
-import { analyticsDemoConfig, analyticsPresets } from "./analytics.demo-data";
+import { analyticsDemoConfig, analyticsPresets, type AnalyticsFactRow } from "./analytics.demo-data";
 import "@simple-table/solid/styles.css";
 
 function formatHeight(height?: string | number | null): string {
@@ -17,7 +17,7 @@ export default function AnalyticsDemo(props: {
   const [activeId, setActiveId] = createSignal(analyticsPresets[0].id);
   const [tableHeightPx, setTableHeightPx] = createSignal<number | null>(null);
   let tableHost: HTMLDivElement | undefined;
-  let tableApi: TableAPI | undefined;
+  let tableApi: TableAPI<AnalyticsFactRow> | undefined;
 
   const active = createMemo(
     () => analyticsPresets.find((p) => p.id === activeId()) ?? analyticsPresets[0]

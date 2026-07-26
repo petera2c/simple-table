@@ -1,6 +1,20 @@
-import type { PivotConfig, SolidColumnDef, Row } from "@simple-table/solid";
+import type { PivotConfig, SolidColumnDef } from "@simple-table/solid";
 
-export const analyticsHeaders: SolidColumnDef[] = [
+export interface AnalyticsFactRow {
+  id: string;
+  region: string;
+  country: string;
+  category: string;
+  product: string;
+  channel: string;
+  year: number;
+  quarter: string;
+  sales: number;
+  units: number;
+  cost: number;
+}
+
+export const analyticsHeaders: SolidColumnDef<AnalyticsFactRow>[] = [
   {
     accessor: "region",
     label: "Region",
@@ -100,30 +114,28 @@ export const analyticsHeaders: SolidColumnDef[] = [
   },
 ];
 
-const REGIONS = ["West", "East", "North", "South"] as const;
-const COUNTRIES: Record<(typeof REGIONS)[number], string[]> = {
+const COUNTRIES = {
   West: ["USA", "Canada"],
   East: ["USA", "UK"],
   North: ["Canada", "Sweden"],
   South: ["Brazil", "Australia"],
 };
-const CATEGORIES = ["Hardware", "Software"] as const;
-const PRODUCTS: Record<(typeof CATEGORIES)[number], string[]> = {
+const PRODUCTS = {
   Hardware: ["Widget", "Gadget", "Sensor"],
   Software: ["License", "Subscription"],
 };
-const CHANNELS = ["Direct", "Partner", "Online"] as const;
-const YEARS = [2024, 2025] as const;
-const QUARTERS = ["Q1", "Q2", "Q3", "Q4"] as const;
+const CHANNELS = ["Direct", "Partner", "Online"];
+const YEARS = [2024, 2025];
+const QUARTERS = ["Q1", "Q2", "Q3", "Q4"];
 
 /** Sparse multi-dimension fact cube (~150–250 rows). */
-export function generateAnalyticsRows(): Row[] {
-  const rows: Row[] = [];
+export function generateAnalyticsRows(): AnalyticsFactRow[] {
+  const rows: AnalyticsFactRow[] = [];
   let id = 1;
-  for (const region of REGIONS) {
-    for (const country of COUNTRIES[region]) {
-      for (const category of CATEGORIES) {
-        for (const product of PRODUCTS[category]) {
+  for (const [region, countries] of Object.entries(COUNTRIES)) {
+    for (const country of countries) {
+      for (const [category, products] of Object.entries(PRODUCTS)) {
+        for (const product of products) {
           for (const channel of CHANNELS) {
             for (const year of YEARS) {
               for (const quarter of QUARTERS) {
@@ -156,7 +168,7 @@ export function generateAnalyticsRows(): Row[] {
   return rows;
 }
 
-export const analyticsRows: Row[] = generateAnalyticsRows();
+export const analyticsRows: AnalyticsFactRow[] = generateAnalyticsRows();
 
 export type AnalyticsPreset = {
   id: string;

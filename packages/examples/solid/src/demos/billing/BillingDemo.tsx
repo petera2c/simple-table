@@ -1,17 +1,17 @@
-import {SimpleTable} from "@simple-table/solid";import type { Theme, SolidColumnDef, CellRendererProps } from "@simple-table/solid";
+import { SimpleTable } from "@simple-table/solid";
+import type { Theme, SolidColumnDef, CellRendererProps } from "@simple-table/solid";
 import { billingConfig } from "./billing.demo-data";
 import type { BillingRow } from "./billing.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function BillingDemo(props: { height?: string | number; theme?: Theme }) {
-  const headers: SolidColumnDef[] = billingConfig.headers.map((h) => {
+  const headers: SolidColumnDef<BillingRow>[] = billingConfig.headers.map((h) => {
     if (h.accessor === "name") {
       return {
         ...h,
-        cellRenderer: ({ row }: CellRendererProps) => {
-          const d = row as unknown as BillingRow;
-          return <div class={d.type === "account" ? "font-semibold" : ""}>{d.name}</div>;
-        },
+        cellRenderer: ({ row }: CellRendererProps<BillingRow>) => (
+          <div class={row.type === "account" ? "font-semibold" : ""}>{row.name}</div>
+        ),
       };
     }
     return h;
@@ -23,6 +23,7 @@ export default function BillingDemo(props: { height?: string | number; theme?: T
       columnResizing
       columns={headers}
       enableColumnEditor
+      getRowId={({ row }) => row.id}
       height={props.height ?? "400px"}
       initialSortColumn="amount"
       initialSortDirection="desc"

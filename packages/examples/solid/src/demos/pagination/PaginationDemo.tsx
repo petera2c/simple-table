@@ -1,13 +1,15 @@
 import { createSignal } from "solid-js";
 import {SimpleTable} from "@simple-table/solid";import type { Theme } from "@simple-table/solid";
-import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "./pagination.demo-data";
+import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE, type HotelStaff } from "./pagination.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function PaginationDemo(props: {
   height?: string | number;
   theme?: Theme;
 }) {
-  const [rows, setRows] = createSignal(paginationData.slice(0, PAGINATION_ROWS_PER_PAGE));
+  const [rows, setRows] = createSignal<HotelStaff[]>(
+    paginationData.slice(0, PAGINATION_ROWS_PER_PAGE),
+  );
   const [isLoading, setIsLoading] = createSignal(false);
 
   const onNextPage = async (pageIndex: number) => {
@@ -34,6 +36,7 @@ export default function PaginationDemo(props: {
       height={props.height ?? "auto"}
       isLoading={isLoading()}
       onNextPage={onNextPage}
+      getRowId={({ row }) => row.id}
       rows={rows()}
       rowsPerPage={PAGINATION_ROWS_PER_PAGE}
       enablePagination={true}

@@ -1,6 +1,16 @@
 // Self-contained demo table setup for this example.
 import type { SolidColumnDef } from "@simple-table/solid";
 
+export interface ChartsProduct {
+  id: number;
+  product: string;
+  category: string;
+  monthlySales: number[];
+  dailyViews: number[];
+  quarterlyRevenue: number[];
+  weeklyOrders: number[];
+  rating: number;
+}
 
 const generateTrendData = (baseValue: number, volatility: number, length: number = 12): number[] => {
   const data: number[] = [];
@@ -13,7 +23,7 @@ const generateTrendData = (baseValue: number, volatility: number, length: number
   return data;
 };
 
-export const chartsData = [
+export const chartsData: ChartsProduct[] = [
   { id: 1, product: "Laptop Pro", category: "Electronics", monthlySales: generateTrendData(150, 30, 12), dailyViews: generateTrendData(500, 100, 30), quarterlyRevenue: [45000, 52000, 48000, 61000], weeklyOrders: [23, 28, 31, 25, 29, 35, 38], rating: 4.5 },
   { id: 2, product: "Wireless Mouse", category: "Accessories", monthlySales: generateTrendData(300, 50, 12), dailyViews: generateTrendData(800, 150, 30), quarterlyRevenue: [12000, 15000, 18000, 21000], weeklyOrders: [45, 52, 48, 61, 58, 67, 71], rating: 4.2 },
   { id: 3, product: "USB-C Cable", category: "Accessories", monthlySales: generateTrendData(500, 80, 12), dailyViews: generateTrendData(1200, 200, 30), quarterlyRevenue: [8000, 9000, 7500, 10000], weeklyOrders: [78, 82, 75, 88, 91, 85, 93], rating: 4.7 },
@@ -28,7 +38,7 @@ export const chartsData = [
   { id: 12, product: "Smart Home Hub", category: "Electronics", monthlySales: generateTrendData(100, 25, 12), dailyViews: generateTrendData(400, 80, 30), quarterlyRevenue: [35000, 38000, 42000, 45000], weeklyOrders: [15, 18, 22, 19, 21, 24, 27], rating: 4.6 },
 ];
 
-export const chartsHeaders: SolidColumnDef[] = [
+export const chartsHeaders: SolidColumnDef<ChartsProduct>[] = [
   { accessor: "id", label: "ID", width: 70, sortable: true, type: "number" },
   { accessor: "product", label: "Product", width: 180, sortable: true, type: "string" },
   { accessor: "category", label: "Category", width: 120, sortable: true, type: "string" },
@@ -47,4 +57,4 @@ export const chartsConfig = {
     columnResizing: true,
     selectableCells: true,
   },
-} as const;
+};

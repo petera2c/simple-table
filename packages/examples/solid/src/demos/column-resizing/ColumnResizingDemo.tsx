@@ -1,7 +1,12 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
 import type { Theme, SolidColumnDef } from "@simple-table/solid";
-import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
+import {
+  columnResizingHeaders,
+  columnResizingData,
+  COLUMN_RESIZING_STORAGE_KEY,
+  type OceanStaff,
+} from "./column-resizing.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function ColumnResizingDemo(props: { height?: string | number; theme?: Theme }) {
@@ -35,7 +40,7 @@ export default function ColumnResizingDemo(props: { height?: string | number; th
     clearMessageTimer();
   });
 
-  const handleColumnWidthChange = (updatedHeaders: SolidColumnDef[]) => {
+  const handleColumnWidthChange = (updatedHeaders: SolidColumnDef<OceanStaff>[]) => {
     try {
       const widthMap: Record<string, unknown> = {};
       for (const h of updatedHeaders) widthMap[h.accessor] = h.width;
@@ -75,6 +80,7 @@ export default function ColumnResizingDemo(props: { height?: string | number; th
       <SimpleTable
         columnResizing
         columns={headers()}
+        getRowId={({ row }) => row.id}
         rows={columnResizingData}
         height={props.height ?? "400px"}
         theme={props.theme}

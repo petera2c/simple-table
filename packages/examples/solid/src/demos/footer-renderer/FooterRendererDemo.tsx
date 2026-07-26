@@ -41,6 +41,7 @@ export default function FooterRendererDemo(props: { height?: string | number; th
   return (
     <SimpleTable
       columns={footerRendererConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={footerRendererConfig.rows}
       enablePagination={true}
       rowsPerPage={10}
