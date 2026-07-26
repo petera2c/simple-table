@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactColumnDef } from "@simple-table/react";
-import { columnReorderingConfig } from "./column-reordering.demo-data";
+import { columnReorderingConfig, type CrewMember } from "./column-reordering.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnReorderingDemo = ({
@@ -13,17 +13,18 @@ const ColumnReorderingDemo = ({
 }) => {
   const [headers, setHeaders] = useState(() => [...columnReorderingConfig.headers]);
 
-  const handleColumnOrderChange = (newHeaders: ReactColumnDef[]) => {
+  const handleColumnOrderChange = (newHeaders: ReactColumnDef<CrewMember>[]) => {
     setHeaders(newHeaders);
   };
 
   return (
-    <SimpleTable
+    <SimpleTable<CrewMember>
       columnReordering={columnReorderingConfig.tableProps.columnReordering}
       columns={headers}
       rows={columnReorderingConfig.rows}
       height={height}
       theme={theme}
+      getRowId={({ row }) => row.id}
       onColumnOrderChange={handleColumnOrderChange}
     />
   );
