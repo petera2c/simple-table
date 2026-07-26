@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
-import {SimpleTable} from "@simple-table/react";import type { Theme, SortColumn } from "@simple-table/react";
-import { externalSortConfig } from "./external-sort.demo-data";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme, SortColumn } from "@simple-table/react";
+import { externalSortConfig, type SortableEmployee } from "./external-sort.demo-data";
 import "@simple-table/react/styles.css";
 
 const ExternalSortDemo = ({
@@ -15,9 +16,9 @@ const ExternalSortDemo = ({
   const sortedData = useMemo(() => {
     if (!sortConfig) return externalSortConfig.rows;
     const sorted = [...externalSortConfig.rows].sort((a, b) => {
-      const key = sortConfig.key.accessor;
-      const aVal = a[key as keyof typeof a];
-      const bVal = b[key as keyof typeof b];
+      const key = sortConfig.key.accessor as keyof SortableEmployee;
+      const aVal = a[key];
+      const bVal = b[key];
       if (aVal === bVal) return 0;
       const cmp =
         sortConfig.key.type === "number"
@@ -29,7 +30,7 @@ const ExternalSortDemo = ({
   }, [sortConfig]);
 
   return (
-    <SimpleTable
+    <SimpleTable<SortableEmployee>
       columns={externalSortConfig.headers}
       rows={sortedData}
       onSortChange={setSortConfig}
@@ -37,6 +38,7 @@ const ExternalSortDemo = ({
       columnResizing
       height={height}
       theme={theme}
+      getRowId={({ row }) => row.id}
     />
   );
 };
