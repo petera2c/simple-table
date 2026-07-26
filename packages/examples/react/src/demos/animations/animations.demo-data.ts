@@ -1,8 +1,15 @@
 // Self-contained demo table setup for this example.
 import type { ReactColumnDef } from "@simple-table/react";
 
+export interface AnimationsCrewMember {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+}
 
-export const animationsHeaders: ReactColumnDef[] = [
+export const animationsHeaders: ReactColumnDef<AnimationsCrewMember>[] = [
   { accessor: "id", label: "ID", width: 60, sortable: true, type: "number" },
   { accessor: "name", label: "Name", minWidth: 140, width: "1fr", sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 80, align: "right", sortable: true, type: "number" },
@@ -18,7 +25,7 @@ export const animationsHeaders: ReactColumnDef[] = [
   },
 ];
 
-export const animationsData = [
+export const animationsData: AnimationsCrewMember[] = [
   { id: 1, name: "Captain Stella Vega", age: 38, role: "Mission Commander", department: "Flight Operations" },
   { id: 2, name: "Dr. Cosmos Rivera", age: 34, role: "Astrophysicist", department: "Science" },
   { id: 3, name: "Commander Nebula Johnson", age: 42, role: "Operations Director", department: "Mission Control" },
