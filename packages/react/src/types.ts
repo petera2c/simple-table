@@ -4,7 +4,7 @@ import type {
   SimpleTableConfig,
   ColumnDef,
   TableAPI,
-  Row,
+  CellValue,
   CellRendererProps,
   HeaderRendererProps as VanillaHeaderRendererProps,
   FooterRendererProps as VanillaFooterRendererProps,
@@ -18,6 +18,13 @@ import type {
   RowButtonProps,
 } from "simple-table-core";
 
+/**
+ * Default `TData` for React props: open records so existing domain object
+ * arrays keep assigning to `rows` without `asRows`. Opt into a domain
+ * interface via `SimpleTable<MyRow>` / `SimpleTableReactProps<MyRow>`.
+ */
+export type ReactDefaultRowData = Record<string, any>;
+
 // ─── Renderer prop overrides (React slots are nodes, not DOM IconElement) ─────
 /** Passed to React `headerRenderer` / `headerDropdown`; slots are React nodes. */
 export interface HeaderRendererComponents {
@@ -27,7 +34,10 @@ export interface HeaderRendererComponents {
   labelContent?: React.ReactNode;
 }
 
-export type HeaderRendererProps = Omit<VanillaHeaderRendererProps, "components"> & {
+export type HeaderRendererProps<TData extends ReactDefaultRowData = ReactDefaultRowData> = Omit<
+  VanillaHeaderRendererProps<TData>,
+  "components"
+> & {
   components?: HeaderRendererComponents;
 };
 
@@ -100,41 +110,40 @@ export interface ReactIconsConfig {
 }
 
 // ─── Renderer overrides ───────────────────────────────────────────────────────
-// Allow class/function components or inline render props that return ReactNode (string, number, etc.).
-export type ReactCellRenderer =
-  | React.ComponentType<CellRendererProps>
-  | ((props: CellRendererProps) => React.ReactNode);
-export type ReactHeaderRenderer =
-  | React.ComponentType<HeaderRendererProps>
-  | ((props: HeaderRendererProps) => React.ReactNode);
-export type ReactFooterRenderer =
-  | React.ComponentType<FooterRendererProps>
-  | ((props: FooterRendererProps) => React.ReactNode);
-export type ReactHeaderDropdown =
-  | React.ComponentType<HeaderDropdownProps>
-  | ((props: HeaderDropdownProps) => React.ReactNode);
-export type ReactColumnEditorRowRenderer =
-  | React.ComponentType<ColumnEditorRowRendererProps>
-  | ((props: ColumnEditorRowRendererProps) => React.ReactNode);
-export type ReactColumnEditorCustomRenderer =
-  | React.ComponentType<ColumnEditorCustomRendererProps>
-  | ((props: ColumnEditorCustomRendererProps) => React.ReactNode);
+// Function types (not `ComponentType | fn` unions) so inline renderers get
+// contextual typing — e.g. `headerRenderer: (props) => …` infers props from TData.
+// Function components and render props both assign to these call signatures.
+export type ReactCellRenderer<
+  TData extends ReactDefaultRowData = ReactDefaultRowData,
+  TValue = CellValue,
+> = (props: CellRendererProps<TData, TValue>) => React.ReactNode;
+export type ReactHeaderRenderer<TData extends ReactDefaultRowData = ReactDefaultRowData> = (
+  props: HeaderRendererProps<TData>,
+) => React.ReactNode;
+export type ReactFooterRenderer = (props: FooterRendererProps) => React.ReactNode;
+export type ReactHeaderDropdown = (props: HeaderDropdownProps) => React.ReactNode;
+export type ReactColumnEditorRowRenderer = (
+  props: ColumnEditorRowRendererProps,
+) => React.ReactNode;
+export type ReactColumnEditorCustomRenderer = (
+  props: ColumnEditorCustomRendererProps,
+) => React.ReactNode;
 
 // Row buttons render per-row action controls. React consumers return JSX
 // (a ReactNode) rather than the DOM `HTMLElement` the vanilla core expects.
-export type ReactRowButton =
-  | React.ComponentType<RowButtonProps>
-  | ((props: RowButtonProps) => React.ReactNode);
+export type ReactRowButton<TData extends ReactDefaultRowData = ReactDefaultRowData> = (
+  props: RowButtonProps<TData>,
+) => React.ReactNode;
 
 // State renderers can be a component (receives props) or a plain ReactNode (static markup)
-export type ReactLoadingStateRenderer =
-  | React.ComponentType<LoadingStateRendererProps>
+export type ReactLoadingStateRenderer<TData extends ReactDefaultRowData = ReactDefaultRowData> =
+  | React.ComponentType<LoadingStateRendererProps<TData>>
   | React.ReactNode;
-export type ReactErrorStateRenderer =
-  | React.ComponentType<ErrorStateRendererProps>
+export type ReactErrorStateRenderer<TData extends ReactDefaultRowData = ReactDefaultRowData> =
+  | React.ComponentType<ErrorStateRendererProps<TData>>
   | React.ReactNode;
-export type ReactEmptyStateRenderer =
-  | React.ComponentType<EmptyStateRendererProps>
+export type ReactEmptyStateRenderer<TData extends ReactDefaultRowData = ReactDefaultRowData> =
+  | React.ComponentType<EmptyStateRendererProps<TData>>
   | React.ReactNode;
 
 // ─── Column editor config override ───────────────────────────────────────────
@@ -151,16 +160,19 @@ export interface ReactColumnEditorConfig extends Omit<
  * Column definition for `columns`: same column metadata as core
  * columns, but `cellRenderer` / `headerRenderer` / `children` / `nestedTable` are React-only.
  */
-export interface ReactColumnDef extends Omit<
-  ColumnDef,
+export interface ReactColumnDef<
+  TData extends ReactDefaultRowData = ReactDefaultRowData,
+  TValue = CellValue,
+> extends Omit<
+  ColumnDef<TData, TValue>,
   "cellRenderer" | "headerRenderer" | "children" | "nestedTable"
 > {
-  cellRenderer?: ReactCellRenderer;
-  headerRenderer?: ReactHeaderRenderer;
-  children?: ReadonlyArray<ReactColumnDef>;
+  cellRenderer?: ReactCellRenderer<TData, TValue>;
+  headerRenderer?: ReactHeaderRenderer<TData>;
+  children?: ReadonlyArray<ReactColumnDef<TData, any>>;
   /** Nested grid: React table props minus row data and inherited state renderers. */
   nestedTable?: Omit<
-    SimpleTableReactProps,
+    SimpleTableReactProps<TData>,
     | "rows"
     | "loadingStateRenderer"
     | "errorStateRenderer"
@@ -172,10 +184,10 @@ export interface ReactColumnDef extends Omit<
 
 // ─── Top-level props ──────────────────────────────────────────────────────────
 // Mirrors SimpleTableProps with React-specific renderer/icon types. Use `ref` +
-// `forwardRef<TableAPI, …>` for the imperative API.
+// a generic `SimpleTable<TData>` for the imperative API.
 //
 //   Overridden to React equivalents:
-//     - columns → ReadonlyArray<ReactColumnDef>
+//     - columns → ReadonlyArray<ReactColumnDef<TData>>
 //     - footerRenderer         → React.ComponentType<FooterRendererProps>
 //     - loadingStateRenderer   → React.ComponentType<…> | React.ReactNode
 //     - errorStateRenderer     → React.ComponentType<…> | React.ReactNode
@@ -184,9 +196,11 @@ export interface ReactColumnDef extends Omit<
 //     - headerDropdown         → React.ComponentType<HeaderDropdownProps>
 //     - columnEditorConfig     → ReactColumnEditorConfig
 //     - icons                  → ReactIconsConfig
-//     - rowButtons             → ReactRowButton[]
-export interface SimpleTableReactProps extends Omit<
-  SimpleTableProps,
+//     - rowButtons             → ReactRowButton<TData>[]
+export interface SimpleTableReactProps<
+  TData extends ReactDefaultRowData = ReactDefaultRowData,
+> extends Omit<
+  SimpleTableProps<TData>,
   // Overridden below with React types
   | "columns"
   | "footerRenderer"
@@ -205,23 +219,23 @@ export interface SimpleTableReactProps extends Omit<
   | "onColumnSelect"
 > {
   /** Column definitions. */
-  columns?: ReadonlyArray<ReactColumnDef>;
-  onColumnOrderChange?: (newHeaders: ReactColumnDef[]) => void;
-  onColumnWidthChange?: (headers: ReactColumnDef[]) => void;
-  onHeaderEdit?: (header: ReactColumnDef, newLabel: string) => void;
-  onColumnSelect?: (header: ReactColumnDef) => void;
-  /** Row data: any object rows (domain models) or core `Row[]`; cast to vanilla `Row[]` inside the adapter. */
-  rows: ReadonlyArray<Row> | ReadonlyArray<object>;
+  columns?: ReadonlyArray<ReactColumnDef<TData, any>>;
+  onColumnOrderChange?: (newHeaders: ReactColumnDef<TData, any>[]) => void;
+  onColumnWidthChange?: (headers: ReactColumnDef<TData, any>[]) => void;
+  onHeaderEdit?: (header: ReactColumnDef<TData, any>, newLabel: string) => void;
+  onColumnSelect?: (header: ReactColumnDef<TData, any>) => void;
+  /** Row data; cast to vanilla `Row[]` inside the adapter. */
+  rows: readonly TData[];
   footerRenderer?: ReactFooterRenderer;
-  loadingStateRenderer?: ReactLoadingStateRenderer;
-  errorStateRenderer?: ReactErrorStateRenderer;
-  emptyStateRenderer?: ReactEmptyStateRenderer;
+  loadingStateRenderer?: ReactLoadingStateRenderer<TData>;
+  errorStateRenderer?: ReactErrorStateRenderer<TData>;
+  emptyStateRenderer?: ReactEmptyStateRenderer<TData>;
   tableEmptyStateRenderer?: React.ReactNode;
   headerDropdown?: ReactHeaderDropdown;
   columnEditorConfig?: ReactColumnEditorConfig;
   icons?: ReactIconsConfig;
   /** Per-row action buttons; each entry returns JSX rendered into the row's selection column. */
-  rowButtons?: ReactRowButton[];
+  rowButtons?: ReactRowButton<TData>[];
 }
 
 // Re-export vanilla prop types that consumers still need directly

@@ -5,6 +5,7 @@ import type {
   ReactColumnDef,
   ReactColumnEditorConfig,
   ReactIconsConfig,
+  ReactDefaultRowData,
 } from "./types";
 import type { PortalBridge } from "./PortalBridge";
 import {
@@ -65,7 +66,10 @@ function transformColumnEditorConfig(
   };
 }
 
-function transformHeader(header: ReactColumnDef, bridge: PortalBridge): ColumnDef {
+function transformHeader<TData extends ReactDefaultRowData>(
+  header: ReactColumnDef<TData, any>,
+  bridge: PortalBridge,
+): ColumnDef {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
   const accessor = String(header.accessor);
 
@@ -102,9 +106,9 @@ function transformHeader(header: ReactColumnDef, bridge: PortalBridge): ColumnDe
 }
 
 /** Resolve column definitions. */
-export function resolveReactColumns(
-  config: Pick<SimpleTableReactProps, "columns">,
-): ReadonlyArray<ReactColumnDef> {
+export function resolveReactColumns<TData extends ReactDefaultRowData = ReactDefaultRowData>(
+  config: Pick<SimpleTableReactProps<TData>, "columns">,
+): ReadonlyArray<ReactColumnDef<TData, any>> {
   const headers = config.columns;
   if (!headers) {
     throw new Error("SimpleTable requires `columns`");
@@ -112,8 +116,8 @@ export function resolveReactColumns(
   return headers;
 }
 
-export function buildVanillaConfig(
-  config: SimpleTableReactProps,
+export function buildVanillaConfig<TData extends ReactDefaultRowData = ReactDefaultRowData>(
+  config: SimpleTableReactProps<TData>,
   bridge: PortalBridge,
 ): SimpleTableConfig {
   const {
@@ -146,9 +150,11 @@ export function buildVanillaConfig(
 
   bridge.pruneRendererCaches(collectHeaderAccessors(columns));
 
-  const vanillaConfig: SimpleTableConfig = {
+  // Callbacks / rows stay typed as TData on the React side; erase to Row-shaped
+  // SimpleTableConfig for the vanilla runtime.
+  const vanillaConfig = {
     ...rest,
-    rows: rows as Row[],
+    rows: rows as unknown as Row[],
     columns: columns.map((header) => transformHeader(header, bridge)),
     enableColumnEditor,
     enableColumnEditorInitOpen,
@@ -164,28 +170,28 @@ export function buildVanillaConfig(
     ...(onColumnOrderChange
       ? {
           onColumnOrderChange: (headers: ColumnDef[]) =>
-            onColumnOrderChange(headers as unknown as ReactColumnDef[]),
+            onColumnOrderChange(headers as unknown as ReactColumnDef<TData, any>[]),
         }
       : {}),
     ...(onColumnWidthChange
       ? {
           onColumnWidthChange: (headers: ColumnDef[]) =>
-            onColumnWidthChange(headers as unknown as ReactColumnDef[]),
+            onColumnWidthChange(headers as unknown as ReactColumnDef<TData, any>[]),
         }
       : {}),
     ...(onHeaderEdit
       ? {
           onHeaderEdit: (header: ColumnDef, newLabel: string) =>
-            onHeaderEdit(header as unknown as ReactColumnDef, newLabel),
+            onHeaderEdit(header as unknown as ReactColumnDef<TData, any>, newLabel),
         }
       : {}),
     ...(onColumnSelect
       ? {
           onColumnSelect: (header: ColumnDef) =>
-            onColumnSelect(header as unknown as ReactColumnDef),
+            onColumnSelect(header as unknown as ReactColumnDef<TData, any>),
         }
       : {}),
-  };
+  } as SimpleTableConfig;
 
   if (footerRenderer !== undefined) {
     vanillaConfig.footerRenderer = wrapReactFooterRenderer(
