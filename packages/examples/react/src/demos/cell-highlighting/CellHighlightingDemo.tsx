@@ -1,5 +1,9 @@
-import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { cellHighlightingConfig } from "./cell-highlighting.demo-data";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme } from "@simple-table/react";
+import {
+  cellHighlightingConfig,
+  type CellHighlightingEmployee,
+} from "./cell-highlighting.demo-data";
 import "@simple-table/react/styles.css";
 
 const CellHighlightingDemo = ({
@@ -10,8 +14,9 @@ const CellHighlightingDemo = ({
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable
+    <SimpleTable<CellHighlightingEmployee>
       columns={cellHighlightingConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={cellHighlightingConfig.rows}
       height={height}
       theme={theme}

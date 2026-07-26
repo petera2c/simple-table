@@ -1,8 +1,16 @@
 // Self-contained demo table setup for this example.
 import type { ReactColumnDef } from "@simple-table/react";
 
+export interface CellHighlightingEmployee {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+  startDate: string;
+}
 
-export const cellHighlightingHeaders: ReactColumnDef[] = [
+export const cellHighlightingHeaders: ReactColumnDef<CellHighlightingEmployee>[] = [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   { accessor: "name", label: "Name", minWidth: 80, width: "1fr", sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },
@@ -11,7 +19,7 @@ export const cellHighlightingHeaders: ReactColumnDef[] = [
   { accessor: "startDate", label: "Start Date", width: 150, sortable: true, type: "date" },
 ];
 
-export const cellHighlightingData = [
+export const cellHighlightingData: CellHighlightingEmployee[] = [
   { id: 1, name: "Davi Thompson", age: 29, role: "Personal Trainer", department: "Fitness", startDate: "2021-03-15" },
   { id: 2, name: "Paloma Martinez", age: 26, role: "Yoga Instructor", department: "Group Classes", startDate: "2022-01-10" },
   { id: 3, name: "Jaxon Johnson", age: 34, role: "Fitness Manager", department: "Management", startDate: "2019-08-20" },
