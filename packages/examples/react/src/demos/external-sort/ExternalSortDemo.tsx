@@ -6,7 +6,7 @@ import "@simple-table/react/styles.css";
 
 const ExternalSortDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -30,7 +30,7 @@ const ExternalSortDemo = ({
   }, [sortConfig]);
 
   return (
-    <SimpleTable<SortableEmployee>
+    <SimpleTable
       columns={externalSortConfig.headers}
       rows={sortedData}
       onSortChange={setSortConfig}
