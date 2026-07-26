@@ -4,7 +4,7 @@ import type { Theme } from "@simple-table/react";
 import {
   generateWindowScrollRows,
   windowScrollHeaders,
-  type WindowScrollEmployee,
+  type WindowScrollEmployee
 } from "./window-infinite-scroll.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -26,7 +26,7 @@ const LOAD_DELAY_MS = 350;
  * until the dataset cap is reached.
  */
 const WindowInfiniteScrollDemo = ({
-  theme,
+  theme
 }: {
   // `height` is intentionally ignored — this demo is about *not* setting one.
   height?: string | number;
@@ -70,7 +70,7 @@ const WindowInfiniteScrollDemo = ({
         style={{
           fontSize: 28,
           margin: "0 0 12px 0",
-          color: "#0f172a",
+          color: "#0f172a"
         }}
       >
         Window-Scroll Infinite Loading
@@ -80,7 +80,7 @@ const WindowInfiniteScrollDemo = ({
           fontSize: 15,
           lineHeight: 1.6,
           color: "#475569",
-          margin: "0 0 16px 0",
+          margin: "0 0 16px 0"
         }}
       >
         This table has no <code>height</code> or <code>maxHeight</code>. It grows to its natural
@@ -101,7 +101,7 @@ const WindowInfiniteScrollDemo = ({
           color: "#3730a3",
           borderRadius: 999,
           fontSize: 13,
-          fontWeight: 500,
+          fontWeight: 500
         }}
       >
         <span
@@ -110,13 +110,13 @@ const WindowInfiniteScrollDemo = ({
             width: 8,
             height: 8,
             borderRadius: "50%",
-            background: "#6366f1",
+            background: "#6366f1"
           }}
         />
         <span>{statusLabel}</span>
       </div>
 
-      <SimpleTable<WindowScrollEmployee>
+      <SimpleTable
         columns={windowScrollHeaders}
         rows={rows}
         theme={theme}
@@ -134,7 +134,7 @@ const WindowInfiniteScrollDemo = ({
           fontSize: 13,
           color: "#94a3b8",
           margin: "24px 0 48px 0",
-          textAlign: "center",
+          textAlign: "center"
         }}
       >
         End of demo content. Keep scrolling near the bottom and onLoadMore will keep firing until
