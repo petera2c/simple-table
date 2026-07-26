@@ -506,13 +506,13 @@ input {
   color: var(--st-header-selected-label-color);
 }
 .st-header-cell.st-header-selected .st-header-icon {
-  fill: var(--st-header-selected-icon-color);
-}
-.st-header-cell.st-header-selected .st-icon-container * {
-  fill: var(--st-header-selected-icon-color);
+  color: var(--st-header-selected-icon-color);
 }
 .st-header-cell.st-header-selected .st-icon-container {
   color: var(--st-header-selected-icon-color);
+}
+.st-header-cell.st-header-selected .st-icon-container svg:not([fill="none"]) {
+  fill: var(--st-header-selected-icon-color);
 }
 .st-header-cell.st-header-selected .st-header-resize-handle {
   background-color: var(--st-resize-handle-selected-color);
@@ -729,6 +729,9 @@ input {
 
 .st-expand-icon {
   cursor: pointer;
+  color: var(--st-header-label-color);
+}
+.st-expand-icon:not([fill="none"]) {
   fill: var(--st-header-label-color);
 }
 .st-header-resize-handle-container {
@@ -986,10 +989,18 @@ input {
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
 }
 .st-next-prev-btn {
+  color: var(--st-next-prev-btn-color);
+  fill: var(--st-next-prev-btn-color);
+}
+.st-next-prev-btn .st-next-prev-icon {
+  color: var(--st-next-prev-btn-color);
+}
+.st-next-prev-btn .st-next-prev-icon:not([fill="none"]) {
   fill: var(--st-next-prev-btn-color);
 }
 .disabled > .st-next-prev-icon {
   cursor: not-allowed;
+  color: var(--st-next-prev-btn-disabled-color);
   fill: var(--st-next-prev-btn-disabled-color);
 }
 
@@ -1317,6 +1328,7 @@ input {
 }
 
 .st-drag-icon {
+  color: currentColor;
   fill: currentColor;
 }
 
@@ -1330,14 +1342,25 @@ input {
 }
 
 .st-header-icon-container {
-  width: 24px;
+  width: 28px;
   display: flex;
   justify-content: center;
 }
 
 .st-header-icon {
-  transition: fill var(--st-transition-duration) var(--st-transition-ease);
+  transition: color var(--st-transition-duration) var(--st-transition-ease);
+  color: var(--st-header-icon-color);
+}
+.st-header-icon:not([fill="none"]) {
   fill: var(--st-header-icon-color);
+}
+/* Keep stroke-icon paths unfilled even when ancestors set fill */
+.st-header-icon[fill="none"] path,
+.st-expand-icon[fill="none"] path,
+.st-next-prev-icon[fill="none"] path,
+.st-checkbox-checkmark[fill="none"] path,
+.st-custom-select-arrow[fill="none"] path {
+  fill: none;
 }
 
 .st-collapsible-header-icon {
@@ -1429,7 +1452,7 @@ input {
 }
 
 .st-checkbox-checkmark {
-  fill: white;
+  color: white;
 }
 
 @keyframes slide-in-left {
@@ -1725,6 +1748,9 @@ input {
   border-radius: var(--st-border-radius);
 }
 .st-datepicker-nav-btn > * {
+  color: var(--st-cell-color) !important;
+}
+.st-datepicker-nav-btn > *:not([fill="none"]) {
   fill: var(--st-cell-color) !important;
 }
 

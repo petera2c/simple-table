@@ -11,6 +11,27 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_0_8: ChangelogEntry = {
+  version: "4.0.8",
+  date: "2026-07-26",
+  title: "Crisper default table icons",
+  description:
+    "Default sort, filter, expand, pagination, checkbox, and select icons are redrawn as stroke SVGs at a consistent header size for sharper rendering.",
+  changes: [
+    {
+      type: "improvement",
+      description:
+        "Default glyphs are now a unified stroke icon set (filter uses tapering list bars). Header icons render at 20px with color via currentColor.",
+      link: "/docs/custom-icons",
+    },
+    {
+      type: "improvement",
+      description:
+        "Checkbox, select dropdown, column-editor drag handle, footer pagination, and datepicker nav now share the same icon factories instead of duplicated SVG strings.",
+    },
+  ],
+};
+
 export const v4_0_7: ChangelogEntry = {
   version: "4.0.7",
   date: "2026-07-25",
@@ -2380,6 +2401,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_0_8,
   v4_0_7,
   v4_0_6,
   v4_0_5,

@@ -21,23 +21,8 @@ import {
   validateFullHeaderTreeEssentialOrder,
   PanelSection,
 } from "../pinnedColumnUtils";
-import { createAngleRightIcon } from "../../icons";
+import { createAngleRightIcon, createDragIcon } from "../../icons";
 import { updateExpandIconState } from "../bodyCell/expansion";
-
-const DRAG_ICON_SVG = `<svg
-  aria-hidden="true"
-  role="img"
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 16 10"
-  style="height: 10px; width: 16px;"
->
-  <circle cx="3" cy="3" r="1.5" fill="currentColor" />
-  <circle cx="8" cy="3" r="1.5" fill="currentColor" />
-  <circle cx="13" cy="3" r="1.5" fill="currentColor" />
-  <circle cx="3" cy="7" r="1.5" fill="currentColor" />
-  <circle cx="8" cy="7" r="1.5" fill="currentColor" />
-  <circle cx="13" cy="7" r="1.5" fill="currentColor" />
-</svg>`;
 
 export interface CreateColumnEditorRowOptions {
   allHeaders: ColumnDef[];
@@ -402,7 +387,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
   } else if (customDragIcon instanceof HTMLElement || customDragIcon instanceof SVGSVGElement) {
     dragIcon.appendChild(customDragIcon.cloneNode(true));
   } else {
-    dragIcon.innerHTML = DRAG_ICON_SVG;
+    dragIcon.appendChild(createDragIcon("st-drag-icon"));
   }
 
 

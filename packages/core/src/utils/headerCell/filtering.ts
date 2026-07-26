@@ -37,11 +37,15 @@ export const createFilterIcon = (
     }
   }
   
-  // Apply fill color to the SVG
+  // Color via currentColor (works for filled filter + stroke custom icons)
   if (svgElement) {
-    svgElement.style.fill = currentFilter
+    const color = currentFilter
       ? "var(--st-button-active-background-color)"
       : "var(--st-header-icon-color)";
+    svgElement.style.color = color;
+    if (svgElement.getAttribute("fill") !== "none") {
+      svgElement.style.fill = color;
+    }
   }
 
   let isFilterDropdownOpen = false;
@@ -69,7 +73,10 @@ export const createFilterIcon = (
         
         // Update icon color to show active state
         if (svgElement) {
-          svgElement.style.fill = "var(--st-button-active-background-color)";
+          svgElement.style.color = "var(--st-button-active-background-color)";
+          if (svgElement.getAttribute("fill") !== "none") {
+            svgElement.style.fill = "var(--st-button-active-background-color)";
+          }
         }
       };
 
@@ -88,7 +95,10 @@ export const createFilterIcon = (
         
         // Update icon color to show inactive state
         if (svgElement) {
-          svgElement.style.fill = "var(--st-header-icon-color)";
+          svgElement.style.color = "var(--st-header-icon-color)";
+          if (svgElement.getAttribute("fill") !== "none") {
+            svgElement.style.fill = "var(--st-header-icon-color)";
+          }
         }
       };
 

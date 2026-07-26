@@ -1,24 +1,5 @@
+import { createAngleLeftIcon, createAngleRightIcon } from "../../icons";
 import OnNextPage from "../../types/OnNextPage";
-
-const PREV_ICON_SVG = `<svg
-  class="st-next-prev-icon"
-  viewBox="0 0 24 24"
-  width="24"
-  height="24"
-  xmlns="http://www.w3.org/2000/svg"
->
-  <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-</svg>`;
-
-const NEXT_ICON_SVG = `<svg
-  class="st-next-prev-icon"
-  viewBox="0 0 24 24"
-  width="24"
-  height="24"
-  xmlns="http://www.w3.org/2000/svg"
->
-  <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" />
-</svg>`;
 
 export interface CreateTableFooterOptions {
   currentPage: number;
@@ -237,7 +218,7 @@ export const createTableFooter = (options: CreateTableFooterOptions) => {
     prevBtn.disabled = isPrevDisabled;
     prevBtn.setAttribute("aria-label", "Go to previous page");
     if (prevIcon) setButtonIcon(prevBtn, prevIcon);
-    else prevBtn.innerHTML = PREV_ICON_SVG;
+    else setButtonIcon(prevBtn, createAngleLeftIcon("st-next-prev-icon"));
     prevBtn.addEventListener("click", handlePrevPage);
     paginationDiv.appendChild(prevBtn);
 
@@ -246,7 +227,7 @@ export const createTableFooter = (options: CreateTableFooterOptions) => {
     nextBtn.disabled = isNextDisabled;
     nextBtn.setAttribute("aria-label", "Go to next page");
     if (nextIcon) setButtonIcon(nextBtn, nextIcon);
-    else nextBtn.innerHTML = NEXT_ICON_SVG;
+    else setButtonIcon(nextBtn, createAngleRightIcon("st-next-prev-icon"));
     nextBtn.addEventListener("click", handleNextPage);
     paginationDiv.appendChild(nextBtn);
 

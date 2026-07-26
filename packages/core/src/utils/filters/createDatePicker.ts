@@ -1,10 +1,4 @@
-const PREV_ICON_SVG = `<svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-  <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-</svg>`;
-
-const NEXT_ICON_SVG = `<svg viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-  <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z" />
-</svg>`;
+import { createAngleLeftIcon, createAngleRightIcon } from "../../icons";
 
 export interface CreateDatePickerOptions {
   onChange: (date: Date) => void;
@@ -169,7 +163,7 @@ export const createDatePicker = (options: CreateDatePickerOptions) => {
     if (currentView === "days") {
       const prevBtn = document.createElement("button");
       prevBtn.className = "st-datepicker-nav-btn";
-      prevBtn.innerHTML = PREV_ICON_SVG;
+      prevBtn.appendChild(createAngleLeftIcon());
       prevBtn.addEventListener("click", handlePrevMonth);
 
       const label = document.createElement("div");
@@ -182,7 +176,7 @@ export const createDatePicker = (options: CreateDatePickerOptions) => {
 
       const nextBtn = document.createElement("button");
       nextBtn.className = "st-datepicker-nav-btn";
-      nextBtn.innerHTML = NEXT_ICON_SVG;
+      nextBtn.appendChild(createAngleRightIcon());
       nextBtn.addEventListener("click", handleNextMonth);
 
       header.appendChild(prevBtn);

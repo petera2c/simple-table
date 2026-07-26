@@ -1,21 +1,5 @@
+import { createSelectIcon } from "../../icons";
 import { createDropdown } from "./createDropdown";
-
-const SELECT_ICON_SVG = `<svg
-  class="st-custom-select-arrow"
-  width="12"
-  height="12"
-  viewBox="0 0 12 12"
-  fill="none"
-  xmlns="http://www.w3.org/2000/svg"
->
-  <path
-    d="M3 4.5L6 7.5L9 4.5"
-    stroke="currentColor"
-    stroke-width="1.5"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-  />
-</svg>`;
 
 export interface CustomSelectOption {
   value: string;
@@ -66,9 +50,7 @@ export const createCustomSelect = (options: CreateCustomSelectOptions) => {
 
   // Match React CustomSelect: SVG is a direct child of the trigger so `.st-custom-select-arrow`
   // is the flex item (flex-shrink, rotate) — not an unstyled wrapper span.
-  const iconTemplate = document.createElement("template");
-  iconTemplate.innerHTML = SELECT_ICON_SVG.trim();
-  const arrowIcon = iconTemplate.content.firstElementChild as SVGElement;
+  const arrowIcon = createSelectIcon();
 
   trigger.appendChild(valueSpan);
   trigger.appendChild(arrowIcon);

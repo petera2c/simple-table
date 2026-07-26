@@ -1,3 +1,5 @@
+import { createCheckIcon } from "../../icons";
+
 /**
  * Creates a vanilla JS checkbox element
  */
@@ -9,21 +11,7 @@ export interface CreateCheckboxOptions {
 }
 
 /** Shared checkmark SVG for checkbox custom visual (used by createCheckbox and update helpers). */
-export const createCheckmarkSVG = (): SVGSVGElement => {
-  const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svgElement.setAttribute("aria-hidden", "true");
-  svgElement.setAttribute("role", "img");
-  svgElement.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-  svgElement.setAttribute("viewBox", "0 0 448 512");
-  svgElement.setAttribute("class", "st-checkbox-checkmark");
-  svgElement.style.height = "10px";
-
-  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path.setAttribute("d", "M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z");
-  svgElement.appendChild(path);
-
-  return svgElement;
-};
+export const createCheckmarkSVG = (): SVGSVGElement => createCheckIcon("st-checkbox-checkmark");
 
 /**
  * Updates an existing checkbox DOM (created by createCheckbox) to match the given checked state.
