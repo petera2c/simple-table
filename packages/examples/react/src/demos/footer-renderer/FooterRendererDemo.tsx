@@ -1,5 +1,5 @@
 import {SimpleTable} from "@simple-table/react";import type { Theme, FooterRendererProps } from "@simple-table/react";
-import { footerRendererConfig } from "./footer-renderer.demo-data";
+import { footerRendererConfig, type CatalogProduct } from "./footer-renderer.demo-data";
 import "@simple-table/react/styles.css";
 
 function getFooterColors(theme?: Theme) {
@@ -43,13 +43,14 @@ const FooterRendererDemo = ({
   const c = getFooterColors(theme);
 
   return (
-    <SimpleTable
+    <SimpleTable<CatalogProduct>
       columns={footerRendererConfig.headers}
       rows={footerRendererConfig.rows}
       enablePagination={true}
       rowsPerPage={10}
       height={height}
       theme={theme}
+      getRowId={({ row }) => row.id}
       footerRenderer={({
         currentPage,
         startRow,
