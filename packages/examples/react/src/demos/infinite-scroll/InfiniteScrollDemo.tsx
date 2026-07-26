@@ -4,7 +4,7 @@ import type { Theme } from "@simple-table/react";
 import {
   infiniteScrollConfig,
   generateInfiniteScrollData,
-  type InfiniteScrollEmployee,
+  type InfiniteScrollEmployee
 } from "./infinite-scroll.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -13,7 +13,7 @@ const BATCH_SIZE = 15;
 
 const InfiniteScrollDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -46,7 +46,7 @@ const InfiniteScrollDemo = ({
       <div style={{ marginBottom: 8, fontSize: 13, color: "#666" }}>
         {rows.length} rows loaded{hasMore ? "" : " (all loaded)"}
       </div>
-      <SimpleTable<InfiniteScrollEmployee>
+      <SimpleTable
         columns={infiniteScrollConfig.headers}
         getRowId={({ row }) => row.id}
         rows={rows}
