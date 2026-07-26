@@ -1,8 +1,14 @@
 <script setup lang="ts">
-import { ref, computed, h, defineComponent } from "vue";
-import type { Component } from "vue";
+import { ref, computed, h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { VueColumnDef, CellChangeProps, CellRendererProps, FooterRendererProps } from "@simple-table/vue";
+import type {
+  VueColumnDef,
+  CellChangeProps,
+  CellRendererProps,
+  FooterRendererProps,
+  GetRowIdParams,
+  VueFooterRenderer,
+} from "@simple-table/vue";
 import {
   crmData,
   CRM_THEME_COLORS_LIGHT,
@@ -32,322 +38,251 @@ const rowsPerPage = ref(100);
 
 type CrmColors = typeof CRM_THEME_COLORS_LIGHT;
 
-function makeContactCell(colors: CrmColors): Component {
-  return defineComponent({
-    name: "CrmContactCell",
-    setup(raw) {
-      return () => {
-        const p = raw as unknown as CellRendererProps;
-        const d = p.row as unknown as CRMLead;
-        const initials = d.name
-          .split(" ")
-          .map((n) => n[0])
-          .join("")
-          .toUpperCase();
-        return h("div", { style: { display: "flex", alignItems: "center", gap: "12px" } }, [
-          h(
-            "div",
-            {
-              style: {
-                width: "40px",
-                height: "40px",
-                borderRadius: "50%",
-                background: "linear-gradient(to right, oklch(75% .183 55.934), oklch(70.4% .191 22.216))",
-                color: "white",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "12px",
-                fontWeight: "600",
-                flexShrink: "0",
-              },
-            },
-            initials,
-          ),
-          h("div", { style: { display: "flex", flexDirection: "column", gap: "2px" } }, [
-            h(
-              "span",
-              {
-                style: {
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  fontWeight: "600",
-                  color: colors.link,
-                },
-              },
-              d.name,
-            ),
-            h("div", { style: { fontSize: "12px", color: colors.textSecondary } }, d.title),
-            h("div", { style: { fontSize: "12px", color: colors.textSecondary } }, [
-              h("span", { style: { fontSize: "12px", color: colors.textTertiary } }, "@"),
-              ` ${d.company}`,
-            ]),
-          ]),
-        ]);
-      };
-    },
-  });
-}
+const getRowId = ({ row }: GetRowIdParams<CRMLead>) => row.id;
 
-function makeSignalCell(colors: CrmColors): Component {
-  return defineComponent({
-    name: "CrmSignalCell",
-    setup(raw) {
-      return () => {
-        const p = raw as unknown as CellRendererProps;
-        const d = p.row as unknown as CRMLead;
-        return h("div", [
-          h("div", { style: { color: colors.textSecondary, marginBottom: "4px", fontSize: "0.875rem" } }, [
-            "🧠 Just engaged with a ",
-            h(
-              "a",
-              {
-                href: "#",
-                style: { color: "#0077b5", textDecoration: "underline", cursor: "pointer" },
-                onClick: (e: MouseEvent) => e.preventDefault(),
-              },
-              "post",
-            ),
-          ]),
-          h("div", { style: { fontSize: "12px", color: colors.textTertiary } }, [
-            h("span", { style: { fontWeight: "600" } }, "Keyword:"),
-            ` ${d.signal}`,
-          ]),
-        ]);
-      };
-    },
-  });
-}
-
-function makeAiScoreCell(): Component {
-  return defineComponent({
-    name: "CrmAiScoreCell",
-    setup(raw) {
-      return () => {
-        const p = raw as unknown as CellRendererProps;
-        const d = p.row as unknown as CRMLead;
-        return h("div", { style: { fontSize: "0.875rem" } }, "🔥".repeat(d.aiScore));
-      };
-    },
-  });
-}
-
-function makeEmailCell(colors: CrmColors): Component {
-  return defineComponent({
-    name: "CrmEmailCell",
-    setup() {
-      return () => h(CrmEmailEnrich, { colors });
-    },
-  });
-}
-
-function makeTimeAgoCell(colors: CrmColors): Component {
-  return defineComponent({
-    name: "CrmTimeAgoCell",
-    setup(raw) {
-      return () => {
-        const p = raw as unknown as CellRendererProps;
-        const d = p.row as unknown as CRMLead;
-        return h("div", { style: { fontSize: "13px", color: colors.textSecondary } }, d.timeAgo);
-      };
-    },
-  });
-}
-
-function makeListCell(colors: CrmColors): Component {
-  return defineComponent({
-    name: "CrmListCell",
-    setup(raw) {
-      return () => {
-        const p = raw as unknown as CellRendererProps;
-        const d = p.row as unknown as CRMLead;
-        return h(
-          "a",
+function makeContactCell(colors: CrmColors) {
+  return ({ row }: CellRendererProps<CRMLead>) => {
+    const initials = row.name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+    return h("div", { style: { display: "flex", alignItems: "center", gap: "12px" } }, [
+      h(
+        "div",
+        {
+          style: {
+            width: "40px",
+            height: "40px",
+            borderRadius: "50%",
+            background: "linear-gradient(to right, oklch(75% .183 55.934), oklch(70.4% .191 22.216))",
+            color: "white",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "12px",
+            fontWeight: "600",
+            flexShrink: "0",
+          },
+        },
+        initials,
+      ),
+      h("div", { style: { display: "flex", flexDirection: "column", gap: "2px" } }, [
+        h(
+          "span",
           {
-            href: "#",
             style: {
               cursor: "pointer",
-              fontSize: "0.875rem",
-              color: colors.link,
-              textDecoration: "none",
+              fontSize: "14px",
               fontWeight: "600",
+              color: colors.link,
             },
-            onClick: (e: MouseEvent) => e.preventDefault(),
           },
-          d.list,
-        );
-      };
-    },
-  });
+          row.name,
+        ),
+        h("div", { style: { fontSize: "12px", color: colors.textSecondary } }, row.title),
+        h("div", { style: { fontSize: "12px", color: colors.textSecondary } }, [
+          h("span", { style: { fontSize: "12px", color: colors.textTertiary } }, "@"),
+          ` ${row.company}`,
+        ]),
+      ]),
+    ]);
+  };
 }
 
-function makeFitCell(colors: CrmColors): Component {
-  return defineComponent({
-    name: "CrmFitCell",
-    setup() {
-      return () => h(CrmFitButtons, { colors });
-    },
-  });
-}
-
-function makeContactNowCell(colors: CrmColors): Component {
-  return defineComponent({
-    name: "CrmContactNowCell",
-    setup() {
-      return () =>
+function makeSignalCell(colors: CrmColors) {
+  return ({ row }: CellRendererProps<CRMLead>) =>
+    h("div", [
+      h("div", { style: { color: colors.textSecondary, marginBottom: "4px", fontSize: "0.875rem" } }, [
+        "🧠 Just engaged with a ",
         h(
           "a",
           {
             href: "#",
-            style: {
-              cursor: "pointer",
-              fontSize: "0.875rem",
-              color: colors.link,
-              textDecoration: "none",
-              fontWeight: "600",
-            },
+            style: { color: "#0077b5", textDecoration: "underline", cursor: "pointer" },
             onClick: (e: MouseEvent) => e.preventDefault(),
           },
-          "Contact Now",
-        );
-    },
-  });
+          "post",
+        ),
+      ]),
+      h("div", { style: { fontSize: "12px", color: colors.textTertiary } }, [
+        h("span", { style: { fontWeight: "600" } }, "Keyword:"),
+        ` ${row.signal}`,
+      ]),
+    ]);
 }
 
-const CrmFooter = defineComponent({
-  name: "CrmFooter",
-  props: {
-    currentPage: { type: Number, required: true },
-    endRow: { type: Number, required: true },
-    hasNextPage: { type: Boolean, required: true },
-    hasPrevPage: { type: Boolean, required: true },
-    onNextPage: { type: Function, required: true },
-    onPageChange: { type: Function, required: true },
-    onPrevPage: { type: Function, required: true },
-    rowsPerPage: { type: Number, required: true },
-    startRow: { type: Number, required: true },
-    totalPages: { type: Number, required: true },
-    totalRows: { type: Number, required: true },
-  },
-  setup(footerProps) {
-    return () => {
-      const c = isDark.value ? CRM_FOOTER_COLORS_DARK : CRM_FOOTER_COLORS_LIGHT;
-      const fp = footerProps as unknown as FooterRendererProps;
-      const visiblePages = generateVisiblePages(fp.currentPage, fp.totalPages);
+function makeAiScoreCell() {
+  return ({ row }: CellRendererProps<CRMLead>) =>
+    h("div", { style: { fontSize: "0.875rem" } }, "🔥".repeat(row.aiScore));
+}
 
-      const makePageBtn = (
-        label: string,
-        onClick: () => void,
-        disabled: boolean,
-        active: boolean,
-        extraStyle?: Record<string, string>,
-      ) =>
-        h("button", {
-          type: "button",
-          disabled,
-          style: {
-            display: "inline-flex",
-            alignItems: "center",
-            padding: label.length > 1 ? "8px 16px" : "8px",
-            border: `1px solid ${c.buttonBorder}`,
-            backgroundColor: active ? c.activeBg : c.buttonBg,
-            fontSize: "14px",
-            fontWeight: "500",
-            color: active ? c.activeText : disabled ? c.buttonText : c.text,
-            cursor: disabled ? "not-allowed" : "pointer",
-            opacity: disabled ? "0.5" : "1",
-            ...extraStyle,
-          },
-          onClick: disabled ? undefined : onClick,
-        }, label);
+function makeEmailCell(colors: CrmColors) {
+  return () => h(CrmEmailEnrich, { colors });
+}
 
-      const perPageOptions = [25, 50, 100, 200, 10000] as const;
+function makeTimeAgoCell(colors: CrmColors) {
+  return ({ row }: CellRendererProps<CRMLead>) =>
+    h("div", { style: { fontSize: "13px", color: colors.textSecondary } }, row.timeAgo);
+}
 
-      return h(
-        "div",
-        {
-          style: {
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "12px 16px",
-            borderTop: `1px solid ${c.border}`,
-            backgroundColor: c.bg,
-          },
+function makeListCell(colors: CrmColors) {
+  return ({ row }: CellRendererProps<CRMLead>) =>
+    h(
+      "a",
+      {
+        href: "#",
+        style: {
+          cursor: "pointer",
+          fontSize: "0.875rem",
+          color: colors.link,
+          textDecoration: "none",
+          fontWeight: "600",
         },
-        [
-          h("p", { style: { fontSize: "14px", color: c.text, margin: "0" } }, [
-            "Showing ",
-            h("span", { style: { fontWeight: "500" } }, String(fp.startRow)),
-            " to ",
-            h("span", { style: { fontWeight: "500" } }, String(fp.endRow)),
-            " of ",
-            h("span", { style: { fontWeight: "500" } }, String(fp.totalRows)),
-            " results",
-          ]),
-          h("div", { style: { display: "flex", alignItems: "center", gap: "16px" } }, [
-            h("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, [
-              h("label", { style: { fontSize: "14px", color: c.text } }, "Show:"),
-              h(
-                "select",
-                {
-                  style: {
-                    border: `1px solid ${c.inputBorder}`,
-                    borderRadius: "6px",
-                    padding: "4px 8px",
-                    fontSize: "14px",
-                    backgroundColor: c.inputBg,
-                    color: c.text,
-                    cursor: "pointer",
-                  },
-                  value: rowsPerPage.value,
-                  onChange: (e: Event) => {
-                    const v = parseInt((e.target as HTMLSelectElement).value, 10);
-                    rowsPerPage.value = v;
-                    fp.onPageChange(1);
-                  },
-                },
-                perPageOptions.map((opt) =>
-                  h("option", { value: String(opt) }, opt === 10000 ? "all" : String(opt)),
-                ),
-              ),
-              h("span", { style: { fontSize: "14px", color: c.text } }, "per page"),
-            ]),
-            h(
-              "nav",
-              {
-                style: {
-                  display: "inline-flex",
-                  borderRadius: "6px",
-                  boxShadow: "0 1px 2px 0 rgba(0,0,0,0.05)",
-                },
-              },
-              [
-                makePageBtn("‹", () => fp.onPrevPage(), !fp.hasPrevPage, false, {
-                  borderTopLeftRadius: "6px",
-                  borderBottomLeftRadius: "6px",
-                }),
-                ...visiblePages.map((page, idx) =>
-                  makePageBtn(String(page), () => fp.onPageChange(page), false, page === fp.currentPage, {
-                    padding: "8px 16px",
-                    marginLeft: idx === 0 ? "0" : "-1px",
-                  }),
-                ),
-                makePageBtn("›", () => void fp.onNextPage(), !fp.hasNextPage, false, {
-                  borderTopRightRadius: "6px",
-                  borderBottomRightRadius: "6px",
-                  marginLeft: "-1px",
-                }),
-              ],
-            ),
-          ]),
-        ],
-      );
-    };
-  },
-});
+        onClick: (e: MouseEvent) => e.preventDefault(),
+      },
+      row.list,
+    );
+}
 
-const headers = computed((): VueColumnDef[] => {
+function makeFitCell(colors: CrmColors) {
+  return () => h(CrmFitButtons, { colors });
+}
+
+function makeContactNowCell(colors: CrmColors) {
+  return () =>
+    h(
+      "a",
+      {
+        href: "#",
+        style: {
+          cursor: "pointer",
+          fontSize: "0.875rem",
+          color: colors.link,
+          textDecoration: "none",
+          fontWeight: "600",
+        },
+        onClick: (e: MouseEvent) => e.preventDefault(),
+      },
+      "Contact Now",
+    );
+}
+
+const crmFooter: VueFooterRenderer = (fp: FooterRendererProps) => {
+  const c = isDark.value ? CRM_FOOTER_COLORS_DARK : CRM_FOOTER_COLORS_LIGHT;
+  const visiblePages = generateVisiblePages(fp.currentPage, fp.totalPages);
+
+  const makePageBtn = (
+    label: string,
+    onClick: () => void,
+    disabled: boolean,
+    active: boolean,
+    extraStyle?: Record<string, string>,
+  ) =>
+    h("button", {
+      type: "button",
+      disabled,
+      style: {
+        display: "inline-flex",
+        alignItems: "center",
+        padding: label.length > 1 ? "8px 16px" : "8px",
+        border: `1px solid ${c.buttonBorder}`,
+        backgroundColor: active ? c.activeBg : c.buttonBg,
+        fontSize: "14px",
+        fontWeight: "500",
+        color: active ? c.activeText : disabled ? c.buttonText : c.text,
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? "0.5" : "1",
+        ...extraStyle,
+      },
+      onClick: disabled ? undefined : onClick,
+    }, label);
+
+  const perPageOptions = [25, 50, 100, 200, 10000] as const;
+
+  return h(
+    "div",
+    {
+      style: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "12px 16px",
+        borderTop: `1px solid ${c.border}`,
+        backgroundColor: c.bg,
+      },
+    },
+    [
+      h("p", { style: { fontSize: "14px", color: c.text, margin: "0" } }, [
+        "Showing ",
+        h("span", { style: { fontWeight: "500" } }, String(fp.startRow)),
+        " to ",
+        h("span", { style: { fontWeight: "500" } }, String(fp.endRow)),
+        " of ",
+        h("span", { style: { fontWeight: "500" } }, String(fp.totalRows)),
+        " results",
+      ]),
+      h("div", { style: { display: "flex", alignItems: "center", gap: "16px" } }, [
+        h("div", { style: { display: "flex", alignItems: "center", gap: "8px" } }, [
+          h("label", { style: { fontSize: "14px", color: c.text } }, "Show:"),
+          h(
+            "select",
+            {
+              style: {
+                border: `1px solid ${c.inputBorder}`,
+                borderRadius: "6px",
+                padding: "4px 8px",
+                fontSize: "14px",
+                backgroundColor: c.inputBg,
+                color: c.text,
+                cursor: "pointer",
+              },
+              value: rowsPerPage.value,
+              onChange: (e: Event) => {
+                const v = parseInt((e.target as HTMLSelectElement).value, 10);
+                rowsPerPage.value = v;
+                fp.onPageChange(1);
+              },
+            },
+            perPageOptions.map((opt) =>
+              h("option", { value: String(opt) }, opt === 10000 ? "all" : String(opt)),
+            ),
+          ),
+          h("span", { style: { fontSize: "14px", color: c.text } }, "per page"),
+        ]),
+        h(
+          "nav",
+          {
+            style: {
+              display: "inline-flex",
+              borderRadius: "6px",
+              boxShadow: "0 1px 2px 0 rgba(0,0,0,0.05)",
+            },
+          },
+          [
+            makePageBtn("‹", () => fp.onPrevPage(), !fp.hasPrevPage, false, {
+              borderTopLeftRadius: "6px",
+              borderBottomLeftRadius: "6px",
+            }),
+            ...visiblePages.map((page, idx) =>
+              makePageBtn(String(page), () => fp.onPageChange(page), false, page === fp.currentPage, {
+                padding: "8px 16px",
+                marginLeft: idx === 0 ? "0" : "-1px",
+              }),
+            ),
+            makePageBtn("›", () => void fp.onNextPage(), !fp.hasNextPage, false, {
+              borderTopRightRadius: "6px",
+              borderBottomRightRadius: "6px",
+              marginLeft: "-1px",
+            }),
+          ],
+        ),
+      ]),
+    ],
+  );
+};
+
+const headers = computed((): VueColumnDef<CRMLead>[] => {
   const colors = isDark.value ? CRM_THEME_COLORS_DARK : CRM_THEME_COLORS_LIGHT;
 
   return [
@@ -450,7 +385,7 @@ const headers = computed((): VueColumnDef[] => {
   ];
 });
 
-const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
+const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps<CRMLead>) => {
   data.value = data.value.map((item) =>
     item.id === row.id ? { ...item, [accessor]: newValue } : item,
   );
@@ -461,6 +396,7 @@ const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
   <div :class="`custom-theme-container theme-${isDark ? 'custom-dark' : 'custom-light'}`">
     <SimpleTable
       :columns="headers"
+      :get-row-id="getRowId"
       :rows="data"
       :height="height"
       theme="custom"
@@ -470,7 +406,7 @@ const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
       :enable-pagination="true"
       :rows-per-page="rowsPerPage"
       :custom-theme="{ headerHeight: 48, rowHeight: 92 }"
-      :footer-renderer="CrmFooter"
+      :footer-renderer="crmFooter"
       @cell-edit="handleCellEdit"
     />
   </div>

@@ -4,6 +4,7 @@
     :column-resizing="chartsConfig.tableProps.columnResizing"
     :columns="chartsConfig.headers"
     :rows="chartsConfig.rows"
+    :get-row-id="getRowId"
     :selectable-cells="chartsConfig.tableProps.selectableCells"
     :height="height"
     :theme="theme"
@@ -11,9 +12,13 @@
 </template>
 
 <script setup lang="ts">
-import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, GetRowIdParams } from "@simple-table/vue";
 import { chartsConfig } from "./charts.demo-data";
+import type { ChartsProduct } from "./charts.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), { height: "400px" });
+
+const getRowId = ({ row }: GetRowIdParams<ChartsProduct>) => row.id;
 </script>

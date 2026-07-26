@@ -5,19 +5,24 @@
     :columns="columnWidthConfig.headers"
     :height="height"
     :rows="columnWidthConfig.rows"
+    :get-row-id="getRowId"
     :theme="theme"
   />
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, GetRowIdParams } from "@simple-table/vue";
 import { columnWidthConfig } from "./column-width.demo-data";
+import type { StartupEmployee } from "./column-width.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
+
+const getRowId = ({ row }: GetRowIdParams<StartupEmployee>) => row.id;
 
 const isMobile = ref(false);
 

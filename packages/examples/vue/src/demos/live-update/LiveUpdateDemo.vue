@@ -11,19 +11,21 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
-import {SimpleTable} from "@simple-table/vue";import type { Theme, TableAPI } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, TableAPI, GetRowIdParams } from "@simple-table/vue";
 import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
+import type { LiveUpdateProduct } from "./live-update.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), { height: "400px" });
 
 const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
-const getRowId = ({ row }: { row: { id: number } }) => row.id;
+const getRowId = ({ row }: GetRowIdParams<LiveUpdateProduct>) => row.id;
 
 let cleanupFn: (() => void) | null = null;
 
 onMounted(() => {
-  const currentData = JSON.parse(JSON.stringify(liveUpdateData));
+  const currentData: LiveUpdateProduct[] = JSON.parse(JSON.stringify(liveUpdateData));
   const timerMap = new Map<string | number, ReturnType<typeof setTimeout>>();
   const currentPeriodSales = new Map<string | number, number>();
   let isActive = true;
@@ -38,7 +40,7 @@ onMounted(() => {
         if (!isActive) return;
         const api = getAPI();
         if (!api) return;
-        const idx = currentData.findIndex((r: any) => r.id === rowId);
+        const idx = currentData.findIndex((r: LiveUpdateProduct) => r.id === rowId);
         if (idx === -1) return;
         const product = currentData[idx];
 
@@ -90,7 +92,7 @@ onMounted(() => {
   const salesRotate = setInterval(() => {
     const api = getAPI();
     if (!api || !isActive) return;
-    currentData.forEach((row: any, i: number) => {
+    currentData.forEach((row: LiveUpdateProduct, i: number) => {
       if (Array.isArray(row.salesHistory)) {
         const rid = row.id;
         const sp = currentPeriodSales.get(rid) || 0;

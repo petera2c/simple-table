@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, VueColumnDef, CellRendererProps, Row, CellValue } from "@simple-table/vue";
+import type { Theme, TableAPI, VueColumnDef, CellRendererProps, Row, CellValue, GetRowIdParams } from "@simple-table/vue";
 import {
   infrastructureConfig,
   infrastructureData,
@@ -139,31 +139,29 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
 });
 
 const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
-const getRowId = ({ row }: { row: { id: string | number } }) => row.id;
+const getRowId = ({ row }: GetRowIdParams<InfrastructureServer>) => row.id;
 
 function applyRenderers(
-  hdrs: readonly VueColumnDef[],
-  map: Record<string, (p: CellRendererProps) => unknown>,
-): VueColumnDef[] {
+  hdrs: readonly VueColumnDef<InfrastructureServer>[],
+  map: Record<string, (p: CellRendererProps<InfrastructureServer>) => unknown>,
+): VueColumnDef<InfrastructureServer>[] {
   return hdrs.map((h) => {
     const renderer = map[h.accessor as string];
-    const clone: VueColumnDef = renderer ? { ...h, cellRenderer: renderer } : { ...h };
+    const clone: VueColumnDef<InfrastructureServer> = renderer ? { ...h, cellRenderer: renderer } : { ...h };
     if (h.children) clone.children = applyRenderers(h.children, map);
     return clone;
   });
 }
 
-const headers = computed((): VueColumnDef[] => {
+const headers = computed((): VueColumnDef<InfrastructureServer>[] => {
   const t = props.theme || "light";
 
-  const serverIdRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as InfrastructureServer;
-    return h("span", { style: { fontFamily: "monospace", fontSize: "0.85rem" } }, d.serverId);
+  const serverIdRenderer = ({ row }: CellRendererProps<InfrastructureServer>) => {
+    return h("span", { style: { fontFamily: "monospace", fontSize: "0.85rem" } }, row.serverId);
   };
 
-  const cpuRenderer = ({ row, theme }: CellRendererProps) => {
-    const d = row as unknown as InfrastructureServer;
-    const cpu = d.cpuUsage;
+  const cpuRenderer = ({ row, theme }: CellRendererProps<InfrastructureServer>) => {
+    const cpu = row.cpuUsage;
     const s = getInfraMetricColorStyles(cpu, theme || t, "cpu");
     return h("div", { style: { display: "flex", justifyContent: "end" } }, [
       h(
@@ -183,9 +181,8 @@ const headers = computed((): VueColumnDef[] => {
     ]);
   };
 
-  const memoryRenderer = ({ row, theme }: CellRendererProps) => {
-    const d = row as unknown as InfrastructureServer;
-    const mem = d.memoryUsage;
+  const memoryRenderer = ({ row, theme }: CellRendererProps<InfrastructureServer>) => {
+    const mem = row.memoryUsage;
     const s = getInfraMetricColorStyles(mem, theme || t, "memory");
     return h("div", { style: { display: "flex", justifyContent: "end" } }, [
       h(
@@ -205,14 +202,12 @@ const headers = computed((): VueColumnDef[] => {
     ]);
   };
 
-  const diskRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as InfrastructureServer;
-    return `${d.diskUsage.toFixed(1)}%`;
+  const diskRenderer = ({ row }: CellRendererProps<InfrastructureServer>) => {
+    return `${row.diskUsage.toFixed(1)}%`;
   };
 
-  const responseRenderer = ({ row, theme }: CellRendererProps) => {
-    const d = row as unknown as InfrastructureServer;
-    const rt = d.responseTime;
+  const responseRenderer = ({ row, theme }: CellRendererProps<InfrastructureServer>) => {
+    const rt = row.responseTime;
     const s = getInfraMetricColorStyles(rt, theme || t, "response");
     return h(
       "span",
@@ -227,9 +222,8 @@ const headers = computed((): VueColumnDef[] => {
     );
   };
 
-  const statusRenderer = ({ row, theme }: CellRendererProps) => {
-    const d = row as unknown as InfrastructureServer;
-    const status = d.status;
+  const statusRenderer = ({ row, theme }: CellRendererProps<InfrastructureServer>) => {
+    const status = row.status;
     const s = getInfraStatusColors(status, theme || t);
     return h(
       "div",

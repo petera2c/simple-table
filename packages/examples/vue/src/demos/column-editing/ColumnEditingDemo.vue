@@ -14,6 +14,7 @@
     <SimpleTable
       :columns="headers"
       :rows="columnEditingData"
+      :get-row-id="getRowId"
       :height="height"
       :theme="theme"
       :enable-header-editing="true"
@@ -26,22 +27,25 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueColumnDef } from "@simple-table/vue";
+import type { Theme, VueColumnDef, GetRowIdParams } from "@simple-table/vue";
 import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
+import type { ColumnEditingEmployee } from "./column-editing.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
 
-const additionalColumns = ref<VueColumnDef[]>([]);
+const additionalColumns = ref<VueColumnDef<ColumnEditingEmployee>[]>([]);
 const lastAdded = ref("");
 
 const headers = computed(() => [...columnEditingHeaders, ...additionalColumns.value]);
 
+const getRowId = ({ row }: GetRowIdParams<ColumnEditingEmployee>) => row.id;
+
 function addColumn() {
   const n = additionalColumns.value.length + 1;
-  const col: VueColumnDef = {
+  const col: VueColumnDef<ColumnEditingEmployee> = {
     accessor: `custom-${n}`,
     label: `Custom ${n}`,
     width: 120,
@@ -51,7 +55,7 @@ function addColumn() {
   lastAdded.value = col.label;
 }
 
-function handleHeaderEdit(_header: VueColumnDef, newLabel: string) {
+function handleHeaderEdit(_header: VueColumnDef<ColumnEditingEmployee>, newLabel: string) {
   lastAdded.value = `Renamed to: ${newLabel}`;
 }
 </script>

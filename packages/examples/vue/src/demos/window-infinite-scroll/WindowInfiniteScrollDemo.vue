@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, Row } from "@simple-table/vue";
+import type { Theme, GetRowIdParams } from "@simple-table/vue";
 import {
   generateWindowScrollRows,
   windowScrollHeaders,
 } from "./window-infinite-scroll.demo-data";
+import type { WindowScrollEmployee } from "./window-infinite-scroll.demo-data";
 import "@simple-table/vue/styles.css";
 
 // `height` is intentionally ignored — this demo is about *not* setting one.
@@ -18,7 +19,7 @@ const LOAD_DELAY_MS = 350;
 
 const wrapperRef = ref<HTMLDivElement | null>(null);
 
-const rows = ref<Row[]>(generateWindowScrollRows(0, INITIAL_ROWS));
+const rows = ref<WindowScrollEmployee[]>(generateWindowScrollRows(0, INITIAL_ROWS));
 const loading = ref(false);
 const hasMore = ref(true);
 
@@ -34,7 +35,7 @@ const statusLabel = computed(() =>
 // In a regular app outside this preview shell, pass scrollParent="window".
 const getScrollParent = () => wrapperRef.value?.parentElement ?? null;
 
-const getRowId = (p: { row: Row }) => String((p.row as { id?: number })?.id);
+const getRowId = ({ row }: GetRowIdParams<WindowScrollEmployee>) => String(row.id);
 
 function handleLoadMore() {
   if (loading.value || !hasMore.value) return;

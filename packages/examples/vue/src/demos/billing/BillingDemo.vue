@@ -1,6 +1,7 @@
 <template>
   <SimpleTable
     :columns="headers"
+    :get-row-id="getRowId"
     :rows="billingConfig.rows"
     :height="height"
     :theme="theme"
@@ -18,7 +19,7 @@
 <script setup lang="ts">
 import { h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueColumnDef, CellRendererProps } from "@simple-table/vue";
+import type { Theme, VueColumnDef, CellRendererProps, GetRowIdParams } from "@simple-table/vue";
 import { billingConfig } from "./billing.demo-data";
 import type { BillingRow } from "./billing.demo-data";
 import "@simple-table/vue/styles.css";
@@ -27,16 +28,17 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
 
-const nameRenderer = ({ row }: CellRendererProps) => {
-  const d = row as unknown as BillingRow;
-  if (d.type === "account") {
-    return h("span", { style: { fontWeight: "600" } }, d.name);
+const getRowId = ({ row }: GetRowIdParams<BillingRow>) => row.id;
+
+const nameRenderer = ({ row }: CellRendererProps<BillingRow>) => {
+  if (row.type === "account") {
+    return h("span", { style: { fontWeight: "600" } }, row.name);
   }
-  return d.name;
+  return row.name;
 };
 
-const headers: VueColumnDef[] = billingConfig.headers.map((h) => {
-  if (h.accessor === "name") return { ...h, cellRenderer: nameRenderer };
-  return { ...h };
+const headers: VueColumnDef<BillingRow>[] = billingConfig.headers.map((col) => {
+  if (col.accessor === "name") return { ...col, cellRenderer: nameRenderer };
+  return { ...col };
 });
 </script>

@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, h, type VNodeChild } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueColumnDef, CellRendererProps, CellChangeProps, Row } from "@simple-table/vue";
+import type {
+  Theme,
+  VueColumnDef,
+  CellRendererProps,
+  CellChangeProps,
+  GetRowIdParams,
+} from "@simple-table/vue";
 import { getThemeColors, salesHeadersCore, salesSampleRows, type SalesRow } from "./sales.demo-data";
 import "@simple-table/vue/styles.css";
 
@@ -23,10 +29,9 @@ function hv(
   return h(tag, { style: styles ?? {} }, children ?? []);
 }
 
-const salesRenderers: Record<string, (p: CellRendererProps) => VNodeChild> = {
+const salesRenderers: Record<string, (p: CellRendererProps<SalesRow>) => VNodeChild> = {
   dealValue: ({ row, theme }) => {
-    if (row.dealValue === "—") return "—";
-    const value = (row as unknown as SalesRow).dealValue;
+    const value = row.dealValue;
     const colors = getThemeColors(theme);
     let color = colors.gray;
     let fontWeight = "normal";
@@ -41,9 +46,7 @@ const salesRenderers: Record<string, (p: CellRendererProps) => VNodeChild> = {
   },
 
   isWon: ({ row }) => {
-    if (row.isWon === "—") return "—";
-    const d = row as unknown as SalesRow;
-    const s = d.isWon ? { bg: "#f6ffed", text: "#2a6a0d" } : { bg: "#fff1f0", text: "#a8071a" };
+    const s = row.isWon ? { bg: "#f6ffed", text: "#2a6a0d" } : { bg: "#fff1f0", text: "#a8071a" };
     return hv(
       "span",
       {
@@ -55,21 +58,19 @@ const salesRenderers: Record<string, (p: CellRendererProps) => VNodeChild> = {
         borderRadius: "2px",
         display: "inline-block",
       },
-      [d.isWon ? "Won" : "Lost"],
+      [row.isWon ? "Won" : "Lost"],
     );
   },
 
   commission: ({ row, theme }) => {
-    if (row.commission === "—") return "—";
-    const value = (row as unknown as SalesRow).commission;
+    const value = row.commission;
     const colors = getThemeColors(theme);
     if (value === 0) return hv("span", { color: colors.grayMuted }, ["$0.00"]);
     return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   },
 
   profitMargin: ({ row, theme }) => {
-    if (row.profitMargin === "—") return "—";
-    const value = (row as unknown as SalesRow).profitMargin;
+    const value = row.profitMargin;
     const colors = getThemeColors(theme);
     let color = colors.gray;
     let fontWeight = "normal";
@@ -108,8 +109,7 @@ const salesRenderers: Record<string, (p: CellRendererProps) => VNodeChild> = {
   },
 
   dealProfit: ({ row, theme }) => {
-    if (row.dealProfit === "—") return "—";
-    const value = (row as unknown as SalesRow).dealProfit;
+    const value = row.dealProfit;
     const colors = getThemeColors(theme);
     if (value === 0) return hv("span", { color: colors.grayMuted }, ["$0.00"]);
     let color = colors.gray;
@@ -126,22 +126,23 @@ const salesRenderers: Record<string, (p: CellRendererProps) => VNodeChild> = {
 };
 
 function applyRenderers(
-  hdrs: readonly VueColumnDef[],
-  map: Record<string, (p: CellRendererProps) => VNodeChild>,
-): VueColumnDef[] {
-  return hdrs.map((h) => {
-    const renderer = map[h.accessor as string];
-    const clone: VueColumnDef = renderer ? { ...h, cellRenderer: renderer } : { ...h };
-    if (h.children) {
-      clone.children = applyRenderers(h.children, map);
+  hdrs: readonly VueColumnDef<SalesRow>[],
+  map: Record<string, (p: CellRendererProps<SalesRow>) => VNodeChild>,
+): VueColumnDef<SalesRow>[] {
+  return hdrs.map((col) => {
+    const renderer = map[col.accessor as string];
+    const clone: VueColumnDef<SalesRow> = renderer ? { ...col, cellRenderer: renderer } : { ...col };
+    if (col.children) {
+      clone.children = applyRenderers(col.children, map);
     }
     return clone;
   });
 }
 
 const headers = applyRenderers(salesHeadersCore, salesRenderers);
+const getRowId = ({ row }: GetRowIdParams<SalesRow>) => row.id;
 
-const data = ref<Row[]>((salesSampleRows.map((r) => ({ ...r })) as Row[]));
+const data = ref<SalesRow[]>(salesSampleRows.map((r) => ({ ...r })));
 const isMobile = ref(false);
 
 const checkMobile = () => {
@@ -157,16 +158,17 @@ onUnmounted(() => {
   window.removeEventListener("resize", checkMobile);
 });
 
-const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
+const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps<SalesRow>) => {
   data.value = data.value.map((item) =>
     item.id === row.id ? { ...item, [accessor]: newValue } : item,
-  ) as Row[];
+  );
 };
 </script>
 
 <template>
   <SimpleTable
     :columns="headers"
+    :get-row-id="getRowId"
     :rows="data"
     :height="formatTableHeight(props.height)"
     :theme="props.theme"

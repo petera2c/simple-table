@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { defineComponent, h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, FooterRendererProps } from "@simple-table/vue";
+import type { Theme, FooterRendererProps, GetRowIdParams } from "@simple-table/vue";
 import { footerRendererConfig } from "./footer-renderer.demo-data";
+import type { CatalogProduct } from "./footer-renderer.demo-data";
 import "@simple-table/vue/styles.css";
+
+const getRowId = ({ row }: GetRowIdParams<CatalogProduct>) => row.id;
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
@@ -124,6 +127,7 @@ const FooterBar = defineComponent({
   <SimpleTable
     :columns="footerRendererConfig.headers"
     :rows="footerRendererConfig.rows"
+    :get-row-id="getRowId"
     :footer-renderer="FooterBar"
     :enable-pagination="true"
     :rows-per-page="10"

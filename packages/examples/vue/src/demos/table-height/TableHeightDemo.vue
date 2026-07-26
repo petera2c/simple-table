@@ -22,6 +22,7 @@
     <SimpleTable
       :columns="tableHeightConfig.headers"
       :rows="tableHeightConfig.rows"
+      :get-row-id="getRowId"
       :height="selectedHeight"
       :theme="theme"
     />
@@ -30,13 +31,17 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, GetRowIdParams } from "@simple-table/vue";
 import { tableHeightConfig } from "./table-height.demo-data";
+import type { HeightDemoEmployee } from "./table-height.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
+
+const getRowId = ({ row }: GetRowIdParams<HeightDemoEmployee>) => row.id;
 
 const heights = ["200px", "300px", "400px"];
 const selectedHeight = ref("400px");

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, RowSelectionChangeProps, VueColumnDef } from "@simple-table/vue";
+import type { Theme, RowSelectionChangeProps, VueColumnDef, CellRendererProps, GetRowIdParams } from "@simple-table/vue";
 import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
 import type { LibraryBook } from "./row-selection.demo-data";
 import "@simple-table/vue/styles.css";
@@ -11,6 +11,7 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
 });
 
 const selectedBooks = ref<LibraryBook[]>([]);
+const getRowId = ({ row }: GetRowIdParams<LibraryBook>) => row.id;
 
 const selectedTitles = computed(() =>
   selectedBooks.value.length > 0
@@ -18,21 +19,21 @@ const selectedTitles = computed(() =>
     : "None",
 );
 
-const headers: VueColumnDef[] = rowSelectionConfig.headers.map((h) => {
-  if (h.accessor === "status") {
+const headers: VueColumnDef<LibraryBook>[] = rowSelectionConfig.headers.map((col) => {
+  if (col.accessor === "status") {
     return {
-      ...h,
-      cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-        const s = String(row.status);
+      ...col,
+      cellRenderer: ({ row }: CellRendererProps<LibraryBook>) => {
+        const s = row.status;
         const color = s === "Available" ? "#16a34a" : s === "Checked Out" ? "#ea580c" : "#dc2626";
         return `<span style="color:${color};font-weight:bold">${s}</span>`;
       },
     };
   }
-  return { ...h };
+  return { ...col };
 });
 
-function handleRowSelectionChange(props: RowSelectionChangeProps) {
+function handleRowSelectionChange(props: RowSelectionChangeProps<LibraryBook>) {
   selectedBooks.value = rowSelectionData.filter((book) =>
     props.selectedRows.has(String(book.id)),
   );
@@ -57,6 +58,7 @@ function handleRowSelectionChange(props: RowSelectionChangeProps) {
 
     <SimpleTable
       :columns="headers"
+      :get-row-id="getRowId"
       :rows="rowSelectionConfig.rows"
       :enable-row-selection="true"
       :column-resizing="true"

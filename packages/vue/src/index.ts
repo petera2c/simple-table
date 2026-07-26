@@ -7,6 +7,8 @@ export type {
   SimpleTableVueProps,
   TableInstance,
   VueColumnDef,
+  NestedVueColumnDef,
+  NestedTableVueConfig,
   VueColumnEditorConfig,
   VueIconsConfig,
   VueIconElement,
@@ -20,10 +22,12 @@ export type {
   VueLoadingStateRenderer,
   VueErrorStateRenderer,
   VueEmptyStateRenderer,
+  VueDefaultRowData,
 } from "./types";
 
-// Re-export vanilla types consumers need when building column definitions,
-// callbacks, or using the imperative ref API.
+// Re-export vanilla types for callbacks and the imperative ref API. For
+// column definitions and column-related callbacks on `SimpleTable`, use
+// `VueColumnDef` (exported above).
 export type {
   Accessor,
   AggregationConfig,

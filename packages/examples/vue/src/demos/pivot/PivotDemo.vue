@@ -23,6 +23,7 @@
     <SimpleTable
       :columns="pivotDemoConfig.headers"
       :rows="pivotDemoConfig.rows"
+      :get-row-id="getRowId"
       :pivot="active.pivot"
       :column-resizing="true"
       :expand-all="nestedRows"
@@ -36,8 +37,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
+import type { Theme, GetRowIdParams } from "@simple-table/vue";
 import { pivotDemoConfig, pivotPresets } from "./pivot.demo-data";
+import type { PivotFact } from "./pivot.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -49,4 +51,6 @@ const active = computed(
   () => pivotPresets.find((p) => p.id === activeId.value) ?? pivotPresets[0]
 );
 const nestedRows = computed(() => active.value.pivot.rows.length > 1);
+
+const getRowId = ({ row }: GetRowIdParams<PivotFact>) => row.id;
 </script>
