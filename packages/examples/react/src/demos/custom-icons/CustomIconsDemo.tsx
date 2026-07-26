@@ -1,5 +1,5 @@
 import {SimpleTable} from "@simple-table/react";import type { Theme, ReactIconsConfig } from "@simple-table/react";
-import { customIconsConfig } from "./custom-icons.demo-data";
+import { customIconsConfig, type SoftwareRelease } from "./custom-icons.demo-data";
 import "@simple-table/react/styles.css";
 
 const customIcons: ReactIconsConfig = {
@@ -43,12 +43,13 @@ const CustomIconsDemo = ({
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable
+    <SimpleTable<SoftwareRelease>
       columns={customIconsConfig.headers}
       rows={customIconsConfig.rows}
       icons={customIcons}
       height={height}
       theme={theme}
+      getRowId={({ row }) => row.id}
     />
   );
 };
