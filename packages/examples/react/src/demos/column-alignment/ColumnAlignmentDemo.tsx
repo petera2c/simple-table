@@ -2,19 +2,19 @@ import { SimpleTable } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
 import {
   columnAlignmentConfig,
-  type ColumnAlignmentPlayer,
+  type ColumnAlignmentPlayer
 } from "./column-alignment.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnAlignmentDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable<ColumnAlignmentPlayer>
+    <SimpleTable
       columns={columnAlignmentConfig.headers}
       getRowId={({ row }) => row.id}
       rows={columnAlignmentConfig.rows}
