@@ -1,7 +1,17 @@
 import { createSignal, createEffect, onMount, onCleanup } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
-import type { Theme, TableAPI, CellValue, SolidColumnDef, CellRendererProps } from "@simple-table/solid";
-import { infrastructureData, getInfraMetricColorStyles, getInfraStatusColors } from "./infrastructure.demo-data";
+import type {
+  Theme,
+  TableAPI,
+  CellValue,
+  SolidColumnDef,
+  CellRendererProps,
+} from "@simple-table/solid";
+import {
+  infrastructureData,
+  getInfraMetricColorStyles,
+  getInfraStatusColors,
+} from "./infrastructure.demo-data";
 import type { InfrastructureServer } from "./infrastructure.demo-data";
 import "@simple-table/solid/styles.css";
 
@@ -20,7 +30,11 @@ function infraPickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function infraApplyRowPatch(api: TableAPI<InfrastructureServer>, rowId: string | number, patch: Partial<InfrastructureServer>) {
+function infraApplyRowPatch(
+  api: TableAPI<InfrastructureServer>,
+  rowId: string | number,
+  patch: Partial<InfrastructureServer>,
+) {
   for (const accessor of Object.keys(patch) as (keyof InfrastructureServer)[]) {
     const newValue = patch[accessor];
     if (newValue === undefined) continue;
@@ -28,7 +42,10 @@ function infraApplyRowPatch(api: TableAPI<InfrastructureServer>, rowId: string |
   }
 }
 
-function infraComputeMetricPatch(row: InfrastructureServer, slot: InfraMetricSlot): Partial<InfrastructureServer> | null {
+function infraComputeMetricPatch(
+  row: InfrastructureServer,
+  slot: InfraMetricSlot,
+): Partial<InfrastructureServer> | null {
   switch (slot) {
     case 0: {
       const currentCpu = row.cpuUsage as number;
@@ -65,7 +82,9 @@ function infraComputeMetricPatch(row: InfrastructureServer, slot: InfraMetricSlo
       const currentResponseTime = row.responseTime as number;
       if (typeof currentResponseTime !== "number") return null;
       const responseChange = (Math.random() - 0.5) * 100;
-      return { responseTime: Math.round(Math.max(10, currentResponseTime + responseChange) * 10) / 10 };
+      return {
+        responseTime: Math.round(Math.max(10, currentResponseTime + responseChange) * 10) / 10,
+      };
     }
     case 5: {
       const currentConnections = row.activeConnections as number;
@@ -84,7 +103,9 @@ function infraComputeMetricPatch(row: InfrastructureServer, slot: InfraMetricSlo
   }
 }
 
-function startInfraDemoLiveUpdates(getApi: () => TableAPI<InfrastructureServer> | null | undefined): () => void {
+function startInfraDemoLiveUpdates(
+  getApi: () => TableAPI<InfrastructureServer> | null | undefined,
+): () => void {
   let isActive = true;
   const tick = () => {
     if (!isActive) return;
@@ -97,11 +118,11 @@ function startInfraDemoLiveUpdates(getApi: () => TableAPI<InfrastructureServer> 
     for (const vr of picks) {
       const rowId = vr.row.id;
       if (typeof rowId !== "number") continue;
-      const server = vr.row as unknown as InfrastructureServer;
       let slot = Math.floor(Math.random() * 7) as InfraMetricSlot;
-      if (slot === 0 && usedCpuSparkline) slot = (1 + Math.floor(Math.random() * 6)) as InfraMetricSlot;
+      if (slot === 0 && usedCpuSparkline)
+        slot = (1 + Math.floor(Math.random() * 6)) as InfraMetricSlot;
       if (slot === 0) usedCpuSparkline = true;
-      const patch = infraComputeMetricPatch(server, slot);
+      const patch = infraComputeMetricPatch(vr.row, slot);
       if (patch) infraApplyRowPatch(api, rowId, patch);
     }
   };
@@ -116,32 +137,172 @@ function startInfraDemoLiveUpdates(getApi: () => TableAPI<InfrastructureServer> 
 function getHeaders(currentTheme?: Theme): SolidColumnDef<InfrastructureServer>[] {
   const t = currentTheme || "light";
   return [
-    { accessor: "serverId", align: "left", filterable: true, editable: false, sortable: true, label: "Server ID", minWidth: 180, pinned: "left", type: "string", width: "1.2fr", cellRenderer: ({ row }: CellRendererProps<InfrastructureServer>) => <span style={{ "font-family": "monospace", "font-size": "0.85rem" }}>{row.serverId}</span> },
-    { accessor: "serverName", align: "left", filterable: true, editable: false, sortable: true, label: "Name", minWidth: 200, type: "string", width: "1.5fr" },
     {
-      accessor: "performance", label: "Performance Metrics", width: 690, sortable: false,
+      accessor: "serverId",
+      align: "left",
+      filterable: true,
+      editable: false,
+      sortable: true,
+      label: "Server ID",
+      minWidth: 180,
+      pinned: "left",
+      type: "string",
+      width: "1.2fr",
+      cellRenderer: ({ row }: CellRendererProps<InfrastructureServer>) => (
+        <span style={{ "font-family": "monospace", "font-size": "0.85rem" }}>{row.serverId}</span>
+      ),
+    },
+    {
+      accessor: "serverName",
+      align: "left",
+      filterable: true,
+      editable: false,
+      sortable: true,
+      label: "Name",
+      minWidth: 200,
+      type: "string",
+      width: "1.5fr",
+    },
+    {
+      accessor: "performance",
+      label: "Performance Metrics",
+      width: 690,
+      sortable: false,
       children: [
-        { accessor: "cpuHistory", label: "CPU History", width: 150, sortable: false, filterable: false, editable: false, align: "center", type: "lineAreaChart", tooltip: "CPU usage over the last 30 intervals" },
         {
-          accessor: "cpuUsage", label: "CPU %", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number",
-          cellRenderer: ({ row, theme }: CellRendererProps<InfrastructureServer>) => { const d = row; const s = getInfraMetricColorStyles(d.cpuUsage, theme || t, "cpu"); return <div style={{ display: "flex", "justify-content": "end" }}><div style={{ padding: "3px 6px", "border-radius": "3px", "font-weight": "600", "font-size": "0.8rem", ...s }}>{d.cpuUsage.toFixed(1)}%</div></div>; },
+          accessor: "cpuHistory",
+          label: "CPU History",
+          width: 150,
+          sortable: false,
+          filterable: false,
+          editable: false,
+          align: "center",
+          type: "lineAreaChart",
+          tooltip: "CPU usage over the last 30 intervals",
         },
         {
-          accessor: "memoryUsage", label: "Memory %", width: 130, sortable: true, filterable: true, editable: true, align: "right", type: "number",
-          cellRenderer: ({ row, theme }: CellRendererProps<InfrastructureServer>) => { const d = row; const s = getInfraMetricColorStyles(d.memoryUsage, theme || t, "memory"); return <div style={{ display: "flex", "justify-content": "end" }}><div style={{ padding: "3px 6px", "border-radius": "3px", "font-weight": "600", "font-size": "0.8rem", ...s }}>{d.memoryUsage.toFixed(1)}%</div></div>; },
+          accessor: "cpuUsage",
+          label: "CPU %",
+          width: 120,
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: ({ row, theme }: CellRendererProps<InfrastructureServer>) => {
+            const d = row;
+            const s = getInfraMetricColorStyles(d.cpuUsage, theme || t, "cpu");
+            return (
+              <div style={{ display: "flex", "justify-content": "end" }}>
+                <div
+                  style={{
+                    padding: "3px 6px",
+                    "border-radius": "3px",
+                    "font-weight": "600",
+                    "font-size": "0.8rem",
+                    ...s,
+                  }}
+                >
+                  {d.cpuUsage.toFixed(1)}%
+                </div>
+              </div>
+            );
+          },
         },
-        { accessor: "diskUsage", label: "Disk %", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number", cellRenderer: ({ row }: CellRendererProps<InfrastructureServer>) => `${row.diskUsage.toFixed(1)}%` },
         {
-          accessor: "responseTime", label: "Response (ms)", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number",
-          cellRenderer: ({ row, theme }: CellRendererProps<InfrastructureServer>) => { const d = row; const s = getInfraMetricColorStyles(d.responseTime, theme || t, "response"); return <span style={{ "font-weight": "500", ...s }}>{d.responseTime.toFixed(1)}</span>; },
+          accessor: "memoryUsage",
+          label: "Memory %",
+          width: 130,
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: ({ row, theme }: CellRendererProps<InfrastructureServer>) => {
+            const d = row;
+            const s = getInfraMetricColorStyles(d.memoryUsage, theme || t, "memory");
+            return (
+              <div style={{ display: "flex", "justify-content": "end" }}>
+                <div
+                  style={{
+                    padding: "3px 6px",
+                    "border-radius": "3px",
+                    "font-weight": "600",
+                    "font-size": "0.8rem",
+                    ...s,
+                  }}
+                >
+                  {d.memoryUsage.toFixed(1)}%
+                </div>
+              </div>
+            );
+          },
+        },
+        {
+          accessor: "diskUsage",
+          label: "Disk %",
+          width: 120,
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: ({ row }: CellRendererProps<InfrastructureServer>) =>
+            `${row.diskUsage.toFixed(1)}%`,
+        },
+        {
+          accessor: "responseTime",
+          label: "Response (ms)",
+          width: 120,
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: ({ row, theme }: CellRendererProps<InfrastructureServer>) => {
+            const d = row;
+            const s = getInfraMetricColorStyles(d.responseTime, theme || t, "response");
+            return <span style={{ "font-weight": "500", ...s }}>{d.responseTime.toFixed(1)}</span>;
+          },
         },
       ],
     },
     {
-      accessor: "status", label: "Status", width: 130, sortable: true, filterable: true, editable: false, align: "center", type: "enum",
-      enumOptions: [{ label: "Online", value: "online" }, { label: "Warning", value: "warning" }, { label: "Critical", value: "critical" }, { label: "Maintenance", value: "maintenance" }, { label: "Offline", value: "offline" }],
-      valueGetter: ({ row }) => { const s = String(row.status); const m: Record<string, number> = { critical: 1, offline: 2, warning: 3, maintenance: 4, online: 5 }; return m[s] || 999; },
-      cellRenderer: ({ row, theme }: CellRendererProps<InfrastructureServer>) => { const d = row; const s = getInfraStatusColors(d.status, theme || t); return <div style={{ ...s, padding: "4px 8px", "border-radius": "4px", "font-size": "0.75rem" }}>{d.status.charAt(0).toUpperCase() + d.status.slice(1)}</div>; },
+      accessor: "status",
+      label: "Status",
+      width: 130,
+      sortable: true,
+      filterable: true,
+      editable: false,
+      align: "center",
+      type: "enum",
+      enumOptions: [
+        { label: "Online", value: "online" },
+        { label: "Warning", value: "warning" },
+        { label: "Critical", value: "critical" },
+        { label: "Maintenance", value: "maintenance" },
+        { label: "Offline", value: "offline" },
+      ],
+      valueGetter: ({ row }) => {
+        const s = String(row.status);
+        const m: Record<string, number> = {
+          critical: 1,
+          offline: 2,
+          warning: 3,
+          maintenance: 4,
+          online: 5,
+        };
+        return m[s] || 999;
+      },
+      cellRenderer: ({ row, theme }: CellRendererProps<InfrastructureServer>) => {
+        const d = row;
+        const s = getInfraStatusColors(d.status, theme || t);
+        return (
+          <div style={{ ...s, padding: "4px 8px", "border-radius": "4px", "font-size": "0.75rem" }}>
+            {d.status.charAt(0).toUpperCase() + d.status.slice(1)}
+          </div>
+        );
+      },
     },
   ];
 }

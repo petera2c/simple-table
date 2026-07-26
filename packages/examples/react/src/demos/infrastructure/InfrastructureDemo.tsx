@@ -1,7 +1,11 @@
 import { useRef, useEffect, useState } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, TableAPI, CellValue, ReactColumnDef } from "@simple-table/react";
-import { infrastructureData, getInfraMetricColorStyles, getInfraStatusColors } from "./infrastructure.demo-data";
+import {
+  infrastructureData,
+  getInfraMetricColorStyles,
+  getInfraStatusColors,
+} from "./infrastructure.demo-data";
 import type { InfrastructureServer } from "./infrastructure.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -61,7 +65,9 @@ function infraComputeMetricPatch(
     }
     case 4: {
       const responseChange = (Math.random() - 0.5) * 100;
-      return { responseTime: Math.round(Math.max(10, row.responseTime + responseChange) * 10) / 10 };
+      return {
+        responseTime: Math.round(Math.max(10, row.responseTime + responseChange) * 10) / 10,
+      };
     }
     case 5: {
       const connectionChange = Math.floor((Math.random() - 0.5) * 500);
@@ -91,12 +97,11 @@ function startInfraDemoLiveUpdates(
     for (const vr of picks) {
       const rowId = vr.row.id;
       if (typeof rowId !== "number") continue;
-      // Visible rows are still loosely typed TableRow; assert domain shape for metrics.
-      const server = vr.row as unknown as InfrastructureServer;
       let slot = Math.floor(Math.random() * 7) as InfraMetricSlot;
-      if (slot === 0 && usedCpuSparkline) slot = (1 + Math.floor(Math.random() * 6)) as InfraMetricSlot;
+      if (slot === 0 && usedCpuSparkline)
+        slot = (1 + Math.floor(Math.random() * 6)) as InfraMetricSlot;
       if (slot === 0) usedCpuSparkline = true;
-      const patch = infraComputeMetricPatch(server, slot);
+      const patch = infraComputeMetricPatch(vr.row, slot);
       if (patch) infraApplyRowPatch(api, rowId, patch);
     }
   };
@@ -124,7 +129,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
       width: "1.2fr",
       cellRenderer: ({ row }) => (
         <span style={{ fontFamily: "monospace", fontSize: "0.85rem" }}>{row.serverId}</span>
-      )
+      ),
     },
     {
       accessor: "serverName",
@@ -135,7 +140,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
       label: "Name",
       minWidth: 200,
       type: "string",
-      width: "1.5fr"
+      width: "1.5fr",
     },
     {
       accessor: "performance",
@@ -152,7 +157,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
           editable: false,
           align: "center",
           type: "lineAreaChart",
-          tooltip: "CPU usage over the last 30 intervals"
+          tooltip: "CPU usage over the last 30 intervals",
         },
         {
           accessor: "cpuUsage",
@@ -167,12 +172,20 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
             const s = getInfraMetricColorStyles(row.cpuUsage, theme || t, "cpu");
             return (
               <div style={{ display: "flex", justifyContent: "end" }}>
-                <div style={{ padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", ...s }}>
+                <div
+                  style={{
+                    padding: "3px 6px",
+                    borderRadius: "3px",
+                    fontWeight: "600",
+                    fontSize: "0.8rem",
+                    ...s,
+                  }}
+                >
                   {row.cpuUsage.toFixed(1)}%
                 </div>
               </div>
             );
-          }
+          },
         },
         {
           accessor: "memoryUsage",
@@ -187,12 +200,20 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
             const s = getInfraMetricColorStyles(row.memoryUsage, theme || t, "memory");
             return (
               <div style={{ display: "flex", justifyContent: "end" }}>
-                <div style={{ padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", ...s }}>
+                <div
+                  style={{
+                    padding: "3px 6px",
+                    borderRadius: "3px",
+                    fontWeight: "600",
+                    fontSize: "0.8rem",
+                    ...s,
+                  }}
+                >
                   {row.memoryUsage.toFixed(1)}%
                 </div>
               </div>
             );
-          }
+          },
         },
         {
           accessor: "diskUsage",
@@ -203,7 +224,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
           editable: true,
           align: "right",
           type: "number",
-          cellRenderer: ({ row }) => `${row.diskUsage.toFixed(1)}%`
+          cellRenderer: ({ row }) => `${row.diskUsage.toFixed(1)}%`,
         },
         {
           accessor: "responseTime",
@@ -217,9 +238,9 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
           cellRenderer: ({ row, theme }) => {
             const s = getInfraMetricColorStyles(row.responseTime, theme || t, "response");
             return <span style={{ fontWeight: "500", ...s }}>{row.responseTime.toFixed(1)}</span>;
-          }
+          },
         },
-      ]
+      ],
     },
     {
       accessor: "status",
@@ -243,7 +264,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
           offline: 2,
           warning: 3,
           maintenance: 4,
-          online: 5
+          online: 5,
         };
         return m[row.status] || 999;
       },
@@ -254,12 +275,18 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
             {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
           </div>
         );
-      }
+      },
     },
   ];
 }
 
-const InfrastructureDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {
+const InfrastructureDemo = ({
+  height = "400px",
+  theme,
+}: {
+  height?: string | number;
+  theme?: Theme;
+}) => {
   const tableRef = useRef<TableAPI<InfrastructureServer>>(null);
   const [isMobile, setIsMobile] = useState(false);
   const data = infrastructureData;

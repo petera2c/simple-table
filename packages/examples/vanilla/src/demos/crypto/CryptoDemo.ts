@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { CryptoCoin } from "./crypto.demo-data";
-import type { Theme, TableAPI, Row, CellValue, GetRowIdParams } from "simple-table-core";
+import type { Theme, TableAPI, CellValue, GetRowIdParams } from "simple-table-core";
 import { cryptoConfig } from "./crypto.demo-data";
 import "simple-table-core/styles.css";
 
@@ -20,7 +20,11 @@ function pickRandomSubset<T>(arr: T[], n: number): T[] {
 
 const getRowId = ({ row }: GetRowIdParams<CryptoCoin>) => row.id;
 
-function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<CryptoCoin>) {
+function applyRowPatch(
+  api: TableAPI<CryptoCoin>,
+  rowId: string | number,
+  patch: Partial<CryptoCoin>,
+) {
   for (const accessor of Object.keys(patch) as Array<keyof CryptoCoin>) {
     const newValue = patch[accessor];
     if (newValue === undefined) continue;
@@ -28,7 +32,7 @@ function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Cry
   }
 }
 
-function runTick(getApi: () => TableAPI | null | undefined) {
+function runTick(getApi: () => TableAPI<CryptoCoin> | null | undefined) {
   const api = getApi();
   if (!api) return;
   const visible = api.getVisibleRows();
@@ -36,8 +40,6 @@ function runTick(getApi: () => TableAPI | null | undefined) {
   for (const vr of pickRandomSubset(visible, ROWS_PER_TICK)) {
     const row = vr.row;
     const rowId = row.id;
-    if (typeof rowId !== "string" && typeof rowId !== "number") continue;
-    if (rowId === "") continue;
     if (typeof row.price !== "number") continue;
     const drift = (Math.random() - 0.5) * 0.012;
     const newPrice = Math.max(row.price * (1 + drift), row.price * 0.0001);
@@ -58,7 +60,7 @@ export function renderCryptoDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla<CryptoCoin> {
-  const table = new SimpleTableVanilla(container, {
+  const table = new SimpleTableVanilla<CryptoCoin>(container, {
     columns: cryptoConfig.headers,
     rows: cryptoConfig.rows,
     getRowId,

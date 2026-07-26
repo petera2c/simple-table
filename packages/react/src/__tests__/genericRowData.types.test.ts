@@ -57,6 +57,21 @@ const ref = createRef<TableAPI<HREmployee>>();
 // Explicit type arg still works when you want it:
 void createElement(SimpleTable<HREmployee>, { ...props, ref });
 
+// TableAPI visible/all rows expose domain row shape (no cast).
+const probeVisibleRows = (api: TableAPI<HREmployee>) => {
+  const visible = api.getVisibleRows();
+  const row = visible[0]?.row;
+  if (row) {
+    const id: number = row.id;
+    // @ts-expect-error HREmployee has no `missing`
+    const missing: string = row.missing;
+    void id;
+    void missing;
+  }
+  void api.getAllRows();
+};
+void probeVisibleRows;
+
 // Untyped / default path still accepts open records (prior object[] escape).
 const loose: SimpleTableReactProps = {
   columns: [{ accessor: "x", label: "X", width: 40 }],

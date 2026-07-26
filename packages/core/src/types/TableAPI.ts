@@ -22,8 +22,8 @@ export interface ExportToCSVProps {
 export type TableAPI<TData extends RowData = Row> = {
   updateData: (props: UpdateDataProps) => void;
   setHeaderRename: (props: SetHeaderRenameProps) => void;
-  getVisibleRows: () => TableRow[];
-  getAllRows: () => TableRow[];
+  getVisibleRows: () => TableRow<TData>[];
+  getAllRows: () => TableRow<TData>[];
   getHeaders: () => ColumnDef<TData, any>[];
   exportToCSV: (props?: ExportToCSVProps) => void;
   getSortState: () => SortColumn | null;

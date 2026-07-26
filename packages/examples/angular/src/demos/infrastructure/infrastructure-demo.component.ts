@@ -149,7 +149,7 @@ function getHeaders(theme?: Theme): AngularColumnDef<InfrastructureServer>[] {
   `,
 })
 export class InfrastructureDemoComponent implements AfterViewInit, OnDestroy {
-  @ViewChild("simpleTable") tableRef!: SimpleTableComponent;
+  @ViewChild("simpleTable") tableRef!: SimpleTableComponent<InfrastructureServer>;
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 

@@ -1,14 +1,15 @@
 import Row from "./Row";
+import type { RowData } from "./Row";
 import RowState from "./RowState";
 import ColumnDef, { Accessor } from "./ColumnDef";
 
-type TableRow = {
+type TableRow<TData extends RowData = Row> = {
   depth: number;
   displayPosition: number;
   groupingKey?: string;
   isLastGroupRow: boolean;
   position: number;
-  row: Row;
+  row: TData;
   // Unique row ID array including indices, grouping keys, and optional custom ID
   // Example: [1, "stores", 5] or [1, "stores", 5, "STORE-101"]
   // Use rowIdToString(rowId) to convert to string for Map keys
@@ -32,14 +33,14 @@ type TableRow = {
   // If this row is a state indicator (loading/error/empty), this contains the state info and parent row
   stateIndicator?: {
     parentRowId: string | number;
-    parentRow: Row;
+    parentRow: TData;
     state: RowState;
   };
   // If this row is a loading skeleton (used when expanding rows without a custom loadingStateRenderer)
   isLoadingSkeleton?: boolean;
   // If this row should render a nested grid, this contains the necessary information
   nestedTable?: {
-    parentRow: Row;
+    parentRow: TData;
     expandableHeader: ColumnDef;
     childAccessor: Accessor;
     calculatedHeight: number; // The calculated height in pixels for this nested grid

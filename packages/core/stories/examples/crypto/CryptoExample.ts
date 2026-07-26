@@ -44,7 +44,7 @@ function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Row
  * Simulates a live market feed: each tick nudges price / 24h change / sparkline
  * on a few visible rows via `updateData` (cell flash + filter/sort recompute).
  */
-function startCryptoTicker(getApi: () => TableAPI | null | undefined): () => void {
+function startCryptoTicker(getApi: () => TableAPI<any> | null | undefined): () => void {
   let isActive = true;
 
   const tick = () => {
@@ -91,14 +91,10 @@ export function renderCryptoExample(args?: Partial<UniversalVanillaArgs>): HTMLE
   const options = { ...defaultVanillaArgs, ...cryptoExampleDefaults, ...args };
   const data = generateCryptoData(200);
 
-  const { wrapper, h2, tableContainer, table } = renderVanillaTable(
-    getCryptoHeaders(),
-    data,
-    {
-      ...options,
-      getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
-    },
-  );
+  const { wrapper, h2, tableContainer, table } = renderVanillaTable(getCryptoHeaders(), data, {
+    ...options,
+    getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+  });
 
   h2.textContent = "Crypto Market";
   addParagraph(

@@ -1,4 +1,4 @@
-import type { CellValue, Row, TableAPI } from "@simple-table/angular";
+import type { CellValue, TableAPI } from "@simple-table/angular";
 import type { InfrastructureServer } from "./infrastructure.demo-data";
 
 const INFRA_TICK_MS = 20;
@@ -17,7 +17,7 @@ export function infraPickRandomSubset<T>(arr: T[], n: number): T[] {
 }
 
 export function infraApplyRowPatch(
-  api: TableAPI,
+  api: TableAPI<InfrastructureServer>,
   rowId: string | number,
   patch: Partial<InfrastructureServer>,
 ) {
@@ -40,14 +40,25 @@ export function infraApplyRowPatch(
     api.updateData({ accessor: "responseTime", rowId, newValue: patch.responseTime as CellValue });
   }
   if (patch.activeConnections !== undefined) {
-    api.updateData({ accessor: "activeConnections", rowId, newValue: patch.activeConnections as CellValue });
+    api.updateData({
+      accessor: "activeConnections",
+      rowId,
+      newValue: patch.activeConnections as CellValue,
+    });
   }
   if (patch.requestsPerSec !== undefined) {
-    api.updateData({ accessor: "requestsPerSec", rowId, newValue: patch.requestsPerSec as CellValue });
+    api.updateData({
+      accessor: "requestsPerSec",
+      rowId,
+      newValue: patch.requestsPerSec as CellValue,
+    });
   }
 }
 
-export function infraComputeMetricPatch(row: Row, slot: InfraMetricSlot): Partial<InfrastructureServer> | null {
+export function infraComputeMetricPatch(
+  row: InfrastructureServer,
+  slot: InfraMetricSlot,
+): Partial<InfrastructureServer> | null {
   switch (slot) {
     case 0: {
       const currentCpu = row.cpuUsage;
@@ -84,7 +95,9 @@ export function infraComputeMetricPatch(row: Row, slot: InfraMetricSlot): Partia
       const currentResponseTime = row.responseTime;
       if (typeof currentResponseTime !== "number") return null;
       const responseChange = (Math.random() - 0.5) * 100;
-      return { responseTime: Math.round(Math.max(10, currentResponseTime + responseChange) * 10) / 10 };
+      return {
+        responseTime: Math.round(Math.max(10, currentResponseTime + responseChange) * 10) / 10,
+      };
     }
     case 5: {
       const currentConnections = row.activeConnections;
@@ -103,7 +116,9 @@ export function infraComputeMetricPatch(row: Row, slot: InfraMetricSlot): Partia
   }
 }
 
-export function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined): () => void {
+export function startInfraDemoLiveUpdates(
+  getApi: () => TableAPI<InfrastructureServer> | null | undefined,
+): () => void {
   let isActive = true;
   const tick = () => {
     if (!isActive) return;
@@ -115,10 +130,9 @@ export function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefi
     let usedCpuSparkline = false;
     for (const vr of picks) {
       const rowId = vr.row.id;
-      if (rowId === undefined || rowId === null || rowId === "") continue;
-      if (typeof rowId !== "number" && typeof rowId !== "string") continue;
       let slot = Math.floor(Math.random() * 7) as InfraMetricSlot;
-      if (slot === 0 && usedCpuSparkline) slot = (1 + Math.floor(Math.random() * 6)) as InfraMetricSlot;
+      if (slot === 0 && usedCpuSparkline)
+        slot = (1 + Math.floor(Math.random() * 6)) as InfraMetricSlot;
       if (slot === 0) usedCpuSparkline = true;
       const patch = infraComputeMetricPatch(vr.row, slot);
       if (patch) infraApplyRowPatch(api, rowId, patch);

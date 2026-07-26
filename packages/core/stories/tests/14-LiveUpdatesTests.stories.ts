@@ -6,7 +6,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
-import { ColumnDef, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla, type TableAPI } from "../../src/index";
 import { waitForTable } from "./testUtils";
 
 const meta: Meta = {
@@ -36,7 +36,7 @@ const getCellValue = (rowIndex: number, accessor: string): string | null => {
 const hasCellUpdatingClass = (rowIndex: number, accessor: string): boolean =>
   getCellElement(rowIndex, accessor)?.classList.contains("st-cell-updating") ?? false;
 
-let testTableApi: ReturnType<SimpleTableVanilla["getAPI"]> | null = null;
+let testTableApi: TableAPI<any> | null = null;
 
 function renderLiveUpdatesTable() {
   const wrapper = document.createElement("div");

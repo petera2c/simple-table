@@ -107,6 +107,16 @@ void badNestedColumns;
 const apiProbe: TableAPI<HREmployee> | null = null;
 void apiProbe;
 
+const probeVisibleRows = (api: TableAPI<HREmployee>) => {
+  const id: number | undefined = api.getVisibleRows()[0]?.row.id;
+  // @ts-expect-error HREmployee has no `missing`
+  const missing: string | undefined = api.getVisibleRows()[0]?.row.missing;
+  void id;
+  void missing;
+  void api.getAllRows();
+};
+void probeVisibleRows;
+
 describe("generic row data types", () => {
   it("compiles typed SimpleTable props", () => {
     expect(columns[0]?.accessor).toBe("fullName");

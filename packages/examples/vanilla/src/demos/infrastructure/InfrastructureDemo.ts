@@ -1,6 +1,17 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, ColumnDef, CellRenderer, TableAPI, Row, CellValue, GetRowIdParams } from "simple-table-core";
-import { infrastructureData, getInfraMetricColorStyles, getInfraStatusColors } from "./infrastructure.demo-data";
+import type {
+  Theme,
+  ColumnDef,
+  CellRenderer,
+  TableAPI,
+  CellValue,
+  GetRowIdParams,
+} from "simple-table-core";
+import {
+  infrastructureData,
+  getInfraMetricColorStyles,
+  getInfraStatusColors,
+} from "./infrastructure.demo-data";
 import type { InfrastructureServer } from "./infrastructure.demo-data";
 import "simple-table-core/styles.css";
 
@@ -19,7 +30,11 @@ function infraPickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function infraApplyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<InfrastructureServer>) {
+function infraApplyRowPatch(
+  api: TableAPI<InfrastructureServer>,
+  rowId: string | number,
+  patch: Partial<InfrastructureServer>,
+) {
   for (const accessor of Object.keys(patch) as Array<keyof InfrastructureServer>) {
     const newValue = patch[accessor];
     if (newValue === undefined) continue;
@@ -27,7 +42,10 @@ function infraApplyRowPatch(api: TableAPI, rowId: string | number, patch: Partia
   }
 }
 
-function infraComputeMetricPatch(row: Row, slot: InfraMetricSlot): Partial<InfrastructureServer> | null {
+function infraComputeMetricPatch(
+  row: InfrastructureServer,
+  slot: InfraMetricSlot,
+): Partial<InfrastructureServer> | null {
   switch (slot) {
     case 0: {
       if (typeof row.cpuUsage !== "number") return null;
@@ -59,7 +77,9 @@ function infraComputeMetricPatch(row: Row, slot: InfraMetricSlot): Partial<Infra
     case 4: {
       if (typeof row.responseTime !== "number") return null;
       const responseChange = (Math.random() - 0.5) * 100;
-      return { responseTime: Math.round(Math.max(10, row.responseTime + responseChange) * 10) / 10 };
+      return {
+        responseTime: Math.round(Math.max(10, row.responseTime + responseChange) * 10) / 10,
+      };
     }
     case 5: {
       if (typeof row.activeConnections !== "number") return null;
@@ -76,7 +96,9 @@ function infraComputeMetricPatch(row: Row, slot: InfraMetricSlot): Partial<Infra
   }
 }
 
-function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined): () => void {
+function startInfraDemoLiveUpdates(
+  getApi: () => TableAPI<InfrastructureServer> | null | undefined,
+): () => void {
   let isActive = true;
   const tick = () => {
     if (!isActive) return;
@@ -88,10 +110,9 @@ function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined): (
     let usedCpuSparkline = false;
     for (const vr of picks) {
       const rowId = vr.row.id;
-      if (typeof rowId !== "string" && typeof rowId !== "number") continue;
-      if (rowId === "") continue;
       let slot = Math.floor(Math.random() * 7) as InfraMetricSlot;
-      if (slot === 0 && usedCpuSparkline) slot = (1 + Math.floor(Math.random() * 6)) as InfraMetricSlot;
+      if (slot === 0 && usedCpuSparkline)
+        slot = (1 + Math.floor(Math.random() * 6)) as InfraMetricSlot;
       if (slot === 0) usedCpuSparkline = true;
       const patch = infraComputeMetricPatch(vr.row, slot);
       if (patch) infraApplyRowPatch(api, rowId, patch);
@@ -124,7 +145,14 @@ function getHeaders(currentTheme?: Theme): ColumnDef<InfrastructureServer>[] {
     outer.style.display = "flex";
     outer.style.justifyContent = "end";
     const badge = document.createElement("div");
-    Object.assign(badge.style, { padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", color: s.color, backgroundColor: s.backgroundColor ?? "" });
+    Object.assign(badge.style, {
+      padding: "3px 6px",
+      borderRadius: "3px",
+      fontWeight: "600",
+      fontSize: "0.8rem",
+      color: s.color,
+      backgroundColor: s.backgroundColor ?? "",
+    });
     badge.textContent = `${cpu.toFixed(1)}%`;
     outer.appendChild(badge);
     return outer;
@@ -138,7 +166,14 @@ function getHeaders(currentTheme?: Theme): ColumnDef<InfrastructureServer>[] {
     outer.style.display = "flex";
     outer.style.justifyContent = "end";
     const badge = document.createElement("div");
-    Object.assign(badge.style, { padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", color: s.color, backgroundColor: s.backgroundColor ?? "" });
+    Object.assign(badge.style, {
+      padding: "3px 6px",
+      borderRadius: "3px",
+      fontWeight: "600",
+      fontSize: "0.8rem",
+      color: s.color,
+      backgroundColor: s.backgroundColor ?? "",
+    });
     badge.textContent = `${mem.toFixed(1)}%`;
     outer.appendChild(badge);
     return outer;
@@ -154,7 +189,11 @@ function getHeaders(currentTheme?: Theme): ColumnDef<InfrastructureServer>[] {
     const rt = d.responseTime;
     const s = getInfraMetricColorStyles(rt, theme || t, "response");
     const span = document.createElement("span");
-    Object.assign(span.style, { fontWeight: "500", color: s.color, backgroundColor: s.backgroundColor ?? "" });
+    Object.assign(span.style, {
+      fontWeight: "500",
+      color: s.color,
+      backgroundColor: s.backgroundColor ?? "",
+    });
     span.textContent = rt.toFixed(1);
     return span;
   };
@@ -164,30 +203,129 @@ function getHeaders(currentTheme?: Theme): ColumnDef<InfrastructureServer>[] {
     const status = d.status;
     const s = getInfraStatusColors(status, theme || t);
     const div = document.createElement("div");
-    Object.assign(div.style, { ...s, padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem" });
+    Object.assign(div.style, {
+      ...s,
+      padding: "4px 8px",
+      borderRadius: "4px",
+      fontSize: "0.75rem",
+    });
     div.textContent = status.charAt(0).toUpperCase() + status.slice(1);
     return div;
   };
 
   return [
-    { accessor: "serverId", align: "left", filterable: true, editable: false, sortable: true, label: "Server ID", minWidth: 180, pinned: "left", type: "string", width: "1.2fr", cellRenderer: serverIdRenderer },
-    { accessor: "serverName", align: "left", filterable: true, editable: false, sortable: true, label: "Name", minWidth: 200, type: "string", width: "1.5fr" },
     {
-      accessor: "performance", label: "Performance Metrics", width: 690, sortable: false,
+      accessor: "serverId",
+      align: "left",
+      filterable: true,
+      editable: false,
+      sortable: true,
+      label: "Server ID",
+      minWidth: 180,
+      pinned: "left",
+      type: "string",
+      width: "1.2fr",
+      cellRenderer: serverIdRenderer,
+    },
+    {
+      accessor: "serverName",
+      align: "left",
+      filterable: true,
+      editable: false,
+      sortable: true,
+      label: "Name",
+      minWidth: 200,
+      type: "string",
+      width: "1.5fr",
+    },
+    {
+      accessor: "performance",
+      label: "Performance Metrics",
+      width: 690,
+      sortable: false,
       children: [
-        { accessor: "cpuHistory", label: "CPU History", width: 150, sortable: false, filterable: false, editable: false, align: "center", type: "lineAreaChart", tooltip: "CPU usage over the last 30 intervals" },
-        { accessor: "cpuUsage", label: "CPU %", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number", cellRenderer: cpuRenderer },
-        { accessor: "memoryUsage", label: "Memory %", width: 130, sortable: true, filterable: true, editable: true, align: "right", type: "number", cellRenderer: memoryRenderer },
-        { accessor: "diskUsage", label: "Disk %", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number", cellRenderer: diskRenderer },
-        { accessor: "responseTime", label: "Response (ms)", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number", cellRenderer: responseRenderer },
+        {
+          accessor: "cpuHistory",
+          label: "CPU History",
+          width: 150,
+          sortable: false,
+          filterable: false,
+          editable: false,
+          align: "center",
+          type: "lineAreaChart",
+          tooltip: "CPU usage over the last 30 intervals",
+        },
+        {
+          accessor: "cpuUsage",
+          label: "CPU %",
+          width: 120,
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: cpuRenderer,
+        },
+        {
+          accessor: "memoryUsage",
+          label: "Memory %",
+          width: 130,
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: memoryRenderer,
+        },
+        {
+          accessor: "diskUsage",
+          label: "Disk %",
+          width: 120,
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: diskRenderer,
+        },
+        {
+          accessor: "responseTime",
+          label: "Response (ms)",
+          width: 120,
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: responseRenderer,
+        },
       ],
     },
     {
-      accessor: "status", label: "Status", width: 130, sortable: true, filterable: true, editable: false, align: "center", type: "enum",
-      enumOptions: [{ label: "Online", value: "online" }, { label: "Warning", value: "warning" }, { label: "Critical", value: "critical" }, { label: "Maintenance", value: "maintenance" }, { label: "Offline", value: "offline" }],
+      accessor: "status",
+      label: "Status",
+      width: 130,
+      sortable: true,
+      filterable: true,
+      editable: false,
+      align: "center",
+      type: "enum",
+      enumOptions: [
+        { label: "Online", value: "online" },
+        { label: "Warning", value: "warning" },
+        { label: "Critical", value: "critical" },
+        { label: "Maintenance", value: "maintenance" },
+        { label: "Offline", value: "offline" },
+      ],
       valueGetter: ({ row }) => {
         const s = String(row.status);
-        const m: Record<string, number> = { critical: 1, offline: 2, warning: 3, maintenance: 4, online: 5 };
+        const m: Record<string, number> = {
+          critical: 1,
+          offline: 2,
+          warning: 3,
+          maintenance: 4,
+          online: 5,
+        };
         return m[s] || 999;
       },
       cellRenderer: statusRenderer,
@@ -202,7 +340,7 @@ export function renderInfrastructureDemo(
   const data = infrastructureData;
   let stopLiveUpdates: (() => void) | undefined;
 
-  const table = new SimpleTableVanilla(container, {
+  const table = new SimpleTableVanilla<InfrastructureServer>(container, {
     autoExpandColumns: true,
     columnReordering: true,
     columnResizing: true,

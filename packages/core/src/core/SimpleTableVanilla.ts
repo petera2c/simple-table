@@ -164,7 +164,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
    */
   private suppressNextAnimationSnapshot = false;
   /** Lazily created once — callers often invoke getAPI() every live tick. */
-  private cachedAPI: TableAPI | null = null;
+  private cachedAPI: TableAPI<TData> | null = null;
 
   private autoScaleManager: AutoScaleManager | null = null;
   private dimensionManager: DimensionManager | null = null;
@@ -2119,7 +2119,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     this.cachedAPI = null;
   }
 
-  getAPI(): TableAPI {
+  getAPI(): TableAPI<TData> {
     if (this.cachedAPI) return this.cachedAPI;
 
     // Use `thiz` so that getter properties can read live instance state rather
@@ -2258,7 +2258,8 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       },
     };
 
-    this.cachedAPI = TableAPIImpl.createAPI(context);
+    // Runtime rows are Row-shaped; expose TableAPI<TData> at the public boundary.
+    this.cachedAPI = TableAPIImpl.createAPI(context) as unknown as TableAPI<TData>;
     return this.cachedAPI;
   }
 }

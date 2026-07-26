@@ -51,7 +51,12 @@ const props: SimpleTableSolidProps<HREmployee> = {
     void id;
   },
   ref: (api: TableAPI<HREmployee>) => {
-    void api;
+    const id: number | undefined = api.getVisibleRows()[0]?.row.id;
+    // @ts-expect-error HREmployee has no `missing`
+    const missing: string | undefined = api.getVisibleRows()[0]?.row.missing;
+    void id;
+    void missing;
+    void api.getAllRows();
   },
 };
 void props;
