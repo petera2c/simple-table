@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import {SimpleTable} from "@simple-table/react";import type { Theme, TableAPI } from "@simple-table/react";
-import { rowGroupingConfig } from "./row-grouping.demo-data";
+import { rowGroupingConfig, type OrgUnit } from "./row-grouping.demo-data";
 import "@simple-table/react/styles.css";
 
 const btnStyle = (color: string) => ({
@@ -21,7 +21,7 @@ const RowGroupingDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const tableRef = useRef<TableAPI>(null);
+  const tableRef = useRef<TableAPI<OrgUnit>>(null);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -51,7 +51,7 @@ const RowGroupingDemo = ({
           Toggle Divisions
         </button>
       </div>
-      <SimpleTable
+      <SimpleTable<OrgUnit>
         ref={tableRef}
         columns={rowGroupingConfig.headers}
         rows={rowGroupingConfig.rows}
