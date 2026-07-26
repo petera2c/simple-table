@@ -6,7 +6,7 @@ import "@simple-table/react/styles.css";
 
 const CsvExportDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -29,12 +29,12 @@ const CsvExportDemo = ({
                   borderRadius: 4,
                   cursor: "pointer",
                   fontSize: 12,
-                  fontWeight: "bold",
+                  fontWeight: "bold"
                 }}
               >
                 View
               </button>
-            ),
+            )
           };
         }
         return h;
@@ -70,7 +70,7 @@ const CsvExportDemo = ({
           Get Table Info
         </button>
       </div>
-      <SimpleTable<CsvProduct>
+      <SimpleTable
         ref={tableRef}
         columns={headers}
         rows={csvExportData}
