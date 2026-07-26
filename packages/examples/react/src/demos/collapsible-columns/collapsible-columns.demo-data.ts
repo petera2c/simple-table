@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { ReactColumnDef } from "@simple-table/react";
+import type { ReactCellRenderer, ReactColumnDef } from "@simple-table/react";
 
 export interface CollapsibleSalesRep {
   id: number;
@@ -48,8 +48,8 @@ export const collapsibleColumnsData: CollapsibleSalesRep[] = [
 ];
 
 const fmt =
-  (accessor: keyof CollapsibleSalesRep) =>
-  ({ row }: { row: CollapsibleSalesRep }) =>
+  (accessor: keyof CollapsibleSalesRep): ReactCellRenderer<CollapsibleSalesRep> =>
+  ({ row }) =>
     `$${((row[accessor] as number) || 0).toLocaleString()}`;
 
 const monthCol = (

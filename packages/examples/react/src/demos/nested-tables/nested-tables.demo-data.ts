@@ -91,8 +91,7 @@ export const nestedTablesHeaders: ReactColumnDef<NestedCompany>[] = [
 export const nestedTablesConfig = {
   headers: nestedTablesHeaders,
   tableProps: {
-    rowGrouping: ["divisions"] as string[],
-    getRowId: ({ row }: { row: NestedCompany }) => row.id,
+    rowGrouping: ["divisions"],
     expandAll: false,
     columnResizing: true,
     autoExpandColumns: true,

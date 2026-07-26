@@ -196,8 +196,7 @@ export const generateInitialRegions = (): DynamicRegion[] => {
 export const dynamicRowLoadingConfig = {
   headers: dynamicRowLoadingHeaders,
   tableProps: {
-    rowGrouping: ["stores", "products"] as string[],
-    getRowId: ({ row }: { row: DynamicTreeRow }) => row.id,
+    rowGrouping: ["stores", "products"],
     expandAll: false,
     columnResizing: true,
     selectableCells: true,
