@@ -1,5 +1,5 @@
 import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { emptyStateConfig } from "./empty-state.demo-data";
+import { emptyStateConfig, type EmptyEmployee } from "./empty-state.demo-data";
 import "@simple-table/react/styles.css";
 
 const EmptyIcon = () => (
@@ -36,12 +36,13 @@ const EmptyStateDemo = ({
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable
+    <SimpleTable<EmptyEmployee>
       columns={emptyStateConfig.headers}
       rows={emptyStateConfig.rows}
       tableEmptyStateRenderer={tableEmptyState}
       height={height}
       theme={theme}
+      getRowId={({ row }) => row.id}
     />
   );
 };

@@ -1,10 +1,17 @@
 // Self-contained demo table setup for this example.
-import type { ReactColumnDef, Row } from "@simple-table/react";
+import type { ReactColumnDef } from "@simple-table/react";
 
+export interface EmptyEmployee {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+}
 
-export const emptyStateData: Row[] = [];
+export const emptyStateData: EmptyEmployee[] = [];
 
-export const emptyStateHeaders: ReactColumnDef[] = [
+export const emptyStateHeaders: ReactColumnDef<EmptyEmployee>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 180, type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },
