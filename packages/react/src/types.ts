@@ -158,6 +158,27 @@ export interface ReactColumnEditorConfig extends Omit<
   customRenderer?: ReactColumnEditorCustomRenderer;
 }
 
+// ─── Nested table config ─────────────────────────────────────────────────────
+/**
+ * Nested grid props (no `rows` / inherited state renderers).
+ *
+ * Child row shape may differ from the parent column's `TData` (e.g. company →
+ * division). `columns` is intentionally open so `ReactColumnDef<Child>[]`
+ * assigns without casts; each column array is still checked at its own
+ * declaration site.
+ */
+export type NestedTableReactConfig = Omit<
+  SimpleTableReactProps,
+  | "rows"
+  | "columns"
+  | "loadingStateRenderer"
+  | "errorStateRenderer"
+  | "emptyStateRenderer"
+  | "tableEmptyStateRenderer"
+> & {
+  columns?: ReadonlyArray<ReactColumnDef<any, any>>;
+};
+
 // ─── ColumnDef override ────────────────────────────────────────────────────
 /**
  * Column definition for `columns`: same column metadata as core
@@ -173,15 +194,8 @@ export interface ReactColumnDef<
   cellRenderer?: ReactCellRenderer<TData, TValue>;
   headerRenderer?: ReactHeaderRenderer<TData>;
   children?: ReadonlyArray<ReactColumnDef<TData, any>>;
-  /** Nested grid: React table props minus row data and inherited state renderers. */
-  nestedTable?: Omit<
-    SimpleTableReactProps<TData>,
-    | "rows"
-    | "loadingStateRenderer"
-    | "errorStateRenderer"
-    | "emptyStateRenderer"
-    | "tableEmptyStateRenderer"
-  >;
+  /** Nested grid; child columns may use a different row type than `TData`. */
+  nestedTable?: NestedTableReactConfig;
 }
 
 

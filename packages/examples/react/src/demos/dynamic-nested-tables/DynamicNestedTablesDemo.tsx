@@ -60,7 +60,7 @@ const DynamicNestedTablesDemo = ({
       expandAll={dynamicNestedTablesConfig.tableProps.expandAll}
       height={height}
       rowGrouping={dynamicNestedTablesConfig.tableProps.rowGrouping}
-      getRowId={dynamicNestedTablesConfig.tableProps.getRowId}
+      getRowId={({ row }) => row.id}
       rows={rows}
       onRowGroupExpand={handleCompanyExpand}
       theme={theme}
