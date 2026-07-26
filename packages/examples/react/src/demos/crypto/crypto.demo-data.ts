@@ -1,8 +1,7 @@
 // Self-contained demo table setup for this example.
 import type { ReactColumnDef } from "@simple-table/react";
-import type { Row } from "@simple-table/react";
 
-export interface CryptoCoin extends Row {
+export interface CryptoCoin {
   id: string;
   rank: number;
   name: string;
@@ -177,7 +176,7 @@ export function generateCryptoData(count = 200): CryptoCoin[] {
 const pct = ({ value }: { value: unknown }) =>
   typeof value === "number" ? formatSignedPercent(value) : "";
 
-export const cryptoHeaders: ReactColumnDef[] = [
+export const cryptoHeaders: ReactColumnDef<CryptoCoin>[] = [
   { accessor: "rank", label: "#", width: 56, align: "center", type: "number", pinned: "left", sortable: true, editable: false },
   {
     accessor: "name", label: "Asset", width: 200, align: "left", type: "string", pinned: "left", sortable: true, editable: false,
