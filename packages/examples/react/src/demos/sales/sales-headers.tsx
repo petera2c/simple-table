@@ -1,10 +1,6 @@
-import type {
-  ReactColumnDef,
-  CellRendererProps,
-  HeaderRendererProps,
-  ValueGetterProps,
-} from "@simple-table/react";
+import type { ReactColumnDef } from "@simple-table/react";
 import type { CSSProperties, ReactNode } from "react";
+import type { SalesRow } from "./sales.demo-data";
 
 type SuccessHighStyle = { color: string; fontWeight: "bold" };
 type ThemePalette = {
@@ -211,7 +207,7 @@ const Progress = ({
   );
 };
 
-export const SALES_HEADERS: ReactColumnDef[] = [
+export const SALES_HEADERS: ReactColumnDef<SalesRow>[] = [
   {
     accessor: "repName",
     label: "Sales Representative",
@@ -222,7 +218,7 @@ export const SALES_HEADERS: ReactColumnDef[] = [
     type: "string",
     tooltip: "Name of the sales representative",
     // Custom header: person icon + the built-in label/sort slots so sorting still works.
-    headerRenderer: ({ header, components }: HeaderRendererProps) => (
+    headerRenderer: ({ header, components }) => (
       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
         <span aria-hidden="true" style={{ fontSize: "16px" }}>
           🧑‍💼
@@ -268,9 +264,8 @@ export const SALES_HEADERS: ReactColumnDef[] = [
         align: "right",
         type: "number",
         tooltip: "The value of the deal in dollars",
-        cellRenderer: ({ row, theme }: CellRendererProps) => {
-          if (row.dealValue === "—") return "—";
-          const value = row.dealValue as number;
+        cellRenderer: ({ row, theme }) => {
+          const value = row.dealValue;
           const colors = getThemeColors(theme);
 
           let valueStyle: CSSProperties = { color: colors.gray };
@@ -299,9 +294,8 @@ export const SALES_HEADERS: ReactColumnDef[] = [
         align: "center",
         type: "boolean",
         tooltip: "Whether the deal was won or lost",
-        cellRenderer: ({ row }: CellRendererProps) => {
-          if (row.isWon === "—") return "—";
-          const isWon = row.isWon as boolean;
+        cellRenderer: ({ row }) => {
+          const isWon = row.isWon;
           return (
             <Tag color={isWon ? "success" : "error"} className="py-1 px-2">
               {isWon ? "Won" : "Lost"}
@@ -349,9 +343,8 @@ export const SALES_HEADERS: ReactColumnDef[] = [
         align: "right",
         type: "number",
         tooltip: "The commission earned from the deal in dollars",
-        cellRenderer: ({ row, theme }: CellRendererProps) => {
-          if (row.commission === "—") return "—";
-          const value = row.commission as number;
+        cellRenderer: ({ row, theme }) => {
+          const value = row.commission;
           const colors = getThemeColors(theme);
 
           if (value === 0) return <span style={{ color: colors.grayMuted }}>$0.00</span>;
@@ -372,9 +365,8 @@ export const SALES_HEADERS: ReactColumnDef[] = [
         align: "right",
         type: "number",
         tooltip: "The profit margin of the deal",
-        cellRenderer: ({ row, theme }: CellRendererProps) => {
-          if (row.profitMargin === "—") return "—";
-          const value = row.profitMargin as number;
+        cellRenderer: ({ row, theme }) => {
+          const value = row.profitMargin;
           const colors = getThemeColors(theme);
 
           let colorStyle: CSSProperties = { color: colors.gray };
@@ -424,9 +416,8 @@ export const SALES_HEADERS: ReactColumnDef[] = [
         align: "right",
         type: "number",
         tooltip: "The profit of the deal in dollars",
-        cellRenderer: ({ row, theme }: CellRendererProps) => {
-          if (row.dealProfit === "—") return "—";
-          const value = row.dealProfit as number;
+        cellRenderer: ({ row, theme }) => {
+          const value = row.dealProfit;
           const colors = getThemeColors(theme);
 
           if (value === 0) return <span style={{ color: colors.grayMuted }}>$0.00</span>;
@@ -465,8 +456,7 @@ export const SALES_HEADERS: ReactColumnDef[] = [
           { label: "Training", value: "Training" },
           { label: "Support", value: "Support" },
         ],
-        valueGetter: ({ row }: ValueGetterProps) => {
-          const category = row.category as string;
+        valueGetter: ({ row }) => {
           const priorityMap: Record<string, number> = {
             Software: 1,
             Consulting: 2,
@@ -475,7 +465,7 @@ export const SALES_HEADERS: ReactColumnDef[] = [
             Training: 5,
             Support: 6,
           };
-          return priorityMap[category] || 999;
+          return priorityMap[row.category] || 999;
         },
       },
     ],
