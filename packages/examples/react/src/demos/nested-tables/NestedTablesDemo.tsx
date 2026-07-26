@@ -1,13 +1,18 @@
 import { useMemo } from "react";
-import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { nestedTablesConfig, generateNestedTablesData } from "./nested-tables.demo-data";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme } from "@simple-table/react";
+import {
+  nestedTablesConfig,
+  generateNestedTablesData,
+  type NestedCompany,
+} from "./nested-tables.demo-data";
 import "@simple-table/react/styles.css";
 
 const NestedTablesDemo = ({ height = "500px", theme }: { height?: string | number; theme?: Theme }) => {
   const sampleData = useMemo(() => generateNestedTablesData(25), []);
 
   return (
-    <SimpleTable
+    <SimpleTable<NestedCompany>
       autoExpandColumns={nestedTablesConfig.tableProps.autoExpandColumns}
       columns={nestedTablesConfig.headers}
       rows={sampleData}
