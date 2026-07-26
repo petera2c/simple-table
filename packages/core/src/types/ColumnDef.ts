@@ -47,22 +47,6 @@ export interface ChartOptions {
   gap?: number; // Gap between bars in bar charts (default: 2)
 }
 
-/**
- * Nested grid props (no `rows` / inherited state renderers).
- * Child row shape may differ from the parent column's `TData`.
- */
-export type NestedTableConfig = Omit<
-  SimpleTableProps<any>,
-  | "rows"
-  | "columns"
-  | "loadingStateRenderer"
-  | "errorStateRenderer"
-  | "emptyStateRenderer"
-  | "tableEmptyStateRenderer"
-> & {
-  columns?: ColumnDef<any, any>[];
-};
-
 export interface ValueFormatterProps<TData extends RowData = Row, TValue = CellValue> {
   accessor: Accessor<TData>;
   colIndex: number;
@@ -191,6 +175,45 @@ export type ColumnDef<TData extends RowData = Row, TValue = CellValue> = {
    */
   width: number | string;
   maxWidth?: number | string; // Upper bound for width, including auto-sizing
+};
+
+/**
+ * TData-bound call signatures omitted at nest boundaries so
+ * `ColumnDef<Child>[]` assigns under a parent column without casts/`any`.
+ * Child columns stay fully checked at their own declaration site.
+ */
+type NestedColumnDefCallbacks =
+  | "cellRenderer"
+  | "headerRenderer"
+  | "children"
+  | "nestedTable"
+  | "comparator"
+  | "exportValueGetter"
+  | "valueFormatter"
+  | "valueGetter"
+  | "quickFilterGetter";
+
+/** Column shape accepted on nested grids — metadata only, no TData-bound callbacks. */
+export type NestedColumnDef = Omit<ColumnDef<Row>, NestedColumnDefCallbacks> & {
+  children?: NestedColumnDef[];
+  nestedTable?: NestedTableConfig;
+};
+
+/**
+ * Nested grid props (no `rows` / inherited state renderers).
+ * Child row shape may differ from the parent column's `TData`.
+ */
+export type NestedTableConfig = Omit<
+  SimpleTableProps,
+  | "rows"
+  | "columns"
+  | "loadingStateRenderer"
+  | "errorStateRenderer"
+  | "emptyStateRenderer"
+  | "tableEmptyStateRenderer"
+> & {
+  /** Mutable to match {@link SimpleTableConfig.columns} at the nest mount boundary. */
+  columns?: NestedColumnDef[];
 };
 
 export default ColumnDef;
