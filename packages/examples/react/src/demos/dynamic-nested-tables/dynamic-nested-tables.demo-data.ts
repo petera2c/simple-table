@@ -71,7 +71,7 @@ export const dynamicNestedTablesCompanyHeaders: ReactColumnDef<DynamicCompany>[]
     expandable: true,
     nestedTable: {
       // Nested grid uses DynamicDivision; parent column tree is typed as DynamicCompany.
-      columns: dynamicNestedTablesDivisionHeaders as ReactColumnDef<DynamicCompany>[],
+      columns: dynamicNestedTablesDivisionHeaders as unknown as ReactColumnDef<DynamicCompany>[],
       expandAll: false,
       autoExpandColumns: true,
     },
