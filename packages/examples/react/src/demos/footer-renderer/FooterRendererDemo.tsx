@@ -1,5 +1,5 @@
 import {SimpleTable} from "@simple-table/react";import type { Theme, FooterRendererProps } from "@simple-table/react";
-import { footerRendererConfig, type CatalogProduct } from "./footer-renderer.demo-data";
+import { footerRendererConfig } from "./footer-renderer.demo-data";
 import "@simple-table/react/styles.css";
 
 function getFooterColors(theme?: Theme) {
@@ -12,30 +12,30 @@ function getFooterColors(theme?: Theme) {
     return {
       background: "#1f2937", border: "#374151", text: "#d1d5db",
       buttonBg: "#374151", buttonBorder: "#4b5563", buttonActive: "#3b82f6",
-      buttonText: "#d1d5db", buttonDisabled: "#6b7280",
+      buttonText: "#d1d5db", buttonDisabled: "#6b7280"
     };
   if (isDark)
     return {
       background: "#1f2937", border: "#374151", text: "#e5e7eb",
       buttonBg: "#374151", buttonBorder: "#4b5563", buttonActive: "#3b82f6",
-      buttonText: "#d1d5db", buttonDisabled: "#6b7280",
+      buttonText: "#d1d5db", buttonDisabled: "#6b7280"
     };
   if (isLight)
     return {
       background: "white", border: "#f3f4f6", text: "#6b7280",
       buttonBg: "white", buttonBorder: "#e5e7eb", buttonActive: "#3b82f6",
-      buttonText: "#374151", buttonDisabled: "#d1d5db",
+      buttonText: "#374151", buttonDisabled: "#d1d5db"
     };
   return {
     background: "#f8fafc", border: "#e2e8f0", text: "#475569",
     buttonBg: "white", buttonBorder: "#e2e8f0", buttonActive: "#3b82f6",
-    buttonText: "#64748b", buttonDisabled: "#cbd5e1",
+    buttonText: "#64748b", buttonDisabled: "#cbd5e1"
   };
 }
 
 const FooterRendererDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -43,7 +43,7 @@ const FooterRendererDemo = ({
   const c = getFooterColors(theme);
 
   return (
-    <SimpleTable<CatalogProduct>
+    <SimpleTable
       columns={footerRendererConfig.headers}
       rows={footerRendererConfig.rows}
       enablePagination={true}
@@ -61,7 +61,7 @@ const FooterRendererDemo = ({
         hasNextPage,
         onPrevPage,
         onNextPage,
-        onPageChange,
+        onPageChange
       }: FooterRendererProps) => (
         <div
           style={{
@@ -70,7 +70,7 @@ const FooterRendererDemo = ({
             justifyContent: "space-between",
             padding: "16px 20px",
             backgroundColor: c.background,
-            borderTop: `2px solid ${c.border}`,
+            borderTop: `2px solid ${c.border}`
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -88,7 +88,7 @@ const FooterRendererDemo = ({
                 color: hasPrevPage ? c.buttonActive : c.buttonDisabled,
                 backgroundColor: c.buttonBg, border: `1px solid ${c.buttonBorder}`,
                 borderRadius: "6px", cursor: hasPrevPage ? "pointer" : "not-allowed",
-                transition: "all 0.2s",
+                transition: "all 0.2s"
               }}
             >
               Previous
@@ -104,7 +104,7 @@ const FooterRendererDemo = ({
                     color: currentPage === page ? "white" : c.buttonText,
                     backgroundColor: currentPage === page ? c.buttonActive : c.buttonBg,
                     border: `1px solid ${c.buttonBorder}`, borderRadius: "6px",
-                    cursor: "pointer", transition: "all 0.2s", minWidth: "40px",
+                    cursor: "pointer", transition: "all 0.2s", minWidth: "40px"
                   }}
                 >
                   {page}
@@ -120,7 +120,7 @@ const FooterRendererDemo = ({
                 color: hasNextPage ? c.buttonActive : c.buttonDisabled,
                 backgroundColor: c.buttonBg, border: `1px solid ${c.buttonBorder}`,
                 borderRadius: "6px", cursor: hasNextPage ? "pointer" : "not-allowed",
-                transition: "all 0.2s",
+                transition: "all 0.2s"
               }}
             >
               Next
