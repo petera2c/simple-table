@@ -47,6 +47,22 @@ export interface ChartOptions {
   gap?: number; // Gap between bars in bar charts (default: 2)
 }
 
+/**
+ * Nested grid props (no `rows` / inherited state renderers).
+ * Child row shape may differ from the parent column's `TData`.
+ */
+export type NestedTableConfig = Omit<
+  SimpleTableProps<any>,
+  | "rows"
+  | "columns"
+  | "loadingStateRenderer"
+  | "errorStateRenderer"
+  | "emptyStateRenderer"
+  | "tableEmptyStateRenderer"
+> & {
+  columns?: ColumnDef<any, any>[];
+};
+
 export interface ValueFormatterProps<TData extends RowData = Row, TValue = CellValue> {
   accessor: Accessor<TData>;
   colIndex: number;
@@ -151,16 +167,9 @@ export type ColumnDef<TData extends RowData = Row, TValue = CellValue> = {
   minWidth?: number | string;
   sortingOrder?: ("asc" | "desc" | null)[]; // Custom sorting cycle order for this column (e.g., ["desc", "asc", null] for numbers/dates)
   // Nested grid configuration - when expandable is true and this is set, renders a nested table instead of child rows
-  // Omit 'rows' and props that should inherit from parent table
-  // Left non-generic in Step 1 (child row shape may differ from TData).
-  nestedTable?: Omit<
-    SimpleTableProps,
-    | "rows"
-    | "loadingStateRenderer"
-    | "errorStateRenderer"
-    | "emptyStateRenderer"
-    | "tableEmptyStateRenderer"
-  >;
+  // Omit 'rows' and props that should inherit from parent table.
+  // Child row shape may differ from TData (see NestedTableConfig).
+  nestedTable?: NestedTableConfig;
   pinned?: Pinned;
   quickFilterable?: boolean; // Default: true - whether column is searchable via quick filter
   quickFilterGetter?: QuickFilterGetter<TData>; // Custom value extraction for quick filter

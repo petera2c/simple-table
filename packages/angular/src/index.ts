@@ -13,6 +13,8 @@ export type {
   SimpleTableAngularProps,
   TableInstance,
   AngularColumnDef,
+  NestedAngularColumnDef,
+  NestedTableAngularConfig,
   AngularIconsConfig,
   AngularIconSlot,
   AngularColumnEditorConfig,
@@ -26,10 +28,11 @@ export type {
   AngularErrorStateRenderer,
   AngularEmptyStateRenderer,
   AngularRowButton,
+  AngularDefaultRowData,
 } from "./types";
 
-// Re-export vanilla types consumers need when building column definitions,
-// callbacks, or using the imperative API via @ViewChild / (tableReady) output.
+// Re-export vanilla types for callbacks and the imperative API via @ViewChild /
+// (tableReady). For column definitions on `SimpleTable`, use `AngularColumnDef`.
 export type {
   Accessor,
   AggregationConfig,

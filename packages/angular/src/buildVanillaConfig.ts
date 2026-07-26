@@ -1,19 +1,22 @@
 import type { ApplicationRef, EnvironmentInjector } from "@angular/core";
-import type { SimpleTableConfig, ColumnDef, ColumnEditorConfig, Row } from "simple-table-core";
-import { collectHeaderAccessors } from "simple-table-core";
+import type { SimpleTableConfig, ColumnDef, ColumnEditorConfig } from "simple-table-core";
+import { asRows, collectHeaderAccessors } from "simple-table-core";
 import type {
   SimpleTableAngularProps,
   AngularColumnDef,
   AngularColumnEditorConfig,
+  AngularDefaultRowData,
   AngularIconsConfig,
 } from "./types";
 import type { MountRegistry } from "./MountRegistry";
 import { wrapAngularRenderer, wrapCachedAngularRenderer } from "./utils/wrapAngularRenderer";
 
 /** Resolve column definitions. */
-export function resolveAngularColumns(
-  config: Pick<SimpleTableAngularProps, "columns">,
-): ReadonlyArray<ColumnDef | AngularColumnDef> {
+export function resolveAngularColumns<
+  TData extends AngularDefaultRowData = AngularDefaultRowData,
+>(
+  config: Pick<SimpleTableAngularProps<TData>, "columns">,
+): ReadonlyArray<AngularColumnDef<TData, any>> {
   const headers = config.columns;
   if (!headers) {
     throw new Error("SimpleTable requires `columns`");
@@ -21,8 +24,8 @@ export function resolveAngularColumns(
   return headers;
 }
 
-export function buildVanillaConfig(
-  config: SimpleTableAngularProps,
+export function buildVanillaConfig<TData extends AngularDefaultRowData = AngularDefaultRowData>(
+  config: SimpleTableAngularProps<TData>,
   registry: MountRegistry,
   appRef: ApplicationRef,
   injector: EnvironmentInjector,
@@ -56,9 +59,9 @@ export function buildVanillaConfig(
   const wrap = <P extends object>(component: any) =>
     wrapAngularRenderer<P>(component, appRef, injector, registry);
 
-  function transformIcons(icons: AngularIconsConfig): NonNullable<SimpleTableConfig["icons"]> {
+  function transformIcons(iconsConfig: AngularIconsConfig): NonNullable<SimpleTableConfig["icons"]> {
     const result: NonNullable<SimpleTableConfig["icons"]> = {};
-    for (const [key, value] of Object.entries(icons)) {
+    for (const [key, value] of Object.entries(iconsConfig)) {
       if (value == null) continue;
       if (
         typeof value === "string" ||
@@ -84,7 +87,7 @@ export function buildVanillaConfig(
     };
   }
 
-  function transformHeader(header: ColumnDef | AngularColumnDef): ColumnDef {
+  function transformHeader(header: AngularColumnDef<TData, any>): ColumnDef {
     const { cellRenderer, headerRenderer, children, nestedTable, ...headerRest } = header;
     const accessor = String(header.accessor);
     const transformed: ColumnDef = { ...(headerRest as any) };
@@ -136,9 +139,13 @@ export function buildVanillaConfig(
 
   registry.pruneRendererCaches(collectHeaderAccessors(columns));
 
+  // `rest` still carries TData-bound callbacks (getRowId, onCellEdit, …).
+  // Widen once here — the vanilla runtime is Row-shaped.
+  const shared = rest as SimpleTableConfig;
+
   const vanillaConfig: SimpleTableConfig = {
-    ...rest,
-    rows: rows as Row[],
+    ...shared,
+    rows: asRows(rows),
     columns: columns.map(transformHeader),
     enableColumnEditor,
     enableColumnEditorInitOpen,
@@ -151,31 +158,24 @@ export function buildVanillaConfig(
     // discards any host element, so the registry destroys exactly the affected
     // Angular ComponentRefs (including CDK Overlay / floating UI).
     onRendererHostDiscard: registry.disposeHost,
-    ...(onColumnOrderChange
-      ? {
-          onColumnOrderChange: (headers: ColumnDef[]) =>
-            onColumnOrderChange(headers as unknown as AngularColumnDef[]),
-        }
-      : {}),
-    ...(onColumnWidthChange
-      ? {
-          onColumnWidthChange: (headers: ColumnDef[]) =>
-            onColumnWidthChange(headers as unknown as AngularColumnDef[]),
-        }
-      : {}),
-    ...(onHeaderEdit
-      ? {
-          onHeaderEdit: (header: ColumnDef, newLabel: string) =>
-            onHeaderEdit(header as unknown as AngularColumnDef, newLabel),
-        }
-      : {}),
-    ...(onColumnSelect
-      ? {
-          onColumnSelect: (header: ColumnDef) =>
-            onColumnSelect(header as unknown as AngularColumnDef),
-        }
-      : {}),
   };
+
+  if (onColumnOrderChange) {
+    vanillaConfig.onColumnOrderChange = (headers) =>
+      onColumnOrderChange(headers as unknown as AngularColumnDef<TData, any>[]);
+  }
+  if (onColumnWidthChange) {
+    vanillaConfig.onColumnWidthChange = (headers) =>
+      onColumnWidthChange(headers as unknown as AngularColumnDef<TData, any>[]);
+  }
+  if (onHeaderEdit) {
+    vanillaConfig.onHeaderEdit = (header, newLabel) =>
+      onHeaderEdit(header as unknown as AngularColumnDef<TData, any>, newLabel);
+  }
+  if (onColumnSelect) {
+    vanillaConfig.onColumnSelect = (header) =>
+      onColumnSelect(header as unknown as AngularColumnDef<TData, any>);
+  }
 
   if (footerRenderer !== undefined) {
     if ((footerRenderer as any).ɵcmp) {
