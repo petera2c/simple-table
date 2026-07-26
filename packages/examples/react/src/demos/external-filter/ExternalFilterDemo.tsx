@@ -4,13 +4,13 @@ import type { Theme, TableFilterState } from "@simple-table/react";
 import {
   externalFilterConfig,
   matchesFilter,
-  type FilterableEmployee,
+  type FilterableEmployee
 } from "./external-filter.demo-data";
 import "@simple-table/react/styles.css";
 
 const ExternalFilterDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -29,7 +29,7 @@ const ExternalFilterDemo = ({
   }, [filters]);
 
   return (
-    <SimpleTable<FilterableEmployee>
+    <SimpleTable
       columns={externalFilterConfig.headers}
       rows={filteredData}
       onFilterChange={setFilters}
