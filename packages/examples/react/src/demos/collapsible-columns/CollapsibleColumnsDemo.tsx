@@ -1,5 +1,9 @@
-import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { collapsibleColumnsConfig } from "./collapsible-columns.demo-data";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme } from "@simple-table/react";
+import {
+  collapsibleColumnsConfig,
+  type CollapsibleSalesRep,
+} from "./collapsible-columns.demo-data";
 import "@simple-table/react/styles.css";
 
 const CollapsibleColumnsDemo = ({
@@ -10,8 +14,9 @@ const CollapsibleColumnsDemo = ({
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable
+    <SimpleTable<CollapsibleSalesRep>
       columns={collapsibleColumnsConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={collapsibleColumnsConfig.rows}
       columnResizing
       enableColumnEditor
