@@ -38,5 +38,4 @@ export const quickFilterData: QuickFilterEmployee[] = [
 export const quickFilterConfig = {
   headers: quickFilterHeaders,
   rows: quickFilterData,
-  tableProps: { quickFilter: { text: "", mode: "simple", caseSensitive: false } },
 };

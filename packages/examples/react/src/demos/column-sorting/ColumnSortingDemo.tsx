@@ -17,8 +17,8 @@ const ColumnSortingDemo = ({
       height={height}
       theme={theme}
       getRowId={({ row }) => row.id}
-      initialSortColumn={columnSortingConfig.tableProps.initialSortColumn}
-      initialSortDirection={columnSortingConfig.tableProps.initialSortDirection}
+      initialSortColumn="age"
+      initialSortDirection="desc"
     />
   );
 };

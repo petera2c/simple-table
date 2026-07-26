@@ -140,8 +140,4 @@ export const columnSortingHeaders: AngularColumnDef[] = [
 export const columnSortingConfig = {
   headers: columnSortingHeaders,
   rows: COLUMN_SORTING_DATA,
-  tableProps: {
-    initialSortColumn: "age",
-    initialSortDirection: "desc" as const,
-  },
-} as const;
+};

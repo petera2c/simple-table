@@ -4,8 +4,8 @@
     :rows="columnSortingConfig.rows"
     :height="height"
     :theme="theme"
-    :initial-sort-column="columnSortingConfig.tableProps.initialSortColumn"
-    :initial-sort-direction="columnSortingConfig.tableProps.initialSortDirection"
+    initial-sort-column="age"
+    initial-sort-direction="desc"
   />
 </template>
 

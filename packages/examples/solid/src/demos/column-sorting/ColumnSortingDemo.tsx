@@ -12,8 +12,8 @@ export default function ColumnSortingDemo(props: {
       rows={columnSortingConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}
-      initialSortColumn={columnSortingConfig.tableProps.initialSortColumn}
-      initialSortDirection={columnSortingConfig.tableProps.initialSortDirection}
+      initialSortColumn="age"
+      initialSortDirection="desc"
     />
   );
 }

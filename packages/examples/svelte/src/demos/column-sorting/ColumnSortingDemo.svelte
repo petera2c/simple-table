@@ -11,6 +11,6 @@
   rows={columnSortingConfig.rows}
   {height}
   {theme}
-  initialSortColumn={columnSortingConfig.tableProps.initialSortColumn}
-  initialSortDirection={columnSortingConfig.tableProps.initialSortDirection}
+  initialSortColumn="age"
+  initialSortDirection="desc"
 />

@@ -12,8 +12,8 @@ export function renderColumnSortingDemo(
     rows: columnSortingConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
-    initialSortColumn: columnSortingConfig.tableProps.initialSortColumn,
-    initialSortDirection: columnSortingConfig.tableProps.initialSortDirection,
+    initialSortColumn: "age",
+    initialSortDirection: "desc",
   });
   return table;
 }

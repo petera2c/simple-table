@@ -47,15 +47,27 @@ export const collapsibleColumnsData: CollapsibleSalesRep[] = [
   { id: 12, name: "Christopher Lee", region: "Europe", q1Sales: 167000, q2Sales: 189000, q3Sales: 212000, q4Sales: 234000, totalSales: 802000, avgQuarterly: 200500, jan: 52000, feb: 55000, mar: 60000, apr: 61000, may: 63000, jun: 65000, jul: 68000, aug: 71000, sep: 73000, oct: 76000, nov: 78000, dec: 80000, avgMonthly: 66833, bestMonth: 80000, softwareSales: 320000, hardwareSales: 241000, servicesSales: 241000, topCategory: "Software", categoryCount: 3 },
 ];
 
-const fmt =
-  (accessor: keyof CollapsibleSalesRep): ReactCellRenderer<CollapsibleSalesRep> =>
-  ({ row }) =>
-    `$${((row[accessor] as number) || 0).toLocaleString()}`;
+const fmtCurrency: ReactCellRenderer<CollapsibleSalesRep, number> = ({ value }) =>
+  `$${(value ?? 0).toLocaleString()}`;
+
+type MonthKey =
+  | "jan"
+  | "feb"
+  | "mar"
+  | "apr"
+  | "may"
+  | "jun"
+  | "jul"
+  | "aug"
+  | "sep"
+  | "oct"
+  | "nov"
+  | "dec";
 
 const monthCol = (
-  accessor: keyof CollapsibleSalesRep & string,
+  accessor: MonthKey,
   label: string,
-): ReactColumnDef<CollapsibleSalesRep> => ({
+): ReactColumnDef<CollapsibleSalesRep, number> => ({
   accessor,
   label,
   width: 100,
@@ -63,7 +75,7 @@ const monthCol = (
   sortable: true,
   align: "right",
   type: "number",
-  cellRenderer: fmt(accessor),
+  cellRenderer: fmtCurrency,
 });
 
 export const collapsibleColumnsHeaders: ReactColumnDef<CollapsibleSalesRep>[] = [
@@ -77,11 +89,11 @@ export const collapsibleColumnsHeaders: ReactColumnDef<CollapsibleSalesRep>[] = 
     collapsible: true,
     collapseDefault: true,
     children: [
-      { accessor: "totalSales", label: "Total Sales", width: 140, showWhen: "parentCollapsed", sortable: true, align: "right", type: "number", cellRenderer: fmt("totalSales") },
-      { accessor: "q1Sales", label: "Q1", width: 120, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmt("q1Sales") },
-      { accessor: "q2Sales", label: "Q2", width: 120, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmt("q2Sales") },
-      { accessor: "q3Sales", label: "Q3", width: 120, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmt("q3Sales") },
-      { accessor: "q4Sales", label: "Q4", width: 120, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmt("q4Sales") },
+      { accessor: "totalSales", label: "Total Sales", width: 140, showWhen: "parentCollapsed", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
+      { accessor: "q1Sales", label: "Q1", width: 120, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
+      { accessor: "q2Sales", label: "Q2", width: 120, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
+      { accessor: "q3Sales", label: "Q3", width: 120, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
+      { accessor: "q4Sales", label: "Q4", width: 120, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
     ],
   },
   {
@@ -91,8 +103,8 @@ export const collapsibleColumnsHeaders: ReactColumnDef<CollapsibleSalesRep>[] = 
     collapsible: true,
     collapseDefault: true,
     children: [
-      { accessor: "avgMonthly", label: "Avg Monthly", width: 130, showWhen: "parentCollapsed", sortable: true, align: "right", type: "number", cellRenderer: fmt("avgMonthly") },
-      { accessor: "bestMonth", label: "Best Month", width: 130, showWhen: "parentCollapsed", sortable: true, align: "right", type: "number", cellRenderer: fmt("bestMonth") },
+      { accessor: "avgMonthly", label: "Avg Monthly", width: 130, showWhen: "parentCollapsed", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
+      { accessor: "bestMonth", label: "Best Month", width: 130, showWhen: "parentCollapsed", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
       monthCol("jan", "Jan"), monthCol("feb", "Feb"), monthCol("mar", "Mar"),
       monthCol("apr", "Apr"), monthCol("may", "May"), monthCol("jun", "Jun"),
       monthCol("jul", "Jul"), monthCol("aug", "Aug"), monthCol("sep", "Sep"),
@@ -107,9 +119,9 @@ export const collapsibleColumnsHeaders: ReactColumnDef<CollapsibleSalesRep>[] = 
     collapseDefault: true,
     children: [
       { accessor: "topCategory", label: "Top Category", width: 140, showWhen: "parentCollapsed", sortable: true, type: "string" },
-      { accessor: "softwareSales", label: "Software", width: 130, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmt("softwareSales") },
-      { accessor: "hardwareSales", label: "Hardware", width: 130, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmt("hardwareSales") },
-      { accessor: "servicesSales", label: "Services", width: 130, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmt("servicesSales") },
+      { accessor: "softwareSales", label: "Software", width: 130, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
+      { accessor: "hardwareSales", label: "Hardware", width: 130, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
+      { accessor: "servicesSales", label: "Services", width: 130, showWhen: "parentExpanded", sortable: true, align: "right", type: "number", cellRenderer: fmtCurrency },
     ],
   },
 ];
