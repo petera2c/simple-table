@@ -1,9 +1,10 @@
 import { useCallback, useRef, useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Row, Theme } from "@simple-table/react";
+import type { Theme } from "@simple-table/react";
 import {
   generateWindowScrollRows,
   windowScrollHeaders,
+  type WindowScrollEmployee,
 } from "./window-infinite-scroll.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -33,7 +34,9 @@ const WindowInfiniteScrollDemo = ({
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const [rows, setRows] = useState<Row[]>(() => generateWindowScrollRows(0, INITIAL_ROWS));
+  const [rows, setRows] = useState<WindowScrollEmployee[]>(() =>
+    generateWindowScrollRows(0, INITIAL_ROWS),
+  );
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
@@ -113,11 +116,11 @@ const WindowInfiniteScrollDemo = ({
         <span>{statusLabel}</span>
       </div>
 
-      <SimpleTable
+      <SimpleTable<WindowScrollEmployee>
         columns={windowScrollHeaders}
         rows={rows}
         theme={theme}
-        getRowId={(p) => String((p.row as { id?: number })?.id)}
+        getRowId={({ row }) => String(row.id)}
         // Getter form so we don't capture the wrapper before React attaches the ref.
         // In a regular app outside this preview shell, pass scrollParent="window".
         scrollParent={() => wrapperRef.current?.parentElement ?? null}
