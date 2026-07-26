@@ -1,8 +1,17 @@
 // Self-contained demo table setup for this example.
-import type { Row, ReactColumnDef, CellRendererProps } from "@simple-table/react";
+import type { ReactColumnDef, CellRendererProps } from "@simple-table/react";
 
+export interface ColumnFilteringEmployee {
+  id: number;
+  name: string;
+  department: string;
+  role: string;
+  salary: number;
+  startDate: string;
+  isActive: boolean;
+}
 
-export const COLUMN_FILTERING_DATA: Row[] = [
+export const COLUMN_FILTERING_DATA: ColumnFilteringEmployee[] = [
   {
     id: 1,
     name: "Bianca Rossi",
@@ -147,7 +156,7 @@ export const DEPARTMENT_OPTIONS = [
   { label: "Quality Assurance", value: "Quality Assurance" },
 ];
 
-export const columnFilteringHeaders: ReactColumnDef[] = [
+export const columnFilteringHeaders: ReactColumnDef<ColumnFilteringEmployee>[] = [
   {
     accessor: "id",
     label: "ID",
@@ -191,7 +200,7 @@ export const columnFilteringHeaders: ReactColumnDef[] = [
     type: "number",
     sortable: true,
     filterable: true,
-    cellRenderer: ({ row }: CellRendererProps) => {
+    cellRenderer: ({ row }: CellRendererProps<ColumnFilteringEmployee>) => {
       const salary = row.salary as number;
       return `$${salary.toLocaleString()}`;
     },
