@@ -1,6 +1,11 @@
 import { useState } from "react";
 import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "./pagination.demo-data";
+import {
+  paginationConfig,
+  paginationData,
+  PAGINATION_ROWS_PER_PAGE,
+  type HotelStaff,
+} from "./pagination.demo-data";
 import "@simple-table/react/styles.css";
 
 const PaginationDemo = ({
@@ -32,7 +37,7 @@ const PaginationDemo = ({
   };
 
   return (
-    <SimpleTable
+    <SimpleTable<HotelStaff>
       columns={paginationConfig.headers}
       height={height ?? "auto"}
       isLoading={isLoading}
@@ -41,6 +46,7 @@ const PaginationDemo = ({
       rowsPerPage={PAGINATION_ROWS_PER_PAGE}
       enablePagination
       theme={theme}
+      getRowId={({ row }) => row.id}
     />
   );
 };
