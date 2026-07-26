@@ -1,17 +1,17 @@
 import { SimpleTable } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
-import { columnPinningConfig, type ColumnPinningEmployee } from "./column-pinning.demo-data";
+import { columnPinningConfig } from "./column-pinning.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnPinningDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable<ColumnPinningEmployee>
+    <SimpleTable
       columns={columnPinningConfig.headers}
       getRowId={({ row }) => row.id}
       rows={columnPinningConfig.rows}
