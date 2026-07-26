@@ -1,5 +1,9 @@
-import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { columnAlignmentConfig } from "./column-alignment.demo-data";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme } from "@simple-table/react";
+import {
+  columnAlignmentConfig,
+  type ColumnAlignmentPlayer,
+} from "./column-alignment.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnAlignmentDemo = ({
@@ -10,8 +14,9 @@ const ColumnAlignmentDemo = ({
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable
+    <SimpleTable<ColumnAlignmentPlayer>
       columns={columnAlignmentConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={columnAlignmentConfig.rows}
       height={height}
       theme={theme}
