@@ -16,7 +16,7 @@ function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
           ) : (
             d.productLine
           );
-        },
+        }
       };
     }
     if (h.accessor === "station") {
@@ -33,7 +33,7 @@ function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
                   fontSize: "0.75rem",
                   fontWeight: 500,
                   padding: "2px 6px",
-                  borderRadius: "4px",
+                  borderRadius: "4px"
                 }}
               >
                 {d.id}
@@ -41,7 +41,7 @@ function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
               <span>{d.station}</span>
             </div>
           );
-        },
+        }
       };
     }
     if (h.accessor === "status") {
@@ -60,13 +60,13 @@ function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
                 lineHeight: "20px",
                 borderRadius: "4px",
                 display: "inline-block",
-                fontWeight: "600",
+                fontWeight: "600"
               }}
             >
               {d.status}
             </span>
           );
-        },
+        }
       };
     }
     if (h.accessor === "outputRate" || h.accessor === "defectCount" || h.accessor === "energy") {
@@ -77,7 +77,7 @@ function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
           return (
             <div style={d.stations ? { fontWeight: "bold" } : {}}>{value.toLocaleString()}</div>
           );
-        },
+        }
       };
     }
     if (h.accessor === "cycletime") {
@@ -87,7 +87,7 @@ function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
           if (d.stations)
             return <span style={{ fontWeight: "bold" }}>{d.cycletime.toFixed(1)}</span>;
           return <span>{d.cycletime}</span>;
-        },
+        }
       };
     }
     if (h.accessor === "efficiency") {
@@ -103,7 +103,7 @@ function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
                   height: "6px",
                   width: "100%",
                   borderRadius: "100px",
-                  overflow: "hidden",
+                  overflow: "hidden"
                 }}
               >
                 <div
@@ -111,7 +111,7 @@ function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
                     height: "100%",
                     width: `${d.efficiency}%`,
                     backgroundColor: color,
-                    borderRadius: "100px",
+                    borderRadius: "100px"
                   }}
                 />
               </div>
@@ -120,14 +120,14 @@ function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
                   fontSize: "12px",
                   textAlign: "center",
                   marginTop: "4px",
-                  fontWeight: d.stations ? "bold" : "normal",
+                  fontWeight: d.stations ? "bold" : "normal"
                 }}
               >
                 {d.efficiency}%
               </div>
             </div>
           );
-        },
+        }
       };
     }
     if (h.accessor === "defectRate") {
@@ -140,7 +140,7 @@ function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
               {d.defectRate.toFixed(2)}%
             </span>
           );
-        },
+        }
       };
     }
     if (h.accessor === "downtime") {
@@ -153,7 +153,7 @@ function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
               {d.downtime.toFixed(2)}
             </span>
           );
-        },
+        }
       };
     }
     if (h.accessor === "utilization") {
@@ -163,7 +163,7 @@ function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
           if (d.stations)
             return <span style={{ fontWeight: "bold" }}>{d.utilization.toFixed(0)}%</span>;
           return `${d.utilization}%`;
-        },
+        }
       };
     }
     if (h.accessor === "maintenanceDate") {
@@ -193,13 +193,13 @@ function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
                 fontSize: "12px",
                 lineHeight: "20px",
                 borderRadius: "2px",
-                display: "inline-block",
+                display: "inline-block"
               }}
             >
               {date.toLocaleDateString()} ({diffDays} days)
             </span>
           );
-        },
+        }
       };
     }
     return h;
@@ -208,12 +208,12 @@ function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
 
 const ManufacturingDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
 }) => (
-  <SimpleTable<ManufacturingRow>
+  <SimpleTable
     columnResizing
     columnReordering
     columns={getHeaders()}
