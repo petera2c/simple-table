@@ -20,7 +20,7 @@ const StatefulHeader = ({ header, components }: HeaderRendererProps<HeaderEmploy
         gap: 6,
         width: "100%",
         minWidth: 0,
-        padding: "0 4px",
+        padding: "0 4px"
       }}
     >
       <span
@@ -30,7 +30,7 @@ const StatefulHeader = ({ header, components }: HeaderRendererProps<HeaderEmploy
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
           minWidth: 0,
-          flex: 1,
+          flex: 1
         }}
       >
         {header.label}
@@ -61,7 +61,7 @@ const StatefulHeader = ({ header, components }: HeaderRendererProps<HeaderEmploy
           cursor: "pointer",
           fontSize: 12,
           lineHeight: 1,
-          fontWeight: 600,
+          fontWeight: 600
         }}
       >
         {pinned ? "★" : "☆"} {clicks}
@@ -78,12 +78,12 @@ const headers: ReactColumnDef<HeaderEmployee>[] = headerRendererConfig.headers.m
   // Keep built-in sorting so sort icon refresh goes through core's header path.
   sortable: h.sortable ?? true,
   filterable: h.accessor === "role" || h.accessor === "department",
-  headerRenderer: StatefulHeader,
+  headerRenderer: StatefulHeader
 }));
 
 const HeaderRendererDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -94,7 +94,7 @@ const HeaderRendererDemo = ({
         Click a header ★ to pin it, then sort that column. The pin (and click count) should stay —
         if the header remounts on sort, both reset.
       </p>
-      <SimpleTable<HeaderEmployee>
+      <SimpleTable
         columns={headers}
         rows={headerRendererConfig.rows}
         height={height}
