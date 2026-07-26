@@ -6,7 +6,7 @@ import "@simple-table/react/styles.css";
 
 const AnimationsDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -18,7 +18,7 @@ const AnimationsDemo = ({
   };
 
   return (
-    <SimpleTable<AnimationsCrewMember>
+    <SimpleTable
       columnReordering={animationsConfig.tableProps.columnReordering}
       columns={headers}
       enableColumnEditor={animationsConfig.tableProps.enableColumnEditor}

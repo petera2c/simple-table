@@ -62,4 +62,4 @@ export const tooltipConfig = {
     columnReordering: true,
     selectableCells: true,
   },
-} as const;
+};

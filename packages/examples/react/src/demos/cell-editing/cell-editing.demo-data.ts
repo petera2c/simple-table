@@ -44,4 +44,4 @@ export const cellEditingData: CellEditingEmployee[] = [
 export const cellEditingConfig = {
   headers: cellEditingHeaders,
   rows: cellEditingData,
-} as const;
+};

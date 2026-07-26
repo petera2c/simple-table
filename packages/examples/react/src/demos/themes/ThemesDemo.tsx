@@ -1,11 +1,11 @@
 import { useState } from "react";
 import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { themesConfig, AVAILABLE_THEMES, type ThemeDemoStaff } from "./themes.demo-data";
+import { themesConfig, AVAILABLE_THEMES } from "./themes.demo-data";
 import "@simple-table/react/styles.css";
 
 const ThemesDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -27,14 +27,14 @@ const ThemesDemo = ({
               color: selectedTheme === t.value ? "#1d4ed8" : "#374151",
               fontWeight: selectedTheme === t.value ? 600 : 400,
               cursor: "pointer",
-              fontSize: 13,
+              fontSize: 13
             }}
           >
             {t.label}
           </button>
         ))}
       </div>
-      <SimpleTable<ThemeDemoStaff>
+      <SimpleTable
         columns={themesConfig.headers}
         rows={themesConfig.rows}
         height={height}

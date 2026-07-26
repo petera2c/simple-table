@@ -174,4 +174,4 @@ export const CRM_THEME_COLORS_DARK = {
 export const crmConfig = {
   headers: crmHeaders,
   rows: crmData,
-} as const;
+};

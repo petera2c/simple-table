@@ -1,9 +1,6 @@
 import { SimpleTable } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
-import {
-  aggregateFunctionsConfig,
-  type AggregateFunctionsRow,
-} from "./aggregate-functions.demo-data";
+import { aggregateFunctionsConfig } from "./aggregate-functions.demo-data";
 import "@simple-table/react/styles.css";
 
 const AggregateFunctionsDemo = ({
@@ -14,7 +11,7 @@ const AggregateFunctionsDemo = ({
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable<AggregateFunctionsRow>
+    <SimpleTable
       columns={aggregateFunctionsConfig.headers}
       getRowId={({ row }) => row.id}
       rows={aggregateFunctionsConfig.rows}

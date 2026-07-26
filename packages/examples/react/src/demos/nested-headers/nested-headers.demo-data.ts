@@ -46,4 +46,4 @@ export const nestedHeadersConfig = {
   headers: nestedHeadersHeaders,
   rows: nestedHeadersData,
   tableProps: { columnResizing: true },
-} as const;
+};

@@ -47,4 +47,4 @@ export const columnPinningConfig = {
   headers: columnPinningHeaders,
   rows: columnPinningData,
   tableProps: { columnResizing: true },
-} as const;
+};

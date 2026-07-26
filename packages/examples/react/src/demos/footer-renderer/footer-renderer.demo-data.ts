@@ -74,4 +74,4 @@ export const footerRendererConfig = {
     enablePagination: true,
     rowsPerPage: 10,
   },
-} as const;
+};

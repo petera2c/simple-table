@@ -80,12 +80,12 @@ export const columnVisibilityConfig = {
   headers: columnVisibilityHeaders,
   rows: columnVisibilityData,
   tableProps: {
-    enableColumnEditor: true as const,
-    enableColumnEditorInitOpen: true as const,
+    enableColumnEditor: true,
+    enableColumnEditorInitOpen: true,
     columnEditorConfig: {
       text: "Manage Columns",
       searchEnabled: true,
       searchPlaceholder: "Search columns…",
     },
   },
-} as const;
+};

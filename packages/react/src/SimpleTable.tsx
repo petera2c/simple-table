@@ -35,12 +35,12 @@ function shallowTablePropsChanged<TData extends ReactDefaultRowData>(
  * emptyStateRenderer, headerDropdown, and per-column renderers inside
  * ReactColumnDef.
  *
- * Parameterize with your row type for end-to-end typing:
+ * `TData` is inferred from `rows` / `columns` — prefer omitting the type arg:
  *
  * @example
  * const tableRef = useRef<TableAPI<HREmployee>>(null);
  *
- * <SimpleTable<HREmployee>
+ * <SimpleTable
  *   ref={tableRef}
  *   rows={rows}
  *   columns={headers}
@@ -203,7 +203,10 @@ function SimpleTableInner<TData extends ReactDefaultRowData = ReactDefaultRowDat
   );
 }
 
-type SimpleTableComponent = <TData extends ReactDefaultRowData = ReactDefaultRowData>(
+// No default on `TData`: TypeScript should infer it from `rows` / `columns`
+// so callers can write `<SimpleTable rows={facts} …>` without `<FactRow>`.
+// (`SimpleTableReactProps` still defaults for untyped prop bags / helpers.)
+type SimpleTableComponent = <TData extends ReactDefaultRowData>(
   props: SimpleTableReactProps<TData> & { ref?: React.ForwardedRef<TableAPI<TData>> },
 ) => React.ReactElement | null;
 

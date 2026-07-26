@@ -3,12 +3,12 @@ import { SimpleTable } from "@simple-table/react";
 import type {
   Theme,
   ReactColumnDef,
-  CellClickProps,
+  CellClickProps
 } from "@simple-table/react";
 import {
   cellClickingHeaders,
   cellClickingData,
-  CELL_CLICKING_STATUSES,
+  CELL_CLICKING_STATUSES
 } from "./cell-clicking.demo-data";
 import type { ProjectTask } from "./cell-clicking.demo-data";
 import "@simple-table/react/styles.css";
@@ -31,14 +31,14 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
                   style={{
                     color: p === "High" ? "#ef4444" : p === "Medium" ? "#f59e0b" : "#10b981",
                     fontWeight: "bold",
-                    cursor: "pointer",
+                    cursor: "pointer"
                   }}
                   title="Click to filter by priority"
                 >
                   {p}
                 </span>
               );
-            },
+            }
           };
         }
         if (h.accessor === "status") {
@@ -59,14 +59,14 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
                     borderRadius: 4,
                     fontSize: 12,
                     fontWeight: "bold",
-                    cursor: "pointer",
+                    cursor: "pointer"
                   }}
                   title="Click to change status"
                 >
                   {s}
                 </span>
               );
-            },
+            }
           };
         }
         if (h.accessor === "details") {
@@ -82,13 +82,13 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
                   borderRadius: 4,
                   cursor: "pointer",
                   fontSize: 12,
-                  fontWeight: "bold",
+                  fontWeight: "bold"
                 }}
                 title="Click to view task details"
               >
                 View Details
               </button>
-            ),
+            )
           };
         }
         return h;
@@ -147,7 +147,7 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
           border: `1px solid ${isDark ? "#4b5563" : "#d1d5db"}`,
           minHeight: 48,
           display: "flex",
-          alignItems: "center",
+          alignItems: "center"
         }}
       >
         <strong style={{ marginRight: 8, color: isDark ? "#f9fafb" : "#1f2937" }}>
@@ -167,7 +167,7 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            zIndex: 1000,
+            zIndex: 1000
           }}
         >
           <div
@@ -176,7 +176,7 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
               padding: 24,
               borderRadius: 8,
               maxWidth: 500,
-              width: "90%",
+              width: "90%"
             }}
           >
             <h3 style={{ margin: "0 0 16px", color: isDark ? "#f9fafb" : "#1f2937" }}>
@@ -197,7 +197,7 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
                 padding: "8px 16px",
                 borderRadius: 4,
                 cursor: "pointer",
-                fontWeight: "bold",
+                fontWeight: "bold"
               }}
             >
               Close
@@ -206,7 +206,7 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
         </div>
       )}
 
-      <SimpleTable<ProjectTask>
+      <SimpleTable
         columnResizing
         columns={headers}
         getRowId={({ row }) => row.id}

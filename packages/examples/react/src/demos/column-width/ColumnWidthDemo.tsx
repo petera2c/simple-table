@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
-import { columnWidthConfig, type StartupEmployee } from "./column-width.demo-data";
+import { columnWidthConfig } from "./column-width.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnWidthDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -21,7 +21,7 @@ const ColumnWidthDemo = ({
   }, []);
 
   return (
-    <SimpleTable<StartupEmployee>
+    <SimpleTable
       autoExpandColumns={!isMobile}
       columnResizing
       columns={columnWidthConfig.headers}

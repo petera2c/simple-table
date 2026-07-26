@@ -48,4 +48,4 @@ export const cellRendererConfig = {
     selectableCells: true,
     customTheme: { rowHeight: 48 },
   },
-} as const;
+};

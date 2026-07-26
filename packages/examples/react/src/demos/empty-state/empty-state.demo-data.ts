@@ -22,4 +22,4 @@ export const emptyStateHeaders: ReactColumnDef<EmptyEmployee>[] = [
 export const emptyStateConfig = {
   headers: emptyStateHeaders,
   rows: emptyStateData,
-} as const;
+};

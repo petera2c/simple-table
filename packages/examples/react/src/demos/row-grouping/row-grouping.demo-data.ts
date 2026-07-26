@@ -216,4 +216,4 @@ export const rowGroupingConfig = {
     getRowId: ({ row }: { row: OrgUnit }) => row.id,
     columnResizing: true,
   },
-} as const;
+};

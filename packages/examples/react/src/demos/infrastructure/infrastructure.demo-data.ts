@@ -255,4 +255,4 @@ export function getInfraStatusColors(status: string, theme: string) {
 export const infrastructureConfig = {
   headers: infrastructureHeaders,
   rows: infrastructureData,
-} as const;
+};

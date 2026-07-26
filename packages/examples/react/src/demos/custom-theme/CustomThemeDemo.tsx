@@ -1,17 +1,17 @@
 import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { customThemeConfig, type ThemeContact } from "./custom-theme.demo-data";
+import { customThemeConfig } from "./custom-theme.demo-data";
 import "@simple-table/react/styles.css";
 import "./custom-theme.css";
 
 const CustomThemeDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable<ThemeContact>
+    <SimpleTable
       columns={customThemeConfig.headers}
       rows={customThemeConfig.rows}
       theme={theme ?? "custom"}

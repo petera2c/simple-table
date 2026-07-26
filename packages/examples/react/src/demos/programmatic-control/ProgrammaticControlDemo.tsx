@@ -4,13 +4,13 @@ import type { Theme, TableAPI, ReactColumnDef } from "@simple-table/react";
 import {
   programmaticControlConfig,
   PROGRAMMATIC_CONTROL_STATUS_COLORS,
-  type ProgrammaticControlProduct,
+  type ProgrammaticControlProduct
 } from "./programmatic-control.demo-data";
 import "@simple-table/react/styles.css";
 
 const ProgrammaticControlDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -28,7 +28,7 @@ const ProgrammaticControlDemo = ({
               const s = String(row.status);
               const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? {
                 bg: "#f3f4f6",
-                color: "#374151",
+                color: "#374151"
               };
               return (
                 <span
@@ -38,13 +38,13 @@ const ProgrammaticControlDemo = ({
                     padding: "4px 8px",
                     borderRadius: 4,
                     fontSize: 12,
-                    fontWeight: "bold",
+                    fontWeight: "bold"
                   }}
                 >
                   {s}
                 </span>
               );
-            },
+            }
           };
         }
         return h;
@@ -101,7 +101,7 @@ const ProgrammaticControlDemo = ({
           border: "1px solid #bfdbfe",
           borderRadius: 6,
           color: "#1e40af",
-          fontSize: 14,
+          fontSize: 14
         }}
       >
         {statusMessage}
@@ -123,7 +123,7 @@ const ProgrammaticControlDemo = ({
           Get Table Info
         </button>
       </div>
-      <SimpleTable<ProgrammaticControlProduct>
+      <SimpleTable
         ref={tableRef}
         columns={headers}
         getRowId={({ row }) => row.id}

@@ -2,11 +2,11 @@ import { SimpleTable } from "@simple-table/react";
 import type {
   Theme,
   ReactColumnEditorConfig,
-  ColumnEditorRowRendererProps,
+  ColumnEditorRowRendererProps
 } from "@simple-table/react";
 import {
   columnEditorCustomRendererConfig,
-  type ColumnEditorCustomRendererEmployee,
+  type ColumnEditorCustomRendererEmployee
 } from "./column-editor-custom-renderer.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -19,7 +19,7 @@ const CustomRowRenderer = ({ header, components }: ColumnEditorRowRendererProps)
       padding: "6px 8px",
       borderRadius: 6,
       background: "#f8fafc",
-      marginBottom: 4,
+      marginBottom: 4
     }}
   >
     {components.checkbox != null && <span>{components.checkbox}</span>}
@@ -34,18 +34,18 @@ const columnEditorConfig: ReactColumnEditorConfig = {
   text: "Manage Columns",
   searchEnabled: true,
   searchPlaceholder: "Search columns…",
-  rowRenderer: CustomRowRenderer,
+  rowRenderer: CustomRowRenderer
 };
 
 const ColumnEditorCustomRendererDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable<ColumnEditorCustomRendererEmployee>
+    <SimpleTable
       columns={columnEditorCustomRendererConfig.headers}
       getRowId={({ row }) => row.id}
       rows={columnEditorCustomRendererConfig.rows}

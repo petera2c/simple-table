@@ -39,4 +39,4 @@ export const columnWidthConfig = {
   headers: columnWidthHeaders,
   rows: columnWidthData,
   tableProps: { columnResizing: true },
-} as const;
+};

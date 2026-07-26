@@ -6,7 +6,7 @@ import "@simple-table/react/styles.css";
 
 const CellEditingDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -20,7 +20,7 @@ const CellEditingDemo = ({
   };
 
   return (
-    <SimpleTable<CellEditingEmployee>
+    <SimpleTable
       columns={cellEditingConfig.headers}
       getRowId={({ row }) => row.id}
       rows={data}

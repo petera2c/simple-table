@@ -38,4 +38,4 @@ export const columnSelectionConfig = {
   headers: columnSelectionHeaders,
   rows: columnSelectionData,
   tableProps: { selectableColumns: true },
-} as const;
+};

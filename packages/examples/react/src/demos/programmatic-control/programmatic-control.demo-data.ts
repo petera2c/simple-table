@@ -59,6 +59,6 @@ export const programmaticControlHeaders: ReactColumnDef<ProgrammaticControlProdu
 export const programmaticControlConfig = {
   headers: programmaticControlHeaders,
   rows: programmaticControlData,
-} as const;
+};
 
 export { STATUS_COLORS as PROGRAMMATIC_CONTROL_STATUS_COLORS };

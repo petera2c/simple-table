@@ -124,7 +124,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
       width: "1.2fr",
       cellRenderer: ({ row }) => (
         <span style={{ fontFamily: "monospace", fontSize: "0.85rem" }}>{row.serverId}</span>
-      ),
+      )
     },
     {
       accessor: "serverName",
@@ -135,7 +135,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
       label: "Name",
       minWidth: 200,
       type: "string",
-      width: "1.5fr",
+      width: "1.5fr"
     },
     {
       accessor: "performance",
@@ -152,7 +152,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
           editable: false,
           align: "center",
           type: "lineAreaChart",
-          tooltip: "CPU usage over the last 30 intervals",
+          tooltip: "CPU usage over the last 30 intervals"
         },
         {
           accessor: "cpuUsage",
@@ -172,7 +172,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
                 </div>
               </div>
             );
-          },
+          }
         },
         {
           accessor: "memoryUsage",
@@ -192,7 +192,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
                 </div>
               </div>
             );
-          },
+          }
         },
         {
           accessor: "diskUsage",
@@ -203,7 +203,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
           editable: true,
           align: "right",
           type: "number",
-          cellRenderer: ({ row }) => `${row.diskUsage.toFixed(1)}%`,
+          cellRenderer: ({ row }) => `${row.diskUsage.toFixed(1)}%`
         },
         {
           accessor: "responseTime",
@@ -217,9 +217,9 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
           cellRenderer: ({ row, theme }) => {
             const s = getInfraMetricColorStyles(row.responseTime, theme || t, "response");
             return <span style={{ fontWeight: "500", ...s }}>{row.responseTime.toFixed(1)}</span>;
-          },
+          }
         },
-      ],
+      ]
     },
     {
       accessor: "status",
@@ -243,7 +243,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
           offline: 2,
           warning: 3,
           maintenance: 4,
-          online: 5,
+          online: 5
         };
         return m[row.status] || 999;
       },
@@ -254,7 +254,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
             {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
           </div>
         );
-      },
+      }
     },
   ];
 }
@@ -276,7 +276,7 @@ const InfrastructureDemo = ({ height = "400px", theme }: { height?: string | num
   }, [tableRef]);
 
   return (
-    <SimpleTable<InfrastructureServer>
+    <SimpleTable
       autoExpandColumns={!isMobile}
       columnReordering
       columnResizing

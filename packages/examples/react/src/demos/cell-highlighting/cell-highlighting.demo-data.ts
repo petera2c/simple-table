@@ -38,4 +38,4 @@ export const cellHighlightingConfig = {
   headers: cellHighlightingHeaders,
   rows: cellHighlightingData,
   tableProps: { selectableCells: true, selectableColumns: true },
-} as const;
+};

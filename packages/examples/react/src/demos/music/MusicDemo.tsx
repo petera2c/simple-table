@@ -5,7 +5,7 @@ import type {
   Theme,
   TableAPI,
   ReactColumnDef,
-  CellRendererProps,
+  CellRendererProps
 } from "@simple-table/react";
 import { musicData, getMusicThemeColors } from "./music.demo-data";
 import type { MusicArtist } from "./music.demo-data";
@@ -20,7 +20,7 @@ const NEGATIVE = { bg: "#fef2f2", text: "#b91c1c" };
 // ---------------------------------------------------------------------------
 const GrowthBadge = ({
   changeFormatted,
-  changePercent,
+  changePercent
 }: {
   changeFormatted: string;
   changePercent: number;
@@ -39,7 +39,7 @@ const GrowthBadge = ({
         padding: "2px 6px",
         fontSize: "11px",
         fontWeight: 500,
-        whiteSpace: "nowrap",
+        whiteSpace: "nowrap"
       }}
     >
       <span style={{ fontSize: "10px" }}>{isPositive ? "▲" : "▼"}</span>
@@ -54,7 +54,7 @@ const StatStack = ({
   value,
   changeFormatted,
   changePercent,
-  theme,
+  theme
 }: {
   label: string;
   value: string;
@@ -69,7 +69,7 @@ const StatStack = ({
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-end",
-        gap: "3px",
+        gap: "3px"
       }}
     >
       <span style={{ fontSize: "11px", color: colors.muted }}>{label}</span>
@@ -166,7 +166,7 @@ const IdentityCell = ({ row, theme }: CellRendererProps<MusicArtist>): ReactNode
           color: "white",
           fontSize: "15px",
           fontWeight: 600,
-          flexShrink: 0,
+          flexShrink: 0
         }}
       >
         {name.charAt(0).toUpperCase() || "?"}
@@ -179,7 +179,7 @@ const IdentityCell = ({ row, theme }: CellRendererProps<MusicArtist>): ReactNode
             color: colors.text,
             whiteSpace: "nowrap",
             overflow: "hidden",
-            textOverflow: "ellipsis",
+            textOverflow: "ellipsis"
           }}
           title={name}
         >
@@ -240,7 +240,7 @@ const ScoreCell = ({ row, theme }: CellRendererProps<MusicArtist>): ReactNode =>
     label,
     value,
     change,
-    decimals,
+    decimals
   }: {
     label: string;
     value: number;
@@ -295,7 +295,7 @@ const SegmentedBar = ({ segments }: { segments: { color: string; value: number }
       height: "9px",
       borderRadius: "4px",
       overflow: "hidden",
-      gap: "2px",
+      gap: "2px"
     }}
   >
     {segments.map((s, i) => (
@@ -375,7 +375,7 @@ const stat = (
   editable: false,
   align: "right",
   type: "number",
-  cellRenderer: makeStatCell(accessor, { label: options.label }),
+  cellRenderer: makeStatCell(accessor, { label: options.label })
 });
 
 function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
@@ -389,7 +389,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
       align: "center",
       type: "number",
       pinned: "left",
-      cellRenderer: RankCell,
+      cellRenderer: RankCell
     },
     {
       accessor: "identity",
@@ -401,7 +401,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
       type: "string",
       pinned: "left",
       valueGetter: ({ row }) => row.artistName,
-      cellRenderer: IdentityCell,
+      cellRenderer: IdentityCell
     },
     {
       accessor: "region",
@@ -412,7 +412,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
       align: "left",
       type: "string",
       valueGetter: ({ row }) => row.country,
-      cellRenderer: RegionCell,
+      cellRenderer: RegionCell
     },
     {
       accessor: "score",
@@ -422,7 +422,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
       editable: false,
       align: "left",
       type: "number",
-      cellRenderer: ScoreCell,
+      cellRenderer: ScoreCell
     },
     {
       accessor: "earliestAlbumReleaseDate",
@@ -432,7 +432,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
       editable: false,
       align: "right",
       type: "string",
-      cellRenderer: makeDateCell("earliestAlbumReleaseDate"),
+      cellRenderer: makeDateCell("earliestAlbumReleaseDate")
     },
     {
       accessor: "latestAlbumReleaseDate",
@@ -442,7 +442,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
       editable: false,
       align: "right",
       type: "string",
-      cellRenderer: makeDateCell("latestAlbumReleaseDate"),
+      cellRenderer: makeDateCell("latestAlbumReleaseDate")
     },
     {
       accessor: "audienceAge",
@@ -452,7 +452,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
       editable: false,
       align: "left",
       type: "string",
-      cellRenderer: AudienceAgeCell,
+      cellRenderer: AudienceAgeCell
     },
     {
       accessor: "audienceGender",
@@ -462,7 +462,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
       editable: false,
       align: "left",
       type: "string",
-      cellRenderer: AudienceGenderCell,
+      cellRenderer: AudienceGenderCell
     },
 
     // Followers / fans
@@ -490,7 +490,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
       editable: false,
       align: "right",
       type: "number",
-      cellRenderer: PopularityCell,
+      cellRenderer: PopularityCell
     },
     stat("spotifyMonthlyListeners", "Spotify Monthly Listeners", { width: 230 }),
     {
@@ -501,7 +501,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
       editable: false,
       align: "right",
       type: "number",
-      cellRenderer: makeRatioCell("spotifyFollowersToListenersRatio", "%"),
+      cellRenderer: makeRatioCell("spotifyFollowersToListenersRatio", "%")
     },
     {
       accessor: "spotifyReachFollowersRatio",
@@ -511,7 +511,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
       editable: false,
       align: "right",
       type: "number",
-      cellRenderer: makeRatioCell("spotifyReachFollowersRatio", "x"),
+      cellRenderer: makeRatioCell("spotifyReachFollowersRatio", "x")
     },
 
     // YouTube performance
@@ -524,7 +524,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
       editable: false,
       align: "right",
       type: "number",
-      cellRenderer: makeRateCell("youtubeEngagementRate"),
+      cellRenderer: makeRateCell("youtubeEngagementRate")
     },
     stat("youtubeDailyVideoViews", "YT Daily Video Views", { width: 220 }),
     stat("youtubeMonthlyListeners", "YT Monthly Listeners", { width: 220 }),
@@ -544,7 +544,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
       editable: false,
       align: "right",
       type: "number",
-      cellRenderer: makeRateCell("instagramEngagementRate"),
+      cellRenderer: makeRateCell("instagramEngagementRate")
     },
     {
       accessor: "tiktokEngagementRate",
@@ -555,8 +555,8 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
       align: "right",
       type: "number",
       cellRenderer: makeRateCell("tiktokEngagementRate", {
-        changeKey: "tiktokEngagementRateChange",
-      }),
+        changeKey: "tiktokEngagementRateChange"
+      })
     },
     stat("lineMusicLikes", "LINE Music Likes (Songs)", { width: 220 }),
     stat("lineMusicMvPlays", "LINE MV Plays", { width: 200 }),
@@ -588,7 +588,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
 }
 
 const MusicDemo = ({
-  theme,
+  theme
 }: {
   // `height` is intentionally unused: window/external scroll mode requires no
   // `height`/`maxHeight`, so the table grows to its natural size inside the page.
@@ -599,7 +599,7 @@ const MusicDemo = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   return (
     <div ref={wrapperRef} className="music-theme-container" style={{ fontFamily: "Inter" }}>
-      <SimpleTable<MusicArtist>
+      <SimpleTable
         columnReordering
         columnResizing
         customTheme={{ headerHeight: 40, rowHeight: 90 }}

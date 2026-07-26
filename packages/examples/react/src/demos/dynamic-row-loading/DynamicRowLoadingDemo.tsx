@@ -5,14 +5,14 @@ import {
   dynamicRowLoadingConfig,
   generateInitialRegions,
   fetchStoresForRegion,
-  fetchProductsForStore,
+  fetchProductsForStore
 } from "./dynamic-row-loading.demo-data";
 import type { DynamicRegion, DynamicTreeRow } from "./dynamic-row-loading.demo-data";
 import "@simple-table/react/styles.css";
 
 const DynamicRowLoadingDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -28,7 +28,7 @@ const DynamicRowLoadingDemo = ({
       setLoading,
       setError,
       setEmpty,
-      rowIndexPath,
+      rowIndexPath
     }: OnRowGroupExpandProps<DynamicTreeRow>) => {
       if (!isExpanded) return;
       if (groupingKey && row[groupingKey as keyof DynamicTreeRow] != null) {
@@ -76,7 +76,7 @@ const DynamicRowLoadingDemo = ({
   );
 
   return (
-    <SimpleTable<DynamicTreeRow>
+    <SimpleTable
       columnResizing={dynamicRowLoadingConfig.tableProps.columnResizing}
       columns={dynamicRowLoadingConfig.headers}
       enableColumnEditor={dynamicRowLoadingConfig.tableProps.enableColumnEditor}

@@ -30,7 +30,7 @@ const TeamCell = ({ row }: CellRendererProps<CellRendererEmployee>) => {
               justifyContent: "center",
               fontSize: 10,
               fontWeight: 600,
-              flexShrink: 0,
+              flexShrink: 0
             }}
           >
             {getInitials(m.name)}
@@ -66,7 +66,7 @@ const StatusCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
   const map: Record<string, { icon: string; color: string }> = {
     active: { icon: "✓", color: "#10B981" },
     inactive: { icon: "✕", color: "#EF4444" },
-    pending: { icon: "!", color: "#F59E0B" },
+    pending: { icon: "!", color: "#F59E0B" }
   };
   const { icon, color } = map[status] ?? { icon: "?", color: "#6b7280" };
   return (
@@ -89,7 +89,7 @@ const ProgressCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
             height: "100%",
             background: color,
             borderRadius: 5,
-            transition: "width 0.3s",
+            transition: "width 0.3s"
           }}
         />
       </div>
@@ -139,7 +139,7 @@ const TagsCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
             fontWeight: 500,
             background: "#DBEAFE",
             color: "#1E40AF",
-            whiteSpace: "nowrap",
+            whiteSpace: "nowrap"
           }}
         >
           {tag}
@@ -151,7 +151,7 @@ const TagsCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
 
 const CellRendererDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -164,7 +164,7 @@ const CellRendererDemo = ({
       progress: ProgressCell,
       rating: RatingCell,
       verified: VerifiedCell,
-      tags: TagsCell,
+      tags: TagsCell
     };
     return cellRendererConfig.headers.map((h) => {
       const cellRenderer = renderers[String(h.accessor)];
@@ -173,7 +173,7 @@ const CellRendererDemo = ({
   }, []);
 
   return (
-    <SimpleTable<CellRendererEmployee>
+    <SimpleTable
       columns={headers}
       getRowId={({ row }) => row.id}
       rows={cellRendererConfig.rows}

@@ -109,7 +109,7 @@ export const columnEditorCustomRendererConfig = {
   tableProps: {
     enableColumnEditor: true,
   },
-} as const;
+};
 
 export const COLUMN_EDITOR_TEXT = "Manage Columns";
 export const COLUMN_EDITOR_SEARCH_PLACEHOLDER = "Search columns…";

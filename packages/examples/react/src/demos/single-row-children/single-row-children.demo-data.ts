@@ -55,4 +55,4 @@ export const singleRowChildrenConfig = {
     columnResizing: true,
     selectableCells: true,
   },
-} as const;
+};

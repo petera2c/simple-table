@@ -3,7 +3,7 @@ import { SimpleTable } from "@simple-table/react";
 import type {
   Theme,
   CellChangeProps,
-  ReactColumnDef,
+  ReactColumnDef
 } from "@simple-table/react";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
 import type { HREmployee } from "./hr.demo-data";
@@ -29,7 +29,7 @@ function getHeaders(): ReactColumnDef<HREmployee>[] {
                   justifyContent: "center",
                   backgroundColor: c.avatarBg,
                   color: c.avatarText,
-                  fontSize: "12px",
+                  fontSize: "12px"
                 }}
               >
                 {initials}
@@ -40,7 +40,7 @@ function getHeaders(): ReactColumnDef<HREmployee>[] {
               </div>
             </div>
           );
-        },
+        }
       };
     }
     if (h.accessor === "performanceScore") {
@@ -62,7 +62,7 @@ function getHeaders(): ReactColumnDef<HREmployee>[] {
                   height: "6px",
                   width: "100%",
                   borderRadius: "100px",
-                  overflow: "hidden",
+                  overflow: "hidden"
                 }}
               >
                 <div
@@ -70,7 +70,7 @@ function getHeaders(): ReactColumnDef<HREmployee>[] {
                     height: "100%",
                     width: `${row.performanceScore}%`,
                     backgroundColor: color,
-                    borderRadius: "100px",
+                    borderRadius: "100px"
                   }}
                 />
               </div>
@@ -81,7 +81,7 @@ function getHeaders(): ReactColumnDef<HREmployee>[] {
               </div>
             </div>
           );
-        },
+        }
       };
     }
     if (h.accessor === "hireDate") {
@@ -97,11 +97,11 @@ function getHeaders(): ReactColumnDef<HREmployee>[] {
               {date.toLocaleDateString("en-US", {
                 month: "short",
                 day: "numeric",
-                year: "numeric",
+                year: "numeric"
               })}
             </span>
           );
-        },
+        }
       };
     }
     if (h.accessor === "yearsOfService") {
@@ -110,7 +110,7 @@ function getHeaders(): ReactColumnDef<HREmployee>[] {
         cellRenderer: ({ row, theme }) => {
           const c = getHRThemeColors(theme);
           return <span style={{ color: c.gray }}>{`${row.yearsOfService} yrs`}</span>;
-        },
+        }
       };
     }
     if (h.accessor === "salary") {
@@ -119,7 +119,7 @@ function getHeaders(): ReactColumnDef<HREmployee>[] {
         cellRenderer: ({ row, theme }) => {
           const c = getHRThemeColors(theme);
           return <span style={{ color: c.gray }}>{`$${row.salary.toLocaleString()}`}</span>;
-        },
+        }
       };
     }
     if (h.accessor === "status") {
@@ -139,13 +139,13 @@ function getHeaders(): ReactColumnDef<HREmployee>[] {
                 fontSize: "12px",
                 lineHeight: "20px",
                 borderRadius: "2px",
-                display: "inline-block",
+                display: "inline-block"
               }}
             >
               {row.status}
             </span>
           );
-        },
+        }
       };
     }
     return h;
@@ -167,7 +167,7 @@ const HRDemo = ({ height = "400px", theme }: { height?: string | number; theme?:
   const headers = useMemo(() => getHeaders(), []);
 
   return (
-    <SimpleTable<HREmployee>
+    <SimpleTable
       columnReordering
       columnResizing
       columns={headers}

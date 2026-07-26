@@ -37,4 +37,4 @@ export const headerRendererConfig = {
     selectableCells: true,
     columnResizing: true,
   },
-} as const;
+};

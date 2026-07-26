@@ -57,4 +57,4 @@ export const chartsConfig = {
     columnResizing: true,
     selectableCells: true,
   },
-} as const;
+};

@@ -5,14 +5,14 @@ import type {
   FooterRendererProps,
   HeaderRendererProps,
   ReactColumnDef,
-  Theme,
+  Theme
 } from "@simple-table/react";
 import {
   HEADER_HEIGHT,
   ROW_HEIGHT,
   formatNumber,
   radioStationRows,
-  type RadioStationRow,
+  type RadioStationRow
 } from "./radio-stations.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -34,7 +34,7 @@ const StationCell = ({ value }: CellRendererProps<RadioStationRow>): ReactNode =
         alignItems: "center",
         gap: 10,
         minWidth: 0,
-        width: "100%",
+        width: "100%"
       }}
     >
       <div
@@ -44,7 +44,7 @@ const StationCell = ({ value }: CellRendererProps<RadioStationRow>): ReactNode =
           height: 40,
           borderRadius: 4,
           background: "linear-gradient(135deg, #94a3b8, #64748b)",
-          flexShrink: 0,
+          flexShrink: 0
         }}
       />
       <a
@@ -58,7 +58,7 @@ const StationCell = ({ value }: CellRendererProps<RadioStationRow>): ReactNode =
           fontWeight: 500,
           color: "#1e293b",
           textDecoration: "none",
-          minWidth: 0,
+          minWidth: 0
         }}
       >
         {name}
@@ -93,7 +93,7 @@ const HeaderWithMenu = ({ header }: HeaderRendererProps<RadioStationRow>): React
         width: "100%",
         gap: 8,
         minWidth: 0,
-        padding: "0 4px",
+        padding: "0 4px"
       }}
     >
       <span
@@ -103,7 +103,7 @@ const HeaderWithMenu = ({ header }: HeaderRendererProps<RadioStationRow>): React
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
-          minWidth: 0,
+          minWidth: 0
         }}
       >
         {label}
@@ -125,7 +125,7 @@ const HeaderWithMenu = ({ header }: HeaderRendererProps<RadioStationRow>): React
           color: "#64748b",
           flexShrink: 0,
           fontSize: 14,
-          lineHeight: 1,
+          lineHeight: 1
         }}
       >
         ⋮
@@ -137,7 +137,7 @@ const HeaderWithMenu = ({ header }: HeaderRendererProps<RadioStationRow>): React
 function buildHeaders(): ReactColumnDef<RadioStationRow>[] {
   const withMenu = (header: ReactColumnDef<RadioStationRow>): ReactColumnDef<RadioStationRow> => ({
     ...header,
-    headerRenderer: HeaderWithMenu,
+    headerRenderer: HeaderWithMenu
   });
 
   return [
@@ -148,7 +148,7 @@ function buildHeaders(): ReactColumnDef<RadioStationRow>[] {
       type: "number",
       align: "center",
       pinned: "left",
-      sortable: false,
+      sortable: false
     }),
     withMenu({
       accessor: "name",
@@ -158,7 +158,7 @@ function buildHeaders(): ReactColumnDef<RadioStationRow>[] {
       align: "left",
       pinned: "left",
       sortable: true,
-      cellRenderer: StationCell,
+      cellRenderer: StationCell
     }),
     withMenu({
       accessor: "genre",
@@ -167,7 +167,7 @@ function buildHeaders(): ReactColumnDef<RadioStationRow>[] {
       type: "string",
       align: "left",
       pinned: "left",
-      sortable: true,
+      sortable: true
     }),
     withMenu({
       accessor: "broadcast_area",
@@ -176,7 +176,7 @@ function buildHeaders(): ReactColumnDef<RadioStationRow>[] {
       type: "string",
       align: "left",
       pinned: "left",
-      sortable: true,
+      sortable: true
     }),
     withMenu({
       accessor: "country",
@@ -186,7 +186,7 @@ function buildHeaders(): ReactColumnDef<RadioStationRow>[] {
       align: "left",
       pinned: "left",
       sortable: true,
-      cellRenderer: CountryCell,
+      cellRenderer: CountryCell
     }),
     withMenu({
       accessor: "wikipedia_views",
@@ -196,7 +196,7 @@ function buildHeaders(): ReactColumnDef<RadioStationRow>[] {
       type: "number",
       align: "right",
       sortable: true,
-      valueFormatter: ({ value }) => formatNumber(value),
+      valueFormatter: ({ value }) => formatNumber(value)
     }),
     withMenu({
       accessor: "aqh",
@@ -206,13 +206,13 @@ function buildHeaders(): ReactColumnDef<RadioStationRow>[] {
       type: "number",
       align: "right",
       sortable: true,
-      valueFormatter: ({ value }) => formatNumber(value),
+      valueFormatter: ({ value }) => formatNumber(value)
     }),
   ];
 }
 
 const RadioStationsDemo = ({
-  theme = "custom",
+  theme = "custom"
 }: {
   // height intentionally unused — window/external scroll requires no height/maxHeight
   height?: string | number;
@@ -247,7 +247,7 @@ const RadioStationsDemo = ({
       borderBottom: "1px solid #e2e8f0",
       background: "#f8fafc",
       fontSize: 13,
-      color: "#475569",
+      color: "#475569"
     };
     return (
       <div style={wrapStyle}>
@@ -266,7 +266,7 @@ const RadioStationsDemo = ({
         compare resize lag with the vanilla Storybook example.
       </p>
 
-      <SimpleTable<RadioStationRow>
+      <SimpleTable
         columns={headers}
         rows={rows}
         getRowId={({ row }) => String(row.id)}
@@ -279,7 +279,7 @@ const RadioStationsDemo = ({
         columnEditorConfig={{
           text: "All Columns",
           searchEnabled: true,
-          searchPlaceholder: "Search columns",
+          searchPlaceholder: "Search columns"
         }}
         footerPosition="top"
         footerRenderer={renderFooter}

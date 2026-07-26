@@ -48,4 +48,4 @@ export const infiniteScrollHeaders: ReactColumnDef<InfiniteScrollEmployee>[] = [
 export const infiniteScrollConfig = {
   headers: infiniteScrollHeaders,
   rows: generateInfiniteScrollData(0, 30),
-} as const;
+};

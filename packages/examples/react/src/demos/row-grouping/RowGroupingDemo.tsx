@@ -11,12 +11,12 @@ const btnStyle = (color: string) => ({
   borderRadius: 4,
   cursor: "pointer",
   fontSize: 12,
-  fontWeight: 500 as const,
+  fontWeight: 500 as const
 });
 
 const RowGroupingDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -51,7 +51,7 @@ const RowGroupingDemo = ({
           Toggle Divisions
         </button>
       </div>
-      <SimpleTable<OrgUnit>
+      <SimpleTable
         ref={tableRef}
         columns={rowGroupingConfig.headers}
         rows={rowGroupingConfig.rows}

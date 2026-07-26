@@ -22,7 +22,7 @@ function getFooterColors(theme?: Theme) {
         buttonBg: "#1f2937",
         buttonBorder: "#374151",
         buttonActive: "#3b82f6",
-        buttonDisabled: "#6b7280",
+        buttonDisabled: "#6b7280"
       };
     default:
       return {
@@ -32,7 +32,7 @@ function getFooterColors(theme?: Theme) {
         buttonBg: "white",
         buttonBorder: "#e2e8f0",
         buttonActive: "#3b82f6",
-        buttonDisabled: "#cbd5e1",
+        buttonDisabled: "#cbd5e1"
       };
   }
 }
@@ -65,7 +65,7 @@ const SalesDemo = ({ height, theme }: { height?: string | number | null; theme?:
     hasPrevPage,
     hasNextPage,
     onPrevPage,
-    onNextPage,
+    onNextPage
   }: FooterRendererProps) => {
     const btnStyle = (disabled: boolean): React.CSSProperties => ({
       padding: "6px 14px",
@@ -75,7 +75,7 @@ const SalesDemo = ({ height, theme }: { height?: string | number | null; theme?:
       backgroundColor: colors.buttonBg,
       border: `1px solid ${colors.buttonBorder}`,
       borderRadius: "6px",
-      cursor: disabled ? "not-allowed" : "pointer",
+      cursor: disabled ? "not-allowed" : "pointer"
     });
 
     return (
@@ -88,7 +88,7 @@ const SalesDemo = ({ height, theme }: { height?: string | number | null; theme?:
           backgroundColor: colors.background,
           borderBottom: `1px solid ${colors.border}`,
           color: colors.text,
-          fontSize: "14px",
+          fontSize: "14px"
         }}
       >
         <span style={{ fontWeight: 600 }}>
@@ -110,7 +110,7 @@ const SalesDemo = ({ height, theme }: { height?: string | number | null; theme?:
   };
 
   return (
-    <SimpleTable<SalesRow>
+    <SimpleTable
       autoExpandColumns={!isMobile}
       columnResizing
       columnReordering

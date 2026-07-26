@@ -203,4 +203,4 @@ export const aggregateFunctionsConfig = {
     rowGrouping: ["categories", "creators"] as string[],
     columnResizing: true,
   },
-} as const;
+};

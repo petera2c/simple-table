@@ -36,4 +36,4 @@ export const columnReorderingConfig = {
   headers: columnReorderingHeaders,
   rows: columnReorderingData,
   tableProps: { columnReordering: true },
-} as const;
+};

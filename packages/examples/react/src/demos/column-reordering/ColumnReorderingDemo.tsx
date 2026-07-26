@@ -6,7 +6,7 @@ import "@simple-table/react/styles.css";
 
 const ColumnReorderingDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -18,7 +18,7 @@ const ColumnReorderingDemo = ({
   };
 
   return (
-    <SimpleTable<CrewMember>
+    <SimpleTable
       columnReordering={columnReorderingConfig.tableProps.columnReordering}
       columns={headers}
       rows={columnReorderingConfig.rows}

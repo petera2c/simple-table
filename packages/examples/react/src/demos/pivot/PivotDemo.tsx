@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
-import { pivotDemoConfig, pivotPresets, type PivotFact } from "./pivot.demo-data";
+import { pivotDemoConfig, pivotPresets } from "./pivot.demo-data";
 import "@simple-table/react/styles.css";
 
 const PivotDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -33,7 +33,7 @@ const PivotDemo = ({
                 fontSize: 13,
                 fontWeight: 500,
                 background: selected ? "#2563eb" : "#e5e7eb",
-                color: selected ? "#fff" : "#374151",
+                color: selected ? "#fff" : "#374151"
               }}
             >
               {preset.label}
@@ -41,7 +41,7 @@ const PivotDemo = ({
           );
         })}
       </div>
-      <SimpleTable<PivotFact>
+      <SimpleTable
         columns={pivotDemoConfig.headers}
         rows={pivotDemoConfig.rows}
         pivot={active.pivot}

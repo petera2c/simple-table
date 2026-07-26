@@ -39,4 +39,4 @@ export const columnResizingData = [
 export const columnResizingConfig = {
   headers: columnResizingHeaders,
   rows: columnResizingData,
-} as const;
+};

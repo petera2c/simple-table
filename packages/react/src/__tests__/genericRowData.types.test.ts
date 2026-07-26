@@ -53,6 +53,7 @@ const props: SimpleTableReactProps<HREmployee> = {
 };
 
 const ref = createRef<TableAPI<HREmployee>>();
+// Explicit type arg still works when you want it:
 void createElement(SimpleTable<HREmployee>, { ...props, ref });
 
 // Untyped / default path still accepts open records (prior object[] escape).

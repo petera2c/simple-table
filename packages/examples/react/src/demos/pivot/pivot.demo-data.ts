@@ -49,30 +49,28 @@ export const pivotHeaders: ReactColumnDef<PivotFact>[] = [
   },
 ];
 
-const REGIONS = ["West", "East", "North", "South"] as const;
-const COUNTRIES: Record<(typeof REGIONS)[number], string[]> = {
+const COUNTRIES = {
   West: ["USA", "Canada"],
   East: ["USA", "UK"],
   North: ["Canada", "Sweden"],
   South: ["Brazil", "Australia"],
 };
-const CATEGORIES = ["Hardware", "Software"] as const;
-const PRODUCTS: Record<(typeof CATEGORIES)[number], string[]> = {
+const PRODUCTS = {
   Hardware: ["Widget", "Gadget", "Sensor"],
   Software: ["License", "Subscription"],
 };
-const CHANNELS = ["Direct", "Partner", "Online"] as const;
-const YEARS = [2024, 2025] as const;
-const QUARTERS = ["Q1", "Q2", "Q3", "Q4"] as const;
+const CHANNELS = ["Direct", "Partner", "Online"];
+const YEARS = [2024, 2025];
+const QUARTERS = ["Q1", "Q2", "Q3", "Q4"];
 
 /** Sparse multi-dimension fact cube (~150–250 rows). */
 export function generatePivotRows(): PivotFact[] {
   const rows: PivotFact[] = [];
   let id = 1;
-  for (const region of REGIONS) {
-    for (const country of COUNTRIES[region]) {
-      for (const category of CATEGORIES) {
-        for (const product of PRODUCTS[category]) {
+  for (const [region, countries] of Object.entries(COUNTRIES)) {
+    for (const country of countries) {
+      for (const [category, products] of Object.entries(PRODUCTS)) {
+        for (const product of products) {
           for (const channel of CHANNELS) {
             for (const year of YEARS) {
               for (const quarter of QUARTERS) {

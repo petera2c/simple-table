@@ -45,4 +45,4 @@ export const externalSortConfig = {
   headers: externalSortHeaders,
   rows: externalSortData,
   tableProps: { externalSortHandling: true, columnResizing: true },
-} as const;
+};

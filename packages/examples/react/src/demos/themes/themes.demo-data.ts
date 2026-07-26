@@ -44,4 +44,4 @@ export const themesData: ThemeDemoStaff[] = [
 export const themesConfig = {
   headers: themesHeaders,
   rows: themesData,
-} as const;
+};

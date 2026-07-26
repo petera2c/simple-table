@@ -11,14 +11,14 @@ const BillingDemo = ({ height = "400px", theme }: { height?: string | number; th
         ...h,
         cellRenderer: ({ row }) => (
           <div className={row.type === "account" ? "font-semibold" : ""}>{row.name}</div>
-        ),
+        )
       };
     }
     return h;
   });
 
   return (
-    <SimpleTable<BillingRow>
+    <SimpleTable
       columnReordering
       columnResizing
       columns={headers}

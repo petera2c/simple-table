@@ -122,4 +122,4 @@ export function getManufacturingStatusColors(status: string, theme?: string) {
 export const manufacturingConfig = {
   headers: manufacturingHeaders,
   rows: manufacturingData,
-} as const;
+};

@@ -4,7 +4,7 @@ import type { Theme } from "@simple-table/react";
 import {
   nestedTablesConfig,
   generateNestedTablesData,
-  type NestedCompany,
+  type NestedCompany
 } from "./nested-tables.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -12,7 +12,7 @@ const NestedTablesDemo = ({ height = "500px", theme }: { height?: string | numbe
   const sampleData = useMemo(() => generateNestedTablesData(25), []);
 
   return (
-    <SimpleTable<NestedCompany>
+    <SimpleTable
       autoExpandColumns={nestedTablesConfig.tableProps.autoExpandColumns}
       columns={nestedTablesConfig.headers}
       rows={sampleData}
