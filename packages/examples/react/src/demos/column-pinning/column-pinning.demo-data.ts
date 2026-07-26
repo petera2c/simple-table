@@ -1,8 +1,21 @@
 // Self-contained demo table setup for this example.
 import type { ReactColumnDef } from "@simple-table/react";
 
+export interface ColumnPinningEmployee {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+  location: string;
+  joinDate: string;
+  salary: number;
+  manager: string;
+  status: string;
+  projects: number;
+}
 
-export const columnPinningHeaders: ReactColumnDef[] = [
+export const columnPinningHeaders: ReactColumnDef<ColumnPinningEmployee>[] = [
   { accessor: "name", label: "Name", width: 132, pinned: "left", type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },
   { accessor: "role", label: "Role", width: 150, type: "string" },
@@ -15,7 +28,7 @@ export const columnPinningHeaders: ReactColumnDef[] = [
   { accessor: "projects", label: "Projects", width: 100, align: "right", pinned: "right", type: "number" },
 ];
 
-export const columnPinningData = [
+export const columnPinningData: ColumnPinningEmployee[] = [
   { id: 1, name: "Zara Nakamura", email: "zara.n@pixelstudio.game", role: "Lead Game Designer", department: "Game Design", location: "Tokyo", joinDate: "2019-03-12", salary: 145000, manager: "Hiroshi Tanaka", status: "Active", projects: 7 },
   { id: 2, name: "Phoenix Rodriguez", email: "phoenix.r@pixelstudio.game", role: "3D Artist", department: "Art & Animation", location: "Montreal", joinDate: "2020-11-08", salary: 98000, manager: "Elena Volkov", status: "Active", projects: 4 },
   { id: 3, name: "Kai Thompson", email: "kai.t@pixelstudio.game", role: "Senior Programmer", department: "Engineering", location: "San Francisco", joinDate: "2018-05-15", salary: 135000, manager: "Nova Singh", status: "Active", projects: 6 },
