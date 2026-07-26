@@ -1,17 +1,17 @@
 import { SimpleTable } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
-import { columnSortingConfig, type FacultyMember } from "./column-sorting.demo-data";
+import { columnSortingConfig } from "./column-sorting.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnSortingDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable<FacultyMember>
+    <SimpleTable
       columns={columnSortingConfig.headers}
       rows={columnSortingConfig.rows}
       height={height}
