@@ -19,13 +19,13 @@ const LiveUpdateDemo = ({
 
   useEffect(() => {
     const currentData: LiveUpdateProduct[] = JSON.parse(JSON.stringify(liveUpdateData));
-    const timerMap = new Map<string | number, ReturnType<typeof setTimeout>>();
-    const currentPeriodSales = new Map<string | number, number>();
+    const timerMap = new Map<number, ReturnType<typeof setTimeout>>();
+    const currentPeriodSales = new Map<number, number>();
     let isActive = true;
 
     const UPDATE_CONFIG = { minInterval: 300, maxInterval: 1000 };
 
-    const createRowTimer = (rowId: string | number) => {
+    const createRowTimer = (rowId: number) => {
       const scheduleUpdate = () => {
         if (!isActive) return;
         const interval =
@@ -73,7 +73,9 @@ const LiveUpdateDemo = ({
     const syncTimers = () => {
       if (!tableRef.current) return;
       const visibleRows = tableRef.current.getVisibleRows();
-      const visibleRowIds = new Set(visibleRows.map((vr) => vr.row.id));
+      const visibleRowIds = new Set(
+        visibleRows.map((vr) => vr.row.id).filter((id): id is number => typeof id === "number"),
+      );
       timerMap.forEach((timerId, rowId) => {
         if (!visibleRowIds.has(rowId)) {
           clearTimeout(timerId);
@@ -82,7 +84,7 @@ const LiveUpdateDemo = ({
       });
       visibleRows.forEach((visibleRow) => {
         const rowId = visibleRow.row.id;
-        if (!timerMap.has(rowId)) createRowTimer(rowId);
+        if (typeof rowId === "number" && !timerMap.has(rowId)) createRowTimer(rowId);
       });
     };
 
