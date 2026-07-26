@@ -1,16 +1,16 @@
 import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { tooltipConfig, type TooltipProduct } from "./tooltip.demo-data";
+import { tooltipConfig } from "./tooltip.demo-data";
 import "@simple-table/react/styles.css";
 
 const TooltipDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable<TooltipProduct>
+    <SimpleTable
       columns={tooltipConfig.headers}
       rows={tooltipConfig.rows}
       height={height}
