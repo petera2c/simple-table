@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {SimpleTable} from "@simple-table/react";import type { Theme, QuickFilterMode } from "@simple-table/react";
-import { quickFilterConfig } from "./quick-filter.demo-data";
+import { quickFilterConfig, type QuickFilterEmployee } from "./quick-filter.demo-data";
 import "@simple-table/react/styles.css";
 
 const QuickFilterDemo = ({
@@ -76,11 +76,12 @@ const QuickFilterDemo = ({
           Case Sensitive
         </button>
       </div>
-      <SimpleTable
+      <SimpleTable<QuickFilterEmployee>
         columns={quickFilterConfig.headers}
         rows={quickFilterConfig.rows}
         height={height}
         theme={theme}
+        getRowId={({ row }) => row.id}
         quickFilter={{ text: searchText, mode: filterMode, caseSensitive }}
       />
     </div>
