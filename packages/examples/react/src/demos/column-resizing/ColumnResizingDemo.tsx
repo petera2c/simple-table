@@ -5,13 +5,13 @@ import {
   columnResizingHeaders,
   columnResizingData,
   COLUMN_RESIZING_STORAGE_KEY,
-  type OceanStaff,
+  type OceanStaff
 } from "./column-resizing.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnResizingDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -27,7 +27,7 @@ const ColumnResizingDemo = ({
         setHeaders(
           columnResizingHeaders.map((h) => ({
             ...h,
-            width: (widthMap as Record<string, number | string | undefined>)[h.accessor] ?? h.width,
+            width: (widthMap as Record<string, number | string | undefined>)[h.accessor] ?? h.width
           })),
         );
       }
@@ -70,13 +70,13 @@ const ColumnResizingDemo = ({
             fontSize: 14,
             fontWeight: 500,
             zIndex: 1000,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.15)"
           }}
         >
           {saveMessage}
         </div>
       )}
-      <SimpleTable<OceanStaff>
+      <SimpleTable
         columnResizing
         columns={headers}
         rows={columnResizingData}
