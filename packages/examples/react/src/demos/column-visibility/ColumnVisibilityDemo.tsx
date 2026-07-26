@@ -10,6 +10,7 @@ import {
   getColumnVisibilityDemoHeaders,
   loadColumnVisibilityDemoSaved,
   saveColumnVisibilityDemoState,
+  type VisibilityEmployee,
 } from "./column-visibility.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -30,13 +31,14 @@ const ColumnVisibilityDemo = ({
   }, []);
 
   return (
-    <SimpleTable
+    <SimpleTable<VisibilityEmployee>
       columns={headers}
       rows={columnVisibilityConfig.rows}
       enableColumnEditor
       enableColumnEditorInitOpen
       height={height}
       theme={theme}
+      getRowId={({ row }) => row.id}
       onColumnVisibilityChange={onColumnVisibilityChange}
       columnEditorConfig={{
         ...columnVisibilityConfig.tableProps.columnEditorConfig,
