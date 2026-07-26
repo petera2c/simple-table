@@ -6,7 +6,7 @@ import "@simple-table/react/styles.css";
 
 const LoadingStateDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -37,13 +37,13 @@ const LoadingStateDemo = ({
           disabled={isLoading}
           style={{
             padding: "6px 16px",
-            cursor: isLoading ? "not-allowed" : "pointer",
+            cursor: isLoading ? "not-allowed" : "pointer"
           }}
         >
           {isLoading ? "Loading…" : "Reload Data"}
         </button>
       </div>
-      <SimpleTable<LoadingStateEmployee>
+      <SimpleTable
         columns={loadingStateConfig.headers}
         getRowId={({ row }) => row.id}
         rows={data}
