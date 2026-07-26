@@ -8,6 +8,7 @@ import { SimpleTable } from "../index";
 import type {
   TableAPI,
   ReactColumnDef,
+  NestedReactColumnDef,
   CellChangeProps,
   SimpleTableReactProps,
 } from "../index";
@@ -103,6 +104,14 @@ const companyColumns: ReactColumnDef<NestCompany>[] = [
   },
 ];
 void companyColumns;
+
+// Non-column objects are rejected at the nest boundary.
+const notAColumn = { foo: 1 };
+const badNestedColumns: NestedReactColumnDef[] = [
+  // @ts-expect-error nest columns require column metadata (accessor, label, …)
+  notAColumn,
+];
+void badNestedColumns;
 
 describe("generic row data types", () => {
   it("compiles typed SimpleTable props and ref", () => {
