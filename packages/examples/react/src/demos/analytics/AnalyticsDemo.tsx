@@ -151,7 +151,7 @@ const AnalyticsDemo = ({
       >
         <div ref={tableHostRef} style={{ flex: 1, minHeight: 0 }}>
           {tableHeightPx != null && (
-            <SimpleTable<AnalyticsFactRow>
+            <SimpleTable
               key={activeId}
               ref={tableRef}
               autoExpandColumns

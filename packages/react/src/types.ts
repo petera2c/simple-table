@@ -19,9 +19,12 @@ import type {
 } from "simple-table-core";
 
 /**
- * Default `TData` for React props: open records so existing domain object
- * arrays keep assigning to `rows` without `asRows`. Opt into a domain
- * interface via `SimpleTable<MyRow>` / `SimpleTableReactProps<MyRow>`.
+ * Default `TData` for React props bags / helpers: open records so untyped
+ * object arrays keep assigning to `rows` without `asRows`.
+ *
+ * Prefer letting `<SimpleTable rows={…} columns={…} />` infer `TData` from
+ * those props — an explicit `SimpleTable<MyRow>` is only needed when inference
+ * can't see a typed `rows`/`columns` (or for `useRef<TableAPI<MyRow>>`).
  */
 export type ReactDefaultRowData = Record<string, any>;
 
@@ -183,8 +186,9 @@ export interface ReactColumnDef<
 
 
 // ─── Top-level props ──────────────────────────────────────────────────────────
-// Mirrors SimpleTableProps with React-specific renderer/icon types. Use `ref` +
-// a generic `SimpleTable<TData>` for the imperative API.
+// Mirrors SimpleTableProps with React-specific renderer/icon types.
+// `SimpleTable` infers `TData` from `rows`/`columns`; use `useRef<TableAPI<TData>>`
+// when you need a typed imperative handle.
 //
 //   Overridden to React equivalents:
 //     - columns → ReadonlyArray<ReactColumnDef<TData>>
