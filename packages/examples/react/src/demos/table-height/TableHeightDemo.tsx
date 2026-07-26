@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { tableHeightConfig } from "./table-height.demo-data";
+import { tableHeightConfig, type HeightDemoEmployee } from "./table-height.demo-data";
 import "@simple-table/react/styles.css";
 
 const heights = ["200px", "300px", "400px"] as const;
@@ -36,11 +36,12 @@ const TableHeightDemo = ({
           </button>
         ))}
       </div>
-      <SimpleTable
+      <SimpleTable<HeightDemoEmployee>
         columns={tableHeightConfig.headers}
         rows={tableHeightConfig.rows}
         height={selectedHeight}
         theme={theme}
+        getRowId={({ row }) => row.id}
       />
     </div>
   );
