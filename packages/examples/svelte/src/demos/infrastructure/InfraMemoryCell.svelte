@@ -3,16 +3,15 @@
   import { getInfraMetricColorStyles } from "./infrastructure.demo-data";
   import type { InfrastructureServer } from "./infrastructure.demo-data";
 
-  let { row, theme }: CellRendererProps = $props();
-  const d = $derived(row as unknown as InfrastructureServer);
+  let { row, theme }: CellRendererProps<InfrastructureServer> = $props();
   const t = $derived(theme || "light");
-  const s = $derived(getInfraMetricColorStyles(d.memoryUsage, t, "memory"));
+  const s = $derived(getInfraMetricColorStyles(row.memoryUsage, t, "memory"));
 </script>
 
 <div style="display:flex;justify-content:end;">
   <div
     style="padding:3px 6px;border-radius:3px;font-weight:600;font-size:0.8rem;color:{s.color};background-color:{s.backgroundColor ?? ''};"
   >
-    {d.memoryUsage.toFixed(1)}%
+    {row.memoryUsage.toFixed(1)}%
   </div>
 </div>

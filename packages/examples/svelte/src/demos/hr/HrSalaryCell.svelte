@@ -3,9 +3,8 @@
   import { getHRThemeColors } from "./hr.demo-data";
   import type { HREmployee } from "./hr.demo-data";
 
-  let { row, theme }: CellRendererProps = $props();
-  const d = $derived(row as unknown as HREmployee);
+  let { row, theme }: CellRendererProps<HREmployee> = $props();
   const c = $derived(getHRThemeColors(theme));
 </script>
 
-<span style="color:{c.gray};">${d.salary.toLocaleString()}</span>
+<span style="color:{c.gray};">${row.salary.toLocaleString()}</span>

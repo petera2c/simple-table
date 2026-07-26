@@ -1,8 +1,8 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { SvelteColumnDef, CellChangeProps } from "@simple-table/svelte";
+  import type { SvelteColumnDef, CellChangeProps, GetRowIdParams } from "@simple-table/svelte";
   import { crmData } from "./crm.demo-data";
-  import type { CrmShellTheme } from "./crm.demo-data";
+  import type { CRMLead, CrmShellTheme } from "./crm.demo-data";
   import { syncCrmDemoPalette, crmRowsPerPage } from "./crm-demo-stores";
   import CrmContactCell from "./CrmContactCell.svelte";
   import CrmSignalCell from "./CrmSignalCell.svelte";
@@ -18,7 +18,7 @@
 
   let { height = "400px", theme }: { height?: string | number; theme?: CrmShellTheme } = $props();
 
-  let data = $state([...crmData]);
+  let data = $state<CRMLead[]>([...crmData]);
 
   const isDark = $derived(
     theme === "custom-dark" || theme === "dark" || theme === "modern-dark",
@@ -28,8 +28,10 @@
     syncCrmDemoPalette(isDark);
   });
 
+  const getRowId = ({ row }: GetRowIdParams<CRMLead>) => row.id;
+
   const headers = $derived.by(
-    (): SvelteColumnDef[] => [
+    (): SvelteColumnDef<CRMLead>[] => [
       {
         accessor: "name",
         label: "CONTACT",
@@ -136,7 +138,7 @@
     ],
   );
 
-  function handleCellEdit({ accessor, newValue, row }: CellChangeProps) {
+  function handleCellEdit({ accessor, newValue, row }: CellChangeProps<CRMLead>) {
     data = data.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item));
   }
 </script>
@@ -149,6 +151,7 @@
     columns={headers}
     enableRowSelection={true}
     footerRenderer={CrmFooter}
+    {getRowId}
     {height}
     onCellEdit={handleCellEdit}
     rows={data}

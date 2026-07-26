@@ -1,11 +1,15 @@
 <script lang="ts">
-  import {SimpleTable} from "@simple-table/svelte";  import type { Theme } from "@simple-table/svelte";
+  import { SimpleTable } from "@simple-table/svelte";
+  import type { Theme, TableAPI, GetRowIdParams } from "@simple-table/svelte";
   import { rowGroupingConfig } from "./row-grouping.demo-data";
+  import type { OrgUnit } from "./row-grouping.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  let tableRef: any;
+  let tableRef: { getAPI: () => TableAPI | null } | undefined;
+
+  const getRowId = ({ row }: GetRowIdParams<OrgUnit>) => row.id;
 
   function expandAll() { tableRef?.getAPI()?.expandAll(); }
   function collapseAll() { tableRef?.getAPI()?.collapseAll(); }
@@ -33,7 +37,7 @@
     rows={rowGroupingConfig.rows}
     rowGrouping={rowGroupingConfig.tableProps.rowGrouping}
     enableStickyParents={true}
-    getRowId={rowGroupingConfig.tableProps.getRowId}
+    getRowId={getRowId}
     columnResizing={true}
     {height}
     {theme}

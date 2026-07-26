@@ -1,7 +1,8 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteColumnDef } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef, GetRowIdParams } from "@simple-table/svelte";
   import { cellRendererConfig } from "./cell-renderer.demo-data";
+  import type { CellRendererEmployee } from "./cell-renderer.demo-data";
   import CrTeamMembersCell from "./CrTeamMembersCell.svelte";
   import CrWebsiteCell from "./CrWebsiteCell.svelte";
   import CrStatusCell from "./CrStatusCell.svelte";
@@ -23,15 +24,18 @@
     tags: CrTagsCell,
   };
 
-  const headers: SvelteColumnDef[] = cellRendererConfig.headers.map((h) => {
+  const headers: SvelteColumnDef<CellRendererEmployee>[] = cellRendererConfig.headers.map((h) => {
     const cellRenderer = RENDERERS[h.accessor as string];
     return cellRenderer ? { ...h, cellRenderer } : { ...h };
   });
+
+  const getRowId = ({ row }: GetRowIdParams<CellRendererEmployee>) => row.id;
 </script>
 
 <SimpleTable
   columns={headers}
   rows={cellRendererConfig.rows}
+  getRowId={getRowId}
   {height}
   {theme}
   selectableCells={cellRendererConfig.tableProps.selectableCells}

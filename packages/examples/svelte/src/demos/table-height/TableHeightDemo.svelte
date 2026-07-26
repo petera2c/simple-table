@@ -1,11 +1,15 @@
 <script lang="ts">
-  import {SimpleTable} from "@simple-table/svelte";  import type { Theme } from "@simple-table/svelte";
+  import { SimpleTable } from "@simple-table/svelte";
+  import type { Theme, GetRowIdParams } from "@simple-table/svelte";
   import { tableHeightConfig } from "./table-height.demo-data";
+  import type { HeightDemoEmployee } from "./table-height.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height: _height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
   let selectedHeight = $state("400px");
   const heights = ["200px", "300px", "400px"];
+
+  const getRowId = ({ row }: GetRowIdParams<HeightDemoEmployee>) => row.id;
 </script>
 
 <div>
@@ -22,6 +26,7 @@
   <SimpleTable
     columns={tableHeightConfig.headers}
     rows={tableHeightConfig.rows}
+    getRowId={getRowId}
     height={selectedHeight}
     {theme}
   />

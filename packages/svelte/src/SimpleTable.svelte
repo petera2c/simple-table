@@ -1,4 +1,4 @@
-<script lang="ts">
+<script lang="ts" generics="TData extends Record<string, any> = Record<string, any>">
   import { onMount, onDestroy } from "svelte";
   import {
     SimpleTableVanilla,
@@ -12,9 +12,10 @@
 
   // SimpleTable — Svelte adapter for simple-table-core.
   // Accepts the same props as SimpleTableProps with Svelte component types for renderers.
-  // Use bind:this={tableRef} to access the TableAPI: tableRef.getAPI()?.sort(...)
+  // Prefer typed `rows` / `columns` (`SvelteColumnDef<MyRow>`) so TData flows into
+  // callbacks. Use bind:this={tableRef} for TableAPI: tableRef.getAPI()?.sort(...)
 
-  type $$Props = SimpleTableSvelteProps;
+  type $$Props = SimpleTableSvelteProps<TData>;
 
   export let rows: $$Props["rows"];
   export let columns: $$Props["columns"] = undefined;
@@ -31,7 +32,7 @@
   let syncedRows: $$Props["rows"] | undefined = undefined;
 
   onMount(() => {
-    const props = { rows, columns, ...$$restProps } as SimpleTableSvelteProps;
+    const props = { rows, columns, ...$$restProps } as SimpleTableSvelteProps<TData>;
     instance = new SimpleTableVanilla(
       container,
       buildVanillaConfig(props, registry),
@@ -51,7 +52,7 @@
 
   // Reactive update: skip no-op columns/rows when structure/content is unchanged.
   $: if (instance) {
-    const props = { rows, columns, ...$$restProps } as SimpleTableSvelteProps;
+    const props = { rows, columns, ...$$restProps } as SimpleTableSvelteProps<TData>;
     const fullConfig = buildVanillaConfig(props, registry);
     const patch: Partial<SimpleTableConfig> = { ...fullConfig };
     const resolvedColumns = resolveSvelteColumns(props);
@@ -65,7 +66,7 @@
     const rowsUnchanged = rowsShallowUnchanged(
       syncedRows as ReadonlyArray<object> | undefined,
       rows as ReadonlyArray<object>,
-      props.getRowId,
+      props.getRowId as Parameters<typeof rowsShallowUnchanged>[2],
     );
     syncedRows = rows;
     if (rowsUnchanged) {
@@ -76,8 +77,8 @@
   }
 
   /** Expose the TableAPI for consumers using bind:this. */
-  export function getAPI(): TableAPI | null {
-    return instance?.getAPI() ?? null;
+  export function getAPI(): TableAPI<TData> | null {
+    return (instance?.getAPI() as TableAPI<TData> | undefined) ?? null;
   }
 </script>
 

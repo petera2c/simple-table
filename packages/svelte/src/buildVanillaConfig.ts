@@ -1,9 +1,10 @@
-import type { SimpleTableConfig, ColumnDef, ColumnEditorConfig, Row } from "simple-table-core";
-import { collectHeaderAccessors } from "simple-table-core";
+import type { SimpleTableConfig, ColumnDef, ColumnEditorConfig } from "simple-table-core";
+import { asRows, collectHeaderAccessors } from "simple-table-core";
 import type {
   SimpleTableSvelteProps,
   SvelteColumnDef,
   SvelteColumnEditorConfig,
+  SvelteDefaultRowData,
   SvelteIconsConfig,
 } from "./types";
 import type { Component } from "svelte";
@@ -45,8 +46,8 @@ function transformColumnEditorConfig(
   };
 }
 
-function transformHeader(
-  header: ColumnDef | SvelteColumnDef,
+function transformHeader<TData extends SvelteDefaultRowData>(
+  header: SvelteColumnDef<TData, any>,
   registry: MountRegistry,
 ): ColumnDef {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
@@ -95,9 +96,9 @@ function transformHeader(
 }
 
 /** Resolve column definitions. */
-export function resolveSvelteColumns(
-  config: Pick<SimpleTableSvelteProps, "columns">,
-): ReadonlyArray<ColumnDef | SvelteColumnDef> {
+export function resolveSvelteColumns<TData extends SvelteDefaultRowData = SvelteDefaultRowData>(
+  config: Pick<SimpleTableSvelteProps<TData>, "columns">,
+): ReadonlyArray<SvelteColumnDef<TData, any>> {
   const headers = config.columns;
   if (!headers) {
     throw new Error("SimpleTable requires `columns`");
@@ -105,8 +106,8 @@ export function resolveSvelteColumns(
   return headers;
 }
 
-export function buildVanillaConfig(
-  config: SimpleTableSvelteProps,
+export function buildVanillaConfig<TData extends SvelteDefaultRowData = SvelteDefaultRowData>(
+  config: SimpleTableSvelteProps<TData>,
   registry: MountRegistry,
 ): SimpleTableConfig {
   const {
@@ -139,9 +140,13 @@ export function buildVanillaConfig(
 
   registry.pruneRendererCaches(collectHeaderAccessors(columns));
 
+  // `rest` still carries TData-bound callbacks (getRowId, onCellEdit, …).
+  // Widen once here — the vanilla runtime is Row-shaped.
+  const shared = rest as SimpleTableConfig;
+
   const vanillaConfig: SimpleTableConfig = {
-    ...rest,
-    rows: rows as Row[],
+    ...shared,
+    rows: asRows(rows),
     columns: columns.map((header) => transformHeader(header, registry)),
     enableColumnEditor,
     enableColumnEditorInitOpen,
@@ -154,31 +159,24 @@ export function buildVanillaConfig(
     // discards any host element, so the registry unmounts exactly the affected
     // Svelte instances (including teleport / floating UI).
     onRendererHostDiscard: registry.disposeHost,
-    ...(onColumnOrderChange
-      ? {
-          onColumnOrderChange: (headers: ColumnDef[]) =>
-            onColumnOrderChange(headers as unknown as SvelteColumnDef[]),
-        }
-      : {}),
-    ...(onColumnWidthChange
-      ? {
-          onColumnWidthChange: (headers: ColumnDef[]) =>
-            onColumnWidthChange(headers as unknown as SvelteColumnDef[]),
-        }
-      : {}),
-    ...(onHeaderEdit
-      ? {
-          onHeaderEdit: (header: ColumnDef, newLabel: string) =>
-            onHeaderEdit(header as unknown as SvelteColumnDef, newLabel),
-        }
-      : {}),
-    ...(onColumnSelect
-      ? {
-          onColumnSelect: (header: ColumnDef) =>
-            onColumnSelect(header as unknown as SvelteColumnDef),
-        }
-      : {}),
   };
+
+  if (onColumnOrderChange) {
+    vanillaConfig.onColumnOrderChange = (headers) =>
+      onColumnOrderChange(headers as unknown as SvelteColumnDef<TData, any>[]);
+  }
+  if (onColumnWidthChange) {
+    vanillaConfig.onColumnWidthChange = (headers) =>
+      onColumnWidthChange(headers as unknown as SvelteColumnDef<TData, any>[]);
+  }
+  if (onHeaderEdit) {
+    vanillaConfig.onHeaderEdit = (header, newLabel) =>
+      onHeaderEdit(header as unknown as SvelteColumnDef<TData, any>, newLabel);
+  }
+  if (onColumnSelect) {
+    vanillaConfig.onColumnSelect = (header) =>
+      onColumnSelect(header as unknown as SvelteColumnDef<TData, any>);
+  }
 
   if (tableEmptyStateRenderer !== undefined) {
     if (tableEmptyStateRenderer === null) {

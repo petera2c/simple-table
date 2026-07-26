@@ -10,7 +10,15 @@ export const AVAILABLE_THEMES: { value: Theme; label: string }[] = [
   { value: "neutral", label: "Neutral" },
 ];
 
-export const themesHeaders: SvelteColumnDef[] = [
+export interface ThemeDemoStaff {
+  id: number;
+  name: string;
+  email: string;
+  department: string;
+  status: string;
+}
+
+export const themesHeaders: SvelteColumnDef<ThemeDemoStaff>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 100, width: "1fr", type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },
@@ -18,7 +26,7 @@ export const themesHeaders: SvelteColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, type: "string" },
 ];
 
-export const themesData = [
+export const themesData: ThemeDemoStaff[] = [
   { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@cityhospital.org", department: "Cardiology", status: "Active" },
   { id: 2, name: "Nurse Emily Chen", email: "e.chen@cityhospital.org", department: "Emergency", status: "Active" },
   { id: 3, name: "Dr. Marcus Williams", email: "m.williams@cityhospital.org", department: "Neurology", status: "Active" },
@@ -36,4 +44,4 @@ export const themesData = [
 export const themesConfig = {
   headers: themesHeaders,
   rows: themesData,
-} as const;
+};

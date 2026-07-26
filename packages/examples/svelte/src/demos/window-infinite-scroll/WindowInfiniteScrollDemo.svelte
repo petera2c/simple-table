@@ -1,10 +1,11 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, Row } from "@simple-table/svelte";
+  import type { Theme, GetRowIdParams } from "@simple-table/svelte";
   import {
     generateWindowScrollRows,
     windowScrollHeaders,
   } from "./window-infinite-scroll.demo-data";
+  import type { WindowScrollEmployee } from "./window-infinite-scroll.demo-data";
   import "@simple-table/svelte/styles.css";
 
   // `height` is intentionally ignored — this demo is about *not* setting one.
@@ -16,7 +17,7 @@
   const LOAD_DELAY_MS = 350;
 
   let wrapper: HTMLDivElement | undefined = $state();
-  let rows = $state<Row[]>(generateWindowScrollRows(0, INITIAL_ROWS));
+  let rows = $state<WindowScrollEmployee[]>(generateWindowScrollRows(0, INITIAL_ROWS));
   let loading = $state(false);
   let hasMore = $state(true);
 
@@ -25,14 +26,11 @@
       ? "Loading more rows…"
       : hasMore
         ? `${rows.length.toLocaleString()} rows loaded · scroll for more`
-        : `${rows.length.toLocaleString()} rows loaded · end of dataset`
+        : `${rows.length.toLocaleString()} rows loaded · end of dataset`,
   );
 
-  // Getter form so we don't capture the wrapper before Svelte attaches the ref.
-  // In a regular app outside this preview shell, pass scrollParent="window".
   const getScrollParent = () => wrapper?.parentElement ?? null;
-
-  const getRowId = (p: { row: Row }) => String((p.row as { id?: number })?.id);
+  const getRowId = ({ row }: GetRowIdParams<WindowScrollEmployee>) => row.id;
 
   function handleLoadMore() {
     if (loading || !hasMore) return;

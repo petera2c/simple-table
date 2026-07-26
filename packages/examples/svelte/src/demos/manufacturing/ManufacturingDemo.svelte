@@ -1,7 +1,8 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteColumnDef } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef, SvelteCellRenderer, GetRowIdParams } from "@simple-table/svelte";
   import { manufacturingConfig } from "./manufacturing.demo-data";
+  import type { ManufacturingRow } from "./manufacturing.demo-data";
   import MfgProductLineCell from "./MfgProductLineCell.svelte";
   import MfgStationCell from "./MfgStationCell.svelte";
   import MfgStatusCell from "./MfgStatusCell.svelte";
@@ -16,7 +17,7 @@
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  const rendererMap: Record<string, unknown> = {
+  const rendererMap: Partial<Record<string, SvelteCellRenderer<ManufacturingRow>>> = {
     productLine: MfgProductLineCell,
     station: MfgStationCell,
     status: MfgStatusCell,
@@ -31,18 +32,21 @@
     maintenanceDate: MfgMaintenanceDateCell,
   };
 
-  const headers = $derived.by((): SvelteColumnDef[] =>
+  const headers = $derived.by((): SvelteColumnDef<ManufacturingRow>[] =>
     manufacturingConfig.headers.map((h) => {
-      const cellRenderer = rendererMap[h.accessor as string];
+      const cellRenderer = rendererMap[String(h.accessor)];
       return cellRenderer ? { ...h, cellRenderer } : { ...h };
     }),
   );
+
+  const getRowId = ({ row }: GetRowIdParams<ManufacturingRow>) => row.id;
 </script>
 
 <SimpleTable
   columnResizing={true}
   columnReordering={true}
   columns={headers}
+  {getRowId}
   {height}
   rowGrouping={["stations"]}
   rows={manufacturingConfig.rows}

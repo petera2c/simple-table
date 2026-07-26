@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { CellRendererProps } from "@simple-table/svelte";
+  import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 
-  let { value }: CellRendererProps = $props();
+  let { value }: CellRendererProps<CellRendererEmployee> = $props();
   const rating = $derived(Number(value) || 0);
   const full = $derived(Math.floor(rating));
   const hasHalf = $derived(rating % 1 >= 0.25);

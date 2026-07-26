@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { CellRendererProps } from "@simple-table/svelte";
+  import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 
-  let { value }: CellRendererProps = $props();
+  let { value }: CellRendererProps<CellRendererEmployee> = $props();
   const pct = $derived(Number(value) || 0);
   const color = $derived(pct < 30 ? "#EF4444" : pct < 70 ? "#F59E0B" : "#10B981");
 </script>

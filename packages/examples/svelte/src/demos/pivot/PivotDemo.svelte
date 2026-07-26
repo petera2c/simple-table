@@ -1,7 +1,8 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme } from "@simple-table/svelte";
+  import type { Theme, GetRowIdParams } from "@simple-table/svelte";
   import { pivotDemoConfig, pivotPresets } from "./pivot.demo-data";
+  import type { PivotFact } from "./pivot.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
@@ -9,6 +10,7 @@
   let activeId = $state(pivotPresets[0].id);
   const active = $derived(pivotPresets.find((p) => p.id === activeId) ?? pivotPresets[0]);
   const nestedRows = $derived(active.pivot.rows.length > 1);
+  const getRowId = ({ row }: GetRowIdParams<PivotFact>) => row.id;
 </script>
 
 <div style="display: flex; flex-direction: column; gap: 12px; width: 100%">
@@ -30,6 +32,7 @@
     columns={pivotDemoConfig.headers}
     rows={pivotDemoConfig.rows}
     pivot={active.pivot}
+    {getRowId}
     columnResizing={true}
     expandAll={nestedRows}
     selectableCells={true}

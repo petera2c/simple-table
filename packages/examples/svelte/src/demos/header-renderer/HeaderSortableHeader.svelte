@@ -1,12 +1,13 @@
 <script lang="ts">
   import type { HeaderRendererProps } from "@simple-table/svelte";
+  import type { HeaderEmployee } from "./header-renderer.demo-data";
   import {
     headerDemoSortAccessor,
     headerDemoSortDirection,
     cycleHeaderDemoSort,
   } from "./header-sort-store";
 
-  let { header }: HeaderRendererProps = $props();
+  let { header }: HeaderRendererProps<HeaderEmployee> = $props();
   const accessor = $derived(String(header.accessor));
   const isSorted = $derived($headerDemoSortAccessor === accessor);
   const dir = $derived(isSorted ? $headerDemoSortDirection : null);

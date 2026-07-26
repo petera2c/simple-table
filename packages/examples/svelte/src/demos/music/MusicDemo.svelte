@@ -1,7 +1,8 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteColumnDef, CellRenderer } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef, SvelteCellRenderer, GetRowIdParams } from "@simple-table/svelte";
   import { musicData, musicHeaders } from "./music.demo-data";
+  import type { MusicArtist } from "./music.demo-data";
   import "@simple-table/svelte/styles.css";
   import "./music-theme.css";
   import MusicArtistCell from "./MusicArtistCell.svelte";
@@ -17,7 +18,7 @@
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  const renderers: Record<string, unknown> = {
+  const renderers: Partial<Record<string, SvelteCellRenderer<MusicArtist>>> = {
     artistName: MusicArtistCell,
     artistType: MusicArtistTypeCell,
     followers: MusicFollowersCell,
@@ -41,28 +42,28 @@
     reachFollowersRatio: MusicRatioCell,
   };
 
-  function applyMusicCellRenderers(hdrs: SvelteColumnDef[]): SvelteColumnDef[] {
+  function applyMusicCellRenderers(hdrs: SvelteColumnDef<MusicArtist>[]): SvelteColumnDef<MusicArtist>[] {
     return hdrs.map((h) => {
       const acc = String(h.accessor);
-      const next: SvelteColumnDef = { ...h };
-      if (acc === "rank") next.pinned = "left";
-      if (acc === "artistName") next.pinned = "left";
-      const R = renderers[acc];
-      if (R) next.cellRenderer = R as CellRenderer;
-      if (h.children) next.children = applyMusicCellRenderers(h.children as SvelteColumnDef[]);
-      return next;
+      const cellRenderer = renderers[acc];
+      return {
+        ...h,
+        ...(acc === "rank" || acc === "artistName" ? { pinned: "left" as const } : {}),
+        ...(cellRenderer ? { cellRenderer } : {}),
+        ...(h.children ? { children: applyMusicCellRenderers(h.children) } : {}),
+      };
     });
   }
 
-  const headers = $derived(
-    applyMusicCellRenderers(JSON.parse(JSON.stringify(musicHeaders)) as SvelteColumnDef[]),
-  );
+  const headers = $derived(applyMusicCellRenderers(musicHeaders));
+  const getRowId = ({ row }: GetRowIdParams<MusicArtist>) => row.id;
 </script>
 
 <div class="music-theme-container" style="font-family: Inter">
   <SimpleTable
     columns={headers}
     rows={[...musicData]}
+    {getRowId}
     {height}
     {theme}
     selectableCells={true}

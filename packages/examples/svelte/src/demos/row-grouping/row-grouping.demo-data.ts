@@ -1,8 +1,22 @@
 // Self-contained demo table setup for this example.
 import type { SvelteColumnDef } from "@simple-table/svelte";
 
+/** Shared metrics at every grouping depth; nesting uses rowGrouping keys. */
+export interface OrgUnit {
+  id: string;
+  organization: string;
+  employees: number;
+  budget: string;
+  performance: string;
+  location: string;
+  growthRate: string;
+  status: string;
+  established: string;
+  divisions?: OrgUnit[];
+  departments?: OrgUnit[];
+}
 
-export const rowGroupingHeaders: SvelteColumnDef[] = [
+export const rowGroupingHeaders: SvelteColumnDef<OrgUnit>[] = [
   { accessor: "organization", label: "Organization", width: 200, expandable: true, type: "string" },
   { accessor: "employees", label: "Employees", width: 100, type: "number" },
   { accessor: "budget", label: "Annual Budget", width: 140, type: "string" },
@@ -13,7 +27,7 @@ export const rowGroupingHeaders: SvelteColumnDef[] = [
   { accessor: "established", label: "Est. Date", width: 110, type: "date" },
 ];
 
-export const rowGroupingData = [
+export const rowGroupingData: OrgUnit[] = [
   {
     id: "company-1",
     organization: "TechSolutions Inc.",
@@ -197,9 +211,8 @@ export const rowGroupingConfig = {
   headers: rowGroupingHeaders,
   rows: rowGroupingData,
   tableProps: {
-    rowGrouping: ["divisions", "departments"] as string[],
+    rowGrouping: ["divisions", "departments"],
     enableStickyParents: true,
-    getRowId: ({ row }: { row: Record<string, unknown> }) => String(row.id),
     columnResizing: true,
   },
-} as const;
+};

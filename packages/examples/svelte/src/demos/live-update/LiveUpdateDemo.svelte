@@ -1,18 +1,21 @@
 <script lang="ts">
-  import {SimpleTable} from "@simple-table/svelte";  import type { Theme } from "@simple-table/svelte";
+  import { SimpleTable } from "@simple-table/svelte";
+  import type { Theme, TableAPI, GetRowIdParams } from "@simple-table/svelte";
   import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
+  import type { LiveUpdateProduct } from "./live-update.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  let tableRef: any;
+  let tableRef = $state<{ getAPI: () => TableAPI<LiveUpdateProduct> | null } | null>(null);
+  const getRowId = ({ row }: GetRowIdParams<LiveUpdateProduct>) => row.id;
 
   $effect(() => {
     if (!tableRef) return;
     const api = tableRef.getAPI?.();
     if (!api) return;
 
-    const currentData = JSON.parse(JSON.stringify(liveUpdateData));
+    const currentData: LiveUpdateProduct[] = liveUpdateData.map((row) => ({ ...row }));
     const timerMap = new Map<string | number, ReturnType<typeof setTimeout>>();
     const currentPeriodSales = new Map<string | number, number>();
     let isActive = true;
@@ -25,30 +28,25 @@
           if (!isActive) return;
           const currentApi = tableRef?.getAPI?.();
           if (!currentApi) return;
-          const idx = currentData.findIndex((r: any) => r.id === rowId);
+          const idx = currentData.findIndex((r) => r.id === rowId);
           if (idx === -1) return;
           const product = currentData[idx];
 
-          if (typeof product.price === "number") {
-            const newPrice = parseFloat((product.price * (0.95 + Math.random() * 0.1)).toFixed(2));
-            currentData[idx].price = newPrice;
-            currentApi.updateData({ accessor: "price", rowId, newValue: newPrice });
-          }
-          if (typeof product.stock === "number") {
-            const newStock = Math.max(0, product.stock + Math.floor((Math.random() - 0.5) * 6));
-            currentData[idx].stock = newStock;
-            currentApi.updateData({ accessor: "stock", rowId, newValue: newStock });
-            if (Array.isArray(product.stockHistory)) {
-              const updated = [...product.stockHistory.slice(1), newStock];
-              currentData[idx].stockHistory = updated;
-              currentApi.updateData({ accessor: "stockHistory", rowId, newValue: updated });
-            }
-          }
-          if (Math.random() < 0.6 && typeof product.sales === "number") {
-            const inc = Math.floor(Math.random() * 3) + 1;
-            currentData[idx].sales = product.sales + inc;
-            currentApi.updateData({ accessor: "sales", rowId, newValue: currentData[idx].sales });
-            currentPeriodSales.set(rowId, (currentPeriodSales.get(rowId) || 0) + inc);
+          const newPrice = parseFloat((product.price * (0.95 + Math.random() * 0.1)).toFixed(2));
+          currentData[idx] = { ...product, price: newPrice };
+          currentApi.updateData({ accessor: "price", rowId, newValue: newPrice });
+
+          const newStock = Math.max(0, product.stock + Math.floor((Math.random() - 0.5) * 6));
+          const updatedStockHistory = [...product.stockHistory.slice(1), newStock];
+          currentData[idx] = { ...currentData[idx], stock: newStock, stockHistory: updatedStockHistory };
+          currentApi.updateData({ accessor: "stock", rowId, newValue: newStock });
+          currentApi.updateData({ accessor: "stockHistory", rowId, newValue: updatedStockHistory });
+
+          if (Math.random() < 0.6) {
+            const newSales = product.sales + Math.floor(Math.random() * 3) + 1;
+            currentData[idx] = { ...currentData[idx], sales: newSales };
+            currentApi.updateData({ accessor: "sales", rowId, newValue: newSales });
+            currentPeriodSales.set(rowId, (currentPeriodSales.get(rowId) || 0) + (newSales - product.sales));
           }
           scheduleUpdate();
         }, interval);
@@ -61,14 +59,14 @@
       const currentApi = tableRef?.getAPI?.();
       if (!currentApi) return;
       const visibleRows = currentApi.getVisibleRows();
-      const visibleIds = new Set(visibleRows.map((vr: any) => vr.row.id));
+      const visibleIds = new Set(visibleRows.map((vr) => vr.row.id));
       timerMap.forEach((tid, rid) => {
         if (!visibleIds.has(rid)) {
           clearTimeout(tid);
           timerMap.delete(rid);
         }
       });
-      visibleRows.forEach((vr: any) => {
+      visibleRows.forEach((vr) => {
         const rid = vr.row.id;
         if (!timerMap.has(rid)) createRowTimer(rid);
       });
@@ -77,15 +75,12 @@
     const salesRotate = setInterval(() => {
       const currentApi = tableRef?.getAPI?.();
       if (!currentApi || !isActive) return;
-      currentData.forEach((row: any, i: number) => {
-        if (Array.isArray(row.salesHistory)) {
-          const rid = row.id;
-          const sp = currentPeriodSales.get(rid) || 0;
-          const updated = [...row.salesHistory.slice(1), sp];
-          currentData[i].salesHistory = updated;
-          currentApi.updateData({ accessor: "salesHistory", rowId: rid, newValue: updated });
-          currentPeriodSales.set(rid, 0);
-        }
+      currentData.forEach((row, i) => {
+        const sp = currentPeriodSales.get(row.id) || 0;
+        const updated = [...row.salesHistory.slice(1), sp];
+        currentData[i] = { ...row, salesHistory: updated };
+        currentApi.updateData({ accessor: "salesHistory", rowId: row.id, newValue: updated });
+        currentPeriodSales.set(row.id, 0);
       });
     }, 2000);
 
@@ -106,7 +101,7 @@
   bind:this={tableRef}
   columns={liveUpdateConfig.headers}
   rows={liveUpdateConfig.rows}
-  getRowId={({ row }) => (row as { id: number }).id}
+  {getRowId}
   {height}
   {theme}
 />

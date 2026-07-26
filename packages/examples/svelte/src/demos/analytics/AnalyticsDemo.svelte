@@ -1,13 +1,14 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { TableAPI, Theme } from "@simple-table/svelte";
+  import type { TableAPI, Theme, GetRowIdParams } from "@simple-table/svelte";
   import { analyticsDemoConfig, analyticsPresets } from "./analytics.demo-data";
+  import type { AnalyticsFactRow } from "./analytics.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "480px", theme }: { height?: string | number | null; theme?: Theme } = $props();
 
   let activeId = $state(analyticsPresets[0].id);
-  let tableRef = $state<{ getAPI: () => TableAPI | null } | null>(null);
+  let tableRef = $state<{ getAPI: () => TableAPI<AnalyticsFactRow> | null } | null>(null);
   const active = $derived(analyticsPresets.find((p) => p.id === activeId) ?? analyticsPresets[0]);
   const isPivoted = $derived(active.pivot != null);
   const nestedRows = $derived((active.pivot?.rows.length ?? 0) > 1);
@@ -22,9 +23,7 @@
     height == null ? "100%" : typeof height === "number" ? `${height}px` : height
   );
 
-  function getRowId({ row }: { row: { id?: unknown } }) {
-    return row.id == null ? undefined : String(row.id);
-  }
+  const getRowId = ({ row }: GetRowIdParams<AnalyticsFactRow>) => row.id;
 </script>
 
 <div

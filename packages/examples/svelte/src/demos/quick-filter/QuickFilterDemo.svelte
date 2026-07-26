@@ -1,12 +1,16 @@
 <script lang="ts">
-  import {SimpleTable} from "@simple-table/svelte";  import type { Theme, QuickFilterMode } from "@simple-table/svelte";
+  import { SimpleTable } from "@simple-table/svelte";
+  import type { Theme, QuickFilterMode, GetRowIdParams } from "@simple-table/svelte";
   import { quickFilterConfig } from "./quick-filter.demo-data";
+  import type { QuickFilterEmployee } from "./quick-filter.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
   let searchText = $state("");
   let filterMode: QuickFilterMode = $state("simple");
   let caseSensitive = $state(false);
+
+  const getRowId = ({ row }: GetRowIdParams<QuickFilterEmployee>) => row.id;
 </script>
 
 <div>
@@ -39,6 +43,7 @@
   <SimpleTable
     columns={quickFilterConfig.headers}
     rows={quickFilterConfig.rows}
+    getRowId={getRowId}
     {height}
     {theme}
     quickFilter={{ text: searchText, mode: filterMode, caseSensitive }}

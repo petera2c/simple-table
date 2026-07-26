@@ -22,18 +22,17 @@
     monthlyListeners60DayGrowth: { val: "monthlyListeners60DayGrowth", pct: "monthlyListeners60DayGrowthPercent", signed: true, align: "right" },
   };
 
-  let { row, accessor, theme }: CellRendererProps = $props();
+  let { row, accessor, theme }: CellRendererProps<MusicArtist> = $props();
   const cfg = $derived(CONFIG[String(accessor)] ?? null);
-  const r = $derived(row as unknown as MusicArtist);
   const c = $derived(getMusicThemeColors(theme));
 
   const view = $derived.by(() => {
     if (!cfg) return null;
-    const val = Number(r[cfg.val]);
-    const pct = Number(r[cfg.pct]);
+    const val = Number(row[cfg.val]);
+    const pct = Number(row[cfg.pct]);
     const isPositive = cfg.signed ? val >= 0 : true;
     const showSign = true;
-    const displayVal = Number.isFinite(val) ? val.toLocaleString() : String(r[cfg.val]);
+    const displayVal = Number.isFinite(val) ? val.toLocaleString() : String(row[cfg.val]);
     const prefix = showSign ? (isPositive ? "+" : "") : "";
     const arrow = isPositive ? "↑" : "↓";
     const tagText = `${arrow} ${Math.abs(pct).toFixed(2)}%`;

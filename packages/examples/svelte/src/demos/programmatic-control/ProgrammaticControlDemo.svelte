@@ -1,22 +1,30 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteColumnDef } from "@simple-table/svelte";
+  import type {
+    Theme,
+    SvelteColumnDef,
+    CellRendererProps,
+    TableAPI,
+    GetRowIdParams,
+  } from "@simple-table/svelte";
   import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
+  import type { ProgrammaticControlProduct } from "./programmatic-control.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  let tableRef: any;
+  let tableRef = $state<{ getAPI: () => TableAPI<ProgrammaticControlProduct> | null } | null>(null);
   let statusMessage = $state("No status message");
 
-  const headers: SvelteColumnDef[] = programmaticControlConfig.headers.map((h) => {
+  const getRowId = ({ row }: GetRowIdParams<ProgrammaticControlProduct>) => row.id;
+
+  const headers: SvelteColumnDef<ProgrammaticControlProduct>[] = programmaticControlConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-          const s = String(row.status);
-          const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? { bg: "#f3f4f6", color: "#374151" };
-          return `<span style="background:${colors.bg};color:${colors.color};padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold">${s}</span>`;
+        cellRenderer: ({ row }: CellRendererProps<ProgrammaticControlProduct>) => {
+          const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[row.status] ?? { bg: "#f3f4f6", color: "#374151" };
+          return `<span style="background:${colors.bg};color:${colors.color};padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold">${row.status}</span>`;
         },
       };
     }
@@ -51,7 +59,7 @@
     const sortState = api.getSortState();
     const filterState = api.getFilterState();
     const totalValue = allRows.reduce(
-      (sum: number, r) => sum + (Number(r.row.price) || 0) * (Number(r.row.stock) || 0),
+      (sum, r) => sum + r.row.price * r.row.stock,
       0,
     );
     const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
@@ -76,6 +84,7 @@
   <SimpleTable
     bind:this={tableRef}
     columns={headers}
+    {getRowId}
     rows={programmaticControlConfig.rows}
     {height}
     {theme}

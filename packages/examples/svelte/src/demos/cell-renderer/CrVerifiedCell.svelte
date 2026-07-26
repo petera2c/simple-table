@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { CellRendererProps } from "@simple-table/svelte";
+  import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 
-  let { value }: CellRendererProps = $props();
+  let { value }: CellRendererProps<CellRendererEmployee> = $props();
   const yes = $derived(Boolean(value));
 </script>
 

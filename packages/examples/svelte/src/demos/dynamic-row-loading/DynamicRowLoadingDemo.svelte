@@ -1,17 +1,19 @@
 <script lang="ts">
-  import {SimpleTable} from "@simple-table/svelte";  import type { Theme, OnRowGroupExpandProps } from "@simple-table/svelte";
+  import { SimpleTable } from "@simple-table/svelte";
+  import type { Theme, OnRowGroupExpandProps, GetRowIdParams } from "@simple-table/svelte";
   import {
     dynamicRowLoadingConfig,
     generateInitialRegions,
     fetchStoresForRegion,
     fetchProductsForStore,
   } from "./dynamic-row-loading.demo-data";
-  import type { DynamicRegion, DynamicStore } from "./dynamic-row-loading.demo-data";
+  import type { DynamicRegion, DynamicTreeRow } from "./dynamic-row-loading.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
   let rows = $state<DynamicRegion[]>(generateInitialRegions());
+  const getRowId = ({ row }: GetRowIdParams<DynamicTreeRow>) => row.id;
 
   async function handleRowExpand({
     row,
@@ -22,25 +24,30 @@
     setError,
     setEmpty,
     rowIndexPath,
-  }: OnRowGroupExpandProps) {
+  }: OnRowGroupExpandProps<DynamicTreeRow>) {
     if (!isExpanded) return;
-    if (groupingKey && row[groupingKey] && (row[groupingKey] as unknown[]).length > 0) return;
+    if (groupingKey === "stores" && row.type === "region" && row.stores && row.stores.length > 0) {
+      return;
+    }
+    if (groupingKey === "products" && row.type === "store" && row.products && row.products.length > 0) {
+      return;
+    }
 
     try {
-      if (depth === 0 && groupingKey === "stores") {
+      if (depth === 0 && groupingKey === "stores" && row.type === "region") {
         setLoading(true);
-        const stores = await fetchStoresForRegion((row as DynamicRegion).id);
+        const stores = await fetchStoresForRegion(row.id);
         setLoading(false);
         if (stores.length === 0) {
           setEmpty(true, "No stores found");
           return;
         }
         const newRows = [...rows];
-        newRows[rowIndexPath[0]].stores = stores;
+        newRows[rowIndexPath[0]] = { ...newRows[rowIndexPath[0]], stores };
         rows = newRows;
-      } else if (depth === 1 && groupingKey === "products") {
+      } else if (depth === 1 && groupingKey === "products" && row.type === "store") {
         setLoading(true);
-        const products = await fetchProductsForStore((row as DynamicStore).id);
+        const products = await fetchProductsForStore(row.id);
         setLoading(false);
         if (products.length === 0) {
           setEmpty(true, "No products found");
@@ -49,7 +56,7 @@
         const newRows = [...rows];
         const region = newRows[rowIndexPath[0]];
         if (region.stores && region.stores[rowIndexPath[1]]) {
-          region.stores[rowIndexPath[1]].products = products;
+          region.stores[rowIndexPath[1]] = { ...region.stores[rowIndexPath[1]], products };
         }
         rows = newRows;
       }
@@ -65,10 +72,10 @@
   columns={dynamicRowLoadingConfig.headers}
   enableColumnEditor={dynamicRowLoadingConfig.tableProps.enableColumnEditor}
   expandAll={dynamicRowLoadingConfig.tableProps.expandAll}
+  {getRowId}
   {height}
   onRowGroupExpand={handleRowExpand}
   rowGrouping={dynamicRowLoadingConfig.tableProps.rowGrouping}
-  getRowId={dynamicRowLoadingConfig.tableProps.getRowId}
   rows={rows}
   selectableCells={dynamicRowLoadingConfig.tableProps.selectableCells}
   {theme}

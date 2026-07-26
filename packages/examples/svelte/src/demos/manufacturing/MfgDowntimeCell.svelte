@@ -3,10 +3,9 @@
   import type { ManufacturingRow } from "./manufacturing.demo-data";
   import { hasStations } from "./mfg-helpers";
 
-  let { row }: CellRendererProps = $props();
-  const d = $derived(row as unknown as ManufacturingRow);
+  let { row }: CellRendererProps<ManufacturingRow> = $props();
   const parent = $derived(hasStations(row));
-  const hours = $derived(typeof d.downtime === "number" ? d.downtime : parseFloat(String(d.downtime)));
+  const hours = $derived(typeof row.downtime === "number" ? row.downtime : parseFloat(String(row.downtime)));
   const color = $derived(hours < 1 ? "#16a34a" : hours < 2 ? "#f59e0b" : "#dc2626");
 </script>
 

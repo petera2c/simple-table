@@ -1,6 +1,6 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteColumnDef, CellClickProps } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef, CellClickProps, GetRowIdParams } from "@simple-table/svelte";
   import { cellClickingHeaders, cellClickingData, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
   import type { ProjectTask } from "./cell-clicking.demo-data";
   import CellClickPriorityCell from "./CellClickPriorityCell.svelte";
@@ -14,17 +14,18 @@
   let selectedTask: ProjectTask | null = $state(null);
   let rows: ProjectTask[] = $state([...cellClickingData]);
 
-  const headers: SvelteColumnDef[] = cellClickingHeaders.map((h) => {
+  const headers: SvelteColumnDef<ProjectTask>[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") return { ...h, cellRenderer: CellClickPriorityCell };
     if (h.accessor === "status") return { ...h, cellRenderer: CellClickStatusCell };
     if (h.accessor === "details") return { ...h, cellRenderer: CellClickDetailsCell };
     return { ...h };
   });
 
+  const getRowId = ({ row }: GetRowIdParams<ProjectTask>) => row.id;
+
   let isDark = $derived(theme === "modern-dark" || theme === "dark");
 
-  function handleCellClick({ accessor, rowIndex, value, row }: CellClickProps) {
-    const task = row as ProjectTask;
+  function handleCellClick({ accessor, rowIndex, value, row }: CellClickProps<ProjectTask>) {
     switch (accessor) {
       case "priority":
         clickInfo = `Filtering by ${value} priority`;
@@ -33,24 +34,24 @@
       case "status": {
         const idx = CELL_CLICKING_STATUSES.indexOf(String(value));
         const next = CELL_CLICKING_STATUSES[(idx + 1) % CELL_CLICKING_STATUSES.length];
-        rows = rows.map((t) => (t.id === task.id ? { ...t, status: next } : t));
+        rows = rows.map((t) => (t.id === row.id ? { ...t, status: next } : t));
         clickInfo = `Status: "${value}" → "${next}"`;
         break;
       }
       case "details":
-        selectedTask = task;
-        clickInfo = `Opening details for: ${task.task}`;
+        selectedTask = row;
+        clickInfo = `Opening details for: ${row.task}`;
         break;
       case "estimatedHours": {
-        const n = Math.min(task.estimatedHours + 2, 40);
-        rows = rows.map((t) => (t.id === task.id ? { ...t, estimatedHours: n } : t));
-        clickInfo = `Est. hours: ${task.estimatedHours}h → ${n}h`;
+        const n = Math.min(row.estimatedHours + 2, 40);
+        rows = rows.map((t) => (t.id === row.id ? { ...t, estimatedHours: n } : t));
+        clickInfo = `Est. hours: ${row.estimatedHours}h → ${n}h`;
         break;
       }
       case "completedHours": {
-        const n = Math.min(task.completedHours + 1, task.estimatedHours);
-        rows = rows.map((t) => (t.id === task.id ? { ...t, completedHours: n } : t));
-        clickInfo = `Done hours: ${task.completedHours}h → ${n}h`;
+        const n = Math.min(row.completedHours + 1, row.estimatedHours);
+        rows = rows.map((t) => (t.id === row.id ? { ...t, completedHours: n } : t));
+        clickInfo = `Done hours: ${row.completedHours}h → ${n}h`;
         break;
       }
       default:
@@ -87,6 +88,7 @@
   <SimpleTable
     columnResizing={true}
     columns={headers}
+    {getRowId}
     {height}
     onCellClick={handleCellClick}
     rows={rows}

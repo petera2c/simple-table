@@ -3,10 +3,9 @@
   import { getInfraMetricColorStyles } from "./infrastructure.demo-data";
   import type { InfrastructureServer } from "./infrastructure.demo-data";
 
-  let { row, theme }: CellRendererProps = $props();
-  const d = $derived(row as unknown as InfrastructureServer);
+  let { row, theme }: CellRendererProps<InfrastructureServer> = $props();
   const t = $derived(theme || "light");
-  const s = $derived(getInfraMetricColorStyles(d.responseTime, t, "response"));
+  const s = $derived(getInfraMetricColorStyles(row.responseTime, t, "response"));
 </script>
 
-<span style="font-weight:500;color:{s.color};background-color:{s.backgroundColor ?? ''};">{d.responseTime.toFixed(1)}</span>
+<span style="font-weight:500;color:{s.color};background-color:{s.backgroundColor ?? ''};">{row.responseTime.toFixed(1)}</span>

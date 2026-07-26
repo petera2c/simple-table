@@ -1,6 +1,28 @@
 // Self-contained demo table setup for this example.
 import type { SvelteColumnDef } from "@simple-table/svelte";
 
+export interface NestedDivision {
+  divisionId: string;
+  divisionName: string;
+  revenue: string;
+  profitMargin: string;
+  headcount: number;
+  location: string;
+}
+
+export interface NestedCompany {
+  id: number;
+  companyName: string;
+  industry: string;
+  founded: number;
+  headquarters: string;
+  stockSymbol: string;
+  marketCap: string;
+  ceo: string;
+  revenue: string;
+  employees: number;
+  divisions: NestedDivision[];
+}
 
 const industries = ["Technology", "Financial Services", "Healthcare", "Manufacturing", "Retail", "Energy", "Telecommunications", "Pharmaceuticals", "Automotive", "Aerospace", "Biotechnology", "E-commerce"];
 const cities = ["San Francisco, CA", "New York, NY", "Boston, MA", "Seattle, WA", "Austin, TX", "Chicago, IL", "Los Angeles, CA", "Denver, CO", "Miami, FL", "Atlanta, GA", "Portland, OR", "Dallas, TX"];
@@ -13,7 +35,7 @@ const suffixes = ["Global", "Inc", "Solutions", "Systems", "Ventures", "Group", 
 const randomElement = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 const randomInt = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1)) + min;
 
-const generateDivision = (divisionIndex: number, companyIndex: number) => ({
+const generateDivision = (divisionIndex: number, companyIndex: number): NestedDivision => ({
   divisionId: `DIV-${String(companyIndex * 10 + divisionIndex).padStart(3, "0")}`,
   divisionName: randomElement(divisionTypes),
   revenue: `$${randomInt(5, 25)}B`,
@@ -22,7 +44,7 @@ const generateDivision = (divisionIndex: number, companyIndex: number) => ({
   location: randomElement(cities),
 });
 
-const generateCompany = (companyIndex: number) => {
+const generateCompany = (companyIndex: number): NestedCompany => {
   const divisions = Array.from({ length: randomInt(3, 7) }, (_, i) => generateDivision(i, companyIndex));
   return {
     id: companyIndex + 1,
@@ -39,9 +61,10 @@ const generateCompany = (companyIndex: number) => {
   };
 };
 
-export const generateNestedTablesData = (count: number = 25) => Array.from({ length: count }, (_, i) => generateCompany(i));
+export const generateNestedTablesData = (count: number = 25): NestedCompany[] =>
+  Array.from({ length: count }, (_, i) => generateCompany(i));
 
-export const nestedTablesDivisionHeaders: SvelteColumnDef[] = [
+export const nestedTablesDivisionHeaders: SvelteColumnDef<NestedDivision>[] = [
   { accessor: "divisionId", label: "Division ID", width: 120 },
   { accessor: "revenue", label: "Revenue", width: 120 },
   { accessor: "profitMargin", label: "Profit Margin", width: 130 },
@@ -49,13 +72,15 @@ export const nestedTablesDivisionHeaders: SvelteColumnDef[] = [
   { accessor: "location", label: "Location", width: "1fr" },
 ];
 
-export const nestedTablesHeaders: SvelteColumnDef[] = [
+export const nestedTablesHeaders: SvelteColumnDef<NestedCompany>[] = [
   {
     accessor: "companyName",
     label: "Company",
     width: 200,
     expandable: true,
-    nestedTable: { columns: nestedTablesDivisionHeaders },
+    nestedTable: {
+      columns: nestedTablesDivisionHeaders,
+    },
   },
   { accessor: "stockSymbol", label: "Symbol", width: 100 },
   { accessor: "marketCap", label: "Market Cap", width: 120 },
@@ -66,10 +91,9 @@ export const nestedTablesHeaders: SvelteColumnDef[] = [
 export const nestedTablesConfig = {
   headers: nestedTablesHeaders,
   tableProps: {
-    rowGrouping: ["divisions"] as string[],
-    getRowId: ({ row }: { row: Record<string, unknown> }) => row.id as string,
+    rowGrouping: ["divisions"],
     expandAll: false,
     columnResizing: true,
     autoExpandColumns: true,
   },
-} as const;
+};

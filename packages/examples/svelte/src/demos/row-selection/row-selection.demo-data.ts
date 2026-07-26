@@ -31,7 +31,7 @@ export const rowSelectionData: LibraryBook[] = [
   { id: 1012, isbn: "978-0593229439", title: "Climate Solutions for Tomorrow", author: "Dr. Hassan Al-Rashid", genre: "Environmental Science", yearPublished: 2022, pages: 398, rating: 4.8, status: "Available", librarySection: "Science" },
 ];
 
-export const rowSelectionHeaders: SvelteColumnDef[] = [
+export const rowSelectionHeaders: SvelteColumnDef<LibraryBook>[] = [
   { accessor: "id", label: "Book ID", width: 80, sortable: true, type: "number" },
   { accessor: "isbn", label: "ISBN", width: 120, sortable: true, type: "string" },
   { accessor: "title", label: "Title", minWidth: 150, width: "1fr", sortable: true, type: "string" },
@@ -53,4 +53,4 @@ export const rowSelectionConfig = {
     columnReordering: true,
     selectableCells: true,
   },
-} as const;
+};

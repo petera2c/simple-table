@@ -3,8 +3,7 @@
   import type { CRMLead } from "./crm.demo-data";
   import { crmCellColors } from "./crm-demo-stores";
 
-  let { row }: CellRendererProps = $props();
-  const d = $derived(row as unknown as CRMLead);
+  let { row }: CellRendererProps<CRMLead> = $props();
   const colors = $derived($crmCellColors);
 </script>
 
@@ -17,6 +16,6 @@
   </div>
   <div style="font-size:12px;color:{colors.textTertiary};">
     <span style="font-weight:600;">Keyword:</span>
-    {` ${d.signal}`}
+    {` ${row.signal}`}
   </div>
 </div>

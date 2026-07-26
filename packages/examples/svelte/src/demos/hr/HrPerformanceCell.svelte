@@ -3,9 +3,8 @@
   import { getHRThemeColors } from "./hr.demo-data";
   import type { HREmployee } from "./hr.demo-data";
 
-  let { row, theme }: CellRendererProps = $props();
-  const d = $derived(row as unknown as HREmployee);
-  const score = $derived(d.performanceScore);
+  let { row, theme }: CellRendererProps<HREmployee> = $props();
+  const score = $derived(row.performanceScore);
   const c = $derived(getHRThemeColors(theme));
   const barColor = $derived(score >= 90 ? c.progressSuccess : score >= 65 ? c.progressNormal : c.progressException);
 </script>

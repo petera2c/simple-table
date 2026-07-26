@@ -3,10 +3,9 @@
   import type { CRMLead } from "./crm.demo-data";
   import { crmCellColors } from "./crm-demo-stores";
 
-  let { row }: CellRendererProps = $props();
-  const d = $derived(row as unknown as CRMLead);
+  let { row }: CellRendererProps<CRMLead> = $props();
   const colors = $derived($crmCellColors);
-  const initials = $derived(d.name.split(" ").map((n) => n[0]).join("").toUpperCase());
+  const initials = $derived(row.name.split(" ").map((n) => n[0]).join("").toUpperCase());
 </script>
 
 <div style="display:flex;align-items:center;gap:12px;">
@@ -16,11 +15,11 @@
     {initials}
   </div>
   <div style="display:flex;flex-direction:column;gap:2px;">
-    <span style="cursor:pointer;font-size:14px;font-weight:600;color:{colors.link};">{d.name}</span>
-    <div style="font-size:12px;color:{colors.textSecondary};">{d.title}</div>
+    <span style="cursor:pointer;font-size:14px;font-weight:600;color:{colors.link};">{row.name}</span>
+    <div style="font-size:12px;color:{colors.textSecondary};">{row.title}</div>
     <div style="font-size:12px;color:{colors.textSecondary};">
       <span style="font-size:12px;color:{colors.textTertiary};">@</span>
-      {` ${d.company}`}
+      {` ${row.company}`}
     </div>
   </div>
 </div>

@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { CellRendererProps } from "@simple-table/svelte";
+  import type { ProjectTask } from "./cell-clicking.demo-data";
 
-  let { row }: CellRendererProps = $props();
-  const s = $derived(String((row as Record<string, unknown>).status));
+  let { row }: CellRendererProps<ProjectTask> = $props();
+  const s = $derived(String(row.status));
   const bg = $derived(s === "Completed" ? "#dcfce7" : s === "In Progress" ? "#fef3c7" : "#fee2e2");
   const c = $derived(s === "Completed" ? "#166534" : s === "In Progress" ? "#92400e" : "#991b1b");
 </script>

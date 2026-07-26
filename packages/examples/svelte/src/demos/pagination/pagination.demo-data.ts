@@ -1,10 +1,18 @@
 // Self-contained demo table setup for this example.
-import type { SvelteColumnDef, Row } from "@simple-table/svelte";
+import type { SvelteColumnDef } from "@simple-table/svelte";
 
+export interface HotelStaff {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+  status: string;
+}
 
 export const PAGINATION_ROWS_PER_PAGE = 9;
 
-export const paginationHeaders: SvelteColumnDef[] = [
+export const paginationHeaders: SvelteColumnDef<HotelStaff>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 100, type: "string" },
   { accessor: "email", label: "Email", width: 200, type: "string" },
@@ -13,7 +21,7 @@ export const paginationHeaders: SvelteColumnDef[] = [
   { accessor: "status", label: "Status", width: 110, type: "string" },
 ];
 
-export const paginationData: Row[] = [
+export const paginationData: HotelStaff[] = [
   { id: 1, name: "Miguel Santos", email: "miguel.santos@grandhotel.com", role: "Guest Relations Manager", department: "Front Office", status: "Active" },
   { id: 2, name: "Carmen Delacroix", email: "carmen.d@grandhotel.com", role: "Head Concierge", department: "Concierge", status: "Active" },
   { id: 3, name: "Dimitri Petrov", email: "dimitri.p@grandhotel.com", role: "Executive Chef", department: "Culinary", status: "Active" },
@@ -50,4 +58,4 @@ export const paginationConfig = {
     rowsPerPage: PAGINATION_ROWS_PER_PAGE,
     enablePagination: true,
   },
-} as const;
+};
