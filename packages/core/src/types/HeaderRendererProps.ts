@@ -1,5 +1,7 @@
 import type { Accessor } from "./ColumnDef";
 import type ColumnDef from "./ColumnDef";
+import type Row from "./Row";
+import type { RowData } from "./Row";
 import type { IconElement } from "./IconsConfig";
 
 export interface HeaderRendererComponents {
@@ -9,13 +11,15 @@ export interface HeaderRendererComponents {
   labelContent?: string | HTMLElement;
 }
 
-interface HeaderRendererProps {
-  accessor: Accessor;
+interface HeaderRendererProps<TData extends RowData = Row> {
+  accessor: Accessor<TData>;
   colIndex: number;
-  header: ColumnDef;
+  header: ColumnDef<TData, any>;
   components?: HeaderRendererComponents;
 }
 
-export type HeaderRenderer = (props: HeaderRendererProps) => HTMLElement | string | null;
+export type HeaderRenderer<TData extends RowData = Row> = (
+  props: HeaderRendererProps<TData>
+) => HTMLElement | string | null;
 
 export default HeaderRendererProps;

@@ -19,7 +19,7 @@ export function renderFinanceExample(args?: Partial<UniversalVanillaArgs>): HTML
   const options = { ...defaultVanillaArgs, ...financeExampleDefaults, ...args };
   const { wrapper, h2 } = renderVanillaTable(FINANCE_HEADERS, financeData as Row[], {
     ...options,
-    getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+    getRowId: ({ row }) => String(row.id),
   });
   h2.textContent = "Finance Example";
   return wrapper;

@@ -1,7 +1,8 @@
 import Row from "./Row";
+import type { RowData } from "./Row";
 
-export interface GetRowIdParams {
-  row: Row;
+export interface GetRowIdParams<TData extends RowData = Row> {
+  row: TData;
   depth: number;
   index: number;
   rowPath: (string | number)[];
@@ -15,4 +16,6 @@ export interface GetRowIdParams {
  * fall back to reference-based identity so cell keys never collide on
  * `String(undefined)`.
  */
-export type GetRowId = (params: GetRowIdParams) => string | number | null | undefined;
+export type GetRowId<TData extends RowData = Row> = (
+  params: GetRowIdParams<TData>
+) => string | number | null | undefined;

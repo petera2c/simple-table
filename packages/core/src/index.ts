@@ -31,6 +31,7 @@ import {
 import { pivotRows, buildPivotAccessor, buildPivotRowTotalAccessor } from "./utils/pivot/pivotRows";
 import type OnRowGroupExpandProps from "./types/OnRowGroupExpandProps";
 import type Row from "./types/Row";
+import type { RowData } from "./types/Row";
 import type RowState from "./types/RowState";
 import type SortColumn from "./types/SortColumn";
 import type { TableAPI, SetHeaderRenameProps, ExportToCSVProps } from "./types/TableAPI";
@@ -185,6 +186,7 @@ export type {
   QuickFilterGetterProps,
   QuickFilterMode,
   Row,
+  RowData,
   RowButtonProps,
   RowId,
   RowSelectionChangeProps,

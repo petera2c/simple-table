@@ -1,16 +1,17 @@
 import type { Accessor } from "./ColumnDef";
 import type Row from "./Row";
+import type { RowData } from "./Row";
 import type Theme from "./Theme";
 import type CellValue from "./CellValue";
 
-interface CellRendererProps {
-  accessor: Accessor;
+interface CellRendererProps<TData extends RowData = Row, TValue = CellValue> {
+  accessor: Accessor<TData>;
   colIndex: number;
-  row: Row;
+  row: TData;
   rowIndex: number;
   rowPath?: (string | number)[];
   theme: Theme;
-  value: CellValue; // The raw cell value
+  value: TValue; // The raw cell value
   formattedValue?: string | number | string[] | number[] | null | undefined | boolean; // The formatted cell value (from valueFormatter if present)
 }
 
@@ -30,6 +31,8 @@ interface CellRendererProps {
  *     return span;
  *   }
  */
-export type CellRenderer = (props: CellRendererProps) => string | number | null | Node;
+export type CellRenderer<TData extends RowData = Row, TValue = CellValue> = (
+  props: CellRendererProps<TData, TValue>
+) => string | number | null | Node;
 
 export default CellRendererProps;
