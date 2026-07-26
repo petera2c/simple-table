@@ -1,7 +1,17 @@
 // Self-contained demo table setup for this example.
-import type { ReactColumnDef, Row } from "@simple-table/react";
+import type { ReactColumnDef } from "@simple-table/react";
 
-export const columnEditorCustomRendererData: Row[] = [
+export interface ColumnEditorCustomRendererEmployee {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  salary: number;
+  department: string;
+  status: string;
+}
+
+export const columnEditorCustomRendererData: ColumnEditorCustomRendererEmployee[] = [
   {
     id: 1,
     name: "Alice Johnson",
@@ -76,7 +86,7 @@ export const columnEditorCustomRendererData: Row[] = [
   },
 ];
 
-export const columnEditorCustomRendererHeaders: ReactColumnDef[] = [
+export const columnEditorCustomRendererHeaders: ReactColumnDef<ColumnEditorCustomRendererEmployee>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 170, type: "string", sortable: true },
   { accessor: "email", label: "Email", width: 200, type: "string" },
