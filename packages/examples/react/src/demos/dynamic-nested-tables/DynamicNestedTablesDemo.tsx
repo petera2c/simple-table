@@ -4,14 +4,14 @@ import type { Theme, OnRowGroupExpandProps } from "@simple-table/react";
 import {
   dynamicNestedTablesConfig,
   dynamicNestedTablesData,
-  fetchDivisionsForCompany,
+  fetchDivisionsForCompany
 } from "./dynamic-nested-tables.demo-data";
 import type { DynamicCompany } from "./dynamic-nested-tables.demo-data";
 import "@simple-table/react/styles.css";
 
 const DynamicNestedTablesDemo = ({
   height = "500px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -26,7 +26,7 @@ const DynamicNestedTablesDemo = ({
       rowIndexPath,
       setLoading,
       setError,
-      setEmpty,
+      setEmpty
     }: OnRowGroupExpandProps<DynamicCompany>) => {
       if (!isExpanded) return;
       try {
@@ -54,7 +54,7 @@ const DynamicNestedTablesDemo = ({
   );
 
   return (
-    <SimpleTable<DynamicCompany>
+    <SimpleTable
       autoExpandColumns={dynamicNestedTablesConfig.tableProps.autoExpandColumns}
       columns={dynamicNestedTablesConfig.headers}
       expandAll={dynamicNestedTablesConfig.tableProps.expandAll}
