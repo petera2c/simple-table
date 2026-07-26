@@ -1,8 +1,17 @@
 // Self-contained demo table setup for this example.
 import type { VueColumnDef } from "@simple-table/vue";
 
+export interface CellEditingEmployee {
+  id: number;
+  firstName: string;
+  lastName: string;
+  role: string;
+  hireDate: string;
+  isActive: boolean;
+  salary: number;
+}
 
-export const cellEditingHeaders: VueColumnDef[] = [
+export const cellEditingHeaders: VueColumnDef<CellEditingEmployee>[] = [
   { accessor: "firstName", label: "First Name", width: "1fr", minWidth: 100, editable: true, type: "string" },
   { accessor: "lastName", label: "Last Name", width: 120, editable: true, type: "string" },
   { accessor: "role", label: "Role", width: 120, editable: true, type: "enum", enumOptions: [
@@ -17,7 +26,7 @@ export const cellEditingHeaders: VueColumnDef[] = [
   { accessor: "salary", label: "Salary", width: 120, editable: true, type: "number" },
 ];
 
-export const cellEditingData = [
+export const cellEditingData: CellEditingEmployee[] = [
   { id: 1, firstName: "Ranger", lastName: "Wilde", role: "Manager", hireDate: "2019-03-12", isActive: true, salary: 89000 },
   { id: 2, firstName: "Safari", lastName: "Brooks", role: "Designer", hireDate: "2021-07-18", isActive: true, salary: 74000 },
   { id: 3, firstName: "Forest", lastName: "Rivers", role: "Manager", hireDate: "2018-11-08", isActive: true, salary: 94000 },
@@ -35,4 +44,4 @@ export const cellEditingData = [
 export const cellEditingConfig = {
   headers: cellEditingHeaders,
   rows: cellEditingData,
-} as const;
+};

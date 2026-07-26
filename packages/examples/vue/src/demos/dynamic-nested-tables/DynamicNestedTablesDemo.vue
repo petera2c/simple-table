@@ -5,7 +5,7 @@
     :expand-all="dynamicNestedTablesConfig.tableProps.expandAll"
     :height="height"
     :row-grouping="dynamicNestedTablesConfig.tableProps.rowGrouping"
-    :get-row-id="dynamicNestedTablesConfig.tableProps.getRowId"
+    :get-row-id="getRowId"
     :rows="rows"
     :on-row-group-expand="handleCompanyExpand"
     :theme="theme"
@@ -14,7 +14,8 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {SimpleTable} from "@simple-table/vue";import type { Theme, OnRowGroupExpandProps } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, OnRowGroupExpandProps, GetRowIdParams } from "@simple-table/vue";
 import {
   dynamicNestedTablesConfig,
   dynamicNestedTablesData,
@@ -27,6 +28,8 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), { heigh
 
 const rows = ref<DynamicCompany[]>([...dynamicNestedTablesData]);
 
+const getRowId = ({ row }: GetRowIdParams<DynamicCompany>) => row.id;
+
 async function handleCompanyExpand({
   row,
   groupingKey,
@@ -35,14 +38,13 @@ async function handleCompanyExpand({
   setLoading,
   setError,
   setEmpty,
-}: OnRowGroupExpandProps) {
+}: OnRowGroupExpandProps<DynamicCompany>) {
   if (!isExpanded) return;
   try {
     if (groupingKey === "divisions") {
-      const company = row as DynamicCompany;
-      if (company.divisions && company.divisions.length > 0) return;
+      if (row.divisions && row.divisions.length > 0) return;
       setLoading(true);
-      const divisions = await fetchDivisionsForCompany(company.id);
+      const divisions = await fetchDivisionsForCompany(row.id);
       if (divisions.length === 0) {
         setEmpty(true, "No divisions found for this company");
         return;

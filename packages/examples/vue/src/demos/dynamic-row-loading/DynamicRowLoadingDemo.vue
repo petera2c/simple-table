@@ -7,7 +7,7 @@
     :height="height"
     :on-row-group-expand="handleRowExpand"
     :row-grouping="dynamicRowLoadingConfig.tableProps.rowGrouping"
-    :get-row-id="dynamicRowLoadingConfig.tableProps.getRowId"
+    :get-row-id="getRowId"
     :rows="rows"
     :selectable-cells="dynamicRowLoadingConfig.tableProps.selectableCells"
     :theme="theme"
@@ -17,19 +17,22 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {SimpleTable} from "@simple-table/vue";import type { Theme, OnRowGroupExpandProps } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, OnRowGroupExpandProps, GetRowIdParams } from "@simple-table/vue";
 import {
   dynamicRowLoadingConfig,
   generateInitialRegions,
   fetchStoresForRegion,
   fetchProductsForStore,
 } from "./dynamic-row-loading.demo-data";
-import type { DynamicRegion, DynamicStore } from "./dynamic-row-loading.demo-data";
+import type { DynamicRegion, DynamicTreeRow } from "./dynamic-row-loading.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), { height: "400px" });
 
 const rows = ref<DynamicRegion[]>(generateInitialRegions());
+
+const getRowId = ({ row }: GetRowIdParams<DynamicTreeRow>) => row.id;
 
 async function handleRowExpand({
   row,
@@ -40,28 +43,31 @@ async function handleRowExpand({
   setError,
   setEmpty,
   rowIndexPath,
-}: OnRowGroupExpandProps) {
+}: OnRowGroupExpandProps<DynamicTreeRow>) {
   if (!isExpanded) return;
-  if (groupingKey && row[groupingKey] && (row[groupingKey] as unknown[]).length > 0) return;
+  if (groupingKey && row[groupingKey as keyof DynamicTreeRow] != null) {
+    const nested = row[groupingKey as keyof DynamicTreeRow];
+    if (Array.isArray(nested) && nested.length > 0) return;
+  }
 
   try {
-    if (depth === 0 && groupingKey === "stores") {
+    if (depth === 0 && groupingKey === "stores" && row.type === "region") {
       setLoading(true);
-      const stores = await fetchStoresForRegion((row as DynamicRegion).id);
+      const stores = await fetchStoresForRegion(row.id);
       setLoading(false);
       if (stores.length === 0) {
-        setEmpty(true, "No stores found");
+        setEmpty(true, "No stores found for this region");
         return;
       }
       const newRows = [...rows.value];
       newRows[rowIndexPath[0]].stores = stores;
       rows.value = newRows;
-    } else if (depth === 1 && groupingKey === "products") {
+    } else if (depth === 1 && groupingKey === "products" && row.type === "store") {
       setLoading(true);
-      const products = await fetchProductsForStore((row as DynamicStore).id);
+      const products = await fetchProductsForStore(row.id);
       setLoading(false);
       if (products.length === 0) {
-        setEmpty(true, "No products found");
+        setEmpty(true, "No products found for this store");
         return;
       }
       const newRows = [...rows.value];

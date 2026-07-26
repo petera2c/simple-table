@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import {SimpleTable} from "@simple-table/vue";import type { Theme, Row } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, GetRowIdParams } from "@simple-table/vue";
 import { loadingStateConfig } from "./loading-state.demo-data";
+import type { LoadingStateEmployee } from "./loading-state.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -9,7 +11,9 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
 });
 
 const isLoading = ref(true);
-const data = ref<Row[]>([]);
+const data = ref<LoadingStateEmployee[]>([]);
+
+const getRowId = ({ row }: GetRowIdParams<LoadingStateEmployee>) => row.id;
 
 function loadData() {
   isLoading.value = true;
@@ -38,6 +42,7 @@ onMounted(() => {
     </div>
     <SimpleTable
       :columns="loadingStateConfig.headers"
+      :get-row-id="getRowId"
       :rows="data"
       :is-loading="isLoading"
       :height="props.height"

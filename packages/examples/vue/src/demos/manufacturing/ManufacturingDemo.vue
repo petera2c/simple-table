@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueColumnDef, CellRendererProps } from "@simple-table/vue";
+import type { Theme, VueColumnDef, CellRendererProps, GetRowIdParams } from "@simple-table/vue";
 import { manufacturingConfig, getManufacturingStatusColors } from "./manufacturing.demo-data";
 import type { ManufacturingRow } from "./manufacturing.demo-data";
 import "@simple-table/vue/styles.css";
@@ -10,25 +10,25 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
   height: "400px",
 });
 
-function getHeaders(): VueColumnDef[] {
+const getRowId = ({ row }: GetRowIdParams<ManufacturingRow>) => row.id;
+
+function getHeaders(): VueColumnDef<ManufacturingRow>[] {
   return manufacturingConfig.headers.map((col) => {
     if (col.accessor === "productLine") {
       return {
         ...col,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
-          return d.stations
-            ? h("span", { style: { fontWeight: "bold" } }, d.productLine)
-            : d.productLine;
+        cellRenderer: ({ row: r }: CellRendererProps<ManufacturingRow>) => {
+          return r.stations
+            ? h("span", { style: { fontWeight: "bold" } }, r.productLine)
+            : r.productLine;
         },
       };
     }
     if (col.accessor === "station") {
       return {
         ...col,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
-          if (d.stations) return h("span", { style: { color: "#6b7280" } }, d.id);
+        cellRenderer: ({ row: r }: CellRendererProps<ManufacturingRow>) => {
+          if (r.stations) return h("span", { style: { color: "#6b7280" } }, r.id);
           return h("div", { style: { display: "flex", alignItems: "center", gap: "4px" } }, [
             h(
               "span",
@@ -42,9 +42,9 @@ function getHeaders(): VueColumnDef[] {
                   borderRadius: "4px",
                 },
               },
-              d.id,
+              r.id,
             ),
-            h("span", d.station),
+            h("span", r.station),
           ]);
         },
       };
@@ -52,10 +52,9 @@ function getHeaders(): VueColumnDef[] {
     if (col.accessor === "status") {
       return {
         ...col,
-        cellRenderer: ({ row: r, theme }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
-          if (d.stations) return "—";
-          const colors = getManufacturingStatusColors(d.status, theme);
+        cellRenderer: ({ row: r, theme }: CellRendererProps<ManufacturingRow>) => {
+          if (r.stations) return "—";
+          const colors = getManufacturingStatusColors(r.status, theme);
           return h(
             "span",
             {
@@ -70,7 +69,7 @@ function getHeaders(): VueColumnDef[] {
                 fontWeight: "600",
               },
             },
-            d.status,
+            r.status,
           );
         },
       };
@@ -78,30 +77,27 @@ function getHeaders(): VueColumnDef[] {
     if (col.accessor === "outputRate" || col.accessor === "defectCount" || col.accessor === "energy") {
       return {
         ...col,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
-          const value = d[col.accessor as keyof ManufacturingRow] as number;
-          return h("div", { style: d.stations ? { fontWeight: "bold" } : {} }, value.toLocaleString());
+        cellRenderer: ({ row: r }: CellRendererProps<ManufacturingRow>) => {
+          const value = r[col.accessor as keyof ManufacturingRow] as number;
+          return h("div", { style: r.stations ? { fontWeight: "bold" } : {} }, value.toLocaleString());
         },
       };
     }
     if (col.accessor === "cycletime") {
       return {
         ...col,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
-          if (d.stations)
-            return h("span", { style: { fontWeight: "bold" } }, d.cycletime.toFixed(1));
-          return h("span", String(d.cycletime));
+        cellRenderer: ({ row: r }: CellRendererProps<ManufacturingRow>) => {
+          if (r.stations)
+            return h("span", { style: { fontWeight: "bold" } }, r.cycletime.toFixed(1));
+          return h("span", String(r.cycletime));
         },
       };
     }
     if (col.accessor === "efficiency") {
       return {
         ...col,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
-          const color = d.efficiency >= 90 ? "#52c41a" : d.efficiency >= 75 ? "#1890ff" : "#ff4d4f";
+        cellRenderer: ({ row: r }: CellRendererProps<ManufacturingRow>) => {
+          const color = r.efficiency >= 90 ? "#52c41a" : r.efficiency >= 75 ? "#1890ff" : "#ff4d4f";
           return h("div", { style: { width: "100%", display: "flex", flexDirection: "column" } }, [
             h(
               "div",
@@ -118,7 +114,7 @@ function getHeaders(): VueColumnDef[] {
                 h("div", {
                   style: {
                     height: "100%",
-                    width: `${d.efficiency}%`,
+                    width: `${r.efficiency}%`,
                     backgroundColor: color,
                     borderRadius: "100px",
                   },
@@ -132,10 +128,10 @@ function getHeaders(): VueColumnDef[] {
                   fontSize: "12px",
                   textAlign: "center",
                   marginTop: "4px",
-                  fontWeight: d.stations ? "bold" : "normal",
+                  fontWeight: r.stations ? "bold" : "normal",
                 },
               },
-              `${d.efficiency}%`,
+              `${r.efficiency}%`,
             ),
           ]);
         },
@@ -144,13 +140,12 @@ function getHeaders(): VueColumnDef[] {
     if (col.accessor === "defectRate") {
       return {
         ...col,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
-          const color = d.defectRate < 1 ? "#16a34a" : d.defectRate < 3 ? "#f59e0b" : "#dc2626";
+        cellRenderer: ({ row: r }: CellRendererProps<ManufacturingRow>) => {
+          const color = r.defectRate < 1 ? "#16a34a" : r.defectRate < 3 ? "#f59e0b" : "#dc2626";
           return h(
             "span",
-            { style: { color, fontWeight: d.stations ? "bold" : "normal" } },
-            `${d.defectRate.toFixed(2)}%`,
+            { style: { color, fontWeight: r.stations ? "bold" : "normal" } },
+            `${r.defectRate.toFixed(2)}%`,
           );
         },
       };
@@ -158,13 +153,12 @@ function getHeaders(): VueColumnDef[] {
     if (col.accessor === "downtime") {
       return {
         ...col,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
-          const color = d.downtime < 1 ? "#16a34a" : d.downtime < 2 ? "#f59e0b" : "#dc2626";
+        cellRenderer: ({ row: r }: CellRendererProps<ManufacturingRow>) => {
+          const color = r.downtime < 1 ? "#16a34a" : r.downtime < 2 ? "#f59e0b" : "#dc2626";
           return h(
             "span",
-            { style: { color, fontWeight: d.stations ? "bold" : "normal" } },
-            d.downtime.toFixed(2),
+            { style: { color, fontWeight: r.stations ? "bold" : "normal" } },
+            r.downtime.toFixed(2),
           );
         },
       };
@@ -172,21 +166,19 @@ function getHeaders(): VueColumnDef[] {
     if (col.accessor === "utilization") {
       return {
         ...col,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
-          if (d.stations)
-            return h("span", { style: { fontWeight: "bold" } }, `${d.utilization.toFixed(0)}%`);
-          return `${d.utilization}%`;
+        cellRenderer: ({ row: r }: CellRendererProps<ManufacturingRow>) => {
+          if (r.stations)
+            return h("span", { style: { fontWeight: "bold" } }, `${r.utilization.toFixed(0)}%`);
+          return `${r.utilization}%`;
         },
       };
     }
     if (col.accessor === "maintenanceDate") {
       return {
         ...col,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
-          if (d.stations) return "—";
-          const [year, month, day] = d.maintenanceDate.split("-").map(Number);
+        cellRenderer: ({ row: r }: CellRendererProps<ManufacturingRow>) => {
+          if (r.stations) return "—";
+          const [year, month, day] = r.maintenanceDate.split("-").map(Number);
           const date = new Date(year, month - 1, day);
           const today = new Date();
           const diffDays = Math.ceil((date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
@@ -228,6 +220,7 @@ const headers = getHeaders();
   <SimpleTable
     :columns="headers"
     :rows="manufacturingConfig.rows"
+    :get-row-id="getRowId"
     :height="props.height"
     :theme="props.theme"
     :column-resizing="true"

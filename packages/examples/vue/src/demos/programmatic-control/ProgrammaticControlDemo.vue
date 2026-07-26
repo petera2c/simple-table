@@ -24,6 +24,7 @@
       ref="tableRef"
       :columns="headers"
       :rows="programmaticControlConfig.rows"
+      :get-row-id="getRowId"
       :height="height"
       :theme="theme"
     />
@@ -33,8 +34,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, VueColumnDef } from "@simple-table/vue";
+import type { Theme, TableAPI, VueColumnDef, CellRendererProps, GetRowIdParams } from "@simple-table/vue";
 import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
+import type { ProgrammaticControlProduct } from "./programmatic-control.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -43,19 +45,20 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
 
 const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
 const statusMessage = ref("No status message");
+const getRowId = ({ row }: GetRowIdParams<ProgrammaticControlProduct>) => row.id;
 
-const headers: VueColumnDef[] = programmaticControlConfig.headers.map((h) => {
-  if (h.accessor === "status") {
+const headers: VueColumnDef<ProgrammaticControlProduct>[] = programmaticControlConfig.headers.map((col) => {
+  if (col.accessor === "status") {
     return {
-      ...h,
-      cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-        const s = String(row.status);
+      ...col,
+      cellRenderer: ({ row }: CellRendererProps<ProgrammaticControlProduct>) => {
+        const s = row.status;
         const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? { bg: "#f3f4f6", color: "#374151" };
         return `<span style="background:${colors.bg};color:${colors.color};padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold">${s}</span>`;
       },
     };
   }
-  return { ...h };
+  return { ...col };
 });
 
 function handleSortByName() {

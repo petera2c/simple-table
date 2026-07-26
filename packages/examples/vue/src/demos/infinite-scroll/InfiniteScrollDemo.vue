@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import {SimpleTable} from "@simple-table/vue";import type { Theme, Row } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, GetRowIdParams } from "@simple-table/vue";
 import { infiniteScrollConfig, generateInfiniteScrollData } from "./infinite-scroll.demo-data";
+import type { InfiniteScrollEmployee } from "./infinite-scroll.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -11,19 +13,21 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
 const MAX_ROWS = 200;
 const BATCH_SIZE = 15;
 
-const rows = ref<Row[]>(generateInfiniteScrollData(0, 30) as Row[]);
+const rows = ref<InfiniteScrollEmployee[]>(generateInfiniteScrollData(0, 30));
 const loading = ref(false);
 const hasMore = ref(true);
 
+const getRowId = ({ row }: GetRowIdParams<InfiniteScrollEmployee>) => row.id;
+
 const statusText = computed(() =>
-  `${rows.value.length} rows loaded${hasMore.value ? "" : " (all loaded)"}`
+  `${rows.value.length} rows loaded${hasMore.value ? "" : " (all loaded)"}`,
 );
 
 function handleLoadMore() {
   if (loading.value || !hasMore.value) return;
   loading.value = true;
   setTimeout(() => {
-    const newRows = generateInfiniteScrollData(rows.value.length, BATCH_SIZE) as Row[];
+    const newRows = generateInfiniteScrollData(rows.value.length, BATCH_SIZE);
     rows.value = [...rows.value, ...newRows];
     if (rows.value.length >= MAX_ROWS) hasMore.value = false;
     loading.value = false;
@@ -36,6 +40,7 @@ function handleLoadMore() {
     <div style="margin-bottom: 8px; font-size: 13px; color: #666">{{ statusText }}</div>
     <SimpleTable
       :columns="infiniteScrollConfig.headers"
+      :get-row-id="getRowId"
       :rows="rows"
       :is-loading="loading"
       :on-load-more="handleLoadMore"

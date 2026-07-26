@@ -18,14 +18,15 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, Row, CellValue } from "@simple-table/vue";
+import type { Theme, TableAPI, CellValue, GetRowIdParams } from "@simple-table/vue";
 import { cryptoConfig } from "./crypto.demo-data";
+import type { CryptoCoin } from "./crypto.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), { height: "70dvh" });
 
 const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
-const getRowId = ({ row }: { row: { id: string | number } }) => row.id;
+const getRowId = ({ row }: GetRowIdParams<CryptoCoin>) => row.id;
 let cleanupFn: (() => void) | null = null;
 
 const TICK_MS = 90;
@@ -42,9 +43,9 @@ function pickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Row>) {
+function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<CryptoCoin>) {
   for (const accessor of Object.keys(patch)) {
-    const newValue = patch[accessor];
+    const newValue = patch[accessor as keyof CryptoCoin];
     if (newValue === undefined) continue;
     api.updateData({ accessor, rowId, newValue: newValue as CellValue });
   }
@@ -67,7 +68,7 @@ function runTick(getApi: () => TableAPI | null | undefined) {
     const currentChange = (vr.row.change24h as number) ?? 0;
     const newChange = Math.round((currentChange + drift * 100) * 100) / 100;
     const history = vr.row.priceHistory as number[];
-    const patch: Partial<Row> = { price: newPriceRounded, change24h: newChange };
+    const patch: Partial<CryptoCoin> = { price: newPriceRounded, change24h: newChange };
     if (Array.isArray(history) && history.length > 0) {
       patch.priceHistory = [...history.slice(1), newPriceRounded];
     }

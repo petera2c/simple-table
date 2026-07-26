@@ -1,8 +1,15 @@
 // Self-contained demo table setup for this example.
 import type { VueColumnDef } from "@simple-table/vue";
 
+export interface ColumnAlignmentPlayer {
+  id: number;
+  name: string;
+  score: number;
+  rating: number;
+  status: string;
+}
 
-export const columnAlignmentHeaders: VueColumnDef[] = [
+export const columnAlignmentHeaders: VueColumnDef<ColumnAlignmentPlayer>[] = [
   { accessor: "id", label: "ID", width: 80, align: "left", type: "number" },
   { accessor: "name", label: "Name", minWidth: 100, width: "1fr", align: "center", type: "string" },
   { accessor: "score", label: "Score", width: 120, align: "right", type: "number" },
@@ -10,7 +17,7 @@ export const columnAlignmentHeaders: VueColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, align: "left", type: "string" },
 ];
 
-export const columnAlignmentData = [
+export const columnAlignmentData: ColumnAlignmentPlayer[] = [
   { id: 1, name: "Camila Rodriguez", score: 94, rating: 4.9, status: "Active" },
   { id: 2, name: "Enzo Silva", score: 89, rating: 4.6, status: "Active" },
   { id: 3, name: "Yuki Kim", score: 96, rating: 4.8, status: "Active" },
@@ -28,4 +35,4 @@ export const columnAlignmentData = [
 export const columnAlignmentConfig = {
   headers: columnAlignmentHeaders,
   rows: columnAlignmentData,
-} as const;
+};

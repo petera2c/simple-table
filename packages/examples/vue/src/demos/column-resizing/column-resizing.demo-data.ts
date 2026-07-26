@@ -1,10 +1,18 @@
 // Self-contained demo table setup for this example.
 import type { VueColumnDef } from "@simple-table/vue";
 
+export interface OceanStaff {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+  startDate: string;
+}
 
 export const COLUMN_RESIZING_STORAGE_KEY = "columnResizingDemo_widths";
 
-export const columnResizingHeaders: VueColumnDef[] = [
+export const columnResizingHeaders: VueColumnDef<OceanStaff>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "First Name", width: "1fr", minWidth: 100, type: "string" },
   { accessor: "age", label: "Age", width: "1fr", minWidth: 50, type: "string" },
@@ -31,4 +39,4 @@ export const columnResizingData = [
 export const columnResizingConfig = {
   headers: columnResizingHeaders,
   rows: columnResizingData,
-} as const;
+};

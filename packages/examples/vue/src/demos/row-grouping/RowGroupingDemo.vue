@@ -14,7 +14,7 @@
       :rows="rowGroupingConfig.rows"
       :row-grouping="rowGroupingConfig.tableProps.rowGrouping"
       :enable-sticky-parents="true"
-      :get-row-id="rowGroupingConfig.tableProps.getRowId"
+      :get-row-id="getRowId"
       :column-resizing="true"
       :height="height"
       :theme="theme"
@@ -24,8 +24,10 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {SimpleTable} from "@simple-table/vue";import type { Theme, TableAPI } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, TableAPI, GetRowIdParams } from "@simple-table/vue";
 import { rowGroupingConfig } from "./row-grouping.demo-data";
+import type { OrgUnit } from "./row-grouping.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -33,6 +35,7 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
 });
 
 const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
+const getRowId = ({ row }: GetRowIdParams<OrgUnit>) => row.id;
 
 function btnStyle(color: string) {
   return {

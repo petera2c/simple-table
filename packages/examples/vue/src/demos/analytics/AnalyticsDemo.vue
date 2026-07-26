@@ -108,8 +108,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { TableAPI, Theme } from "@simple-table/vue";
+import type { TableAPI, Theme, GetRowIdParams } from "@simple-table/vue";
 import { analyticsDemoConfig, analyticsPresets } from "./analytics.demo-data";
+import type { AnalyticsFactRow } from "./analytics.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number | null; theme?: Theme }>(), {
@@ -136,8 +137,8 @@ const formatHeight = computed(() => {
   return props.height;
 });
 
-function getRowId({ row }: { row: { id?: unknown } }) {
-  return row.id == null ? undefined : String(row.id);
+function getRowId({ row }: GetRowIdParams<AnalyticsFactRow>) {
+  return row.id;
 }
 
 function exportCsv() {

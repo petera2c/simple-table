@@ -57,6 +57,7 @@
     <SimpleTable
       :columns="quickFilterConfig.headers"
       :rows="quickFilterConfig.rows"
+      :get-row-id="getRowId"
       :height="height"
       :theme="theme"
       :quick-filter="{ text: searchText, mode: filterMode, caseSensitive }"
@@ -66,13 +67,17 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {SimpleTable} from "@simple-table/vue";import type { Theme, QuickFilterMode } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, QuickFilterMode, GetRowIdParams } from "@simple-table/vue";
 import { quickFilterConfig } from "./quick-filter.demo-data";
+import type { QuickFilterEmployee } from "./quick-filter.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
+
+const getRowId = ({ row }: GetRowIdParams<QuickFilterEmployee>) => row.id;
 
 const searchText = ref("");
 const filterMode = ref<QuickFilterMode>("simple");

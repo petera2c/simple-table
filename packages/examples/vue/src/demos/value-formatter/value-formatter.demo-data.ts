@@ -1,8 +1,18 @@
 // Self-contained demo table setup for this example.
-import type { VueColumnDef, Row } from "@simple-table/vue";
+import type { VueColumnDef } from "@simple-table/vue";
 
+export interface FormattedEmployee {
+  id: number;
+  firstName: string;
+  lastName: string;
+  salary: number;
+  joinDate: string;
+  performanceScore: number;
+  balance: number;
+  department: string;
+}
 
-export const valueFormatterData: Row[] = [
+export const valueFormatterData: FormattedEmployee[] = [
   { id: 1, firstName: "Isabella", lastName: "Romano", salary: 125000, joinDate: "2021-03-15", performanceScore: 0.945, balance: 1250.50, department: "Engineering" },
   { id: 2, firstName: "Ethan", lastName: "McKenzie", salary: 98500, joinDate: "2022-07-22", performanceScore: 0.875, balance: -150.00, department: "Marketing" },
   { id: 3, firstName: "Zoe", lastName: "Patterson", salary: 110000, joinDate: "2020-01-10", performanceScore: 0.923, balance: 0, department: "Sales" },
@@ -26,7 +36,7 @@ const DEPARTMENT_CODES: Record<string, string> = {
   operations: "OPS",
 };
 
-export const valueFormatterHeaders: VueColumnDef[] = [
+export const valueFormatterHeaders: VueColumnDef<FormattedEmployee>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   {
     accessor: "firstName",
@@ -34,7 +44,7 @@ export const valueFormatterHeaders: VueColumnDef[] = [
     width: 180,
     type: "string",
     valueFormatter: ({ value, row }) => {
-      return `${value as string} ${row.lastName as string}`;
+      return `${value as string} ${row.lastName}`;
     },
   },
   {
@@ -102,4 +112,4 @@ export const valueFormatterConfig = {
   tableProps: {
     selectableCells: true,
   },
-} as const;
+};

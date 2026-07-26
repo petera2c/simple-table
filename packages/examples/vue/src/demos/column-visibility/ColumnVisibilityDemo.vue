@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import {SimpleTable} from "@simple-table/vue";import type { ColumnVisibilityState, Theme } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { ColumnVisibilityState, Theme, GetRowIdParams } from "@simple-table/vue";
 import MarketingColumnEditorRow from "./MarketingColumnEditorRow.vue";
 import {
   columnVisibilityConfig,
@@ -7,6 +8,7 @@ import {
   loadColumnVisibilityDemoSaved,
   saveColumnVisibilityDemoState,
 } from "./column-visibility.demo-data";
+import type { VisibilityEmployee } from "./column-visibility.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -20,6 +22,8 @@ const columnEditorConfig = {
   rowRenderer: MarketingColumnEditorRow,
 };
 
+const getRowId = ({ row }: GetRowIdParams<VisibilityEmployee>) => row.id;
+
 function onColumnVisibilityChange(state: ColumnVisibilityState) {
   saveColumnVisibilityDemoState(state);
 }
@@ -29,6 +33,7 @@ function onColumnVisibilityChange(state: ColumnVisibilityState) {
   <SimpleTable
     :columns="columns"
     :rows="columnVisibilityConfig.rows"
+    :get-row-id="getRowId"
     :enable-column-editor="columnVisibilityConfig.tableProps.enableColumnEditor"
     :enable-column-editor-init-open="columnVisibilityConfig.tableProps.enableColumnEditorInitOpen"
     :column-editor-config="columnEditorConfig"

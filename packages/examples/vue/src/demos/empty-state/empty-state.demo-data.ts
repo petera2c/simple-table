@@ -1,10 +1,17 @@
 // Self-contained demo table setup for this example.
-import type { VueColumnDef, Row } from "@simple-table/vue";
+import type { VueColumnDef } from "@simple-table/vue";
 
+export interface EmptyEmployee {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+}
 
-export const emptyStateData: Row[] = [];
+export const emptyStateData: EmptyEmployee[] = [];
 
-export const emptyStateHeaders: VueColumnDef[] = [
+export const emptyStateHeaders: VueColumnDef<EmptyEmployee>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 180, type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },
@@ -15,4 +22,4 @@ export const emptyStateHeaders: VueColumnDef[] = [
 export const emptyStateConfig = {
   headers: emptyStateHeaders,
   rows: emptyStateData,
-} as const;
+};

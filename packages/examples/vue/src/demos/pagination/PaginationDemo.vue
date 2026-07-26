@@ -5,6 +5,7 @@
     :is-loading="isLoading"
     :on-next-page="onNextPage"
     :rows="rows"
+    :get-row-id="getRowId"
     :rows-per-page="PAGINATION_ROWS_PER_PAGE"
     :enable-pagination="true"
     :theme="theme"
@@ -13,13 +14,17 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, GetRowIdParams } from "@simple-table/vue";
 import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "./pagination.demo-data";
+import type { HotelStaff } from "./pagination.demo-data";
 import "@simple-table/vue/styles.css";
 
-const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {});
+withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {});
 
-const rows = ref(paginationData.slice(0, PAGINATION_ROWS_PER_PAGE));
+const getRowId = ({ row }: GetRowIdParams<HotelStaff>) => row.id;
+
+const rows = ref<HotelStaff[]>(paginationData.slice(0, PAGINATION_ROWS_PER_PAGE));
 const isLoading = ref(false);
 
 const onNextPage = async (pageIndex: number) => {

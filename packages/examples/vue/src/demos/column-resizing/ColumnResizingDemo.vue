@@ -10,6 +10,7 @@
       :column-resizing="true"
       :columns="headers"
       :rows="columnResizingData"
+      :get-row-id="getRowId"
       :height="height"
       :theme="theme"
       @column-width-change="handleColumnWidthChange"
@@ -20,16 +21,23 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueColumnDef } from "@simple-table/vue";
-import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
+import type { Theme, VueColumnDef, GetRowIdParams } from "@simple-table/vue";
+import {
+  columnResizingHeaders,
+  columnResizingData,
+  COLUMN_RESIZING_STORAGE_KEY,
+} from "./column-resizing.demo-data";
+import type { OceanStaff } from "./column-resizing.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
 
-const headers = ref<VueColumnDef[]>([...columnResizingHeaders]);
+const headers = ref<VueColumnDef<OceanStaff>[]>([...columnResizingHeaders]);
 const saveMessage = ref("");
+
+const getRowId = ({ row }: GetRowIdParams<OceanStaff>) => row.id;
 
 onMounted(() => {
   try {
@@ -44,7 +52,7 @@ onMounted(() => {
   } catch { /* ignore */ }
 });
 
-function handleColumnWidthChange(updatedHeaders: VueColumnDef[]) {
+function handleColumnWidthChange(updatedHeaders: VueColumnDef<OceanStaff>[]) {
   try {
     const widthMap = updatedHeaders.reduce(
       (acc: Record<string, unknown>, h) => { acc[h.accessor] = h.width; return acc; },

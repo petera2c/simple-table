@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, h, type VNodeChild } from "vue";
+import { ref, computed, h, type VNodeChild } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueColumnDef, CellRendererProps } from "@simple-table/vue";
+import type { Theme, VueColumnDef, CellRendererProps, GetRowIdParams } from "@simple-table/vue";
 import { musicConfig, getMusicThemeColors } from "./music.demo-data";
 import type { MusicArtist } from "./music.demo-data";
 import "@simple-table/vue/styles.css";
@@ -10,6 +10,13 @@ import "./music-theme.css";
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
+
+function musicNumber(row: MusicArtist, key: string): number {
+  const value = row[key];
+  if (typeof value === "number") return value;
+  if (typeof value === "string") return Number(value) || 0;
+  return 0;
+}
 
 function hv(
   tag: string,
@@ -68,25 +75,26 @@ function growthMetric(
 }
 
 function applyRenderers(
-  hdrs: readonly VueColumnDef[],
-  map: Record<string, (p: CellRendererProps) => VNodeChild>,
-): VueColumnDef[] {
-  return hdrs.map((h) => {
-    const renderer = map[h.accessor as string];
-    const clone: VueColumnDef = renderer ? { ...h, cellRenderer: renderer } : { ...h };
-    if (h.children) {
-      clone.children = applyRenderers(h.children, map);
+  hdrs: readonly VueColumnDef<MusicArtist>[],
+  map: Record<string, (p: CellRendererProps<MusicArtist>) => VNodeChild>,
+): VueColumnDef<MusicArtist>[] {
+  return hdrs.map((col) => {
+    const renderer = map[col.accessor as string];
+    const clone: VueColumnDef<MusicArtist> = renderer ? { ...col, cellRenderer: renderer } : { ...col };
+    if (col.children) {
+      clone.children = applyRenderers(col.children, map);
     }
     return clone;
   });
 }
 
-const headers = computed(() => {
+const getRowId = ({ row }: GetRowIdParams<MusicArtist>) => row.id;
+
+const headers = computed((): VueColumnDef<MusicArtist>[] => {
   const c = getMusicThemeColors(props.theme);
 
-  const artistRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
-    const name = d.artistName;
+  const artistRenderer = ({ row }: CellRendererProps<MusicArtist>) => {
+    const name = row.artistName;
     let hash = 0;
     for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
     const avatar = hv("div", {
@@ -97,9 +105,9 @@ const headers = computed(() => {
     }, [name.charAt(0).toUpperCase()]);
 
     const tags = hv("div", { display: "flex", gap: "6px", flexWrap: "wrap" }, [
-      tag(d.growthStatus, "default", c),
-      tag(d.mood, "default", c),
-      tag(d.genre, "default", c),
+      tag(row.growthStatus as string, "default", c),
+      tag(row.mood as string, "default", c),
+      tag(row.genre, "default", c),
     ]);
 
     const info = hv("div", { display: "flex", flexDirection: "column", gap: "6px", flex: "1" }, [
@@ -110,82 +118,74 @@ const headers = computed(() => {
     return hv("div", { display: "flex", alignItems: "center", gap: "12px" }, [avatar, info]);
   };
 
-  const artistTypeRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
+  const artistTypeRenderer = ({ row }: CellRendererProps<MusicArtist>) => {
     return hv("div", { display: "flex", flexDirection: "column", gap: "4px" }, [
-      hv("div", { fontSize: "13px", color: c.gray }, [`${d.artistType}, ${d.pronouns}`]),
-      hv("div", { fontSize: "12px", color: c.gray }, [d.recordLabel]),
-      hv("div", { fontSize: "12px", color: c.gray }, [`Lyrics Language: ${d.lyricsLanguage}`]),
+      hv("div", { fontSize: "13px", color: c.gray }, [`${row.artistType}, ${row.pronouns}`]),
+      hv("div", { fontSize: "12px", color: c.gray }, [row.recordLabel]),
+      hv("div", { fontSize: "12px", color: c.gray }, [`Lyrics Language: ${String(row.lyricsLanguage ?? "")}`]),
     ]);
   };
 
-  const followersRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
+  const followersRenderer = ({ row }: CellRendererProps<MusicArtist>) => {
     return hv("div", { display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-start" }, [
-      hv("div", { fontSize: "14px", color: c.gray }, [d.followersFormatted]),
-      tag(`↑ +${d.followersGrowthFormatted} (${d.followersGrowthPercent.toFixed(2)}%)`, "green", c),
+      hv("div", { fontSize: "14px", color: c.gray }, [String(row.followersFormatted ?? "")]),
+      tag(`↑ +${String(row.followersGrowthFormatted ?? "")} (${musicNumber(row, "followersGrowthPercent").toFixed(2)}%)`, "green", c),
     ]);
   };
 
-  const playlistReachRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
-    const growth = d.playlistReachChange;
+  const playlistReachRenderer = ({ row }: CellRendererProps<MusicArtist>) => {
+    const growth = musicNumber(row, "playlistReachChange");
     const isPos = growth >= 0;
-    const formatted = d.playlistReachChangeFormatted;
-    const pct = Math.abs(d.playlistReachChangePercent).toFixed(2);
+    const formatted = String(row.playlistReachChangeFormatted ?? "");
+    const pct = Math.abs(musicNumber(row, "playlistReachChangePercent")).toFixed(2);
     return hv("div", { display: "flex", flexDirection: "column", gap: "4px" }, [
-      hv("div", { fontSize: "14px", color: c.gray }, [d.playlistReachFormatted]),
+      hv("div", { fontSize: "14px", color: c.gray }, [String(row.playlistReachFormatted ?? "")]),
       tag(`${isPos ? "↑" : "↓"} ${isPos ? "+" : ""}${formatted} (${pct}%)`, isPos ? "green" : "red", c),
     ]);
   };
 
-  const playlistCountRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
+  const playlistCountRenderer = ({ row }: CellRendererProps<MusicArtist>) => {
     return hv("div", { display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-start" }, [
-      hv("div", { fontSize: "14px", color: c.gray }, [d.playlistCount.toLocaleString()]),
-      tag(`↑ +${d.playlistCountGrowth} (${d.playlistCountGrowthPercent.toFixed(2)}%)`, "green", c),
+      hv("div", { fontSize: "14px", color: c.gray }, [musicNumber(row, "playlistCount").toLocaleString()]),
+      tag(`↑ +${musicNumber(row, "playlistCountGrowth")} (${musicNumber(row, "playlistCountGrowthPercent").toFixed(2)}%)`, "green", c),
     ]);
   };
 
-  const monthlyListenersRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
-    const growth = d.monthlyListenersChange;
+  const monthlyListenersRenderer = ({ row }: CellRendererProps<MusicArtist>) => {
+    const growth = musicNumber(row, "monthlyListenersChange");
     const isPos = growth >= 0;
-    const formatted = d.monthlyListenersChangeFormatted;
-    const pct = Math.abs(d.monthlyListenersChangePercent).toFixed(2);
+    const formatted = String(row.monthlyListenersChangeFormatted ?? "");
+    const pct = Math.abs(musicNumber(row, "monthlyListenersChangePercent")).toFixed(2);
     return hv("div", { display: "flex", flexDirection: "column", gap: "4px" }, [
-      hv("div", { fontSize: "14px", color: c.gray }, [d.monthlyListenersFormatted]),
+      hv("div", { fontSize: "14px", color: c.gray }, [String(row.monthlyListenersFormatted ?? "")]),
       tag(`${isPos ? "↑" : "↓"} ${isPos ? "+" : ""}${formatted} (${pct}%)`, isPos ? "green" : "red", c),
     ]);
   };
 
-  const popularityRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
-    const pct = d.popularityChangePercent;
+  const popularityRenderer = ({ row }: CellRendererProps<MusicArtist>) => {
+    const pct = musicNumber(row, "popularityChangePercent");
     const isPos = pct >= 0;
     return hv("div", { display: "flex", justifyContent: "center" }, [
-      growthMetric(`${d.popularity}/100`, pct, c, { isPositive: isPos, showSign: false }),
+      growthMetric(`${musicNumber(row, "popularity")}/100`, pct, c, { isPositive: isPos, showSign: false }),
     ]);
   };
 
-  const conversionRateRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
-    return hv("span", { color: c.gray }, [`${d.conversionRate.toFixed(2)}%`]);
+  const conversionRateRenderer = ({ row }: CellRendererProps<MusicArtist>) => {
+    return hv("span", { color: c.gray }, [`${musicNumber(row, "conversionRate").toFixed(2)}%`]);
   };
 
-  const ratioRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as MusicArtist;
-    return hv("span", { color: c.gray }, [`${d.reachFollowersRatio.toFixed(1)}x`]);
+  const ratioRenderer = ({ row }: CellRendererProps<MusicArtist>) => {
+    return hv("span", { color: c.gray }, [`${musicNumber(row, "reachFollowersRatio").toFixed(1)}x`]);
   };
 
-  const growthCell = (valueKey: string, pctKey: string, signed: boolean) => ({ row }: CellRendererProps) => {
-    const d = row as unknown as Record<string, number>;
-    const val = d[valueKey];
-    const pct = d[pctKey];
-    return growthMetric(val, pct, c, { isPositive: signed ? val >= 0 : true, align: "right" });
-  };
+  const growthCell = (valueKey: string, pctKey: string, signed: boolean) =>
+    ({ row }: CellRendererProps<MusicArtist>) => {
+      const val = musicNumber(row, valueKey);
+      const pct = musicNumber(row, pctKey);
+      return growthMetric(val, pct, c, { isPositive: signed ? val >= 0 : true, align: "right" });
+    };
 
-  const rendererMap: Record<string, (p: CellRendererProps) => VNodeChild> = {
+  const rendererMap: Record<string, (p: CellRendererProps<MusicArtist>) => VNodeChild> = {
     artistName: artistRenderer,
     artistType: artistTypeRenderer,
     followers: followersRenderer,
@@ -217,6 +217,7 @@ const headers = computed(() => {
   <div class="music-theme-container" style="font-family: Inter">
     <SimpleTable
       :columns="headers"
+      :get-row-id="getRowId"
       :rows="[...musicConfig.rows]"
       :height="props.height"
       :theme="props.theme"

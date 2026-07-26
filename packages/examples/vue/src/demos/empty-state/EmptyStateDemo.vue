@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme } from "@simple-table/vue";
+import type { Theme, GetRowIdParams } from "@simple-table/vue";
 import { emptyStateConfig } from "./empty-state.demo-data";
+import type { EmptyEmployee } from "./empty-state.demo-data";
 import "@simple-table/vue/styles.css";
+
+const getRowId = ({ row }: GetRowIdParams<EmptyEmployee>) => row.id;
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
@@ -53,6 +56,7 @@ const tableEmptyStateRenderer = h(
   <SimpleTable
     :columns="emptyStateConfig.headers"
     :rows="emptyStateConfig.rows"
+    :get-row-id="getRowId"
     :table-empty-state-renderer="tableEmptyStateRenderer"
     :height="props.height"
     :theme="props.theme"

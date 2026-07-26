@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, h, type VNodeChild } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueColumnDef, CellRendererProps, CellChangeProps } from "@simple-table/vue";
+import type { Theme, VueColumnDef, CellRendererProps, CellChangeProps, GetRowIdParams } from "@simple-table/vue";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
 import type { HREmployee } from "./hr.demo-data";
 import "@simple-table/vue/styles.css";
@@ -9,6 +9,8 @@ import "@simple-table/vue/styles.css";
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
+
+const getRowId = ({ row }: GetRowIdParams<HREmployee>) => row.id;
 
 function hv(
   tag: string,
@@ -18,9 +20,9 @@ function hv(
   return h(tag, { style: styles ?? {} }, children ?? []);
 }
 
-const renderers: Record<string, (p: CellRendererProps) => VNodeChild> = {
+const renderers: Record<string, (p: CellRendererProps<HREmployee>) => VNodeChild> = {
   fullName: ({ row, theme }) => {
-    const d = row as unknown as HREmployee;
+    const d = row;
     const c = getHRThemeColors(theme);
     const initials = `${d.firstName?.charAt(0) || ""}${d.lastName?.charAt(0) || ""}`;
 
@@ -49,7 +51,7 @@ const renderers: Record<string, (p: CellRendererProps) => VNodeChild> = {
   },
 
   performanceScore: ({ row, theme }) => {
-    const d = row as unknown as HREmployee;
+    const d = row;
     const score = d.performanceScore;
     const c = getHRThemeColors(theme);
     const color = score >= 90 ? c.progressSuccess : score >= 65 ? c.progressNormal : c.progressException;
@@ -88,7 +90,7 @@ const renderers: Record<string, (p: CellRendererProps) => VNodeChild> = {
   },
 
   hireDate: ({ row, theme }) => {
-    const d = row as unknown as HREmployee;
+    const d = row;
     if (!d.hireDate) return "";
     const [year, month, day] = d.hireDate.split("-").map(Number);
     const date = new Date(year, month - 1, day);
@@ -105,13 +107,13 @@ const renderers: Record<string, (p: CellRendererProps) => VNodeChild> = {
   },
 
   salary: ({ row, theme }) => {
-    const d = row as unknown as HREmployee;
+    const d = row;
     const c = getHRThemeColors(theme);
     return hv("span", { color: c.gray }, [`$${d.salary.toLocaleString()}`]);
   },
 
   status: ({ row, theme }) => {
-    const d = row as unknown as HREmployee;
+    const d = row;
     if (!d.status) return "";
     const c = getHRThemeColors(theme);
     const colorKey = HR_STATUS_COLOR_MAP[d.status] || "default";
@@ -132,7 +134,7 @@ const renderers: Record<string, (p: CellRendererProps) => VNodeChild> = {
   },
 };
 
-const headers: VueColumnDef[] = hrConfig.headers.map((col) => {
+const headers: VueColumnDef<HREmployee>[] = hrConfig.headers.map((col) => {
   const renderer = renderers[col.accessor as string];
   return renderer ? { ...col, cellRenderer: renderer } : { ...col };
 });
@@ -142,7 +144,7 @@ const rowHeight = 48;
 const heightNum = typeof props.height === "number" ? props.height : 400;
 const rowsPerPage = Math.floor(heightNum / rowHeight);
 
-const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
+const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps<HREmployee>) => {
   data.value = data.value.map((item) =>
     item.id === row.id ? { ...item, [accessor]: newValue } : item,
   );
@@ -153,6 +155,7 @@ const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
   <SimpleTable
     :columns="headers"
     :rows="data"
+    :get-row-id="getRowId"
     :height="props.height"
     :theme="props.theme"
     :column-reordering="true"

@@ -1,6 +1,7 @@
 // Self-contained demo table setup for this example.
 import type { VueColumnDef } from "@simple-table/vue";
 
+
 export type CellRendererEmployee = {
   id: number;
   name: string;

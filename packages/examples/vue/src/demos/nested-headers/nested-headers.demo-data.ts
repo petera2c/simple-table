@@ -1,8 +1,16 @@
 // Self-contained demo table setup for this example.
 import type { VueColumnDef } from "@simple-table/vue";
 
+export interface StudentScores {
+  id: number;
+  name: string;
+  mathScore: number;
+  scienceScore: number;
+  historyScore: number;
+  grade: string;
+}
 
-export const nestedHeadersHeaders: VueColumnDef[] = [
+export const nestedHeadersHeaders: VueColumnDef<StudentScores>[] = [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", sortable: true, type: "string" },
   {
@@ -20,7 +28,7 @@ export const nestedHeadersHeaders: VueColumnDef[] = [
   { accessor: "grade", label: "Overall Grade", width: 120, sortable: true, type: "string", align: "center" },
 ];
 
-export const nestedHeadersData = [
+export const nestedHeadersData: StudentScores[] = [
   { id: 1, name: "Aria Chen", mathScore: 94, scienceScore: 89, historyScore: 92, grade: "A" },
   { id: 2, name: "Kai Rodriguez", mathScore: 81, scienceScore: 85, historyScore: 78, grade: "B" },
   { id: 3, name: "Luna Nakamura", mathScore: 96, scienceScore: 94, historyScore: 93, grade: "A" },
@@ -38,4 +46,4 @@ export const nestedHeadersConfig = {
   headers: nestedHeadersHeaders,
   rows: nestedHeadersData,
   tableProps: { columnResizing: true },
-} as const;
+};
