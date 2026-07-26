@@ -3,8 +3,8 @@ import type {
   SimpleTableProps,
   SimpleTableConfig,
   ColumnDef,
-  Row,
   TableAPI,
+  CellValue,
   CellRenderer,
   CellRendererProps,
   HeaderRenderer,
@@ -20,6 +20,16 @@ import type {
   RowButtonProps,
 } from "simple-table-core";
 
+/**
+ * Default `TData` for Svelte props bags / helpers: open records so untyped
+ * object arrays keep assigning to `rows` without `asRows`.
+ *
+ * Prefer typed `rows` / `columns` (`SvelteColumnDef<MyRow>`) so `TData` flows
+ * into renderers and callbacks. Markup inference via `<SimpleTable>` may be
+ * weaker than React/Solid JSX — typed column/renderer defs still give the demo win.
+ */
+export type SvelteDefaultRowData = Record<string, any>;
+
 // ─── Internal instance contract ───────────────────────────────────────────────
 export interface TableInstance {
   mount(): void;
@@ -30,22 +40,31 @@ export interface TableInstance {
 
 // ─── Renderer overrides ───────────────────────────────────────────────────────
 // Svelte components or core vanilla renderers (arity-1 functions pass through at runtime).
-export type SvelteCellRenderer = Component<CellRendererProps> | CellRenderer;
-export type SvelteHeaderRenderer = Component<HeaderRendererProps> | HeaderRenderer;
+export type SvelteCellRenderer<
+  TData extends SvelteDefaultRowData = SvelteDefaultRowData,
+  TValue = CellValue,
+> = Component<CellRendererProps<TData, TValue>> | CellRenderer<TData, TValue>;
+export type SvelteHeaderRenderer<TData extends SvelteDefaultRowData = SvelteDefaultRowData> =
+  | Component<HeaderRendererProps<TData>>
+  | HeaderRenderer<TData>;
 export type SvelteFooterRenderer = Component<FooterRendererProps>;
 export type SvelteHeaderDropdown = Component<HeaderDropdownProps>;
 export type SvelteColumnEditorRowRenderer = Component<ColumnEditorRowRendererProps>;
 export type SvelteColumnEditorCustomRenderer = Component<ColumnEditorCustomRendererProps>;
 // Per-row action buttons. Each entry is a Svelte component receiving RowButtonProps.
-export type SvelteRowButton = Component<RowButtonProps>;
+export type SvelteRowButton<TData extends SvelteDefaultRowData = SvelteDefaultRowData> =
+  Component<RowButtonProps<TData>>;
 
 // State renderers: Svelte components (static markup via a wrapper component or HTMLElement).
-export type SvelteLoadingStateRenderer = Component<LoadingStateRendererProps>;
-export type SvelteErrorStateRenderer = Component<ErrorStateRendererProps>;
-export type SvelteEmptyStateRenderer = Component<EmptyStateRendererProps>;
+export type SvelteLoadingStateRenderer<TData extends SvelteDefaultRowData = SvelteDefaultRowData> =
+  Component<LoadingStateRendererProps<TData>>;
+export type SvelteErrorStateRenderer<TData extends SvelteDefaultRowData = SvelteDefaultRowData> =
+  Component<ErrorStateRendererProps<TData>>;
+export type SvelteEmptyStateRenderer<TData extends SvelteDefaultRowData = SvelteDefaultRowData> =
+  Component<EmptyStateRendererProps<TData>>;
 
 // ─── Icon overrides ───────────────────────────────────────────────────────────
-export type SvelteIconElement = Component<any>;
+export type SvelteIconElement = Component<Record<string, never>>;
 
 export interface SvelteIconsConfig {
   drag?: SvelteIconElement | HTMLElement | SVGSVGElement | string;
@@ -72,37 +91,42 @@ export interface SvelteColumnEditorConfig extends Omit<
 
 // ─── ColumnDef override ────────────────────────────────────────────────────
 /**
- * Column definition for `columns`: core column metadata with
- * Svelte-only renderer fields. `columns` also accept plain
- * `ColumnDef[]` from shared configs.
+ * Column definition for `columns`: same column metadata as core
+ * columns, but `cellRenderer` / `headerRenderer` / `children` / `nestedTable` are Svelte-only.
  */
-export interface SvelteColumnDef extends Omit<
-  ColumnDef,
+export interface SvelteColumnDef<
+  TData extends SvelteDefaultRowData = SvelteDefaultRowData,
+  TValue = CellValue,
+> extends Omit<
+  ColumnDef<TData, TValue>,
   "cellRenderer" | "headerRenderer" | "children" | "nestedTable"
 > {
-  cellRenderer?: SvelteCellRenderer;
-  headerRenderer?: SvelteHeaderRenderer;
-  children?: SvelteColumnDef[];
-  nestedTable?: Omit<
-    SimpleTableSvelteProps,
-    | "rows"
-    | "loadingStateRenderer"
-    | "errorStateRenderer"
-    | "emptyStateRenderer"
-    | "tableEmptyStateRenderer"
-  >;
+  cellRenderer?: SvelteCellRenderer<TData, TValue>;
+  headerRenderer?: SvelteHeaderRenderer<TData>;
+  children?: ReadonlyArray<SvelteColumnDef<TData, any>>;
+  /** Nested grid; child columns may use a different row type than `TData`. */
+  nestedTable?: NestedTableSvelteConfig;
 }
-
 
 // ─── Top-level props ──────────────────────────────────────────────────────────
 // Mirrors SimpleTableProps with Svelte-specific overrides. Use `bind:this` on the
 // table component and `getAPI()` for the imperative TableAPI.
 //
 //   Overridden to Svelte equivalents:
-//     - columns → ReadonlyArray<ColumnDef | SvelteColumnDef>
-export interface SimpleTableSvelteProps extends Omit<
-  SimpleTableProps,
-  | "rows"
+//     - columns → ReadonlyArray<SvelteColumnDef<TData>>
+//     - footerRenderer         → SvelteFooterRenderer
+//     - loadingStateRenderer   → SvelteLoadingStateRenderer<TData>
+//     - errorStateRenderer     → SvelteErrorStateRenderer<TData>
+//     - emptyStateRenderer     → SvelteEmptyStateRenderer<TData>
+//     - tableEmptyStateRenderer → Component | HTMLElement | string | null
+//     - headerDropdown         → SvelteHeaderDropdown
+//     - columnEditorConfig     → SvelteColumnEditorConfig
+//     - icons                  → SvelteIconsConfig
+//     - rowButtons             → SvelteRowButton<TData>[]
+export interface SimpleTableSvelteProps<
+  TData extends SvelteDefaultRowData = SvelteDefaultRowData,
+> extends Omit<
+  SimpleTableProps<TData>,
   | "columns"
   | "footerRenderer"
   | "emptyStateRenderer"
@@ -112,6 +136,7 @@ export interface SimpleTableSvelteProps extends Omit<
   | "headerDropdown"
   | "columnEditorConfig"
   | "icons"
+  | "rows"
   | "rowButtons"
   | "onColumnOrderChange"
   | "onColumnWidthChange"
@@ -119,25 +144,67 @@ export interface SimpleTableSvelteProps extends Omit<
   | "onColumnSelect"
 > {
   /** Column definitions. */
-  columns?: ReadonlyArray<ColumnDef | SvelteColumnDef>;
-  /** Row data: domain objects or core `Row[]`; cast inside the adapter. */
-  rows: ReadonlyArray<Row> | ReadonlyArray<object>;
-  onColumnOrderChange?: (newHeaders: SvelteColumnDef[]) => void;
-  onColumnWidthChange?: (headers: SvelteColumnDef[]) => void;
-  onHeaderEdit?: (header: SvelteColumnDef, newLabel: string) => void;
-  onColumnSelect?: (header: SvelteColumnDef) => void;
+  columns?: ReadonlyArray<SvelteColumnDef<TData, any>>;
+  onColumnOrderChange?: (newHeaders: SvelteColumnDef<TData, any>[]) => void;
+  onColumnWidthChange?: (headers: SvelteColumnDef<TData, any>[]) => void;
+  onHeaderEdit?: (header: SvelteColumnDef<TData, any>, newLabel: string) => void;
+  onColumnSelect?: (header: SvelteColumnDef<TData, any>) => void;
+  /** Row data; cast to vanilla `Row[]` inside the adapter. */
+  rows: readonly TData[];
   footerRenderer?: SvelteFooterRenderer;
-  loadingStateRenderer?: SvelteLoadingStateRenderer;
-  errorStateRenderer?: SvelteErrorStateRenderer;
-  emptyStateRenderer?: SvelteEmptyStateRenderer;
+  loadingStateRenderer?: SvelteLoadingStateRenderer<TData>;
+  errorStateRenderer?: SvelteErrorStateRenderer<TData>;
+  emptyStateRenderer?: SvelteEmptyStateRenderer<TData>;
   /** Svelte component (no props) or plain markup — adapter mounts components for the vanilla table slot. */
   tableEmptyStateRenderer?: Component | HTMLElement | string | null;
   headerDropdown?: SvelteHeaderDropdown;
   columnEditorConfig?: SvelteColumnEditorConfig;
   icons?: SvelteIconsConfig;
   /** Per-row action buttons; each entry is a Svelte component rendered into the row's selection column. */
-  rowButtons?: SvelteRowButton[];
+  rowButtons?: SvelteRowButton<TData>[];
 }
+
+// ─── Nested table config ─────────────────────────────────────────────────────
+/**
+ * TData-bound call signatures omitted at nest boundaries so
+ * `SvelteColumnDef<Child>[]` assigns under a parent column without casts/`any`.
+ * Child columns stay fully checked at their own declaration site.
+ */
+type SvelteColumnDefCallbacks =
+  | "cellRenderer"
+  | "headerRenderer"
+  | "children"
+  | "nestedTable"
+  | "comparator"
+  | "exportValueGetter"
+  | "valueFormatter"
+  | "valueGetter"
+  | "quickFilterGetter";
+
+/** Column shape accepted on nested grids — metadata only, no TData-bound callbacks. */
+export type NestedSvelteColumnDef = Omit<
+  SvelteColumnDef<SvelteDefaultRowData>,
+  SvelteColumnDefCallbacks
+> & {
+  children?: ReadonlyArray<NestedSvelteColumnDef>;
+  nestedTable?: NestedTableSvelteConfig;
+};
+
+/**
+ * Nested grid props (no `rows` / inherited state renderers).
+ * Child row shape may differ from the parent column's `TData`.
+ */
+export type NestedTableSvelteConfig = Omit<
+  SimpleTableSvelteProps,
+  | "rows"
+  | "columns"
+  | "loadingStateRenderer"
+  | "errorStateRenderer"
+  | "emptyStateRenderer"
+  | "tableEmptyStateRenderer"
+> & {
+  columns?: ReadonlyArray<NestedSvelteColumnDef>;
+};
 
 // Re-export vanilla prop types that consumers still need directly
 export type {
