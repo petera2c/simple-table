@@ -106,7 +106,7 @@ export const cellClickingData: ProjectTask[] = [
   },
 ];
 
-export const cellClickingHeaders: ReactColumnDef[] = [
+export const cellClickingHeaders: ReactColumnDef<ProjectTask>[] = [
   { accessor: "id", label: "Task ID", width: 80, sortable: true, type: "number" },
   {
     accessor: "task",
