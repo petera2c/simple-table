@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, TableAPI, Row, CellValue, ReactColumnDef, CellRendererProps } from "@simple-table/react";
+import type { Theme, TableAPI, CellValue, ReactColumnDef } from "@simple-table/react";
 import { infrastructureData, getInfraMetricColorStyles, getInfraStatusColors } from "./infrastructure.demo-data";
 import type { InfrastructureServer } from "./infrastructure.demo-data";
 import "@simple-table/react/styles.css";
@@ -20,71 +20,65 @@ function infraPickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function infraApplyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Row>) {
-  for (const accessor of Object.keys(patch)) {
+function infraApplyRowPatch(
+  api: TableAPI<InfrastructureServer>,
+  rowId: number,
+  patch: Partial<InfrastructureServer>,
+) {
+  for (const accessor of Object.keys(patch) as (keyof InfrastructureServer)[]) {
     const newValue = patch[accessor];
     if (newValue === undefined) continue;
     api.updateData({ accessor, rowId, newValue: newValue as CellValue });
   }
 }
 
-function infraComputeMetricPatch(row: Row, slot: InfraMetricSlot): Partial<Row> | null {
+function infraComputeMetricPatch(
+  row: InfrastructureServer,
+  slot: InfraMetricSlot,
+): Partial<InfrastructureServer> | null {
   switch (slot) {
     case 0: {
-      const currentCpu = row.cpuUsage as number;
-      if (typeof currentCpu !== "number") return null;
       const cpuChange = (Math.random() - 0.5) * 8;
-      const newCpu = Math.min(100, Math.max(0, currentCpu + cpuChange));
+      const newCpu = Math.min(100, Math.max(0, row.cpuUsage + cpuChange));
       const newCpuRounded = Math.round(newCpu * 10) / 10;
-      const currentHistory = row.cpuHistory as number[];
-      if (Array.isArray(currentHistory) && currentHistory.length > 0) {
-        return { cpuUsage: newCpuRounded, cpuHistory: [...currentHistory.slice(1), newCpuRounded] };
+      if (row.cpuHistory.length > 0) {
+        return { cpuUsage: newCpuRounded, cpuHistory: [...row.cpuHistory.slice(1), newCpuRounded] };
       }
       return { cpuUsage: newCpuRounded };
     }
     case 1: {
-      const currentMemory = row.memoryUsage as number;
-      if (typeof currentMemory !== "number") return null;
       const memoryChange = (Math.random() - 0.5) * 5;
-      const newMemory = Math.min(100, Math.max(0, currentMemory + memoryChange));
+      const newMemory = Math.min(100, Math.max(0, row.memoryUsage + memoryChange));
       return { memoryUsage: Math.round(newMemory * 10) / 10 };
     }
     case 2: {
-      const currentNetIn = row.networkIn as number;
-      if (typeof currentNetIn !== "number") return null;
       const netChange = (Math.random() - 0.5) * 100;
-      return { networkIn: Math.round(Math.max(0, currentNetIn + netChange) * 100) / 100 };
+      return { networkIn: Math.round(Math.max(0, row.networkIn + netChange) * 100) / 100 };
     }
     case 3: {
-      const currentNetOut = row.networkOut as number;
-      if (typeof currentNetOut !== "number") return null;
       const netChange = (Math.random() - 0.5) * 60;
-      return { networkOut: Math.round(Math.max(0, currentNetOut + netChange) * 100) / 100 };
+      return { networkOut: Math.round(Math.max(0, row.networkOut + netChange) * 100) / 100 };
     }
     case 4: {
-      const currentResponseTime = row.responseTime as number;
-      if (typeof currentResponseTime !== "number") return null;
       const responseChange = (Math.random() - 0.5) * 100;
-      return { responseTime: Math.round(Math.max(10, currentResponseTime + responseChange) * 10) / 10 };
+      return { responseTime: Math.round(Math.max(10, row.responseTime + responseChange) * 10) / 10 };
     }
     case 5: {
-      const currentConnections = row.activeConnections as number;
-      if (typeof currentConnections !== "number") return null;
       const connectionChange = Math.floor((Math.random() - 0.5) * 500);
-      return { activeConnections: Math.max(0, currentConnections + connectionChange) };
+      return { activeConnections: Math.max(0, row.activeConnections + connectionChange) };
     }
     case 6: {
-      const currentRequests = row.requestsPerSec as number;
-      if (typeof currentRequests !== "number") return null;
       const requestChange = Math.floor((Math.random() - 0.5) * 2000);
-      return { requestsPerSec: Math.max(0, currentRequests + requestChange) };
+      return { requestsPerSec: Math.max(0, row.requestsPerSec + requestChange) };
     }
     default:
       return null;
   }
 }
 
-function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined): () => void {
+function startInfraDemoLiveUpdates(
+  getApi: () => TableAPI<InfrastructureServer> | null | undefined,
+): () => void {
   let isActive = true;
   const tick = () => {
     if (!isActive) return;
@@ -95,12 +89,14 @@ function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined): (
     const picks = infraPickRandomSubset(visible, INFRA_ROWS_PER_TICK);
     let usedCpuSparkline = false;
     for (const vr of picks) {
-      const rowId = vr.row.id as string | number | undefined;
-      if (rowId === undefined || rowId === null || rowId === "") continue;
+      const rowId = vr.row.id;
+      if (typeof rowId !== "number") continue;
+      // Visible rows are still loosely typed TableRow; assert domain shape for metrics.
+      const server = vr.row as unknown as InfrastructureServer;
       let slot = Math.floor(Math.random() * 7) as InfraMetricSlot;
       if (slot === 0 && usedCpuSparkline) slot = (1 + Math.floor(Math.random() * 6)) as InfraMetricSlot;
       if (slot === 0) usedCpuSparkline = true;
-      const patch = infraComputeMetricPatch(vr.row, slot);
+      const patch = infraComputeMetricPatch(server, slot);
       if (patch) infraApplyRowPatch(api, rowId, patch);
     }
   };
@@ -112,41 +108,159 @@ function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined): (
   };
 }
 
-function getHeaders(currentTheme?: Theme): ReactColumnDef[] {
+function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[] {
   const t = currentTheme || "light";
   return [
-    { accessor: "serverId", align: "left", filterable: true, editable: false, sortable: true, label: "Server ID", minWidth: 180, pinned: "left", type: "string", width: "1.2fr", cellRenderer: ({ row: r }: CellRendererProps) => { const { serverId } = r as unknown as InfrastructureServer; return <span style={{ fontFamily: "monospace", fontSize: "0.85rem" }}>{serverId}</span>; } },
-    { accessor: "serverName", align: "left", filterable: true, editable: false, sortable: true, label: "Name", minWidth: 200, type: "string", width: "1.5fr" },
     {
-      accessor: "performance", label: "Performance Metrics", width: 690, sortable: false,
+      accessor: "serverId",
+      align: "left",
+      filterable: true,
+      editable: false,
+      sortable: true,
+      label: "Server ID",
+      minWidth: 180,
+      pinned: "left",
+      type: "string",
+      width: "1.2fr",
+      cellRenderer: ({ row }) => (
+        <span style={{ fontFamily: "monospace", fontSize: "0.85rem" }}>{row.serverId}</span>
+      ),
+    },
+    {
+      accessor: "serverName",
+      align: "left",
+      filterable: true,
+      editable: false,
+      sortable: true,
+      label: "Name",
+      minWidth: 200,
+      type: "string",
+      width: "1.5fr",
+    },
+    {
+      accessor: "performance",
+      label: "Performance Metrics",
+      width: 690,
+      sortable: false,
       children: [
-        { accessor: "cpuHistory", label: "CPU History", width: 150, sortable: false, filterable: false, editable: false, align: "center", type: "lineAreaChart", tooltip: "CPU usage over the last 30 intervals" },
         {
-          accessor: "cpuUsage", label: "CPU %", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number",
-          cellRenderer: ({ row: r, theme }: CellRendererProps) => { const { cpuUsage } = r as unknown as InfrastructureServer; const s = getInfraMetricColorStyles(cpuUsage, theme || t, "cpu"); return <div style={{ display: "flex", justifyContent: "end" }}><div style={{ padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", ...s }}>{cpuUsage.toFixed(1)}%</div></div>; },
+          accessor: "cpuHistory",
+          label: "CPU History",
+          width: 150,
+          sortable: false,
+          filterable: false,
+          editable: false,
+          align: "center",
+          type: "lineAreaChart",
+          tooltip: "CPU usage over the last 30 intervals",
         },
         {
-          accessor: "memoryUsage", label: "Memory %", width: 130, sortable: true, filterable: true, editable: true, align: "right", type: "number",
-          cellRenderer: ({ row: r, theme }: CellRendererProps) => { const { memoryUsage } = r as unknown as InfrastructureServer; const s = getInfraMetricColorStyles(memoryUsage, theme || t, "memory"); return <div style={{ display: "flex", justifyContent: "end" }}><div style={{ padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", ...s }}>{memoryUsage.toFixed(1)}%</div></div>; },
+          accessor: "cpuUsage",
+          label: "CPU %",
+          width: 120,
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: ({ row, theme }) => {
+            const s = getInfraMetricColorStyles(row.cpuUsage, theme || t, "cpu");
+            return (
+              <div style={{ display: "flex", justifyContent: "end" }}>
+                <div style={{ padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", ...s }}>
+                  {row.cpuUsage.toFixed(1)}%
+                </div>
+              </div>
+            );
+          },
         },
-        { accessor: "diskUsage", label: "Disk %", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number", cellRenderer: ({ row: r }: CellRendererProps) => { const { diskUsage } = r as unknown as InfrastructureServer; return `${diskUsage.toFixed(1)}%`; } },
         {
-          accessor: "responseTime", label: "Response (ms)", width: 120, sortable: true, filterable: true, editable: true, align: "right", type: "number",
-          cellRenderer: ({ row: r, theme }: CellRendererProps) => { const { responseTime } = r as unknown as InfrastructureServer; const s = getInfraMetricColorStyles(responseTime, theme || t, "response"); return <span style={{ fontWeight: "500", ...s }}>{responseTime.toFixed(1)}</span>; },
+          accessor: "memoryUsage",
+          label: "Memory %",
+          width: 130,
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: ({ row, theme }) => {
+            const s = getInfraMetricColorStyles(row.memoryUsage, theme || t, "memory");
+            return (
+              <div style={{ display: "flex", justifyContent: "end" }}>
+                <div style={{ padding: "3px 6px", borderRadius: "3px", fontWeight: "600", fontSize: "0.8rem", ...s }}>
+                  {row.memoryUsage.toFixed(1)}%
+                </div>
+              </div>
+            );
+          },
+        },
+        {
+          accessor: "diskUsage",
+          label: "Disk %",
+          width: 120,
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: ({ row }) => `${row.diskUsage.toFixed(1)}%`,
+        },
+        {
+          accessor: "responseTime",
+          label: "Response (ms)",
+          width: 120,
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: ({ row, theme }) => {
+            const s = getInfraMetricColorStyles(row.responseTime, theme || t, "response");
+            return <span style={{ fontWeight: "500", ...s }}>{row.responseTime.toFixed(1)}</span>;
+          },
         },
       ],
     },
     {
-      accessor: "status", label: "Status", width: 130, sortable: true, filterable: true, editable: false, align: "center", type: "enum",
-      enumOptions: [{ label: "Online", value: "online" }, { label: "Warning", value: "warning" }, { label: "Critical", value: "critical" }, { label: "Maintenance", value: "maintenance" }, { label: "Offline", value: "offline" }],
-      valueGetter: ({ row }) => { const m: Record<string, number> = { critical: 1, offline: 2, warning: 3, maintenance: 4, online: 5 }; return m[String(row.status)] || 999; },
-      cellRenderer: ({ row: r, theme }: CellRendererProps) => { const { status } = r as unknown as InfrastructureServer; const s = getInfraStatusColors(status, theme || t); return <div style={{ ...s, padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem" }}>{status.charAt(0).toUpperCase() + status.slice(1)}</div>; },
+      accessor: "status",
+      label: "Status",
+      width: 130,
+      sortable: true,
+      filterable: true,
+      editable: false,
+      align: "center",
+      type: "enum",
+      enumOptions: [
+        { label: "Online", value: "online" },
+        { label: "Warning", value: "warning" },
+        { label: "Critical", value: "critical" },
+        { label: "Maintenance", value: "maintenance" },
+        { label: "Offline", value: "offline" },
+      ],
+      valueGetter: ({ row }) => {
+        const m: Record<string, number> = {
+          critical: 1,
+          offline: 2,
+          warning: 3,
+          maintenance: 4,
+          online: 5,
+        };
+        return m[row.status] || 999;
+      },
+      cellRenderer: ({ row, theme }) => {
+        const s = getInfraStatusColors(row.status, theme || t);
+        return (
+          <div style={{ ...s, padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem" }}>
+            {row.status.charAt(0).toUpperCase() + row.status.slice(1)}
+          </div>
+        );
+      },
     },
   ];
 }
 
 const InfrastructureDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {
-  const tableRef = useRef<TableAPI>(null);
+  const tableRef = useRef<TableAPI<InfrastructureServer>>(null);
   const [isMobile, setIsMobile] = useState(false);
   const data = infrastructureData;
 
@@ -162,13 +276,13 @@ const InfrastructureDemo = ({ height = "400px", theme }: { height?: string | num
   }, [tableRef]);
 
   return (
-    <SimpleTable
+    <SimpleTable<InfrastructureServer>
       autoExpandColumns={!isMobile}
       columnReordering
       columnResizing
       columns={getHeaders(theme)}
       enableColumnEditor
-      getRowId={({ row }) => (row as { id: string | number }).id}
+      getRowId={({ row }) => row.id}
       height={height}
       ref={tableRef}
       rows={data}

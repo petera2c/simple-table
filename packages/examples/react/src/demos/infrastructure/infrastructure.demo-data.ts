@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { ReactColumnDef, Row } from "@simple-table/react";
+import type { ReactColumnDef } from "@simple-table/react";
 
 export interface InfrastructureServer {
   id: number;
@@ -50,7 +50,7 @@ const STATUSES: Array<InfrastructureServer["status"]> = [
   "offline",
 ];
 
-export function generateInfrastructureData(count: number = 50): Row[] {
+export function generateInfrastructureData(count: number = 50): InfrastructureServer[] {
   return Array.from({ length: count }, (_, i) => {
     const prefix = SERVER_PREFIXES[i % SERVER_PREFIXES.length];
     const num = String(i + 1).padStart(3, "0");
@@ -75,7 +75,7 @@ export function generateInfrastructureData(count: number = 50): Row[] {
 
 export const infrastructureData = generateInfrastructureData(50);
 
-export const infrastructureHeaders: ReactColumnDef[] = [
+export const infrastructureHeaders: ReactColumnDef<InfrastructureServer>[] = [
   {
     accessor: "serverId",
     align: "left",
