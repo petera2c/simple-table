@@ -1,16 +1,16 @@
 import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { quickStartConfig, type QuickStartEmployee } from "./quick-start.demo-data";
+import { quickStartConfig } from "./quick-start.demo-data";
 import "@simple-table/react/styles.css";
 
 const QuickStartDemo = ({
   height = "300px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable<QuickStartEmployee>
+    <SimpleTable
       columns={quickStartConfig.headers}
       rows={quickStartConfig.rows}
       height={height}
