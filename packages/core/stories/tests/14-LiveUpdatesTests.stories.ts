@@ -9,6 +9,14 @@ import { expect } from "@storybook/test";
 import { ColumnDef, SimpleTableVanilla, type TableAPI } from "../../src/index";
 import { waitForTable } from "./testUtils";
 
+interface LiveUpdateProduct {
+  id: number;
+  product: string;
+  price: number;
+  stock: number;
+  sales: number;
+}
+
 const meta: Meta = {
   title: "Tests/14 - Live Updates",
   parameters: {
@@ -36,7 +44,7 @@ const getCellValue = (rowIndex: number, accessor: string): string | null => {
 const hasCellUpdatingClass = (rowIndex: number, accessor: string): boolean =>
   getCellElement(rowIndex, accessor)?.classList.contains("st-cell-updating") ?? false;
 
-let testTableApi: TableAPI<any> | null = null;
+let testTableApi: TableAPI<LiveUpdateProduct> | null = null;
 
 function renderLiveUpdatesTable() {
   const wrapper = document.createElement("div");
@@ -44,7 +52,7 @@ function renderLiveUpdatesTable() {
   const tableContainer = document.createElement("div");
   wrapper.appendChild(tableContainer);
 
-  const headers: ColumnDef[] = [
+  const headers: ColumnDef<LiveUpdateProduct>[] = [
     { accessor: "id", label: "ID", width: 60, type: "number" },
     { accessor: "product", label: "Product", width: 180, type: "string" },
     {
@@ -58,16 +66,16 @@ function renderLiveUpdatesTable() {
     { accessor: "sales", label: "Sales", width: 120, type: "number" },
   ];
 
-  const initialData = [
+  const initialData: LiveUpdateProduct[] = [
     { id: 1, product: "Widget A", price: 19.99, stock: 42, sales: 120 },
     { id: 2, product: "Widget B", price: 24.99, stock: 28, sales: 85 },
     { id: 3, product: "Widget C", price: 34.99, stock: 15, sales: 63 },
   ];
 
-  const table = new SimpleTableVanilla(tableContainer, {
+  const table = new SimpleTableVanilla<LiveUpdateProduct>(tableContainer, {
     columns: headers,
     rows: initialData,
-    getRowId: (params) => String(params.row?.id),
+    getRowId: ({ row }) => row.id,
     height: "400px",
     cellUpdateFlash: true,
   });

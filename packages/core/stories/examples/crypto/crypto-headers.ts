@@ -14,7 +14,7 @@ const DOWN = "#dc2626";
 const MUTED = "#9ca3af";
 const TEXT = "#374151";
 
-function changeRenderer(accessor: keyof CryptoCoin): CellRenderer {
+function changeRenderer(accessor: keyof CryptoCoin): CellRenderer<CryptoCoin, number> {
   return ({ row }) => {
     const value = row[accessor] as number;
     const isPositive = value >= 0;
@@ -106,7 +106,7 @@ function assetRenderer(): CellRenderer {
   };
 }
 
-export function getCryptoHeaders(): ColumnDef[] {
+export function getCryptoHeaders(): ColumnDef<CryptoCoin>[] {
   return [
     {
       accessor: "rank",

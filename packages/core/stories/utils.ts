@@ -2,10 +2,7 @@
  * Shared helpers for vanilla stories (examples and tests).
  */
 import { SimpleTableVanilla } from "../src/index";
-import type { ColumnDef, Row, SimpleTableConfigInput } from "../src/index";
-
-/** Instance type of the table (class is a value; use InstanceType<typeof C> for the type of instances). */
-type TableInstance = InstanceType<typeof SimpleTableVanilla>;
+import type { ColumnDef, Row, RowData, SimpleTableConfigInput } from "../src/index";
 
 /**
  * Config passed through to {@link SimpleTableVanilla}, minus `columns` /
@@ -22,20 +19,20 @@ export type RenderVanillaTableOptions = {
   [K in keyof Omit<SimpleTableConfigInput, "columns" | "rows">]?: unknown;
 };
 
-export interface RenderVanillaTableResult {
-  wrapper: HTMLDivElement & { _table?: TableInstance };
+export interface RenderVanillaTableResult<TData extends RowData = Row> {
+  wrapper: HTMLDivElement & { _table?: SimpleTableVanilla<TData> };
   h2: HTMLHeadingElement;
   tableContainer: HTMLDivElement;
-  table: TableInstance;
+  table: SimpleTableVanilla<TData>;
 }
 
-export function renderVanillaTable(
-  headers: ColumnDef[],
-  data: Row[],
+export function renderVanillaTable<TData extends RowData = Row>(
+  headers: ColumnDef<TData>[],
+  data: TData[],
   options: RenderVanillaTableOptions = {},
-): RenderVanillaTableResult {
+): RenderVanillaTableResult<TData> {
   const wrapper = document.createElement("div") as HTMLDivElement & {
-    _table?: TableInstance;
+    _table?: SimpleTableVanilla<TData>;
   };
   wrapper.style.padding = "2rem";
 
@@ -48,11 +45,11 @@ export function renderVanillaTable(
 
   // Keys are already constrained by RenderVanillaTableOptions; cast values
   // through to the constructor (stories often use slightly narrower callbacks).
-  const table = new SimpleTableVanilla(tableContainer, {
+  const table = new SimpleTableVanilla<TData>(tableContainer, {
     columns: headers,
     rows: data,
     ...options,
-  } as SimpleTableConfigInput);
+  } as SimpleTableConfigInput<TData>);
   table.mount();
   wrapper._table = table;
 

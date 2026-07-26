@@ -2,10 +2,10 @@
  * CryptoExample – vanilla port of the marketing crypto dashboard with a live
  * market-feed ticker (`updateData` on visible rows).
  */
-import type { CellValue, Row, TableAPI } from "../../../src/index";
+import type { Accessor, CellValue, TableAPI } from "../../../src/index";
 import { renderVanillaTable, addParagraph } from "../../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../../vanillaStoryConfig";
-import { generateCryptoData } from "./crypto-data";
+import { generateCryptoData, type CryptoCoin } from "./crypto-data";
 import { getCryptoHeaders } from "./crypto-headers";
 
 const TICK_MS = 90;
@@ -32,11 +32,19 @@ function pickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Row>) {
-  for (const accessor of Object.keys(patch)) {
+function applyRowPatch(
+  api: TableAPI<CryptoCoin>,
+  rowId: string | number,
+  patch: Partial<CryptoCoin>,
+) {
+  for (const accessor of Object.keys(patch) as Array<keyof CryptoCoin>) {
     const newValue = patch[accessor];
     if (newValue === undefined) continue;
-    api.updateData({ accessor, rowId, newValue: newValue as CellValue });
+    api.updateData({
+      accessor: accessor as Accessor<CryptoCoin>,
+      rowId,
+      newValue: newValue as CellValue,
+    });
   }
 }
 
@@ -44,7 +52,7 @@ function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Row
  * Simulates a live market feed: each tick nudges price / 24h change / sparkline
  * on a few visible rows via `updateData` (cell flash + filter/sort recompute).
  */
-function startCryptoTicker(getApi: () => TableAPI<any> | null | undefined): () => void {
+function startCryptoTicker(getApi: () => TableAPI<CryptoCoin> | null | undefined): () => void {
   let isActive = true;
 
   const tick = () => {
@@ -56,22 +64,20 @@ function startCryptoTicker(getApi: () => TableAPI<any> | null | undefined): () =
     if (!visible.length) return;
 
     for (const vr of pickRandomSubset(visible, ROWS_PER_TICK)) {
-      const rowId = vr.row.id as string | number | undefined;
-      if (rowId === undefined || rowId === null || rowId === "") continue;
-
-      const currentPrice = vr.row.price as number;
-      if (typeof currentPrice !== "number") continue;
+      const row = vr.row;
+      const rowId = row.id;
+      if (typeof row.price !== "number") continue;
 
       const drift = (Math.random() - 0.5) * 0.012;
-      const newPrice = Math.max(currentPrice * (1 + drift), currentPrice * 0.0001);
+      const newPrice = Math.max(row.price * (1 + drift), row.price * 0.0001);
       const round = newPrice >= 1 ? 1e2 : 1e6;
       const newPriceRounded = Math.round(newPrice * round) / round;
 
-      const currentChange = (vr.row.change24h as number) ?? 0;
+      const currentChange = typeof row.change24h === "number" ? row.change24h : 0;
       const newChange = Math.round((currentChange + drift * 100) * 100) / 100;
 
-      const history = vr.row.priceHistory as number[];
-      const patch: Partial<Row> = { price: newPriceRounded, change24h: newChange };
+      const patch: Partial<CryptoCoin> = { price: newPriceRounded, change24h: newChange };
+      const history = row.priceHistory;
       if (Array.isArray(history) && history.length > 0) {
         patch.priceHistory = [...history.slice(1), newPriceRounded];
       }
@@ -91,10 +97,14 @@ export function renderCryptoExample(args?: Partial<UniversalVanillaArgs>): HTMLE
   const options = { ...defaultVanillaArgs, ...cryptoExampleDefaults, ...args };
   const data = generateCryptoData(200);
 
-  const { wrapper, h2, tableContainer, table } = renderVanillaTable(getCryptoHeaders(), data, {
-    ...options,
-    getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
-  });
+  const { wrapper, h2, tableContainer, table } = renderVanillaTable<CryptoCoin>(
+    getCryptoHeaders(),
+    data,
+    {
+      ...options,
+      getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+    },
+  );
 
   h2.textContent = "Crypto Market";
   addParagraph(
