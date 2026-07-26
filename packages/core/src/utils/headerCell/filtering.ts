@@ -128,7 +128,7 @@ export const createFilterIcon = (
         },
         open: true,
         positioning: "fixed",
-        maxWidth: 280,
+        maxWidth: 320,
         allowDescendantOverflow: true,
       });
     } else {

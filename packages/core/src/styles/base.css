@@ -711,8 +711,8 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 4px;
-  border-radius: 4px;
+  margin-left: var(--st-spacing-small);
+  border-radius: var(--st-border-radius);
   align-self: stretch;
   transition: outline 0.2s ease;
 }
@@ -1452,7 +1452,7 @@ input {
 }
 
 .st-checkbox-checkmark {
-  color: white;
+  color: var(--st-button-active-text-color);
 }
 
 @keyframes slide-in-left {
@@ -1665,6 +1665,12 @@ input {
   cursor: default;
 }
 
+/* Date pickers are taller than the default dropdown cap (day grid + footer).
+   Keep max-height for enum/option lists; let calendars size to content. */
+.st-dropdown-content:has(> .st-datepicker) {
+  max-height: none;
+}
+
 /* Filter popover (and similar): nested .st-dropdown-content menus must not be clipped by the shell.
    overflow:auto + max-height on the parent creates a scrollport that clips absolutely positioned
    children (operator CustomSelect, date picker, etc.). */
@@ -1688,12 +1694,12 @@ input {
 
 /* Dropdown items */
 .st-dropdown-item {
-  padding: var(--st-spacing-small) var(--st-spacing-medium);
+  padding: var(--st-control-padding-y) var(--st-control-padding-x);
   cursor: pointer;
   white-space: nowrap;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
   color: var(--st-cell-color);
-  font-size: 0.9em;
+  font-size: var(--st-overlay-font-size);
 }
 
 .st-dropdown-item:hover {
@@ -1716,13 +1722,15 @@ input {
 .st-datepicker {
   background-color: var(--st-odd-row-background-color);
   font-family: inherit;
+  font-size: var(--st-overlay-font-size);
 }
 
 .st-datepicker-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--st-spacing-medium);
+  /* Match footer: light vertical pad around square nav buttons */
+  padding: 6px var(--st-overlay-padding);
   border-bottom: 1px solid var(--st-border-color);
   background-color: var(--st-header-background-color);
 }
@@ -1730,9 +1738,14 @@ input {
 .st-datepicker-header-label {
   color: var(--st-header-label-color);
   font-weight: 600;
-  cursor: pointer;
+  font-size: var(--st-overlay-font-size);
+  cursor: default;
   text-align: center;
   flex: 1;
+}
+
+.st-datepicker-header-label[role="button"] {
+  cursor: pointer;
 }
 
 .st-datepicker-nav-btn {
@@ -1744,7 +1757,10 @@ input {
   cursor: pointer;
   font-size: 1.2em;
   color: var(--st-cell-color);
-  padding: 0 8px;
+  width: var(--st-datepicker-day-size);
+  height: var(--st-datepicker-day-size);
+  padding: 0;
+  flex-shrink: 0;
   border-radius: var(--st-border-radius);
 }
 .st-datepicker-nav-btn > * {
@@ -1760,7 +1776,7 @@ input {
 
 .st-datepicker-grid {
   display: grid;
-  padding: var(--st-spacing-medium);
+  padding: var(--st-overlay-padding);
 }
 
 .st-datepicker-days-grid {
@@ -1780,7 +1796,7 @@ input {
 
 .st-datepicker-weekday {
   text-align: center;
-  font-size: 0.8em;
+  font-size: 12px;
   font-weight: 600;
   padding: 6px 0;
   color: var(--st-datepicker-weekday-color);
@@ -1791,12 +1807,12 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 24px;
-  width: 24px;
+  height: var(--st-datepicker-day-size);
+  width: var(--st-datepicker-day-size);
   border-radius: 50%;
   cursor: pointer;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
-  font-size: 0.9em;
+  font-size: var(--st-overlay-font-size);
 }
 
 .st-datepicker-day.empty {
@@ -1846,7 +1862,9 @@ input {
 .st-datepicker-footer {
   display: flex;
   justify-content: flex-end;
-  padding: var(--st-spacing-medium);
+  align-items: center;
+  /* Same vertical rhythm as header — Today shouldn't sit in a tall band */
+  padding: 6px var(--st-overlay-padding);
   border-top: 1px solid var(--st-border-color);
 }
 
@@ -1854,10 +1872,13 @@ input {
   background-color: transparent;
   border: 1px solid var(--st-border-color);
   border-radius: var(--st-border-radius);
-  padding: 6px 12px;
+  padding: var(--st-spacing-small) var(--st-control-padding-x);
+  min-height: var(--st-datepicker-day-size);
+  box-sizing: border-box;
   cursor: pointer;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
   color: var(--st-cell-color);
+  font-size: var(--st-overlay-font-size);
 }
 
 .st-datepicker-today-btn:hover {
@@ -1869,8 +1890,9 @@ input {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  padding: var(--st-spacing-medium);
-  min-width: 150px;
+  padding: var(--st-overlay-padding);
+  min-width: 200px;
+  font-size: var(--st-overlay-font-size);
 }
 
 /* Filter Section - Used for spacing between form sections */
@@ -1884,10 +1906,10 @@ input {
 /* Filter Input - Text and number inputs */
 .st-filter-input {
   width: 100%;
-  padding: var(--st-spacing-small);
+  padding: var(--st-control-padding-y) var(--st-control-padding-x);
   border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
-  font-size: 0.9em;
+  font-size: var(--st-overlay-font-size);
   background-color: var(--st-odd-row-background-color);
   color: var(--st-cell-color);
   font-family: inherit;
@@ -1907,10 +1929,10 @@ input {
 /* Filter Select - Dropdown selectors */
 .st-filter-select {
   width: 100%;
-  padding: var(--st-spacing-medium) var(--st-spacing-medium);
+  padding: var(--st-control-padding-y) var(--st-control-padding-x);
   border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
-  font-size: 0.9em;
+  font-size: var(--st-overlay-font-size);
   background-color: var(--st-odd-row-background-color);
   color: var(--st-cell-color);
   font-family: inherit;
@@ -1933,11 +1955,11 @@ input {
 
 .st-filter-button {
   flex: 1;
-  padding: var(--st-spacing-small);
+  padding: var(--st-control-padding-y) var(--st-control-padding-x);
   border: none;
   border-radius: var(--st-border-radius);
   cursor: pointer;
-  font-size: 0.9em;
+  font-size: var(--st-overlay-font-size);
   font-weight: 500;
   font-family: inherit;
   appearance: none;
@@ -1957,7 +1979,7 @@ input {
 /* Apply Button */
 .st-filter-button-apply {
   background-color: var(--st-button-active-background-color);
-  color: white;
+  color: var(--st-button-active-text-color);
 }
 
 .st-filter-button-apply:hover:not(.st-filter-button-disabled) {
@@ -1990,13 +2012,13 @@ input {
 
 .st-custom-select-trigger {
   width: 100%;
-  padding: var(--st-spacing-small);
+  padding: var(--st-control-padding-y) var(--st-control-padding-x);
   border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
   background-color: var(--st-odd-row-background-color);
   color: var(--st-cell-color);
   font-family: inherit;
-  font-size: 0.9em;
+  font-size: var(--st-overlay-font-size);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -2052,14 +2074,14 @@ input {
 
 .st-custom-select-option {
   flex-shrink: 0;
-  padding: var(--st-spacing-small);
+  padding: var(--st-control-padding-y) var(--st-control-padding-x);
   cursor: pointer;
   transition: background-color var(--st-transition-duration) var(--st-transition-ease);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--st-cell-color);
-  font-size: 0.9em;
+  font-size: var(--st-overlay-font-size);
 }
 
 .st-custom-select-option:hover,
@@ -2128,7 +2150,7 @@ input {
 
 /* Enum option label */
 .st-enum-option-label {
-  font-size: 0.9em;
+  font-size: var(--st-overlay-font-size);
   color: var(--st-cell-color);
   user-select: none;
 }
@@ -2144,8 +2166,8 @@ input {
 .st-enum-no-results {
   padding: var(--st-spacing-medium);
   text-align: center;
-  font-size: 0.9em;
-  color: var(--st-slate-400);
+  font-size: var(--st-overlay-font-size);
+  color: var(--st-muted-text-color);
   font-style: italic;
 }
 

@@ -8,6 +8,13 @@
   --st-spacing-small: 4px;
   --st-spacing-medium: 8px;
 
+  /* Overlay / filter control sizing (aligned with table type + cell padding) */
+  --st-overlay-font-size: 14px;
+  --st-overlay-padding: 8px;
+  --st-control-padding-y: 6px;
+  --st-control-padding-x: 8px;
+  --st-datepicker-day-size: 28px;
+
   /* Scrollbar variables */
   --st-scrollbar-bg-color: var(--st-gray-900);
   --st-scrollbar-thumb-color: var(--st-gray-600);
@@ -65,6 +72,7 @@
   /* Button colors */
   --st-button-hover-background-color: var(--st-gray-600);
   --st-button-active-background-color: var(--st-blue-500);
+  --st-button-active-text-color: var(--st-white);
   --st-next-prev-btn-color: var(--st-gray-300);
   --st-next-prev-btn-disabled-color: var(--st-gray-600);
   --st-page-btn-color: var(--st-gray-300);
@@ -86,6 +94,7 @@
   --st-datepicker-other-month-color: var(--st-gray-600);
   --st-filter-button-disabled-background-color: var(--st-gray-700);
   --st-filter-button-disabled-text-color: var(--st-gray-500);
+  --st-muted-text-color: var(--st-gray-400);
 
   /* Flash/Animation colors */
   --st-cell-flash-color: var(--st-gray-600);

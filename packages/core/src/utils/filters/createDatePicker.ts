@@ -168,6 +168,9 @@ export const createDatePicker = (options: CreateDatePickerOptions) => {
 
       const label = document.createElement("div");
       label.className = "st-datepicker-header-label";
+      label.setAttribute("role", "button");
+      label.setAttribute("tabindex", "0");
+      label.setAttribute("aria-label", "Select month");
       label.textContent = `${formatMonth(currentDate)} ${currentDate.getFullYear()}`;
       label.addEventListener("click", () => {
         currentView = "months";
@@ -185,6 +188,9 @@ export const createDatePicker = (options: CreateDatePickerOptions) => {
     } else if (currentView === "months") {
       const label = document.createElement("div");
       label.className = "st-datepicker-header-label";
+      label.setAttribute("role", "button");
+      label.setAttribute("tabindex", "0");
+      label.setAttribute("aria-label", "Select year");
       label.textContent = currentDate.getFullYear().toString();
       label.addEventListener("click", () => {
         currentView = "years";

@@ -24,6 +24,13 @@
   --st-spacing-small: 4px;
   --st-spacing-medium: 8px;
 
+  /* Overlay / filter control sizing (tracks roomier modern cell padding) */
+  --st-overlay-font-size: 14px;
+  --st-overlay-padding: 12px;
+  --st-control-padding-y: 8px;
+  --st-control-padding-x: 12px;
+  --st-datepicker-day-size: 32px;
+
   /* Scrollbar variables - Dark minimal */
   --st-scrollbar-bg-color: #111827;
   --st-scrollbar-thumb-color: #4b5563;
@@ -80,6 +87,7 @@
   /* Button colors - Clean, minimal dark */
   --st-button-hover-background-color: #374151;
   --st-button-active-background-color: #3b82f6;
+  --st-button-active-text-color: var(--st-white);
   --st-next-prev-btn-color: #9ca3af;
   --st-next-prev-btn-disabled-color: #4b5563;
   --st-page-btn-color: #d1d5db;
@@ -101,6 +109,7 @@
   --st-datepicker-other-month-color: #4b5563;
   --st-filter-button-disabled-background-color: #374151;
   --st-filter-button-disabled-text-color: #6b7280;
+  --st-muted-text-color: #9ca3af;
 
   /* Flash/Animation colors */
   --st-cell-flash-color: #1e40af;

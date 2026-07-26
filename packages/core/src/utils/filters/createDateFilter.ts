@@ -173,7 +173,7 @@ export const createDateFilter = (options: CreateDateFilterOptions) => {
       open: false,
       overflow: "hidden",
       positioning: "absolute",
-      width: 240,
+      width: 280,
     });
 
     inputContainer.appendChild(input);
