@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
-import {SimpleTable} from "@simple-table/react";import type { Theme, OnRowGroupExpandProps } from "@simple-table/react";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme, OnRowGroupExpandProps } from "@simple-table/react";
 import {
   dynamicNestedTablesConfig,
   dynamicNestedTablesData,
@@ -8,18 +9,31 @@ import {
 import type { DynamicCompany } from "./dynamic-nested-tables.demo-data";
 import "@simple-table/react/styles.css";
 
-const DynamicNestedTablesDemo = ({ height = "500px", theme }: { height?: string | number; theme?: Theme }) => {
+const DynamicNestedTablesDemo = ({
+  height = "500px",
+  theme,
+}: {
+  height?: string | number;
+  theme?: Theme;
+}) => {
   const [rows, setRows] = useState<DynamicCompany[]>([...dynamicNestedTablesData]);
 
   const handleCompanyExpand = useCallback(
-    async ({ row, groupingKey, isExpanded, rowIndexPath, setLoading, setError, setEmpty }: OnRowGroupExpandProps) => {
+    async ({
+      row,
+      groupingKey,
+      isExpanded,
+      rowIndexPath,
+      setLoading,
+      setError,
+      setEmpty,
+    }: OnRowGroupExpandProps<DynamicCompany>) => {
       if (!isExpanded) return;
       try {
         if (groupingKey === "divisions") {
-          const company = row as DynamicCompany;
-          if (company.divisions && company.divisions.length > 0) return;
+          if (row.divisions && row.divisions.length > 0) return;
           setLoading(true);
-          const divisions = await fetchDivisionsForCompany(company.id);
+          const divisions = await fetchDivisionsForCompany(row.id);
           if (divisions.length === 0) {
             setEmpty(true, "No divisions found for this company");
             return;
@@ -40,7 +54,7 @@ const DynamicNestedTablesDemo = ({ height = "500px", theme }: { height?: string 
   );
 
   return (
-    <SimpleTable
+    <SimpleTable<DynamicCompany>
       autoExpandColumns={dynamicNestedTablesConfig.tableProps.autoExpandColumns}
       columns={dynamicNestedTablesConfig.headers}
       expandAll={dynamicNestedTablesConfig.tableProps.expandAll}
