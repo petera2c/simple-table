@@ -27,6 +27,7 @@ import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
+import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
 import { Button } from "antd";
 import {
   SIMPLE_TABLE_INFO,
@@ -1084,8 +1085,9 @@ export default function BestReactTableLibraries2026Page() {
           href: "/examples/crypto",
         }}
         secondaryButton={{
-          text: "See pricing",
-          href: "/pricing",
+          text: "Book a free call",
+          href: TECHNICAL_STRINGS.links.calendly,
+          external: true,
         }}
       />
     </BlogLayout>

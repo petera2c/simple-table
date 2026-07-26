@@ -18,6 +18,7 @@ import { Metadata } from "next";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
+import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
 import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import {
   SIMPLE_TABLE_INFO,
@@ -1047,8 +1048,9 @@ export default function KaTableVsSimpleTablePage() {
           href: "/docs/installation",
         }}
         secondaryButton={{
-          text: "See pricing",
-          href: "/pricing",
+          text: "Book a free call",
+          href: TECHNICAL_STRINGS.links.calendly,
+          external: true,
         }}
       />
     </BlogLayout>

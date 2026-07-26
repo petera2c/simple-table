@@ -22,8 +22,6 @@ import {
   buildTechArticleJsonLd,
 } from "@/utils/structuredData";
 import { FRAMEWORK_HUB_BY_ID, type HubFrameworkId } from "@/constants/frameworkIntegrationHub";
-import OtherFrameworksCallout from "@/components/OtherFrameworksCallout";
-
 export interface LibraryRow {
   library: string;
   support: { value: string; tone?: "good" | "bad" | "neutral" };

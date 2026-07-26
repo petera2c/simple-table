@@ -9,7 +9,7 @@ import {
   faBolt,
   faGift,
   faCreditCard,
-  faEnvelope,
+  faCalendarCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "antd";
 import Link from "next/link";
@@ -17,7 +17,7 @@ import { useEffect, useMemo, useState } from "react";
 import { openStripeCheckout } from "@/utils/stripe";
 import { STRIPE_CUSTOMER_PORTAL_URL } from "@/constants/stripe";
 import { SIMPLE_TABLE_PRICING } from "@/constants/simpleTablePricing";
-import ContactModal from "@/components/ContactModal";
+import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
 import { trackCtaClick, trackViewPricing } from "@/lib/analytics";
 
 interface PlanFeature {
@@ -43,20 +43,21 @@ const PLAN_CAPACITY_NOTE = "One license per product · unlimited users";
 
 const PricingContent: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(true);
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   useEffect(() => {
     trackViewPricing("pricing_page");
   }, []);
 
-  const openContact = (ctaId: string, ctaText: string) => {
+  const calendlyUrl = TECHNICAL_STRINGS.links.calendly;
+
+  const openBookACall = (ctaId: string, ctaText: string) => {
     trackCtaClick({
       cta_id: ctaId,
       cta_text: ctaText,
-      destination: "contact_modal",
+      destination: calendlyUrl,
       location: "pricing_page",
     });
-    setIsContactModalOpen(true);
+    window.open(calendlyUrl, "_blank", "noopener,noreferrer");
   };
 
   const plans: Plan[] = useMemo(
@@ -171,37 +172,6 @@ const PricingContent: React.FC = () => {
           <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-4">
             Free until you earn revenue. Then Pro — one price per product, not per developer.
           </p>
-
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-            Need Enterprise or a custom quote?{" "}
-            <button
-              type="button"
-              onClick={() => openContact("pricing_talk_to_us_hero", "Talk to us")}
-              className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
-            >
-              Talk to us
-            </button>
-          </p>
-
-          <div className="max-w-3xl mx-auto mb-8 grid sm:grid-cols-2 gap-3 text-left">
-            <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-4">
-              <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                Choose FREE if…
-              </p>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                You are an individual, side project, or pre-revenue startup. Install from docs.
-              </p>
-            </div>
-            <div className="rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/30 p-4">
-              <p className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-1">
-                Choose PRO if…
-              </p>
-              <p className="text-sm text-blue-900/80 dark:text-blue-100/90">
-                Your company generates any revenue. You need a commercial license plus priority
-                support.
-              </p>
-            </div>
-          </div>
 
           <div className="relative inline-flex items-center gap-4 mb-8">
             <span
@@ -342,99 +312,58 @@ const PricingContent: React.FC = () => {
           ))}
         </motion.section>
 
-        <motion.section
-          className="mt-12 max-w-xl mx-auto"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+        <motion.div
+          className="mt-8 text-center"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
           viewport={{ once: true }}
         >
-          <Link
-            href="/case-studies/chartmetric"
-            className="block rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
-          >
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">
-              Case study
-            </p>
-            <p className="font-semibold text-gray-900 dark:text-white mb-1">ChartMetric</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Chose Simple Table over AG Grid — $19K+ first-year savings.
-            </p>
-          </Link>
-        </motion.section>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            ChartMetric chose Simple Table over AG Grid —{" "}
+            <Link
+              href="/case-studies/chartmetric"
+              className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
+            >
+              $19K+ first-year savings
+            </Link>
+            .
+          </p>
+        </motion.div>
 
         <motion.section
-          className="mt-10 text-center bg-gray-50 dark:bg-gray-800 rounded-xl p-8 max-w-3xl mx-auto"
+          className="mt-14 text-center max-w-2xl mx-auto border-t border-gray-200 dark:border-gray-700 pt-12"
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
         >
           <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Not sure?</h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-5 text-sm max-w-lg mx-auto">
-            Pre-revenue → Free. Earning revenue → Pro. Need dedicated help → Enterprise.
+          <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm max-w-lg mx-auto">
+            Pre-revenue → Free. Earning revenue → Pro. Still deciding between grids? Book 30
+            minutes — we&apos;ll help for free, even if Simple Table isn&apos;t the fit.
           </p>
-          <Button
-            type="primary"
-            size="large"
-            onClick={() => openContact("pricing_contact_us", "Contact us")}
-            className="h-11 px-8"
-          >
-            <FontAwesomeIcon icon={faEnvelope} className="mr-2" />
-            Contact us
-          </Button>
-        </motion.section>
-
-        <motion.section
-          className="mt-14 text-center border-t border-gray-200 dark:border-gray-700 pt-10"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-        >
-          <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-2">
-            Already subscribed?
-          </h3>
-          <button
-            type="button"
-            onClick={() => window.open(STRIPE_CUSTOMER_PORTAL_URL, "_blank")}
-            className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors inline-flex items-center gap-2"
-          >
-            <FontAwesomeIcon icon={faCreditCard} />
-            Manage billing
-          </button>
-        </motion.section>
-
-        <motion.section
-          className="mt-14 text-center border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 rounded-xl p-10"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-3">
-            Ship the grid. Skip the per-seat bill.
-          </h2>
-          <p className="mb-6 text-gray-600 dark:text-gray-300 max-w-xl mx-auto">
-            Install free today. Upgrade to Pro when your product earns revenue.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button size="large" onClick={() => handleGetStarted("FREE")} className="h-11 px-8">
-              <FontAwesomeIcon icon={faRocket} className="mr-2" />
-              Install free
-            </Button>
+          <div className="mb-10">
             <Button
               type="primary"
               size="large"
-              onClick={() => handleGetStarted("PRO")}
+              onClick={() => openBookACall("pricing_book_a_call", "Book a free call")}
               className="h-11 px-8"
             >
-              Start Pro
+              <FontAwesomeIcon icon={faCalendarCheck} className="mr-2" />
+              Book a free call
             </Button>
           </div>
+          <button
+            type="button"
+            onClick={() => window.open(STRIPE_CUSTOMER_PORTAL_URL, "_blank")}
+            className="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-2"
+          >
+            <FontAwesomeIcon icon={faCreditCard} />
+            Already subscribed? Manage billing
+          </button>
         </motion.section>
       </div>
-      <ContactModal isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
     </PageWrapper>
   );
 };

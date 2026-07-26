@@ -1,12 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import OtherFrameworksCallout from "@/components/OtherFrameworksCallout";
-import {
-  getBlogPostBySlug,
-  getPostFrameworkId,
-  shouldShowOtherFrameworksCallout,
-} from "@/constants/blogPosts";
+import { getBlogPostBySlug } from "@/constants/blogPosts";
 import { FRAMEWORK_HUB_PILLAR_BLOG_SLUG } from "@/constants/frameworkPillarBlogs";
 import { buildBreadcrumbListJsonLd, buildTechArticleJsonLd } from "@/utils/structuredData";
 
@@ -19,8 +14,6 @@ const PILLAR_SLUGS_WITH_OWN_JSONLD = new Set(
 export default function BlogSegmentChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const segment = pathname.replace(/^\/?blog\/?/, "").split("/")[0] ?? "";
-  const showCallout = shouldShowOtherFrameworksCallout(segment);
-  const frameworkId = getPostFrameworkId(segment);
 
   const post = segment ? getBlogPostBySlug(segment) : undefined;
   const shouldEmitJsonLd = !!post && !PILLAR_SLUGS_WITH_OWN_JSONLD.has(segment);
@@ -56,7 +49,6 @@ export default function BlogSegmentChrome({ children }: { children: React.ReactN
         />
       ) : null}
       {children}
-      {showCallout ? <OtherFrameworksCallout currentFramework={frameworkId ?? "react"} /> : null}
     </>
   );
 }

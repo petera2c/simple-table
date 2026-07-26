@@ -21,7 +21,7 @@ import {
   buildTechArticleJsonLd,
 } from "@/utils/structuredData";
 import { FRAMEWORK_HUB_BY_ID, type HubFrameworkId } from "@/constants/frameworkIntegrationHub";
-import OtherFrameworksCallout from "@/components/OtherFrameworksCallout";
+import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
 
 export interface ComparisonRow {
   feature: string;
@@ -339,7 +339,11 @@ export default function CompetitorBlogLayout(props: CompetitorBlogLayoutProps) {
           title={props.ctaTitle}
           description={props.ctaDescription}
           primaryButton={{ text: "Get started", href: "/docs/installation" }}
-          secondaryButton={{ text: "See pricing", href: "/pricing" }}
+          secondaryButton={{
+            text: "Book a free call",
+            href: TECHNICAL_STRINGS.links.calendly,
+            external: true,
+          }}
         />
       </BlogLayout>
     </>

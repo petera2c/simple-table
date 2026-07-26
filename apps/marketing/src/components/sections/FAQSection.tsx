@@ -26,6 +26,7 @@ import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationH
 import { SIMPLE_TABLE_INFO, AG_GRID_TOTAL_SIZE } from "@/constants/packageInfo";
 import { DEFAULT_EXAMPLE_PATH } from "@/constants/global";
 import ExampleLink from "@/components/ExampleLink";
+import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
 
 export default function FAQSection() {
   return (
@@ -277,8 +278,23 @@ export default function FAQSection() {
               {
                 icon: faHeadset,
                 question: "What kind of support do you offer?",
-                answer:
-                  "We provide comprehensive documentation with interactive examples, GitHub discussions for community support, and dedicated email support for commercial license holders. Most questions are answered within 24 hours. We also take feature requests seriously and implement the most valuable ones.",
+                answer: (
+                  <>
+                    Docs, Discord, and GitHub for day-to-day questions. Commercial licenses include
+                    priority email/Discord support. If your team is still evaluating grids, you can{" "}
+                    <a
+                      href={TECHNICAL_STRINGS.links.calendly}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      book a free 30-minute call
+                    </a>{" "}
+                    — we&apos;ll help you pick the right table, even if Simple Table isn&apos;t the
+                    fit.
+                  </>
+                ),
               },
               {
                 icon: faBook,

@@ -1143,12 +1143,3 @@ export function getPostFrameworkId(slug: string): HubFrameworkId | null {
   }
   return null;
 }
-
-/**
- * End-of-article cross-stack callout. Shown on every framework-tagged post so
- * Angular/Vue/Svelte/Solid/Vanilla readers also see hub links for the other
- * stacks (not just React readers).
- */
-export function shouldShowOtherFrameworksCallout(slug: string): boolean {
-  return getPostFrameworkId(slug) !== null;
-}

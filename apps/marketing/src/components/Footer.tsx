@@ -2,6 +2,7 @@
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub, faDiscord, faNpm } from "@fortawesome/free-brands-svg-icons";
+import { faCalendarCheck } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { TECHNICAL_STRINGS } from "../constants/strings/technical";
@@ -10,6 +11,7 @@ import { COMPARISON_FOOTER_LINKS } from "@/constants/comparisons";
 import { EXAMPLE_NAV_ITEMS } from "@/constants/examplesNav";
 import PageWrapper from "./PageWrapper";
 import { getExampleUrl } from "@/utils/getExampleUrl";
+import { trackCtaClick } from "@/lib/analytics";
 
 export default function Footer() {
   const pathname = usePathname();
@@ -115,13 +117,32 @@ export default function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://discord.gg/RvKHCfg3PC"
+                    href={TECHNICAL_STRINGS.links.discord}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-gray-400 hover:text-white transition-colors flex items-center"
                   >
                     <FontAwesomeIcon icon={faDiscord} className="mr-2" />
                     Discord Support
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={TECHNICAL_STRINGS.links.calendly}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors flex items-center"
+                    onClick={() =>
+                      trackCtaClick({
+                        cta_id: "footer_book_a_call",
+                        cta_text: "Book a free call",
+                        destination: TECHNICAL_STRINGS.links.calendly,
+                        location: "footer",
+                      })
+                    }
+                  >
+                    <FontAwesomeIcon icon={faCalendarCheck} className="mr-2" />
+                    Book a free call
                   </a>
                 </li>
                 <li>

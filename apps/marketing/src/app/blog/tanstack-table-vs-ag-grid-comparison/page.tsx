@@ -23,6 +23,7 @@ import Link from "next/link";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
+import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
 import {
   buildBreadcrumbListJsonLd,
   buildFaqPageJsonLd,
@@ -1195,14 +1196,15 @@ export default function TanStackVsAgGridPage() {
       <CallToActionCard
         location="blog_tanstack_vs_ag_grid"
         title="Skip the tradeoffs. Choose Simple Table."
-        description="Get TanStack Table's features with a built-in UI. Get AG Grid's completeness without the price tag. Try the live crypto demo, then see commercial pricing when you're ready to ship."
+        description="Get TanStack Table's features with a built-in UI. Get AG Grid's completeness without the price tag. Try the live crypto demo — or book a free call if you're still deciding which grid fits."
         primaryButton={{
           text: "Try the live demo",
           href: "/examples/crypto",
         }}
         secondaryButton={{
-          text: "See pricing",
-          href: "/pricing",
+          text: "Book a free call",
+          href: TECHNICAL_STRINGS.links.calendly,
+          external: true,
         }}
       />
       </BlogLayout>

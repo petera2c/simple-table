@@ -18,6 +18,7 @@ import { SEO_STRINGS } from "@/constants/strings/seo";
 import { bestFreeReactDataGridPost } from "@/constants/blogPosts";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
+import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
 import { Button } from "antd";
 import { DEFAULT_EXAMPLE_PATH } from "@/constants/global";
 import ExampleLink from "@/components/ExampleLink";
@@ -624,8 +625,9 @@ export default function BestFreeReactDataGrid2026Page() {
           href: "/docs/installation",
         }}
         secondaryButton={{
-          text: "See pricing",
-          href: "/pricing",
+          text: "Book a free call",
+          href: TECHNICAL_STRINGS.links.calendly,
+          external: true,
         }}
       />
     </BlogLayout>

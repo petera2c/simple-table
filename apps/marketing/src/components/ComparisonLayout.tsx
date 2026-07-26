@@ -4,14 +4,13 @@ import React, { ReactNode, useState, useEffect, useMemo } from "react";
 import { Typography, Table, Space, Card, Button, Tooltip } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
-import NextLink from "next/link";
 import PageWrapper from "@/components/PageWrapper";
 import { ALL_FEATURES, getFeatureStatus } from "@/constants/comparisonFeatures";
 import { FEATURE_LABELS } from "@/constants/featureLabels";
 import { FeatureStatusBadge } from "@/components/CommonFeatures";
 import { SIMPLE_TABLE_INFO } from "@/constants/packageInfo";
-import { getStackBlitzUrl } from "@/utils/getStackBlitzUrl";
-import { useFramework } from "@/providers/FrameworkProvider";
+import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
+import { trackCtaClick } from "@/lib/analytics";
 
 const { Title, Paragraph, Link } = Typography;
 
@@ -40,8 +39,6 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
   summaryContent,
 }) => {
   const [isMobile, setIsMobile] = useState(false);
-  const { framework } = useFramework();
-  const stackBlitzUrl = getStackBlitzUrl("quick-start", framework);
 
   // Handle responsive layout
   useEffect(() => {
@@ -280,39 +277,33 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
               isMobile ? "text-xl" : "text-2xl"
             } font-semibold text-gray-900 dark:text-white mb-2`}
           >
-            Try Simple Table next
+            Still deciding?
           </Title>
           <Paragraph className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-            Install free for pre-revenue use, or see how pricing compares to {competitorName}.
+            Install Simple Table free, or book 30 minutes — we&apos;ll help you pick the right
+            grid versus {competitorName}, even if it isn&apos;t us.
           </Paragraph>
-          <Space direction={isMobile ? "vertical" : "horizontal"} className="w-full mb-4" wrap>
+          <Space direction={isMobile ? "vertical" : "horizontal"} className="w-full" wrap>
             <Button type="primary" href="/docs/installation" size="large">
               Get started
             </Button>
-            <Button href="/pricing" size="large">
-              See pricing
-            </Button>
-            <Button href={stackBlitzUrl} target="_blank" rel="noopener noreferrer" size="large">
-              Live demo
-            </Button>
-          </Space>
-          <Paragraph className="text-sm text-gray-600 dark:text-gray-400 mb-0">
-            <NextLink
-              href="/case-studies/chartmetric"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
-            >
-              ChartMetric case study
-            </NextLink>
-            {" · "}
-            <a
-              href="https://github.com/petera2c/simple-table/issues"
+            <Button
+              href={TECHNICAL_STRINGS.links.calendly}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 dark:text-blue-400 hover:underline"
+              size="large"
+              onClick={() =>
+                trackCtaClick({
+                  cta_id: "comparison_book_a_call",
+                  cta_text: "Book a free call",
+                  destination: TECHNICAL_STRINGS.links.calendly,
+                  location: "comparison_exit",
+                })
+              }
             >
-              Request a feature
-            </a>
-          </Paragraph>
+              Book a free call
+            </Button>
+          </Space>
         </Card>
         </div>
       </div>

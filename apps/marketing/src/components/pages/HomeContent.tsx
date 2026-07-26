@@ -47,6 +47,10 @@ const ComparisonsSection = dynamic(() => import("@/components/sections/Compariso
   ssr: true,
   loading: () => null,
 });
+const BookACallSection = dynamic(() => import("@/components/sections/BookACallSection"), {
+  ssr: true,
+  loading: () => null,
+});
 const CaseStudySection = dynamic(() => import("@/components/sections/CaseStudySection"), {
   ssr: true,
   loading: () => null,
@@ -291,6 +295,9 @@ export default function HomeContent() {
 
         {/* Comparisons section */}
         <ComparisonsSection />
+
+        {/* Evaluator help — book a free grid-selection call */}
+        <BookACallSection />
 
         {/* FAQ Section */}
         <FAQSection />
