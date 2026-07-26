@@ -62,7 +62,7 @@ const CryptoDemo = ({ height = "70dvh", theme }: { height?: string | number; the
     return () => clearInterval(intervalId);
   }, []);
   return (
-    <SimpleTable<CryptoCoin>
+    <SimpleTable
       columns={cryptoConfig.headers}
       rows={cryptoConfig.rows}
       ref={tableRef}
