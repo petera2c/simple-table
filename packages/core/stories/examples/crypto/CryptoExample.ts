@@ -2,7 +2,7 @@
  * CryptoExample – vanilla port of the marketing crypto dashboard with a live
  * market-feed ticker (`updateData` on visible rows).
  */
-import type { Accessor, CellValue, TableAPI } from "../../../src/index";
+import type { TableAPI } from "../../../src/index";
 import { renderVanillaTable, addParagraph } from "../../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../../vanillaStoryConfig";
 import { generateCryptoData, type CryptoCoin } from "./crypto-data";
@@ -30,22 +30,6 @@ function pickRandomSubset<T>(arr: T[], n: number): T[] {
     copy[j] = t;
   }
   return copy.slice(0, Math.min(n, copy.length));
-}
-
-function applyRowPatch(
-  api: TableAPI<CryptoCoin>,
-  rowId: string | number,
-  patch: Partial<CryptoCoin>,
-) {
-  for (const accessor of Object.keys(patch) as Array<keyof CryptoCoin>) {
-    const newValue = patch[accessor];
-    if (newValue === undefined) continue;
-    api.updateData({
-      accessor: accessor as Accessor<CryptoCoin>,
-      rowId,
-      newValue: newValue as CellValue,
-    });
-  }
 }
 
 /**
@@ -76,13 +60,17 @@ function startCryptoTicker(getApi: () => TableAPI<CryptoCoin> | null | undefined
       const currentChange = typeof row.change24h === "number" ? row.change24h : 0;
       const newChange = Math.round((currentChange + drift * 100) * 100) / 100;
 
-      const patch: Partial<CryptoCoin> = { price: newPriceRounded, change24h: newChange };
+      api.updateData({ accessor: "price", rowId, newValue: newPriceRounded });
+      api.updateData({ accessor: "change24h", rowId, newValue: newChange });
+
       const history = row.priceHistory;
       if (Array.isArray(history) && history.length > 0) {
-        patch.priceHistory = [...history.slice(1), newPriceRounded];
+        api.updateData({
+          accessor: "priceHistory",
+          rowId,
+          newValue: [...history.slice(1), newPriceRounded],
+        });
       }
-
-      applyRowPatch(api, rowId, patch);
     }
   };
 

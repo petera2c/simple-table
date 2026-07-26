@@ -1,6 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { CryptoCoin } from "./crypto.demo-data";
-import type { Theme, TableAPI, CellValue, GetRowIdParams } from "simple-table-core";
+import type { Theme, TableAPI, GetRowIdParams } from "simple-table-core";
 import { cryptoConfig } from "./crypto.demo-data";
 import "simple-table-core/styles.css";
 
@@ -20,18 +20,6 @@ function pickRandomSubset<T>(arr: T[], n: number): T[] {
 
 const getRowId = ({ row }: GetRowIdParams<CryptoCoin>) => row.id;
 
-function applyRowPatch(
-  api: TableAPI<CryptoCoin>,
-  rowId: string | number,
-  patch: Partial<CryptoCoin>,
-) {
-  for (const accessor of Object.keys(patch) as Array<keyof CryptoCoin>) {
-    const newValue = patch[accessor];
-    if (newValue === undefined) continue;
-    api.updateData({ accessor, rowId, newValue: newValue as CellValue });
-  }
-}
-
 function runTick(getApi: () => TableAPI<CryptoCoin> | null | undefined) {
   const api = getApi();
   if (!api) return;
@@ -47,12 +35,16 @@ function runTick(getApi: () => TableAPI<CryptoCoin> | null | undefined) {
     const newPriceRounded = Math.round(newPrice * round) / round;
     const currentChange = typeof row.change24h === "number" ? row.change24h : 0;
     const newChange = Math.round((currentChange + drift * 100) * 100) / 100;
-    const patch: Partial<CryptoCoin> = { price: newPriceRounded, change24h: newChange };
+    api.updateData({ accessor: "price", rowId, newValue: newPriceRounded });
+    api.updateData({ accessor: "change24h", rowId, newValue: newChange });
     const history = row.priceHistory;
     if (Array.isArray(history) && history.length > 0) {
-      patch.priceHistory = [...history.slice(1), newPriceRounded];
+      api.updateData({
+        accessor: "priceHistory",
+        rowId,
+        newValue: [...history.slice(1), newPriceRounded],
+      });
     }
-    applyRowPatch(api, rowId, patch);
   }
 }
 

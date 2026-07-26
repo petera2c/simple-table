@@ -2,20 +2,21 @@ import { Accessor } from "./ColumnDef";
 import { AggregationConfig } from "./AggregationTypes";
 import ColumnDef from "./ColumnDef";
 import Row from "./Row";
+import type { RowData } from "./Row";
 
-export type PivotValueConfig = {
-  accessor: Accessor;
+export type PivotValueConfig<TData extends RowData = Row> = {
+  accessor: Accessor<TData>;
   aggregation: AggregationConfig;
   label?: string;
 };
 
-export type PivotConfig = {
+export type PivotConfig<TData extends RowData = Row> = {
   /** Row dimension accessors (0+). Multi-level dims become an expandable tree. */
-  rows: Accessor[];
+  rows: Accessor<TData>[];
   /** Column dimension accessors (0+). Distinct values become dynamic header groups. */
-  columns: Accessor[];
+  columns: Accessor<TData>[];
   /** Value/measure configs (required, length >= 1). */
-  values: PivotValueConfig[];
+  values: PivotValueConfig<TData>[];
   /** Total column(s) aggregating across column dimensions. Default true. */
   showRowTotals?: boolean;
   /** Total row aggregating across row dimensions. Default true. */
@@ -39,6 +40,9 @@ export const PIVOT_BLANK_LABEL = "(blank)";
 export type PivotResult = {
   rows: Row[];
   headers: ColumnDef[];
-  /** Internal rowGrouping to use while pivot is active (undefined when flat). */
+  /**
+   * Internal rowGrouping while pivot is active (undefined when flat).
+   * Kept as open accessors — pivot injects synthetic keys.
+   */
   rowGrouping?: Accessor[];
 };

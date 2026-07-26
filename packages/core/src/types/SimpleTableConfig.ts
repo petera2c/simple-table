@@ -108,7 +108,7 @@ export interface SimpleTableConfig<TData extends RowData = Row> {
   onColumnSelect?: (header: ColumnDef<TData, any>) => void;
   onColumnVisibilityChange?: (visibilityState: ColumnVisibilityState) => void;
   onColumnWidthChange?: (headers: ColumnDef<TData, any>[]) => void;
-  onFilterChange?: (filters: TableFilterState) => void;
+  onFilterChange?: (filters: TableFilterState<TData>) => void;
   /** Called once when the table is ready. */
   onTableReady?: () => void;
   onHeaderEdit?: (header: ColumnDef<TData, any>, newLabel: string) => void;
@@ -130,17 +130,17 @@ export interface SimpleTableConfig<TData extends RowData = Row> {
   onRendererHostDiscard?: (host: HTMLElement) => void;
   onSortChange?: (sort: SortColumn | null) => void;
   /** @see SimpleTableProps.pivot */
-  pivot?: PivotConfig | null;
+  pivot?: PivotConfig<TData> | null;
   /** @see SimpleTableProps.onPivotChange */
-  onPivotChange?: (pivot: PivotConfig | null) => void;
+  onPivotChange?: (pivot: PivotConfig<TData> | null) => void;
   quickFilter?: QuickFilterConfig;
   rowButtons?: RowButton<TData>[];
   /**
    * Property names that define the row grouping hierarchy.
-   * Kept as plain accessors (string-friendly) so dynamic / heterogeneous nesting
-   * keys and pivot-injected keys remain valid.
+   * `Accessor<TData>` keeps keyof autocomplete; the `string & {}` arm still
+   * allows dynamic / heterogeneous nesting keys and pivot-injected keys.
    */
-  rowGrouping?: Accessor[];
+  rowGrouping?: Accessor<TData>[];
   getRowId?: GetRowId<TData>;
   rows: TData[];
   rowsPerPage?: number;

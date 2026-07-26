@@ -115,7 +115,7 @@ export interface SimpleTableProps<TData extends RowData = Row> {
   onColumnSelect?: (header: ColumnDef<TData, any>) => void; // Callback when a column is selected/clicked
   onColumnVisibilityChange?: (visibilityState: ColumnVisibilityState) => void; // Callback when column visibility changes
   onColumnWidthChange?: (headers: ColumnDef<TData, any>[]) => void; // Callback when column widths change (resize or auto-size)
-  onFilterChange?: (filters: TableFilterState) => void; // Callback when filter is applied
+  onFilterChange?: (filters: TableFilterState<TData>) => void; // Callback when filter is applied
   /** Called once when the table is ready. */
   onTableReady?: () => void;
   onHeaderEdit?: (header: ColumnDef<TData, any>, newLabel: string) => void; // Callback when a header is edited
@@ -130,17 +130,17 @@ export interface SimpleTableProps<TData extends RowData = Row> {
    * Declarative matrix pivot. When set, flat `rows` are reshaped into a
    * pivoted grid with dynamic columns. Ignores consumer `rowGrouping` while active.
    */
-  pivot?: PivotConfig | null;
+  pivot?: PivotConfig<TData> | null;
   /** Fired when pivot config changes via TableAPI.setPivot. */
-  onPivotChange?: (pivot: PivotConfig | null) => void;
+  onPivotChange?: (pivot: PivotConfig<TData> | null) => void;
   quickFilter?: QuickFilterConfig; // Global search configuration across all columns
   rowButtons?: RowButton<TData>[]; // Array of buttons to show in each row
   /**
    * Property names that define the row grouping hierarchy.
-   * Kept as plain accessors (string-friendly) so dynamic / heterogeneous nesting
-   * keys and pivot-injected keys remain valid.
+   * `Accessor<TData>` keeps keyof autocomplete; the `string & {}` arm still
+   * allows dynamic / heterogeneous nesting keys and pivot-injected keys.
    */
-  rowGrouping?: Accessor[];
+  rowGrouping?: Accessor<TData>[];
   getRowId?: GetRowId<TData>; // Stable business id for a row. Return null/undefined when the row has no id (pivot aggregates, loading) to use reference-based identity.
   rows: TData[]; // Rows data
   rowsPerPage?: number; // Rows per page

@@ -1,5 +1,7 @@
 import CellValue from "./CellValue";
 import { Accessor } from "./ColumnDef";
+import type Row from "./Row";
+import type { RowData } from "./Row";
 
 // Filter operators for different data types
 export type StringFilterOperator =
@@ -47,17 +49,17 @@ export type FilterOperator =
   | EnumFilterOperator;
 
 // Filter condition interface
-export interface FilterCondition {
-  accessor: Accessor;
+export interface FilterCondition<TData extends RowData = Row> {
+  accessor: Accessor<TData>;
   operator: FilterOperator;
   value?: CellValue;
   values?: CellValue[]; // For operators like 'between', 'in', etc.
 }
 
 // Filter state for the entire table
-export interface TableFilterState {
-  [accessor: Accessor]: FilterCondition;
-}
+export type TableFilterState<TData extends RowData = Row> = {
+  [accessor: string]: FilterCondition<TData>;
+};
 
 // Human-readable labels for filter operators
 export const FILTER_OPERATOR_LABELS: Record<FilterOperator, string> = {

@@ -11,8 +11,8 @@ import type { PivotConfig } from "./PivotTypes";
 import type { ColumnVisibilityState } from "./ColumnVisibilityTypes";
 import type { RowId } from "./RowId";
 
-export interface SetHeaderRenameProps {
-  accessor: Accessor;
+export interface SetHeaderRenameProps<TData extends RowData = Row> {
+  accessor: Accessor<TData>;
 }
 
 export interface ExportToCSVProps {
@@ -20,21 +20,24 @@ export interface ExportToCSVProps {
 }
 
 export type TableAPI<TData extends RowData = Row> = {
-  updateData: (props: UpdateDataProps) => void;
-  setHeaderRename: (props: SetHeaderRenameProps) => void;
+  updateData: (props: UpdateDataProps<TData>) => void;
+  setHeaderRename: (props: SetHeaderRenameProps<TData>) => void;
   getVisibleRows: () => TableRow<TData>[];
   getAllRows: () => TableRow<TData>[];
   getHeaders: () => ColumnDef<TData, any>[];
   exportToCSV: (props?: ExportToCSVProps) => void;
   getSortState: () => SortColumn | null;
-  applySortState: (props?: { accessor: Accessor; direction?: SortDirection }) => Promise<void>;
+  applySortState: (props?: {
+    accessor: Accessor<TData>;
+    direction?: SortDirection;
+  }) => Promise<void>;
   /** Ordered root accessors per pin section (left, main/unpinned, right) */
   getPinnedState: () => PinnedSectionsState;
   /** Reorder root columns and set pinned flags; lists must include every root accessor exactly once. Essential order is clamped per section. */
   applyPinnedState: (state: PinnedSectionsState) => Promise<void>;
-  getFilterState: () => TableFilterState;
-  applyFilter: (filter: FilterCondition) => Promise<void>;
-  clearFilter: (accessor: Accessor) => Promise<void>;
+  getFilterState: () => TableFilterState<TData>;
+  applyFilter: (filter: FilterCondition<TData>) => Promise<void>;
+  clearFilter: (accessor: Accessor<TData>) => Promise<void>;
   clearAllFilters: () => Promise<void>;
   getCurrentPage: () => number;
   getTotalPages: () => number;
@@ -46,8 +49,8 @@ export type TableAPI<TData extends RowData = Row> = {
   toggleDepth: (depth: number) => void;
   setExpandedDepths: (depths: Set<number>) => void;
   getExpandedDepths: () => Set<number>;
-  getGroupingProperty: (depth: number) => Accessor | undefined;
-  getGroupingDepth: (property: Accessor) => number;
+  getGroupingProperty: (depth: number) => Accessor<TData> | undefined;
+  getGroupingDepth: (property: Accessor<TData>) => number;
   toggleColumnEditor: (open?: boolean) => void;
   applyColumnVisibility: (visibility: ColumnVisibilityState) => Promise<void>;
   /**
@@ -77,8 +80,8 @@ export type TableAPI<TData extends RowData = Row> = {
   /** Clears row selection only (does not clear cell selection). */
   clearRowSelection: () => void;
   /** Enable, update, or clear matrix pivot (`null` disables). */
-  setPivot: (config: PivotConfig | null) => void;
-  getPivot: () => PivotConfig | null;
+  setPivot: (config: PivotConfig<TData> | null) => void;
+  getPivot: () => PivotConfig<TData> | null;
   /** Generated headers while pivot is active; otherwise current headers. */
   getPivotHeaders: () => ColumnDef[];
   /**
