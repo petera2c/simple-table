@@ -1,11 +1,11 @@
 import { useState } from "react";
 import {SimpleTable} from "@simple-table/react";import type { Theme, QuickFilterMode } from "@simple-table/react";
-import { quickFilterConfig, type QuickFilterEmployee } from "./quick-filter.demo-data";
+import { quickFilterConfig } from "./quick-filter.demo-data";
 import "@simple-table/react/styles.css";
 
 const QuickFilterDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -27,7 +27,7 @@ const QuickFilterDemo = ({
             borderRadius: 6,
             border: "1px solid #d1d5db",
             fontSize: 13,
-            minWidth: 200,
+            minWidth: 200
           }}
         />
         <button
@@ -40,7 +40,7 @@ const QuickFilterDemo = ({
             color: filterMode === "simple" ? "#1d4ed8" : "#374151",
             fontWeight: filterMode === "simple" ? 600 : 400,
             cursor: "pointer",
-            fontSize: 13,
+            fontSize: 13
           }}
         >
           Simple
@@ -55,7 +55,7 @@ const QuickFilterDemo = ({
             color: filterMode === "smart" ? "#1d4ed8" : "#374151",
             fontWeight: filterMode === "smart" ? 600 : 400,
             cursor: "pointer",
-            fontSize: 13,
+            fontSize: 13
           }}
         >
           Smart
@@ -70,13 +70,13 @@ const QuickFilterDemo = ({
             color: caseSensitive ? "#1d4ed8" : "#374151",
             fontWeight: caseSensitive ? 600 : 400,
             cursor: "pointer",
-            fontSize: 13,
+            fontSize: 13
           }}
         >
           Case Sensitive
         </button>
       </div>
-      <SimpleTable<QuickFilterEmployee>
+      <SimpleTable
         columns={quickFilterConfig.headers}
         rows={quickFilterConfig.rows}
         height={height}
