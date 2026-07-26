@@ -4,13 +4,13 @@ import type { Theme, TableAPI } from "@simple-table/react";
 import {
   liveUpdateConfig,
   liveUpdateData,
-  type LiveUpdateProduct,
+  type LiveUpdateProduct
 } from "./live-update.demo-data";
 import "@simple-table/react/styles.css";
 
 const LiveUpdateDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -51,7 +51,7 @@ const LiveUpdateDemo = ({
             tableRef.current?.updateData({
               accessor: "stockHistory",
               rowId,
-              newValue: updatedStockHistory,
+              newValue: updatedStockHistory
             });
           }
 
@@ -99,7 +99,7 @@ const LiveUpdateDemo = ({
           tableRef.current?.updateData({
             accessor: "salesHistory",
             rowId,
-            newValue: updatedSalesHistory,
+            newValue: updatedSalesHistory
           });
           currentPeriodSales.set(rowId, 0);
         }
@@ -119,7 +119,7 @@ const LiveUpdateDemo = ({
   }, []);
 
   return (
-    <SimpleTable<LiveUpdateProduct>
+    <SimpleTable
       columns={liveUpdateConfig.headers}
       rows={liveUpdateConfig.rows}
       ref={tableRef}
