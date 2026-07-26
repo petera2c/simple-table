@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { columnWidthConfig } from "./column-width.demo-data";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme } from "@simple-table/react";
+import { columnWidthConfig, type StartupEmployee } from "./column-width.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnWidthDemo = ({
@@ -20,13 +21,14 @@ const ColumnWidthDemo = ({
   }, []);
 
   return (
-    <SimpleTable
+    <SimpleTable<StartupEmployee>
       autoExpandColumns={!isMobile}
       columnResizing
       columns={columnWidthConfig.headers}
       height={height}
       rows={columnWidthConfig.rows}
       theme={theme}
+      getRowId={({ row }) => row.id}
     />
   );
 };

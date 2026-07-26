@@ -1,8 +1,16 @@
 // Self-contained demo table setup for this example.
 import type { ReactColumnDef } from "@simple-table/react";
 
+export interface StartupEmployee {
+  id: number;
+  name: string;
+  email: string;
+  age: number;
+  department: string;
+  salary: string;
+}
 
-export const columnWidthHeaders: ReactColumnDef[] = [
+export const columnWidthHeaders: ReactColumnDef<StartupEmployee>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, type: "string" },
   { accessor: "email", label: "Email", width: "1fr", minWidth: 180, type: "string" },
