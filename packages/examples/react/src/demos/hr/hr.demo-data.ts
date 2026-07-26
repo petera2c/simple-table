@@ -55,7 +55,7 @@ export function generateHRData(count: number = 100): HREmployee[] {
 
 export const hrData = generateHRData(100);
 
-export const hrHeaders: ReactColumnDef[] = [
+export const hrHeaders: ReactColumnDef<HREmployee>[] = [
   { accessor: "fullName", label: "Employee", width: 220, sortable: true, editable: false, align: "left", pinned: "left", type: "string" },
   {
     accessor: "performanceScore", label: "Performance", width: 160, sortable: true, editable: true, align: "center", type: "number",
