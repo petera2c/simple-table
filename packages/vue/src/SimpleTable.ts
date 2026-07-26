@@ -1,4 +1,5 @@
 import { defineComponent, onMounted, onUnmounted, watch, ref, h, camelize } from "vue";
+import type { DefineComponent } from "vue";
 import {
   SimpleTableVanilla,
   headersStructurallyEqual,
@@ -7,7 +8,11 @@ import {
 import type { SimpleTableConfig, TableAPI } from "simple-table-core";
 import { buildVanillaConfig, resolveVueColumns } from "./buildVanillaConfig";
 import { MountRegistry } from "./MountRegistry";
-import type { SimpleTableVueProps, TableInstance } from "./types";
+import type {
+  SimpleTableVueProps,
+  TableInstance,
+  VueDefaultRowData,
+} from "./types";
 
 /**
  * SimpleTable — Vue 3 adapter for simple-table-core.
@@ -15,18 +20,21 @@ import type { SimpleTableVueProps, TableInstance } from "./types";
  * Accepts the same props as SimpleTableProps (the vanilla user-facing API) but
  * with Vue component types for all renderer props.
  *
+ * `TData` is typed on `SimpleTableVueProps` / `VueColumnDef`; prefer typed
+ * `rows` / `columns` in script. Template attrs inference may be weaker than
+ * React/Solid JSX.
+ *
  * Use Vue's template ref to access the full TableAPI imperative interface:
  *
  * @example
  * <template>
- *   <SimpleTable ref="tableRef" :rows="rows" :columns="headers" />
+ *   <SimpleTable ref="tableRef" :rows="rows" :columns="headers" :get-row-id="getRowId" />
  * </template>
  *
  * <script setup lang="ts">
  * import { ref } from 'vue'
- * import type { TableAPI } from 'simple-table-vue'
- * const tableRef = ref<TableAPI | null>(null)
- * // tableRef.value?.sort(...)
+ * import type { TableAPI } from '@simple-table/vue'
+ * const tableRef = ref<{ getAPI: () => TableAPI<HREmployee> | null } | null>(null)
  * </script>
  */
 /**
@@ -44,7 +52,7 @@ function camelizeAttrs(attrs: Record<string, unknown>): Record<string, unknown> 
   return out;
 }
 
-const SimpleTable = defineComponent({
+const SimpleTableInner = defineComponent({
   name: "SimpleTable",
 
   props: {
@@ -83,7 +91,7 @@ const SimpleTable = defineComponent({
       const rowsUnchanged = rowsShallowUnchanged(
         syncedRows as ReadonlyArray<object> | undefined,
         props.rows as ReadonlyArray<object>,
-        props.getRowId,
+        props.getRowId as Parameters<typeof rowsShallowUnchanged>[2],
       );
       syncedRows = props.rows;
       if (rowsUnchanged) {
@@ -126,5 +134,17 @@ const SimpleTable = defineComponent({
     return () => h("div", { ref: containerRef });
   },
 });
+
+// No default on `TData`: TypeScript should infer it from `rows` / `columns`
+// for `h(SimpleTable, { … })` callers. (`SimpleTableVueProps` still defaults
+// for untyped prop bags / helpers.)
+type SimpleTableComponent = <TData extends VueDefaultRowData>(
+  props: SimpleTableVueProps<TData>,
+) => ReturnType<typeof h>;
+
+const SimpleTable = SimpleTableInner as unknown as SimpleTableComponent &
+  DefineComponent & {
+    name?: string;
+  };
 
 export default SimpleTable;

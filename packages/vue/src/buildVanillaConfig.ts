@@ -1,10 +1,11 @@
-import type { SimpleTableConfig, ColumnDef, ColumnEditorConfig, Row } from "simple-table-core";
-import { collectHeaderAccessors } from "simple-table-core";
+import type { SimpleTableConfig, ColumnDef, ColumnEditorConfig } from "simple-table-core";
+import { asRows, collectHeaderAccessors } from "simple-table-core";
 import type { VNode } from "vue";
 import type {
   SimpleTableVueProps,
   VueColumnDef,
   VueColumnEditorConfig,
+  VueDefaultRowData,
   VueIconsConfig,
 } from "./types";
 import type { MountRegistry } from "./MountRegistry";
@@ -44,8 +45,8 @@ function transformColumnEditorConfig(
   };
 }
 
-function transformHeader(
-  header: ColumnDef | VueColumnDef,
+function transformHeader<TData extends VueDefaultRowData>(
+  header: VueColumnDef<TData, any>,
   registry: MountRegistry,
 ): ColumnDef {
   const { cellRenderer, headerRenderer, children, nestedTable, ...rest } = header;
@@ -54,29 +55,23 @@ function transformHeader(
   const transformed: ColumnDef = { ...(rest as any) };
 
   if (cellRenderer) {
-    if (typeof cellRenderer === "object") {
-      transformed.cellRenderer = wrapCachedVueRenderer(
-        registry,
-        accessor,
-        "cell",
-        cellRenderer,
-      ) as any;
-    } else {
-      transformed.cellRenderer = cellRenderer as any;
-    }
+    // Function and object Vue components both need wrapping for the vanilla
+    // HTMLElement contract (`h()`-style renderers return VNodes).
+    transformed.cellRenderer = wrapCachedVueRenderer(
+      registry,
+      accessor,
+      "cell",
+      cellRenderer,
+    ) as any;
   }
 
   if (headerRenderer) {
-    if (typeof headerRenderer === "object") {
-      transformed.headerRenderer = wrapCachedVueRenderer(
-        registry,
-        accessor,
-        "header",
-        headerRenderer,
-      ) as any;
-    } else {
-      transformed.headerRenderer = headerRenderer as any;
-    }
+    transformed.headerRenderer = wrapCachedVueRenderer(
+      registry,
+      accessor,
+      "header",
+      headerRenderer,
+    ) as any;
   }
 
   if (children) {
@@ -84,6 +79,8 @@ function transformHeader(
   }
 
   if (nestedTable) {
+    // Recursively convert the nested table config. Rows are provided at
+    // render time by the vanilla core, so we supply an empty placeholder.
     const nestedConfig = { ...nestedTable, rows: [] } as unknown as SimpleTableVueProps;
     transformed.nestedTable = buildVanillaConfig(nestedConfig, registry) as any;
   }
@@ -92,9 +89,9 @@ function transformHeader(
 }
 
 /** Resolve column definitions. */
-export function resolveVueColumns(
-  config: Pick<SimpleTableVueProps, "columns">,
-): ReadonlyArray<ColumnDef | VueColumnDef> {
+export function resolveVueColumns<TData extends VueDefaultRowData = VueDefaultRowData>(
+  config: Pick<SimpleTableVueProps<TData>, "columns">,
+): ReadonlyArray<VueColumnDef<TData, any>> {
   const headers = config.columns;
   if (!headers) {
     throw new Error("SimpleTable requires `columns`");
@@ -102,8 +99,8 @@ export function resolveVueColumns(
   return headers;
 }
 
-export function buildVanillaConfig(
-  config: SimpleTableVueProps,
+export function buildVanillaConfig<TData extends VueDefaultRowData = VueDefaultRowData>(
+  config: SimpleTableVueProps<TData>,
   registry: MountRegistry,
 ): SimpleTableConfig {
   const {
@@ -118,6 +115,10 @@ export function buildVanillaConfig(
     columnEditorConfig,
     icons,
     rowButtons,
+    onColumnOrderChange,
+    onColumnWidthChange,
+    onHeaderEdit,
+    onColumnSelect,
     enableColumnEditor,
     enableColumnEditorInitOpen,
     enablePagination,
@@ -132,9 +133,13 @@ export function buildVanillaConfig(
 
   registry.pruneRendererCaches(collectHeaderAccessors(columns));
 
+  // `rest` still carries TData-bound callbacks (getRowId, onCellEdit, …).
+  // Widen once here — the vanilla runtime is Row-shaped.
+  const shared = rest as SimpleTableConfig;
+
   const vanillaConfig: SimpleTableConfig = {
-    ...rest,
-    rows: rows as Row[],
+    ...shared,
+    rows: asRows(rows),
     columns: columns.map((header) => transformHeader(header, registry)),
     enableColumnEditor,
     enableColumnEditorInitOpen,
@@ -149,12 +154,25 @@ export function buildVanillaConfig(
     onRendererHostDiscard: registry.disposeHost,
   };
 
+  if (onColumnOrderChange) {
+    vanillaConfig.onColumnOrderChange = (headers) =>
+      onColumnOrderChange(headers as unknown as VueColumnDef<TData, any>[]);
+  }
+  if (onColumnWidthChange) {
+    vanillaConfig.onColumnWidthChange = (headers) =>
+      onColumnWidthChange(headers as unknown as VueColumnDef<TData, any>[]);
+  }
+  if (onHeaderEdit) {
+    vanillaConfig.onHeaderEdit = (header, newLabel) =>
+      onHeaderEdit(header as unknown as VueColumnDef<TData, any>, newLabel);
+  }
+  if (onColumnSelect) {
+    vanillaConfig.onColumnSelect = (header) =>
+      onColumnSelect(header as unknown as VueColumnDef<TData, any>);
+  }
+
   if (footerRenderer !== undefined) {
-    if (typeof footerRenderer === "object") {
-      vanillaConfig.footerRenderer = wrapVueRenderer(registry, footerRenderer) as any;
-    } else {
-      vanillaConfig.footerRenderer = footerRenderer as any;
-    }
+    vanillaConfig.footerRenderer = wrapVueRenderer(registry, footerRenderer) as any;
   }
 
   if (emptyStateRenderer !== undefined) {

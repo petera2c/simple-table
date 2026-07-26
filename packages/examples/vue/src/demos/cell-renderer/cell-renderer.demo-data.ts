@@ -1,7 +1,6 @@
 // Self-contained demo table setup for this example.
 import type { VueColumnDef } from "@simple-table/vue";
 
-
 export type CellRendererEmployee = {
   id: number;
   name: string;
@@ -29,7 +28,7 @@ export const cellRendererData: CellRendererEmployee[] = [
   { id: 12, name: "Atlas Johnson", website: "atlasjohnson.brand", status: "inactive", progress: 28, rating: 3.6, verified: false, tags: ["Brand Design", "Graphic Design"], teamMembers: [{ name: "Uma Patel", role: "Graphic Designer" }] },
 ];
 
-export const cellRendererHeaders: VueColumnDef[] = [
+export const cellRendererHeaders: VueColumnDef<CellRendererEmployee>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 180, type: "string" },
   { accessor: "teamMembers", label: "Team", width: 280, type: "string" },
@@ -48,4 +47,4 @@ export const cellRendererConfig = {
     selectableCells: true,
     customTheme: { rowHeight: 48 },
   },
-} as const;
+};

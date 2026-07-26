@@ -4,7 +4,7 @@
     :columns="nestedTablesConfig.headers"
     :rows="sampleData"
     :row-grouping="nestedTablesConfig.tableProps.rowGrouping"
-    :get-row-id="nestedTablesConfig.tableProps.getRowId"
+    :get-row-id="getRowId"
     :expand-all="nestedTablesConfig.tableProps.expandAll"
     :column-resizing="nestedTablesConfig.tableProps.columnResizing"
     :height="height"
@@ -14,11 +14,18 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
-import { nestedTablesConfig, generateNestedTablesData } from "./nested-tables.demo-data";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, GetRowIdParams } from "@simple-table/vue";
+import {
+  nestedTablesConfig,
+  generateNestedTablesData,
+  type NestedCompany,
+} from "./nested-tables.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), { height: "500px" });
 
 const sampleData = computed(() => generateNestedTablesData(25));
+
+const getRowId = ({ row }: GetRowIdParams<NestedCompany>) => row.id;
 </script>
