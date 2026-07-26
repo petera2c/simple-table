@@ -173,15 +173,8 @@ export interface ReactColumnDef<
   cellRenderer?: ReactCellRenderer<TData, TValue>;
   headerRenderer?: ReactHeaderRenderer<TData>;
   children?: ReadonlyArray<ReactColumnDef<TData, any>>;
-  /** Nested grid: React table props minus row data and inherited state renderers. */
-  nestedTable?: Omit<
-    SimpleTableReactProps<TData>,
-    | "rows"
-    | "loadingStateRenderer"
-    | "errorStateRenderer"
-    | "emptyStateRenderer"
-    | "tableEmptyStateRenderer"
-  >;
+  /** Nested grid; child columns may use a different row type than `TData`. */
+  nestedTable?: NestedTableReactConfig;
 }
 
 
@@ -241,6 +234,48 @@ export interface SimpleTableReactProps<
   /** Per-row action buttons; each entry returns JSX rendered into the row's selection column. */
   rowButtons?: ReactRowButton<TData>[];
 }
+
+// ─── Nested table config ─────────────────────────────────────────────────────
+/**
+ * TData-bound call signatures omitted at nest boundaries so
+ * `ReactColumnDef<Child>[]` assigns under a parent column without casts/`any`.
+ * Child columns stay fully checked at their own declaration site.
+ */
+type ReactColumnDefCallbacks =
+  | "cellRenderer"
+  | "headerRenderer"
+  | "children"
+  | "nestedTable"
+  | "comparator"
+  | "exportValueGetter"
+  | "valueFormatter"
+  | "valueGetter"
+  | "quickFilterGetter";
+
+/** Column shape accepted on nested grids — metadata only, no TData-bound callbacks. */
+export type NestedReactColumnDef = Omit<
+  ReactColumnDef<ReactDefaultRowData>,
+  ReactColumnDefCallbacks
+> & {
+  children?: ReadonlyArray<NestedReactColumnDef>;
+  nestedTable?: NestedTableReactConfig;
+};
+
+/**
+ * Nested grid props (no `rows` / inherited state renderers).
+ * Child row shape may differ from the parent column's `TData`.
+ */
+export type NestedTableReactConfig = Omit<
+  SimpleTableReactProps,
+  | "rows"
+  | "columns"
+  | "loadingStateRenderer"
+  | "errorStateRenderer"
+  | "emptyStateRenderer"
+  | "tableEmptyStateRenderer"
+> & {
+  columns?: ReadonlyArray<NestedReactColumnDef>;
+};
 
 // Re-export vanilla prop types that consumers still need directly
 export type {

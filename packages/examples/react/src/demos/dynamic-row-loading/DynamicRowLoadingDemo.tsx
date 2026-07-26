@@ -84,7 +84,7 @@ const DynamicRowLoadingDemo = ({
       height={height}
       onRowGroupExpand={handleRowExpand}
       rowGrouping={dynamicRowLoadingConfig.tableProps.rowGrouping}
-      getRowId={dynamicRowLoadingConfig.tableProps.getRowId}
+      getRowId={({ row }) => row.id}
       rows={rows}
       selectableCells={dynamicRowLoadingConfig.tableProps.selectableCells}
       theme={theme}

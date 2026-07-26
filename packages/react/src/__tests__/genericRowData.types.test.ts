@@ -8,6 +8,7 @@ import { SimpleTable } from "../index";
 import type {
   TableAPI,
   ReactColumnDef,
+  NestedReactColumnDef,
   CellChangeProps,
   SimpleTableReactProps,
 } from "../index";
@@ -63,9 +64,62 @@ const loose: SimpleTableReactProps = {
 };
 void loose;
 
+// Nested grid: child columns typed as Division assign under a Company column
+// with no cast / helper (nestedTable.columns is open at the boundary).
+interface NestCompany {
+  id: string;
+  name: string;
+  divisions?: NestDivision[];
+}
+interface NestDivision {
+  id: string;
+  divisionName: string;
+}
+
+const divisionColumns: ReactColumnDef<NestDivision>[] = [
+  {
+    accessor: "divisionName",
+    label: "Division",
+    width: 120,
+    cellRenderer: ({ row }) => {
+      const name: string = row.divisionName;
+      // @ts-expect-error NestDivision has no company-only fields
+      const missing: string = row.companyName;
+      void missing;
+      return name;
+    },
+  },
+];
+
+const companyColumns: ReactColumnDef<NestCompany>[] = [
+  {
+    accessor: "name",
+    label: "Company",
+    width: 160,
+    expandable: true,
+    nestedTable: {
+      columns: divisionColumns,
+      expandAll: false,
+    },
+  },
+];
+void companyColumns;
+
+// Non-column objects are rejected at the nest boundary.
+const notAColumn = { foo: 1 };
+const badNestedColumns: NestedReactColumnDef[] = [
+  // @ts-expect-error nest columns require column metadata (accessor, label, …)
+  notAColumn,
+];
+void badNestedColumns;
+
 describe("generic row data types", () => {
   it("compiles typed SimpleTable props and ref", () => {
     expect(columns[0]?.accessor).toBe("fullName");
     expect(ref.current).toBeNull();
+  });
+
+  it("accepts differently typed nested columns without casts", () => {
+    expect(companyColumns[0]?.nestedTable?.columns?.[0]?.accessor).toBe("divisionName");
   });
 });

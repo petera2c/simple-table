@@ -79,7 +79,7 @@ export const nestedTablesHeaders: ReactColumnDef<NestedCompany>[] = [
     width: 200,
     expandable: true,
     nestedTable: {
-      columns: nestedTablesDivisionHeaders as unknown as ReactColumnDef<NestedCompany>[],
+      columns: nestedTablesDivisionHeaders,
     },
   },
   { accessor: "stockSymbol", label: "Symbol", width: 100 },
@@ -91,8 +91,7 @@ export const nestedTablesHeaders: ReactColumnDef<NestedCompany>[] = [
 export const nestedTablesConfig = {
   headers: nestedTablesHeaders,
   tableProps: {
-    rowGrouping: ["divisions"] as string[],
-    getRowId: ({ row }: { row: NestedCompany }) => row.id,
+    rowGrouping: ["divisions"],
     expandAll: false,
     columnResizing: true,
     autoExpandColumns: true,

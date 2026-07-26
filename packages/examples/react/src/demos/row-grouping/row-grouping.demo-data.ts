@@ -211,9 +211,8 @@ export const rowGroupingConfig = {
   headers: rowGroupingHeaders,
   rows: rowGroupingData,
   tableProps: {
-    rowGrouping: ["divisions", "departments"] as string[],
+    rowGrouping: ["divisions", "departments"],
     enableStickyParents: true,
-    getRowId: ({ row }: { row: OrgUnit }) => row.id,
     columnResizing: true,
   },
 };

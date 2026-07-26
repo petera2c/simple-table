@@ -13,8 +13,8 @@ import "@simple-table/angular/styles.css";
       [columns]="headers"
       [height]="height"
       [theme]="theme"
-      [initialSortColumn]="initialSortColumn"
-      [initialSortDirection]="initialSortDirection"
+      initialSortColumn="age"
+      initialSortDirection="desc"
     ></simple-table>
   `,
 })
@@ -24,6 +24,4 @@ export class ColumnSortingDemoComponent {
 
   readonly rows: Row[] = columnSortingConfig.rows;
   readonly headers: AngularColumnDef[] = columnSortingConfig.headers;
-  readonly initialSortColumn = columnSortingConfig.tableProps.initialSortColumn;
-  readonly initialSortDirection = columnSortingConfig.tableProps.initialSortDirection;
 }

@@ -7,6 +7,8 @@ export type {
   SimpleTableReactProps,
   TableInstance,
   ReactColumnDef,
+  NestedReactColumnDef,
+  NestedTableReactConfig,
   ReactColumnEditorConfig,
   ReactIconsConfig,
   ReactIconElement,

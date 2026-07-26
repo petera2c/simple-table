@@ -57,7 +57,7 @@ const RowGroupingDemo = ({
         rows={rowGroupingConfig.rows}
         rowGrouping={rowGroupingConfig.tableProps.rowGrouping}
         enableStickyParents={rowGroupingConfig.tableProps.enableStickyParents}
-        getRowId={rowGroupingConfig.tableProps.getRowId}
+        getRowId={({ row }) => row.id}
         columnResizing
         height={height}
         theme={theme}

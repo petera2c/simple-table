@@ -4,7 +4,6 @@ import type { Theme } from "@simple-table/react";
 import {
   nestedTablesConfig,
   generateNestedTablesData,
-  type NestedCompany
 } from "./nested-tables.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -17,7 +16,7 @@ const NestedTablesDemo = ({ height = "500px", theme }: { height?: string | numbe
       columns={nestedTablesConfig.headers}
       rows={sampleData}
       rowGrouping={nestedTablesConfig.tableProps.rowGrouping}
-      getRowId={nestedTablesConfig.tableProps.getRowId}
+      getRowId={({ row }) => row.id}
       expandAll={nestedTablesConfig.tableProps.expandAll}
       columnResizing={nestedTablesConfig.tableProps.columnResizing}
       height={height}

@@ -147,12 +147,5 @@ export const columnSortingHeaders: ReactColumnDef<FacultyMember>[] = [
 export const columnSortingConfig = {
   headers: columnSortingHeaders,
   rows: COLUMN_SORTING_DATA,
-  tableProps: {
-    initialSortColumn: "age",
-    initialSortDirection: "desc",
-  } satisfies {
-    initialSortColumn: string;
-    initialSortDirection: "asc" | "desc";
-  },
 };
 

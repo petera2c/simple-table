@@ -47,7 +47,6 @@ export const customThemeConfig = {
   headers: customThemeHeaders,
   rows: customThemeData,
   tableProps: {
-    theme: "custom",
     customTheme: {
       rowHeight: 40,
       headerHeight: 44,

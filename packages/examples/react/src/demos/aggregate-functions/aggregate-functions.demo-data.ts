@@ -200,7 +200,7 @@ export const aggregateFunctionsConfig = {
   headers: aggregateFunctionsHeaders,
   rows: aggregateFunctionsData,
   tableProps: {
-    rowGrouping: ["categories", "creators"] as string[],
+    rowGrouping: ["categories", "creators"],
     columnResizing: true,
   },
 };
