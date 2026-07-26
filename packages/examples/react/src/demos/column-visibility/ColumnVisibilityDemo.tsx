@@ -2,7 +2,7 @@ import {
   SimpleTable,
   type ColumnEditorRowRendererProps,
   type ColumnVisibilityState,
-  type Theme,
+  type Theme
 } from "@simple-table/react";
 import { useMemo, useCallback } from "react";
 import {
@@ -10,13 +10,13 @@ import {
   getColumnVisibilityDemoHeaders,
   loadColumnVisibilityDemoSaved,
   saveColumnVisibilityDemoState,
-  type VisibilityEmployee,
+  type VisibilityEmployee
 } from "./column-visibility.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnVisibilityDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -31,7 +31,7 @@ const ColumnVisibilityDemo = ({
   }, []);
 
   return (
-    <SimpleTable<VisibilityEmployee>
+    <SimpleTable
       columns={headers}
       rows={columnVisibilityConfig.rows}
       enableColumnEditor
@@ -50,7 +50,7 @@ const ColumnVisibilityDemo = ({
               alignItems: "center",
               justifyContent: "space-between",
               gap: "8px",
-              paddingRight: "8px",
+              paddingRight: "8px"
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -60,7 +60,7 @@ const ColumnVisibilityDemo = ({
             </div>
             <div>{components?.dragIcon}</div>
           </div>
-        ),
+        )
       }}
     />
   );
