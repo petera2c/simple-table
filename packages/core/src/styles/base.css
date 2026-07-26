@@ -188,6 +188,9 @@ input {
   display: flex;
   flex-direction: column;
   width: 100%;
+  /* Backplate for rubber-band / momentum overscroll. Body already paints this
+     color, but overscroll can reveal transparent ancestors behind it. */
+  background-color: var(--st-even-row-background-color);
 }
 
 /* Header */

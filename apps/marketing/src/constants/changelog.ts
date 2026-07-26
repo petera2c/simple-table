@@ -11,6 +11,21 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_0_7: ChangelogEntry = {
+  version: "4.0.7",
+  date: "2026-07-25",
+  title: "Opaque table body during overscroll",
+  description:
+    "Momentum / rubber-band scroll no longer flashes the page behind the table at the top or bottom edge.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "`.st-content` now uses the even-row background color as a backplate, so overscroll gaps stay opaque instead of revealing content behind the table.",
+    },
+  ],
+};
+
 export const v4_0_6: ChangelogEntry = {
   version: "4.0.6",
   date: "2026-07-25",
@@ -2365,6 +2380,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_0_7,
   v4_0_6,
   v4_0_5,
   v4_0_3,
