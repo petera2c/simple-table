@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { themesConfig, AVAILABLE_THEMES } from "./themes.demo-data";
+import { themesConfig, AVAILABLE_THEMES, type ThemeDemoStaff } from "./themes.demo-data";
 import "@simple-table/react/styles.css";
 
 const ThemesDemo = ({
@@ -34,11 +34,12 @@ const ThemesDemo = ({
           </button>
         ))}
       </div>
-      <SimpleTable
+      <SimpleTable<ThemeDemoStaff>
         columns={themesConfig.headers}
         rows={themesConfig.rows}
         height={height}
         theme={selectedTheme}
+        getRowId={({ row }) => row.id}
       />
     </div>
   );
