@@ -4,14 +4,14 @@ import type {
   Theme,
   ReactColumnDef,
   CellRendererProps,
-  RowSelectionChangeProps,
+  RowSelectionChangeProps
 } from "@simple-table/react";
 import { rowSelectionConfig, rowSelectionData, type LibraryBook } from "./row-selection.demo-data";
 import "@simple-table/react/styles.css";
 
 const RowSelectionDemo = ({
   height = "348px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -29,7 +29,7 @@ const RowSelectionDemo = ({
               const color =
                 s === "Available" ? "#16a34a" : s === "Checked Out" ? "#ea580c" : "#dc2626";
               return <span style={{ color, fontWeight: "bold" }}>{s}</span>;
-            },
+            }
           };
         }
         return h;
@@ -49,7 +49,7 @@ const RowSelectionDemo = ({
           padding: 12,
           backgroundColor: "#f0f9ff",
           borderRadius: 8,
-          border: "1px solid #bae6fd",
+          border: "1px solid #bae6fd"
         }}
       >
         <div style={{ fontWeight: "bold", marginBottom: 4, color: "#0c4a6e" }}>
@@ -64,7 +64,7 @@ const RowSelectionDemo = ({
         </div>
       </div>
 
-      <SimpleTable<LibraryBook>
+      <SimpleTable
         columns={headers}
         rows={rowSelectionConfig.rows}
         enableRowSelection
