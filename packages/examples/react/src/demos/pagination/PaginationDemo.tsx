@@ -4,13 +4,13 @@ import {
   paginationConfig,
   paginationData,
   PAGINATION_ROWS_PER_PAGE,
-  type HotelStaff,
+  type HotelStaff
 } from "./pagination.demo-data";
 import "@simple-table/react/styles.css";
 
 const PaginationDemo = ({
   height,
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -37,7 +37,7 @@ const PaginationDemo = ({
   };
 
   return (
-    <SimpleTable<HotelStaff>
+    <SimpleTable
       columns={paginationConfig.headers}
       height={height ?? "auto"}
       isLoading={isLoading}
