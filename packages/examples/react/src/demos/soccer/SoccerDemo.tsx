@@ -1,11 +1,11 @@
 import { SimpleTable } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
-import { soccerConfig, type SoccerPlayer } from "./soccer.demo-data";
+import { soccerConfig } from "./soccer.demo-data";
 import "@simple-table/react/styles.css";
 
 const SoccerDemo = ({ height = "70dvh", theme }: { height?: string | number; theme?: Theme }) => {
   return (
-    <SimpleTable<SoccerPlayer>
+    <SimpleTable
       columns={soccerConfig.headers}
       rows={soccerConfig.rows}
       height={height}
