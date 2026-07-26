@@ -14,7 +14,7 @@ const AggregateFunctionsDemo = ({
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable<AggregateFunctionsRow>
+    <SimpleTable
       columns={aggregateFunctionsConfig.headers}
       getRowId={({ row }) => row.id}
       rows={aggregateFunctionsConfig.rows}
