@@ -1,5 +1,5 @@
 import {SimpleTable} from "@simple-table/react";import type { Theme, ReactIconsConfig } from "@simple-table/react";
-import { customIconsConfig, type SoftwareRelease } from "./custom-icons.demo-data";
+import { customIconsConfig } from "./custom-icons.demo-data";
 import "@simple-table/react/styles.css";
 
 const customIcons: ReactIconsConfig = {
@@ -32,18 +32,18 @@ const customIcons: ReactIconsConfig = {
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M15 19l-7-7 7-7" />
     </svg>
-  ),
+  )
 };
 
 const CustomIconsDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable<SoftwareRelease>
+    <SimpleTable
       columns={customIconsConfig.headers}
       rows={customIconsConfig.rows}
       icons={customIcons}
