@@ -1,6 +1,20 @@
-import type { PivotConfig, ReactColumnDef, Row } from "@simple-table/react";
+import type { PivotConfig, ReactColumnDef } from "@simple-table/react";
 
-export const pivotHeaders: ReactColumnDef[] = [
+export interface PivotFact {
+  id: string;
+  region: string;
+  country: string;
+  category: string;
+  product: string;
+  channel: string;
+  year: number;
+  quarter: string;
+  sales: number;
+  units: number;
+  cost: number;
+}
+
+export const pivotHeaders: ReactColumnDef<PivotFact>[] = [
   { accessor: "region", label: "Region", width: 110, type: "string" },
   { accessor: "country", label: "Country", width: 100, type: "string" },
   { accessor: "category", label: "Category", width: 110, type: "string" },
@@ -52,8 +66,8 @@ const YEARS = [2024, 2025] as const;
 const QUARTERS = ["Q1", "Q2", "Q3", "Q4"] as const;
 
 /** Sparse multi-dimension fact cube (~150–250 rows). */
-export function generatePivotRows(): Row[] {
-  const rows: Row[] = [];
+export function generatePivotRows(): PivotFact[] {
+  const rows: PivotFact[] = [];
   let id = 1;
   for (const region of REGIONS) {
     for (const country of COUNTRIES[region]) {
@@ -92,7 +106,7 @@ export function generatePivotRows(): Row[] {
   return rows;
 }
 
-export const pivotRows: Row[] = generatePivotRows();
+export const pivotRows: PivotFact[] = generatePivotRows();
 
 export type PivotPreset = {
   id: string;
