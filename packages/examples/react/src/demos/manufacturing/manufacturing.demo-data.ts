@@ -83,7 +83,7 @@ export function generateManufacturingData(count: number = 8): ManufacturingRow[]
 
 export const manufacturingData = generateManufacturingData(8);
 
-export const manufacturingHeaders: ReactColumnDef[] = [
+export const manufacturingHeaders: ReactColumnDef<ManufacturingRow>[] = [
   { accessor: "productLine", label: "Production Line", width: 180, expandable: true, sortable: true, editable: false, align: "left", type: "string" },
   { accessor: "station", label: "Workstation", width: 150, sortable: true, editable: false, align: "left", type: "string" },
   { accessor: "machineType", label: "Machine Type", width: 150, sortable: true, editable: false, align: "left", type: "string" },

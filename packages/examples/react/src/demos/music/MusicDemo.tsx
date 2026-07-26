@@ -6,7 +6,6 @@ import type {
   TableAPI,
   ReactColumnDef,
   CellRendererProps,
-  Row,
 } from "@simple-table/react";
 import { musicData, getMusicThemeColors } from "./music.demo-data";
 import type { MusicArtist } from "./music.demo-data";
@@ -90,7 +89,7 @@ type StatOptions = { label?: string };
 /** A formatted "total + growth" metric: reads `<key>Formatted`, `<key>ChangeFormatted`, `<key>ChangePercent`. */
 const makeStatCell =
   (key: string, { label = "Total" }: StatOptions = {}) =>
-  ({ row, theme }: CellRendererProps): ReactNode => {
+  ({ row, theme }: CellRendererProps<MusicArtist>): ReactNode => {
     const value = row[`${key}Formatted`] as string | undefined;
     if (value === undefined || value === null) {
       return <StatStack label={label} value="—" theme={theme} />;
@@ -111,7 +110,7 @@ const makeStatCell =
 /** A single percentage value (e.g. engagement rate), optionally with a change badge. */
 const makeRateCell =
   (key: string, { label = "Rate", changeKey }: StatOptions & { changeKey?: string } = {}) =>
-  ({ row, theme }: CellRendererProps): ReactNode => {
+  ({ row, theme }: CellRendererProps<MusicArtist>): ReactNode => {
     const value = row[key] as number | undefined;
     if (value === undefined || value === null) {
       return <StatStack label={label} value="—" theme={theme} />;
@@ -131,7 +130,7 @@ const makeRateCell =
 /** A "x" ratio value such as reach / followers. */
 const makeRatioCell =
   (key: string, suffix = "x") =>
-  ({ row, theme }: CellRendererProps): ReactNode => {
+  ({ row, theme }: CellRendererProps<MusicArtist>): ReactNode => {
     const colors = getMusicThemeColors(theme);
     const value = row[key] as number | undefined;
     return (
@@ -150,10 +149,9 @@ const colorFromName = (str: string) => {
   return `hsl(${hash % 360}, 62%, 52%)`;
 };
 
-const IdentityCell = ({ row, theme }: CellRendererProps): ReactNode => {
+const IdentityCell = ({ row, theme }: CellRendererProps<MusicArtist>): ReactNode => {
   const colors = getMusicThemeColors(theme);
-  const d = row as unknown as MusicArtist;
-  const name = d.artistName ?? "";
+  const name = row.artistName ?? "";
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
       <div
@@ -188,24 +186,23 @@ const IdentityCell = ({ row, theme }: CellRendererProps): ReactNode => {
           {name}
         </span>
         <span style={{ fontSize: "12px", color: colors.muted }}>
-          {d.artistType} · {d.pronouns}
+          {row.artistType} · {row.pronouns}
         </span>
         <span
           style={{ fontSize: "12px", color: colors.muted, whiteSpace: "nowrap" }}
-          title={d.recordLabel}
+          title={row.recordLabel}
         >
-          {d.recordLabel}
+          {row.recordLabel}
         </span>
       </div>
     </div>
   );
 };
 
-const RankCell = ({ row, theme }: CellRendererProps): ReactNode => {
+const RankCell = ({ row, theme }: CellRendererProps<MusicArtist>): ReactNode => {
   const colors = getMusicThemeColors(theme);
-  const d = row as unknown as MusicArtist;
-  const rank = d.rank;
-  const change = d.rankChange ?? 0;
+  const rank = row.rank;
+  const change = row.rankChange ?? 0;
   const isPositive = change >= 0;
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2px" }}>
@@ -219,27 +216,25 @@ const RankCell = ({ row, theme }: CellRendererProps): ReactNode => {
   );
 };
 
-const RegionCell = ({ row, theme }: CellRendererProps): ReactNode => {
+const RegionCell = ({ row, theme }: CellRendererProps<MusicArtist>): ReactNode => {
   const colors = getMusicThemeColors(theme);
-  const d = row as unknown as MusicArtist;
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
       <span style={{ display: "flex", alignItems: "center", gap: "6px", color: colors.text }}>
-        <span style={{ fontSize: "15px" }}>{d.countryFlag}</span>
-        {d.country}
+        <span style={{ fontSize: "15px" }}>{row.countryFlag}</span>
+        {row.country}
       </span>
-      <span style={{ fontSize: "12px", color: colors.muted }}>{d.continent}</span>
+      <span style={{ fontSize: "12px", color: colors.muted }}>{row.continent}</span>
     </div>
   );
 };
 
-const ScoreCell = ({ row, theme }: CellRendererProps): ReactNode => {
+const ScoreCell = ({ row, theme }: CellRendererProps<MusicArtist>): ReactNode => {
   const colors = getMusicThemeColors(theme);
-  const d = row as unknown as MusicArtist;
-  const score = d.score;
-  const scoreChange = d.scoreChange ?? 0;
-  const rank = d.rank;
-  const rankChange = d.rankChange ?? 0;
+  const score = row.score;
+  const scoreChange = row.scoreChange ?? 0;
+  const rank = row.rank;
+  const rankChange = row.rankChange ?? 0;
 
   const MetricRow = ({
     label,
@@ -278,7 +273,7 @@ const ScoreCell = ({ row, theme }: CellRendererProps): ReactNode => {
 
 const makeDateCell =
   (accessor: string) =>
-  ({ row, theme }: CellRendererProps): ReactNode => {
+  ({ row, theme }: CellRendererProps<MusicArtist>): ReactNode => {
     const colors = getMusicThemeColors(theme);
     return <span style={{ color: colors.text }}>{(row[accessor] as string) ?? "—"}</span>;
   };
@@ -312,10 +307,9 @@ const SegmentedBar = ({ segments }: { segments: { color: string; value: number }
   </div>
 );
 
-const AudienceAgeCell = ({ row, theme }: CellRendererProps): ReactNode => {
+const AudienceAgeCell = ({ row, theme }: CellRendererProps<MusicArtist>): ReactNode => {
   const colors = getMusicThemeColors(theme);
-  const d = row as unknown as MusicArtist;
-  const age = d.audienceAge ?? {};
+  const age = row.audienceAge ?? {};
   const youngShare = (age["18-24"] ?? 0) + (age["25-34"] ?? 0) + (age["13-17"] ?? 0);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "5px", width: "100%" }}>
@@ -329,10 +323,9 @@ const AudienceAgeCell = ({ row, theme }: CellRendererProps): ReactNode => {
   );
 };
 
-const AudienceGenderCell = ({ row, theme }: CellRendererProps): ReactNode => {
+const AudienceGenderCell = ({ row, theme }: CellRendererProps<MusicArtist>): ReactNode => {
   const colors = getMusicThemeColors(theme);
-  const d = row as unknown as MusicArtist;
-  const gender = d.audienceGender ?? { f: 0, m: 0 };
+  const gender = row.audienceGender ?? { f: 0, m: 0 };
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "5px", width: "100%" }}>
       <div style={{ display: "flex", gap: "12px", fontSize: "12px", color: colors.muted }}>
@@ -353,10 +346,9 @@ const AudienceGenderCell = ({ row, theme }: CellRendererProps): ReactNode => {
   );
 };
 
-const PopularityCell = ({ row, theme }: CellRendererProps): ReactNode => {
-  const d = row as unknown as MusicArtist;
-  const value = d.spotifyPopularity;
-  const change = d.spotifyPopularityChangePercent;
+const PopularityCell = ({ row, theme }: CellRendererProps<MusicArtist>): ReactNode => {
+  const value = row.spotifyPopularity;
+  const change = row.spotifyPopularityChangePercent;
   return (
     <StatStack
       label="Score"
@@ -375,7 +367,7 @@ const stat = (
   accessor: string,
   label: string,
   options: StatOptions & { width?: number } = {},
-): ReactColumnDef => ({
+): ReactColumnDef<MusicArtist> => ({
   accessor,
   label,
   width: options.width ?? 200,
@@ -386,7 +378,7 @@ const stat = (
   cellRenderer: makeStatCell(accessor, { label: options.label }),
 });
 
-function getMusicHeaders(): ReactColumnDef[] {
+function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
   return [
     {
       accessor: "rank",
@@ -408,7 +400,7 @@ function getMusicHeaders(): ReactColumnDef[] {
       align: "left",
       type: "string",
       pinned: "left",
-      valueGetter: ({ row }) => (row as unknown as MusicArtist).artistName,
+      valueGetter: ({ row }) => row.artistName,
       cellRenderer: IdentityCell,
     },
     {
@@ -419,7 +411,7 @@ function getMusicHeaders(): ReactColumnDef[] {
       editable: false,
       align: "left",
       type: "string",
-      valueGetter: ({ row }) => (row as unknown as MusicArtist).country,
+      valueGetter: ({ row }) => row.country,
       cellRenderer: RegionCell,
     },
     {
@@ -603,17 +595,18 @@ const MusicDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const tableRef = useRef<TableAPI>(null);
+  const tableRef = useRef<TableAPI<MusicArtist>>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   return (
     <div ref={wrapperRef} className="music-theme-container" style={{ fontFamily: "Inter" }}>
-      <SimpleTable
+      <SimpleTable<MusicArtist>
         columnReordering
         columnResizing
         customTheme={{ headerHeight: 40, rowHeight: 90 }}
         columns={getMusicHeaders()}
+        getRowId={({ row }) => row.id}
         ref={tableRef}
-        rows={musicData as Row[]}
+        rows={musicData}
         selectableCells
         theme={theme}
         // Window / external scroll mode: no height/maxHeight. The nearest

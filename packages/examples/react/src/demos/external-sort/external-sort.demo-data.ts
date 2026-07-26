@@ -1,8 +1,16 @@
 // Self-contained demo table setup for this example.
 import type { ReactColumnDef } from "@simple-table/react";
 
+export interface SortableEmployee {
+  id: number;
+  name: string;
+  age: number;
+  email: string;
+  salary: number;
+  department: string;
+}
 
-export const externalSortData = [
+export const externalSortData: SortableEmployee[] = [
   { id: 1, name: "Dr. Elena Vasquez", age: 42, email: "elena.vasquez@techcorp.com", salary: 145000, department: "AI Research" },
   { id: 2, name: "Kai Tanaka", age: 29, email: "k.tanaka@techcorp.com", salary: 95000, department: "UX Design" },
   { id: 3, name: "Amara Okafor", age: 35, email: "amara.okafor@techcorp.com", salary: 125000, department: "DevOps" },
@@ -17,7 +25,7 @@ export const externalSortData = [
   { id: 12, name: "Dmitri Volkov", age: 39, email: "dmitri.volkov@techcorp.com", salary: 135000, department: "DevOps" },
 ];
 
-export const externalSortHeaders: ReactColumnDef[] = [
+export const externalSortHeaders: ReactColumnDef<SortableEmployee>[] = [
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 120, sortable: true, type: "number" },
   { accessor: "department", label: "Department", width: 150, sortable: true, type: "string" },

@@ -1,6 +1,7 @@
 import type ColumnDef from "./ColumnDef";
 import { Accessor } from "./ColumnDef";
 import Row from "./Row";
+import type { RowData } from "./Row";
 import {
   VanillaEmptyStateRenderer,
   VanillaErrorStateRenderer,
@@ -32,7 +33,7 @@ import type { PivotConfig } from "./PivotTypes";
  * Canonical runtime config after {@link normalizeConfig}.
  * Preferred public prop names only (no legacy aliases).
  */
-export interface SimpleTableConfig {
+export interface SimpleTableConfig<TData extends RowData = Row> {
   animations?: AnimationsConfig;
   /**
    * Expand-only fill: when the columns' natural widths (declared px, or
@@ -42,22 +43,22 @@ export interface SimpleTableConfig {
    * fit, the table scrolls horizontally instead.
    */
   autoExpandColumns?: boolean;
-  canExpandRowGroup?: (row: Row) => boolean;
+  canExpandRowGroup?: (row: TData) => boolean;
   cellUpdateFlash?: boolean;
   className?: string;
   columnBorders?: boolean;
   columnEditorConfig?: ColumnEditorConfig;
   columnReordering?: boolean;
   columnResizing?: boolean;
-  /** Column definitions. */
-  columns: ColumnDef[];
+  /** Column definitions. Mixed per-column TValue uses `any` on the column union. */
+  columns: ColumnDef<TData, any>[];
   copyHeadersToClipboard?: boolean;
   customTheme?: CustomThemeProps;
   /** Show the column editor / visibility UI. */
   enableColumnEditor?: boolean;
   /** Open the column editor when the table loads. */
   enableColumnEditorInitOpen?: boolean;
-  emptyStateRenderer?: VanillaEmptyStateRenderer;
+  emptyStateRenderer?: VanillaEmptyStateRenderer<TData>;
   enableHeaderEditing?: boolean;
   /** Enable client-side pagination. */
   enablePagination?: boolean;
@@ -71,7 +72,7 @@ export interface SimpleTableConfig {
   enableStickyParents?: boolean;
   /** @see SimpleTableProps.enableVirtualization */
   enableVirtualization?: boolean;
-  errorStateRenderer?: VanillaErrorStateRenderer;
+  errorStateRenderer?: VanillaErrorStateRenderer<TData>;
   expandAll?: boolean;
   externalFilterHandling?: boolean;
   externalSortHandling?: boolean;
@@ -95,28 +96,28 @@ export interface SimpleTableConfig {
   initialSortColumn?: string;
   initialSortDirection?: SortDirection;
   isLoading?: boolean;
-  loadingStateRenderer?: VanillaLoadingStateRenderer;
+  loadingStateRenderer?: VanillaLoadingStateRenderer<TData>;
   maxHeight?: string | number;
   /** Alternate column background. */
   oddColumnBackground?: boolean;
   /** Alternate odd/even row backgrounds. */
   oddEvenRowBackground?: boolean;
-  onCellClick?: (props: CellClickProps) => void;
-  onCellEdit?: (props: CellChangeProps) => void;
-  onColumnOrderChange?: (newHeaders: ColumnDef[]) => void;
-  onColumnSelect?: (header: ColumnDef) => void;
+  onCellClick?: (props: CellClickProps<TData>) => void;
+  onCellEdit?: (props: CellChangeProps<TData>) => void;
+  onColumnOrderChange?: (newHeaders: ColumnDef<TData, any>[]) => void;
+  onColumnSelect?: (header: ColumnDef<TData, any>) => void;
   onColumnVisibilityChange?: (visibilityState: ColumnVisibilityState) => void;
-  onColumnWidthChange?: (headers: ColumnDef[]) => void;
+  onColumnWidthChange?: (headers: ColumnDef<TData, any>[]) => void;
   onFilterChange?: (filters: TableFilterState) => void;
   /** Called once when the table is ready. */
   onTableReady?: () => void;
-  onHeaderEdit?: (header: ColumnDef, newLabel: string) => void;
+  onHeaderEdit?: (header: ColumnDef<TData, any>, newLabel: string) => void;
   infiniteScrollThreshold?: number;
   onLoadMore?: () => void;
   onNextPage?: OnNextPage;
   onPageChange?: (page: number) => void | Promise<void>;
-  onRowGroupExpand?: (props: OnRowGroupExpandProps) => void | Promise<void>;
-  onRowSelectionChange?: (props: RowSelectionChangeProps) => void;
+  onRowGroupExpand?: (props: OnRowGroupExpandProps<TData>) => void | Promise<void>;
+  onRowSelectionChange?: (props: RowSelectionChangeProps<TData>) => void;
   /**
    * Called by the renderer immediately BEFORE it permanently discards a host
    * element that may contain async-framework renderer output (e.g. React
@@ -133,10 +134,15 @@ export interface SimpleTableConfig {
   /** @see SimpleTableProps.onPivotChange */
   onPivotChange?: (pivot: PivotConfig | null) => void;
   quickFilter?: QuickFilterConfig;
-  rowButtons?: RowButton[];
+  rowButtons?: RowButton<TData>[];
+  /**
+   * Property names that define the row grouping hierarchy.
+   * Kept as plain accessors (string-friendly) so dynamic / heterogeneous nesting
+   * keys and pivot-injected keys remain valid.
+   */
   rowGrouping?: Accessor[];
-  getRowId?: GetRowId;
-  rows: Row[];
+  getRowId?: GetRowId<TData>;
+  rows: TData[];
   rowsPerPage?: number;
   scrollParent?: HTMLElement | "window" | (() => HTMLElement | null);
   selectableCells?: boolean;

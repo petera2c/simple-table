@@ -1,5 +1,6 @@
 import { Accessor } from "./ColumnDef";
 import Row from "./Row";
+import type { RowData } from "./Row";
 
 export type QuickFilterMode = "simple" | "smart";
 
@@ -19,12 +20,14 @@ export interface QuickFilterConfig {
   onChange?: (text: string) => void; // Called when filter changes
 }
 
-export interface QuickFilterGetterProps {
-  row: Row;
-  accessor: Accessor;
+export interface QuickFilterGetterProps<TData extends RowData = Row> {
+  row: TData;
+  accessor: Accessor<TData>;
 }
 
-export type QuickFilterGetter = (props: QuickFilterGetterProps) => string;
+export type QuickFilterGetter<TData extends RowData = Row> = (
+  props: QuickFilterGetterProps<TData>
+) => string;
 
 // Parsed smart filter tokens
 export interface SmartFilterToken {

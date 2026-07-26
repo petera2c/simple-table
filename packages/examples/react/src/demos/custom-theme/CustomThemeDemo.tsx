@@ -1,5 +1,5 @@
 import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { customThemeConfig } from "./custom-theme.demo-data";
+import { customThemeConfig, type ThemeContact } from "./custom-theme.demo-data";
 import "@simple-table/react/styles.css";
 import "./custom-theme.css";
 
@@ -11,7 +11,7 @@ const CustomThemeDemo = ({
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable
+    <SimpleTable<ThemeContact>
       columns={customThemeConfig.headers}
       rows={customThemeConfig.rows}
       theme={theme ?? "custom"}
@@ -19,6 +19,7 @@ const CustomThemeDemo = ({
       columnResizing
       selectableCells
       height={height}
+      getRowId={({ row }) => row.id}
     />
   );
 };

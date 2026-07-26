@@ -5,4 +5,11 @@ import CellValue from "./CellValue";
 // Supports nested objects for nested accessor paths (e.g., "stats.points")
 type Row = Record<string, CellValue | Row[] | Record<string, any>>;
 
+/**
+ * Constraint for consumer row shapes on generic table APIs.
+ * Defaults on those APIs remain {@link Row}; use a domain interface as `TData`
+ * (e.g. `ColumnDef<HREmployee>`) without requiring an index signature.
+ */
+export type RowData = unknown;
+
 export default Row;

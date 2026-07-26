@@ -6,8 +6,7 @@ import type {
   CellRendererProps,
   RowSelectionChangeProps,
 } from "@simple-table/react";
-import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
-import type { LibraryBook } from "./row-selection.demo-data";
+import { rowSelectionConfig, rowSelectionData, type LibraryBook } from "./row-selection.demo-data";
 import "@simple-table/react/styles.css";
 
 const RowSelectionDemo = ({
@@ -19,13 +18,13 @@ const RowSelectionDemo = ({
 }) => {
   const [selectedBooks, setSelectedBooks] = useState<LibraryBook[]>([]);
 
-  const headers: ReactColumnDef[] = useMemo(
+  const headers: ReactColumnDef<LibraryBook>[] = useMemo(
     () =>
-      rowSelectionConfig.headers.map((h) => {
+      rowSelectionConfig.headers.map((h): ReactColumnDef<LibraryBook> => {
         if (h.accessor === "status") {
           return {
             ...h,
-            cellRenderer: ({ row }: CellRendererProps) => {
+            cellRenderer: ({ row }: CellRendererProps<LibraryBook>) => {
               const s = String(row.status);
               const color =
                 s === "Available" ? "#16a34a" : s === "Checked Out" ? "#ea580c" : "#dc2626";
@@ -38,7 +37,7 @@ const RowSelectionDemo = ({
     [],
   );
 
-  const handleRowSelectionChange = (props: RowSelectionChangeProps) => {
+  const handleRowSelectionChange = (props: RowSelectionChangeProps<LibraryBook>) => {
     const selected = rowSelectionData.filter((book) => props.selectedRows.has(String(book.id)));
     setSelectedBooks(selected);
   };
@@ -65,7 +64,7 @@ const RowSelectionDemo = ({
         </div>
       </div>
 
-      <SimpleTable
+      <SimpleTable<LibraryBook>
         columns={headers}
         rows={rowSelectionConfig.rows}
         enableRowSelection
@@ -75,6 +74,7 @@ const RowSelectionDemo = ({
         onRowSelectionChange={handleRowSelectionChange}
         height={height}
         theme={theme}
+        getRowId={({ row }) => row.id}
       />
     </div>
   );

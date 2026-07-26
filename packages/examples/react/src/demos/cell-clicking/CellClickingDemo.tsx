@@ -3,7 +3,6 @@ import { SimpleTable } from "@simple-table/react";
 import type {
   Theme,
   ReactColumnDef,
-  CellRendererProps,
   CellClickProps,
 } from "@simple-table/react";
 import {
@@ -19,13 +18,13 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
   const [selectedTask, setSelectedTask] = useState<ProjectTask | null>(null);
   const [rows, setRows] = useState<ProjectTask[]>([...cellClickingData]);
 
-  const headers: ReactColumnDef[] = useMemo(
+  const headers: ReactColumnDef<ProjectTask>[] = useMemo(
     () =>
       cellClickingHeaders.map((h) => {
         if (h.accessor === "priority") {
           return {
             ...h,
-            cellRenderer: ({ row }: CellRendererProps) => {
+            cellRenderer: ({ row }) => {
               const p = String(row.priority);
               return (
                 <span
@@ -45,7 +44,7 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
         if (h.accessor === "status") {
           return {
             ...h,
-            cellRenderer: ({ row }: CellRendererProps) => {
+            cellRenderer: ({ row }) => {
               const s = String(row.status);
               const bg =
                 s === "Completed" ? "#dcfce7" : s === "In Progress" ? "#fef3c7" : "#fee2e2";
@@ -97,8 +96,7 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
     [],
   );
 
-  const handleCellClick = ({ accessor, rowIndex, value, row }: CellClickProps) => {
-    const task = row as ProjectTask;
+  const handleCellClick = ({ accessor, rowIndex, value, row }: CellClickProps<ProjectTask>) => {
     switch (accessor) {
       case "priority": {
         setClickInfo(`Filtering by ${value} priority`);
@@ -108,28 +106,28 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
       case "status": {
         const idx = CELL_CLICKING_STATUSES.indexOf(String(value));
         const next = CELL_CLICKING_STATUSES[(idx + 1) % CELL_CLICKING_STATUSES.length];
-        setRows((prev) => prev.map((t) => (t.id === task.id ? { ...t, status: next } : t)));
+        setRows((prev) => prev.map((t) => (t.id === row.id ? { ...t, status: next } : t)));
         setClickInfo(`Status changed from "${value}" to "${next}"`);
         break;
       }
       case "details":
-        setSelectedTask(task);
-        setClickInfo(`Opening details for: ${task.task}`);
+        setSelectedTask(row);
+        setClickInfo(`Opening details for: ${row.task}`);
         break;
       case "estimatedHours": {
-        const newVal = Math.min(task.estimatedHours + 2, 40);
+        const newVal = Math.min(row.estimatedHours + 2, 40);
         setRows((prev) =>
-          prev.map((t) => (t.id === task.id ? { ...t, estimatedHours: newVal } : t)),
+          prev.map((t) => (t.id === row.id ? { ...t, estimatedHours: newVal } : t)),
         );
-        setClickInfo(`Est. hours: ${task.estimatedHours}h → ${newVal}h`);
+        setClickInfo(`Est. hours: ${row.estimatedHours}h → ${newVal}h`);
         break;
       }
       case "completedHours": {
-        const newVal = Math.min(task.completedHours + 1, task.estimatedHours);
+        const newVal = Math.min(row.completedHours + 1, row.estimatedHours);
         setRows((prev) =>
-          prev.map((t) => (t.id === task.id ? { ...t, completedHours: newVal } : t)),
+          prev.map((t) => (t.id === row.id ? { ...t, completedHours: newVal } : t)),
         );
-        setClickInfo(`Done hours: ${task.completedHours}h → ${newVal}h`);
+        setClickInfo(`Done hours: ${row.completedHours}h → ${newVal}h`);
         break;
       }
       default:
@@ -208,9 +206,10 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
         </div>
       )}
 
-      <SimpleTable
+      <SimpleTable<ProjectTask>
         columnResizing
         columns={headers}
+        getRowId={({ row }) => row.id}
         height={height ?? "320px"}
         onCellClick={handleCellClick}
         rows={rows}

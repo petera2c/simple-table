@@ -1,6 +1,13 @@
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactColumnEditorConfig, ColumnEditorRowRendererProps } from "@simple-table/react";
-import { columnEditorCustomRendererConfig } from "./column-editor-custom-renderer.demo-data";
+import type {
+  Theme,
+  ReactColumnEditorConfig,
+  ColumnEditorRowRendererProps,
+} from "@simple-table/react";
+import {
+  columnEditorCustomRendererConfig,
+  type ColumnEditorCustomRendererEmployee,
+} from "./column-editor-custom-renderer.demo-data";
 import "@simple-table/react/styles.css";
 
 const CustomRowRenderer = ({ header, components }: ColumnEditorRowRendererProps) => (
@@ -38,8 +45,9 @@ const ColumnEditorCustomRendererDemo = ({
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable
+    <SimpleTable<ColumnEditorCustomRendererEmployee>
       columns={columnEditorCustomRendererConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={columnEditorCustomRendererConfig.rows}
       enableColumnEditor
       columnEditorConfig={columnEditorConfig}

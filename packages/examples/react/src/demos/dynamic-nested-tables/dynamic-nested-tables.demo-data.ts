@@ -1,8 +1,7 @@
 // Self-contained demo table setup for this example.
-import type { ReactColumnDef, Row } from "@simple-table/react";
+import type { ReactColumnDef } from "@simple-table/react";
 
-
-export interface DynamicCompany extends Row {
+export interface DynamicCompany {
   id: string;
   companyName: string;
   industry: string;
@@ -11,7 +10,7 @@ export interface DynamicCompany extends Row {
   divisions?: DynamicDivision[];
 }
 
-export interface DynamicDivision extends Row {
+export interface DynamicDivision {
   id: string;
   divisionName: string;
   revenue: string;
@@ -56,7 +55,7 @@ export const dynamicNestedTablesData: DynamicCompany[] = [
   { id: "comp-15", companyName: "EnergyFlow Systems", industry: "Energy", revenue: "$560M", employees: 1800 },
 ];
 
-export const dynamicNestedTablesDivisionHeaders: ReactColumnDef[] = [
+export const dynamicNestedTablesDivisionHeaders: ReactColumnDef<DynamicDivision>[] = [
   { accessor: "divisionName", label: "Division", width: 200 },
   { accessor: "revenue", label: "Revenue", width: 120 },
   { accessor: "profitMargin", label: "Profit Margin", width: 130 },
@@ -64,14 +63,15 @@ export const dynamicNestedTablesDivisionHeaders: ReactColumnDef[] = [
   { accessor: "location", label: "Location", width: 180 },
 ];
 
-export const dynamicNestedTablesCompanyHeaders: ReactColumnDef[] = [
+export const dynamicNestedTablesCompanyHeaders: ReactColumnDef<DynamicCompany>[] = [
   {
     accessor: "companyName",
     label: "Company",
     width: 200,
     expandable: true,
     nestedTable: {
-      columns: dynamicNestedTablesDivisionHeaders,
+      // Nested grid uses DynamicDivision; parent column tree is typed as DynamicCompany.
+      columns: dynamicNestedTablesDivisionHeaders as unknown as ReactColumnDef<DynamicCompany>[],
       expandAll: false,
       autoExpandColumns: true,
     },
@@ -86,7 +86,7 @@ export const dynamicNestedTablesConfig = {
   rows: dynamicNestedTablesData,
   tableProps: {
     rowGrouping: ["divisions"] as string[],
-    getRowId: ({ row }: { row: Record<string, unknown> }) => row.id as string,
+    getRowId: ({ row }: { row: DynamicCompany }) => row.id,
     expandAll: false,
     autoExpandColumns: true,
   },

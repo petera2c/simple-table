@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { TableAPI, Theme } from "@simple-table/react";
-import { analyticsDemoConfig, analyticsPresets } from "./analytics.demo-data";
+import {
+  analyticsDemoConfig,
+  analyticsPresets,
+  type AnalyticsFactRow,
+} from "./analytics.demo-data";
 import "@simple-table/react/styles.css";
 
 function formatHeight(height?: string | number | null): string {
@@ -23,7 +27,7 @@ const AnalyticsDemo = ({
   const nestedRows = (active.pivot?.rows.length ?? 0) > 1;
   const isDark = theme === "dark" || theme === "modern-dark";
   const tableHostRef = useRef<HTMLDivElement>(null);
-  const tableRef = useRef<TableAPI>(null);
+  const tableRef = useRef<TableAPI<AnalyticsFactRow>>(null);
   const [tableHeightPx, setTableHeightPx] = useState<number | null>(null);
 
   useEffect(() => {
@@ -147,7 +151,7 @@ const AnalyticsDemo = ({
       >
         <div ref={tableHostRef} style={{ flex: 1, minHeight: 0 }}>
           {tableHeightPx != null && (
-            <SimpleTable
+            <SimpleTable<AnalyticsFactRow>
               key={activeId}
               ref={tableRef}
               autoExpandColumns
@@ -159,10 +163,7 @@ const AnalyticsDemo = ({
               enableColumnEditor
               enableStickyParents={nestedRows}
               expandAll={nestedRows}
-              getRowId={({ row }) => {
-                const id = row.id;
-                return id == null ? undefined : String(id);
-              }}
+              getRowId={({ row }) => row.id}
               height={tableHeightPx}
               includeHeadersInCSVExport
               initialSortColumn={isPivoted ? undefined : "sales"}

@@ -1,9 +1,10 @@
 import { useRef, useState, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, TableAPI, ReactColumnDef, CellRendererProps } from "@simple-table/react";
+import type { Theme, TableAPI, ReactColumnDef } from "@simple-table/react";
 import {
   programmaticControlConfig,
   PROGRAMMATIC_CONTROL_STATUS_COLORS,
+  type ProgrammaticControlProduct,
 } from "./programmatic-control.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -14,16 +15,16 @@ const ProgrammaticControlDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const tableRef = useRef<TableAPI>(null);
+  const tableRef = useRef<TableAPI<ProgrammaticControlProduct>>(null);
   const [statusMessage, setStatusMessage] = useState("No status message");
 
-  const headers: ReactColumnDef[] = useMemo(
+  const headers: ReactColumnDef<ProgrammaticControlProduct>[] = useMemo(
     () =>
       programmaticControlConfig.headers.map((h) => {
         if (h.accessor === "status") {
           return {
             ...h,
-            cellRenderer: ({ row }: CellRendererProps) => {
+            cellRenderer: ({ row }) => {
               const s = String(row.status);
               const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? {
                 bg: "#f3f4f6",
@@ -79,8 +80,9 @@ const ProgrammaticControlDemo = ({
     const sortState = api.getSortState();
     const filterState = api.getFilterState();
     const totalValue = allRows.reduce((sum, r) => {
-      const data = r.row as { price?: number; stock?: number };
-      return sum + (Number(data.price) || 0) * (Number(data.stock) || 0);
+      const price = typeof r.row.price === "number" ? r.row.price : 0;
+      const stock = typeof r.row.stock === "number" ? r.row.stock : 0;
+      return sum + price * stock;
     }, 0);
     const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
     alert(
@@ -121,9 +123,10 @@ const ProgrammaticControlDemo = ({
           Get Table Info
         </button>
       </div>
-      <SimpleTable
+      <SimpleTable<ProgrammaticControlProduct>
         ref={tableRef}
         columns={headers}
+        getRowId={({ row }) => row.id}
         rows={programmaticControlConfig.rows}
         height={height}
         theme={theme}

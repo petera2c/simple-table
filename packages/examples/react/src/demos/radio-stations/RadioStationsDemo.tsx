@@ -5,7 +5,6 @@ import type {
   FooterRendererProps,
   HeaderRendererProps,
   ReactColumnDef,
-  Row,
   Theme,
 } from "@simple-table/react";
 import {
@@ -26,7 +25,7 @@ import "@simple-table/react/styles.css";
  * columns, two equal main metric columns, ~3235 rows at 65px, React portals.
  */
 
-const StationCell = ({ value }: CellRendererProps): ReactNode => {
+const StationCell = ({ value }: CellRendererProps<RadioStationRow>): ReactNode => {
   const name = String(value ?? "");
   return (
     <div
@@ -68,7 +67,7 @@ const StationCell = ({ value }: CellRendererProps): ReactNode => {
   );
 };
 
-const CountryCell = ({ value }: CellRendererProps): ReactNode => {
+const CountryCell = ({ value }: CellRendererProps<RadioStationRow>): ReactNode => {
   const code = String(value ?? "US");
   return (
     <span
@@ -83,7 +82,7 @@ const CountryCell = ({ value }: CellRendererProps): ReactNode => {
   );
 };
 
-const HeaderWithMenu = ({ header }: HeaderRendererProps): ReactNode => {
+const HeaderWithMenu = ({ header }: HeaderRendererProps<RadioStationRow>): ReactNode => {
   const label = header.label;
   return (
     <div
@@ -135,8 +134,8 @@ const HeaderWithMenu = ({ header }: HeaderRendererProps): ReactNode => {
   );
 };
 
-function buildHeaders(): ReactColumnDef[] {
-  const withMenu = (header: ReactColumnDef): ReactColumnDef => ({
+function buildHeaders(): ReactColumnDef<RadioStationRow>[] {
+  const withMenu = (header: ReactColumnDef<RadioStationRow>): ReactColumnDef<RadioStationRow> => ({
     ...header,
     headerRenderer: HeaderWithMenu,
   });
@@ -220,14 +219,14 @@ const RadioStationsDemo = ({
   theme?: Theme;
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const [headers, setHeaders] = useState<ReactColumnDef[]>(() => buildHeaders());
+  const [headers, setHeaders] = useState<ReactColumnDef<RadioStationRow>[]>(() => buildHeaders());
 
-  const rows = useMemo(() => radioStationRows as unknown as Row[], []);
+  const rows = useMemo(() => radioStationRows, []);
 
   // Merge widths onto the React header definitions. Core's callback returns
   // vanilla-wrapped renderers; putting those into React state and back through
   // buildVanillaConfig can nest wraps. Width-only merge keeps React components.
-  const handleColumnWidthChange = useCallback((next: ReactColumnDef[]) => {
+  const handleColumnWidthChange = useCallback((next: ReactColumnDef<RadioStationRow>[]) => {
     const widthByAccessor = new Map(next.map((h) => [h.accessor, h.width]));
     setHeaders((prev) =>
       prev.map((h) => {
@@ -267,10 +266,10 @@ const RadioStationsDemo = ({
         compare resize lag with the vanilla Storybook example.
       </p>
 
-      <SimpleTable
+      <SimpleTable<RadioStationRow>
         columns={headers}
         rows={rows}
-        getRowId={(p) => String((p.row as unknown as RadioStationRow | undefined)?.id)}
+        getRowId={({ row }) => String(row.id)}
         theme={theme}
         customTheme={{ rowHeight: ROW_HEIGHT, headerHeight: HEADER_HEIGHT }}
         columnReordering

@@ -102,8 +102,8 @@ export function generateBillingData(count: number = 30): BillingRow[] {
 
 export const billingData = generateBillingData(30);
 
-function generateMonthHeaders(): ReactColumnDef[] {
-  const headers: ReactColumnDef[] = [];
+function generateMonthHeaders(): ReactColumnDef<BillingRow>[] {
+  const headers: ReactColumnDef<BillingRow>[] = [];
   const year = 2024;
   for (let monthIndex = 11; monthIndex >= 0; monthIndex--) {
     const fullMonthName = new Date(year, monthIndex).toLocaleString("default", { month: "long" });
@@ -153,7 +153,7 @@ function generateMonthHeaders(): ReactColumnDef[] {
   return headers;
 }
 
-export const billingHeaders: ReactColumnDef[] = [
+export const billingHeaders: ReactColumnDef<BillingRow>[] = [
   {
     accessor: "name",
     label: "Name",

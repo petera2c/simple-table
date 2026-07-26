@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, CellRendererProps, ReactColumnDef } from "@simple-table/react";
+import type { Theme, CellRendererProps, ReactCellRenderer, ReactColumnDef } from "@simple-table/react";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "@simple-table/react/styles.css";
@@ -12,8 +12,8 @@ const getInitials = (name: string) =>
     .join("")
     .toUpperCase();
 
-const TeamCell = ({ row }: CellRendererProps) => {
-  const members = (row as CellRendererEmployee).teamMembers;
+const TeamCell = ({ row }: CellRendererProps<CellRendererEmployee>) => {
+  const members = row.teamMembers;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
       {members.map((m) => (
@@ -42,7 +42,7 @@ const TeamCell = ({ row }: CellRendererProps) => {
   );
 };
 
-const WebsiteCell = ({ value }: CellRendererProps) => {
+const WebsiteCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
   const url = String(value);
   return (
     <span>
@@ -61,7 +61,7 @@ const WebsiteCell = ({ value }: CellRendererProps) => {
   );
 };
 
-const StatusCell = ({ value }: CellRendererProps) => {
+const StatusCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
   const status = String(value);
   const map: Record<string, { icon: string; color: string }> = {
     active: { icon: "✓", color: "#10B981" },
@@ -76,7 +76,7 @@ const StatusCell = ({ value }: CellRendererProps) => {
   );
 };
 
-const ProgressCell = ({ value }: CellRendererProps) => {
+const ProgressCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
   const pct = Number(value) || 0;
   const color = pct < 30 ? "#EF4444" : pct < 70 ? "#F59E0B" : "#10B981";
   return (
@@ -97,7 +97,7 @@ const ProgressCell = ({ value }: CellRendererProps) => {
   );
 };
 
-const RatingCell = ({ value }: CellRendererProps) => {
+const RatingCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
   const rating = Number(value) || 0;
   const full = Math.floor(rating);
   const hasHalf = rating % 1 >= 0.25;
@@ -114,7 +114,7 @@ const RatingCell = ({ value }: CellRendererProps) => {
   );
 };
 
-const VerifiedCell = ({ value }: CellRendererProps) => {
+const VerifiedCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
   const yes = Boolean(value);
   return (
     <span style={{ color: yes ? "#10B981" : "#EF4444", fontWeight: 600 }}>
@@ -123,7 +123,7 @@ const VerifiedCell = ({ value }: CellRendererProps) => {
   );
 };
 
-const TagsCell = ({ value }: CellRendererProps) => {
+const TagsCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
   const raw = Array.isArray(value) ? value : [];
   const tags = raw.filter((t): t is string => typeof t === "string");
   return (
@@ -156,27 +156,26 @@ const CellRendererDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const headers = useMemo(
-    () =>
-      cellRendererConfig.headers.map((h) => {
-        const renderers: Record<string, React.ComponentType<CellRendererProps>> = {
-          teamMembers: TeamCell,
-          website: WebsiteCell,
-          status: StatusCell,
-          progress: ProgressCell,
-          rating: RatingCell,
-          verified: VerifiedCell,
-          tags: TagsCell,
-        };
-        const cellRenderer = renderers[h.accessor as string];
-        return cellRenderer ? { ...h, cellRenderer } : h;
-      }) as ReactColumnDef[],
-    [],
-  );
+  const headers = useMemo((): ReactColumnDef<CellRendererEmployee>[] => {
+    const renderers: Partial<Record<string, ReactCellRenderer<CellRendererEmployee>>> = {
+      teamMembers: TeamCell,
+      website: WebsiteCell,
+      status: StatusCell,
+      progress: ProgressCell,
+      rating: RatingCell,
+      verified: VerifiedCell,
+      tags: TagsCell,
+    };
+    return cellRendererConfig.headers.map((h) => {
+      const cellRenderer = renderers[String(h.accessor)];
+      return cellRenderer ? { ...h, cellRenderer } : h;
+    });
+  }, []);
 
   return (
-    <SimpleTable
+    <SimpleTable<CellRendererEmployee>
       columns={headers}
+      getRowId={({ row }) => row.id}
       rows={cellRendererConfig.rows}
       height={height}
       theme={theme}

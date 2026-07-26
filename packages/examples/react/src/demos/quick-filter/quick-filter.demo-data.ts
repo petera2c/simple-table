@@ -1,8 +1,17 @@
 // Self-contained demo table setup for this example.
 import type { ReactColumnDef } from "@simple-table/react";
 
+export interface QuickFilterEmployee {
+  id: number;
+  name: string;
+  age: number;
+  department: string;
+  salary: number;
+  status: string;
+  location: string;
+}
 
-export const quickFilterHeaders: ReactColumnDef[] = [
+export const quickFilterHeaders: ReactColumnDef<QuickFilterEmployee>[] = [
   { accessor: "name", label: "Employee Name", width: 180, type: "string" },
   { accessor: "age", label: "Age", width: 80, type: "number" },
   { accessor: "department", label: "Department", width: 140, type: "string" },
@@ -11,7 +20,7 @@ export const quickFilterHeaders: ReactColumnDef[] = [
   { accessor: "location", label: "Location", width: 140, type: "string" },
 ];
 
-export const quickFilterData = [
+export const quickFilterData: QuickFilterEmployee[] = [
   { id: 1, name: "Alice Johnson", age: 28, department: "Engineering", salary: 95000, status: "Active", location: "New York" },
   { id: 2, name: "Bob Smith", age: 35, department: "Sales", salary: 75000, status: "Active", location: "Los Angeles" },
   { id: 3, name: "Charlie Davis", age: 42, department: "Engineering", salary: 110000, status: "Active", location: "San Francisco" },

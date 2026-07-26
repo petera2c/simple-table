@@ -42,7 +42,7 @@ export function generateCRMData(count: number = 100): CRMLead[] {
 
 export const crmData = generateCRMData(100);
 
-export const crmHeaders: ReactColumnDef[] = [
+export const crmHeaders: ReactColumnDef<CRMLead>[] = [
   {
     accessor: "name",
     label: "CONTACT",

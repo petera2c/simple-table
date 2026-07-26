@@ -1,29 +1,29 @@
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactColumnDef, CellRendererProps } from "@simple-table/react";
+import type { Theme, ReactColumnDef } from "@simple-table/react";
 import { billingConfig } from "./billing.demo-data";
 import type { BillingRow } from "./billing.demo-data";
 import "@simple-table/react/styles.css";
 
 const BillingDemo = ({ height = "400px", theme }: { height?: string | number; theme?: Theme }) => {
-  const headers: ReactColumnDef[] = billingConfig.headers.map((h) => {
+  const headers: ReactColumnDef<BillingRow>[] = billingConfig.headers.map((h) => {
     if (h.accessor === "name") {
       return {
         ...h,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as BillingRow;
-          return <div className={d.type === "account" ? "font-semibold" : ""}>{d.name}</div>;
-        },
+        cellRenderer: ({ row }) => (
+          <div className={row.type === "account" ? "font-semibold" : ""}>{row.name}</div>
+        ),
       };
     }
     return h;
   });
 
   return (
-    <SimpleTable
+    <SimpleTable<BillingRow>
       columnReordering
       columnResizing
       columns={headers}
       enableColumnEditor
+      getRowId={({ row }) => row.id}
       height={height}
       initialSortColumn="amount"
       initialSortDirection="desc"

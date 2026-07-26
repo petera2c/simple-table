@@ -48,7 +48,7 @@ const SalesDemo = ({ height, theme }: { height?: string | number | null; theme?:
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
+  const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps<SalesRow>) => {
     setData((prev) =>
       prev.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item)),
     );
@@ -110,7 +110,7 @@ const SalesDemo = ({ height, theme }: { height?: string | number | null; theme?:
   };
 
   return (
-    <SimpleTable
+    <SimpleTable<SalesRow>
       autoExpandColumns={!isMobile}
       columnResizing
       columnReordering
@@ -118,6 +118,7 @@ const SalesDemo = ({ height, theme }: { height?: string | number | null; theme?:
       enableColumnEditor
       footerPosition="top"
       footerRenderer={renderFooter}
+      getRowId={({ row }) => row.id}
       height={formatTableHeight(height)}
       initialSortColumn="dealValue"
       initialSortDirection="desc"

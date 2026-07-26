@@ -1,17 +1,16 @@
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, ReactColumnDef, CellRendererProps } from "@simple-table/react";
+import type { Theme, ReactColumnDef } from "@simple-table/react";
 import { manufacturingConfig, getManufacturingStatusColors } from "./manufacturing.demo-data";
 import type { ManufacturingRow } from "./manufacturing.demo-data";
 import "@simple-table/react/styles.css";
 
-function getHeaders(): ReactColumnDef[] {
+function getHeaders(): ReactColumnDef<ManufacturingRow>[] {
   const baseHeaders = [...manufacturingConfig.headers];
   return baseHeaders.map((h) => {
     if (h.accessor === "productLine") {
       return {
         ...h,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
+        cellRenderer: ({ row: d }) => {
           return d.stations ? (
             <span style={{ fontWeight: "bold" }}>{d.productLine}</span>
           ) : (
@@ -23,8 +22,7 @@ function getHeaders(): ReactColumnDef[] {
     if (h.accessor === "station") {
       return {
         ...h,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
+        cellRenderer: ({ row: d }) => {
           if (d.stations) return <span style={{ color: "#6b7280" }}>{d.id}</span>;
           return (
             <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
@@ -49,8 +47,7 @@ function getHeaders(): ReactColumnDef[] {
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: ({ row: r, theme }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
+        cellRenderer: ({ row: d, theme }) => {
           if (d.stations) return "—";
           const colors = getManufacturingStatusColors(d.status, theme);
           return (
@@ -75,8 +72,7 @@ function getHeaders(): ReactColumnDef[] {
     if (h.accessor === "outputRate" || h.accessor === "defectCount" || h.accessor === "energy") {
       return {
         ...h,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
+        cellRenderer: ({ row: d }) => {
           const value = d[h.accessor as keyof ManufacturingRow] as number;
           return (
             <div style={d.stations ? { fontWeight: "bold" } : {}}>{value.toLocaleString()}</div>
@@ -87,8 +83,7 @@ function getHeaders(): ReactColumnDef[] {
     if (h.accessor === "cycletime") {
       return {
         ...h,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
+        cellRenderer: ({ row: d }) => {
           if (d.stations)
             return <span style={{ fontWeight: "bold" }}>{d.cycletime.toFixed(1)}</span>;
           return <span>{d.cycletime}</span>;
@@ -98,8 +93,7 @@ function getHeaders(): ReactColumnDef[] {
     if (h.accessor === "efficiency") {
       return {
         ...h,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
+        cellRenderer: ({ row: d }) => {
           const color = d.efficiency >= 90 ? "#52c41a" : d.efficiency >= 75 ? "#1890ff" : "#ff4d4f";
           return (
             <div style={{ width: "100%", display: "flex", flexDirection: "column" }}>
@@ -139,8 +133,7 @@ function getHeaders(): ReactColumnDef[] {
     if (h.accessor === "defectRate") {
       return {
         ...h,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
+        cellRenderer: ({ row: d }) => {
           const color = d.defectRate < 1 ? "#16a34a" : d.defectRate < 3 ? "#f59e0b" : "#dc2626";
           return (
             <span style={{ color, fontWeight: d.stations ? "bold" : "normal" }}>
@@ -153,8 +146,7 @@ function getHeaders(): ReactColumnDef[] {
     if (h.accessor === "downtime") {
       return {
         ...h,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
+        cellRenderer: ({ row: d }) => {
           const color = d.downtime < 1 ? "#16a34a" : d.downtime < 2 ? "#f59e0b" : "#dc2626";
           return (
             <span style={{ color, fontWeight: d.stations ? "bold" : "normal" }}>
@@ -167,8 +159,7 @@ function getHeaders(): ReactColumnDef[] {
     if (h.accessor === "utilization") {
       return {
         ...h,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
+        cellRenderer: ({ row: d }) => {
           if (d.stations)
             return <span style={{ fontWeight: "bold" }}>{d.utilization.toFixed(0)}%</span>;
           return `${d.utilization}%`;
@@ -178,8 +169,7 @@ function getHeaders(): ReactColumnDef[] {
     if (h.accessor === "maintenanceDate") {
       return {
         ...h,
-        cellRenderer: ({ row: r }: CellRendererProps) => {
-          const d = r as unknown as ManufacturingRow;
+        cellRenderer: ({ row: d }) => {
           if (d.stations) return "—";
           const [year, month, day] = d.maintenanceDate.split("-").map(Number);
           const date = new Date(year, month - 1, day);
@@ -223,10 +213,11 @@ const ManufacturingDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => (
-  <SimpleTable
+  <SimpleTable<ManufacturingRow>
     columnResizing
     columnReordering
     columns={getHeaders()}
+    getRowId={({ row }) => row.id}
     height={height}
     rowGrouping={["stations"]}
     rows={manufacturingConfig.rows}

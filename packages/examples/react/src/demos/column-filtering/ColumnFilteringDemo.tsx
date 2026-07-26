@@ -1,5 +1,9 @@
-import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { columnFilteringConfig } from "./column-filtering.demo-data";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme } from "@simple-table/react";
+import {
+  columnFilteringConfig,
+  type ColumnFilteringEmployee,
+} from "./column-filtering.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnFilteringDemo = ({
@@ -10,8 +14,9 @@ const ColumnFilteringDemo = ({
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable
+    <SimpleTable<ColumnFilteringEmployee>
       columns={columnFilteringConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={columnFilteringConfig.rows}
       height={height}
       theme={theme}

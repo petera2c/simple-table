@@ -1,10 +1,12 @@
 import type ColumnDef from "../types/ColumnDef";
 import type { SimpleTableConfig } from "../types/SimpleTableConfig";
+import type Row from "../types/Row";
+import type { RowData } from "../types/Row";
 
 /**
  * Consumer-facing config input. Preferred prop names only — no legacy aliases.
  */
-export type SimpleTableConfigInput = SimpleTableConfig;
+export type SimpleTableConfigInput<TData extends RowData = Row> = SimpleTableConfig<TData>;
 
 /** Pass-through for column trees (kept for call-site stability / future transforms). */
 export function normalizeColumnDef(header: ColumnDef): ColumnDef {
@@ -21,6 +23,7 @@ export function normalizeColumnDefs(headers: ColumnDef[]): ColumnDef[] {
 
 /**
  * Validate and normalize config. Requires `columns`.
+ * Runtime always normalizes to the default {@link Row}-shaped config.
  */
 export function normalizeConfig(input: SimpleTableConfigInput): SimpleTableConfig {
   if (!input.columns) {

@@ -1,6 +1,14 @@
 // Self-contained demo table setup for this example.
 import type { ReactColumnDef } from "@simple-table/react";
 
+export interface ProgrammaticControlProduct {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  status: string;
+}
 
 export const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   Available: { bg: "#dcfce7", color: "#166534" },
@@ -8,7 +16,7 @@ export const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   "Out of Stock": { bg: "#fee2e2", color: "#991b1b" },
 };
 
-export const programmaticControlData = [
+export const programmaticControlData: ProgrammaticControlProduct[] = [
   { id: 1, name: "Wireless Keyboard", category: "Electronics", price: 49.99, stock: 145, status: "Available" },
   { id: 2, name: "Ergonomic Mouse", category: "Electronics", price: 29.99, stock: 12, status: "Low Stock" },
   { id: 3, name: "USB-C Hub", category: "Electronics", price: 39.99, stock: 234, status: "Available" },
@@ -23,7 +31,7 @@ export const programmaticControlData = [
   { id: 12, name: "Desk Lamp LED", category: "Appliances", price: 44.99, stock: 0, status: "Out of Stock" },
 ];
 
-export const programmaticControlHeaders: ReactColumnDef[] = [
+export const programmaticControlHeaders: ReactColumnDef<ProgrammaticControlProduct>[] = [
   { accessor: "id", label: "ID", width: 70, type: "number", sortable: true, filterable: true },
   { accessor: "name", label: "Product Name", width: "1fr", minWidth: 150, type: "string", sortable: true, filterable: true },
   {

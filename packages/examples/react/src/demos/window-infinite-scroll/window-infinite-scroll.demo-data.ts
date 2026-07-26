@@ -1,5 +1,15 @@
 // Self-contained data + headers for the window-scroll infinite scroll example.
-import type { ReactColumnDef, Row } from "@simple-table/react";
+import type { ReactColumnDef } from "@simple-table/react";
+
+export interface WindowScrollEmployee {
+  id: number;
+  name: string;
+  email: string;
+  department: string;
+  status: string;
+  tenureYears: number;
+  salary: number;
+}
 
 const FIRST_NAMES = [
   "Elena",
@@ -54,8 +64,11 @@ const DEPARTMENTS = [
 
 const STATUSES = ["Active", "On Leave", "Remote", "Onsite"] as const;
 
-export function generateWindowScrollRows(startIndex: number, count: number): Row[] {
-  const rows: Row[] = [];
+export function generateWindowScrollRows(
+  startIndex: number,
+  count: number,
+): WindowScrollEmployee[] {
+  const rows: WindowScrollEmployee[] = [];
   for (let i = 0; i < count; i++) {
     const idx = startIndex + i;
     const first = FIRST_NAMES[idx % FIRST_NAMES.length];
@@ -73,7 +86,7 @@ export function generateWindowScrollRows(startIndex: number, count: number): Row
   return rows;
 }
 
-export const windowScrollHeaders: ReactColumnDef[] = [
+export const windowScrollHeaders: ReactColumnDef<WindowScrollEmployee>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number", align: "right" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 160 },
   { accessor: "email", label: "Email", width: 260 },

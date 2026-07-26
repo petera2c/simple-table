@@ -1,4 +1,5 @@
 import Row from "./Row";
+import type { RowData } from "./Row";
 import { Pinned } from "./Pinned";
 import EnumOption from "./EnumOption";
 import { AggregationConfig } from "./AggregationTypes";
@@ -10,10 +11,12 @@ import { QuickFilterGetter } from "./QuickFilterTypes";
 import type { FilterOperator } from "./FilterTypes";
 
 // Accessor can be:
-// - A simple key of Row (e.g., "name")
+// - A simple key of TData (e.g., "name")
 // - A nested path with dots (e.g., "latest.score")
 // - A path with array indices (e.g., "albums[0].title" or "releaseDate[0]")
-export type Accessor = keyof Row | string;
+// The `string & {}` arm keeps dotted/dynamic paths assignable while preserving
+// keyof autocomplete when TData is a concrete interface.
+export type Accessor<TData extends RowData = Row> = (keyof TData & string) | (string & {});
 export type ColumnType =
   | "string"
   | "number"
@@ -44,50 +47,58 @@ export interface ChartOptions {
   gap?: number; // Gap between bars in bar charts (default: 2)
 }
 
-export interface ValueFormatterProps {
-  accessor: Accessor;
+export interface ValueFormatterProps<TData extends RowData = Row, TValue = CellValue> {
+  accessor: Accessor<TData>;
   colIndex: number;
-  row: Row;
+  row: TData;
   rowIndex: number;
-  value: CellValue;
+  value: TValue;
 }
 
-export type ValueFormatter = (props: ValueFormatterProps) => string | number | string[] | number[];
+export type ValueFormatter<TData extends RowData = Row, TValue = CellValue> = (
+  props: ValueFormatterProps<TData, TValue>
+) => string | number | string[] | number[];
 
-export interface ValueGetterProps {
-  accessor: Accessor;
-  row: Row;
+export interface ValueGetterProps<TData extends RowData = Row> {
+  accessor: Accessor<TData>;
+  row: TData;
   rowIndex: number;
 }
 
-export type ValueGetter = (props: ValueGetterProps) => CellValue;
+export type ValueGetter<TData extends RowData = Row, TValue = CellValue> = (
+  props: ValueGetterProps<TData>
+) => TValue;
 
-export interface ComparatorProps {
-  rowA: Row;
-  rowB: Row;
-  valueA: CellValue;
-  valueB: CellValue;
+export interface ComparatorProps<TData extends RowData = Row, TValue = CellValue> {
+  rowA: TData;
+  rowB: TData;
+  valueA: TValue;
+  valueB: TValue;
   direction: "asc" | "desc";
 }
 
-export type Comparator = (props: ComparatorProps) => number;
+export type Comparator<TData extends RowData = Row, TValue = CellValue> = (
+  props: ComparatorProps<TData, TValue>
+) => number;
 
-export interface ExportValueProps {
-  accessor: Accessor;
+export interface ExportValueProps<TData extends RowData = Row, TValue = CellValue> {
+  accessor: Accessor<TData>;
   colIndex: number;
-  row: Row;
+  row: TData;
   rowIndex: number;
-  value: CellValue;
+  value: TValue;
   formattedValue?: string | number | string[] | number[];
 }
 
-export type ExportValueGetter = (props: ExportValueProps) => string | number;
+export type ExportValueGetter<TData extends RowData = Row, TValue = CellValue> = (
+  props: ExportValueProps<TData, TValue>
+) => string | number;
 
 // Default showWhen value for child columns when not specified
 export const DEFAULT_SHOW_WHEN: ShowWhen = "parentExpanded";
 
-export type ColumnDef = {
-  accessor: Accessor;
+export type ColumnDef<TData extends RowData = Row, TValue = CellValue> = {
+  accessor: Accessor<TData>;
   aggregation?: AggregationConfig;
   align?: "left" | "center" | "right";
   /**
@@ -97,16 +108,17 @@ export type ColumnDef = {
    * (`"header"`). `minWidth` / `maxWidth` clamp the computed width.
    */
   autoSizeMode?: AutoSizeMode;
-  cellRenderer?: CellRenderer;
+  cellRenderer?: CellRenderer<TData, TValue>;
   chartOptions?: ChartOptions; // Options for chart rendering (lineAreaChart, barChart)
-  children?: ColumnDef[];
+  /** Nested header groups may mix per-column TValue; use any for the child union. */
+  children?: ColumnDef<TData, any>[];
   collapsible?: boolean; // This is used to determine if the column is collapsible
   collapseDefault?: boolean; // When true, this column starts collapsed
-  comparator?: Comparator; // Custom sorting function based on row-level metadata
+  comparator?: Comparator<TData, TValue>; // Custom sorting function based on row-level metadata
   disableReorder?: boolean;
   enumOptions?: EnumOption[];
   expandable?: boolean; // This is for row grouping
-  exportValueGetter?: ExportValueGetter; // Custom function for CSV export values
+  exportValueGetter?: ExportValueGetter<TData, TValue>; // Custom function for CSV export values
   filterable?: boolean;
   /**
    * Restricts which filter operators are shown in this column's filter dropdown.
@@ -121,7 +133,7 @@ export type ColumnDef = {
    *   filterOperators: ["contains", "equals"] }
    */
   filterOperators?: FilterOperator[];
-  headerRenderer?: HeaderRenderer;
+  headerRenderer?: HeaderRenderer<TData>;
   hide?: boolean;
   /** Whether cells in this column are editable. */
   editable?: boolean;
@@ -140,6 +152,7 @@ export type ColumnDef = {
   sortingOrder?: ("asc" | "desc" | null)[]; // Custom sorting cycle order for this column (e.g., ["desc", "asc", null] for numbers/dates)
   // Nested grid configuration - when expandable is true and this is set, renders a nested table instead of child rows
   // Omit 'rows' and props that should inherit from parent table
+  // Left non-generic in Step 1 (child row shape may differ from TData).
   nestedTable?: Omit<
     SimpleTableProps,
     | "rows"
@@ -150,14 +163,14 @@ export type ColumnDef = {
   >;
   pinned?: Pinned;
   quickFilterable?: boolean; // Default: true - whether column is searchable via quick filter
-  quickFilterGetter?: QuickFilterGetter; // Custom value extraction for quick filter
+  quickFilterGetter?: QuickFilterGetter<TData>; // Custom value extraction for quick filter
   singleRowChildren?: boolean; // When true, renders parent and children on the same row instead of tree hierarchy
   tooltip?: string; // Optional tooltip text to display on hover
   type?: ColumnType;
   useFormattedValueForClipboard?: boolean; // When true, uses valueFormatter output for clipboard copy
   useFormattedValueForCSV?: boolean; // When true, uses valueFormatter output for CSV export (unless exportValueGetter is provided)
-  valueFormatter?: ValueFormatter; // Function to format the cell value for display (does not affect underlying data)
-  valueGetter?: ValueGetter; // Function to get the value for sorting and operations
+  valueFormatter?: ValueFormatter<TData, TValue>; // Function to format the cell value for display (does not affect underlying data)
+  valueGetter?: ValueGetter<TData, TValue>; // Function to get the value for sorting and operations
   showWhen?: ShowWhen; // Controls when child column is visible based on parent's collapsed state
   /**
    * Column width. A number or px/fr/% string sets a fixed/proportional width.

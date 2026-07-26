@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactColumnDef } from "@simple-table/react";
-import { animationsConfig } from "./animations.demo-data";
+import { animationsConfig, type AnimationsCrewMember } from "./animations.demo-data";
 import "@simple-table/react/styles.css";
 
 const AnimationsDemo = ({
@@ -13,16 +13,17 @@ const AnimationsDemo = ({
 }) => {
   const [headers, setHeaders] = useState(() => [...animationsConfig.headers]);
 
-  const handleColumnOrderChange = (newHeaders: ReactColumnDef[]) => {
+  const handleColumnOrderChange = (newHeaders: ReactColumnDef<AnimationsCrewMember>[]) => {
     setHeaders(newHeaders);
   };
 
   return (
-    <SimpleTable
+    <SimpleTable<AnimationsCrewMember>
       columnReordering={animationsConfig.tableProps.columnReordering}
       columns={headers}
       enableColumnEditor={animationsConfig.tableProps.enableColumnEditor}
       enableColumnEditorInitOpen={animationsConfig.tableProps.enableColumnEditorInitOpen}
+      getRowId={({ row }) => row.id}
       rows={animationsConfig.rows}
       height={height}
       theme={theme}

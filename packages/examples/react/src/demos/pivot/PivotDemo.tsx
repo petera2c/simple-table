@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme } from "@simple-table/react";
-import { pivotDemoConfig, pivotPresets } from "./pivot.demo-data";
+import { pivotDemoConfig, pivotPresets, type PivotFact } from "./pivot.demo-data";
 import "@simple-table/react/styles.css";
 
 const PivotDemo = ({
@@ -41,7 +41,7 @@ const PivotDemo = ({
           );
         })}
       </div>
-      <SimpleTable
+      <SimpleTable<PivotFact>
         columns={pivotDemoConfig.headers}
         rows={pivotDemoConfig.rows}
         pivot={active.pivot}
@@ -50,6 +50,7 @@ const PivotDemo = ({
         height={height}
         selectableCells
         theme={theme}
+        getRowId={({ row }) => row.id}
       />
     </div>
   );

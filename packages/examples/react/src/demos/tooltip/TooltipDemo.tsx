@@ -1,5 +1,5 @@
 import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { tooltipConfig } from "./tooltip.demo-data";
+import { tooltipConfig, type TooltipProduct } from "./tooltip.demo-data";
 import "@simple-table/react/styles.css";
 
 const TooltipDemo = ({
@@ -10,7 +10,7 @@ const TooltipDemo = ({
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable
+    <SimpleTable<TooltipProduct>
       columns={tooltipConfig.headers}
       rows={tooltipConfig.rows}
       height={height}
@@ -18,6 +18,7 @@ const TooltipDemo = ({
       columnResizing={tooltipConfig.tableProps.columnResizing}
       columnReordering={tooltipConfig.tableProps.columnReordering}
       selectableCells={tooltipConfig.tableProps.selectableCells}
+      getRowId={({ row }) => row.id}
     />
   );
 };

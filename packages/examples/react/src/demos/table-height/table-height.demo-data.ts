@@ -1,8 +1,16 @@
 // Self-contained demo table setup for this example.
 import type { ReactColumnDef } from "@simple-table/react";
 
+export interface HeightDemoEmployee {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+  status: string;
+}
 
-export const tableHeightHeaders: ReactColumnDef[] = [
+export const tableHeightHeaders: ReactColumnDef<HeightDemoEmployee>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 150, width: "1fr", type: "string" },
   { accessor: "email", label: "Email", minWidth: 200, width: "1fr", type: "string" },
@@ -11,7 +19,7 @@ export const tableHeightHeaders: ReactColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, type: "string" },
 ];
 
-export const tableHeightData = [
+export const tableHeightData: HeightDemoEmployee[] = [
   { id: 1, name: "Alice Chen", email: "alice@example.com", role: "Senior Engineer", department: "Engineering", status: "Active" },
   { id: 2, name: "Bob Martinez", email: "bob@example.com", role: "Product Manager", department: "Product", status: "Active" },
   { id: 3, name: "Carol Williams", email: "carol@example.com", role: "Designer", department: "Design", status: "Active" },

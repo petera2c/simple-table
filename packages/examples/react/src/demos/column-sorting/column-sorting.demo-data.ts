@@ -1,8 +1,16 @@
 // Self-contained demo table setup for this example.
-import type { Row, ReactColumnDef } from "@simple-table/react";
+import type { ReactColumnDef } from "@simple-table/react";
 
+export interface FacultyMember {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+  startDate: string;
+}
 
-export const COLUMN_SORTING_DATA: Row[] = [
+export const COLUMN_SORTING_DATA: FacultyMember[] = [
   {
     id: 1,
     name: "Dr. Elena Vasquez",
@@ -102,7 +110,7 @@ export const COLUMN_SORTING_DATA: Row[] = [
 ];
 
 
-export const columnSortingHeaders: ReactColumnDef[] = [
+export const columnSortingHeaders: ReactColumnDef<FacultyMember>[] = [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   { accessor: "name", label: "Name", width: 180, sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 80, sortable: true, type: "number" },

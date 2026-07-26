@@ -1,13 +1,14 @@
 import CellValue from "./CellValue";
 import { Accessor } from "./ColumnDef";
 import Row from "./Row";
+import type { RowData } from "./Row";
 
-type CellClickProps = {
-  accessor: Accessor;
+type CellClickProps<TData extends RowData = Row, TValue = CellValue> = {
+  accessor: Accessor<TData>;
   colIndex: number;
-  row: Row;
+  row: TData;
   rowIndex: number;
-  value: CellValue;
+  value: TValue;
 };
 
 export default CellClickProps;

@@ -5,6 +5,7 @@ import {
   columnResizingHeaders,
   columnResizingData,
   COLUMN_RESIZING_STORAGE_KEY,
+  type OceanStaff,
 } from "./column-resizing.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -35,7 +36,7 @@ const ColumnResizingDemo = ({
     }
   }, []);
 
-  const handleColumnWidthChange = (updatedHeaders: ReactColumnDef[]) => {
+  const handleColumnWidthChange = (updatedHeaders: ReactColumnDef<OceanStaff>[]) => {
     try {
       const widthMap = updatedHeaders.reduce(
         (acc, h) => {
@@ -75,12 +76,13 @@ const ColumnResizingDemo = ({
           {saveMessage}
         </div>
       )}
-      <SimpleTable
+      <SimpleTable<OceanStaff>
         columnResizing
         columns={headers}
         rows={columnResizingData}
         height={height}
         theme={theme}
+        getRowId={({ row }) => row.id}
         onColumnWidthChange={handleColumnWidthChange}
       />
     </div>

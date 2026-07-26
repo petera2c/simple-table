@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactColumnDef, HeaderRendererProps } from "@simple-table/react";
-import { headerRendererConfig } from "./header-renderer.demo-data";
+import { headerRendererConfig, type HeaderEmployee } from "./header-renderer.demo-data";
 import "@simple-table/react/styles.css";
 
 /**
  * Stateful header control. Pin should survive built-in sort/filter icon refreshes.
  * If core remounts the React headerRenderer on sort, the pin snaps back off.
  */
-const StatefulHeader = ({ header, components }: HeaderRendererProps) => {
+const StatefulHeader = ({ header, components }: HeaderRendererProps<HeaderEmployee>) => {
   const [pinned, setPinned] = useState(false);
   const [clicks, setClicks] = useState(0);
 
@@ -72,7 +72,8 @@ const StatefulHeader = ({ header, components }: HeaderRendererProps) => {
   );
 };
 
-const headers: ReactColumnDef[] = headerRendererConfig.headers.map((h) => ({
+const headers: ReactColumnDef<HeaderEmployee>[] = headerRendererConfig.headers.map(
+  (h): ReactColumnDef<HeaderEmployee> => ({
   ...h,
   // Keep built-in sorting so sort icon refresh goes through core's header path.
   sortable: h.sortable ?? true,
@@ -93,13 +94,14 @@ const HeaderRendererDemo = ({
         Click a header ★ to pin it, then sort that column. The pin (and click count) should stay —
         if the header remounts on sort, both reset.
       </p>
-      <SimpleTable
+      <SimpleTable<HeaderEmployee>
         columns={headers}
         rows={headerRendererConfig.rows}
         height={height}
         theme={theme}
         columnResizing
         selectableCells
+        getRowId={({ row }) => row.id}
       />
     </div>
   );

@@ -1,5 +1,6 @@
-import {SimpleTable} from "@simple-table/react";import type { Theme } from "@simple-table/react";
-import { columnSelectionConfig } from "./column-selection.demo-data";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme } from "@simple-table/react";
+import { columnSelectionConfig, type TeamMember } from "./column-selection.demo-data";
 import "@simple-table/react/styles.css";
 
 const ColumnSelectionDemo = ({
@@ -10,11 +11,12 @@ const ColumnSelectionDemo = ({
   theme?: Theme;
 }) => {
   return (
-    <SimpleTable
+    <SimpleTable<TeamMember>
       columns={columnSelectionConfig.headers}
       rows={columnSelectionConfig.rows}
       height={height}
       theme={theme}
+      getRowId={({ row }) => row.id}
       selectableColumns={columnSelectionConfig.tableProps.selectableColumns}
     />
   );

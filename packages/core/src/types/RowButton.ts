@@ -1,7 +1,8 @@
 import Row from "./Row";
+import type { RowData } from "./Row";
 
-export interface RowButtonProps {
-  row: Row;
+export interface RowButtonProps<TData extends RowData = Row> {
+  row: TData;
   rowIndex: number; // The position of the row in the table
 }
 
@@ -14,4 +15,6 @@ export interface RowButtonProps {
 //     button.onclick = () => handleEdit(props.row);
 //     return button;
 //   }]}
-export type RowButton = (props: RowButtonProps) => HTMLElement | null;
+export type RowButton<TData extends RowData = Row> = (
+  props: RowButtonProps<TData>
+) => HTMLElement | null;

@@ -7,6 +7,7 @@ import { addTrackedEventListener } from "../eventTracking";
 import { parseDateString } from "../../dateUtils";
 import { getCellId } from "../../cellUtils";
 import { createAngleLeftIcon, createAngleRightIcon } from "../../../icons";
+import type { IconElement } from "../../../types/IconsConfig";
 
 // Helper to get days in month
 const getDaysInMonth = (year: number, month: number): number => {
@@ -82,11 +83,11 @@ export const createDatePicker = (
   const prevIconSource = context.icons.prev ?? createAngleLeftIcon("st-next-prev-icon");
   const nextIconSource = context.icons.next ?? createAngleRightIcon("st-next-prev-icon");
 
-  const appendIcon = (button: HTMLElement, icon: string | HTMLElement) => {
+  const appendIcon = (button: HTMLElement, icon: IconElement) => {
     if (typeof icon === "string") {
       button.innerHTML = icon;
     } else {
-      button.appendChild(icon.cloneNode(true) as HTMLElement);
+      button.appendChild(icon.cloneNode(true));
     }
   };
 

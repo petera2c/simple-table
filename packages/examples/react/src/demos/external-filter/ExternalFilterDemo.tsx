@@ -1,6 +1,11 @@
 import { useState, useMemo } from "react";
-import {SimpleTable} from "@simple-table/react";import type { Theme, TableFilterState } from "@simple-table/react";
-import { externalFilterConfig, matchesFilter } from "./external-filter.demo-data";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme, TableFilterState } from "@simple-table/react";
+import {
+  externalFilterConfig,
+  matchesFilter,
+  type FilterableEmployee,
+} from "./external-filter.demo-data";
 import "@simple-table/react/styles.css";
 
 const ExternalFilterDemo = ({
@@ -18,13 +23,13 @@ const ExternalFilterDemo = ({
 
     return externalFilterConfig.rows.filter((row) =>
       filterEntries.every(([accessor, filter]) =>
-        matchesFilter(row[accessor as keyof typeof row] as any, filter)
-      )
+        matchesFilter(row[accessor as keyof FilterableEmployee], filter),
+      ),
     );
   }, [filters]);
 
   return (
-    <SimpleTable
+    <SimpleTable<FilterableEmployee>
       columns={externalFilterConfig.headers}
       rows={filteredData}
       onFilterChange={setFilters}
@@ -32,6 +37,7 @@ const ExternalFilterDemo = ({
       columnResizing
       height={height}
       theme={theme}
+      getRowId={({ row }) => row.id}
     />
   );
 };

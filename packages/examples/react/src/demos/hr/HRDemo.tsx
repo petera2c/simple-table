@@ -3,22 +3,20 @@ import { SimpleTable } from "@simple-table/react";
 import type {
   Theme,
   CellChangeProps,
-  CellRendererProps,
   ReactColumnDef,
 } from "@simple-table/react";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
 import type { HREmployee } from "./hr.demo-data";
 import "@simple-table/react/styles.css";
 
-function getHeaders(): ReactColumnDef[] {
+function getHeaders(): ReactColumnDef<HREmployee>[] {
   return hrConfig.headers.map((h) => {
     if (h.accessor === "fullName") {
       return {
         ...h,
-        cellRenderer: ({ row: r, theme }: CellRendererProps) => {
-          const d = r as unknown as HREmployee;
+        cellRenderer: ({ row, theme }) => {
           const c = getHRThemeColors(theme);
-          const initials = `${d.firstName.charAt(0)}${d.lastName.charAt(0)}`;
+          const initials = `${row.firstName.charAt(0)}${row.lastName.charAt(0)}`;
           return (
             <div style={{ display: "flex", alignItems: "center" }}>
               <div
@@ -37,8 +35,8 @@ function getHeaders(): ReactColumnDef[] {
                 {initials}
               </div>
               <div style={{ marginLeft: "8px" }}>
-                <div>{d.fullName}</div>
-                <div style={{ fontSize: "12px", color: c.grayMuted }}>{d.position}</div>
+                <div>{row.fullName}</div>
+                <div style={{ fontSize: "12px", color: c.grayMuted }}>{row.position}</div>
               </div>
             </div>
           );
@@ -48,13 +46,12 @@ function getHeaders(): ReactColumnDef[] {
     if (h.accessor === "performanceScore") {
       return {
         ...h,
-        cellRenderer: ({ row: r, theme }: CellRendererProps) => {
-          const d = r as unknown as HREmployee;
+        cellRenderer: ({ row, theme }) => {
           const c = getHRThemeColors(theme);
           const color =
-            d.performanceScore >= 90
+            row.performanceScore >= 90
               ? c.progressSuccess
-              : d.performanceScore >= 65
+              : row.performanceScore >= 65
                 ? c.progressNormal
                 : c.progressException;
           return (
@@ -71,7 +68,7 @@ function getHeaders(): ReactColumnDef[] {
                 <div
                   style={{
                     height: "100%",
-                    width: `${d.performanceScore}%`,
+                    width: `${row.performanceScore}%`,
                     backgroundColor: color,
                     borderRadius: "100px",
                   }}
@@ -80,7 +77,7 @@ function getHeaders(): ReactColumnDef[] {
               <div
                 style={{ fontSize: "12px", textAlign: "center", marginTop: "4px", color: c.gray }}
               >
-                {d.performanceScore}/100
+                {row.performanceScore}/100
               </div>
             </div>
           );
@@ -90,10 +87,9 @@ function getHeaders(): ReactColumnDef[] {
     if (h.accessor === "hireDate") {
       return {
         ...h,
-        cellRenderer: ({ row: r, theme }: CellRendererProps) => {
-          const d = r as unknown as HREmployee;
-          if (!d.hireDate) return "";
-          const [year, month, day] = d.hireDate.split("-").map(Number);
+        cellRenderer: ({ row, theme }) => {
+          if (!row.hireDate) return "";
+          const [year, month, day] = row.hireDate.split("-").map(Number);
           const date = new Date(year, month - 1, day);
           const c = getHRThemeColors(theme);
           return (
@@ -111,31 +107,28 @@ function getHeaders(): ReactColumnDef[] {
     if (h.accessor === "yearsOfService") {
       return {
         ...h,
-        cellRenderer: ({ row: r, theme }: CellRendererProps) => {
-          const d = r as unknown as HREmployee;
+        cellRenderer: ({ row, theme }) => {
           const c = getHRThemeColors(theme);
-          return <span style={{ color: c.gray }}>{`${d.yearsOfService} yrs`}</span>;
+          return <span style={{ color: c.gray }}>{`${row.yearsOfService} yrs`}</span>;
         },
       };
     }
     if (h.accessor === "salary") {
       return {
         ...h,
-        cellRenderer: ({ row: r, theme }: CellRendererProps) => {
-          const d = r as unknown as HREmployee;
+        cellRenderer: ({ row, theme }) => {
           const c = getHRThemeColors(theme);
-          return <span style={{ color: c.gray }}>{`$${d.salary.toLocaleString()}`}</span>;
+          return <span style={{ color: c.gray }}>{`$${row.salary.toLocaleString()}`}</span>;
         },
       };
     }
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: ({ row: r, theme }: CellRendererProps) => {
-          const d = r as unknown as HREmployee;
-          if (!d.status) return "";
+        cellRenderer: ({ row, theme }) => {
+          if (!row.status) return "";
           const c = getHRThemeColors(theme);
-          const colorKey = HR_STATUS_COLOR_MAP[d.status] || "default";
+          const colorKey = HR_STATUS_COLOR_MAP[row.status] || "default";
           const tagColors = c.tagColors[colorKey];
           return (
             <span
@@ -149,7 +142,7 @@ function getHeaders(): ReactColumnDef[] {
                 display: "inline-block",
               }}
             >
-              {d.status}
+              {row.status}
             </span>
           );
         },
@@ -165,7 +158,7 @@ const HRDemo = ({ height = "400px", theme }: { height?: string | number; theme?:
   const heightNum = typeof height === "number" ? height : 400;
   const howManyRowsCanFit = Math.floor(heightNum / rowHeight);
 
-  const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps) => {
+  const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps<HREmployee>) => {
     setData((prev) =>
       prev.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item)),
     );
@@ -174,10 +167,11 @@ const HRDemo = ({ height = "400px", theme }: { height?: string | number; theme?:
   const headers = useMemo(() => getHeaders(), []);
 
   return (
-    <SimpleTable
+    <SimpleTable<HREmployee>
       columnReordering
       columnResizing
       columns={headers}
+      getRowId={({ row }) => row.id}
       onCellEdit={handleCellEdit}
       customTheme={{ rowHeight }}
       rows={data}
