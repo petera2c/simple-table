@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
 export interface BillingRow {
   id: string | number;
@@ -14,10 +14,27 @@ export interface BillingRow {
   [key: `revenue_${string}`]: number;
 }
 
-
-const ACCOUNT_NAMES = ["Acme Corp", "Globex Inc", "Initech", "Soylent Corp", "Umbrella LLC", "Wayne Industries", "Stark Tech", "Oscorp", "LexCorp", "Cyberdyne"];
+const ACCOUNT_NAMES = [
+  "Acme Corp",
+  "Globex Inc",
+  "Initech",
+  "Soylent Corp",
+  "Umbrella LLC",
+  "Wayne Industries",
+  "Stark Tech",
+  "Oscorp",
+  "LexCorp",
+  "Cyberdyne",
+];
 const INVOICE_PREFIXES = ["INV", "SUB", "REN"];
-const CHARGE_TYPES = ["Subscription", "API Usage", "Storage", "Support Premium", "Bandwidth", "Compute"];
+const CHARGE_TYPES = [
+  "Subscription",
+  "API Usage",
+  "Storage",
+  "Support Premium",
+  "Bandwidth",
+  "Compute",
+];
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -85,8 +102,8 @@ export function generateBillingData(count: number = 30): BillingRow[] {
 
 export const billingData = generateBillingData(30);
 
-function generateMonthHeaders(): AngularColumnDef[] {
-  const headers: AngularColumnDef[] = [];
+function generateMonthHeaders(): AngularColumnDef<BillingRow>[] {
+  const headers: AngularColumnDef<BillingRow>[] = [];
   const year = 2024;
   for (let monthIndex = 11; monthIndex >= 0; monthIndex--) {
     const fullMonthName = new Date(year, monthIndex).toLocaleString("default", { month: "long" });
@@ -110,7 +127,7 @@ function generateMonthHeaders(): AngularColumnDef[] {
           align: "right",
           type: "number",
           aggregation: { type: "sum" },
-          valueFormatter: ({ value }) => {
+          valueFormatter: ({ value }: ValueFormatterProps<BillingRow>) => {
             if (typeof value !== "number" || value === 0) return "—";
             return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
           },
@@ -125,7 +142,7 @@ function generateMonthHeaders(): AngularColumnDef[] {
           align: "right",
           type: "number",
           aggregation: { type: "sum" },
-          valueFormatter: ({ value }) => {
+          valueFormatter: ({ value }: ValueFormatterProps<BillingRow>) => {
             if (typeof value !== "number" || value === 0) return "—";
             return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
           },
@@ -136,7 +153,7 @@ function generateMonthHeaders(): AngularColumnDef[] {
   return headers;
 }
 
-export const billingHeaders: AngularColumnDef[] = [
+export const billingHeaders: AngularColumnDef<BillingRow>[] = [
   {
     accessor: "name",
     label: "Name",
@@ -157,7 +174,7 @@ export const billingHeaders: AngularColumnDef[] = [
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
-    valueFormatter: ({ value }) => {
+    valueFormatter: ({ value }: ValueFormatterProps<BillingRow>) => {
       if (typeof value !== "number" || value === 0) return "—";
       return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     },
@@ -171,7 +188,7 @@ export const billingHeaders: AngularColumnDef[] = [
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
-    valueFormatter: ({ value }) => {
+    valueFormatter: ({ value }: ValueFormatterProps<BillingRow>) => {
       if (typeof value !== "number" || value === 0) return "—";
       return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     },
@@ -185,7 +202,7 @@ export const billingHeaders: AngularColumnDef[] = [
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
-    valueFormatter: ({ value }) => {
+    valueFormatter: ({ value }: ValueFormatterProps<BillingRow>) => {
       if (typeof value !== "number" || value === 0) return "—";
       return `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     },
@@ -196,4 +213,4 @@ export const billingHeaders: AngularColumnDef[] = [
 export const billingConfig = {
   headers: billingHeaders,
   rows: billingData,
-} as const;
+};

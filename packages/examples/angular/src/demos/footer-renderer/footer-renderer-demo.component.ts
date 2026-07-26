@@ -1,10 +1,11 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { footerDemoThemeContext } from "./footer-demo-theme-context";
 import { FooterPaginationComponent } from "./footer-pagination.component";
 import { footerRendererConfig } from "./footer-renderer.demo-data";
 import "@simple-table/angular/styles.css";
+import type { CatalogProduct } from "./footer-renderer.demo-data";
 
 @Component({
   selector: "footer-renderer-demo",
@@ -12,6 +13,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [footerRenderer]="footerRenderer"
@@ -27,8 +29,8 @@ export class FooterRendererDemoComponent implements OnInit, OnChanges, OnDestroy
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = footerRendererConfig.rows;
-  readonly headers: AngularColumnDef[] = footerRendererConfig.headers;
+  readonly rows: CatalogProduct[] = footerRendererConfig.rows;
+  readonly headers: AngularColumnDef<CatalogProduct>[] = footerRendererConfig.headers;
   readonly footerRenderer = FooterPaginationComponent;
 
   ngOnInit(): void {

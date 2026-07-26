@@ -1,5 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, TableAPI, Row, CellValue } from "simple-table-core";
+import type { CryptoCoin } from "./crypto.demo-data";
+import type { Theme, TableAPI, Row, CellValue, GetRowIdParams } from "simple-table-core";
 import { cryptoConfig } from "./crypto.demo-data";
 import "simple-table-core/styles.css";
 
@@ -17,8 +18,10 @@ function pickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Row>) {
-  for (const accessor of Object.keys(patch)) {
+const getRowId = ({ row }: GetRowIdParams<CryptoCoin>) => row.id;
+
+function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<CryptoCoin>) {
+  for (const accessor of Object.keys(patch) as Array<keyof CryptoCoin>) {
     const newValue = patch[accessor];
     if (newValue === undefined) continue;
     api.updateData({ accessor, rowId, newValue: newValue as CellValue });
@@ -31,18 +34,19 @@ function runTick(getApi: () => TableAPI | null | undefined) {
   const visible = api.getVisibleRows();
   if (!visible.length) return;
   for (const vr of pickRandomSubset(visible, ROWS_PER_TICK)) {
-    const rowId = vr.row.id as string | number | undefined;
-    if (rowId === undefined || rowId === null || rowId === "") continue;
-    const currentPrice = vr.row.price as number;
-    if (typeof currentPrice !== "number") continue;
+    const row = vr.row;
+    const rowId = row.id;
+    if (typeof rowId !== "string" && typeof rowId !== "number") continue;
+    if (rowId === "") continue;
+    if (typeof row.price !== "number") continue;
     const drift = (Math.random() - 0.5) * 0.012;
-    const newPrice = Math.max(currentPrice * (1 + drift), currentPrice * 0.0001);
+    const newPrice = Math.max(row.price * (1 + drift), row.price * 0.0001);
     const round = newPrice >= 1 ? 1e2 : 1e6;
     const newPriceRounded = Math.round(newPrice * round) / round;
-    const currentChange = (vr.row.change24h as number) ?? 0;
+    const currentChange = typeof row.change24h === "number" ? row.change24h : 0;
     const newChange = Math.round((currentChange + drift * 100) * 100) / 100;
-    const history = vr.row.priceHistory as number[];
-    const patch: Partial<Row> = { price: newPriceRounded, change24h: newChange };
+    const patch: Partial<CryptoCoin> = { price: newPriceRounded, change24h: newChange };
+    const history = row.priceHistory;
     if (Array.isArray(history) && history.length > 0) {
       patch.priceHistory = [...history.slice(1), newPriceRounded];
     }
@@ -53,11 +57,11 @@ function runTick(getApi: () => TableAPI | null | undefined) {
 export function renderCryptoDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<CryptoCoin> {
   const table = new SimpleTableVanilla(container, {
     columns: cryptoConfig.headers,
     rows: cryptoConfig.rows,
-    getRowId: ({ row }) => (row as { id: string | number }).id,
+    getRowId,
     height: options?.height ?? "70dvh",
     theme: options?.theme,
     columnReordering: true,

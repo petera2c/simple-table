@@ -1,5 +1,4 @@
 import { Component, Input } from "@angular/core";
-import type { Row } from "@simple-table/angular";
 import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 
 @Component({
@@ -21,10 +20,10 @@ import type { CellRendererEmployee } from "./cell-renderer.demo-data";
   `,
 })
 export class CrTeamMembersCellComponent {
-  @Input({ required: true }) row!: Row;
+  @Input({ required: true }) row!: CellRendererEmployee;
 
   get members(): { name: string; role: string }[] {
-    return (this.row as unknown as CellRendererEmployee).teamMembers;
+    return this.row.teamMembers;
   }
 
   initials(name: string): string {

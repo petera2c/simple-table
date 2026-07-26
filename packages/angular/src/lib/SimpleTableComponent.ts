@@ -19,7 +19,11 @@ import {
 } from "simple-table-core";
 import { buildVanillaConfig, resolveAngularColumns } from "../buildVanillaConfig";
 import { MountRegistry } from "../MountRegistry";
-import type { SimpleTableAngularProps, TableInstance } from "../types";
+import type {
+  AngularDefaultRowData,
+  SimpleTableAngularProps,
+  TableInstance,
+} from "../types";
 
 /**
  * SimpleTable — Angular adapter for simple-table-core.
@@ -27,11 +31,9 @@ import type { SimpleTableAngularProps, TableInstance } from "../types";
  * Accepts the same props as SimpleTableProps (the vanilla user-facing API) but
  * with Angular component types for all renderer props.
  *
- * Use @ViewChild to access the TableAPI:
- *   @ViewChild(SimpleTableComponent) tableRef!: SimpleTableComponent;
- *   this.tableRef.getAPI()?.sort(...)
- *
- * Or listen to the (tableReady) output event.
+ * Prefer typed `rows` / `columns` (`AngularColumnDef<MyRow>`). For a typed
+ * imperative handle, use `@ViewChild(SimpleTableComponent) table!: SimpleTableComponent<MyRow>`
+ * or listen to `(tableReady)`.
  */
 @Component({
   selector: "simple-table",
@@ -39,81 +41,83 @@ import type { SimpleTableAngularProps, TableInstance } from "../types";
   template: `<div #host></div>`,
   styles: [":host { display: block; }"],
 })
-export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
-  @Input({ required: true }) rows!: SimpleTableAngularProps["rows"];
-  @Input() columns?: SimpleTableAngularProps["columns"];
+export class SimpleTableComponent<
+  TData extends AngularDefaultRowData = AngularDefaultRowData,
+> implements OnInit, OnChanges, OnDestroy {
+  @Input({ required: true }) rows!: SimpleTableAngularProps<TData>["rows"];
+  @Input() columns?: SimpleTableAngularProps<TData>["columns"];
 
   // All optional SimpleTableAngularProps inputs
-  @Input() footerRenderer?: SimpleTableAngularProps["footerRenderer"];
-  @Input() loadingStateRenderer?: SimpleTableAngularProps["loadingStateRenderer"];
-  @Input() errorStateRenderer?: SimpleTableAngularProps["errorStateRenderer"];
-  @Input() emptyStateRenderer?: SimpleTableAngularProps["emptyStateRenderer"];
-  @Input() tableEmptyStateRenderer?: SimpleTableAngularProps["tableEmptyStateRenderer"];
-  @Input() headerDropdown?: SimpleTableAngularProps["headerDropdown"];
-  @Input() columnEditorConfig?: SimpleTableAngularProps["columnEditorConfig"];
-  @Input() onCellClick?: SimpleTableAngularProps["onCellClick"];
-  @Input() onCellEdit?: SimpleTableAngularProps["onCellEdit"];
-  @Input() onSortChange?: SimpleTableAngularProps["onSortChange"];
-  @Input() onFilterChange?: SimpleTableAngularProps["onFilterChange"];
-  @Input() onRowSelectionChange?: SimpleTableAngularProps["onRowSelectionChange"];
-  @Input() onRowGroupExpand?: SimpleTableAngularProps["onRowGroupExpand"];
-  @Input() onColumnOrderChange?: SimpleTableAngularProps["onColumnOrderChange"];
-  @Input() onColumnVisibilityChange?: SimpleTableAngularProps["onColumnVisibilityChange"];
-  @Input() onColumnWidthChange?: SimpleTableAngularProps["onColumnWidthChange"];
-  @Input() onPageChange?: SimpleTableAngularProps["onPageChange"];
-  @Input() onLoadMore?: SimpleTableAngularProps["onLoadMore"];
-  @Input() onTableReady?: SimpleTableAngularProps["onTableReady"];
-  @Input() rowGrouping?: SimpleTableAngularProps["rowGrouping"];
-  @Input() pivot?: SimpleTableAngularProps["pivot"];
-  @Input() onPivotChange?: SimpleTableAngularProps["onPivotChange"];
-  @Input() enableRowSelection?: SimpleTableAngularProps["enableRowSelection"];
-  @Input() theme?: SimpleTableAngularProps["theme"];
-  @Input() quickFilter?: SimpleTableAngularProps["quickFilter"];
-  @Input() isLoading?: SimpleTableAngularProps["isLoading"];
-  @Input() getRowId?: SimpleTableAngularProps["getRowId"];
-  @Input() enablePagination?: SimpleTableAngularProps["enablePagination"];
-  @Input() rowsPerPage?: SimpleTableAngularProps["rowsPerPage"];
-  @Input() serverSidePagination?: SimpleTableAngularProps["serverSidePagination"];
-  @Input() totalRowCount?: SimpleTableAngularProps["totalRowCount"];
-  @Input() height?: SimpleTableAngularProps["height"];
-  @Input() maxHeight?: SimpleTableAngularProps["maxHeight"];
-  @Input() scrollParent?: SimpleTableAngularProps["scrollParent"];
-  @Input() infiniteScrollThreshold?: SimpleTableAngularProps["infiniteScrollThreshold"];
-  @Input() columnResizing?: SimpleTableAngularProps["columnResizing"];
-  @Input() columnReordering?: SimpleTableAngularProps["columnReordering"];
-  @Input() enableColumnEditor?: SimpleTableAngularProps["enableColumnEditor"];
-  @Input() enableColumnEditorInitOpen?: SimpleTableAngularProps["enableColumnEditorInitOpen"];
-  @Input() selectableCells?: SimpleTableAngularProps["selectableCells"];
-  @Input() selectableColumns?: SimpleTableAngularProps["selectableColumns"];
-  @Input() enableHeaderEditing?: SimpleTableAngularProps["enableHeaderEditing"];
-  @Input() onHeaderEdit?: SimpleTableAngularProps["onHeaderEdit"];
-  @Input() customTheme?: SimpleTableAngularProps["customTheme"];
-  @Input() icons?: SimpleTableAngularProps["icons"];
-  @Input() externalFilterHandling?: SimpleTableAngularProps["externalFilterHandling"];
-  @Input() externalSortHandling?: SimpleTableAngularProps["externalSortHandling"];
-  @Input() columnBorders?: SimpleTableAngularProps["columnBorders"];
-  @Input() rowButtons?: SimpleTableAngularProps["rowButtons"];
-  @Input() hideFooter?: SimpleTableAngularProps["hideFooter"];
-  @Input() footerPosition?: SimpleTableAngularProps["footerPosition"];
-  @Input() initialSortColumn?: SimpleTableAngularProps["initialSortColumn"];
-  @Input() initialSortDirection?: SimpleTableAngularProps["initialSortDirection"];
-  @Input() expandAll?: SimpleTableAngularProps["expandAll"];
-  @Input() autoExpandColumns?: SimpleTableAngularProps["autoExpandColumns"];
-  @Input() animations?: SimpleTableAngularProps["animations"];
-  @Input() enableVirtualization?: SimpleTableAngularProps["enableVirtualization"];
-  @Input() hoverRowBackground?: SimpleTableAngularProps["hoverRowBackground"];
-  @Input() oddColumnBackground?: SimpleTableAngularProps["oddColumnBackground"];
-  @Input() oddEvenRowBackground?: SimpleTableAngularProps["oddEvenRowBackground"];
+  @Input() footerRenderer?: SimpleTableAngularProps<TData>["footerRenderer"];
+  @Input() loadingStateRenderer?: SimpleTableAngularProps<TData>["loadingStateRenderer"];
+  @Input() errorStateRenderer?: SimpleTableAngularProps<TData>["errorStateRenderer"];
+  @Input() emptyStateRenderer?: SimpleTableAngularProps<TData>["emptyStateRenderer"];
+  @Input() tableEmptyStateRenderer?: SimpleTableAngularProps<TData>["tableEmptyStateRenderer"];
+  @Input() headerDropdown?: SimpleTableAngularProps<TData>["headerDropdown"];
+  @Input() columnEditorConfig?: SimpleTableAngularProps<TData>["columnEditorConfig"];
+  @Input() onCellClick?: SimpleTableAngularProps<TData>["onCellClick"];
+  @Input() onCellEdit?: SimpleTableAngularProps<TData>["onCellEdit"];
+  @Input() onSortChange?: SimpleTableAngularProps<TData>["onSortChange"];
+  @Input() onFilterChange?: SimpleTableAngularProps<TData>["onFilterChange"];
+  @Input() onRowSelectionChange?: SimpleTableAngularProps<TData>["onRowSelectionChange"];
+  @Input() onRowGroupExpand?: SimpleTableAngularProps<TData>["onRowGroupExpand"];
+  @Input() onColumnOrderChange?: SimpleTableAngularProps<TData>["onColumnOrderChange"];
+  @Input() onColumnVisibilityChange?: SimpleTableAngularProps<TData>["onColumnVisibilityChange"];
+  @Input() onColumnWidthChange?: SimpleTableAngularProps<TData>["onColumnWidthChange"];
+  @Input() onPageChange?: SimpleTableAngularProps<TData>["onPageChange"];
+  @Input() onLoadMore?: SimpleTableAngularProps<TData>["onLoadMore"];
+  @Input() onTableReady?: SimpleTableAngularProps<TData>["onTableReady"];
+  @Input() rowGrouping?: SimpleTableAngularProps<TData>["rowGrouping"];
+  @Input() pivot?: SimpleTableAngularProps<TData>["pivot"];
+  @Input() onPivotChange?: SimpleTableAngularProps<TData>["onPivotChange"];
+  @Input() enableRowSelection?: SimpleTableAngularProps<TData>["enableRowSelection"];
+  @Input() theme?: SimpleTableAngularProps<TData>["theme"];
+  @Input() quickFilter?: SimpleTableAngularProps<TData>["quickFilter"];
+  @Input() isLoading?: SimpleTableAngularProps<TData>["isLoading"];
+  @Input() getRowId?: SimpleTableAngularProps<TData>["getRowId"];
+  @Input() enablePagination?: SimpleTableAngularProps<TData>["enablePagination"];
+  @Input() rowsPerPage?: SimpleTableAngularProps<TData>["rowsPerPage"];
+  @Input() serverSidePagination?: SimpleTableAngularProps<TData>["serverSidePagination"];
+  @Input() totalRowCount?: SimpleTableAngularProps<TData>["totalRowCount"];
+  @Input() height?: SimpleTableAngularProps<TData>["height"];
+  @Input() maxHeight?: SimpleTableAngularProps<TData>["maxHeight"];
+  @Input() scrollParent?: SimpleTableAngularProps<TData>["scrollParent"];
+  @Input() infiniteScrollThreshold?: SimpleTableAngularProps<TData>["infiniteScrollThreshold"];
+  @Input() columnResizing?: SimpleTableAngularProps<TData>["columnResizing"];
+  @Input() columnReordering?: SimpleTableAngularProps<TData>["columnReordering"];
+  @Input() enableColumnEditor?: SimpleTableAngularProps<TData>["enableColumnEditor"];
+  @Input() enableColumnEditorInitOpen?: SimpleTableAngularProps<TData>["enableColumnEditorInitOpen"];
+  @Input() selectableCells?: SimpleTableAngularProps<TData>["selectableCells"];
+  @Input() selectableColumns?: SimpleTableAngularProps<TData>["selectableColumns"];
+  @Input() enableHeaderEditing?: SimpleTableAngularProps<TData>["enableHeaderEditing"];
+  @Input() onHeaderEdit?: SimpleTableAngularProps<TData>["onHeaderEdit"];
+  @Input() customTheme?: SimpleTableAngularProps<TData>["customTheme"];
+  @Input() icons?: SimpleTableAngularProps<TData>["icons"];
+  @Input() externalFilterHandling?: SimpleTableAngularProps<TData>["externalFilterHandling"];
+  @Input() externalSortHandling?: SimpleTableAngularProps<TData>["externalSortHandling"];
+  @Input() columnBorders?: SimpleTableAngularProps<TData>["columnBorders"];
+  @Input() rowButtons?: SimpleTableAngularProps<TData>["rowButtons"];
+  @Input() hideFooter?: SimpleTableAngularProps<TData>["hideFooter"];
+  @Input() footerPosition?: SimpleTableAngularProps<TData>["footerPosition"];
+  @Input() initialSortColumn?: SimpleTableAngularProps<TData>["initialSortColumn"];
+  @Input() initialSortDirection?: SimpleTableAngularProps<TData>["initialSortDirection"];
+  @Input() expandAll?: SimpleTableAngularProps<TData>["expandAll"];
+  @Input() autoExpandColumns?: SimpleTableAngularProps<TData>["autoExpandColumns"];
+  @Input() animations?: SimpleTableAngularProps<TData>["animations"];
+  @Input() enableVirtualization?: SimpleTableAngularProps<TData>["enableVirtualization"];
+  @Input() hoverRowBackground?: SimpleTableAngularProps<TData>["hoverRowBackground"];
+  @Input() oddColumnBackground?: SimpleTableAngularProps<TData>["oddColumnBackground"];
+  @Input() oddEvenRowBackground?: SimpleTableAngularProps<TData>["oddEvenRowBackground"];
 
   /** Emits the TableAPI once the table has mounted. */
-  @Output() tableReady = new EventEmitter<TableAPI>();
+  @Output() tableReady = new EventEmitter<TableAPI<TData>>();
 
   private instance: TableInstance | null = null;
   private registry = new MountRegistry();
   private syncedDefaultHeaders: ReadonlyArray<
-    NonNullable<SimpleTableAngularProps["columns"]>[number]
+    NonNullable<SimpleTableAngularProps<TData>["columns"]>[number]
   > | undefined;
-  private syncedRows: SimpleTableAngularProps["rows"] | undefined;
+  private syncedRows: SimpleTableAngularProps<TData>["rows"] | undefined;
   private hostEl = inject(ElementRef<HTMLElement>);
   private appRef = inject(ApplicationRef);
   private envInjector = inject(EnvironmentInjector);
@@ -131,7 +135,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     this.syncedDefaultHeaders = resolveAngularColumns(props);
     this.syncedRows = props.rows;
 
-    this.tableReady.emit(this.instance.getAPI());
+    this.tableReady.emit(this.instance.getAPI() as unknown as TableAPI<TData>);
   }
 
   ngOnChanges(): void {
@@ -154,7 +158,7 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
     const rowsUnchanged = rowsShallowUnchanged(
       this.syncedRows as ReadonlyArray<object> | undefined,
       props.rows as ReadonlyArray<object>,
-      props.getRowId,
+      props.getRowId as Parameters<typeof rowsShallowUnchanged>[2],
     );
     this.syncedRows = props.rows;
     if (rowsUnchanged) {
@@ -173,12 +177,12 @@ export class SimpleTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   /** Returns the full imperative TableAPI. Use via @ViewChild or (tableReady) output. */
-  getAPI(): TableAPI | null {
-    return this.instance?.getAPI() ?? null;
+  getAPI(): TableAPI<TData> | null {
+    return (this.instance?.getAPI() as TableAPI<TData> | undefined) ?? null;
   }
 
-  private getProps(): SimpleTableAngularProps {
-    const props: SimpleTableAngularProps = {
+  private getProps(): SimpleTableAngularProps<TData> {
+    const props: SimpleTableAngularProps<TData> = {
       rows: this.rows,
     };
 

@@ -1,16 +1,16 @@
-import { SimpleTableVanilla, asRows } from "simple-table-core";
-import type { Theme, ColumnDef, CellRenderer, CellRendererProps } from "simple-table-core";
+import { SimpleTableVanilla } from "simple-table-core";
+import type { Theme, ColumnDef, CellRenderer, CellRendererProps, GetRowIdParams } from "simple-table-core";
 import { manufacturingConfig, getManufacturingStatusColors } from "./manufacturing.demo-data";
 import type { ManufacturingRow } from "./manufacturing.demo-data";
 import "simple-table-core/styles.css";
 
-function hasStations(row: Record<string, unknown>): boolean {
+function hasStations(row: ManufacturingRow): boolean {
   return Boolean(row.stations && Array.isArray(row.stations));
 }
 
-function getHeaders(): ColumnDef[] {
-  const productLineRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as ManufacturingRow;
+function getHeaders(): ColumnDef<ManufacturingRow>[] {
+  const productLineRenderer: CellRenderer<ManufacturingRow> = ({ row }: CellRendererProps<ManufacturingRow>) => {
+    const d = row ;
     if (hasStations(row)) {
       const span = document.createElement("span");
       span.style.fontWeight = "bold";
@@ -20,8 +20,8 @@ function getHeaders(): ColumnDef[] {
     return d.productLine;
   };
 
-  const stationRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as ManufacturingRow;
+  const stationRenderer: CellRenderer<ManufacturingRow> = ({ row }: CellRendererProps<ManufacturingRow>) => {
+    const d = row ;
     if (hasStations(row)) {
       const span = document.createElement("span");
       span.style.color = "#6b7280";
@@ -45,9 +45,9 @@ function getHeaders(): ColumnDef[] {
     return wrapper;
   };
 
-  const statusRenderer: CellRenderer = ({ row, theme }: CellRendererProps) => {
+  const statusRenderer: CellRenderer<ManufacturingRow> = ({ row, theme }: CellRendererProps<ManufacturingRow>) => {
     if (hasStations(row)) return "—";
-    const d = row as unknown as ManufacturingRow;
+    const d = row ;
     const status = d.status;
     const colors = getManufacturingStatusColors(status, theme);
     const span = document.createElement("span");
@@ -60,17 +60,15 @@ function getHeaders(): ColumnDef[] {
     return span;
   };
 
-  const boldParentNumberRenderer = (accessor: keyof ManufacturingRow): CellRenderer => ({ row }: CellRendererProps) => {
-    const d = row as unknown as ManufacturingRow;
-    const value = d[accessor] as number;
+  const boldParentNumberRenderer: CellRenderer<ManufacturingRow> = ({ row, value }) => {
     const div = document.createElement("div");
     if (hasStations(row)) div.style.fontWeight = "bold";
-    div.textContent = value.toLocaleString();
+    div.textContent = Number(value).toLocaleString();
     return div;
   };
 
-  const cycletimeRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as ManufacturingRow;
+  const cycletimeRenderer: CellRenderer<ManufacturingRow> = ({ row }: CellRendererProps<ManufacturingRow>) => {
+    const d = row ;
     if (hasStations(row)) {
       const span = document.createElement("span");
       span.style.fontWeight = "bold";
@@ -80,8 +78,8 @@ function getHeaders(): ColumnDef[] {
     return String(d.cycletime);
   };
 
-  const efficiencyRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as ManufacturingRow;
+  const efficiencyRenderer: CellRenderer<ManufacturingRow> = ({ row }: CellRendererProps<ManufacturingRow>) => {
+    const d = row ;
     const eff = d.efficiency;
     const isParent = hasStations(row);
     const color = eff >= 90 ? "#52c41a" : eff >= 75 ? "#1890ff" : "#ff4d4f";
@@ -111,8 +109,8 @@ function getHeaders(): ColumnDef[] {
     return wrapper;
   };
 
-  const defectRateRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as ManufacturingRow;
+  const defectRateRenderer: CellRenderer<ManufacturingRow> = ({ row }: CellRendererProps<ManufacturingRow>) => {
+    const d = row ;
     const isParent = hasStations(row);
     const rate = d.defectRate;
     const color = rate < 1 ? "#16a34a" : rate < 3 ? "#f59e0b" : "#dc2626";
@@ -122,8 +120,8 @@ function getHeaders(): ColumnDef[] {
     return span;
   };
 
-  const downtimeRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as ManufacturingRow;
+  const downtimeRenderer: CellRenderer<ManufacturingRow> = ({ row }: CellRendererProps<ManufacturingRow>) => {
+    const d = row ;
     const isParent = hasStations(row);
     const hours = d.downtime;
     const color = hours < 1 ? "#16a34a" : hours < 2 ? "#f59e0b" : "#dc2626";
@@ -133,8 +131,8 @@ function getHeaders(): ColumnDef[] {
     return span;
   };
 
-  const utilizationRenderer: CellRenderer = ({ row }: CellRendererProps) => {
-    const d = row as unknown as ManufacturingRow;
+  const utilizationRenderer: CellRenderer<ManufacturingRow> = ({ row }: CellRendererProps<ManufacturingRow>) => {
+    const d = row ;
     if (hasStations(row)) {
       const span = document.createElement("span");
       span.style.fontWeight = "bold";
@@ -144,9 +142,9 @@ function getHeaders(): ColumnDef[] {
     return `${d.utilization}%`;
   };
 
-  const maintenanceDateRenderer: CellRenderer = ({ row }: CellRendererProps) => {
+  const maintenanceDateRenderer: CellRenderer<ManufacturingRow> = ({ row }: CellRendererProps<ManufacturingRow>) => {
     if (hasStations(row)) return "—";
-    const d = row as unknown as ManufacturingRow;
+    const d = row ;
     const [year, month, day] = d.maintenanceDate.split("-").map(Number);
     const date = new Date(year, month - 1, day);
     const today = new Date();
@@ -171,18 +169,18 @@ function getHeaders(): ColumnDef[] {
     return span;
   };
 
-  const rendererMap: Record<string, CellRenderer> = {
+  const rendererMap: Record<string, CellRenderer<ManufacturingRow>> = {
     productLine: productLineRenderer,
     station: stationRenderer,
     status: statusRenderer,
-    outputRate: boldParentNumberRenderer("outputRate"),
+    outputRate: boldParentNumberRenderer,
     cycletime: cycletimeRenderer,
     efficiency: efficiencyRenderer,
     defectRate: defectRateRenderer,
-    defectCount: boldParentNumberRenderer("defectCount"),
+    defectCount: boldParentNumberRenderer,
     downtime: downtimeRenderer,
     utilization: utilizationRenderer,
-    energy: boldParentNumberRenderer("energy"),
+    energy: boldParentNumberRenderer,
     maintenanceDate: maintenanceDateRenderer,
   };
 
@@ -192,17 +190,20 @@ function getHeaders(): ColumnDef[] {
   });
 }
 
+
+const getRowId = ({ row }: GetRowIdParams<ManufacturingRow>) => row.id;
 export function renderManufacturingDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
-): SimpleTableVanilla {
+): SimpleTableVanilla<ManufacturingRow> {
   const table = new SimpleTableVanilla(container, {
+    getRowId,
     columnResizing: true,
     columnReordering: true,
     columns: getHeaders(),
     height: options?.height ?? "400px",
     rowGrouping: ["stations"],
-    rows: asRows(manufacturingConfig.rows),
+    rows: manufacturingConfig.rows,
     selectableCells: true,
     theme: options?.theme,
   });

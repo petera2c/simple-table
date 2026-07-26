@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, AngularIconsConfig, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, AngularIconsConfig, GetRowIdParams, Theme } from "@simple-table/angular";
 import { customIconsConfig } from "./custom-icons.demo-data";
 import {
   DemoExpandIconComponent,
@@ -11,6 +11,7 @@ import {
   DemoSortUpIconComponent,
 } from "./table-icons.components";
 import "@simple-table/angular/styles.css";
+import type { SoftwareRelease } from "./custom-icons.demo-data";
 
 @Component({
   selector: "custom-icons-demo",
@@ -18,6 +19,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -30,8 +32,8 @@ export class CustomIconsDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = customIconsConfig.rows;
-  readonly headers: AngularColumnDef[] = customIconsConfig.headers;
+  readonly rows: SoftwareRelease[] = customIconsConfig.rows;
+  readonly headers: AngularColumnDef<SoftwareRelease>[] = customIconsConfig.headers;
   readonly icons: AngularIconsConfig = {
     sortUp: DemoSortUpIconComponent,
     sortDown: DemoSortDownIconComponent,
@@ -40,4 +42,6 @@ export class CustomIconsDemoComponent {
     next: DemoNextIconComponent,
     prev: DemoPrevIconComponent,
   };
+
+  getRowId = ({ row }: GetRowIdParams<SoftwareRelease>) => row.id;
 }

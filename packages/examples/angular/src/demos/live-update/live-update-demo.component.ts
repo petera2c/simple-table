@@ -1,7 +1,8 @@
 import { Component, Input, ViewChild, AfterViewInit, OnDestroy } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, TableAPI, Theme } from "@simple-table/angular";
 import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
 import "@simple-table/angular/styles.css";
+import type { LiveUpdateProduct } from "./live-update.demo-data";
 
 @Component({
   selector: "live-update-demo",
@@ -19,13 +20,13 @@ import "@simple-table/angular/styles.css";
   `,
 })
 export class LiveUpdateDemoComponent implements AfterViewInit, OnDestroy {
-  @ViewChild("simpleTable") tableRef!: SimpleTableComponent;
+  @ViewChild("simpleTable") tableRef!: SimpleTableComponent<LiveUpdateProduct>;
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularColumnDef[] = liveUpdateConfig.headers;
-  readonly rows: Row[] = liveUpdateConfig.rows;
-  readonly getRowId = ({ row }: { row: Row }) => (row as { id: number }).id;
+  readonly headers: AngularColumnDef<LiveUpdateProduct>[] = liveUpdateConfig.headers;
+  readonly rows: LiveUpdateProduct[] = liveUpdateConfig.rows;
+  readonly getRowId = ({ row }: GetRowIdParams<LiveUpdateProduct>) => row.id;
 
   private cleanupFn?: () => void;
 
@@ -33,12 +34,12 @@ export class LiveUpdateDemoComponent implements AfterViewInit, OnDestroy {
     const api = this.tableRef.getAPI();
     if (!api) return;
 
-    const currentData = JSON.parse(JSON.stringify(liveUpdateData));
-    const timerMap = new Map<string | number, ReturnType<typeof setTimeout>>();
-    const currentPeriodSales = new Map<string | number, number>();
+    const currentData: LiveUpdateProduct[] = JSON.parse(JSON.stringify(liveUpdateData));
+    const timerMap = new Map<number, ReturnType<typeof setTimeout>>();
+    const currentPeriodSales = new Map<number, number>();
     let isActive = true;
 
-    const createRowTimer = (rowId: string | number) => {
+    const createRowTimer = (rowId: number) => {
       const scheduleUpdate = () => {
         if (!isActive) return;
         const interval = 300 + Math.random() * 700;
@@ -46,7 +47,7 @@ export class LiveUpdateDemoComponent implements AfterViewInit, OnDestroy {
           if (!isActive) return;
           const currentApi = this.tableRef?.getAPI();
           if (!currentApi) return;
-          const idx = currentData.findIndex((r: any) => r.id === rowId);
+          const idx = currentData.findIndex((r) => r.id === rowId);
           if (idx === -1) return;
           const product = currentData[idx];
 
@@ -82,7 +83,9 @@ export class LiveUpdateDemoComponent implements AfterViewInit, OnDestroy {
       const currentApi = this.tableRef?.getAPI();
       if (!currentApi) return;
       const visibleRows = currentApi.getVisibleRows();
-      const visibleIds = new Set(visibleRows.map((vr) => vr.row.id as string | number));
+      const visibleIds = new Set(
+        visibleRows.map((vr) => vr.row.id).filter((id): id is number => typeof id === "number"),
+      );
       timerMap.forEach((tid, rid) => {
         if (!visibleIds.has(rid)) {
           clearTimeout(tid);
@@ -90,15 +93,15 @@ export class LiveUpdateDemoComponent implements AfterViewInit, OnDestroy {
         }
       });
       visibleRows.forEach((vr) => {
-        const rid = vr.row.id as string | number;
-        if (!timerMap.has(rid)) createRowTimer(rid);
+        const rid = vr.row.id;
+        if (typeof rid === "number" && !timerMap.has(rid)) createRowTimer(rid);
       });
     };
 
     const salesRotate = setInterval(() => {
       const currentApi = this.tableRef?.getAPI();
       if (!currentApi || !isActive) return;
-      currentData.forEach((row: any, i: number) => {
+      currentData.forEach((row, i) => {
         if (Array.isArray(row.salesHistory)) {
           const rid = row.id;
           const sp = currentPeriodSales.get(rid) || 0;

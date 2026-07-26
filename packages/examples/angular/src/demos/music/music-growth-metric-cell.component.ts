@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
-import type { Accessor, Row, Theme } from "@simple-table/angular";
-import { getMusicThemeColors } from "./music.demo-data";
+import type { Accessor, Theme } from "@simple-table/angular";
+import { getMusicThemeColors, musicNumber } from "./music.demo-data";
 import type { MusicArtist } from "./music.demo-data";
 import { MusicTagComponent } from "./music-tag.component";
 
@@ -39,13 +39,9 @@ const CONFIG: Record<
   `,
 })
 export class MusicGrowthMetricCellComponent {
-  @Input({ required: true }) row!: Row;
+  @Input({ required: true }) row!: MusicArtist;
   @Input({ required: true }) accessor!: Accessor;
   @Input() theme?: Theme;
-
-  get d(): MusicArtist {
-    return this.row as unknown as MusicArtist;
-  }
 
   get c(): Record<string, string> {
     return getMusicThemeColors(this.theme);
@@ -54,10 +50,10 @@ export class MusicGrowthMetricCellComponent {
   get view(): { line: string; tagText: string; variant: "green" | "red"; align: "left" | "right" } | null {
     const cfg = CONFIG[String(this.accessor)];
     if (!cfg) return null;
-    const val = Number(this.d[cfg.val]);
-    const pct = Number(this.d[cfg.pct]);
+    const val = musicNumber(this.row, String(cfg.val));
+    const pct = musicNumber(this.row, String(cfg.pct));
     const isPositive = cfg.signed ? val >= 0 : true;
-    const displayVal = Number.isFinite(val) ? val.toLocaleString() : String(this.d[cfg.val]);
+    const displayVal = Number.isFinite(val) ? val.toLocaleString() : String(this.row[cfg.val]);
     const prefix = isPositive ? "+" : "";
     const arrow = isPositive ? "↑" : "↓";
     const tagText = `${arrow} ${Math.abs(pct).toFixed(2)}%`;

@@ -1,7 +1,8 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "./pagination.demo-data";
 import "@simple-table/angular/styles.css";
+import type { HotelStaff } from "./pagination.demo-data";
 
 @Component({
   selector: "pagination-demo",
@@ -9,6 +10,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -24,9 +26,9 @@ export class PaginationDemoComponent {
   @Input() height: string | number = "auto";
   @Input() theme?: Theme;
 
-  readonly headers: AngularColumnDef[] = paginationConfig.headers;
+  readonly headers: AngularColumnDef<HotelStaff>[] = paginationConfig.headers;
   readonly rowsPerPage = PAGINATION_ROWS_PER_PAGE;
-  rows: Row[] = paginationData.slice(0, PAGINATION_ROWS_PER_PAGE);
+  rows: HotelStaff[] = paginationData.slice(0, PAGINATION_ROWS_PER_PAGE);
   isLoading = false;
 
   onNextPage = async (pageIndex: number): Promise<boolean> => {
@@ -46,4 +48,6 @@ export class PaginationDemoComponent {
     this.isLoading = false;
     return true;
   };
+
+  getRowId = ({ row }: GetRowIdParams<HotelStaff>) => row.id;
 }

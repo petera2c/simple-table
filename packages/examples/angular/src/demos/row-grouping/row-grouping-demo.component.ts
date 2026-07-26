@@ -1,7 +1,8 @@
 import { Component, Input, ViewChild } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { rowGroupingConfig } from "./row-grouping.demo-data";
 import "@simple-table/angular/styles.css";
+import type { OrgUnit } from "./row-grouping.demo-data";
 
 @Component({
   selector: "row-grouping-demo",
@@ -36,10 +37,10 @@ export class RowGroupingDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = rowGroupingConfig.rows;
-  readonly headers: AngularColumnDef[] = rowGroupingConfig.headers;
+  readonly rows: OrgUnit[] = rowGroupingConfig.rows;
+  readonly headers: AngularColumnDef<OrgUnit>[] = rowGroupingConfig.headers;
   readonly grouping = rowGroupingConfig.tableProps.rowGrouping;
-  readonly getRowId = rowGroupingConfig.tableProps.getRowId;
+  getRowId = ({ row }: GetRowIdParams<OrgUnit>) => row.id;
 
   expandAll() { this.tableRef.getAPI()?.expandAll(); }
   collapseAll() { this.tableRef.getAPI()?.collapseAll(); }

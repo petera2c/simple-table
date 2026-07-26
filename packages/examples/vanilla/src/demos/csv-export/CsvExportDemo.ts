@@ -1,12 +1,15 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, ColumnDef } from "simple-table-core";
+import type { CsvProduct } from "./csv-export.demo-data";
+import type { Theme, ColumnDef, GetRowIdParams } from "simple-table-core";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<CsvProduct>) => row.id;
 export function renderCsvExportDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
-): SimpleTableVanilla {
+): SimpleTableVanilla<CsvProduct> {
   const wrapper = document.createElement("div");
 
   const controls = document.createElement("div");
@@ -27,7 +30,7 @@ export function renderCsvExportDemo(
   wrapper.appendChild(tableContainer);
   container.appendChild(wrapper);
 
-  const headers: ColumnDef[] = csvExportHeaders.map((h) => {
+  const headers: ColumnDef<CsvProduct>[] = csvExportHeaders.map((h) => {
     if (h.accessor === "actions") {
       return {
         ...h,
@@ -39,6 +42,7 @@ export function renderCsvExportDemo(
   });
 
   const table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: headers,
     rows: csvExportData,
     enableColumnEditor: csvExportConfig.tableProps.enableColumnEditor,

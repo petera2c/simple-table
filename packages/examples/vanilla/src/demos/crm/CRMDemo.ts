@@ -1,5 +1,5 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { ColumnDef, CellRenderer, FooterRendererProps } from "simple-table-core";
+import type { ColumnDef, CellRenderer, FooterRendererProps, GetRowIdParams } from "simple-table-core";
 import {
   crmData,
   CRM_THEME_COLORS_LIGHT,
@@ -134,11 +134,11 @@ function createFitButtons(colors: typeof CRM_THEME_COLORS_LIGHT): HTMLElement {
   return container;
 }
 
-function getCRMHeaders(isDark: boolean): ColumnDef[] {
+function getCRMHeaders(isDark: boolean): ColumnDef<CRMLead>[] {
   const colors = isDark ? CRM_THEME_COLORS_DARK : CRM_THEME_COLORS_LIGHT;
 
-  const contactRenderer: CellRenderer = ({ row }) => {
-    const d = row as unknown as CRMLead;
+  const contactRenderer: CellRenderer<CRMLead> = ({ row }) => {
+    const d = row;
     const initials = d.name
       .split(" ")
       .map((n) => n[0])
@@ -181,8 +181,8 @@ function getCRMHeaders(isDark: boolean): ColumnDef[] {
     return wrapper;
   };
 
-  const signalRenderer: CellRenderer = ({ row }) => {
-    const d = row as unknown as CRMLead;
+  const signalRenderer: CellRenderer<CRMLead> = ({ row }) => {
+    const d = row;
     const wrapper = el("div");
     const line1 = el("div", {
       color: colors.textSecondary,
@@ -206,20 +206,20 @@ function getCRMHeaders(isDark: boolean): ColumnDef[] {
     return wrapper;
   };
 
-  const aiScoreRenderer: CellRenderer = ({ row }) => {
-    const d = row as unknown as CRMLead;
+  const aiScoreRenderer: CellRenderer<CRMLead> = ({ row }) => {
+    const d = row;
     return el("div", { fontSize: "0.875rem" }, "🔥".repeat(d.aiScore));
   };
 
-  const emailRenderer: CellRenderer = () => createEmailEnrich(colors);
+  const emailRenderer: CellRenderer<CRMLead> = () => createEmailEnrich(colors);
 
-  const timeAgoRenderer: CellRenderer = ({ row }) => {
-    const d = row as unknown as CRMLead;
+  const timeAgoRenderer: CellRenderer<CRMLead> = ({ row }) => {
+    const d = row;
     return el("div", { fontSize: "13px", color: colors.textSecondary }, d.timeAgo);
   };
 
-  const listRenderer: CellRenderer = ({ row }) => {
-    const d = row as unknown as CRMLead;
+  const listRenderer: CellRenderer<CRMLead> = ({ row }) => {
+    const d = row;
     const link = el(
       "a",
       {
@@ -236,9 +236,9 @@ function getCRMHeaders(isDark: boolean): ColumnDef[] {
     return link;
   };
 
-  const fitRenderer: CellRenderer = () => createFitButtons(colors);
+  const fitRenderer: CellRenderer<CRMLead> = () => createFitButtons(colors);
 
-  const contactNowRenderer: CellRenderer = () => {
+  const contactNowRenderer: CellRenderer<CRMLead> = () => {
     const link = el(
       "a",
       {
@@ -468,10 +468,12 @@ function createCRMFooter(
   return wrapper;
 }
 
+
+const getRowId = ({ row }: GetRowIdParams<CRMLead>) => row.id;
 export function renderCRMDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: CrmShellTheme },
-): SimpleTableVanilla {
+): SimpleTableVanilla<CRMLead> {
   const isDark =
     options?.theme === "custom-dark" ||
     options?.theme === "dark" ||
@@ -485,6 +487,7 @@ export function renderCRMDemo(
   let rowsPerPage = 100;
 
   const table = new SimpleTableVanilla(themeContainer, {
+    getRowId,
     columnReordering: true,
     columnResizing: true,
     columns: getCRMHeaders(isDark),

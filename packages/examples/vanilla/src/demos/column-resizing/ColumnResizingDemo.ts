@@ -1,12 +1,15 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, ColumnDef } from "simple-table-core";
+import type { OceanStaff } from "./column-resizing.demo-data";
+import type { Theme, ColumnDef, GetRowIdParams } from "simple-table-core";
 import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<OceanStaff>) => row.id;
 export function renderColumnResizingDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
-): SimpleTableVanilla {
+): SimpleTableVanilla<OceanStaff> {
   const wrapper = document.createElement("div");
   wrapper.style.position = "relative";
   wrapper.style.height = "100%";
@@ -23,7 +26,7 @@ export function renderColumnResizingDemo(
   wrapper.appendChild(tableContainer);
   container.appendChild(wrapper);
 
-  let headers: ColumnDef[] = [...columnResizingHeaders];
+  let headers: ColumnDef<OceanStaff>[] = [...columnResizingHeaders];
   try {
     const saved = localStorage.getItem(COLUMN_RESIZING_STORAGE_KEY);
     if (saved) {
@@ -33,12 +36,13 @@ export function renderColumnResizingDemo(
   } catch { /* ignore */ }
 
   const table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: headers,
     rows: columnResizingData,
     height: options?.height ?? "400px",
     theme: options?.theme,
     columnResizing: true,
-    onColumnWidthChange: (updatedHeaders: ColumnDef[]) => {
+    onColumnWidthChange: (updatedHeaders: ColumnDef<OceanStaff>[]) => {
       try {
         const widthMap: Record<string, unknown> = {};
         for (const h of updatedHeaders) widthMap[h.accessor] = h.width;

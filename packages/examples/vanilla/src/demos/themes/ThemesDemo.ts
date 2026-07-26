@@ -1,12 +1,15 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
+import type { ThemeDemoStaff } from "./themes.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import { themesConfig, AVAILABLE_THEMES } from "./themes.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<ThemeDemoStaff>) => row.id;
 export function renderThemesDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<ThemeDemoStaff> {
   let selectedTheme: Theme = options?.theme ?? "light";
 
   const wrapper = document.createElement("div");
@@ -20,6 +23,7 @@ export function renderThemesDemo(
   container.appendChild(wrapper);
 
   const table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: themesConfig.headers,
     rows: themesConfig.rows,
     height: options?.height ?? "400px",

@@ -1,8 +1,17 @@
 // Self-contained demo table setup for this example.
 import type { ColumnDef } from "simple-table-core";
 
+export interface LiveUpdateProduct {
+  id: number;
+  product: string;
+  price: number;
+  stock: number;
+  sales: number;
+  stockHistory: number[];
+  salesHistory: number[];
+}
 
-export const liveUpdateHeaders: ColumnDef[] = [
+export const liveUpdateHeaders: ColumnDef<LiveUpdateProduct>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "product", label: "Product", width: 180, type: "string" },
   {
@@ -40,7 +49,7 @@ export const generateSalesHistory = (_currentSales: number, length = 12) => {
   return history;
 };
 
-export const liveUpdateData = [
+export const liveUpdateData: LiveUpdateProduct[] = [
   { id: 1, product: "Organic Green Tea", price: 24.99, stock: 156, sales: 342, stockHistory: generateStockHistory(156), salesHistory: generateSalesHistory(342) },
   { id: 2, product: "Bluetooth Headphones", price: 89.99, stock: 73, sales: 187, stockHistory: generateStockHistory(73), salesHistory: generateSalesHistory(187) },
   { id: 3, product: "Bamboo Yoga Mat", price: 45.99, stock: 92, sales: 256, stockHistory: generateStockHistory(92), salesHistory: generateSalesHistory(256) },
@@ -58,4 +67,4 @@ export const liveUpdateData = [
 export const liveUpdateConfig = {
   headers: liveUpdateHeaders,
   rows: liveUpdateData,
-} as const;
+};

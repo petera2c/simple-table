@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import type { Row, Theme } from "@simple-table/angular";
+import type { Theme } from "@simple-table/angular";
 import { getHRThemeColors } from "./hr.demo-data";
 import type { HREmployee } from "./hr.demo-data";
 
@@ -23,15 +23,11 @@ import type { HREmployee } from "./hr.demo-data";
   `,
 })
 export class HrPerformanceCellComponent {
-  @Input({ required: true }) row!: Row;
+  @Input({ required: true }) row!: HREmployee;
   @Input() theme?: Theme;
 
-  get d(): HREmployee {
-    return this.row as unknown as HREmployee;
-  }
-
   get score(): number {
-    return this.d.performanceScore;
+    return this.row.performanceScore;
   }
 
   get c(): ReturnType<typeof getHRThemeColors> {

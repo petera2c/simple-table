@@ -1,8 +1,7 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef } from "@simple-table/angular";
-import type { Row } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
-export interface CryptoCoin extends Row {
+export interface CryptoCoin {
   id: string;
   rank: number;
   name: string;
@@ -177,17 +176,17 @@ export function generateCryptoData(count = 200): CryptoCoin[] {
 const pct = ({ value }: { value: unknown }) =>
   typeof value === "number" ? formatSignedPercent(value) : "";
 
-export const cryptoHeaders: AngularColumnDef[] = [
+export const cryptoHeaders: AngularColumnDef<CryptoCoin>[] = [
   { accessor: "rank", label: "#", width: 56, align: "center", type: "number", pinned: "left", sortable: true, editable: false },
   {
     accessor: "name", label: "Asset", width: 200, align: "left", type: "string", pinned: "left", sortable: true, editable: false,
-    valueFormatter: ({ value, row }) => `${value} (${row.symbol})`,
+    valueFormatter: ({ value, row }: ValueFormatterProps<CryptoCoin>) => `${value} (${row.symbol})`,
   },
   { accessor: "symbol", label: "Symbol", width: 90, type: "string", sortable: true, editable: false },
   { accessor: "category", label: "Category", width: 140, type: "string", sortable: true, editable: false },
   {
     accessor: "price", label: "Price", width: 130, align: "right", type: "number", sortable: true, editable: false,
-    valueFormatter: ({ value }) => typeof value === "number" ? formatPrice(value) : "",
+    valueFormatter: ({ value }: ValueFormatterProps<CryptoCoin>) => typeof value === "number" ? formatPrice(value) : "",
   },
   {
     accessor: "priceHistory", label: "Last 30d", width: 160, align: "center", type: "lineAreaChart",
@@ -209,15 +208,15 @@ export const cryptoHeaders: AngularColumnDef[] = [
     children: [
       {
         accessor: "marketCap", label: "Market Cap", width: 140, align: "right", type: "number", sortable: true, editable: false, showWhen: "always",
-        valueFormatter: ({ value }) => typeof value === "number" ? formatCompactUsd(value) : "",
+        valueFormatter: ({ value }: ValueFormatterProps<CryptoCoin>) => typeof value === "number" ? formatCompactUsd(value) : "",
       },
       {
         accessor: "volume24h", label: "Volume (24h)", width: 140, align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded",
-        valueFormatter: ({ value }) => typeof value === "number" ? formatCompactUsd(value) : "",
+        valueFormatter: ({ value }: ValueFormatterProps<CryptoCoin>) => typeof value === "number" ? formatCompactUsd(value) : "",
       },
       {
         accessor: "supplyPercent", label: "Circulating %", width: 130, align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded",
-        valueFormatter: ({ value }) => typeof value === "number" ? `${value.toFixed(1)}%` : "",
+        valueFormatter: ({ value }: ValueFormatterProps<CryptoCoin>) => typeof value === "number" ? `${value.toFixed(1)}%` : "",
       },
       { accessor: "athChangePercent", label: "From ATH", width: 110, align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded", valueFormatter: pct },
     ],
@@ -229,4 +228,4 @@ export const cryptoData = generateCryptoData(200);
 export const cryptoConfig = {
   headers: cryptoHeaders,
   rows: cryptoData,
-} as const;
+};

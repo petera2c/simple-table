@@ -1,8 +1,16 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef, Row } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
+export interface SoftwareRelease {
+  id: number;
+  name: string;
+  version: string;
+  status: string;
+  downloads: number;
+  date: string;
+}
 
-export const customIconsData: Row[] = [
+export const customIconsData: SoftwareRelease[] = [
   { id: 1, name: "Alpha Release", version: "1.0.0", status: "released", downloads: 15420, date: "2024-01-15" },
   { id: 2, name: "Beta Release", version: "1.1.0", status: "released", downloads: 28300, date: "2024-03-22" },
   { id: 3, name: "Hotfix", version: "1.1.1", status: "released", downloads: 31050, date: "2024-04-05" },
@@ -13,7 +21,7 @@ export const customIconsData: Row[] = [
   { id: 8, name: "Next Release", version: "2.2.0", status: "planned", downloads: 0, date: "2025-01-20" },
 ];
 
-export const customIconsHeaders: AngularColumnDef[] = [
+export const customIconsHeaders: AngularColumnDef<SoftwareRelease, any>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number", sortable: true },
   { accessor: "name", label: "Release", width: 170, type: "string", sortable: true },
   { accessor: "version", label: "Version", width: 100, type: "string", sortable: true },
@@ -24,7 +32,7 @@ export const customIconsHeaders: AngularColumnDef[] = [
     width: 130,
     type: "number",
     sortable: true,
-    valueFormatter: ({ value }) => (value as number).toLocaleString(),
+    valueFormatter: ({ value }: ValueFormatterProps<SoftwareRelease, number>) => value.toLocaleString(),
   },
   {
     accessor: "date",
@@ -32,11 +40,11 @@ export const customIconsHeaders: AngularColumnDef[] = [
     width: 130,
     type: "date",
     sortable: true,
-    valueFormatter: ({ value }) => new Date(value as string).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    valueFormatter: ({ value }: ValueFormatterProps<SoftwareRelease, string>) => new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
   },
 ];
 
 export const customIconsConfig = {
   headers: customIconsHeaders,
   rows: customIconsData,
-} as const;
+};

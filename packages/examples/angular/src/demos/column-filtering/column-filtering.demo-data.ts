@@ -1,8 +1,17 @@
 // Self-contained demo table setup for this example.
-import type { Row, AngularColumnDef } from "@simple-table/angular";
+import type { AngularColumnDef, CellRendererProps } from "@simple-table/angular";
 
+export interface ColumnFilteringEmployee {
+  id: number;
+  name: string;
+  department: string;
+  role: string;
+  salary: number;
+  startDate: string;
+  isActive: boolean;
+}
 
-export const COLUMN_FILTERING_DATA: Row[] = [
+export const COLUMN_FILTERING_DATA: ColumnFilteringEmployee[] = [
   {
     id: 1,
     name: "Bianca Rossi",
@@ -147,7 +156,7 @@ export const DEPARTMENT_OPTIONS = [
   { label: "Quality Assurance", value: "Quality Assurance" },
 ];
 
-export const columnFilteringHeaders: AngularColumnDef[] = [
+export const columnFilteringHeaders: AngularColumnDef<ColumnFilteringEmployee>[] = [
   {
     accessor: "id",
     label: "ID",
@@ -191,9 +200,8 @@ export const columnFilteringHeaders: AngularColumnDef[] = [
     type: "number",
     sortable: true,
     filterable: true,
-    cellRenderer: ({ row }) => {
-      const salary = row.salary as number;
-      return `$${salary.toLocaleString()}`;
+    cellRenderer: ({ row }: CellRendererProps<ColumnFilteringEmployee>) => {
+      return `$${row.salary.toLocaleString()}`;
     },
   },
   {
@@ -218,4 +226,4 @@ export const columnFilteringHeaders: AngularColumnDef[] = [
 export const columnFilteringConfig = {
   headers: columnFilteringHeaders,
   rows: COLUMN_FILTERING_DATA,
-} as const;
+};

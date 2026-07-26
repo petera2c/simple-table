@@ -1,9 +1,16 @@
 // Self-contained demo table setup for this example.
-import type { Row } from "simple-table-core";
 import type { ColumnDef } from "simple-table-core";
 
+export interface FacultyMember {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+  startDate: string;
+}
 
-export const COLUMN_SORTING_DATA: Row[] = [
+export const COLUMN_SORTING_DATA: FacultyMember[] = [
   {
     id: 1,
     name: "Dr. Elena Vasquez",
@@ -103,7 +110,7 @@ export const COLUMN_SORTING_DATA: Row[] = [
 ];
 
 
-export const columnSortingHeaders: ColumnDef[] = [
+export const columnSortingHeaders: ColumnDef<FacultyMember>[] = [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   { accessor: "name", label: "Name", width: 180, sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 80, sortable: true, type: "number" },
@@ -115,7 +122,8 @@ export const columnSortingHeaders: ColumnDef[] = [
     sortable: true,
     type: "string",
     valueFormatter: ({ value }) => {
-      return (value as string).charAt(0).toUpperCase() + (value as string).slice(1);
+      const department = String(value);
+      return department.charAt(0).toUpperCase() + department.slice(1);
     },
   },
   {
@@ -141,3 +149,4 @@ export const columnSortingConfig = {
   headers: columnSortingHeaders,
   rows: COLUMN_SORTING_DATA,
 };
+

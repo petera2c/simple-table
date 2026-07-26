@@ -1,7 +1,8 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { columnAlignmentConfig } from "./column-alignment.demo-data";
 import "@simple-table/angular/styles.css";
+import type { ColumnAlignmentPlayer } from "./column-alignment.demo-data";
 
 @Component({
   selector: "column-alignment-demo",
@@ -9,6 +10,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -20,6 +22,8 @@ export class ColumnAlignmentDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = columnAlignmentConfig.rows;
-  readonly headers: AngularColumnDef[] = columnAlignmentConfig.headers;
+  readonly rows: ColumnAlignmentPlayer[] = columnAlignmentConfig.rows;
+  readonly headers: AngularColumnDef<ColumnAlignmentPlayer>[] = columnAlignmentConfig.headers;
+
+  getRowId = ({ row }: GetRowIdParams<ColumnAlignmentPlayer>) => row.id;
 }

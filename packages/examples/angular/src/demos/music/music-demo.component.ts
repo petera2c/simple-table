@@ -1,7 +1,8 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent, asRows } from "@simple-table/angular";
-import type { AngularCellRenderer, AngularColumnDef, Theme } from "@simple-table/angular";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { musicData, musicHeaders } from "./music.demo-data";
+import type { MusicArtist } from "./music.demo-data";
 import { MusicArtistCellComponent } from "./music-artist-cell.component";
 import { MusicArtistTypeCellComponent } from "./music-artist-type-cell.component";
 import { MusicConversionRateCellComponent } from "./music-conversion-rate-cell.component";
@@ -15,7 +16,7 @@ import { MusicRatioCellComponent } from "./music-ratio-cell.component";
 import "@simple-table/angular/styles.css";
 import "./music-theme.css";
 
-const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
+const RENDERERS: Partial<Record<string, AngularCellRenderer<MusicArtist>>> = {
   artistName: MusicArtistCellComponent,
   artistType: MusicArtistTypeCellComponent,
   followers: MusicFollowersCellComponent,
@@ -39,10 +40,10 @@ const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   reachFollowersRatio: MusicRatioCellComponent,
 };
 
-function applyMusicCellRenderers(hdrs: AngularColumnDef[]): AngularColumnDef[] {
-  return hdrs.map((h): AngularColumnDef => {
+function applyMusicCellRenderers(hdrs: readonly AngularColumnDef<MusicArtist>[]): AngularColumnDef<MusicArtist>[] {
+  return hdrs.map((h): AngularColumnDef<MusicArtist> => {
     const acc = String(h.accessor);
-    const next: AngularColumnDef = { ...h };
+    const next: AngularColumnDef<MusicArtist> = { ...h };
     const cellRenderer = RENDERERS[acc];
     if (cellRenderer) next.cellRenderer = cellRenderer;
     if (h.children) next.children = applyMusicCellRenderers(h.children);
@@ -57,6 +58,7 @@ function applyMusicCellRenderers(hdrs: AngularColumnDef[]): AngularColumnDef[] {
   template: `
     <div class="music-theme-container" style="font-family: Inter">
       <simple-table
+      [getRowId]="getRowId"
         [columns]="headers"
         [rows]="rows"
         [height]="height"
@@ -73,8 +75,10 @@ export class MusicDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows = asRows([...musicData]);
-  readonly headers: AngularColumnDef[] = applyMusicCellRenderers(
-    structuredClone(musicHeaders) as AngularColumnDef[],
+  readonly rows: MusicArtist[] = [...musicData];
+  readonly headers: AngularColumnDef<MusicArtist>[] = applyMusicCellRenderers(
+    structuredClone(musicHeaders),
   );
+
+  getRowId = ({ row }: GetRowIdParams<MusicArtist>) => row.id;
 }

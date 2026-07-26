@@ -1,7 +1,8 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { tooltipConfig } from "./tooltip.demo-data";
 import "@simple-table/angular/styles.css";
+import type { TooltipProduct } from "./tooltip.demo-data";
 
 @Component({
   selector: "tooltip-demo",
@@ -9,6 +10,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -23,6 +25,8 @@ export class TooltipDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = tooltipConfig.rows;
-  readonly headers: AngularColumnDef[] = tooltipConfig.headers;
+  readonly rows: TooltipProduct[] = tooltipConfig.rows;
+  readonly headers: AngularColumnDef<TooltipProduct>[] = tooltipConfig.headers;
+
+  getRowId = ({ row }: GetRowIdParams<TooltipProduct>) => row.id;
 }

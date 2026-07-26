@@ -1,5 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, FooterRendererProps } from "simple-table-core";
+import type { CatalogProduct } from "./footer-renderer.demo-data";
+import type { Theme, FooterRendererProps, GetRowIdParams } from "simple-table-core";
 import { footerRendererConfig } from "./footer-renderer.demo-data";
 import "simple-table-core/styles.css";
 
@@ -102,12 +103,15 @@ function createFooter(props: FooterRendererProps, theme?: Theme): HTMLElement {
   return wrapper;
 }
 
+
+const getRowId = ({ row }: GetRowIdParams<CatalogProduct>) => row.id;
 export function renderFooterRendererDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<CatalogProduct> {
   const theme = options?.theme;
   const table = new SimpleTableVanilla(container, {
+    getRowId,
     columns: [...footerRendererConfig.headers],
     rows: footerRendererConfig.rows,
     height: options?.height ?? "400px",

@@ -1,7 +1,7 @@
 import { NgIf } from "@angular/common";
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, CellClickProps, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, CellClickProps, GetRowIdParams, Theme } from "@simple-table/angular";
 import { cellClickingData, cellClickingHeaders, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
 import type { ProjectTask } from "./cell-clicking.demo-data";
 import { CellClickDetailsCellComponent } from "./cell-click-details-cell.component";
@@ -33,6 +33,7 @@ import "@simple-table/angular/styles.css";
       </div>
 
       <simple-table
+      [getRowId]="getRowId"
         [columnResizing]="true"
         [columns]="headers"
         [height]="height"
@@ -55,7 +56,7 @@ export class CellClickingDemoComponent {
     return this.theme === "modern-dark" || this.theme === "dark";
   }
 
-  readonly headers: AngularColumnDef[] = cellClickingHeaders.map((h) => {
+  readonly headers: AngularColumnDef<ProjectTask>[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") {
       return { ...h, cellRenderer: CellClickPriorityCellComponent };
     }
@@ -68,8 +69,7 @@ export class CellClickingDemoComponent {
     return { ...h };
   });
 
-  handleCellClick = ({ accessor, rowIndex, value, row }: CellClickProps) => {
-    const task = row as ProjectTask;
+  handleCellClick = ({ accessor, rowIndex, value, row }: CellClickProps<ProjectTask>) => {
     switch (accessor) {
       case "priority":
         this.clickInfo = `Filtering by ${value} priority`;
@@ -78,28 +78,30 @@ export class CellClickingDemoComponent {
       case "status": {
         const idx = CELL_CLICKING_STATUSES.indexOf(String(value));
         const next = CELL_CLICKING_STATUSES[(idx + 1) % CELL_CLICKING_STATUSES.length];
-        this.rows = this.rows.map((t) => (t.id === task.id ? { ...t, status: next } : t));
+        this.rows = this.rows.map((t) => (t.id === row.id ? { ...t, status: next } : t));
         this.clickInfo = `Status: "${value}" → "${next}"`;
         break;
       }
       case "details":
-        this.selectedTask = task;
-        this.clickInfo = `Opening details for: ${task.task}`;
+        this.selectedTask = row;
+        this.clickInfo = `Opening details for: ${row.task}`;
         break;
       case "estimatedHours": {
-        const n = Math.min(task.estimatedHours + 2, 40);
-        this.rows = this.rows.map((t) => (t.id === task.id ? { ...t, estimatedHours: n } : t));
-        this.clickInfo = `Est. hours: ${task.estimatedHours}h → ${n}h`;
+        const n = Math.min(row.estimatedHours + 2, 40);
+        this.rows = this.rows.map((t) => (t.id === row.id ? { ...t, estimatedHours: n } : t));
+        this.clickInfo = `Est. hours: ${row.estimatedHours}h → ${n}h`;
         break;
       }
       case "completedHours": {
-        const n = Math.min(task.completedHours + 1, task.estimatedHours);
-        this.rows = this.rows.map((t) => (t.id === task.id ? { ...t, completedHours: n } : t));
-        this.clickInfo = `Done hours: ${task.completedHours}h → ${n}h`;
+        const n = Math.min(row.completedHours + 1, row.estimatedHours);
+        this.rows = this.rows.map((t) => (t.id === row.id ? { ...t, completedHours: n } : t));
+        this.clickInfo = `Done hours: ${row.completedHours}h → ${n}h`;
         break;
       }
       default:
         this.clickInfo = `Clicked [${accessor}] = "${value}" (row ${rowIndex})`;
     }
   };
+
+  getRowId = ({ row }: GetRowIdParams<ProjectTask>) => row.id;
 }

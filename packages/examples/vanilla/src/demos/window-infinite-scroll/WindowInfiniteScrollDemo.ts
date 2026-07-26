@@ -1,5 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, Row } from "simple-table-core";
+import type { WindowScrollEmployee } from "./window-infinite-scroll.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import {
   windowScrollHeaders,
   generateWindowScrollRows,
@@ -24,7 +25,7 @@ const LOAD_DELAY_MS = 350;
 export function renderWindowInfiniteScrollDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<WindowScrollEmployee> {
   // The `height` URL param doesn't apply to this demo — the whole point is to
   // let the table grow to fit all rows so the parent scrolls. Same for
   // `maxHeight`. We accept the option to match the demo registry signature
@@ -89,7 +90,7 @@ export function renderWindowInfiniteScrollDemo(
 
   container.appendChild(wrapper);
 
-  let rows: Row[] = generateWindowScrollRows(0, INITIAL_ROWS);
+  let rows: WindowScrollEmployee[] = generateWindowScrollRows(0, INITIAL_ROWS);
   let loading = false;
   let hasMore = true;
 
@@ -104,11 +105,13 @@ export function renderWindowInfiniteScrollDemo(
   };
   updateStatus();
 
+  const getRowId = ({ row }: GetRowIdParams<WindowScrollEmployee>) => row.id;
+
   const table = new SimpleTableVanilla(tableContainer, {
     columns: windowScrollHeaders,
     rows,
     theme: options?.theme,
-    getRowId: (p) => String((p.row as { id?: number })?.id),
+    getRowId,
     // Use the demo container as the scroll parent. In a typical app you would
     // pass `"window"` here — the demo shell wraps everything in a scrollable
     // `<main>` so `window` doesn't actually scroll inside this preview.

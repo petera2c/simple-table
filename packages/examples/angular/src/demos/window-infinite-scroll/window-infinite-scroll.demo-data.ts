@@ -1,5 +1,15 @@
 // Self-contained data + headers for the window-scroll infinite scroll example.
-import type { AngularColumnDef, Row } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
+
+export interface WindowScrollEmployee {
+  id: number;
+  name: string;
+  email: string;
+  department: string;
+  status: string;
+  tenureYears: number;
+  salary: number;
+}
 
 const FIRST_NAMES = [
   "Elena",
@@ -52,10 +62,13 @@ const DEPARTMENTS = [
   "Customer Success",
 ];
 
-const STATUSES = ["Active", "On Leave", "Remote", "Onsite"] as const;
+const STATUSES = ["Active", "On Leave", "Remote", "Onsite"];
 
-export function generateWindowScrollRows(startIndex: number, count: number): Row[] {
-  const rows: Row[] = [];
+export function generateWindowScrollRows(
+  startIndex: number,
+  count: number,
+): WindowScrollEmployee[] {
+  const rows: WindowScrollEmployee[] = [];
   for (let i = 0; i < count; i++) {
     const idx = startIndex + i;
     const first = FIRST_NAMES[idx % FIRST_NAMES.length];
@@ -73,7 +86,7 @@ export function generateWindowScrollRows(startIndex: number, count: number): Row
   return rows;
 }
 
-export const windowScrollHeaders: AngularColumnDef[] = [
+export const windowScrollHeaders: AngularColumnDef<WindowScrollEmployee, any>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number", align: "right" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 160 },
   { accessor: "email", label: "Email", width: 260 },
@@ -85,7 +98,7 @@ export const windowScrollHeaders: AngularColumnDef[] = [
     width: 110,
     type: "number",
     align: "right",
-    valueFormatter: ({ value }) => `${value} yrs`,
+    valueFormatter: ({ value }: ValueFormatterProps<WindowScrollEmployee>) => `${value} yrs`,
   },
   {
     accessor: "salary",
@@ -93,6 +106,6 @@ export const windowScrollHeaders: AngularColumnDef[] = [
     width: 140,
     type: "number",
     align: "right",
-    valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
+    valueFormatter: ({ value }: ValueFormatterProps<WindowScrollEmployee, number>) => `$${value.toLocaleString()}`,
   },
 ];

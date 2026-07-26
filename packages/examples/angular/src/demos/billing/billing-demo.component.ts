@@ -1,9 +1,10 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { billingConfig } from "./billing.demo-data";
 import { BillingNameCellComponent } from "./billing-name-cell.component";
 import "@simple-table/angular/styles.css";
+import type { BillingRow } from "./billing.demo-data";
 
 @Component({
   selector: "billing-demo",
@@ -11,6 +12,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [columnReordering]="true"
       [columnResizing]="true"
       [columns]="headers"
@@ -31,9 +33,11 @@ export class BillingDemoComponent {
   @Input() theme?: Theme;
 
   readonly grouping = ["invoices", "charges"];
-  readonly rows: Row[] = billingConfig.rows as unknown as Row[];
+  readonly rows: BillingRow[] = billingConfig.rows;
 
-  readonly headers: AngularColumnDef[] = billingConfig.headers.map((h) =>
+  readonly headers: AngularColumnDef<BillingRow>[] = billingConfig.headers.map((h) =>
     h.accessor === "name" ? { ...h, cellRenderer: BillingNameCellComponent } : h,
   );
+
+  getRowId = ({ row }: GetRowIdParams<BillingRow>) => row.id;
 }

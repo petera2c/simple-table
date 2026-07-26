@@ -1,11 +1,12 @@
 import { Component, ElementRef, Input, ViewChild } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import {
   generateWindowScrollRows,
   windowScrollHeaders,
 } from "./window-infinite-scroll.demo-data";
 import "@simple-table/angular/styles.css";
+import type { WindowScrollEmployee } from "./window-infinite-scroll.demo-data";
 
 const INITIAL_ROWS = 50;
 const BATCH_SIZE = 50;
@@ -81,8 +82,8 @@ export class WindowInfiniteScrollDemoComponent {
   @ViewChild("wrapper", { static: true })
   wrapperRef!: ElementRef<HTMLDivElement>;
 
-  readonly headers: AngularColumnDef[] = windowScrollHeaders;
-  rows: Row[] = generateWindowScrollRows(0, INITIAL_ROWS);
+  readonly headers: AngularColumnDef<WindowScrollEmployee>[] = windowScrollHeaders;
+  rows: WindowScrollEmployee[] = generateWindowScrollRows(0, INITIAL_ROWS);
   loading = false;
   hasMore = true;
 
@@ -98,7 +99,7 @@ export class WindowInfiniteScrollDemoComponent {
   // In a regular app outside this preview shell, pass `"window"` instead.
   getScrollParent = () => this.wrapperRef?.nativeElement?.parentElement ?? null;
 
-  getRowId = (p: { row: Row }) => String((p.row as { id?: number })?.id);
+  getRowId = ({ row }: GetRowIdParams<WindowScrollEmployee>) => String(row.id);
 
   handleLoadMore = () => {
     if (this.loading || !this.hasMore) return;

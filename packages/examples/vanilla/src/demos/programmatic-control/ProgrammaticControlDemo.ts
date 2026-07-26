@@ -1,15 +1,18 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, ColumnDef } from "simple-table-core";
+import type { ProgrammaticControlProduct } from "./programmatic-control.demo-data";
+import type { Theme, ColumnDef, CellRendererProps, GetRowIdParams } from "simple-table-core";
 import {
   programmaticControlConfig,
   PROGRAMMATIC_CONTROL_STATUS_COLORS,
 } from "./programmatic-control.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<ProgrammaticControlProduct>) => row.id;
 export function renderProgrammaticControlDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
-): SimpleTableVanilla {
+): SimpleTableVanilla<ProgrammaticControlProduct> {
   const wrapper = document.createElement("div");
 
   const banner = document.createElement("div");
@@ -21,11 +24,11 @@ export function renderProgrammaticControlDemo(
   const controls = document.createElement("div");
   controls.style.cssText = "margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap";
 
-  const headers: ColumnDef[] = programmaticControlConfig.headers.map((h) => {
+  const headers: ColumnDef<ProgrammaticControlProduct>[] = programmaticControlConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+        cellRenderer: ({ row }: CellRendererProps<ProgrammaticControlProduct>) => {
           const s = String(row.status);
           const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? {
             bg: "#f3f4f6",
@@ -38,7 +41,7 @@ export function renderProgrammaticControlDemo(
     return { ...h };
   });
 
-  let table: SimpleTableVanilla;
+  let table: SimpleTableVanilla<ProgrammaticControlProduct>;
 
   function setStatus(msg: string) {
     banner.textContent = msg;
@@ -82,7 +85,7 @@ export function renderProgrammaticControlDemo(
         const sortState = api.getSortState();
         const filterState = api.getFilterState();
         const totalValue = allRows.reduce(
-          (sum, r) => sum + (r.row.price as number) * (r.row.stock as number),
+          (sum, r) => sum + Number(r.row.price) * Number(r.row.stock),
           0,
         );
         const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
@@ -108,6 +111,7 @@ export function renderProgrammaticControlDemo(
   container.appendChild(wrapper);
 
   table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: headers,
     rows: programmaticControlConfig.rows,
     height: options?.height ?? "400px",

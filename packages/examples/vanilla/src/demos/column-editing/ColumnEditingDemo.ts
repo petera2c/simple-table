@@ -1,12 +1,15 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, ColumnDef } from "simple-table-core";
+import type { ColumnEditingEmployee } from "./column-editing.demo-data";
+import type { Theme, ColumnDef, GetRowIdParams } from "simple-table-core";
 import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<ColumnEditingEmployee>) => row.id;
 export function renderColumnEditingDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
-): SimpleTableVanilla {
+): SimpleTableVanilla<ColumnEditingEmployee> {
   const wrapper = document.createElement("div");
 
   const toolbar = document.createElement("div");
@@ -27,23 +30,24 @@ export function renderColumnEditingDemo(
   wrapper.appendChild(tableContainer);
   container.appendChild(wrapper);
 
-  let additionalColumns: ColumnDef[] = [];
+  let additionalColumns: ColumnDef<ColumnEditingEmployee>[] = [];
 
   const table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: [...columnEditingHeaders],
     rows: columnEditingData,
     height: options?.height ?? "400px",
     theme: options?.theme,
     enableHeaderEditing: true,
     selectableColumns: true,
-    onHeaderEdit: (_header: ColumnDef, newLabel: string) => {
+    onHeaderEdit: (_header: ColumnDef<ColumnEditingEmployee>, newLabel: string) => {
       info.textContent = `Renamed to: ${newLabel}`;
     },
   });
 
   btn.addEventListener("click", () => {
     const n = additionalColumns.length + 1;
-    const col: ColumnDef = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
+    const col: ColumnDef<ColumnEditingEmployee> = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
     additionalColumns = [...additionalColumns, col];
     info.textContent = `Added: ${col.label}`;
     table.update({ columns: [...columnEditingHeaders, ...additionalColumns] });

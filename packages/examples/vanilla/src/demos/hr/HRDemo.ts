@@ -1,5 +1,5 @@
-import { SimpleTableVanilla, asRows } from "simple-table-core";
-import type { Theme, ColumnDef, CellRenderer, CellChangeProps, CellRendererProps } from "simple-table-core";
+import { SimpleTableVanilla } from "simple-table-core";
+import type { Theme, ColumnDef, CellRenderer, CellChangeProps, CellRendererProps, GetRowIdParams } from "simple-table-core";
 import { hrConfig, getHRThemeColors, HR_STATUS_COLOR_MAP } from "./hr.demo-data";
 import type { HREmployee, HRTagColorKey } from "./hr.demo-data";
 import "simple-table-core/styles.css";
@@ -15,11 +15,11 @@ function el(tag: string, styles?: Partial<CSSStyleDeclaration>, children?: (Node
   return e;
 }
 
-function buildHRHeaders(): ColumnDef[] {
-  const renderers: Record<string, CellRenderer> = {
-    fullName: ({ row, theme }: CellRendererProps) => {
+function buildHRHeaders(): ColumnDef<HREmployee>[] {
+  const renderers: Record<string, CellRenderer<HREmployee>> = {
+    fullName: ({ row, theme }: CellRendererProps<HREmployee>) => {
       const c = getHRThemeColors(theme);
-      const d = row as unknown as HREmployee;
+      const d = row;
       const initials = `${d.firstName?.charAt(0) || ""}${d.lastName?.charAt(0) || ""}`;
 
       const avatar = el("div", {
@@ -36,8 +36,8 @@ function buildHRHeaders(): ColumnDef[] {
       return el("div", { display: "flex", alignItems: "center" }, [avatar, info]);
     },
 
-    performanceScore: ({ row, theme }: CellRendererProps) => {
-      const d = row as unknown as HREmployee;
+    performanceScore: ({ row, theme }: CellRendererProps<HREmployee>) => {
+      const d = row;
       const score = d.performanceScore;
       const c = getHRThemeColors(theme);
       const color = score >= 90 ? c.progressSuccess : score >= 65 ? c.progressNormal : c.progressException;
@@ -57,8 +57,8 @@ function buildHRHeaders(): ColumnDef[] {
       return el("div", { width: "100%", display: "flex", flexDirection: "column" }, [track, label]);
     },
 
-    hireDate: ({ row, theme }: CellRendererProps) => {
-      const d = row as unknown as HREmployee;
+    hireDate: ({ row, theme }: CellRendererProps<HREmployee>) => {
+      const d = row;
       if (!d.hireDate) return "";
       const [year, month, day] = d.hireDate.split("-").map(Number);
       const date = new Date(year, month - 1, day);
@@ -68,21 +68,21 @@ function buildHRHeaders(): ColumnDef[] {
       ]);
     },
 
-    yearsOfService: ({ row, theme }: CellRendererProps) => {
-      const d = row as unknown as HREmployee;
+    yearsOfService: ({ row, theme }: CellRendererProps<HREmployee>) => {
+      const d = row;
       if (d.yearsOfService === null) return "";
       const c = getHRThemeColors(theme);
       return el("span", { color: c.gray }, [`${d.yearsOfService} yrs`]);
     },
 
-    salary: ({ row, theme }: CellRendererProps) => {
-      const d = row as unknown as HREmployee;
+    salary: ({ row, theme }: CellRendererProps<HREmployee>) => {
+      const d = row;
       const c = getHRThemeColors(theme);
       return el("span", { color: c.gray }, [`$${d.salary.toLocaleString()}`]);
     },
 
-    status: ({ row, theme }: CellRendererProps) => {
-      const d = row as unknown as HREmployee;
+    status: ({ row, theme }: CellRendererProps<HREmployee>) => {
+      const d = row;
       if (!d.status) return "";
       const c = getHRThemeColors(theme);
       const colorKey: HRTagColorKey = HR_STATUS_COLOR_MAP[d.status] || "default";
@@ -101,16 +101,19 @@ function buildHRHeaders(): ColumnDef[] {
   });
 }
 
+
+const getRowId = ({ row }: GetRowIdParams<HREmployee>) => row.id;
 export function renderHRDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
-): SimpleTableVanilla {
-  let rows = [...asRows(hrConfig.rows)];
+): SimpleTableVanilla<HREmployee> {
+  let rows = [...hrConfig.rows];
   const rowHeight = 48;
   const heightNum = typeof options?.height === "number" ? options.height : 400;
   const rowsPerPage = Math.floor(heightNum / rowHeight);
 
   const table = new SimpleTableVanilla(container, {
+    getRowId,
     columns: buildHRHeaders(),
     rows,
     height: options?.height ?? "400px",
@@ -121,7 +124,7 @@ export function renderHRDemo(
     enablePagination: true,
     rowsPerPage,
     customTheme: { rowHeight },
-    onCellEdit: ({ accessor, newValue, row }: CellChangeProps) => {
+    onCellEdit: ({ accessor, newValue, row }: CellChangeProps<HREmployee>) => {
       rows = rows.map((item) => item.id === row.id ? { ...item, [accessor]: newValue } : item);
       table.update({ rows });
     },

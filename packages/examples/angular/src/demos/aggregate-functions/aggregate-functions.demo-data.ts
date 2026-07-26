@@ -1,8 +1,21 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
+/** Platform → category → creator nesting used by rowGrouping. */
+export type AggregateFunctionsRow = {
+  id: number;
+  name: string;
+  status: string;
+  followers?: number;
+  revenue?: string;
+  rating?: number;
+  contentCount?: number;
+  avgViewTime?: number;
+  categories?: AggregateFunctionsRow[];
+  creators?: AggregateFunctionsRow[];
+};
 
-export const aggregateFunctionsHeaders: AngularColumnDef[] = [
+export const aggregateFunctionsHeaders: AngularColumnDef<AggregateFunctionsRow>[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   {
     accessor: "followers",
@@ -10,7 +23,7 @@ export const aggregateFunctionsHeaders: AngularColumnDef[] = [
     width: 120,
     type: "number",
     aggregation: { type: "sum" },
-    valueFormatter: ({ value }) => {
+    valueFormatter: ({ value }: ValueFormatterProps<AggregateFunctionsRow>) => {
       if (typeof value === "number") {
         return value >= 1000000
           ? `${(value / 1000000).toFixed(1)}M`
@@ -34,7 +47,7 @@ export const aggregateFunctionsHeaders: AngularColumnDef[] = [
         return isNaN(numericValue) ? 0 : numericValue;
       },
     },
-    valueFormatter: ({ value }) => {
+    valueFormatter: ({ value }: ValueFormatterProps<AggregateFunctionsRow>) => {
       if (typeof value === "number") return `$${value.toFixed(1)}K`;
       if (typeof value === "string") return value;
       return "";
@@ -46,7 +59,7 @@ export const aggregateFunctionsHeaders: AngularColumnDef[] = [
     width: 100,
     type: "number",
     aggregation: { type: "average" },
-    valueFormatter: ({ value }) => (typeof value === "number" ? `${value.toFixed(1)} ⭐` : ""),
+    valueFormatter: ({ value }: ValueFormatterProps<AggregateFunctionsRow>) => (typeof value === "number" ? `${value.toFixed(1)} ⭐` : ""),
   },
   {
     accessor: "contentCount",
@@ -61,12 +74,12 @@ export const aggregateFunctionsHeaders: AngularColumnDef[] = [
     width: 130,
     type: "number",
     aggregation: { type: "average" },
-    valueFormatter: ({ value }) => (typeof value === "number" ? `${Math.round(value)}min` : ""),
+    valueFormatter: ({ value }: ValueFormatterProps<AggregateFunctionsRow>) => (typeof value === "number" ? `${Math.round(value)}min` : ""),
   },
   { accessor: "status", label: "Status", width: 120, type: "string" },
 ];
 
-export const aggregateFunctionsData = [
+export const aggregateFunctionsData: AggregateFunctionsRow[] = [
   {
     id: 1,
     name: "StreamFlix",
@@ -187,7 +200,7 @@ export const aggregateFunctionsConfig = {
   headers: aggregateFunctionsHeaders,
   rows: aggregateFunctionsData,
   tableProps: {
-    rowGrouping: ["categories", "creators"] as string[],
+    rowGrouping: ["categories", "creators"],
     columnResizing: true,
   },
-} as const;
+};

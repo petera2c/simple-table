@@ -1,9 +1,10 @@
 import { ApplicationRef, Component, EnvironmentInjector, Input, inject } from "@angular/core";
 import { SimpleTableComponent, wrapAngularRenderer } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { emptyStateConfig } from "./empty-state.demo-data";
 import { TableEmptyStateComponent } from "./table-empty-state.component";
 import "@simple-table/angular/styles.css";
+import type { EmptyEmployee } from "./empty-state.demo-data";
 
 @Component({
   selector: "empty-state-demo",
@@ -11,6 +12,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -26,11 +28,13 @@ export class EmptyStateDemoComponent {
   private readonly appRef = inject(ApplicationRef);
   private readonly envInjector = inject(EnvironmentInjector);
 
-  readonly rows: Row[] = emptyStateConfig.rows;
-  readonly headers: AngularColumnDef[] = emptyStateConfig.headers;
+  readonly rows: EmptyEmployee[] = emptyStateConfig.rows;
+  readonly headers: AngularColumnDef<EmptyEmployee>[] = emptyStateConfig.headers;
   readonly emptyStateEl = wrapAngularRenderer(
     TableEmptyStateComponent,
     this.appRef,
     this.envInjector,
   )({});
+
+  getRowId = ({ row }: GetRowIdParams<EmptyEmployee>) => row.id;
 }

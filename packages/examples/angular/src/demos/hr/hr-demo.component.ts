@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularCellRenderer, AngularColumnDef, CellChangeProps, Theme } from "@simple-table/angular";
+import type { AngularCellRenderer, AngularColumnDef, CellChangeProps, GetRowIdParams, Theme } from "@simple-table/angular";
 import { hrConfig } from "./hr.demo-data";
 import { HrFullNameCellComponent } from "./hr-full-name-cell.component";
 import { HrHireDateCellComponent } from "./hr-hire-date-cell.component";
@@ -9,8 +9,9 @@ import { HrSalaryCellComponent } from "./hr-salary-cell.component";
 import { HrStatusCellComponent } from "./hr-status-cell.component";
 import { HrYearsCellComponent } from "./hr-years-cell.component";
 import "@simple-table/angular/styles.css";
+import type { HREmployee } from "./hr.demo-data";
 
-const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
+const RENDERERS: Partial<Record<string, AngularCellRenderer<HREmployee>>> = {
   fullName: HrFullNameCellComponent,
   performanceScore: HrPerformanceCellComponent,
   hireDate: HrHireDateCellComponent,
@@ -19,8 +20,8 @@ const RENDERERS: Partial<Record<string, AngularCellRenderer>> = {
   status: HrStatusCellComponent,
 };
 
-function buildHRHeaders(): AngularColumnDef[] {
-  return hrConfig.headers.map((h): AngularColumnDef => {
+function buildHRHeaders(): AngularColumnDef<HREmployee>[] {
+  return hrConfig.headers.map((h): AngularColumnDef<HREmployee> => {
     const cellRenderer = RENDERERS[String(h.accessor)];
     return cellRenderer ? { ...h, cellRenderer } : { ...h };
   });
@@ -32,6 +33,7 @@ function buildHRHeaders(): AngularColumnDef[] {
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [columns]="headers"
       [rows]="data"
       [height]="height"
@@ -50,7 +52,7 @@ export class HRDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularColumnDef[] = buildHRHeaders();
+  readonly headers: AngularColumnDef<HREmployee>[] = buildHRHeaders();
   data = [...hrConfig.rows];
 
   get rowsPerPage(): number {
@@ -58,7 +60,9 @@ export class HRDemoComponent {
     return Math.floor(heightNum / 48);
   }
 
-  onCellEdit({ accessor, newValue, row }: CellChangeProps): void {
+  onCellEdit({ accessor, newValue, row }: CellChangeProps<HREmployee>): void {
     this.data = this.data.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item));
   }
+
+  getRowId = ({ row }: GetRowIdParams<HREmployee>) => row.id;
 }

@@ -1,7 +1,8 @@
 import { Component, Input, ViewChild } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
 import "@simple-table/angular/styles.css";
+import type { CsvProduct } from "./csv-export.demo-data";
 
 @Component({
   selector: "csv-export-demo",
@@ -14,6 +15,7 @@ import "@simple-table/angular/styles.css";
         <button style="padding: 6px 16px" (click)="handleGetInfo()">Get Table Info</button>
       </div>
       <simple-table
+      [getRowId]="getRowId"
         #simpleTable
         [rows]="rows"
         [columns]="headers"
@@ -31,8 +33,8 @@ export class CsvExportDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = csvExportData;
-  readonly headers: AngularColumnDef[] = csvExportHeaders.map((h) => {
+  readonly rows: CsvProduct[] = csvExportData;
+  readonly headers: AngularColumnDef<CsvProduct>[] = csvExportHeaders.map((h) => {
     if (h.accessor === "actions") {
       return {
         ...h,
@@ -52,9 +54,14 @@ export class CsvExportDemoComponent {
     if (!api) return;
     const rows = api.getAllRows();
     const hdrs = api.getHeaders();
-    const totalRevenue = rows.reduce((sum, r) => sum + (Number((r.row as { revenue?: unknown }).revenue) || 0), 0);
+    const totalRevenue = rows.reduce((sum, r) => {
+      const revenue = r.row.revenue;
+      return sum + (typeof revenue === "number" ? revenue : 0);
+    }, 0);
     alert(
       `Table Info:\n• ${rows.length} rows\n• ${hdrs.length} columns\n• Columns: ${hdrs.map((h) => h.label).join(", ")}\n• Total Revenue: $${totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     );
   }
+
+  getRowId = ({ row }: GetRowIdParams<CsvProduct>) => row.id;
 }

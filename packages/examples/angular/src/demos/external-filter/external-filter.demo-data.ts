@@ -1,6 +1,31 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef, TableFilterState } from "@simple-table/angular";
+import type { AngularColumnDef, TableFilterState, ValueFormatterProps } from "@simple-table/angular";
 
+export interface FilterableEmployee {
+  id: number;
+  name: string;
+  age: number;
+  email: string;
+  salary: number;
+  department: string;
+  active: boolean;
+  location: string;
+}
+
+type FilterableKey = keyof FilterableEmployee;
+
+export function isFilterableKey(accessor: string): accessor is FilterableKey {
+  return (
+    accessor === "id" ||
+    accessor === "name" ||
+    accessor === "age" ||
+    accessor === "email" ||
+    accessor === "salary" ||
+    accessor === "department" ||
+    accessor === "active" ||
+    accessor === "location"
+  );
+}
 
 type CellValue = string | number | boolean | null | undefined;
 
@@ -75,7 +100,7 @@ const LOCATION_OPTIONS = [
   { label: "Moscow", value: "Moscow" },
 ];
 
-export const externalFilterData = [
+export const externalFilterData: FilterableEmployee[] = [
   { id: 1, name: "Dr. Elena Vasquez", age: 42, email: "elena.vasquez@techcorp.com", salary: 145000, department: "AI Research", active: true, location: "San Francisco" },
   { id: 2, name: "Kai Tanaka", age: 29, email: "k.tanaka@techcorp.com", salary: 95000, department: "UX Design", active: true, location: "Tokyo" },
   { id: 3, name: "Amara Okafor", age: 35, email: "amara.okafor@techcorp.com", salary: 125000, department: "DevOps", active: false, location: "Lagos" },
@@ -90,7 +115,7 @@ export const externalFilterData = [
   { id: 12, name: "Dmitri Volkov", age: 39, email: "dmitri.volkov@techcorp.com", salary: 135000, department: "DevOps", active: true, location: "Moscow" },
 ];
 
-export const externalFilterHeaders: AngularColumnDef[] = [
+export const externalFilterHeaders: AngularColumnDef<FilterableEmployee, any>[] = [
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, filterable: true, type: "string" },
   { accessor: "age", label: "Age", width: 120, filterable: true, type: "number" },
   {
@@ -117,7 +142,7 @@ export const externalFilterHeaders: AngularColumnDef[] = [
     filterable: true,
     type: "number",
     align: "right",
-    valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
+    valueFormatter: ({ value }: ValueFormatterProps<FilterableEmployee, number>) => `$${value.toLocaleString()}`,
   },
 ];
 
@@ -125,4 +150,4 @@ export const externalFilterConfig = {
   headers: externalFilterHeaders,
   rows: externalFilterData,
   tableProps: { externalFilterHandling: true, columnResizing: true },
-} as const;
+};

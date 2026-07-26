@@ -1,8 +1,8 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, CellChangeProps, ValueGetterProps } from "@simple-table/angular";
+import type { AngularColumnDef, CellChangeProps, GetRowIdParams, ValueGetterProps } from "@simple-table/angular";
 import { crmData } from "./crm.demo-data";
-import type { CrmShellTheme } from "./crm.demo-data";
+import type { CRMLead, CrmShellTheme } from "./crm.demo-data";
 import { CrmAiScoreCellComponent } from "./crm-ai-score-cell.component";
 import { CrmContactCellComponent } from "./crm-contact-cell.component";
 import { CrmContactNowCellComponent } from "./crm-contact-now-cell.component";
@@ -16,7 +16,7 @@ import { CrmTimeAgoCellComponent } from "./crm-time-ago-cell.component";
 import "@simple-table/angular/styles.css";
 import "./crm-custom-theme.css";
 
-const CRM_HEADERS: AngularColumnDef[] = [
+const CRM_HEADERS: AngularColumnDef<CRMLead>[] = [
   {
     accessor: "name",
     label: "CONTACT",
@@ -90,7 +90,7 @@ const CRM_HEADERS: AngularColumnDef[] = [
       { label: "SMB", value: "SMB" },
       { label: "Nurture", value: "Nurture" },
     ],
-    valueGetter: ({ row }: ValueGetterProps) => {
+    valueGetter: ({ row }: ValueGetterProps<CRMLead>) => {
       const m: Record<string, number> = {
         "Hot Leads": 1,
         "Warm Leads": 2,
@@ -128,6 +128,7 @@ const CRM_HEADERS: AngularColumnDef[] = [
   template: `
     <div [class]="'custom-theme-container theme-' + (isDark ? 'custom-dark' : 'custom-light')">
       <simple-table
+      [getRowId]="getRowId"
         #simpleTable
         [columnReordering]="true"
         [columnResizing]="true"
@@ -151,7 +152,7 @@ export class CRMDemoComponent implements OnInit, OnChanges {
 
   isDark = false;
   data = [...crmData];
-  readonly headers: AngularColumnDef[] = CRM_HEADERS;
+  readonly headers: AngularColumnDef<CRMLead>[] = CRM_HEADERS;
   readonly footerRenderer = CrmFooterComponent;
   readonly rowsPerPage = crmRowsPerPageSignal;
 
@@ -171,7 +172,7 @@ export class CRMDemoComponent implements OnInit, OnChanges {
     syncCrmDemoPalette(this.isDark);
   }
 
-  onCellEdit({ accessor, newValue, row }: CellChangeProps): void {
+  onCellEdit({ accessor, newValue, row }: CellChangeProps<CRMLead>): void {
     this.data = this.data.map((item) =>
       item.id === row.id ? { ...item, [accessor]: newValue } : item,
     );

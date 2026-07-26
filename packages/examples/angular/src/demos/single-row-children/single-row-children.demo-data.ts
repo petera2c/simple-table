@@ -1,8 +1,19 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
+export interface StudentRecord {
+  id: number;
+  studentId: string;
+  studentName: string;
+  gradeLevel: string;
+  overallGPA: number;
+  mathGrade: number;
+  scienceGrade: number;
+  englishGrade: number;
+  historyGrade: number;
+}
 
-export const singleRowChildrenData = [
+export const singleRowChildrenData: StudentRecord[] = [
   { id: 1, studentId: "STU-2024-001", studentName: "Alexandra Martinez", gradeLevel: "10th Grade", overallGPA: 3.85, mathGrade: 92, scienceGrade: 88, englishGrade: 91, historyGrade: 89 },
   { id: 2, studentId: "STU-2024-002", studentName: "Benjamin Foster", gradeLevel: "11th Grade", overallGPA: 3.65, mathGrade: 85, scienceGrade: 87, englishGrade: 89, historyGrade: 86 },
   { id: 3, studentId: "STU-2024-003", studentName: "Chloe Nakamura", gradeLevel: "12th Grade", overallGPA: 3.95, mathGrade: 96, scienceGrade: 94, englishGrade: 95, historyGrade: 93 },
@@ -16,7 +27,7 @@ export const singleRowChildrenData = [
   { id: 11, studentId: "STU-2024-011", studentName: "Keiko Tanaka", gradeLevel: "12th Grade", overallGPA: 3.9, mathGrade: 94, scienceGrade: 93, englishGrade: 96, historyGrade: 92 },
 ];
 
-export const singleRowChildrenHeaders: AngularColumnDef[] = [
+export const singleRowChildrenHeaders: AngularColumnDef<StudentRecord>[] = [
   { accessor: "studentId", label: "Student ID", width: 160, sortable: true, type: "string" },
   { accessor: "gradeLevel", label: "Grade Level", width: 150, sortable: true, type: "string" },
   {
@@ -28,7 +39,7 @@ export const singleRowChildrenHeaders: AngularColumnDef[] = [
     sortable: true,
     singleRowChildren: true,
     children: [
-      { accessor: "overallGPA", label: "GPA", width: 90, sortable: true, type: "number", align: "right", showWhen: "parentCollapsed", valueFormatter: ({ value }) => (value as number).toFixed(2) },
+      { accessor: "overallGPA", label: "GPA", width: 90, sortable: true, type: "number", align: "right", showWhen: "parentCollapsed", valueFormatter: ({ value }: ValueFormatterProps<StudentRecord, number>) => value.toFixed(2) },
       { accessor: "mathGrade", label: "Math", width: 90, sortable: true, type: "number", align: "right", showWhen: "parentExpanded" },
       { accessor: "scienceGrade", label: "Science", width: 90, sortable: true, type: "number", align: "right", showWhen: "parentExpanded" },
       { accessor: "englishGrade", label: "English", width: 90, sortable: true, type: "number", align: "right", showWhen: "parentExpanded" },
@@ -44,4 +55,4 @@ export const singleRowChildrenConfig = {
     columnResizing: true,
     selectableCells: true,
   },
-} as const;
+};

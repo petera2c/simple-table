@@ -1,10 +1,9 @@
 // Self-contained demo table setup for this example.
 import type { ColumnDef } from "simple-table-core";
-import type { Row } from "simple-table-core";
 
 export type SoccerPosition = "GK" | "DEF" | "MID" | "FWD";
 
-export interface SoccerPlayer extends Row {
+export interface SoccerPlayer {
   id: string;
   rank: number;
   rankChange: number;
@@ -125,7 +124,7 @@ export function generateSoccerData(count = 200): SoccerPlayer[] {
   return players;
 }
 
-export const soccerHeaders: ColumnDef[] = [
+export const soccerHeaders: ColumnDef<SoccerPlayer>[] = [
   { accessor: "rank", label: "#", width: 56, align: "center", type: "number", pinned: "left", sortable: true, editable: false },
   {
     accessor: "name", label: "Player", width: 220, align: "left", type: "string", pinned: "left", sortable: true, editable: false,
@@ -185,4 +184,4 @@ export const soccerData = generateSoccerData(200);
 export const soccerConfig = {
   headers: soccerHeaders,
   rows: soccerData,
-} as const;
+};

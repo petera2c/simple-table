@@ -1,8 +1,17 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef, Row } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
+export interface TooltipProduct {
+  id: number;
+  productName: string;
+  category: string;
+  price: number;
+  stock: number;
+  rating: number;
+  lastUpdated: string;
+}
 
-export const tooltipData: Row[] = [
+export const tooltipData: TooltipProduct[] = [
   { id: 1, productName: "MacBook Pro M3 Max", category: "Laptops", price: 3299.99, stock: 12, rating: 4.8, lastUpdated: "2024-01-15" },
   { id: 2, productName: "Logitech MX Master 3S", category: "Peripherals", price: 99.99, stock: 45, rating: 4.6, lastUpdated: "2024-01-18" },
   { id: 3, productName: "Samsung 49-inch Ultrawide Monitor", category: "Displays", price: 899.99, stock: 8, rating: 4.7, lastUpdated: "2024-01-20" },
@@ -20,7 +29,7 @@ export const tooltipData: Row[] = [
   { id: 15, productName: "Corsair K95 RGB Platinum", category: "Peripherals", price: 199.99, stock: 16, rating: 4.5, lastUpdated: "2024-02-18" },
 ];
 
-export const tooltipHeaders: AngularColumnDef[] = [
+export const tooltipHeaders: AngularColumnDef<TooltipProduct, any>[] = [
   { accessor: "productName", label: "Product", width: 200, sortable: true, tooltip: "Complete product name including model specifications and key features" },
   { accessor: "category", label: "Category", width: 150, sortable: true, filterable: true, tooltip: "Product classification: Laptops, Displays, or Peripherals for easy filtering" },
   {
@@ -30,7 +39,7 @@ export const tooltipHeaders: AngularColumnDef[] = [
     align: "right",
     sortable: true,
     tooltip: "Current retail price in US dollars (USD) including all standard features",
-    valueFormatter: ({ value }) => `$${(value as number).toFixed(2)}`,
+    valueFormatter: ({ value }: ValueFormatterProps<TooltipProduct, number>) => `$${value.toFixed(2)}`,
   },
   { accessor: "stock", label: "Stock", width: 100, align: "right", sortable: true, tooltip: "Available inventory count - number of units currently in warehouse stock" },
   {
@@ -40,7 +49,7 @@ export const tooltipHeaders: AngularColumnDef[] = [
     align: "center",
     sortable: true,
     tooltip: "Customer satisfaction rating based on verified purchase reviews (scale: 1-5 stars)",
-    valueFormatter: ({ value }) => `${value}/5`,
+    valueFormatter: ({ value }: ValueFormatterProps<TooltipProduct>) => `${value}/5`,
   },
   { accessor: "lastUpdated", label: "Last Updated", width: 150, sortable: true, tooltip: "Most recent inventory update date in YYYY-MM-DD format" },
 ];
@@ -53,4 +62,4 @@ export const tooltipConfig = {
     columnReordering: true,
     selectableCells: true,
   },
-} as const;
+};

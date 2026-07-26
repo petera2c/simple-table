@@ -1,19 +1,15 @@
 import { Component, Input } from "@angular/core";
-import type { Row, Theme } from "@simple-table/angular";
+import type { Theme } from "@simple-table/angular";
 import { getInfraMetricColorStyles, getInfraStatusColors } from "./infrastructure.demo-data";
 import type { InfrastructureServer } from "./infrastructure.demo-data";
 
 @Component({
   standalone: true,
   selector: "demo-infra-server-id",
-  template: `<span style="font-family:monospace;font-size:0.85rem;">{{ d.serverId }}</span>`,
+  template: `<span style="font-family:monospace;font-size:0.85rem;">{{ row.serverId }}</span>`,
 })
 export class InfraServerIdCellComponent {
-  @Input({ required: true }) row!: Row;
-
-  get d(): InfrastructureServer {
-    return this.row as unknown as InfrastructureServer;
-  }
+  @Input({ required: true }) row!: InfrastructureServer;
 }
 
 @Component({
@@ -26,21 +22,17 @@ export class InfraServerIdCellComponent {
         [style.color]="styles.color"
         [style.background-color]="styles.backgroundColor || 'transparent'"
       >
-        {{ d.cpuUsage.toFixed(1) }}%
+        {{ row.cpuUsage.toFixed(1) }}%
       </div>
     </div>
   `,
 })
 export class InfraCpuCellComponent {
-  @Input({ required: true }) row!: Row;
+  @Input({ required: true }) row!: InfrastructureServer;
   @Input() theme?: Theme;
 
-  get d(): InfrastructureServer {
-    return this.row as unknown as InfrastructureServer;
-  }
-
   get styles(): ReturnType<typeof getInfraMetricColorStyles> {
-    return getInfraMetricColorStyles(this.d.cpuUsage, this.theme || "light", "cpu");
+    return getInfraMetricColorStyles(this.row.cpuUsage, this.theme || "light", "cpu");
   }
 }
 
@@ -54,35 +46,27 @@ export class InfraCpuCellComponent {
         [style.color]="styles.color"
         [style.background-color]="styles.backgroundColor || 'transparent'"
       >
-        {{ d.memoryUsage.toFixed(1) }}%
+        {{ row.memoryUsage.toFixed(1) }}%
       </div>
     </div>
   `,
 })
 export class InfraMemoryCellComponent {
-  @Input({ required: true }) row!: Row;
+  @Input({ required: true }) row!: InfrastructureServer;
   @Input() theme?: Theme;
 
-  get d(): InfrastructureServer {
-    return this.row as unknown as InfrastructureServer;
-  }
-
   get styles(): ReturnType<typeof getInfraMetricColorStyles> {
-    return getInfraMetricColorStyles(this.d.memoryUsage, this.theme || "light", "memory");
+    return getInfraMetricColorStyles(this.row.memoryUsage, this.theme || "light", "memory");
   }
 }
 
 @Component({
   standalone: true,
   selector: "demo-infra-disk",
-  template: `{{ d.diskUsage.toFixed(1) }}%`,
+  template: `{{ row.diskUsage.toFixed(1) }}%`,
 })
 export class InfraDiskCellComponent {
-  @Input({ required: true }) row!: Row;
-
-  get d(): InfrastructureServer {
-    return this.row as unknown as InfrastructureServer;
-  }
+  @Input({ required: true }) row!: InfrastructureServer;
 }
 
 @Component({
@@ -93,19 +77,15 @@ export class InfraDiskCellComponent {
       style="font-weight:500;"
       [style.color]="styles.color"
       [style.background-color]="styles.backgroundColor || 'transparent'"
-      >{{ d.responseTime.toFixed(1) }}</span>
+      >{{ row.responseTime.toFixed(1) }}</span>
   `,
 })
 export class InfraResponseCellComponent {
-  @Input({ required: true }) row!: Row;
+  @Input({ required: true }) row!: InfrastructureServer;
   @Input() theme?: Theme;
 
-  get d(): InfrastructureServer {
-    return this.row as unknown as InfrastructureServer;
-  }
-
   get styles(): ReturnType<typeof getInfraMetricColorStyles> {
-    return getInfraMetricColorStyles(this.d.responseTime, this.theme || "light", "response");
+    return getInfraMetricColorStyles(this.row.responseTime, this.theme || "light", "response");
   }
 }
 
@@ -123,19 +103,15 @@ export class InfraResponseCellComponent {
   `,
 })
 export class InfraStatusCellComponent {
-  @Input({ required: true }) row!: Row;
+  @Input({ required: true }) row!: InfrastructureServer;
   @Input() theme?: Theme;
 
-  get d(): InfrastructureServer {
-    return this.row as unknown as InfrastructureServer;
-  }
-
   get styles(): ReturnType<typeof getInfraStatusColors> {
-    return getInfraStatusColors(this.d.status, this.theme || "light");
+    return getInfraStatusColors(this.row.status, this.theme || "light");
   }
 
   get label(): string {
-    const s = this.d.status;
+    const s = this.row.status;
     return s.charAt(0).toUpperCase() + s.slice(1);
   }
 }

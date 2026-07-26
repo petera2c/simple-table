@@ -2,6 +2,7 @@ import { SimpleTableConfig } from "../types/SimpleTableConfig";
 import { TableAPI } from "../types/TableAPI";
 import ColumnDef, { Accessor, DEFAULT_SHOW_WHEN } from "../types/ColumnDef";
 import Row from "../types/Row";
+import type { RowData } from "../types/Row";
 import { CustomTheme, areCustomThemesEqual } from "../types/CustomTheme";
 import RowState from "../types/RowState";
 import {
@@ -79,7 +80,7 @@ const isDevEnvironment = (): boolean => {
   }
 };
 
-export class SimpleTableVanilla {
+export class SimpleTableVanilla<TData extends RowData = Row> {
   private container: HTMLElement;
   private config: SimpleTableConfig;
   private customTheme: CustomTheme;
@@ -250,11 +251,11 @@ export class SimpleTableVanilla {
    */
   private lastRenderedVisibilityKey: string | null = null;
 
-  constructor(container: HTMLElement, config: SimpleTableConfigInput) {
+  constructor(container: HTMLElement, config: SimpleTableConfigInput<TData>) {
     this.container = container;
     // Collapse consumer aliases (`columns`, `enablePagination`, …) before any
     // internal reads — `this.config` is the only shape the rest of the class uses.
-    this.config = normalizeConfig(config);
+    this.config = normalizeConfig(config as unknown as SimpleTableConfigInput);
     const resolved = this.config;
 
     this.customTheme = TableInitializer.mergeCustomTheme(resolved);
@@ -1292,7 +1293,7 @@ export class SimpleTableVanilla {
       // cycle SimpleTableVanilla → RenderOrchestrator → TableRenderer →
       // SectionRenderer → nestedGridRowRenderer → SimpleTableVanilla.
       createNestedTable: (container, nestedConfig) =>
-        new SimpleTableVanilla(container, nestedConfig),
+        new SimpleTableVanilla<Row>(container, nestedConfig as SimpleTableConfigInput<Row>),
       cellRegistry: this.cellRegistry,
       hoverScopeId: this.hoverScopeId,
       headerRegistry: this.headerRegistry,
@@ -1765,12 +1766,10 @@ export class SimpleTableVanilla {
     );
   }
 
-  update(config: Partial<SimpleTableConfigInput>): void {
+  update(config: Partial<SimpleTableConfigInput<TData>>): void {
     this.isUpdating = true;
-    const patch = normalizeConfigPatch(config);
+    const patch = normalizeConfigPatch(config as unknown as Partial<SimpleTableConfigInput>);
     this.config = { ...this.config, ...patch };
-    // Rebind so the rest of this method reads normalized keys (`columns`, etc.).
-    config = patch as Partial<SimpleTableConfigInput>;
 
     if (config.animations !== undefined) {
       this.applyAnimationsConfig(config.animations);
@@ -1793,7 +1792,7 @@ export class SimpleTableVanilla {
       if (this.firstRenderDone) {
         this.captureAnimationSnapshot();
       }
-      this.localRows = [...config.rows];
+      this.localRows = [...config.rows] as Row[];
       this.rebuildRowIndexMap();
 
       if (this.filterManager) {
@@ -1836,7 +1835,7 @@ export class SimpleTableVanilla {
       // a fresh columns tree with stale widths, which would replace
       // this.headers, clear naturalWidths, and fight the in-progress resize.
       this.captureAnimationSnapshot();
-      this.pristineDefaultHeaders = deepClone(config.columns);
+      this.pristineDefaultHeaders = deepClone(config.columns as ColumnDef[]);
       // Field catalog drives filters; visible headers come from pivot when active.
       if (this.filterManager) {
         this.filterManager.updateConfig({ headers: this.pristineDefaultHeaders });
@@ -1844,7 +1843,7 @@ export class SimpleTableVanilla {
       if (this.pivotManager?.isActive()) {
         this.syncPivotPipeline(this.filterManager?.getFilteredRows() ?? this.localRows);
       } else {
-        this.headers = [...config.columns];
+        this.headers = [...(config.columns as ColumnDef[])];
         this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
         if (this.sortManager) {
           this.sortManager.updateConfig({ headers: this.headers });
@@ -2004,7 +2003,7 @@ export class SimpleTableVanilla {
   }
 
   /** @deprecated Use {@link update} — same behavior. */
-  updateConfig(config: Partial<SimpleTableConfig>): void {
+  updateConfig(config: Partial<SimpleTableConfigInput<TData>>): void {
     this.update(config);
   }
 

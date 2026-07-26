@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import type { Row } from "@simple-table/angular";
+import type {  } from "@simple-table/angular";
 import type { CRMLead } from "./crm.demo-data";
 
 @Component({
@@ -8,13 +8,9 @@ import type { CRMLead } from "./crm.demo-data";
   template: `<div style="font-size:0.875rem;">{{ fire }}</div>`,
 })
 export class CrmAiScoreCellComponent {
-  @Input({ required: true }) row!: Row;
-
-  get d(): CRMLead {
-    return this.row as unknown as CRMLead;
-  }
+  @Input({ required: true }) row!: CRMLead;
 
   get fire(): string {
-    return "🔥".repeat(this.d.aiScore);
+    return "🔥".repeat(this.row.aiScore);
   }
 }

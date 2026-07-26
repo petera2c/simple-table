@@ -1,8 +1,16 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef, Row } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
+export interface CatalogProduct {
+  id: number;
+  product: string;
+  category: string;
+  price: number;
+  stock: number;
+  status: string;
+}
 
-export const footerRendererHeaders: AngularColumnDef[] = [
+export const footerRendererHeaders: AngularColumnDef<CatalogProduct>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "product", label: "Product Name", width: 220, type: "string" },
   { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -11,7 +19,7 @@ export const footerRendererHeaders: AngularColumnDef[] = [
   { accessor: "status", label: "Status", width: "1fr", type: "string" },
 ];
 
-export const footerRendererData: Row[] = [
+export const footerRendererData: CatalogProduct[] = [
   { id: 1, product: "MacBook Pro 16-inch M3 Max", category: "Laptops", price: 3499, stock: 28, status: "In Stock" },
   { id: 2, product: "Dell XPS 15 OLED Touchscreen", category: "Laptops", price: 2299, stock: 42, status: "In Stock" },
   { id: 3, product: "ThinkPad X1 Carbon Gen 11", category: "Laptops", price: 1899, stock: 35, status: "In Stock" },
@@ -66,4 +74,4 @@ export const footerRendererConfig = {
     enablePagination: true,
     rowsPerPage: 10,
   },
-} as const;
+};

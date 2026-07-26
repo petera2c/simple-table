@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef, Row } from "@simple-table/angular";
+import type { AngularColumnDef, ValueGetterProps } from "@simple-table/angular";
 
 export interface InfrastructureServer {
   id: number;
@@ -50,7 +50,7 @@ const STATUSES: Array<InfrastructureServer["status"]> = [
   "offline",
 ];
 
-export function generateInfrastructureData(count: number = 50): Row[] {
+export function generateInfrastructureData(count: number = 50): InfrastructureServer[] {
   return Array.from({ length: count }, (_, i) => {
     const prefix = SERVER_PREFIXES[i % SERVER_PREFIXES.length];
     const num = String(i + 1).padStart(3, "0");
@@ -75,7 +75,7 @@ export function generateInfrastructureData(count: number = 50): Row[] {
 
 export const infrastructureData = generateInfrastructureData(50);
 
-export const infrastructureHeaders: AngularColumnDef[] = [
+export const infrastructureHeaders: AngularColumnDef<InfrastructureServer>[] = [
   {
     accessor: "serverId",
     align: "left",
@@ -174,7 +174,7 @@ export const infrastructureHeaders: AngularColumnDef[] = [
       { label: "Maintenance", value: "maintenance" },
       { label: "Offline", value: "offline" },
     ],
-    valueGetter: ({ row }) => {
+    valueGetter: ({ row }: ValueGetterProps<InfrastructureServer>) => {
       const severityMap: Record<string, number> = {
         critical: 1,
         offline: 2,
@@ -255,4 +255,4 @@ export function getInfraStatusColors(status: string, theme: string) {
 export const infrastructureConfig = {
   headers: infrastructureHeaders,
   rows: infrastructureData,
-} as const;
+};

@@ -1,5 +1,6 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
+import type { AnalyticsFactRow } from "./analytics.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import { analyticsDemoConfig, analyticsPresets } from "./analytics.demo-data";
 import "simple-table-core/styles.css";
 
@@ -12,9 +13,9 @@ function formatHeight(height?: string | number | null): string {
 export function renderAnalyticsDemo(
   container: HTMLElement,
   options?: { height?: string | number | null; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<AnalyticsFactRow> {
   let activeId = analyticsPresets[0].id;
-  let table: SimpleTableVanilla | null = null;
+  let table: SimpleTableVanilla<AnalyticsFactRow> | null = null;
 
   const isDark = options?.theme === "dark" || options?.theme === "modern-dark";
   const chromeBg = isDark ? "#0f172a" : "#f8fafc";

@@ -1,9 +1,10 @@
 import { NgIf } from "@angular/common";
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
 import "@simple-table/angular/styles.css";
+import type { ColumnEditingEmployee } from "./column-editing.demo-data";
 
 @Component({
   selector: "column-editing-demo",
@@ -23,6 +24,7 @@ import "@simple-table/angular/styles.css";
         </span>
       </div>
       <simple-table
+      [getRowId]="getRowId"
         [rows]="rows"
         [columns]="headers"
         [height]="height"
@@ -38,22 +40,24 @@ export class ColumnEditingDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = columnEditingData;
-  additionalColumns: AngularColumnDef[] = [];
+  readonly rows: ColumnEditingEmployee[] = columnEditingData;
+  additionalColumns: AngularColumnDef<ColumnEditingEmployee>[] = [];
   lastAdded = "";
 
-  get headers(): AngularColumnDef[] {
+  get headers(): AngularColumnDef<ColumnEditingEmployee>[] {
     return [...columnEditingHeaders, ...this.additionalColumns];
   }
 
   addColumn() {
     const n = this.additionalColumns.length + 1;
-    const col: AngularColumnDef = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
+    const col: AngularColumnDef<ColumnEditingEmployee> = { accessor: `custom-${n}`, label: `Custom ${n}`, width: 120, type: "string" };
     this.additionalColumns = [...this.additionalColumns, col];
     this.lastAdded = col.label;
   }
 
-  handleHeaderEdit = (_header: AngularColumnDef, newLabel: string) => {
+  handleHeaderEdit = (_header: AngularColumnDef<ColumnEditingEmployee>, newLabel: string) => {
     this.lastAdded = `Renamed to: ${newLabel}`;
   };
+
+  getRowId = ({ row }: GetRowIdParams<ColumnEditingEmployee>) => row.id;
 }

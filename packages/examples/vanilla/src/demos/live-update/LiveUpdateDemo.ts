@@ -1,33 +1,36 @@
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
+import type { LiveUpdateProduct } from "./live-update.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
 import "simple-table-core/styles.css";
 
 export function renderLiveUpdateDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla & { _cleanup?: () => void } {
+): SimpleTableVanilla<LiveUpdateProduct> & { _cleanup?: () => void } {
+  const getRowId = ({ row }: GetRowIdParams<LiveUpdateProduct>) => row.id;
+
   const table = new SimpleTableVanilla(container, {
     columns: liveUpdateConfig.headers,
     rows: liveUpdateConfig.rows,
-    getRowId: ({ row }) => (row as { id: number }).id,
+    getRowId,
     height: options?.height ?? "400px",
     theme: options?.theme,
   });
 
-  const currentData = JSON.parse(JSON.stringify(liveUpdateData));
-  const timerMap = new Map<string | number, ReturnType<typeof setTimeout>>();
-  const currentPeriodSales = new Map<string | number, number>();
+  const currentData: LiveUpdateProduct[] = JSON.parse(JSON.stringify(liveUpdateData));
+  const timerMap = new Map<number, ReturnType<typeof setTimeout>>();
+  const currentPeriodSales = new Map<number, number>();
   let isActive = true;
 
-  const createRowTimer = (rowId: string | number) => {
+  const createRowTimer = (rowId: number) => {
     const scheduleUpdate = () => {
       if (!isActive) return;
       const interval = 300 + Math.random() * 700;
       const timerId = setTimeout(() => {
         if (!isActive) return;
         const api = table.getAPI();
-        const idx = currentData.findIndex((r: any) => r.id === rowId);
+        const idx = currentData.findIndex((r) => r.id === rowId);
         if (idx === -1) return;
         const product = currentData[idx];
 
@@ -62,7 +65,9 @@ export function renderLiveUpdateDemo(
   const syncTimers = () => {
     const api = table.getAPI();
     const visibleRows = api.getVisibleRows();
-    const visibleIds = new Set(visibleRows.map((vr) => vr.row.id as string | number));
+    const visibleIds = new Set(
+      visibleRows.flatMap((vr) => (typeof vr.row.id === "number" ? [vr.row.id] : [])),
+    );
     timerMap.forEach((tid, rid) => {
       if (!visibleIds.has(rid)) {
         clearTimeout(tid);
@@ -70,7 +75,8 @@ export function renderLiveUpdateDemo(
       }
     });
     visibleRows.forEach((vr) => {
-      const rid = vr.row.id as string | number;
+      const rid = vr.row.id;
+      if (typeof rid !== "number") return;
       if (!timerMap.has(rid)) createRowTimer(rid);
     });
   };
@@ -78,7 +84,7 @@ export function renderLiveUpdateDemo(
   const salesRotate = setInterval(() => {
     if (!isActive) return;
     const api = table.getAPI();
-    currentData.forEach((row: any, i: number) => {
+    currentData.forEach((row, i) => {
       if (Array.isArray(row.salesHistory)) {
         const rid = row.id;
         const sp = currentPeriodSales.get(rid) || 0;

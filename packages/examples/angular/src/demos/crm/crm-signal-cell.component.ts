@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import type { Row } from "@simple-table/angular";
+import type {  } from "@simple-table/angular";
 import type { CRMLead } from "./crm.demo-data";
 import { crmCellPalette } from "./crm-demo-context";
 
@@ -20,11 +20,7 @@ import { crmCellPalette } from "./crm-demo-context";
   `,
 })
 export class CrmSignalCellComponent {
-  @Input({ required: true }) row!: Row;
+  @Input({ required: true }) row!: CRMLead;
 
   protected readonly palette = crmCellPalette;
-
-  get d(): CRMLead {
-    return this.row as unknown as CRMLead;
-  }
 }

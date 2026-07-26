@@ -1,7 +1,8 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { chartsConfig } from "./charts.demo-data";
 import "@simple-table/angular/styles.css";
+import type { ChartsProduct } from "./charts.demo-data";
 
 @Component({
   selector: "charts-demo",
@@ -9,6 +10,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [columnReordering]="true"
       [columnResizing]="true"
       [columns]="headers"
@@ -23,6 +25,8 @@ export class ChartsDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularColumnDef[] = chartsConfig.headers;
-  readonly rows: Row[] = chartsConfig.rows;
+  readonly headers: AngularColumnDef<ChartsProduct>[] = chartsConfig.headers;
+  readonly rows: ChartsProduct[] = chartsConfig.rows;
+
+  getRowId = ({ row }: GetRowIdParams<ChartsProduct>) => row.id;
 }

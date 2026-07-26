@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import type { Row } from "@simple-table/angular";
+import type {  } from "@simple-table/angular";
 import type { BillingRow } from "./billing.demo-data";
 
 @Component({
@@ -14,17 +14,13 @@ import type { BillingRow } from "./billing.demo-data";
   `,
 })
 export class BillingNameCellComponent {
-  @Input({ required: true }) row!: Row;
-
-  get d(): BillingRow {
-    return this.row as unknown as BillingRow;
-  }
+  @Input({ required: true }) row!: BillingRow;
 
   get isAccount(): boolean {
-    return this.d.type === "account";
+    return this.row.type === "account";
   }
 
   get name(): string {
-    return this.d.name;
+    return this.row.name;
   }
 }

@@ -1,5 +1,5 @@
 import { Component, Input } from "@angular/core";
-import type { Row, Theme } from "@simple-table/angular";
+import type { Theme } from "@simple-table/angular";
 import { getThemeColors } from "./sales.demo-data";
 import type { SalesRow } from "./sales.demo-data";
 
@@ -15,17 +15,12 @@ import type { SalesRow } from "./sales.demo-data";
   `,
 })
 export class SalesDealValueCellComponent {
-  @Input({ required: true }) row!: Row;
+  @Input({ required: true }) row!: SalesRow;
   @Input() theme?: Theme;
 
-  get d(): SalesRow {
-    return this.row as unknown as SalesRow;
-  }
-
   get style(): { text: string; color: string; weight: string } {
-    if (this.row.dealValue === "—") return { text: "—", color: "", weight: "" };
     const c = getThemeColors(this.theme);
-    const v = this.d.dealValue as number;
+    const v = this.row.dealValue;
     let color = c.gray;
     let fontWeight = "normal";
     if (v > 100000) {

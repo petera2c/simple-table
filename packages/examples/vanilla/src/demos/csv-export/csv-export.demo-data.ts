@@ -1,6 +1,17 @@
 // Self-contained demo table setup for this example.
 import type { ColumnDef } from "simple-table-core";
 
+export interface CsvProduct {
+  id: string;
+  sku: string;
+  product: string;
+  category: string;
+  price: number;
+  stock: number;
+  sold: number;
+  revenue: number;
+  actions: string;
+}
 
 const CATEGORY_CODES: Record<string, string> = {
   electronics: "ELEC",
@@ -24,7 +35,7 @@ export const csvExportData = [
   { id: "db-4003", sku: "PRD-4003", product: "Desk Lamp LED", category: "Appliances", price: 44.99, stock: 201, sold: 198, revenue: 8908.02, actions: "" },
 ];
 
-export const csvExportHeaders: ColumnDef[] = [
+export const csvExportHeaders: ColumnDef<CsvProduct>[] = [
   { accessor: "id", label: "Internal ID", width: 80, type: "string", excludeFromRender: true },
   { accessor: "sku", label: "SKU", width: 100, sortable: true, type: "string" },
   { accessor: "product", label: "Product Name", minWidth: 120, width: "1fr", sortable: true, type: "string" },
@@ -49,7 +60,7 @@ export const csvExportHeaders: ColumnDef[] = [
     width: 100,
     sortable: true,
     type: "number",
-    valueFormatter: ({ value }) => `$${(value as number).toFixed(2)}`,
+    valueFormatter: ({ value }) => `$${Number(value).toFixed(2)}`,
     useFormattedValueForCSV: true,
     useFormattedValueForClipboard: true,
   },
@@ -62,7 +73,7 @@ export const csvExportHeaders: ColumnDef[] = [
     sortable: true,
     type: "number",
     valueFormatter: ({ value }) =>
-      `$${(value as number).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      `$${Number(value).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     useFormattedValueForCSV: true,
     useFormattedValueForClipboard: true,
   },
@@ -73,4 +84,4 @@ export const csvExportConfig = {
   headers: csvExportHeaders,
   rows: csvExportData,
   tableProps: { enableColumnEditor: true, selectableCells: true, customTheme: { rowHeight: 32 } },
-} as const;
+};

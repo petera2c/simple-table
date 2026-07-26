@@ -1,12 +1,13 @@
 import { Component, Input, ViewChild } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, PivotConfig, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, PivotConfig, Theme } from "@simple-table/angular";
 import {
   analyticsDemoConfig,
   analyticsPresets,
   type AnalyticsPreset,
 } from "./analytics.demo-data";
 import "@simple-table/angular/styles.css";
+import type { AnalyticsFactRow } from "./analytics.demo-data";
 
 @Component({
   selector: "analytics-demo",
@@ -108,11 +109,10 @@ export class AnalyticsDemoComponent {
   @Input() height: string | number | null = "480px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = analyticsDemoConfig.rows;
-  readonly headers: AngularColumnDef[] = analyticsDemoConfig.headers;
+  readonly rows: AnalyticsFactRow[] = analyticsDemoConfig.rows;
+  readonly headers: AngularColumnDef<AnalyticsFactRow>[] = analyticsDemoConfig.headers;
   readonly presets = analyticsPresets;
-  readonly getRowId = ({ row }: { row: Row }) =>
-    row.id == null ? undefined : String(row.id);
+  readonly getRowId = ({ row }: GetRowIdParams<AnalyticsFactRow>) => row.id == null ? undefined : String(row.id);
 
   activeId = analyticsPresets[0].id;
   pivot: PivotConfig | null = analyticsPresets[0].pivot;
