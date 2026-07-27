@@ -1086,11 +1086,25 @@ function pivotConfigLiteral(options: PivotSnippetOptions): string {
 }
 
 /** Field catalog for pivot — labels/types for source fields (not the pivoted headers). */
-export const PIVOT_HEADERS_SNIPPET = `const headers = [
-  { accessor: "region", label: "Region", type: "string" },
+const PIVOT_HEADER_OBJECTS = `  { accessor: "region", label: "Region", type: "string" },
   { accessor: "quarter", label: "Quarter", type: "string" },
   { accessor: "sales", label: "Sales", type: "number" },
 ];`;
+
+export const PIVOT_HEADERS_SNIPPETS: Record<Framework, string> = {
+  react: `const headers: ReactColumnDef[] = [
+${PIVOT_HEADER_OBJECTS}`,
+  vue: `const headers: VueColumnDef[] = [
+${PIVOT_HEADER_OBJECTS}`,
+  angular: `const headers: AngularColumnDef[] = [
+${PIVOT_HEADER_OBJECTS}`,
+  svelte: `const headers: SvelteColumnDef[] = [
+${PIVOT_HEADER_OBJECTS}`,
+  solid: `const headers: SolidColumnDef[] = [
+${PIVOT_HEADER_OBJECTS}`,
+  vanilla: `const headers: ColumnDef[] = [
+${PIVOT_HEADER_OBJECTS}`,
+};
 
 export const PIVOT_FLAT_ROWS_SNIPPET = `const flatRows = [
   { region: "North", quarter: "Q1", sales: 120000 },
@@ -1315,7 +1329,7 @@ export function cellRendererSnippets(): Record<Framework, string> {
   return <span style={{ color, fontWeight: 600 }}>{status}</span>;
 };
 
-const columns = [
+const columns: ReactColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, cellRenderer: StatusCell },
 ];`,
     solid: `const StatusCell = (props) => {
@@ -1324,7 +1338,7 @@ const columns = [
   return <span style={{ color, "font-weight": "600" }}>{status}</span>;
 };
 
-const columns = [
+const columns: SolidColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, cellRenderer: StatusCell },
 ];`,
     vue: `import { h } from "vue";
@@ -1335,7 +1349,7 @@ const StatusCell = ({ value }) => {
   return h("span", { style: { color, fontWeight: "600" } }, status);
 };
 
-const columns = [
+const columns: VueColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, cellRenderer: StatusCell },
 ];`,
     angular: `// status-cell.component.ts
@@ -1373,7 +1387,7 @@ export class StatusCellComponent {
   return span;
 };
 
-const columns = [
+const columns: ColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, cellRenderer: StatusCell },
 ];`,
   };
@@ -2503,14 +2517,14 @@ export function headerRendererSnippets(): Record<Framework, string> {
   <span style={{ fontWeight: 600 }}>{header.label}</span>
 );
 
-const columns = [
+const columns: ReactColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, headerRenderer: StatusHeader },
 ];`,
     solid: `const StatusHeader = (props) => (
   <span style={{ "font-weight": "600" }}>{props.header.label}</span>
 );
 
-const columns = [
+const columns: SolidColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, headerRenderer: StatusHeader },
 ];`,
     vue: `import { h } from "vue";
@@ -2518,7 +2532,7 @@ const columns = [
 const StatusHeader = ({ header }) =>
   h("span", { style: { fontWeight: "600" } }, header.label);
 
-const columns = [
+const columns: VueColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, headerRenderer: StatusHeader },
 ];`,
     angular: `// status-header.component.ts
@@ -2549,7 +2563,7 @@ export class StatusHeaderComponent {
   return span;
 };
 
-const columns = [
+const columns: ColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, headerRenderer: StatusHeader },
 ];`,
   };

@@ -413,7 +413,7 @@ export default function CustomizingReactTableThemesContent() {
 
             <CodeBlock
               className="mb-4"
-              code={`const headers = [
+              code={`const headers: ReactColumnDef[] = [
 {
 accessor: "email",
 label: "Email",
@@ -556,7 +556,7 @@ return ({ header }) => (
 );
 };
 
-const headers = [
+const headers: ReactColumnDef[] = [
 {
 accessor: "name",
 label: "Star Name",

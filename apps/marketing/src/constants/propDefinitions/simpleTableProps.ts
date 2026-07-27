@@ -8,7 +8,7 @@ export const SIMPLE_TABLE_PROPS: PropInfo[] = [
     description: "Array of column definitions that specify the structure of your table.",
     type: "ColumnDef[]",
     link: "#column-def",
-    example: `const headers = [
+    example: `const columns: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80 },
   { accessor: "name", label: "Name", width: "1fr" }
 ];`,

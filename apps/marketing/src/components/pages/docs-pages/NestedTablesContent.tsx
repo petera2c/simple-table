@@ -18,12 +18,34 @@ import {
   onRowGroupExpandSnippets,
   type CodeByFramework,
 } from "@/constants/docsSnippets";
+import type { Framework } from "@/constants/frameworks";
 
 type NestedPattern = {
   title: string;
   body: ReactNode;
   codeByFramework: CodeByFramework;
   language?: string;
+};
+
+const DIVISION_COLUMN_OBJECTS = `  { accessor: "divisionId", label: "Division ID", width: 120 },
+  { accessor: "revenue", label: "Revenue", width: 120, type: "number" },
+  { accessor: "headcount", label: "Headcount", width: 110, type: "number" },
+  { accessor: "location", label: "Location", width: "1fr" },
+];`;
+
+const DIVISION_COLUMNS_SNIPPETS: Record<Framework, string> = {
+  react: `const divisionColumns: ReactColumnDef[] = [
+${DIVISION_COLUMN_OBJECTS}`,
+  vue: `const divisionColumns: VueColumnDef[] = [
+${DIVISION_COLUMN_OBJECTS}`,
+  angular: `const divisionColumns: AngularColumnDef[] = [
+${DIVISION_COLUMN_OBJECTS}`,
+  svelte: `const divisionColumns: SvelteColumnDef[] = [
+${DIVISION_COLUMN_OBJECTS}`,
+  solid: `const divisionColumns: SolidColumnDef[] = [
+${DIVISION_COLUMN_OBJECTS}`,
+  vanilla: `const divisionColumns: ColumnDef[] = [
+${DIVISION_COLUMN_OBJECTS}`,
 };
 
 const NESTED_STEPS: DocsStep[] = [
@@ -38,12 +60,7 @@ const NESTED_STEPS: DocsStep[] = [
         , each level can have its own column set.
       </>
     ),
-    codeByFramework: forAllFrameworks(`const divisionColumns = [
-  { accessor: "divisionId", label: "Division ID", width: 120 },
-  { accessor: "revenue", label: "Revenue", width: 120, type: "number" },
-  { accessor: "headcount", label: "Headcount", width: 110, type: "number" },
-  { accessor: "location", label: "Location", width: "1fr" },
-];`),
+    codeByFramework: DIVISION_COLUMNS_SNIPPETS,
     language: "typescript",
   },
   {

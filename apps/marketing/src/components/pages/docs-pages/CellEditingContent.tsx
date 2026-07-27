@@ -15,12 +15,45 @@ import {
   onCellEditSnippets,
   type CodeByFramework,
 } from "@/constants/docsSnippets";
+import type { Framework } from "@/constants/frameworks";
 
 type EditPattern = {
   title: string;
   body: ReactNode;
   codeByFramework: CodeByFramework;
   language?: string;
+};
+
+const CELL_EDITING_COLUMN_OBJECTS = `  { accessor: "firstName", label: "First Name", type: "string", editable: true },
+  { accessor: "salary", label: "Salary", type: "number", editable: true },
+  { accessor: "isActive", label: "Active", type: "boolean", editable: true },
+  { accessor: "hireDate", label: "Hire Date", type: "date", editable: true },
+  {
+    accessor: "role",
+    label: "Role",
+    type: "enum",
+    editable: true,
+    enumOptions: [
+      { label: "Developer", value: "Developer" },
+      { label: "Designer", value: "Designer" },
+      { label: "Manager", value: "Manager" },
+    ],
+  },
+];`;
+
+const CELL_EDITING_COLUMNS_SNIPPETS: Record<Framework, string> = {
+  react: `const columns: ReactColumnDef[] = [
+${CELL_EDITING_COLUMN_OBJECTS}`,
+  vue: `const columns: VueColumnDef[] = [
+${CELL_EDITING_COLUMN_OBJECTS}`,
+  angular: `const columns: AngularColumnDef[] = [
+${CELL_EDITING_COLUMN_OBJECTS}`,
+  svelte: `const columns: SvelteColumnDef[] = [
+${CELL_EDITING_COLUMN_OBJECTS}`,
+  solid: `const columns: SolidColumnDef[] = [
+${CELL_EDITING_COLUMN_OBJECTS}`,
+  vanilla: `const columns: ColumnDef[] = [
+${CELL_EDITING_COLUMN_OBJECTS}`,
 };
 
 const EDIT_PATTERNS: EditPattern[] = [
@@ -68,23 +101,7 @@ const EDIT_PATTERNS: EditPattern[] = [
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">enumOptions</code>.
       </>
     ),
-    codeByFramework: forAllFrameworks(`const columns = [
-  { accessor: "firstName", label: "First Name", type: "string", editable: true },
-  { accessor: "salary", label: "Salary", type: "number", editable: true },
-  { accessor: "isActive", label: "Active", type: "boolean", editable: true },
-  { accessor: "hireDate", label: "Hire Date", type: "date", editable: true },
-  {
-    accessor: "role",
-    label: "Role",
-    type: "enum",
-    editable: true,
-    enumOptions: [
-      { label: "Developer", value: "Developer" },
-      { label: "Designer", value: "Designer" },
-      { label: "Manager", value: "Manager" },
-    ],
-  },
-];`),
+    codeByFramework: CELL_EDITING_COLUMNS_SNIPPETS,
     language: "typescript",
   },
 ];

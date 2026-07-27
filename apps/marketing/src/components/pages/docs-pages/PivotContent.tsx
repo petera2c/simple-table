@@ -14,7 +14,7 @@ import PropTable, { type PropInfo } from "@/components/PropTable";
 import {
   forAllFrameworks,
   PIVOT_FLAT_ROWS_SNIPPET,
-  PIVOT_HEADERS_SNIPPET,
+  PIVOT_HEADERS_SNIPPETS,
   pivotSnippets,
   programmaticPivotSnippets,
   type CodeByFramework,
@@ -38,7 +38,7 @@ const PIVOT_STEPS: DocsStep[] = [
         headers instead of this catalog as columns.
       </>
     ),
-    codeByFramework: forAllFrameworks(PIVOT_HEADERS_SNIPPET),
+    codeByFramework: PIVOT_HEADERS_SNIPPETS,
     language: "typescript",
   },
   {

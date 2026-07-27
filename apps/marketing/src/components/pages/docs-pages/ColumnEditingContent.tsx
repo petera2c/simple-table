@@ -74,7 +74,7 @@ const COLUMN_EDITING_PROPS: PropInfo[] = [
     description:
       "Custom renderer for column headers. Can be used to add buttons, dropdowns, or other interactive elements to column headers.",
     type: "React.ComponentType<HeaderRendererProps>",
-    example: `const headers = [
+    example: `const columns: ReactColumnDef[] = [
   {
     accessor: "actions",
     label: "Actions",
