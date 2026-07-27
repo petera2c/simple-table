@@ -5,11 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PageWrapper from "@/components/PageWrapper";
 import {
   faCheck,
-  faRocket,
-  faBolt,
   faGift,
   faCreditCard,
   faCalendarCheck,
+  faFileInvoice,
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "antd";
 import Link from "next/link";
@@ -19,6 +18,7 @@ import { STRIPE_CUSTOMER_PORTAL_URL } from "@/constants/stripe";
 import { SIMPLE_TABLE_PRICING } from "@/constants/simpleTablePricing";
 import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
 import { trackCtaClick, trackViewPricing } from "@/lib/analytics";
+import ContactModal, { type PlanInterest } from "@/components/ContactModal";
 
 interface PlanFeature {
   text: string;
@@ -27,7 +27,7 @@ interface PlanFeature {
 }
 
 interface Plan {
-  name: string;
+  name: "FREE" | "PRO" | "ENTERPRISE";
   subtitle: string;
   price: string;
   originalPrice?: string;
@@ -43,6 +43,8 @@ const PLAN_CAPACITY_NOTE = "One license per product · unlimited users";
 
 const PricingContent: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(true);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+  const [quotePlanInterest, setQuotePlanInterest] = useState<PlanInterest>("pro");
 
   useEffect(() => {
     trackViewPricing("pricing_page");
@@ -60,6 +62,17 @@ const PricingContent: React.FC = () => {
     window.open(calendlyUrl, "_blank", "noopener,noreferrer");
   };
 
+  const openLicenseQuote = (planInterest: PlanInterest = "unsure", ctaId?: string) => {
+    trackCtaClick({
+      cta_id: ctaId ?? `pricing_license_quote_${planInterest}`,
+      cta_text: "Get a license quote",
+      destination: "license_quote_modal",
+      location: "pricing_page",
+    });
+    setQuotePlanInterest(planInterest);
+    setIsQuoteModalOpen(true);
+  };
+
   const plans: Plan[] = useMemo(
     () => [
       {
@@ -67,7 +80,7 @@ const PricingContent: React.FC = () => {
         subtitle: "Pre-revenue & side projects",
         price: SIMPLE_TABLE_PRICING.freeDisplay,
         billingCycle: "forever",
-        description: "Full library. Community License — only while you have zero revenue.",
+        description: "Full library. Community License: only while you're pre-revenue.",
         features: [
           { text: "All grid features (same as Pro)", included: true, highlight: true },
           { text: "Official adapters for every framework", included: true, highlight: true },
@@ -118,7 +131,7 @@ const PricingContent: React.FC = () => {
     [isAnnual],
   );
 
-  const handleGetStarted = (planName: string) => {
+  const handleGetStarted = (planName: Plan["name"]) => {
     if (planName === "FREE") {
       trackCtaClick({
         cta_id: "pricing_install_free",
@@ -170,7 +183,7 @@ const PricingContent: React.FC = () => {
             Simple Pricing
           </h1>
           <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-4">
-            Free until you earn revenue. Then Pro — one price per product, not per developer.
+            Free until you earn revenue.
           </p>
 
           <div className="relative inline-flex items-center gap-4 mb-8">
@@ -291,10 +304,6 @@ const PricingContent: React.FC = () => {
                 className="mb-4 h-10 w-full shrink-0"
                 onClick={() => handleGetStarted(plan.name)}
               >
-                <FontAwesomeIcon
-                  icon={plan.name === "FREE" ? faRocket : faBolt}
-                  className="mr-2"
-                />
                 {plan.cta}
               </Button>
 
@@ -320,7 +329,7 @@ const PricingContent: React.FC = () => {
           viewport={{ once: true }}
         >
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            ChartMetric chose Simple Table over AG Grid —{" "}
+            ChartMetric chose Simple Table over AG Grid:{" "}
             <Link
               href="/case-studies/chartmetric"
               className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
@@ -340,12 +349,20 @@ const PricingContent: React.FC = () => {
         >
           <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Not sure?</h3>
           <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm max-w-lg mx-auto">
-            Pre-revenue → Free. Earning revenue → Pro. Still deciding between grids? Book 30
-            minutes — we&apos;ll help for free, even if Simple Table isn&apos;t the fit.
+            Prefer a quote without checkout, or want to talk through your setup? We&apos;ll help
+            for free, even if Simple Table isn&apos;t the fit.
           </p>
-          <div className="mb-10">
+          <div className="mb-10 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button
               type="primary"
+              size="large"
+              onClick={() => openLicenseQuote("unsure", "pricing_bottom_license_quote")}
+              className="h-11 px-8"
+            >
+              <FontAwesomeIcon icon={faFileInvoice} className="mr-2" />
+              Get a license quote
+            </Button>
+            <Button
               size="large"
               onClick={() => openBookACall("pricing_book_a_call", "Book a free call")}
               className="h-11 px-8"
@@ -364,6 +381,13 @@ const PricingContent: React.FC = () => {
           </button>
         </motion.section>
       </div>
+
+      <ContactModal
+        isOpen={isQuoteModalOpen}
+        onClose={() => setIsQuoteModalOpen(false)}
+        variant="license_quote"
+        initialPlanInterest={quotePlanInterest}
+      />
     </PageWrapper>
   );
 };

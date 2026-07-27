@@ -16,6 +16,14 @@ function getResend(): Resend | null {
   return resendClient;
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 export async function POST(request: NextRequest) {
   try {
     const resend = getResend();
@@ -24,33 +32,77 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, email, company, message } = body;
+    const {
+      name,
+      email,
+      company,
+      message = "",
+      source = "contact_modal",
+      planInterest,
+      replacingAgGrid,
+    } = body;
 
-    // Validate required fields
-    if (!name || !email || !company || !message) {
+    const isQuote = source === "license_quote";
+
+    if (!name || !email || !company) {
       return NextResponse.json({ error: "All fields are required" }, { status: 400 });
     }
 
-    // Validate email format
+    if (!isQuote && !message) {
+      return NextResponse.json({ error: "All fields are required" }, { status: 400 });
+    }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
     }
 
-    // Send email using Resend
+    const safeName = escapeHtml(String(name));
+    const safeEmail = escapeHtml(String(email));
+    const safeCompany = escapeHtml(String(company));
+    const safeMessage = escapeHtml(String(message || "")).replace(/\n/g, "<br>");
+    const planLabel =
+      planInterest === "enterprise"
+        ? "Enterprise"
+        : planInterest === "unsure"
+          ? "Not sure yet"
+          : planInterest === "pro"
+            ? "Pro"
+            : null;
+
+    const subject = isQuote
+      ? `License quote: ${company} - ${name}`
+      : `Contact Form: ${company} - ${name}`;
+
+    const html = isQuote
+      ? `
+        <h2>New license quote request</h2>
+        <p><strong>Name:</strong> ${safeName}</p>
+        <p><strong>Email:</strong> ${safeEmail}</p>
+        <p><strong>Company:</strong> ${safeCompany}</p>
+        <p><strong>Plan interest:</strong> ${planLabel ?? "Not specified"}</p>
+        <p><strong>AG Grid alternative:</strong> ${replacingAgGrid ? "Yes" : "No"}</p>
+        ${
+          message
+            ? `<p><strong>Notes:</strong></p><p>${safeMessage}</p>`
+            : "<p><em>No additional notes.</em></p>"
+        }
+      `
+      : `
+        <h2>New Contact Form Submission</h2>
+        <p><strong>Name:</strong> ${safeName}</p>
+        <p><strong>Email:</strong> ${safeEmail}</p>
+        <p><strong>Company:</strong> ${safeCompany}</p>
+        <p><strong>Message:</strong></p>
+        <p>${safeMessage}</p>
+      `;
+
     const { data, error } = await resend.emails.send({
-      from: "Simple Table Contact Form <onboarding@resend.dev>", // You'll need to update this with your verified domain
+      from: "Simple Table Contact Form <onboarding@resend.dev>",
       to: ["peter@peteryng.com"],
       replyTo: email,
-      subject: `Contact Form: ${company} - ${name}`,
-      html: `
-        <h2>New Contact Form Submission</h2>
-        <p><strong>Name:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Company:</strong> ${company}</p>
-        <p><strong>Message:</strong></p>
-        <p>${message.replace(/\n/g, "<br>")}</p>
-      `,
+      subject,
+      html,
     });
 
     if (error) {
