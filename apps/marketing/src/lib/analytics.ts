@@ -78,6 +78,16 @@ export function trackCopyInstallCommand(params: {
   });
 }
 
+export function trackCopyAiTablePrompt(params: {
+  framework: string;
+  location: string;
+}): void {
+  trackEvent("copy_ai_table_prompt", {
+    framework: params.framework,
+    location: params.location,
+  });
+}
+
 /** Fired on /checkout/success after Stripe Payment Link redirect. */
 export function trackPurchaseComplete(params: {
   plan?: string;

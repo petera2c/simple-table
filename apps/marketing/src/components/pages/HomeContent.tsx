@@ -3,7 +3,15 @@
 import { Button, Tooltip } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PageWrapper from "@/components/PageWrapper";
-import { faCode, faBox, faStar } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faBookOpen,
+  faBox,
+  faCode,
+  faStar,
+  faCopy,
+  faCheck,
+} from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -21,7 +29,8 @@ import { useFramework, FRAMEWORKS, FRAMEWORK_LABELS } from "@/providers/Framewor
 import { getStackBlitzUrl } from "@/utils/getStackBlitzUrl";
 import FrameworkIcon from "@/components/FrameworkIcon";
 import { mapWebsiteThemeToTableTheme } from "@/utils/themeMapper";
-import { trackCtaClick } from "@/lib/analytics";
+import { trackCtaClick, trackCopyAiTablePrompt } from "@/lib/analytics";
+import { getAiTablePrompt } from "@/constants/aiTablePrompt";
 
 // Dynamically import heavy components that are below the fold or conditional.
 // `loading` is required with `ssr: true` so Next wraps React.lazy in Suspense;
@@ -63,6 +72,7 @@ export default function HomeContent() {
   const [iconLibrary, setIconLibrary] = useState<IconLibrary>("default");
   const [selectedTheme, setSelectedTheme] = useState<Theme>();
   const [isCodeVisible, setIsCodeVisible] = useState(false);
+  const [promptCopied, setPromptCopied] = useState(false);
   const { framework, setFramework } = useFramework();
   const tableIcons = getTableIcons(iconLibrary);
 
@@ -71,22 +81,24 @@ export default function HomeContent() {
 
   const handleDocumentationClick = () => {
     trackCtaClick({
-      cta_id: "homepage_get_started",
-      cta_text: "Get Started",
+      cta_id: "homepage_docs",
+      cta_text: "Go to docs",
       destination: "/docs/installation",
       location: "homepage_hero",
     });
     router.push("/docs/installation");
   };
 
-  const handlePricingClick = () => {
-    trackCtaClick({
-      cta_id: "homepage_see_pricing",
-      cta_text: "See pricing",
-      destination: "/pricing",
-      location: "homepage_hero",
+  const handleCopyPromptClick = () => {
+    const prompt = getAiTablePrompt(framework);
+    navigator.clipboard.writeText(prompt).then(() => {
+      trackCopyAiTablePrompt({
+        framework,
+        location: "homepage_hero",
+      });
+      setPromptCopied(true);
+      setTimeout(() => setPromptCopied(false), 2000);
     });
-    router.push("/pricing");
   };
 
   return (
@@ -151,20 +163,22 @@ export default function HomeContent() {
             >
               <Button
                 className="hover:scale-105 transition-transform"
-                icon={<FontAwesomeIcon icon={faCode} />}
+                icon={<FontAwesomeIcon icon={faBookOpen} />}
                 onClick={handleDocumentationClick}
                 size="large"
                 type="primary"
               >
-                Get Started
+                Go to docs
+                <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
               </Button>
 
               <Button
                 size="large"
-                onClick={handlePricingClick}
+                icon={<FontAwesomeIcon icon={promptCopied ? faCheck : faCopy} />}
+                onClick={handleCopyPromptClick}
                 className="hover:scale-105 transition-transform"
               >
-                See pricing
+                {promptCopied ? "Copied!" : "Copy table prompt"}
               </Button>
             </motion.div>
           </motion.div>
