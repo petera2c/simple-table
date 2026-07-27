@@ -23,7 +23,7 @@ import Link from "next/link";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
-import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
+import ColumnSortingDemoWrapper from "@/components/blog/ColumnSortingDemoWrapper";
 import {
   buildBreadcrumbListJsonLd,
   buildFaqPageJsonLd,
@@ -46,7 +46,7 @@ const FAQS: { question: string; answer: string }[] = [
   {
     question: "Is AG Grid free?",
     answer:
-      "Partly. AG Grid Community is free and MIT-licensed, but advanced features such as row grouping, aggregation, pivoting, Excel export, master/detail, and integrated charts require an AG Grid Enterprise license starting at $999 per developer per year.",
+      "Partly. AG Grid Community is free and MIT-licensed, but advanced features such as row grouping, aggregation, pivoting, Excel export, master/detail, and integrated charts require an AG Grid Enterprise license starting at $999 per developer (perpetual license with 1 year of updates).",
   },
   {
     question: "What is the main difference between TanStack Table and AG Grid?",
@@ -61,12 +61,12 @@ const FAQS: { question: string; answer: string }[] = [
   {
     question: "Does AG Grid require a paid license for commercial use?",
     answer:
-      "Only for Enterprise features. AG Grid Community can be used commercially for free. The moment you use any Enterprise feature in production you need a commercial license, currently from $999 per developer per year.",
+      "Only for Enterprise features. AG Grid Community can be used commercially for free. The moment you use any Enterprise feature in production you need a commercial license, currently from $999 per developer (perpetual + 1 year of updates).",
   },
   {
     question: "Is there a free alternative that already includes a UI?",
     answer:
-      "Yes. Simple Table is a source-available React data grid that ships a complete UI plus virtualization, column pinning, row grouping, and inline editing in roughly 84.6 kB, giving you AG Grid-style features without the license fee and without building the UI yourself like with TanStack Table.",
+      "Yes. Simple Table is a source-available React data grid that ships a complete UI plus virtualization, column pinning, row grouping, and inline editing in roughly 84.6 kB. It's free for pre-revenue teams under the Community License; commercial/revenue products need Pro. You get AG Grid-style features without building the UI yourself like with TanStack Table.",
   },
 ];
 
@@ -211,8 +211,12 @@ export default function TanStackVsAgGridPage() {
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">License</td>
                     <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
-                    <td className="p-3 text-red-600 dark:text-red-400">MIT + $999+/year</td>
-                    <td className="p-3 text-green-600 dark:text-green-400">Community License</td>
+                    <td className="p-3 text-gray-700 dark:text-gray-300">
+                      Community MIT · Enterprise from $999/dev
+                    </td>
+                    <td className="p-3 text-green-600 dark:text-green-400">
+                      Community (pre-revenue)
+                    </td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
@@ -248,9 +252,11 @@ export default function TanStackVsAgGridPage() {
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
                       Time to First Table
                     </td>
-                    <td className="p-3 text-gray-700 dark:text-gray-300">2-4 hours</td>
-                    <td className="p-3 text-gray-700 dark:text-gray-300">1-2 hours</td>
-                    <td className="p-3 text-green-600 dark:text-green-400 font-bold">15 minutes</td>
+                    <td className="p-3 text-gray-700 dark:text-gray-300">~2–4 hours</td>
+                    <td className="p-3 text-gray-700 dark:text-gray-300">~1–2 hours</td>
+                    <td className="p-3 text-green-600 dark:text-green-400 font-bold">
+                      Often under an hour
+                    </td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">TypeScript</td>
@@ -269,6 +275,20 @@ export default function TanStackVsAgGridPage() {
             </div>
           </div>
         </section>
+
+        <CallToActionCard
+          location="blog_tanstack_mid_glance"
+          title="Prefer a UI-included grid without the AG Grid bill?"
+          description="Install Simple Table in minutes — or copy a paste-ready AI prompt to scaffold a table in your stack."
+          primaryButton={{
+            text: "Install Simple Table",
+            href: "/docs/installation",
+          }}
+          secondaryButton={{
+            text: "Copy table prompt",
+            action: "copyPrompt",
+          }}
+        />
 
         {/* Philosophy Differences */}
         <section id="philosophy">
@@ -379,7 +399,7 @@ export default function TanStackVsAgGridPage() {
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
             <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
               <FontAwesomeIcon icon={faDollarSign} className="text-green-500" />
-              License & Pricing: The $5,000/Year Difference
+              License & Pricing: Community vs Enterprise Costs
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -445,14 +465,14 @@ export default function TanStackVsAgGridPage() {
                     Community (Free):
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">$0</div>
-                  <div className="text-xs text-red-600 dark:text-red-400 mb-3">
-                    ⚠️ Basic features only
+                  <div className="text-xs text-amber-600 dark:text-amber-400 mb-3">
+                    Core grid features only (no grouping/pivots/Excel)
                   </div>
 
                   <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Enterprise:</div>
                   <div className="text-2xl font-bold text-red-600 dark:text-red-400">$999+</div>
                   <div className="text-xs text-gray-600 dark:text-gray-400">
-                    per developer per year
+                    per developer (perpetual + 1yr updates)
                   </div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded p-3 border border-red-300 dark:border-red-700">
@@ -460,7 +480,7 @@ export default function TanStackVsAgGridPage() {
                     <strong>For a team of 5:</strong>
                   </p>
                   <p className="text-lg font-bold text-red-600 dark:text-red-400">
-                    $5,000/year minimum
+                    ~$5,000 to license (+ optional renewals)
                   </p>
                 </div>
                 <div className="mt-3 text-xs text-gray-600 dark:text-gray-400">
@@ -520,7 +540,9 @@ export default function TanStackVsAgGridPage() {
                     <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                       {AG_GRID_COMMUNITY_INFO.bundleSizeMinGzip}
                     </div>
-                    <div className="text-xs text-red-600 dark:text-red-400 mt-1">3x larger!</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                      ~23× TanStack · ~4× Simple Table
+                    </div>
                   </div>
                   <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-green-200 dark:border-green-700">
                     <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
@@ -530,7 +552,7 @@ export default function TanStackVsAgGridPage() {
                       {SIMPLE_TABLE_INFO.bundleSizeMinGzip}
                     </div>
                     <div className="text-xs text-green-600 dark:text-green-400 mt-1">
-                      Smallest + UI!
+                      UI included (among these three)
                     </div>
                   </div>
                 </div>
@@ -558,8 +580,8 @@ export default function TanStackVsAgGridPage() {
                     />
                     <span>
                       <strong>AG Grid:</strong> Heavy out of the box. Enterprise is{" "}
-                      {AG_GRID_ENTERPRISE_INFO.bundleSizeMinGzip}. Impacts mobile performance
-                      significantly.
+                      {AG_GRID_ENTERPRISE_INFO.bundleSizeMinGzip}. Measure on your target devices
+                      before assuming a performance hit.
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -568,9 +590,9 @@ export default function TanStackVsAgGridPage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>Simple Table:</strong> Smallest complete solution. Includes UI,
-                      virtualization, and all features in just {SIMPLE_TABLE_INFO.bundleSizeMinGzip}
-                      .
+                      <strong>Simple Table:</strong> Smallest UI-included option in this comparison.
+                      Includes virtualization and core grid features in just{" "}
+                      {SIMPLE_TABLE_INFO.bundleSizeMinGzip}.
                     </span>
                   </li>
                 </ul>
@@ -656,23 +678,23 @@ export default function TanStackVsAgGridPage() {
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 text-gray-700 dark:text-gray-300">Column Pinning</td>
                     <td className="p-3 text-center text-green-600 dark:text-green-400">✓</td>
-                    <td className="p-3 text-center text-red-600 dark:text-red-400">✗</td>
-                    <td className="p-3 text-center text-green-600 dark:text-green-400">✓ ($$$)</td>
-                    <td className="p-3 text-center text-green-600 dark:text-green-400">✓ Free</td>
+                    <td className="p-3 text-center text-green-600 dark:text-green-400">✓</td>
+                    <td className="p-3 text-center text-green-600 dark:text-green-400">✓</td>
+                    <td className="p-3 text-center text-green-600 dark:text-green-400">✓</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 text-gray-700 dark:text-gray-300">Row Grouping</td>
                     <td className="p-3 text-center text-green-600 dark:text-green-400">✓</td>
                     <td className="p-3 text-center text-red-600 dark:text-red-400">✗</td>
                     <td className="p-3 text-center text-green-600 dark:text-green-400">✓ ($$$)</td>
-                    <td className="p-3 text-center text-green-600 dark:text-green-400">✓ Free</td>
+                    <td className="p-3 text-center text-green-600 dark:text-green-400">✓</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 text-gray-700 dark:text-gray-300">Aggregation</td>
                     <td className="p-3 text-center text-green-600 dark:text-green-400">✓</td>
                     <td className="p-3 text-center text-red-600 dark:text-red-400">✗</td>
                     <td className="p-3 text-center text-green-600 dark:text-green-400">✓ ($$$)</td>
-                    <td className="p-3 text-center text-green-600 dark:text-green-400">✓ Free</td>
+                    <td className="p-3 text-center text-green-600 dark:text-green-400">✓</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 text-gray-700 dark:text-gray-300">Cell Editing</td>
@@ -702,8 +724,10 @@ export default function TanStackVsAgGridPage() {
             <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded">
               <p className="text-sm text-gray-700 dark:text-gray-300">
                 <strong>Key Insight:</strong> TanStack Table has the features but you build the UI.
-                AG Grid Community lacks advanced features (paywall). Simple Table includes
-                everything for free.
+                AG Grid Community covers core grid features (including column pinning); grouping,
+                pivots, and Excel export need Enterprise. Simple Table includes UI plus grouping
+                and editing under a Community License (free while pre-revenue); CSV export is built
+                in—Excel export is not.
               </p>
             </div>
           </div>
@@ -823,7 +847,7 @@ export default function TanStackVsAgGridPage() {
                   </span>
                 </div>
                 <p className="text-gray-700 dark:text-gray-300 text-sm font-bold">
-                  15 minutes (production-ready)
+                  Often under an hour for a basic production table
                 </p>
               </div>
 
@@ -849,7 +873,7 @@ export default function TanStackVsAgGridPage() {
                   </li>
                   <li className="flex items-center gap-2">
                     <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />
-                    <span>All features included</span>
+                    <span>Grouping, pinning, editing included</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />
@@ -895,7 +919,9 @@ export default function TanStackVsAgGridPage() {
                       icon={faCheckCircle}
                       className="text-green-500 mt-1 shrink-0"
                     />
-                    <span>You want all features free without license fees</span>
+                    <span>
+                      You want a UI-included grid free while pre-revenue (Pro when you earn)
+                    </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
@@ -914,7 +940,8 @@ export default function TanStackVsAgGridPage() {
                 </ul>
                 <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded border border-green-300 dark:border-green-700">
                   <p className="text-xs text-gray-700 dark:text-gray-300">
-                    <strong>Best for:</strong> 90% of React applications needing data grids
+                    <strong>Best for:</strong> Most CRUD, dashboard, and admin grids that need a UI
+                    without enterprise pivot/Excel depth
                   </p>
                 </div>
               </div>
@@ -1006,12 +1033,38 @@ export default function TanStackVsAgGridPage() {
           </div>
         </section>
 
+        {/* Live proof */}
+        <section id="live-demo">
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
+            <h2 className="mb-2 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
+              <FontAwesomeIcon icon={faBolt} className="text-amber-500" />
+              Try Simple Table live
+            </h2>
+            <p className="mb-4 text-gray-700 dark:text-gray-300">
+              Same features, UI included — click a column header to sort. No headless scaffolding,
+              no enterprise license.
+            </p>
+            <div className="rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 mb-3">
+              <ColumnSortingDemoWrapper height="360px" />
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Want the full experience?{" "}
+              <Link
+                href="/examples/crypto"
+                className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+              >
+                Open the live crypto demo →
+              </Link>
+            </p>
+          </div>
+        </section>
+
         {/* Final Verdict */}
         <section id="verdict">
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm mb-8">
             <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
               <FontAwesomeIcon icon={faCrown} className="text-gold-500" />
-              The Verdict: There's a Better Option
+              The Verdict: A Third Option
             </h2>
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
@@ -1078,13 +1131,13 @@ export default function TanStackVsAgGridPage() {
                     <li className="flex items-center gap-2">
                       <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />
                       <span>
-                        <strong>All features included</strong>
+                        <strong>Grouping, pinning, editing included</strong> (CSV export; not Excel)
                       </span>
                     </li>
                     <li className="flex items-center gap-2">
                       <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />
                       <span>
-                        <strong>Easy to learn</strong> (15 min to first table)
+                        <strong>Easy to learn</strong> (often under an hour to a basic table)
                       </span>
                     </li>
                     <li className="flex items-center gap-2">
@@ -1196,15 +1249,14 @@ export default function TanStackVsAgGridPage() {
       <CallToActionCard
         location="blog_tanstack_vs_ag_grid"
         title="Skip the tradeoffs. Choose Simple Table."
-        description="Get TanStack Table's features with a built-in UI. Get AG Grid's completeness without the price tag. Try the live crypto demo — or book a free call if you're still deciding which grid fits."
+        description="Get TanStack-style features with a built-in UI — without AG Grid pricing. Go to the docs, or copy a paste-ready AI prompt for your stack."
         primaryButton={{
-          text: "Try the live demo",
-          href: "/examples/crypto",
+          text: "Go to docs",
+          href: "/docs/installation",
         }}
         secondaryButton={{
-          text: "Book a free call",
-          href: TECHNICAL_STRINGS.links.calendly,
-          external: true,
+          text: "Copy table prompt",
+          action: "copyPrompt",
         }}
       />
       </BlogLayout>

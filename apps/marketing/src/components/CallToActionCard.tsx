@@ -1,25 +1,37 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { Button } from "antd";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowRight, faBookOpen, faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { useThemeContext } from "@/providers/ThemeProvider";
+import { useFramework } from "@/providers/FrameworkProvider";
 import { getExampleUrl } from "@/utils/getExampleUrl";
-import { trackCtaClick } from "@/lib/analytics";
+import { getAiTablePrompt } from "@/constants/aiTablePrompt";
+import { trackCtaClick, trackCopyAiTablePrompt } from "@/lib/analytics";
+
+export type CallToActionButton = {
+  text: string;
+  href?: string;
+  external?: boolean;
+  /** When set, renders a clipboard button instead of a navigation link. */
+  action?: "link" | "copyPrompt";
+};
 
 interface CallToActionCardProps {
   title: string;
   description: string;
   location?: string;
-  primaryButton: {
-    text: string;
-    href: string;
-    external?: boolean;
-  };
-  secondaryButton: {
-    text: string;
-    href: string;
-    external?: boolean;
-  };
+  primaryButton: CallToActionButton;
+  secondaryButton: CallToActionButton;
+}
+
+const BLACK_BTN =
+  "!bg-gray-900 !text-white !border-gray-900 hover:!bg-black hover:!border-black hover:!text-white";
+
+function isDocsCta(button: CallToActionButton): boolean {
+  return Boolean(button.href?.startsWith("/docs"));
 }
 
 export default function CallToActionCard({
@@ -30,22 +42,55 @@ export default function CallToActionCard({
   secondaryButton,
 }: CallToActionCardProps) {
   const { theme } = useThemeContext();
+  const { framework } = useFramework();
+  const [promptCopied, setPromptCopied] = useState(false);
+
+  const handleCopyPrompt = (ctaId: string, ctaText: string) => {
+    const prompt = getAiTablePrompt(framework);
+    navigator.clipboard.writeText(prompt).then(() => {
+      trackCopyAiTablePrompt({ framework, location });
+      trackCtaClick({
+        cta_id: ctaId,
+        cta_text: ctaText,
+        destination: "clipboard:ai_table_prompt",
+        location,
+      });
+      setPromptCopied(true);
+      setTimeout(() => setPromptCopied(false), 2000);
+    });
+  };
 
   const ButtonComponent = ({
     button,
     isPrimary,
     ctaId,
   }: {
-    button: typeof primaryButton;
+    button: CallToActionButton;
     isPrimary: boolean;
     ctaId: string;
   }) => {
-    const baseClasses = "w-full sm:w-auto px-6 py-3 rounded-lg font-medium transition-colors";
-    const primaryClasses = isPrimary
-      ? "bg-white text-gray-800 hover:bg-gray-100"
-      : "bg-blue-500 hover:bg-blue-600 text-white";
+    const className = `hover:scale-105 transition-transform w-full sm:w-auto ${
+      isPrimary ? "" : BLACK_BTN
+    }`;
 
-    // Add theme parameter to example URLs
+    if (button.action === "copyPrompt") {
+      return (
+        <Button
+          type={isPrimary ? "primary" : "default"}
+          size="large"
+          className={className}
+          icon={<FontAwesomeIcon icon={promptCopied ? faCheck : faCopy} />}
+          onClick={() => handleCopyPrompt(ctaId, button.text)}
+        >
+          {promptCopied ? "Copied!" : button.text}
+        </Button>
+      );
+    }
+
+    if (!button.href) {
+      return null;
+    }
+
     let href = button.href;
     if (!button.external && href.startsWith("/examples/")) {
       href = getExampleUrl(href, theme);
@@ -55,28 +100,49 @@ export default function CallToActionCard({
       trackCtaClick({
         cta_id: ctaId,
         cta_text: button.text,
-        destination: button.href,
+        destination: button.href ?? "",
         location,
       });
     };
 
+    const docsIcon = isDocsCta(button) ? (
+      <FontAwesomeIcon icon={faBookOpen} />
+    ) : undefined;
+
+    const label = (
+      <>
+        {button.text}
+        {isDocsCta(button) ? <FontAwesomeIcon icon={faArrowRight} className="ml-2" /> : null}
+      </>
+    );
+
     if (button.external) {
       return (
-        <a
+        <Button
+          type={isPrimary ? "primary" : "default"}
+          size="large"
+          className={className}
+          icon={docsIcon}
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className={`${baseClasses} ${primaryClasses}`}
           onClick={handleClick}
         >
-          {button.text}
-        </a>
+          {label}
+        </Button>
       );
     }
 
     return (
-      <Link href={href} className={`${baseClasses} ${primaryClasses}`} onClick={handleClick}>
-        {button.text}
+      <Link href={href} onClick={handleClick}>
+        <Button
+          type={isPrimary ? "primary" : "default"}
+          size="large"
+          className={className}
+          icon={docsIcon}
+        >
+          {label}
+        </Button>
       </Link>
     );
   };

@@ -113,9 +113,7 @@ const PricingContent: React.FC = () => {
         price: isAnnual
           ? SIMPLE_TABLE_PRICING.enterpriseAnnual
           : SIMPLE_TABLE_PRICING.enterpriseMonthly,
-        originalPrice: isAnnual
-          ? SIMPLE_TABLE_PRICING.enterpriseAnnualStrikethrough
-          : undefined,
+        originalPrice: isAnnual ? SIMPLE_TABLE_PRICING.enterpriseAnnualStrikethrough : undefined,
         billingCycle: isAnnual ? "per year" : "per month",
         description: "Everything in Pro when you need faster answers and core-dev access.",
         features: [
@@ -183,7 +181,7 @@ const PricingContent: React.FC = () => {
             Simple Pricing
           </h1>
           <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-4">
-            Free until you earn revenue.
+            Free until you earn revenue
           </p>
 
           <div className="relative inline-flex items-center gap-4 mb-8">
@@ -349,8 +347,8 @@ const PricingContent: React.FC = () => {
         >
           <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Not sure?</h3>
           <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm max-w-lg mx-auto">
-            Prefer a quote without checkout, or want to talk through your setup? We&apos;ll help
-            for free, even if Simple Table isn&apos;t the fit.
+            Prefer a quote without checkout, or want to talk through your setup? We&apos;ll help for
+            free, even if Simple Table isn&apos;t the fit.
           </p>
           <div className="mb-10 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button
