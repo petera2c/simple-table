@@ -15,25 +15,40 @@ export function installSnippets(): Record<Framework, string> {
 }
 
 export const IMPORT_SNIPPETS: Record<Framework, string> = {
-  react: `import { SimpleTable } from "@simple-table/react";
+  react: `import { SimpleTable, type ReactColumnDef } from "@simple-table/react";
 import "@simple-table/react/styles.css";`,
-  vue: `import { SimpleTable } from "@simple-table/vue";
+  vue: `import { SimpleTable, type VueColumnDef } from "@simple-table/vue";
 import "@simple-table/vue/styles.css";`,
-  angular: `import { SimpleTableComponent } from "@simple-table/angular";
+  angular: `import { SimpleTableComponent, type AngularColumnDef } from "@simple-table/angular";
 import "@simple-table/angular/styles.css";`,
-  svelte: `import { SimpleTable } from "@simple-table/svelte";
+  svelte: `import { SimpleTable, type SvelteColumnDef } from "@simple-table/svelte";
 import "@simple-table/svelte/styles.css";`,
-  solid: `import { SimpleTable } from "@simple-table/solid";
+  solid: `import { SimpleTable, type SolidColumnDef } from "@simple-table/solid";
 import "@simple-table/solid/styles.css";`,
-  vanilla: `import { SimpleTableVanilla } from "simple-table-core";
+  vanilla: `import { SimpleTableVanilla, type ColumnDef } from "simple-table-core";
 import "simple-table-core/styles.css";`,
 };
 
-export const COLUMNS_SNIPPET = `const columns = [
-  { accessor: "id", label: "ID", width: 80, type: "number" },
+const COLUMN_OBJECTS = `  { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", type: "string" },
   { accessor: "age", label: "Age", width: 80, type: "number" },
 ];`;
+
+/** Annotated column arrays — contextual typing keeps type/align literals valid without as const. */
+export const COLUMNS_SNIPPETS: Record<Framework, string> = {
+  react: `const columns: ReactColumnDef[] = [
+${COLUMN_OBJECTS}`,
+  vue: `const columns: VueColumnDef[] = [
+${COLUMN_OBJECTS}`,
+  angular: `const columns: AngularColumnDef[] = [
+${COLUMN_OBJECTS}`,
+  svelte: `const columns: SvelteColumnDef[] = [
+${COLUMN_OBJECTS}`,
+  solid: `const columns: SolidColumnDef[] = [
+${COLUMN_OBJECTS}`,
+  vanilla: `const columns: ColumnDef[] = [
+${COLUMN_OBJECTS}`,
+};
 
 export const ROWS_SNIPPET = `const rows = [
   { id: 1, name: "John Doe", age: 30 },

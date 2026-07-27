@@ -58,6 +58,32 @@ const looseStillWorks = (
 );
 void looseStillWorks;
 
+// Annotated freestanding columns: no as const; valid literals assign; typos fail.
+const freestandingColumns: ReactColumnDef[] = [
+  { accessor: "id", label: "ID", width: 80, type: "number" },
+  { accessor: "name", label: "Name", width: "1fr", type: "string" },
+  { accessor: "age", label: "Age", width: 80, type: "number", align: "right" },
+];
+const freestandingRows = [
+  { id: 1, name: "John Doe", age: 30 },
+  { id: 2, name: "Jane Smith", age: 25 },
+];
+const freestandingAccepted = (
+  <SimpleTable columns={freestandingColumns} rows={freestandingRows} height="400px" />
+);
+void freestandingAccepted;
+
+const _typoRejected: ReactColumnDef[] = [
+  {
+    accessor: "id",
+    label: "ID",
+    width: 80,
+    // @ts-expect-error — "numbers" is not a ColumnType
+    type: "numbers",
+  },
+];
+void _typoRejected;
+
 describe("SimpleTable TData inference", () => {
   it("compiles without an explicit JSX type argument", () => {
     expect(rows[0]?.id).toBe(1);

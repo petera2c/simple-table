@@ -9,7 +9,7 @@ import DocNavigationButtons from "@/components/DocNavigationButtons";
 import DocsSteps, { type DocsStep } from "@/components/DocsSteps";
 import Link from "next/link";
 import {
-  COLUMNS_SNIPPET,
+  COLUMNS_SNIPPETS,
   ROWS_SNIPPET,
   IMPORT_SNIPPETS,
   forAllFrameworks,
@@ -27,7 +27,7 @@ const TABLE_PROPS: PropInfo[] = [
     description: "Array of column definitions that specify the structure of your table.",
     type: "ColumnDef[]",
     link: "/docs/api-reference#column-def",
-    example: `const headers = [
+    example: `const columns: ReactColumnDef[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", type: "string" }
 ];`,
@@ -145,7 +145,7 @@ const QUICK_START_STEPS: DocsStep[] = [
         that matches a property on your row objects.
       </>
     ),
-    codeByFramework: forAllFrameworks(COLUMNS_SNIPPET),
+    codeByFramework: COLUMNS_SNIPPETS,
     language: "typescript",
   },
   {
