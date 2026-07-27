@@ -6,7 +6,7 @@
 import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
-import { renderVanillaTable, addParagraph, type RenderVanillaTableResult } from "../utils";
+import { renderVanillaTable, addParagraph } from "../utils";
 import type { Meta } from "@storybook/html";
 
 const meta: Meta = {
@@ -29,7 +29,15 @@ export default meta;
 // TEST DATA
 // ============================================================================
 
-const createPaginatedData = (count: number) => {
+interface PaginatedTestRow {
+  id: number;
+  name: string;
+  email: string;
+  department: string;
+  age: number;
+}
+
+const createPaginatedData = (count: number): PaginatedTestRow[] => {
   const departments = ["Engineering", "Sales", "Marketing", "HR", "Finance"];
   return Array.from({ length: count }, (_, index) => ({
     id: index + 1,
@@ -82,14 +90,14 @@ const clickPreviousPageButton = async (canvasElement: HTMLElement) => {
 
 export const BasicPagination = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<PaginatedTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
       { accessor: "department", label: "Department", width: 150 },
     ];
     const data = createPaginatedData(50);
-    const { wrapper, h2 } = renderVanillaTable(headers, data, { height: "400px", enablePagination: true });
+    const { wrapper, h2 } = renderVanillaTable<PaginatedTestRow>(headers, data, { height: "400px", enablePagination: true });
     h2.textContent = "Basic Pagination";
     addParagraph(wrapper, "50 rows with default pagination (10 rows per page)");
     return wrapper;
@@ -110,13 +118,13 @@ export const BasicPagination = {
 
 export const CustomRowsPerPage = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<PaginatedTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "department", label: "Department", width: 150 },
     ];
     const data = createPaginatedData(50);
-    const { wrapper, h2 } = renderVanillaTable(headers, data, {
+    const { wrapper, h2 } = renderVanillaTable<PaginatedTestRow>(headers, data, {
       height: "400px",
       enablePagination: true,
       rowsPerPage: 20,
@@ -140,13 +148,13 @@ export const CustomRowsPerPage = {
 
 export const PageNavigation = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<PaginatedTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
     ];
     const data = createPaginatedData(50);
-    const { wrapper, h2 } = renderVanillaTable(headers, data, {
+    const { wrapper, h2 } = renderVanillaTable<PaginatedTestRow>(headers, data, {
       height: "400px",
       enablePagination: true,
       rowsPerPage: 10,
@@ -199,12 +207,12 @@ export const OnPageChangeCallback = {
     let pageChangeCount = 0;
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:ColumnDef[] = [
+    const headers:ColumnDef<PaginatedTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
     ];
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<PaginatedTestRow>(tableContainer, {
       columns: headers,
       rows: createPaginatedData(50),
       height: "400px",
@@ -284,12 +292,12 @@ export const ProgrammaticPageControl = {
     wrapper.appendChild(stateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:ColumnDef[] = [
+    const headers:ColumnDef<PaginatedTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
     ];
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<PaginatedTestRow>(tableContainer, {
       columns: headers,
       rows: createPaginatedData(50),
       height: "400px",
@@ -297,7 +305,7 @@ export const ProgrammaticPageControl = {
       rowsPerPage: 10,
     });
     table.mount();
-    (wrapper as RenderVanillaTableResult["wrapper"])._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     const updateState = () => {
       const page = table.getAPI().getCurrentPage();
       stateDiv.textContent = `Current Page: ${page}`;
@@ -368,13 +376,13 @@ export const ServerSidePagination = {
     wrapper.appendChild(stateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:ColumnDef[] = [
+    const headers:ColumnDef<PaginatedTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
       { accessor: "department", label: "Department", width: 150 },
     ];
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<PaginatedTestRow>(tableContainer, {
       columns: headers,
       rows: currentPageData,
       height: "400px",
@@ -448,12 +456,12 @@ export const PaginationWithFiltering = {
     wrapper.appendChild(btnContainer);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:ColumnDef[] = [
+    const headers:ColumnDef<PaginatedTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
     ];
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<PaginatedTestRow>(tableContainer, {
       columns: headers,
       rows: createPaginatedData(50),
       height: "400px",
@@ -461,7 +469,7 @@ export const PaginationWithFiltering = {
       rowsPerPage: 10,
     });
     table.mount();
-    (wrapper as RenderVanillaTableResult["wrapper"])._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     filterBtn.onclick = async () => {
       await table.getAPI().applyFilter({
         accessor: "department",
@@ -499,14 +507,14 @@ export const PaginationWithFiltering = {
 
 export const PaginationWithSorting = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<PaginatedTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number", sortable: true },
       { accessor: "name", label: "Name", width: 200, sortable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", sortable: true },
       { accessor: "department", label: "Department", width: 150, sortable: true },
     ];
     const data = createPaginatedData(50);
-    const { wrapper, h2 } = renderVanillaTable(headers, data, {
+    const { wrapper, h2 } = renderVanillaTable<PaginatedTestRow>(headers, data, {
       height: "400px",
       enablePagination: true,
       rowsPerPage: 10,
@@ -534,13 +542,13 @@ export const PaginationWithSorting = {
 
 export const PaginationWithoutHeight = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<PaginatedTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
       { accessor: "email", label: "Email", width: 250 },
     ];
     const data = createPaginatedData(50);
-    const { wrapper, h2 } = renderVanillaTable(headers, data, {
+    const { wrapper, h2 } = renderVanillaTable<PaginatedTestRow>(headers, data, {
       enablePagination: true,
       rowsPerPage: 10,
     });
@@ -567,12 +575,12 @@ export const OnPageChangeCallbackFires = {
   render: () => {
     let pageChangeCallCount = 0;
     (window as unknown as { __pageChangeCallCount2?: number }).__pageChangeCallCount2 = 0;
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<PaginatedTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
     ];
     const data = createPaginatedData(30);
-    const { wrapper } = renderVanillaTable(headers, data, {
+    const { wrapper } = renderVanillaTable<PaginatedTestRow>(headers, data, {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
       enablePagination: true,
@@ -604,14 +612,14 @@ export const OnPageChangeCallbackFires = {
 
 export const ServerSidePaginationWithLoadingState = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<PaginatedTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
     ];
     const pageData = createPaginatedData(10);
 
     const tableContainer = document.createElement("div");
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<PaginatedTestRow>(tableContainer, {
       columns: headers,
       rows: pageData,
       height: "300px",
@@ -659,11 +667,11 @@ export const ServerSidePaginationWithLoadingState = {
 
 export const TotalRowCountDrivesPageCount = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<PaginatedTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200 },
     ];
-    const { wrapper } = renderVanillaTable(headers, createPaginatedData(10), {
+    const { wrapper } = renderVanillaTable<PaginatedTestRow>(headers, createPaginatedData(10), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
       enablePagination: true,

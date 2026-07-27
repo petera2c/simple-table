@@ -235,7 +235,7 @@ export function renderWindowInfiniteScrollExample(
   table.mount();
 
   // Hold a reference so the story container can dispose of the instance.
-  (wrapper as unknown as { _table?: SimpleTableVanilla })._table = table;
+  (wrapper as HTMLDivElement & { _table?: SimpleTableVanilla<Row> })._table = table;
 
   return wrapper;
 }

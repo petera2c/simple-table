@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, TableAPI, CellValue, ReactColumnDef } from "@simple-table/react";
+import type { Theme, TableAPI, ReactColumnDef } from "@simple-table/react";
 import {
   infrastructureData,
   getInfraMetricColorStyles,
@@ -11,7 +11,8 @@ import "@simple-table/react/styles.css";
 
 const INFRA_TICK_MS = 20;
 const INFRA_ROWS_PER_TICK = 4;
-type InfraMetricSlot = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+const INFRA_METRIC_SLOTS = [0, 1, 2, 3, 4, 5, 6] as const;
+type InfraMetricSlot = (typeof INFRA_METRIC_SLOTS)[number];
 
 function infraPickRandomSubset<T>(arr: T[], n: number): T[] {
   const copy = [...arr];
@@ -24,15 +25,39 @@ function infraPickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
+function randomInfraMetricSlot(fromIndex = 0): InfraMetricSlot {
+  const pool = INFRA_METRIC_SLOTS.slice(fromIndex);
+  return pool[Math.floor(Math.random() * pool.length)]!;
+}
+
 function infraApplyRowPatch(
   api: TableAPI<InfrastructureServer>,
   rowId: number,
   patch: Partial<InfrastructureServer>,
 ) {
-  for (const accessor of Object.keys(patch) as (keyof InfrastructureServer)[]) {
-    const newValue = patch[accessor];
-    if (newValue === undefined) continue;
-    api.updateData({ accessor, rowId, newValue: newValue as CellValue });
+  if (patch.cpuUsage !== undefined) {
+    api.updateData({ accessor: "cpuUsage", rowId, newValue: patch.cpuUsage });
+  }
+  if (patch.cpuHistory !== undefined) {
+    api.updateData({ accessor: "cpuHistory", rowId, newValue: patch.cpuHistory });
+  }
+  if (patch.memoryUsage !== undefined) {
+    api.updateData({ accessor: "memoryUsage", rowId, newValue: patch.memoryUsage });
+  }
+  if (patch.networkIn !== undefined) {
+    api.updateData({ accessor: "networkIn", rowId, newValue: patch.networkIn });
+  }
+  if (patch.networkOut !== undefined) {
+    api.updateData({ accessor: "networkOut", rowId, newValue: patch.networkOut });
+  }
+  if (patch.responseTime !== undefined) {
+    api.updateData({ accessor: "responseTime", rowId, newValue: patch.responseTime });
+  }
+  if (patch.activeConnections !== undefined) {
+    api.updateData({ accessor: "activeConnections", rowId, newValue: patch.activeConnections });
+  }
+  if (patch.requestsPerSec !== undefined) {
+    api.updateData({ accessor: "requestsPerSec", rowId, newValue: patch.requestsPerSec });
   }
 }
 
@@ -96,10 +121,8 @@ function startInfraDemoLiveUpdates(
     let usedCpuSparkline = false;
     for (const vr of picks) {
       const rowId = vr.row.id;
-      if (typeof rowId !== "number") continue;
-      let slot = Math.floor(Math.random() * 7) as InfraMetricSlot;
-      if (slot === 0 && usedCpuSparkline)
-        slot = (1 + Math.floor(Math.random() * 6)) as InfraMetricSlot;
+      let slot = randomInfraMetricSlot();
+      if (slot === 0 && usedCpuSparkline) slot = randomInfraMetricSlot(1);
       if (slot === 0) usedCpuSparkline = true;
       const patch = infraComputeMetricPatch(vr.row, slot);
       if (patch) infraApplyRowPatch(api, rowId, patch);

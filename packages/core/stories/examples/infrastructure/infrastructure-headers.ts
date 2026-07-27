@@ -3,6 +3,7 @@
  */
 import type { ColumnDef } from "../../../src/index";
 import type Theme from "../../../src/types/Theme";
+import type { InfrastructureRow } from "./infrastructure-data";
 
 type ColorStyles = {
   color: string;
@@ -200,7 +201,7 @@ function createMetricBadge(text: string, styles: ColorStyles): HTMLElement {
   return wrapper;
 }
 
-export const INFRASTRUCTURE_HEADERS: ColumnDef[] = [
+export const INFRASTRUCTURE_HEADERS: ColumnDef<InfrastructureRow>[] = [
   {
     accessor: "serverId",
     align: "left",

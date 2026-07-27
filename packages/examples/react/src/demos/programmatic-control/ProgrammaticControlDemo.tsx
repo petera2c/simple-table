@@ -79,11 +79,7 @@ const ProgrammaticControlDemo = ({
     const hdrs = api.getHeaders();
     const sortState = api.getSortState();
     const filterState = api.getFilterState();
-    const totalValue = allRows.reduce((sum, r) => {
-      const price = typeof r.row.price === "number" ? r.row.price : 0;
-      const stock = typeof r.row.stock === "number" ? r.row.stock : 0;
-      return sum + price * stock;
-    }, 0);
+    const totalValue = allRows.reduce((sum, r) => sum + r.row.price * r.row.stock, 0);
     const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
     alert(
       `Table Info:\n• Rows: ${allRows.length}\n• Columns: ${hdrs.length}\n• Active filters: ${Object.keys(filterState).length}\n• Sort: ${sortInfo}\n• Total inventory value: $${totalValue.toFixed(2)}`,

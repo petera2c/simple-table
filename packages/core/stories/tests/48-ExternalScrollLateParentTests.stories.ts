@@ -35,13 +35,19 @@ const meta: Meta = {
 
 export default meta;
 
-const headers: ColumnDef[] = [
+const headers: ColumnDef<ExternalScrollRow>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 200, type: "string" },
   { accessor: "description", label: "Description", width: 300, type: "string" },
 ];
 
-const createRows = (count: number) =>
+interface ExternalScrollRow {
+  id: number;
+  name: string;
+  description: string;
+}
+
+const createRows = (count: number): ExternalScrollRow[] =>
   Array.from({ length: count }, (_, i) => ({
     id: i + 1,
     name: `Item ${i + 1}`,
@@ -83,7 +89,7 @@ export const LateResolvingParentGetsWired = {
     // can recover from this.
     let resolvable = false;
 
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<ExternalScrollRow>(tableContainer, {
       columns: headers,
       rows: createRows(2000),
       getRowId: (p) => String((p.row as { id?: number })?.id),
@@ -94,7 +100,7 @@ export const LateResolvingParentGetsWired = {
       resolvable = true;
     }, 0);
 
-    (wrapper as unknown as { _table?: SimpleTableVanilla })._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -153,7 +159,7 @@ export const UnresolvedParentStaysVirtualized = {
 
     // Getter NEVER resolves — we stay in the provisional phase for the whole
     // test, isolating the provisional-viewport behavior.
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<ExternalScrollRow>(tableContainer, {
       columns: headers,
       rows: createRows(2000),
       getRowId: (p) => String((p.row as { id?: number })?.id),
@@ -161,7 +167,7 @@ export const UnresolvedParentStaysVirtualized = {
     });
     table.mount();
 
-    (wrapper as unknown as { _table?: SimpleTableVanilla })._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -198,7 +204,7 @@ export const ProvisionalViewportFeedsRenderWindow = {
     const tableContainer = document.createElement("div");
     scrollContainer.appendChild(tableContainer);
 
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<ExternalScrollRow>(tableContainer, {
       columns: headers,
       rows: createRows(2000),
       getRowId: (p) => String((p.row as { id?: number })?.id),
@@ -206,7 +212,7 @@ export const ProvisionalViewportFeedsRenderWindow = {
     });
     table.mount();
 
-    (wrapper as unknown as { _table?: SimpleTableVanilla })._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {

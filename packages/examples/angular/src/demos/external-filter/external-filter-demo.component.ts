@@ -26,9 +26,9 @@ export class ExternalFilterDemoComponent {
   @Input() theme?: Theme;
 
   readonly headers: AngularColumnDef<FilterableEmployee>[] = externalFilterConfig.headers;
-  private filters: TableFilterState = {};
+  private filters: TableFilterState<FilterableEmployee> = {};
 
-  handleFilterChange = (newFilters: TableFilterState) => {
+  handleFilterChange = (newFilters: TableFilterState<FilterableEmployee>) => {
     this.filters = newFilters;
   };
 

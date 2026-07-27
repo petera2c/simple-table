@@ -1,9 +1,23 @@
 /**
  * Finance example headers – ported from React finance-headers (vanilla-compatible).
  */
-import type { ColumnDef } from "../../../src/index";
+import type { CellRendererProps, ColumnDef } from "../../../src/index";
 
-export const FINANCE_HEADERS: ColumnDef[] = [
+export interface FinanceRow {
+  id: number;
+  ticker: string;
+  companyName: string;
+  price: number;
+  priceChangePercent: number | string;
+  marketCap: number;
+  peRatio: number;
+  dividendYield: number | null;
+  analystRating: string;
+  date: string;
+  isFollowed: boolean;
+}
+
+export const FINANCE_HEADERS: ColumnDef<FinanceRow>[] = [
   {
     accessor: "ticker",
     align: "left",
@@ -60,7 +74,7 @@ export const FINANCE_HEADERS: ColumnDef[] = [
         editable: false,
         align: "right",
         type: "number",
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+        cellRenderer: ({ row }: CellRendererProps<FinanceRow>) => {
           const val = row.priceChangePercent;
           if (val === "—" || val === null || val === undefined) return "—";
           const value = Number(val);
@@ -140,7 +154,7 @@ export const FINANCE_HEADERS: ColumnDef[] = [
           { label: "Sell", value: "Sell" },
           { label: "Strong Sell", value: "Strong Sell" },
         ],
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+        cellRenderer: ({ row }: CellRendererProps<FinanceRow>) =>
           row.analystRating ? String(row.analystRating) : "—",
       },
       {

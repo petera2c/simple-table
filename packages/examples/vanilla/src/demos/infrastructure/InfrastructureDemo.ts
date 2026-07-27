@@ -4,7 +4,6 @@ import type {
   ColumnDef,
   CellRenderer,
   TableAPI,
-  CellValue,
   GetRowIdParams,
 } from "simple-table-core";
 import {
@@ -17,7 +16,8 @@ import "simple-table-core/styles.css";
 
 const INFRA_TICK_MS = 20;
 const INFRA_ROWS_PER_TICK = 4;
-type InfraMetricSlot = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+const INFRA_METRIC_SLOTS = [0, 1, 2, 3, 4, 5, 6] as const;
+type InfraMetricSlot = (typeof INFRA_METRIC_SLOTS)[number];
 
 function infraPickRandomSubset<T>(arr: T[], n: number): T[] {
   const copy = [...arr];
@@ -30,15 +30,39 @@ function infraPickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
+function randomInfraMetricSlot(fromIndex = 0): InfraMetricSlot {
+  const pool = INFRA_METRIC_SLOTS.slice(fromIndex);
+  return pool[Math.floor(Math.random() * pool.length)]!;
+}
+
 function infraApplyRowPatch(
   api: TableAPI<InfrastructureServer>,
   rowId: string | number,
   patch: Partial<InfrastructureServer>,
 ) {
-  for (const accessor of Object.keys(patch) as Array<keyof InfrastructureServer>) {
-    const newValue = patch[accessor];
-    if (newValue === undefined) continue;
-    api.updateData({ accessor, rowId, newValue: newValue as CellValue });
+  if (patch.cpuUsage !== undefined) {
+    api.updateData({ accessor: "cpuUsage", rowId, newValue: patch.cpuUsage });
+  }
+  if (patch.cpuHistory !== undefined) {
+    api.updateData({ accessor: "cpuHistory", rowId, newValue: patch.cpuHistory });
+  }
+  if (patch.memoryUsage !== undefined) {
+    api.updateData({ accessor: "memoryUsage", rowId, newValue: patch.memoryUsage });
+  }
+  if (patch.networkIn !== undefined) {
+    api.updateData({ accessor: "networkIn", rowId, newValue: patch.networkIn });
+  }
+  if (patch.networkOut !== undefined) {
+    api.updateData({ accessor: "networkOut", rowId, newValue: patch.networkOut });
+  }
+  if (patch.responseTime !== undefined) {
+    api.updateData({ accessor: "responseTime", rowId, newValue: patch.responseTime });
+  }
+  if (patch.activeConnections !== undefined) {
+    api.updateData({ accessor: "activeConnections", rowId, newValue: patch.activeConnections });
+  }
+  if (patch.requestsPerSec !== undefined) {
+    api.updateData({ accessor: "requestsPerSec", rowId, newValue: patch.requestsPerSec });
   }
 }
 
@@ -48,46 +72,38 @@ function infraComputeMetricPatch(
 ): Partial<InfrastructureServer> | null {
   switch (slot) {
     case 0: {
-      if (typeof row.cpuUsage !== "number") return null;
       const cpuChange = (Math.random() - 0.5) * 8;
       const newCpu = Math.min(100, Math.max(0, row.cpuUsage + cpuChange));
       const newCpuRounded = Math.round(newCpu * 10) / 10;
-      const history = row.cpuHistory;
-      if (Array.isArray(history) && history.length > 0) {
-        return { cpuUsage: newCpuRounded, cpuHistory: [...history.slice(1), newCpuRounded] };
+      if (row.cpuHistory.length > 0) {
+        return { cpuUsage: newCpuRounded, cpuHistory: [...row.cpuHistory.slice(1), newCpuRounded] };
       }
       return { cpuUsage: newCpuRounded };
     }
     case 1: {
-      if (typeof row.memoryUsage !== "number") return null;
       const memoryChange = (Math.random() - 0.5) * 5;
       const newMemory = Math.min(100, Math.max(0, row.memoryUsage + memoryChange));
       return { memoryUsage: Math.round(newMemory * 10) / 10 };
     }
     case 2: {
-      if (typeof row.networkIn !== "number") return null;
       const netChange = (Math.random() - 0.5) * 100;
       return { networkIn: Math.round(Math.max(0, row.networkIn + netChange) * 100) / 100 };
     }
     case 3: {
-      if (typeof row.networkOut !== "number") return null;
       const netChange = (Math.random() - 0.5) * 60;
       return { networkOut: Math.round(Math.max(0, row.networkOut + netChange) * 100) / 100 };
     }
     case 4: {
-      if (typeof row.responseTime !== "number") return null;
       const responseChange = (Math.random() - 0.5) * 100;
       return {
         responseTime: Math.round(Math.max(10, row.responseTime + responseChange) * 10) / 10,
       };
     }
     case 5: {
-      if (typeof row.activeConnections !== "number") return null;
       const connectionChange = Math.floor((Math.random() - 0.5) * 500);
       return { activeConnections: Math.max(0, row.activeConnections + connectionChange) };
     }
     case 6: {
-      if (typeof row.requestsPerSec !== "number") return null;
       const requestChange = Math.floor((Math.random() - 0.5) * 2000);
       return { requestsPerSec: Math.max(0, row.requestsPerSec + requestChange) };
     }
@@ -110,9 +126,8 @@ function startInfraDemoLiveUpdates(
     let usedCpuSparkline = false;
     for (const vr of picks) {
       const rowId = vr.row.id;
-      let slot = Math.floor(Math.random() * 7) as InfraMetricSlot;
-      if (slot === 0 && usedCpuSparkline)
-        slot = (1 + Math.floor(Math.random() * 6)) as InfraMetricSlot;
+      let slot = randomInfraMetricSlot();
+      if (slot === 0 && usedCpuSparkline) slot = randomInfraMetricSlot(1);
       if (slot === 0) usedCpuSparkline = true;
       const patch = infraComputeMetricPatch(vr.row, slot);
       if (patch) infraApplyRowPatch(api, rowId, patch);

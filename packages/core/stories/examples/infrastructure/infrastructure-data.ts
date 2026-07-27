@@ -1,9 +1,36 @@
 /**
  * Infrastructure example data – same shape as React BACKUP_INFRASTRUCTURE_DATA.
  */
-import type { Row } from "../../../src/index";
 
-export const INFRASTRUCTURE_DATA: Row[] = [
+export interface InfrastructureRow {
+  id: string;
+  serverId: string;
+  serverName: string;
+  datacenter: string;
+  datacenterName: string;
+  region: string;
+  serverType: string;
+  serverTypeName: string;
+  status: string;
+  cpuUsage: number;
+  memoryUsage: number;
+  diskUsage: number;
+  networkIn: number;
+  networkOut: number;
+  activeConnections: number;
+  requestsPerSec: number;
+  responseTime: number;
+  uptime: number;
+  activeAlerts: number;
+  isMonitored: boolean;
+  os: string;
+  lastPing: string;
+  totalStorage: number;
+  usedStorage: number;
+  availableStorage: number;
+}
+
+export const INFRASTRUCTURE_DATA: InfrastructureRow[] = [
   {
     id: "US-WEST-1-loadbalancer-0000",
     serverId: "US-WEST-1-loadbalancer-0000",

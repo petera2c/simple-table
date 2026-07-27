@@ -40,8 +40,6 @@ export default meta;
 
 const STORY_TABLE_REF_KEY = "__storybook_row_group_reexpand_table";
 
-type StoryTable = InstanceType<typeof SimpleTableVanilla>;
-
 interface TeamRow {
   id: string;
   name: string;
@@ -53,6 +51,8 @@ interface DeptRow extends Row {
   budget: number;
   teams?: TeamRow[];
 }
+
+type StoryTable = SimpleTableVanilla<DeptRow>;
 
 interface ReExpandProbe {
   expandSnapshots: Array<{ childCount: number; isExpanded: boolean }>;
@@ -258,7 +258,7 @@ const renderLazyReExpandTable = (options?: { showStatusPanel?: boolean }): HTMLD
     updateStatus();
   };
 
-  const table = new SimpleTableVanilla(tableContainer, {
+  const table = new SimpleTableVanilla<DeptRow>(tableContainer, {
     columns: LAZY_HEADERS,
     rows,
     height: "320px",

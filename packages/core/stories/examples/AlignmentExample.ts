@@ -6,8 +6,6 @@ import { generateRetailSalesData } from "../data/retail-data";
 import { SimpleTableVanilla } from "../../src/index";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
-type TableInstance = InstanceType<typeof SimpleTableVanilla>;
-
 export const alignmentExampleDefaults = {
   columnResizing: true,
   columnReordering: true,
@@ -39,7 +37,7 @@ export function renderAlignmentExample(args?: Partial<UniversalVanillaArgs>): HT
     ...options,
   });
   table.mount();
-  (wrapper as HTMLDivElement & { _table?: TableInstance })._table = table;
+  (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
   btn.addEventListener("click", () => table.getAPI().exportToCSV());
 
   return wrapper;

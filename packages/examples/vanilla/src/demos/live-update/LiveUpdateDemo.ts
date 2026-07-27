@@ -34,22 +34,20 @@ export function renderLiveUpdateDemo(
         if (idx === -1) return;
         const product = currentData[idx];
 
-        if (typeof product.price === "number") {
-          const newPrice = parseFloat((product.price * (0.95 + Math.random() * 0.1)).toFixed(2));
-          currentData[idx].price = newPrice;
-          api.updateData({ accessor: "price", rowId, newValue: newPrice });
+        const newPrice = parseFloat((product.price * (0.95 + Math.random() * 0.1)).toFixed(2));
+        currentData[idx].price = newPrice;
+        api.updateData({ accessor: "price", rowId, newValue: newPrice });
+
+        const newStock = Math.max(0, product.stock + Math.floor((Math.random() - 0.5) * 6));
+        currentData[idx].stock = newStock;
+        api.updateData({ accessor: "stock", rowId, newValue: newStock });
+        if (product.stockHistory.length > 0) {
+          const updated = [...product.stockHistory.slice(1), newStock];
+          currentData[idx].stockHistory = updated;
+          api.updateData({ accessor: "stockHistory", rowId, newValue: updated });
         }
-        if (typeof product.stock === "number") {
-          const newStock = Math.max(0, product.stock + Math.floor((Math.random() - 0.5) * 6));
-          currentData[idx].stock = newStock;
-          api.updateData({ accessor: "stock", rowId, newValue: newStock });
-          if (Array.isArray(product.stockHistory)) {
-            const updated = [...product.stockHistory.slice(1), newStock];
-            currentData[idx].stockHistory = updated;
-            api.updateData({ accessor: "stockHistory", rowId, newValue: updated });
-          }
-        }
-        if (Math.random() < 0.6 && typeof product.sales === "number") {
+
+        if (Math.random() < 0.6) {
           const inc = Math.floor(Math.random() * 3) + 1;
           currentData[idx].sales = product.sales + inc;
           api.updateData({ accessor: "sales", rowId, newValue: currentData[idx].sales });
@@ -65,9 +63,7 @@ export function renderLiveUpdateDemo(
   const syncTimers = () => {
     const api = table.getAPI();
     const visibleRows = api.getVisibleRows();
-    const visibleIds = new Set(
-      visibleRows.flatMap((vr) => (typeof vr.row.id === "number" ? [vr.row.id] : [])),
-    );
+    const visibleIds = new Set(visibleRows.map((vr) => vr.row.id));
     timerMap.forEach((tid, rid) => {
       if (!visibleIds.has(rid)) {
         clearTimeout(tid);
@@ -76,7 +72,6 @@ export function renderLiveUpdateDemo(
     });
     visibleRows.forEach((vr) => {
       const rid = vr.row.id;
-      if (typeof rid !== "number") return;
       if (!timerMap.has(rid)) createRowTimer(rid);
     });
   };
@@ -85,7 +80,7 @@ export function renderLiveUpdateDemo(
     if (!isActive) return;
     const api = table.getAPI();
     currentData.forEach((row, i) => {
-      if (Array.isArray(row.salesHistory)) {
+      if (row.salesHistory.length > 0) {
         const rid = row.id;
         const sp = currentPeriodSales.get(rid) || 0;
         const updated = [...row.salesHistory.slice(1), sp];

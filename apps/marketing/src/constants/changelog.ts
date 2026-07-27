@@ -11,6 +11,41 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_0_9: ChangelogEntry = {
+  version: "4.0.9",
+  date: "2026-07-26",
+  title: "Typed row data with TData generics",
+  description:
+    "Opt-in domain row typing across core and every framework adapter, with safer nested-table column types and typed TableAPI accessors.",
+  changes: [
+    {
+      type: "feature",
+      description:
+        "ColumnDef, SimpleTableProps, TableAPI, and renderers/callbacks accept optional TData/TValue generics. Available on React, Solid, Vue, Svelte, Angular, and SimpleTableVanilla. Defaults preserve existing untyped usage.",
+    },
+    {
+      type: "feature",
+      description:
+        "TableAPI.getVisibleRows() and getAllRows() return TableRow<TData>[], so visible-row handlers see your domain row shape without casts.",
+    },
+    {
+      type: "improvement",
+      description:
+        "updateData, filters, pivot config, and rowGrouping accept typed Accessor<TData> values, with keyof autocomplete for known columns.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Nested table columns can use a different child row type than the parent (NestedColumnDef / NestedReactColumnDef) without casts or any.",
+    },
+    {
+      type: "improvement",
+      description:
+        "Filter and datepicker overlays match table density; calendar clipping and month/year drill-down in the cell editor are fixed.",
+    },
+  ],
+};
+
 export const v4_0_8: ChangelogEntry = {
   version: "4.0.8",
   date: "2026-07-26",
@@ -2401,6 +2436,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_0_9,
   v4_0_8,
   v4_0_7,
   v4_0_6,

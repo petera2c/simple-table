@@ -2,7 +2,6 @@
  * ManufacturingExample – vanilla port of React manufacturing/ManufacturingExample.
  * Uses same manufacturing headers and data, with rowGrouping by stations.
  */
-import type { Row } from "../../../src/index";
 import { renderVanillaTable } from "../../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../../vanillaStoryConfig";
 import { MANUFACTURING_HEADERS } from "./manufacturing-headers";
@@ -19,9 +18,9 @@ export const manufacturingExampleDefaults = {
 
 export function renderManufacturingExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
   const options = { ...defaultVanillaArgs, ...manufacturingExampleDefaults, ...args };
-  const { wrapper, h2 } = renderVanillaTable(MANUFACTURING_HEADERS, manufacturingData as Row[], {
+  const { wrapper, h2 } = renderVanillaTable(MANUFACTURING_HEADERS, manufacturingData, {
     ...options,
-    getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+    getRowId: ({ row }) => String(row?.id),
   });
   h2.textContent = "Manufacturing Example";
   return wrapper;

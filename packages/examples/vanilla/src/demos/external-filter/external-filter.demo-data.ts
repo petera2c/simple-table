@@ -16,7 +16,7 @@ type CellValue = string | number | boolean | null | undefined;
 
 export function matchesFilter(
   value: CellValue,
-  filter: TableFilterState[string]
+  filter: TableFilterState<FilterableEmployee>[string]
 ): boolean {
   const { operator } = filter;
 

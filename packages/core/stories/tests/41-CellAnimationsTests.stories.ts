@@ -39,19 +39,32 @@ const meta: Meta = {
 
 export default meta;
 
-type TableInstance = InstanceType<typeof SimpleTableVanilla>;
+type TableInstance = SimpleTableVanilla<AnimRow>;
 const TABLE_REF_KEY = "__storybook_animations_table_ref";
 
-const setTable = (table: TableInstance): void => {
-  (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = table;
+const setTable = <T>(table: SimpleTableVanilla<T>): void => {
+  (globalThis as unknown as Record<string, SimpleTableVanilla<T>>)[TABLE_REF_KEY] = table;
 };
-const getTable = (): TableInstance => {
-  const t = (globalThis as unknown as Record<string, TableInstance | undefined>)[TABLE_REF_KEY];
+const getTable = <T>(): SimpleTableVanilla<T> => {
+  const t = (globalThis as unknown as Record<string, SimpleTableVanilla<T> | undefined>)[TABLE_REF_KEY];
   if (!t) throw new Error("Table ref not set (run render first)");
   return t;
 };
 
-interface AnimRow {
+interface GridSwapRow {
+  id: number;
+  a: string;
+  b: string;
+  c: string;
+}
+
+interface SortBoundaryRow {
+  id: number;
+  name: string;
+  value: number;
+}
+
+interface AnimRow extends Row {
   id: number;
   name: string;
   age: number;
@@ -70,7 +83,7 @@ const createData = (): AnimRow[] => [
   { id: 8, name: "Henry", age: 45, revenue: 95000, city: "Houston" },
 ];
 
-const createHeaders = (): ColumnDef[] => [
+const createHeaders = (): ColumnDef<AnimRow>[] => [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   { accessor: "name", label: "Name", width: 160, sortable: true },
   { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },
@@ -110,7 +123,7 @@ const tickFrames = async (count: number): Promise<void> => {
 export const ProgrammaticReorderAnimation = {
   render: () => {
     const originalHeaders = createHeaders();
-    const result = renderVanillaTable(createHeaders(), createData() as unknown as Row[], {
+    const result = renderVanillaTable<AnimRow>(createHeaders(), createData(), {
       height: "400px",
       animations: { enabled: true, duration: SLOW_DURATION },
     });
@@ -169,7 +182,7 @@ export const ProgrammaticReorderAnimation = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
     await sleep(BEAT);
-    const table = getTable();
+    const table = getTable<AnimRow>();
     const api = table.getAPI();
     const original = api.getHeaders();
 
@@ -269,17 +282,17 @@ export const ProgrammaticReorderAnimation = {
  */
 export const SimpleThreeByThreeCenterToRightSwap = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<GridSwapRow>[] = [
       { accessor: "a", label: "A", width: 120 },
       { accessor: "b", label: "B", width: 120 },
       { accessor: "c", label: "C", width: 120 },
     ];
-    const rows: Row[] = [
+    const rows: GridSwapRow[] = [
       { id: 1, a: "A1", b: "B1", c: "C1" },
       { id: 2, a: "A2", b: "B2", c: "C2" },
       { id: 3, a: "A3", b: "B3", c: "C3" },
     ];
-    const result = renderVanillaTable(headers, rows, {
+    const result = renderVanillaTable<GridSwapRow>(headers, rows, {
       height: "240px",
       animations: { enabled: true, duration: SLOW_DURATION },
       getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
@@ -287,7 +300,7 @@ export const SimpleThreeByThreeCenterToRightSwap = {
     setTable(result.table);
     result.h2.textContent = `Simplest 3×3 column swap · move center → right · ${SLOW_DURATION}ms`;
 
-    const findByAccessor = (accessor: string): ColumnDef => {
+    const findByAccessor = (accessor: string): ColumnDef<GridSwapRow> => {
       const h = result.table
         .getAPI()
         .getHeaders()
@@ -333,7 +346,7 @@ export const SimpleThreeByThreeCenterToRightSwap = {
 
     const ROW_INDICES = [0, 1, 2];
     const ACCESSORS = ["a", "b", "c"];
-    const table = getTable();
+    const table = getTable<GridSwapRow>();
 
     /**
      * Capture pre-update lefts, apply the new column order, synchronously
@@ -510,17 +523,17 @@ export const SimpleThreeByThreeCenterToRightSwap = {
  */
 export const HeaderCellsAnimateOnColumnReorder = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<GridSwapRow>[] = [
       { accessor: "a", label: "A", width: 120 },
       { accessor: "b", label: "B", width: 120 },
       { accessor: "c", label: "C", width: 120 },
     ];
-    const rows: Row[] = [
+    const rows: GridSwapRow[] = [
       { id: 1, a: "A1", b: "B1", c: "C1" },
       { id: 2, a: "A2", b: "B2", c: "C2" },
       { id: 3, a: "A3", b: "B3", c: "C3" },
     ];
-    const result = renderVanillaTable(headers, rows, {
+    const result = renderVanillaTable<GridSwapRow>(headers, rows, {
       height: "240px",
       animations: { enabled: true, duration: SLOW_DURATION },
       getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
@@ -541,7 +554,7 @@ export const HeaderCellsAnimateOnColumnReorder = {
     await sleep(BEAT);
 
     const ACCESSORS = ["a", "b", "c"] as const;
-    const table = getTable();
+    const table = getTable<GridSwapRow>();
 
     const findHeaderCell = (accessor: string): HTMLElement | null => {
       return canvasElement.querySelector<HTMLElement>(
@@ -697,17 +710,17 @@ export const HeaderCellsAnimateOnColumnReorder = {
  */
 export const HeaderCellsAnimateDuringDragReorder = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<GridSwapRow>[] = [
       { accessor: "a", label: "A", width: 120 },
       { accessor: "b", label: "B", width: 120 },
       { accessor: "c", label: "C", width: 120 },
     ];
-    const rows: Row[] = [
+    const rows: GridSwapRow[] = [
       { id: 1, a: "A1", b: "B1", c: "C1" },
       { id: 2, a: "A2", b: "B2", c: "C2" },
       { id: 3, a: "A3", b: "B3", c: "C3" },
     ];
-    const result = renderVanillaTable(headers, rows, {
+    const result = renderVanillaTable<GridSwapRow>(headers, rows, {
       height: "240px",
       animations: { enabled: true, duration: SLOW_DURATION },
       columnReordering: true,
@@ -924,17 +937,17 @@ export const HeaderCellsAnimateDuringDragReorder = {
  */
 export const HeaderDragDoesNotFlickerDuringAnimation = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<GridSwapRow>[] = [
       { accessor: "a", label: "A", width: 120 },
       { accessor: "b", label: "B", width: 120 },
       { accessor: "c", label: "C", width: 120 },
     ];
-    const rows: Row[] = [
+    const rows: GridSwapRow[] = [
       { id: 1, a: "A1", b: "B1", c: "C1" },
       { id: 2, a: "A2", b: "B2", c: "C2" },
       { id: 3, a: "A3", b: "B3", c: "C3" },
     ];
-    const result = renderVanillaTable(headers, rows, {
+    const result = renderVanillaTable<GridSwapRow>(headers, rows, {
       height: "240px",
       animations: { enabled: true, duration: SLOW_DURATION },
       columnReordering: true,
@@ -957,7 +970,7 @@ export const HeaderDragDoesNotFlickerDuringAnimation = {
     await sleep(BEAT);
 
     const ACCESSORS = ["a", "b", "c"] as const;
-    const table = getTable();
+    const table = getTable<GridSwapRow>();
 
     const findHeaderCell = (accessor: string): HTMLElement | null =>
       canvasElement.querySelector<HTMLElement>(`.st-header-cell[data-accessor="${accessor}"]`);
@@ -1129,7 +1142,7 @@ export const HeaderDragDoesNotFlickerDuringAnimation = {
 
 export const ReorderWithoutAnimations = {
   render: () => {
-    const result = renderVanillaTable(createHeaders(), createData() as unknown as Row[], {
+    const result = renderVanillaTable<AnimRow>(createHeaders(), createData(), {
       height: "400px",
       animations: { enabled: false },
     });
@@ -1166,7 +1179,7 @@ export const ReorderWithoutAnimations = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    const table = getTable();
+    const table = getTable<AnimRow>();
 
     const api = table.getAPI();
     const reversed = [...api.getHeaders()].reverse();
@@ -1184,7 +1197,7 @@ export const ReorderWithoutAnimations = {
 
 export const SortAnimationDemo = {
   render: () => {
-    const result = renderVanillaTable(createHeaders(), createData() as unknown as Row[], {
+    const result = renderVanillaTable<AnimRow>(createHeaders(), createData(), {
       height: "400px",
       animations: { enabled: true, duration: SLOW_DURATION },
       getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
@@ -1231,7 +1244,7 @@ export const SortAnimationDemo = {
     // schedules a RAF that resets it to translate3d(0,0,0) before the
     // visible transition starts. Awaiting any RAF here would only ever
     // surface the destination state.
-    const table = getTable();
+    const table = getTable<AnimRow>();
     void table.getAPI().applySortState({ accessor: "name", direction: "asc" });
 
     const charlieMid = findNameCellByText("Charlie");
@@ -1291,7 +1304,7 @@ export const SortAnimationDemo = {
 
 export const AnimationsPropWiring = {
   render: () => {
-    const { wrapper, h2 } = renderVanillaTable(createHeaders(), createData() as unknown as Row[], {
+    const { wrapper, h2 } = renderVanillaTable<AnimRow>(createHeaders(), createData(), {
       height: "400px",
       animations: { enabled: true },
     });
@@ -1323,7 +1336,7 @@ export const AnimationsPropWiring = {
  */
 export const ReorderAnimatesFromPreviousPositionPerCell = {
   render: () => {
-    const result = renderVanillaTable(createHeaders(), createData() as unknown as Row[], {
+    const result = renderVanillaTable<AnimRow>(createHeaders(), createData(), {
       height: "400px",
       animations: { enabled: true, duration: SLOW_DURATION },
     });
@@ -1352,7 +1365,7 @@ export const ReorderAnimatesFromPreviousPositionPerCell = {
     const distinctBefore = new Set(beforeLefts.values());
     expect(distinctBefore.size).toBe(accessors.length);
 
-    const table = getTable();
+    const table = getTable<AnimRow>();
     const original = table.getAPI().getHeaders();
     table.update({ columns: [...original].reverse() });
 
@@ -1450,17 +1463,17 @@ export const ReorderAnimatesFromPreviousPositionPerCell = {
  */
 export const SortSlidesRowsCrossingTheViewportBoundary = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<SortBoundaryRow>[] = [
       { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
       { accessor: "name", label: "Name", width: 200, sortable: true },
       { accessor: "value", label: "Value", width: 150, sortable: true, type: "number" },
     ];
-    const rows: Row[] = Array.from({ length: 100 }, (_, i) => ({
+    const rows: SortBoundaryRow[] = Array.from({ length: 100 }, (_, i) => ({
       id: i + 1,
       name: `Row ${i + 1}`,
       value: (i * 37) % 1000,
     }));
-    const result = renderVanillaTable(headers, rows, {
+    const result = renderVanillaTable<SortBoundaryRow>(headers, rows, {
       height: "300px",
       animations: { enabled: true, duration: SLOW_DURATION },
       getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
@@ -1513,7 +1526,7 @@ export const SortSlidesRowsCrossingTheViewportBoundary = {
     expect(beforeIds.has("1")).toBe(true);
     expect(beforeIds.has("100")).toBe(false);
 
-    const table = getTable();
+    const table = getTable<SortBoundaryRow>();
     // Trigger sort synchronously and inspect the FLIP "First" frame *before*
     // any RAFs run. play() sets `transform: translate3d(...)` synchronously
     // then schedules a RAF that resets it to translate3d(0,0,0) and applies
@@ -1629,17 +1642,17 @@ export const SortSlidesRowsCrossingTheViewportBoundary = {
  */
 export const DragAndDropColumnReorderShouldAnimate = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<GridSwapRow>[] = [
       { accessor: "a", label: "A", width: 120 },
       { accessor: "b", label: "B", width: 120 },
       { accessor: "c", label: "C", width: 120 },
     ];
-    const rows: Row[] = [
+    const rows: GridSwapRow[] = [
       { id: 1, a: "A1", b: "B1", c: "C1" },
       { id: 2, a: "A2", b: "B2", c: "C2" },
       { id: 3, a: "A3", b: "B3", c: "C3" },
     ];
-    const result = renderVanillaTable(headers, rows, {
+    const result = renderVanillaTable<GridSwapRow>(headers, rows, {
       height: "240px",
       animations: { enabled: true, duration: SLOW_DURATION },
       columnReordering: true,

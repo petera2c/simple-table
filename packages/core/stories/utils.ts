@@ -59,7 +59,7 @@ export function renderVanillaTable<TData extends RowData = Row>(
 export function addParagraph(
   wrapper: HTMLElement,
   text: string,
-  beforeElement: Element | null = null
+  beforeElement: Element | null = null,
 ): HTMLParagraphElement {
   const p = document.createElement("p");
   p.style.marginBottom = "1rem";
@@ -81,7 +81,7 @@ export interface ControlPanelSection {
 export function addControlPanel(
   wrapper: HTMLElement,
   sections: ControlPanelSection[],
-  insertBefore: Element
+  insertBefore: Element,
 ): HTMLDivElement {
   const panel = document.createElement("div");
   panel.style.marginBottom = "1.25rem";

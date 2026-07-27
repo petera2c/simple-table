@@ -1,9 +1,21 @@
 /**
  * Filter example headers – ported from React filter-headers (vanilla-compatible).
  */
-import type { ColumnDef } from "../../../src/index";
+import type { CellRendererProps, ColumnDef } from "../../../src/index";
 
-export const PRODUCT_HEADERS: ColumnDef[] = [
+export interface ProductRow {
+  id: number;
+  productName: string;
+  category: string;
+  brand: string;
+  rating: number;
+  price: number;
+  stockLevel: number | string;
+  isActive: boolean | string;
+  releaseDate: string;
+}
+
+export const PRODUCT_HEADERS: ColumnDef<ProductRow>[] = [
   {
     accessor: "productName",
     label: "Product",
@@ -133,7 +145,7 @@ export const PRODUCT_HEADERS: ColumnDef[] = [
         align: "center",
         type: "number",
         filterable: true,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+        cellRenderer: ({ row }: CellRendererProps<ProductRow>) => {
           if (row.stockLevel === "—") return "—";
           const stock = Number(row.stockLevel);
           if (stock === 0) return "Out of Stock";
@@ -150,7 +162,7 @@ export const PRODUCT_HEADERS: ColumnDef[] = [
         align: "center",
         type: "boolean",
         filterable: true,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+        cellRenderer: ({ row }: CellRendererProps<ProductRow>) =>
           row.isActive === "—" ? "—" : (row.isActive as boolean) ? "Active" : "Inactive",
       },
       {
@@ -167,8 +179,18 @@ export const PRODUCT_HEADERS: ColumnDef[] = [
           const dateString = String(value);
           const [year, month, day] = dateString.split("-").map(Number);
           const monthNames = [
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
           ];
           return `${monthNames[month - 1]} ${day}, ${year}`;
         },

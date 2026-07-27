@@ -16,7 +16,7 @@ type ProjectTask = {
 };
 
 // Define headers
-const headers: ReactColumnDef[] = [
+const headers: ReactColumnDef<ProjectTask>[] = [
   { accessor: "id", label: "Task ID", width: 80, sortable: true, type: "number" },
   {
     accessor: "task",
@@ -33,7 +33,7 @@ const headers: ReactColumnDef[] = [
     width: 100,
     sortable: true,
     type: "string",
-    cellRenderer: ({ accessor, colIndex, row, theme }: CellRendererProps) => (
+    cellRenderer: ({ row }: CellRendererProps<ProjectTask>) => (
       <span
         style={{
           color:
@@ -53,7 +53,7 @@ const headers: ReactColumnDef[] = [
     width: 120,
     sortable: true,
     type: "string",
-    cellRenderer: ({ accessor, colIndex, row, theme }: CellRendererProps) => (
+    cellRenderer: ({ row }: CellRendererProps<ProjectTask>) => (
       <span
         style={{
           backgroundColor:
@@ -88,7 +88,7 @@ const headers: ReactColumnDef[] = [
     label: "View Details",
     width: 120,
     type: "other",
-    cellRenderer: ({ accessor, colIndex, row, theme }: CellRendererProps) => (
+    cellRenderer: (_props: CellRendererProps<ProjectTask>) => (
       <button
         style={{
           backgroundColor: "#3b82f6",
@@ -213,9 +213,13 @@ const CellClickingDemo = ({ theme }: { height?: string | number; theme?: Theme }
   const [assigneeFilter, setAssigneeFilter] = useState<string>("");
   const [rows, setRows] = useState<ProjectTask[]>(PROJECT_TASKS);
 
-  const handleCellClick = ({ accessor, colIndex, row, rowIndex, value }: CellClickProps) => {
-    const task = row as ProjectTask;
-
+  const handleCellClick = ({
+    accessor,
+    colIndex,
+    row: task,
+    rowIndex,
+    value,
+  }: CellClickProps<ProjectTask>) => {
     // Different behaviors based on which column was clicked
     switch (accessor) {
       case "task":

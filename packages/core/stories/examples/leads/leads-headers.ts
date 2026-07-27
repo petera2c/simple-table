@@ -2,9 +2,22 @@
  * Leads example headers – ported from React leads-headers (vanilla-compatible).
  * Cell renderers return strings; no React-specific components.
  */
-import type { ColumnDef } from "../../../src/index";
+import type { CellRendererProps, ColumnDef } from "../../../src/index";
 
-export const LEADS_HEADERS: ColumnDef[] = [
+export interface LeadRow {
+  id: string;
+  name: string;
+  title: string;
+  company: string;
+  signal: string;
+  aiScore: number;
+  emailStatus: string;
+  timeAgo: string;
+  list: string;
+  linkedin: boolean;
+}
+
+export const LEADS_HEADERS: ColumnDef<LeadRow>[] = [
   {
     accessor: "name",
     label: "CONTACT",
@@ -13,7 +26,7 @@ export const LEADS_HEADERS: ColumnDef[] = [
     sortable: true,
     editable: true,
     type: "string",
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+    cellRenderer: ({ row }: CellRendererProps<LeadRow>) =>
       `${row.name ?? ""} | ${row.title ?? ""} @ ${row.company ?? ""}`.trim(),
   },
   {
@@ -24,7 +37,7 @@ export const LEADS_HEADERS: ColumnDef[] = [
     sortable: true,
     editable: true,
     type: "string",
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+    cellRenderer: ({ row }: CellRendererProps<LeadRow>) =>
       `Keyword: ${String(row.signal ?? "")}`,
   },
   {
@@ -35,7 +48,7 @@ export const LEADS_HEADERS: ColumnDef[] = [
     sortable: true,
     align: "center",
     type: "number",
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+    cellRenderer: ({ row }: CellRendererProps<LeadRow>) => {
       const score = Number(row.aiScore ?? 0);
       return "🔥".repeat(score) || "—";
     },
@@ -54,7 +67,7 @@ export const LEADS_HEADERS: ColumnDef[] = [
       { label: "Pending", value: "Pending" },
       { label: "Bounced", value: "Bounced" },
     ],
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+    cellRenderer: ({ row }: CellRendererProps<LeadRow>) =>
       String(row.emailStatus ?? "—"),
   },
   {
@@ -65,7 +78,7 @@ export const LEADS_HEADERS: ColumnDef[] = [
     sortable: true,
     align: "center",
     type: "string",
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+    cellRenderer: ({ row }: CellRendererProps<LeadRow>) =>
       String(row.timeAgo ?? "—"),
   },
   {
@@ -85,7 +98,7 @@ export const LEADS_HEADERS: ColumnDef[] = [
       { label: "SMB", value: "SMB" },
       { label: "Nurture", value: "Nurture" },
     ],
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+    cellRenderer: ({ row }: CellRendererProps<LeadRow>) =>
       String(row.list ?? "—"),
   },
   {

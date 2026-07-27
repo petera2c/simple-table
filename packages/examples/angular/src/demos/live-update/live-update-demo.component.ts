@@ -51,22 +51,20 @@ export class LiveUpdateDemoComponent implements AfterViewInit, OnDestroy {
           if (idx === -1) return;
           const product = currentData[idx];
 
-          if (typeof product.price === "number") {
-            const newPrice = parseFloat((product.price * (0.95 + Math.random() * 0.1)).toFixed(2));
-            currentData[idx].price = newPrice;
-            currentApi.updateData({ accessor: "price", rowId, newValue: newPrice });
+          const newPrice = parseFloat((product.price * (0.95 + Math.random() * 0.1)).toFixed(2));
+          currentData[idx].price = newPrice;
+          currentApi.updateData({ accessor: "price", rowId, newValue: newPrice });
+
+          const newStock = Math.max(0, product.stock + Math.floor((Math.random() - 0.5) * 6));
+          currentData[idx].stock = newStock;
+          currentApi.updateData({ accessor: "stock", rowId, newValue: newStock });
+          if (product.stockHistory.length > 0) {
+            const updated = [...product.stockHistory.slice(1), newStock];
+            currentData[idx].stockHistory = updated;
+            currentApi.updateData({ accessor: "stockHistory", rowId, newValue: updated });
           }
-          if (typeof product.stock === "number") {
-            const newStock = Math.max(0, product.stock + Math.floor((Math.random() - 0.5) * 6));
-            currentData[idx].stock = newStock;
-            currentApi.updateData({ accessor: "stock", rowId, newValue: newStock });
-            if (Array.isArray(product.stockHistory)) {
-              const updated = [...product.stockHistory.slice(1), newStock];
-              currentData[idx].stockHistory = updated;
-              currentApi.updateData({ accessor: "stockHistory", rowId, newValue: updated });
-            }
-          }
-          if (Math.random() < 0.6 && typeof product.sales === "number") {
+
+          if (Math.random() < 0.6) {
             const inc = Math.floor(Math.random() * 3) + 1;
             currentData[idx].sales = product.sales + inc;
             currentApi.updateData({ accessor: "sales", rowId, newValue: currentData[idx].sales });
@@ -83,9 +81,7 @@ export class LiveUpdateDemoComponent implements AfterViewInit, OnDestroy {
       const currentApi = this.tableRef?.getAPI();
       if (!currentApi) return;
       const visibleRows = currentApi.getVisibleRows();
-      const visibleIds = new Set(
-        visibleRows.map((vr) => vr.row.id).filter((id): id is number => typeof id === "number"),
-      );
+      const visibleIds = new Set(visibleRows.map((vr) => vr.row.id));
       timerMap.forEach((tid, rid) => {
         if (!visibleIds.has(rid)) {
           clearTimeout(tid);

@@ -17,7 +17,7 @@ type LibraryBook = {
   borrowedBy?: string;
 };
 
-const headers: ReactColumnDef[] = [
+const headers: ReactColumnDef<LibraryBook>[] = [
   { accessor: "id", label: "Book ID", width: 80, sortable: true, type: "number" },
   { accessor: "isbn", label: "ISBN", width: 120, sortable: true, type: "string" },
   {
@@ -211,11 +211,11 @@ const RowSelectionDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const tableRef = useRef<TableAPI>(null);
+  const tableRef = useRef<TableAPI<LibraryBook>>(null);
   const [selectedRowsInfo, setSelectedRowsInfo] = useState<LibraryBook[]>([]);
 
   const handleRowSelectionChange = () => {
-    setSelectedRowsInfo((tableRef.current?.getSelectedRowsData() as LibraryBook[]) ?? []);
+    setSelectedRowsInfo(tableRef.current?.getSelectedRowsData() ?? []);
   };
 
   return (
@@ -247,7 +247,7 @@ const RowSelectionDemo = ({
         columns={headers}
         rows={LIBRARY_BOOKS}
         enableRowSelection
-        getRowId={({ row }) => String((row as LibraryBook).id)}
+        getRowId={({ row }) => String(row.id)}
         onRowSelectionChange={handleRowSelectionChange}
         height={height}
         theme={theme}

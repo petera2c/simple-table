@@ -1,9 +1,31 @@
 /**
  * Music example headers – ported from React music-headers (vanilla-compatible).
  */
-import type { ColumnDef } from "../../../src/index";
+import type { CellRendererProps, ColumnDef } from "../../../src/index";
 
-export const MUSIC_HEADERS: ColumnDef[] = [
+export interface MusicRow {
+  id: string;
+  rank: number;
+  artistName: string;
+  artistType: string;
+  pronouns: string;
+  recordLabel: string;
+  lyricsLanguage?: string;
+  growthStatus?: string;
+  mood?: string;
+  genre?: string;
+  followers?: number;
+  followersFormatted?: string;
+  followersGrowth?: number;
+  followersGrowthFormatted?: string;
+  followersGrowthPercent?: number;
+  popularity?: number;
+  popularityChange?: number;
+  popularityChangePercent?: number;
+  [key: string]: string | number | undefined;
+}
+
+export const MUSIC_HEADERS: ColumnDef<MusicRow>[] = [
   {
     accessor: "rank",
     label: "#",
@@ -23,7 +45,7 @@ export const MUSIC_HEADERS: ColumnDef[] = [
     align: "left",
     type: "string",
     pinned: "left",
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+    cellRenderer: ({ row }: CellRendererProps<MusicRow>) =>
       `${row.artistName ?? ""} | ${row.growthStatus ?? ""} | ${row.mood ?? ""} | ${row.genre ?? ""}`.trim(),
   },
   {
@@ -34,7 +56,7 @@ export const MUSIC_HEADERS: ColumnDef[] = [
     editable: false,
     align: "left",
     type: "string",
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+    cellRenderer: ({ row }: CellRendererProps<MusicRow>) =>
       `${row.artistType ?? ""}, ${row.pronouns ?? ""} | ${row.recordLabel ?? ""}`.trim(),
   },
   {
@@ -51,7 +73,7 @@ export const MUSIC_HEADERS: ColumnDef[] = [
         sortable: true,
         editable: false,
         type: "number",
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+        cellRenderer: ({ row }: CellRendererProps<MusicRow>) =>
           `${row.followersFormatted ?? ""} (↑ ${row.followersGrowthFormatted ?? ""} ${row.followersGrowthPercent ?? 0}%)`.trim(),
       },
       {
@@ -100,7 +122,7 @@ export const MUSIC_HEADERS: ColumnDef[] = [
     editable: false,
     align: "center",
     type: "number",
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+    cellRenderer: ({ row }: CellRendererProps<MusicRow>) =>
       `${row.popularity ?? "—"} (${row.popularityChangePercent != null ? `${row.popularityChangePercent}%` : "—"})`,
   },
   {

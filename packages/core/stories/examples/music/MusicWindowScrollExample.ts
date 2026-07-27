@@ -9,7 +9,7 @@
  * for scroll-performance profiling.
  */
 import { SimpleTableVanilla } from "../../../src/index";
-import type { ColumnDef, Row } from "../../../src/index";
+import type { ColumnDef } from "../../../src/index";
 import type { CellRendererProps } from "../../../src/index";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../../vanillaStoryConfig";
 import { generateMusicData, getMusicThemeColors, METRICS } from "./music-window.data";
@@ -111,7 +111,7 @@ type StatOptions = { label?: string };
 
 const makeStatCell =
   (key: string, { label = "Total" }: StatOptions = {}) =>
-  ({ row, theme }: CellRendererProps): Node => {
+  ({ row, theme }: CellRendererProps<MusicArtist>): Node => {
     const value = row[`${key}Formatted`] as string | undefined;
     if (value === undefined || value === null) {
       return statStack({ label, value: "—", theme });
@@ -127,7 +127,7 @@ const makeStatCell =
 
 const makeRateCell =
   (key: string, { label = "Rate", changeKey }: StatOptions & { changeKey?: string } = {}) =>
-  ({ row, theme }: CellRendererProps): Node => {
+  ({ row, theme }: CellRendererProps<MusicArtist>): Node => {
     const value = row[key] as number | undefined;
     if (value === undefined || value === null) {
       return statStack({ label, value: "—", theme });
@@ -144,7 +144,7 @@ const makeRateCell =
 
 const makeRatioCell =
   (key: string, suffix = "x") =>
-  ({ row, theme }: CellRendererProps): Node => {
+  ({ row, theme }: CellRendererProps<MusicArtist>): Node => {
     const colors = getMusicThemeColors(theme);
     const value = row[key] as number | undefined;
     return el(
@@ -156,7 +156,7 @@ const makeRatioCell =
 
 const makeDateCell =
   (accessor: string) =>
-  ({ row, theme }: CellRendererProps): Node => {
+  ({ row, theme }: CellRendererProps<MusicArtist>): Node => {
     const colors = getMusicThemeColors(theme);
     return el("span", { color: colors.text }, (row[accessor] as string) ?? "—");
   };
@@ -170,10 +170,9 @@ function colorFromName(str: string): string {
   return `hsl(${hash % 360}, 62%, 52%)`;
 }
 
-const IdentityCell = ({ row, theme }: CellRendererProps): Node => {
+const IdentityCell = ({ row, theme }: CellRendererProps<MusicArtist>): Node => {
   const colors = getMusicThemeColors(theme);
-  const d = row as unknown as MusicArtist;
-  const name = d.artistName ?? "";
+  const name = row.artistName ?? "";
   const avatar = el(
     "div",
     {
@@ -204,13 +203,13 @@ const IdentityCell = ({ row, theme }: CellRendererProps): Node => {
     name,
   );
   nameEl.title = name;
-  const sub = el("span", { fontSize: "12px", color: colors.muted }, `${d.artistType} · ${d.pronouns}`);
+  const sub = el("span", { fontSize: "12px", color: colors.muted }, `${row.artistType} · ${row.pronouns}`);
   const label = el(
     "span",
     { fontSize: "12px", color: colors.muted, whiteSpace: "nowrap" },
-    d.recordLabel,
+    row.recordLabel,
   );
-  label.title = d.recordLabel;
+  label.title = row.recordLabel;
   return el("div", { display: "flex", alignItems: "center", gap: "10px" }, [
     avatar,
     el("div", { display: "flex", flexDirection: "column", gap: "2px", minWidth: "0" }, [
@@ -221,16 +220,15 @@ const IdentityCell = ({ row, theme }: CellRendererProps): Node => {
   ]);
 };
 
-const RankCell = ({ row, theme }: CellRendererProps): Node => {
+const RankCell = ({ row, theme }: CellRendererProps<MusicArtist>): Node => {
   const colors = getMusicThemeColors(theme);
-  const d = row as unknown as MusicArtist;
-  const change = d.rankChange ?? 0;
+  const change = row.rankChange ?? 0;
   const isPositive = change >= 0;
   return el(
     "div",
     { display: "flex", flexDirection: "column", alignItems: "center", gap: "2px" },
     [
-      el("span", { fontWeight: "700", fontSize: "15px", color: colors.text }, d.rank),
+      el("span", { fontWeight: "700", fontSize: "15px", color: colors.text }, row.rank),
       change !== 0
         ? el(
             "span",
@@ -242,21 +240,19 @@ const RankCell = ({ row, theme }: CellRendererProps): Node => {
   );
 };
 
-const RegionCell = ({ row, theme }: CellRendererProps): Node => {
+const RegionCell = ({ row, theme }: CellRendererProps<MusicArtist>): Node => {
   const colors = getMusicThemeColors(theme);
-  const d = row as unknown as MusicArtist;
   return el("div", { display: "flex", flexDirection: "column", gap: "2px" }, [
     el("span", { display: "flex", alignItems: "center", gap: "6px", color: colors.text }, [
-      el("span", { fontSize: "15px" }, d.countryFlag),
-      d.country,
+      el("span", { fontSize: "15px" }, row.countryFlag),
+      row.country,
     ]),
-    el("span", { fontSize: "12px", color: colors.muted }, d.continent),
+    el("span", { fontSize: "12px", color: colors.muted }, row.continent),
   ]);
 };
 
-const ScoreCell = ({ row, theme }: CellRendererProps): Node => {
+const ScoreCell = ({ row, theme }: CellRendererProps<MusicArtist>): Node => {
   const colors = getMusicThemeColors(theme);
-  const d = row as unknown as MusicArtist;
 
   const metricRow = (label: string, value: number, change: number, decimals: number): HTMLElement => {
     const isPositive = change >= 0;
@@ -278,8 +274,8 @@ const ScoreCell = ({ row, theme }: CellRendererProps): Node => {
   };
 
   return el("div", { display: "flex", flexDirection: "column", gap: "4px" }, [
-    metricRow("Score", d.score, d.scoreChange ?? 0, 1),
-    metricRow("Rank", d.rank, d.rankChange ?? 0, 0),
+    metricRow("Score", row.score, row.scoreChange ?? 0, 1),
+    metricRow("Rank", row.rank, row.rankChange ?? 0, 0),
   ]);
 };
 
@@ -292,10 +288,9 @@ const AGE_SEGMENTS: { key: string; color: string }[] = [
   { key: "60+", color: "#1a3f73" },
 ];
 
-const AudienceAgeCell = ({ row, theme }: CellRendererProps): Node => {
+const AudienceAgeCell = ({ row, theme }: CellRendererProps<MusicArtist>): Node => {
   const colors = getMusicThemeColors(theme);
-  const d = row as unknown as MusicArtist;
-  const age = d.audienceAge ?? {};
+  const age = row.audienceAge ?? {};
   const youngShare = (age["18-24"] ?? 0) + (age["25-34"] ?? 0) + (age["13-17"] ?? 0);
   return el("div", { display: "flex", flexDirection: "column", gap: "5px", width: "100%" }, [
     el("div", { fontSize: "12px", color: colors.muted }, [
@@ -306,10 +301,9 @@ const AudienceAgeCell = ({ row, theme }: CellRendererProps): Node => {
   ]);
 };
 
-const AudienceGenderCell = ({ row, theme }: CellRendererProps): Node => {
+const AudienceGenderCell = ({ row, theme }: CellRendererProps<MusicArtist>): Node => {
   const colors = getMusicThemeColors(theme);
-  const d = row as unknown as MusicArtist;
-  const gender = d.audienceGender ?? { f: 0, m: 0 };
+  const gender = row.audienceGender ?? { f: 0, m: 0 };
   return el("div", { display: "flex", flexDirection: "column", gap: "5px", width: "100%" }, [
     el("div", { display: "flex", gap: "12px", fontSize: "12px", color: colors.muted }, [
       el("span", undefined, ["F: ", el("span", { color: colors.text, fontWeight: "600" }, `${gender.f}%`)]),
@@ -322,10 +316,9 @@ const AudienceGenderCell = ({ row, theme }: CellRendererProps): Node => {
   ]);
 };
 
-const PopularityCell = ({ row, theme }: CellRendererProps): Node => {
-  const d = row as unknown as MusicArtist;
-  const value = d.spotifyPopularity;
-  const change = d.spotifyPopularityChangePercent;
+const PopularityCell = ({ row, theme }: CellRendererProps<MusicArtist>): Node => {
+  const value = row.spotifyPopularity;
+  const change = row.spotifyPopularityChangePercent;
   return statStack({
     label: "Score",
     value: value === undefined ? "—" : `${value}/100`,
@@ -342,7 +335,7 @@ const stat = (
   accessor: string,
   label: string,
   options: StatOptions & { width?: number } = {},
-): ColumnDef => ({
+): ColumnDef<MusicArtist> => ({
   accessor,
   label,
   width: options.width ?? 200,
@@ -353,7 +346,7 @@ const stat = (
   cellRenderer: makeStatCell(accessor, { label: options.label }),
 });
 
-function getMusicHeaders(): ColumnDef[] {
+function getMusicHeaders(): ColumnDef<MusicArtist>[] {
   return [
     {
       accessor: "rank",
@@ -375,7 +368,7 @@ function getMusicHeaders(): ColumnDef[] {
       align: "left",
       type: "string",
       pinned: "left",
-      valueGetter: ({ row }) => (row as unknown as MusicArtist).artistName,
+      valueGetter: ({ row }) => row.artistName,
       cellRenderer: IdentityCell,
     },
     {
@@ -386,7 +379,7 @@ function getMusicHeaders(): ColumnDef[] {
       editable: false,
       align: "left",
       type: "string",
-      valueGetter: ({ row }) => (row as unknown as MusicArtist).country,
+      valueGetter: ({ row }) => row.country,
       cellRenderer: RegionCell,
     },
     {
@@ -560,7 +553,7 @@ function getMusicHeaders(): ColumnDef[] {
   ];
 }
 
-const musicWindowData = generateMusicData(2000) as unknown as Row[];
+const musicWindowData = generateMusicData(2000);
 
 export const musicWindowScrollExampleDefaults: Partial<UniversalVanillaArgs> = {
   columnReordering: true,
@@ -593,7 +586,7 @@ export function renderMusicWindowScrollExample(args?: Partial<UniversalVanillaAr
   tableContainer.style.fontFamily = "Inter, system-ui, sans-serif";
   scrollContainer.appendChild(tableContainer);
 
-  const table = new SimpleTableVanilla(tableContainer, {
+  const table = new SimpleTableVanilla<MusicArtist>(tableContainer, {
     columns: getMusicHeaders(),
     rows: musicWindowData,
     theme: options.theme,
@@ -601,12 +594,12 @@ export function renderMusicWindowScrollExample(args?: Partial<UniversalVanillaAr
     columnReordering: options.columnReordering,
     columnResizing: options.columnResizing,
     selectableCells: options.selectableCells,
-    getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+    getRowId: ({ row }) => String(row?.id),
     scrollParent: scrollContainer,
   });
   table.mount();
 
-  (wrapper as unknown as { _table?: SimpleTableVanilla })._table = table;
+  (wrapper as unknown as { _table?: SimpleTableVanilla<MusicArtist> })._table = table;
 
   return wrapper;
 }

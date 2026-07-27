@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
   height: "400px",
 });
 
-const filters = ref<TableFilterState>({});
+const filters = ref<TableFilterState<FilterableEmployee>>({});
 
 const getRowId = ({ row }: GetRowIdParams<FilterableEmployee>) => row.id;
 
@@ -25,7 +25,7 @@ const filteredRows = computed(() => {
   );
 });
 
-function handleFilterChange(newFilters: TableFilterState) {
+function handleFilterChange(newFilters: TableFilterState<FilterableEmployee>) {
   filters.value = newFilters;
 }
 </script>

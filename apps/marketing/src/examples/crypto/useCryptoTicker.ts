@@ -1,5 +1,6 @@
 import { useEffect, RefObject } from "react";
-import type { TableAPI, Row, CellValue } from "@simple-table/react";
+import type { TableAPI } from "@simple-table/react";
+import type { CryptoCoin } from "./useCryptoData";
 
 /** Throttled below the frame budget so ticks and scrolling rarely share a rAF. */
 const TICK_MS = 90;
@@ -16,20 +17,15 @@ function pickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Row>) {
-  for (const accessor of Object.keys(patch)) {
-    const newValue = patch[accessor];
-    if (newValue === undefined) continue;
-    api.updateData({ accessor, rowId, newValue: newValue as CellValue });
-  }
-}
-
 /**
  * Simulates a live market feed: each tick nudges the price of a few visible
  * coins, recomputes the 24h change, and pushes a new point onto the sparkline
  * history. Uses `updateData` so only the affected cells re-render (and flash).
  */
-export function useCryptoTicker(tableRef: RefObject<TableAPI | null>, _data: Row[]) {
+export function useCryptoTicker(
+  tableRef: RefObject<TableAPI<CryptoCoin> | null>,
+  _data: CryptoCoin[],
+) {
   useEffect(() => {
     let isActive = true;
 
@@ -42,27 +38,25 @@ export function useCryptoTicker(tableRef: RefObject<TableAPI | null>, _data: Row
       if (!visible.length) return;
 
       for (const vr of pickRandomSubset(visible, ROWS_PER_TICK)) {
-        const rowId = vr.row.id as string | number | undefined;
-        if (rowId === undefined || rowId === null || rowId === "") continue;
-
-        const currentPrice = vr.row.price as number;
-        if (typeof currentPrice !== "number") continue;
+        const row = vr.row;
+        const rowId = row.id;
 
         const drift = (Math.random() - 0.5) * 0.012; // +/- 0.6% per tick
-        const newPrice = Math.max(currentPrice * (1 + drift), currentPrice * 0.0001);
+        const newPrice = Math.max(row.price * (1 + drift), row.price * 0.0001);
         const round = newPrice >= 1 ? 1e2 : 1e6;
         const newPriceRounded = Math.round(newPrice * round) / round;
+        const newChange = Math.round((row.change24h + drift * 100) * 100) / 100;
 
-        const currentChange = (vr.row.change24h as number) ?? 0;
-        const newChange = Math.round((currentChange + drift * 100) * 100) / 100;
+        api.updateData({ accessor: "price", rowId, newValue: newPriceRounded });
+        api.updateData({ accessor: "change24h", rowId, newValue: newChange });
 
-        const history = vr.row.priceHistory as number[];
-        const patch: Partial<Row> = { price: newPriceRounded, change24h: newChange };
-        if (Array.isArray(history) && history.length > 0) {
-          patch.priceHistory = [...history.slice(1), newPriceRounded];
+        if (row.priceHistory.length > 0) {
+          api.updateData({
+            accessor: "priceHistory",
+            rowId,
+            newValue: [...row.priceHistory.slice(1), newPriceRounded],
+          });
         }
-
-        applyRowPatch(api, rowId, patch);
       }
     };
 

@@ -24,13 +24,19 @@ const meta: Meta = {
 
 export default meta;
 
-const createData = () => [
+interface LoadingStateRow {
+  id: number | string;
+  name: string;
+  score: number;
+}
+
+const createData = (): LoadingStateRow[] => [
   { id: 1, name: "Alice", score: 85 },
   { id: 2, name: "Bob", score: 92 },
   { id: 3, name: "Carol", score: 78 },
 ];
 
-const headers: ColumnDef[] = [
+const headers: ColumnDef<LoadingStateRow>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 150, type: "string" },
   { accessor: "score", label: "Score", width: 100, type: "number" },
@@ -41,7 +47,7 @@ const headers: ColumnDef[] = [
  */
 export const LoadingStateShowsSkeletons = {
   render: () => {
-    const { wrapper } = renderVanillaTable(headers, createData(), {
+    const { wrapper } = renderVanillaTable<LoadingStateRow>(headers, createData(), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
       isLoading: true,
@@ -59,7 +65,7 @@ export const LoadingStateShowsSkeletons = {
 
 export const NotLoadingShowsData = {
   render: () => {
-    const { wrapper } = renderVanillaTable(headers, createData(), {
+    const { wrapper } = renderVanillaTable<LoadingStateRow>(headers, createData(), {
       getRowId: (p) => String(p.row?.id),
       height: "300px",
       isLoading: false,
@@ -77,7 +83,7 @@ export const NotLoadingShowsData = {
 
 export const LoadingStateWithEmptyRows = {
   render: () => {
-    const { wrapper } = renderVanillaTable(headers, [], {
+    const { wrapper } = renderVanillaTable<LoadingStateRow>(headers, [], {
       height: "300px",
       isLoading: true,
     });
@@ -92,11 +98,26 @@ export const LoadingStateWithEmptyRows = {
   },
 };
 
-type TableInstance = InstanceType<typeof SimpleTableVanilla>;
+type LoadingStateTable = SimpleTableVanilla<LoadingStateRow>;
+
+interface ExpandableLoadingTeamRow {
+  id: string;
+  name: string;
+  role: string;
+}
+
+interface ExpandableLoadingDeptRow {
+  id: string;
+  name: string;
+  role: string;
+  teams: ExpandableLoadingTeamRow[];
+}
+
+type ExpandableLoadingTable = SimpleTableVanilla<ExpandableLoadingDeptRow>;
 
 const LOADING_TO_LOADED_REF_KEY = "__storybook_loading_to_loaded_table_ref";
-const getLoadingToLoadedTable = (): TableInstance => {
-  const t = (globalThis as unknown as Record<string, TableInstance | undefined>)[
+const getLoadingToLoadedTable = (): LoadingStateTable => {
+  const t = (globalThis as unknown as Record<string, LoadingStateTable | undefined>)[
     LOADING_TO_LOADED_REF_KEY
   ];
   if (!t) throw new Error("Table ref not set (run render first)");
@@ -104,8 +125,8 @@ const getLoadingToLoadedTable = (): TableInstance => {
 };
 
 const APPEND_SKELETONS_REF_KEY = "__storybook_append_skeletons_table_ref";
-const getAppendSkeletonsTable = (): TableInstance => {
-  const t = (globalThis as unknown as Record<string, TableInstance | undefined>)[
+const getAppendSkeletonsTable = (): LoadingStateTable => {
+  const t = (globalThis as unknown as Record<string, LoadingStateTable | undefined>)[
     APPEND_SKELETONS_REF_KEY
   ];
   if (!t) throw new Error("Table ref not set (run render first)");
@@ -131,12 +152,12 @@ export const LoadingToLoadedRemovesStaleCells = {
   render: () => {
     // Mount in the loading state with no rows yet, so `getRowId` returns
     // "undefined" for every skeleton row.
-    const result = renderVanillaTable(headers, [], {
+    const result = renderVanillaTable<LoadingStateRow>(headers, [], {
       getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
       height: "300px",
       isLoading: true,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[LOADING_TO_LOADED_REF_KEY] =
+    (globalThis as unknown as Record<string, LoadingStateTable>)[LOADING_TO_LOADED_REF_KEY] =
       result.table;
     return result.wrapper;
   },
@@ -177,12 +198,12 @@ export const LoadingToLoadedRemovesStaleCells = {
  */
 export const LoadingAppendsSkeletonsUnderLoadedRows = {
   render: () => {
-    const result = renderVanillaTable(headers, createData(), {
+    const result = renderVanillaTable<LoadingStateRow>(headers, createData(), {
       getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
       height: "300px",
       isLoading: false,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[APPEND_SKELETONS_REF_KEY] =
+    (globalThis as unknown as Record<string, LoadingStateTable>)[APPEND_SKELETONS_REF_KEY] =
       result.table;
     return result.wrapper;
   },
@@ -218,12 +239,12 @@ export const LoadingAppendsSkeletonsUnderLoadedRows = {
 // EXPANDABLE CELLS + LOADING STATE
 // ============================================================================
 
-const expandableLoadingHeaders: ColumnDef[] = [
+const expandableLoadingHeaders: ColumnDef<ExpandableLoadingDeptRow>[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   { accessor: "role", label: "Role", width: 120, type: "string" },
 ];
 
-const expandableLoadingRows = [
+const expandableLoadingRows: ExpandableLoadingDeptRow[] = [
   {
     id: "dept-1",
     name: "Engineering",
@@ -242,8 +263,8 @@ const expandableLoadingRows = [
 ];
 
 const EXPANDABLE_ENTER_LOADING_REF_KEY = "__storybook_expandable_enter_loading_table_ref";
-const getExpandableEnterLoadingTable = (): TableInstance => {
-  const t = (globalThis as unknown as Record<string, TableInstance | undefined>)[
+const getExpandableEnterLoadingTable = (): ExpandableLoadingTable => {
+  const t = (globalThis as unknown as Record<string, ExpandableLoadingTable | undefined>)[
     EXPANDABLE_ENTER_LOADING_REF_KEY
   ];
   if (!t) throw new Error("Table ref not set (run render first)");
@@ -251,8 +272,8 @@ const getExpandableEnterLoadingTable = (): TableInstance => {
 };
 
 const EXPANDABLE_EXIT_LOADING_REF_KEY = "__storybook_expandable_exit_loading_table_ref";
-const getExpandableExitLoadingTable = (): TableInstance => {
-  const t = (globalThis as unknown as Record<string, TableInstance | undefined>)[
+const getExpandableExitLoadingTable = (): ExpandableLoadingTable => {
+  const t = (globalThis as unknown as Record<string, ExpandableLoadingTable | undefined>)[
     EXPANDABLE_EXIT_LOADING_REF_KEY
   ];
   if (!t) throw new Error("Table ref not set (run render first)");
@@ -265,13 +286,13 @@ const getExpandableExitLoadingTable = (): TableInstance => {
  */
 export const ExpandableCellsShowSkeletonWhenEnteringLoading = {
   render: () => {
-    const result = renderVanillaTable(expandableLoadingHeaders, expandableLoadingRows, {
+    const result = renderVanillaTable<ExpandableLoadingDeptRow>(expandableLoadingHeaders, expandableLoadingRows, {
       getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
       rowGrouping: ["teams"],
       height: "300px",
       isLoading: false,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[EXPANDABLE_ENTER_LOADING_REF_KEY] =
+    (globalThis as unknown as Record<string, ExpandableLoadingTable>)[EXPANDABLE_ENTER_LOADING_REF_KEY] =
       result.table;
     return result.wrapper;
   },
@@ -310,13 +331,13 @@ export const ExpandableCellsShowSkeletonWhenEnteringLoading = {
  */
 export const ExpandableCellsRestoreContentWhenLeavingLoading = {
   render: () => {
-    const result = renderVanillaTable(expandableLoadingHeaders, [], {
+    const result = renderVanillaTable<ExpandableLoadingDeptRow>(expandableLoadingHeaders, [], {
       getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
       rowGrouping: ["teams"],
       height: "300px",
       isLoading: true,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[EXPANDABLE_EXIT_LOADING_REF_KEY] =
+    (globalThis as unknown as Record<string, ExpandableLoadingTable>)[EXPANDABLE_EXIT_LOADING_REF_KEY] =
       result.table;
     return result.wrapper;
   },

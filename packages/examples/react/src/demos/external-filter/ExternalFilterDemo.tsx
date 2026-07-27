@@ -15,7 +15,7 @@ const ExternalFilterDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const [filters, setFilters] = useState<TableFilterState>({});
+  const [filters, setFilters] = useState<TableFilterState<FilterableEmployee>>({});
 
   const filteredData = useMemo(() => {
     const filterEntries = Object.entries(filters);

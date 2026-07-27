@@ -228,7 +228,7 @@ export const CustomFooterRespectsFooterRenderKey = {
       table.update({ footerRenderKey: status });
     });
 
-    (wrapper as HTMLDivElement & { _table?: SimpleTableVanilla })._table = table;
+    (wrapper as HTMLDivElement & { _table?: SimpleTableVanilla<Row> })._table = table;
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -292,7 +292,7 @@ export const CustomFooterRefreshesOnRowsUpdateSameCount = {
       table.update({ rows });
     });
 
-    (wrapper as HTMLDivElement & { _table?: SimpleTableVanilla })._table = table;
+    (wrapper as HTMLDivElement & { _table?: SimpleTableVanilla<Row> })._table = table;
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {

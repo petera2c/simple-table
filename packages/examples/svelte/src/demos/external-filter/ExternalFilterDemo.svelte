@@ -7,7 +7,7 @@
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  let filters = $state<TableFilterState>({});
+  let filters = $state<TableFilterState<FilterableEmployee>>({});
 
   const getRowId = ({ row }: GetRowIdParams<FilterableEmployee>) => row.id;
 
@@ -22,7 +22,7 @@
     );
   });
 
-  function handleFilterChange(newFilters: TableFilterState) {
+  function handleFilterChange(newFilters: TableFilterState<FilterableEmployee>) {
     filters = newFilters;
   }
 </script>

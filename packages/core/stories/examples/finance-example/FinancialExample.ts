@@ -2,7 +2,6 @@
  * FinancialExample – vanilla port of React finance-example/FinancialExample.
  * Uses same finance headers and data as React (live-update behavior is React-only).
  */
-import type { Row } from "../../../src/index";
 import { renderVanillaTable } from "../../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../../vanillaStoryConfig";
 import { FINANCE_HEADERS } from "./finance-headers";
@@ -17,7 +16,7 @@ export const financeExampleDefaults = {
 
 export function renderFinanceExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
   const options = { ...defaultVanillaArgs, ...financeExampleDefaults, ...args };
-  const { wrapper, h2 } = renderVanillaTable(FINANCE_HEADERS, financeData as Row[], {
+  const { wrapper, h2 } = renderVanillaTable(FINANCE_HEADERS, financeData, {
     ...options,
     getRowId: ({ row }) => String(row.id),
   });

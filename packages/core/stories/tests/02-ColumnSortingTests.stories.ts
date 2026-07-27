@@ -6,7 +6,7 @@
 import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
-import { renderVanillaTable, addParagraph, type RenderVanillaTableResult } from "../utils";
+import { renderVanillaTable, addParagraph } from "../utils";
 import type { Meta } from "@storybook/html";
 
 const meta: Meta = {
@@ -528,7 +528,7 @@ export const ExternalSortHandling = {
       },
     });
     table.mount();
-    (wrapper as RenderVanillaTableResult["wrapper"])._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     return wrapper;
   },
   play: async ({ canvasElement }) => {
@@ -598,7 +598,7 @@ export const ProgrammaticSortControl = {
     ];
     const table = new SimpleTableVanilla(tableContainer, { columns: headers, rows: createSortableData(), height: "400px" });
     table.mount();
-    (wrapper as RenderVanillaTableResult["wrapper"])._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     const updateState = () => {
       const state = table.getAPI().getSortState();
       stateDiv.textContent = state ? `Current Sort: ${state.key.accessor} (${state.direction})` : "Current Sort: No sort";

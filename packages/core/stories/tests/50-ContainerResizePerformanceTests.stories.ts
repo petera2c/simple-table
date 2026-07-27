@@ -250,7 +250,7 @@ function buildCollapsibleNavLayout({
   main.appendChild(hud);
 
   let tableHost: HTMLDivElement | null = null;
-  let tableInstance: SimpleTableVanilla | null = null;
+  let tableInstance: SimpleTableVanilla<Row> | null = null;
 
   if (showTable) {
     tableHost = document.createElement("div");

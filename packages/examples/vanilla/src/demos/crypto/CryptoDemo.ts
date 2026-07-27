@@ -28,21 +28,18 @@ function runTick(getApi: () => TableAPI<CryptoCoin> | null | undefined) {
   for (const vr of pickRandomSubset(visible, ROWS_PER_TICK)) {
     const row = vr.row;
     const rowId = row.id;
-    if (typeof row.price !== "number") continue;
     const drift = (Math.random() - 0.5) * 0.012;
     const newPrice = Math.max(row.price * (1 + drift), row.price * 0.0001);
     const round = newPrice >= 1 ? 1e2 : 1e6;
     const newPriceRounded = Math.round(newPrice * round) / round;
-    const currentChange = typeof row.change24h === "number" ? row.change24h : 0;
-    const newChange = Math.round((currentChange + drift * 100) * 100) / 100;
+    const newChange = Math.round((row.change24h + drift * 100) * 100) / 100;
     api.updateData({ accessor: "price", rowId, newValue: newPriceRounded });
     api.updateData({ accessor: "change24h", rowId, newValue: newChange });
-    const history = row.priceHistory;
-    if (Array.isArray(history) && history.length > 0) {
+    if (row.priceHistory.length > 0) {
       api.updateData({
         accessor: "priceHistory",
         rowId,
-        newValue: [...history.slice(1), newPriceRounded],
+        newValue: [...row.priceHistory.slice(1), newPriceRounded],
       });
     }
   }

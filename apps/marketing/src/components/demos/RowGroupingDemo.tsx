@@ -3,7 +3,21 @@ import { SimpleTable } from "@simple-table/react";
 import type { ReactColumnDef, TableAPI, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 
-const headers: ReactColumnDef[] = [
+type OrgUnit = {
+  id: string;
+  organization: string;
+  employees: number;
+  budget: string;
+  performance: string;
+  location: string;
+  growthRate: string;
+  status: string;
+  established: string;
+  divisions?: OrgUnit[];
+  departments?: OrgUnit[];
+};
+
+const headers: ReactColumnDef<OrgUnit>[] = [
   { accessor: "organization", label: "Organization", width: 200, expandable: true, type: "string" },
   { accessor: "employees", label: "Employees", width: 100, type: "number" },
   { accessor: "budget", label: "Annual Budget", width: 140, type: "string" },
@@ -15,7 +29,7 @@ const headers: ReactColumnDef[] = [
 ];
 
 // Flat hierarchical data structure using divisions -> departments
-const rows = [
+const rows: OrgUnit[] = [
   // TechSolutions Inc.
   {
     id: "company-1",
@@ -419,7 +433,7 @@ const RowGroupingDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
-  const tableRef = useRef<TableAPI>(null);
+  const tableRef = useRef<TableAPI<OrgUnit>>(null);
 
   const handleExpandAll = () => {
     tableRef.current?.expandAll();
@@ -493,7 +507,7 @@ const RowGroupingDemo = ({
         columns={headers}
         enableStickyParents
         expandAll={expandAll}
-        getRowId={({ row }) => row.id as string}
+        getRowId={({ row }) => row.id}
         height={height}
         rowGrouping={["divisions", "departments"]}
         rows={rows}

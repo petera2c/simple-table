@@ -152,10 +152,17 @@ const resizeColumnSlow = async (
   await wait(150);
 };
 
+interface AutoExpandDataRow {
+  id: number;
+  text: string;
+  name: string;
+  city: string;
+}
+
 // Module-level handles so play() can drive update() / container resizes on
 // the mounted table (canvasElement.firstElementChild is a Storybook decorator
 // wrapper, not the story's own wrapper element).
-let dataUpdateTable: SimpleTableVanilla | null = null;
+let dataUpdateTable: SimpleTableVanilla<AutoExpandDataRow> | null = null;
 let resizeWrapper: HTMLElement | null = null;
 
 // ============================================================================
@@ -526,7 +533,7 @@ export const AutoWidthPinnedAutoColumn = {
 export const AutoWidthDataUpdateGrowsPastThreshold = {
   parameters: { tags: ["auto-width-expand-data-update"] },
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<AutoExpandDataRow>[] = [
       { accessor: "text", label: "Text", width: "auto", type: "string" },
       { accessor: "name", label: "Name", width: 250, type: "string" },
       { accessor: "city", label: "City", width: 250, type: "string" },
@@ -537,7 +544,7 @@ export const AutoWidthDataUpdateGrowsPastThreshold = {
       name: `Name ${i}`,
       city: `City ${i % 5}`,
     }));
-    const { wrapper, table } = renderVanillaTable(headers, shortData, {
+    const { wrapper, table } = renderVanillaTable<AutoExpandDataRow>(headers, shortData, {
       getRowId: (params: any) => String(params.row.id),
       height: "300px",
       autoExpandColumns: true,

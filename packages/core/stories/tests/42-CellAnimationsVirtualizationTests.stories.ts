@@ -70,7 +70,7 @@ const meta: Meta = {
 
 export default meta;
 
-type TableInstance = InstanceType<typeof SimpleTableVanilla>;
+type TableInstance = SimpleTableVanilla<BigRow>;
 const TABLE_REF_KEY = "__storybook_animations_v_table_ref";
 
 const setTable = (table: TableInstance): void => {
@@ -82,7 +82,7 @@ const getTable = (): TableInstance => {
   return t;
 };
 
-interface BigRow {
+interface BigRow extends Row {
   id: string;
   [accessor: string]: string | number;
 }
@@ -108,8 +108,8 @@ interface RenderResult {
 }
 
 const renderConstrainedTable = (
-  headers: ColumnDef[],
-  data: Row[],
+  headers: ColumnDef<BigRow>[],
+  data: BigRow[],
   options: Record<string, unknown>,
 ): RenderResult => {
   const wrapper = document.createElement("div");
@@ -132,7 +132,7 @@ const renderConstrainedTable = (
   tableContainer.style.maxWidth = `${VIEWPORT_WIDTH}px`;
   wrapper.appendChild(tableContainer);
 
-  const table = new SimpleTableVanilla(tableContainer, {
+  const table = new SimpleTableVanilla<BigRow>(tableContainer, {
     columns: headers,
     rows: data,
     height: `${VIEWPORT_HEIGHT}px`,

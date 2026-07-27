@@ -9,7 +9,7 @@ import {
 import "@simple-table/solid/styles.css";
 
 export default function ExternalFilterDemo(props: { height?: string | number; theme?: Theme }) {
-  const [filters, setFilters] = createSignal<TableFilterState>({});
+  const [filters, setFilters] = createSignal<TableFilterState<FilterableEmployee>>({});
 
   const filteredData = createMemo(() => {
     const entries = Object.entries(filters());

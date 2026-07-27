@@ -193,19 +193,17 @@ const DynamicNestedTablesDemo = ({
       setLoading,
       setError,
       setEmpty,
-    }: OnRowGroupExpandProps) => {
+    }: OnRowGroupExpandProps<Company>) => {
       if (!isExpanded) return;
 
       try {
         if (groupingKey === "divisions") {
-          const company = row as Company;
-
-          if (company.divisions && company.divisions.length > 0) {
+          if (row.divisions && row.divisions.length > 0) {
             return;
           }
 
           setLoading(true);
-          const divisions = await fetchDivisionsForCompany(company.id);
+          const divisions = await fetchDivisionsForCompany(row.id);
 
           if (divisions.length === 0) {
             setEmpty(true, "No divisions found for this company");
@@ -235,7 +233,7 @@ const DynamicNestedTablesDemo = ({
   );
 
   // Division headers for nested table
-  const divisionHeaders: ReactColumnDef[] = useMemo(
+  const divisionHeaders: ReactColumnDef<Division>[] = useMemo(
     () => [
       { accessor: "divisionName", label: "Division", width: 200 },
       { accessor: "revenue", label: "Revenue", width: 120 },
@@ -247,7 +245,7 @@ const DynamicNestedTablesDemo = ({
   );
 
   // Company headers with nested table configuration
-  const companyHeaders: ReactColumnDef[] = useMemo(
+  const companyHeaders: ReactColumnDef<Company>[] = useMemo(
     () => [
       {
         accessor: "companyName",
@@ -274,7 +272,7 @@ const DynamicNestedTablesDemo = ({
       expandAll={false}
       height={height}
       rowGrouping={["divisions"]}
-      getRowId={({ row }) => row.id as string}
+      getRowId={({ row }) => row.id}
       rows={rows}
       onRowGroupExpand={handleCompanyExpand}
       theme={theme}

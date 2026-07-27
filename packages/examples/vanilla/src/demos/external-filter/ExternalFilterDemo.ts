@@ -26,7 +26,7 @@ export function renderExternalFilterDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla<FilterableEmployee> {
-  let currentFilters: TableFilterState = {};
+  let currentFilters: TableFilterState<FilterableEmployee> = {};
 
   const applyFilters = () => {
     const entries = Object.entries(currentFilters);
@@ -50,7 +50,7 @@ export function renderExternalFilterDemo(
     columnResizing: true,
     height: options?.height ?? "400px",
     theme: options?.theme,
-    onFilterChange: (newFilters: TableFilterState) => {
+    onFilterChange: (newFilters: TableFilterState<FilterableEmployee>) => {
       currentFilters = newFilters;
       applyFilters();
     },

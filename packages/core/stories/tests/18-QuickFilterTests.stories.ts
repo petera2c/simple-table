@@ -5,7 +5,7 @@
 
 import type { Meta } from "@storybook/html";
 import { expect, userEvent } from "@storybook/test";
-import { ColumnDef } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
@@ -25,7 +25,17 @@ const meta: Meta = {
 
 export default meta;
 
-const createTestData = () => [
+interface QuickFilterRow {
+  id: number;
+  name: string;
+  age: number;
+  email: string;
+  department: string;
+  status: string;
+  location: string;
+}
+
+const createTestData = (): QuickFilterRow[] => [
   { id: 1, name: "Alice Johnson", age: 28, email: "alice.johnson@example.com", department: "Engineering", status: "Active", location: "New York" },
   { id: 2, name: "Bob Smith", age: 35, email: "bob.smith@example.com", department: "Sales", status: "Active", location: "Los Angeles" },
   { id: 3, name: "Charlie Davis", age: 42, email: "charlie.davis@example.com", department: "Engineering", status: "Active", location: "San Francisco" },
@@ -53,22 +63,34 @@ const getColumnData = (canvasElement: HTMLElement, accessor: string): string[] =
     .filter((t) => t.length > 0);
 };
 
-let quickFilterTableInstance: InstanceType<typeof import("../../src/index").SimpleTableVanilla> | null = null;
+interface FormattedValueRow {
+  id: number;
+  name: string;
+  price: number;
+}
+
+interface ExcludedQuickFilterRow {
+  id: number;
+  name: string;
+  hiddenField: string;
+  department: string;
+}
+
+const FORMATTED_VALUE_TABLE_REF_KEY = "__storybook_qf_formatted_value_table";
 
 export const BasicQuickFilterSimpleMode = {
   render: () => {
     const data = createTestData();
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<QuickFilterRow>[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "age", label: "Age", width: 80 },
       { accessor: "department", label: "Department", width: 140 },
       { accessor: "email", label: "Email", width: 220 },
     ];
-    const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
+    const { wrapper, tableContainer, table } = renderVanillaTable<QuickFilterRow>(headers, data, {
       height: "400px",
       quickFilter: { text: "", mode: "simple" },
     });
-    quickFilterTableInstance = table;
     const input = document.createElement("input");
     input.type = "text";
     input.placeholder = "Search across all columns...";
@@ -77,7 +99,7 @@ export const BasicQuickFilterSimpleMode = {
     input.style.padding = "10px";
     input.style.marginBottom = "1rem";
     input.addEventListener("input", () => {
-      quickFilterTableInstance?.update({ quickFilter: { text: input.value, mode: "simple" } });
+      table.update({ quickFilter: { text: input.value, mode: "simple" } });
     });
     wrapper.insertBefore(input, tableContainer);
     return wrapper;
@@ -109,16 +131,15 @@ export const BasicQuickFilterSimpleMode = {
 export const SmartModeMultiWord = {
   render: () => {
     const data = createTestData();
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<QuickFilterRow>[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
       { accessor: "status", label: "Status", width: 100 },
     ];
-    const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
+    const { wrapper, tableContainer, table } = renderVanillaTable<QuickFilterRow>(headers, data, {
       height: "400px",
       quickFilter: { text: "", mode: "smart" },
     });
-    quickFilterTableInstance = table;
     const input = document.createElement("input");
     input.type = "text";
     input.placeholder = "Try: engineering active";
@@ -127,7 +148,7 @@ export const SmartModeMultiWord = {
     input.style.padding = "10px";
     input.style.marginBottom = "1rem";
     input.addEventListener("input", () => {
-      quickFilterTableInstance?.update({ quickFilter: { text: input.value, mode: "smart" } });
+      table.update({ quickFilter: { text: input.value, mode: "smart" } });
     });
     wrapper.insertBefore(input, tableContainer);
     return wrapper;
@@ -151,21 +172,25 @@ export const SmartModeMultiWord = {
 // Quick filter extras: columns, useFormattedValue, onChange, quickFilterGetter
 // ---------------------------------------------------------------------------
 
+const QUICK_FILTER_COLUMNS_REF_KEY = "__storybook_qf_columns_table";
+
 export const QuickFilterColumns = {
   parameters: { tags: ["fail-quick-filter-columns"] },
   render: () => {
     const data = createTestData();
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<QuickFilterRow>[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
       { accessor: "email", label: "Email", width: 220 },
     ];
-    const { wrapper, table } = renderVanillaTable(headers, data, {
+    const { wrapper, table } = renderVanillaTable<QuickFilterRow>(headers, data, {
       height: "400px",
-      getRowId: (p) => String((p.row as { id?: number })?.id),
+      getRowId: (p) => String((p.row as QuickFilterRow).id),
       quickFilter: { text: "Engineering", columns: ["department"], mode: "simple" },
     });
-    quickFilterTableInstance = table;
+    (globalThis as unknown as Record<string, SimpleTableVanilla<QuickFilterRow>>)[
+      QUICK_FILTER_COLUMNS_REF_KEY
+    ] = table;
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -177,7 +202,10 @@ export const QuickFilterColumns = {
       const deptData = getColumnData(canvasElement, "department");
       deptData.forEach((d) => expect(d).toBe("Engineering"));
     }
-    quickFilterTableInstance?.update({ quickFilter: { text: "Engineering", columns: ["name"], mode: "simple" } });
+    const table = (globalThis as unknown as Record<string, SimpleTableVanilla<QuickFilterRow>>)[
+      QUICK_FILTER_COLUMNS_REF_KEY
+    ]!;
+    table.update({ quickFilter: { text: "Engineering", columns: ["name"], mode: "simple" } });
     await new Promise((r) => setTimeout(r, 400));
     expect(getVisibleRowCount(canvasElement)).toBeLessThanOrEqual(rowCount);
   },
@@ -186,11 +214,11 @@ export const QuickFilterColumns = {
 export const QuickFilterUseFormattedValue = {
   parameters: { tags: ["fail-quick-filter-formatted-value"] },
   render: () => {
-    const rows = [
+    const rows: FormattedValueRow[] = [
       { id: 1, name: "Alice", price: 50 },
       { id: 2, name: "Bob", price: 100 },
     ];
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<FormattedValueRow>[] = [
       { accessor: "name", label: "Name", width: 120 },
       {
         accessor: "price",
@@ -200,12 +228,14 @@ export const QuickFilterUseFormattedValue = {
           `$${typeof value === "number" ? value : value}`,
       },
     ];
-    const { wrapper, tableContainer, table } = renderVanillaTable(headers, rows, {
+    const { wrapper, tableContainer, table } = renderVanillaTable<FormattedValueRow>(headers, rows, {
       height: "300px",
-      getRowId: (p) => String((p.row as { id?: number })?.id),
+      getRowId: (p) => String((p.row as FormattedValueRow).id),
       quickFilter: { text: "", mode: "simple", useFormattedValue: true },
     });
-    quickFilterTableInstance = table;
+    (globalThis as unknown as Record<string, SimpleTableVanilla<FormattedValueRow>>)[
+      FORMATTED_VALUE_TABLE_REF_KEY
+    ] = table;
     const input = document.createElement("input");
     input.type = "text";
     input.setAttribute("data-testid", "qf-formatted-input");
@@ -213,7 +243,7 @@ export const QuickFilterUseFormattedValue = {
     input.style.padding = "8px";
     input.style.marginBottom = "1rem";
     input.addEventListener("input", () => {
-      quickFilterTableInstance?.update({
+      table.update({
         quickFilter: { text: input.value, mode: "simple", useFormattedValue: true },
       });
     });
@@ -227,7 +257,10 @@ export const QuickFilterUseFormattedValue = {
     await userEvent.type(input, "$50");
     await new Promise((r) => setTimeout(r, 500));
     const countWithFormatted = getVisibleRowCount(canvasElement);
-    quickFilterTableInstance?.update({
+    const table = (globalThis as unknown as Record<string, SimpleTableVanilla<FormattedValueRow>>)[
+      FORMATTED_VALUE_TABLE_REF_KEY
+    ]!;
+    table.update({
       quickFilter: { text: "$50", mode: "simple", useFormattedValue: false },
     });
     await new Promise((r) => setTimeout(r, 400));
@@ -241,11 +274,11 @@ export const QuickFilterOnChange = {
     const captured: string[] = [];
     (window as unknown as { __qfOnChangeCapture?: string[] }).__qfOnChangeCapture = captured;
     const data = createTestData();
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<QuickFilterRow>[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
     ];
-    const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
+    const { wrapper, tableContainer, table } = renderVanillaTable<QuickFilterRow>(headers, data, {
       height: "400px",
       getRowId: (p) => String((p.row as { id?: number })?.id),
       quickFilter: {
@@ -254,7 +287,6 @@ export const QuickFilterOnChange = {
         onChange: (t) => captured.push(t),
       },
     });
-    quickFilterTableInstance = table;
     const input = document.createElement("input");
     input.type = "text";
     input.setAttribute("data-testid", "qf-onchange-input");
@@ -263,7 +295,7 @@ export const QuickFilterOnChange = {
     input.style.marginBottom = "1rem";
     input.addEventListener("input", () => {
       const val = input.value;
-      quickFilterTableInstance?.update({
+      table.update({
         quickFilter: { text: val, mode: "simple", onChange: (t) => captured.push(t) },
       });
       captured.push(val);
@@ -284,25 +316,31 @@ export const QuickFilterOnChange = {
   },
 };
 
+interface CustomGetterRow {
+  id: number;
+  name: string;
+  customField: string;
+}
+
 export const QuickFilterGetter = {
   render: () => {
-    const rows = [
+    const rows: CustomGetterRow[] = [
       { id: 1, name: "Alice", customField: "secret-alpha" },
       { id: 2, name: "Bob", customField: "secret-beta" },
     ];
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<CustomGetterRow>[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
       {
         accessor: "customField",
         label: "Custom",
         width: 120,
-        quickFilterGetter: ({ row }: { row: Record<string, unknown>; accessor: string }) =>
+        quickFilterGetter: ({ row }: { row: CustomGetterRow; accessor: string }) =>
           String(row.customField ?? ""),
       },
     ];
-    const { wrapper } = renderVanillaTable(headers, rows, {
+    const { wrapper } = renderVanillaTable<CustomGetterRow>(headers, rows, {
       height: "300px",
-      getRowId: (p) => String((p.row as { id?: number })?.id),
+      getRowId: (p) => String((p.row as CustomGetterRow).id),
       quickFilter: { text: "secret-alpha", mode: "simple" },
     });
     return wrapper;
@@ -322,15 +360,14 @@ export const QuickFilterGetter = {
 export const QuickFilterCaseSensitive = {
   render: () => {
     const data = createTestData();
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<QuickFilterRow>[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
     ];
-    const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
+    const { wrapper, tableContainer, table } = renderVanillaTable<QuickFilterRow>(headers, data, {
       height: "400px",
       quickFilter: { text: "", mode: "simple", caseSensitive: true },
     });
-    quickFilterTableInstance = table;
     const input = document.createElement("input");
     input.type = "text";
     input.setAttribute("data-testid", "case-sensitive-input");
@@ -338,7 +375,7 @@ export const QuickFilterCaseSensitive = {
     input.style.padding = "8px";
     input.style.marginBottom = "1rem";
     input.addEventListener("input", () => {
-      quickFilterTableInstance?.update({ quickFilter: { text: input.value, mode: "simple", caseSensitive: true } });
+      table.update({ quickFilter: { text: input.value, mode: "simple", caseSensitive: true } });
     });
     wrapper.insertBefore(input, tableContainer);
     return wrapper;
@@ -372,16 +409,15 @@ export const QuickFilterCaseSensitive = {
 export const SmartModeQuotedPhrase = {
   render: () => {
     const data = createTestData();
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<QuickFilterRow>[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
       { accessor: "location", label: "Location", width: 140 },
     ];
-    const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
+    const { wrapper, tableContainer, table } = renderVanillaTable<QuickFilterRow>(headers, data, {
       height: "400px",
       quickFilter: { text: "", mode: "smart" },
     });
-    quickFilterTableInstance = table;
     const input = document.createElement("input");
     input.type = "text";
     input.setAttribute("data-testid", "quoted-phrase-input");
@@ -389,7 +425,7 @@ export const SmartModeQuotedPhrase = {
     input.style.padding = "8px";
     input.style.marginBottom = "1rem";
     input.addEventListener("input", () => {
-      quickFilterTableInstance?.update({ quickFilter: { text: input.value, mode: "smart" } });
+      table.update({ quickFilter: { text: input.value, mode: "smart" } });
     });
     wrapper.insertBefore(input, tableContainer);
     return wrapper;
@@ -421,15 +457,14 @@ export const SmartModeNegation = {
   parameters: { tags: ["quick-filter-smart-negation"] },
   render: () => {
     const data = createTestData();
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<QuickFilterRow>[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
     ];
-    const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
+    const { wrapper, tableContainer, table } = renderVanillaTable<QuickFilterRow>(headers, data, {
       height: "400px",
       quickFilter: { text: "", mode: "smart" },
     });
-    quickFilterTableInstance = table;
     const input = document.createElement("input");
     input.type = "text";
     input.setAttribute("data-testid", "negation-input");
@@ -437,7 +472,7 @@ export const SmartModeNegation = {
     input.style.padding = "8px";
     input.style.marginBottom = "1rem";
     input.addEventListener("input", () => {
-      quickFilterTableInstance?.update({ quickFilter: { text: input.value, mode: "smart" } });
+      table.update({ quickFilter: { text: input.value, mode: "smart" } });
     });
     wrapper.insertBefore(input, tableContainer);
     return wrapper;
@@ -473,15 +508,14 @@ export const QuickFilterRecoversAfterEmptyState = {
   parameters: { tags: ["quick-filter-recover-after-empty"] },
   render: () => {
     const data = createTestData();
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<QuickFilterRow>[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
     ];
-    const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
+    const { wrapper, tableContainer, table } = renderVanillaTable<QuickFilterRow>(headers, data, {
       height: "400px",
       quickFilter: { text: "", mode: "simple" },
     });
-    quickFilterTableInstance = table;
     const input = document.createElement("input");
     input.type = "text";
     input.setAttribute("data-testid", "recover-empty-input");
@@ -489,7 +523,7 @@ export const QuickFilterRecoversAfterEmptyState = {
     input.style.padding = "8px";
     input.style.marginBottom = "1rem";
     input.addEventListener("input", () => {
-      quickFilterTableInstance?.update({ quickFilter: { text: input.value, mode: "simple" } });
+      table.update({ quickFilter: { text: input.value, mode: "simple" } });
     });
     wrapper.insertBefore(input, tableContainer);
     return wrapper;
@@ -525,16 +559,15 @@ export const QuickFilterRecoversAfterEmptyState = {
 export const SmartModeColumnValueSyntax = {
   render: () => {
     const data = createTestData();
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<QuickFilterRow>[] = [
       { accessor: "name", label: "Name", width: 180 },
       { accessor: "department", label: "Department", width: 140 },
       { accessor: "status", label: "Status", width: 100 },
     ];
-    const { wrapper, tableContainer, table } = renderVanillaTable(headers, data, {
+    const { wrapper, tableContainer, table } = renderVanillaTable<QuickFilterRow>(headers, data, {
       height: "400px",
       quickFilter: { text: "", mode: "smart" },
     });
-    quickFilterTableInstance = table;
     const input = document.createElement("input");
     input.type = "text";
     input.setAttribute("data-testid", "column-value-input");
@@ -542,7 +575,7 @@ export const SmartModeColumnValueSyntax = {
     input.style.padding = "8px";
     input.style.marginBottom = "1rem";
     input.addEventListener("input", () => {
-      quickFilterTableInstance?.update({ quickFilter: { text: input.value, mode: "smart" } });
+      table.update({ quickFilter: { text: input.value, mode: "smart" } });
     });
     wrapper.insertBefore(input, tableContainer);
     return wrapper;
@@ -571,21 +604,20 @@ export const SmartModeColumnValueSyntax = {
 
 export const QuickFilterableColumnExcluded = {
   render: () => {
-    const rows = [
+    const rows: ExcludedQuickFilterRow[] = [
       { id: 1, name: "Alice", hiddenField: "secret-alice", department: "Engineering" },
       { id: 2, name: "Bob", hiddenField: "secret-bob", department: "Sales" },
     ];
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<ExcludedQuickFilterRow>[] = [
       { accessor: "name", label: "Name", width: 120, type: "string" },
       { accessor: "department", label: "Department", width: 140, type: "string" },
       { accessor: "hiddenField", label: "Hidden", width: 120, type: "string", quickFilterable: false },
     ];
-    const { wrapper, tableContainer, table } = renderVanillaTable(headers, rows, {
+    const { wrapper, tableContainer, table } = renderVanillaTable<ExcludedQuickFilterRow>(headers, rows, {
       height: "300px",
-      getRowId: (p) => String((p.row as { id?: number })?.id),
+      getRowId: (p) => String((p.row as ExcludedQuickFilterRow).id),
       quickFilter: { text: "", mode: "simple" },
     });
-    quickFilterTableInstance = table;
     const input = document.createElement("input");
     input.type = "text";
     input.setAttribute("data-testid", "filterable-input");
@@ -593,7 +625,7 @@ export const QuickFilterableColumnExcluded = {
     input.style.padding = "8px";
     input.style.marginBottom = "1rem";
     input.addEventListener("input", () => {
-      quickFilterTableInstance?.update({ quickFilter: { text: input.value, mode: "simple" } });
+      table.update({ quickFilter: { text: input.value, mode: "simple" } });
     });
     wrapper.insertBefore(input, tableContainer);
     return wrapper;

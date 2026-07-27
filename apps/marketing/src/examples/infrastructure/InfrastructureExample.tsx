@@ -5,7 +5,7 @@ import type { TableAPI, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 import { HEADERS } from "./infrastructure-headers";
 import { useServerMetricsUpdates } from "./useServerMetricsUpdates";
-import { useInfrastructureData } from "./useInfrastructureData";
+import { useInfrastructureData, type InfrastructureServer } from "./useInfrastructureData";
 
 export default function InfrastructureExample({
   height,
@@ -16,7 +16,7 @@ export default function InfrastructureExample({
   icons?: ReactIconsConfig;
   theme?: Theme;
 }) {
-  const tableRef = useRef<TableAPI | null>(null);
+  const tableRef = useRef<TableAPI<InfrastructureServer> | null>(null);
   const { data, isLoading } = useInfrastructureData();
   const [isMobile, setIsMobile] = useState(false);
 
@@ -57,7 +57,7 @@ export default function InfrastructureExample({
       columnResizing
       columns={HEADERS}
       enableColumnEditor
-      getRowId={({ row }) => (row as { id: number }).id}
+      getRowId={({ row }) => row.id}
       height={height ? height : "60dvh"}
       icons={icons}
       rows={data}

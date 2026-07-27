@@ -2,9 +2,22 @@
  * Sales example headers – ported from React sales-headers (vanilla-compatible).
  * Cell renderers return strings; no React components.
  */
-import type { ColumnDef } from "../../../src/index";
+import type { CellRendererProps, ColumnDef } from "../../../src/index";
 
-export const SALES_HEADERS: ColumnDef[] = [
+export interface SalesRow {
+  id: string;
+  repName: string;
+  dealSize: number;
+  isWon: boolean | string;
+  commission: number;
+  dealProfit: number;
+  dealValue: number;
+  profitMargin: number;
+  closeDate: string;
+  category: string;
+}
+
+export const SALES_HEADERS: ColumnDef<SalesRow>[] = [
   {
     pinned: "left",
     accessor: "repName",
@@ -92,7 +105,7 @@ export const SALES_HEADERS: ColumnDef[] = [
         editable: true,
         align: "center",
         type: "boolean",
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+        cellRenderer: ({ row }: CellRendererProps<SalesRow>) =>
           row.isWon === "—" ? "—" : (row.isWon as boolean) ? "Won" : "Lost",
       },
       {

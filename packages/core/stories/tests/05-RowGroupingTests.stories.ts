@@ -9,7 +9,6 @@ import { waitForTable } from "./testUtils";
 import {
   renderVanillaTable,
   addParagraph,
-  type RenderVanillaTableResult,
 } from "../utils";
 import type { Meta } from "@storybook/html";
 
@@ -31,14 +30,6 @@ export default meta;
 
 /** Play functions cannot rely on `canvasElement === wrapper`; mirror file 37 pattern. */
 const ROW_GROUP_API_TABLE_STORY_REF_KEY = "__storybook_row_group_api_table";
-type RowGroupStoryTable = InstanceType<typeof SimpleTableVanilla>;
-const getRowGroupApiStoryTable = (): RowGroupStoryTable => {
-  const t = (globalThis as unknown as Record<string, RowGroupStoryTable | undefined>)[
-    ROW_GROUP_API_TABLE_STORY_REF_KEY
-  ];
-  if (!t) throw new Error("Story table ref not set (render must assign global ref)");
-  return t;
-};
 
 // ============================================================================
 // TEST DATA
@@ -132,6 +123,16 @@ const createGroupedData = () => [
     ],
   },
 ];
+
+type GroupedDeptRow = ReturnType<typeof createGroupedData>[number];
+type RowGroupStoryTable = SimpleTableVanilla<GroupedDeptRow>;
+const getRowGroupApiStoryTable = (): RowGroupStoryTable => {
+  const t = (globalThis as unknown as Record<string, RowGroupStoryTable | undefined>)[
+    ROW_GROUP_API_TABLE_STORY_REF_KEY
+  ];
+  if (!t) throw new Error("Story table ref not set (render must assign global ref)");
+  return t;
+};
 
 // ============================================================================
 // TEST UTILITIES
@@ -374,7 +375,7 @@ export const ProgrammaticExpandCollapseAll = {
       expandAll: false,
     });
     table.mount();
-    (wrapper as RenderVanillaTableResult["wrapper"])._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     expandBtn.onclick = () => table.getAPI().expandAll();
     collapseBtn.onclick = () => table.getAPI().collapseAll();
     return wrapper;
@@ -468,7 +469,7 @@ export const ProgrammaticDepthControl = {
       expandAll: false,
     });
     table.mount();
-    (wrapper as RenderVanillaTableResult["wrapper"])._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     const updateState = () => {
       const depths = table.getAPI().getExpandedDepths();
       stateDiv.textContent = `Expanded Depths: ${JSON.stringify(Array.from(depths))}`;
@@ -1088,7 +1089,7 @@ export const GetGroupingPropertyAndDepth = {
       expandAll: true,
     });
     table.mount();
-    (wrapper as RenderVanillaTableResult["wrapper"])._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     checkBtn.onclick = () => {
       const prop0 = table.getAPI().getGroupingProperty(0);
       const prop1 = table.getAPI().getGroupingProperty(1);

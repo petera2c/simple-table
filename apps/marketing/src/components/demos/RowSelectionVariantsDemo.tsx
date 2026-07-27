@@ -19,7 +19,7 @@ const EMPLOYEES: Employee[] = [
   { id: 6, name: "Frank Miller", department: "Engineering", role: "Platform Engineer" },
 ];
 
-const HEADERS: ReactColumnDef[] = [
+const HEADERS: ReactColumnDef<Employee>[] = [
   { accessor: "id", label: "ID", width: 70, type: "number", sortable: true },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 140, type: "string", sortable: true },
   { accessor: "department", label: "Department", width: 140, type: "string", sortable: true },
@@ -32,7 +32,7 @@ const selectedLabel = (selected: Employee[]) =>
   selected.length ? selected.map((e) => e.name).join(", ") : "None";
 
 export function RowSelectionSingleDemo({ height = "260px", theme }: DemoProps) {
-  const tableRef = useRef<TableAPI>(null);
+  const tableRef = useRef<TableAPI<Employee>>(null);
   const [selected, setSelected] = useState<Employee[]>([]);
 
   return (
@@ -48,9 +48,9 @@ export function RowSelectionSingleDemo({ height = "260px", theme }: DemoProps) {
         rows={EMPLOYEES}
         enableRowSelection
         rowSelectionMode="single"
-        getRowId={({ row }) => String((row as Employee).id)}
+        getRowId={({ row }) => String(row.id)}
         onRowSelectionChange={() => {
-          setSelected((tableRef.current?.getSelectedRowsData() as Employee[]) ?? []);
+          setSelected(tableRef.current?.getSelectedRowsData() ?? []);
         }}
         height={height}
         theme={theme}
@@ -61,7 +61,7 @@ export function RowSelectionSingleDemo({ height = "260px", theme }: DemoProps) {
 }
 
 export function RowSelectionClickDemo({ height = "260px", theme }: DemoProps) {
-  const tableRef = useRef<TableAPI>(null);
+  const tableRef = useRef<TableAPI<Employee>>(null);
   const [selected, setSelected] = useState<Employee[]>([]);
 
   return (
@@ -79,9 +79,9 @@ export function RowSelectionClickDemo({ height = "260px", theme }: DemoProps) {
         selectRowOnClick
         showRowSelectionColumn={false}
         selectableCells={false}
-        getRowId={({ row }) => String((row as Employee).id)}
+        getRowId={({ row }) => String(row.id)}
         onRowSelectionChange={() => {
-          setSelected((tableRef.current?.getSelectedRowsData() as Employee[]) ?? []);
+          setSelected(tableRef.current?.getSelectedRowsData() ?? []);
         }}
         height={height}
         theme={theme}
@@ -92,12 +92,12 @@ export function RowSelectionClickDemo({ height = "260px", theme }: DemoProps) {
 }
 
 export function RowSelectionApiDemo({ height = "260px", theme }: DemoProps) {
-  const tableRef = useRef<TableAPI>(null);
+  const tableRef = useRef<TableAPI<Employee>>(null);
   const [selected, setSelected] = useState<Employee[]>([]);
   const [statusMessage, setStatusMessage] = useState("Ready");
 
   const syncSelection = () => {
-    setSelected((tableRef.current?.getSelectedRowsData() as Employee[]) ?? []);
+    setSelected(tableRef.current?.getSelectedRowsData() ?? []);
   };
 
   const selectFirst = () => {
@@ -161,7 +161,7 @@ export function RowSelectionApiDemo({ height = "260px", theme }: DemoProps) {
         columns={HEADERS}
         rows={EMPLOYEES}
         enableRowSelection
-        getRowId={({ row }) => String((row as Employee).id)}
+        getRowId={({ row }) => String(row.id)}
         onRowSelectionChange={syncSelection}
         height={height}
         theme={theme}

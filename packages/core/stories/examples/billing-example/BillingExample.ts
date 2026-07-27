@@ -2,7 +2,6 @@
  * BillingExample – vanilla port of React billing-example/BillingExample.
  * Uses same headers and data as React, with row grouping by invoices and charges.
  */
-import type { Row } from "../../../src/index";
 import { renderVanillaTable } from "../../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../../vanillaStoryConfig";
 import { BILLING_HEADERS } from "./billing-headers";
@@ -22,9 +21,9 @@ export const billingExampleDefaults = {
 
 export function renderBillingExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
   const options = { ...defaultVanillaArgs, ...billingExampleDefaults, ...args };
-  const { wrapper, h2 } = renderVanillaTable(BILLING_HEADERS, billingData as Row[], {
+  const { wrapper, h2 } = renderVanillaTable(BILLING_HEADERS, billingData, {
     ...options,
-    getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+    getRowId: ({ row }) => String(row?.id),
   });
   h2.textContent = "Billing Example";
   return wrapper;

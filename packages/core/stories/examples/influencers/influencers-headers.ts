@@ -974,7 +974,7 @@ function withHeaderMenus(headers: readonly ColumnDef[]): ColumnDef[] {
  * Headers mirrored from sandbox3.chartmetric.com/influencers DOM.
  * Includes accidental production case: `id` has excludeFromRender + width: 150.
  */
-export function buildInfluencerHeaders(): ColumnDef[] {
+export function buildInfluencerHeaders(): ColumnDef<InfluencerRow>[] {
   const topVideoChildren: ColumnDef[] = [
     {
       accessor: "topContentsSummary",

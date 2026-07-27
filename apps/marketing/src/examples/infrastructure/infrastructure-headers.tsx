@@ -1,6 +1,7 @@
 import type { ReactColumnDef, CellRendererProps, ValueGetterProps } from "@simple-table/react";
+import type { InfrastructureServer } from "./useInfrastructureData";
 
-export const HEADERS: ReactColumnDef[] = [
+export const HEADERS: ReactColumnDef<InfrastructureServer>[] = [
   {
     accessor: "serverId",
     align: "left",

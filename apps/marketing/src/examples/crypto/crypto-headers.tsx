@@ -16,7 +16,7 @@ import type { CryptoCoin } from "./useCryptoData";
 
 /** Right-aligned, color-coded percentage change. */
 const ChangeCell = (accessor: keyof CryptoCoin) => {
-  function ChangeCellRenderer({ row, theme }: CellRendererProps) {
+  function ChangeCellRenderer({ row, theme }: CellRendererProps<CryptoCoin>) {
     const value = row[accessor] as number;
     const c = getThemeColors(theme);
     const isPositive = value >= 0;
@@ -40,7 +40,7 @@ const ChangeCell = (accessor: keyof CryptoCoin) => {
   return ChangeCellRenderer;
 };
 
-export const HEADERS: ReactColumnDef[] = [
+export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
   {
     accessor: "rank",
     label: "#",

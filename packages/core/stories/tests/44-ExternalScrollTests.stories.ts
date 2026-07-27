@@ -22,13 +22,19 @@ const meta: Meta = {
 
 export default meta;
 
-const headers: ColumnDef[] = [
+const headers: ColumnDef<ExternalScrollRow>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 200, type: "string" },
   { accessor: "description", label: "Description", width: 300, type: "string" },
 ];
 
-const createRows = (count: number) =>
+interface ExternalScrollRow {
+  id: number;
+  name: string;
+  description: string;
+}
+
+const createRows = (count: number): ExternalScrollRow[] =>
   Array.from({ length: count }, (_, i) => ({
     id: i + 1,
     name: `Item ${i + 1}`,
@@ -55,14 +61,14 @@ export const ExternalElementVirtualizes = {
     const tableContainer = document.createElement("div");
     scrollContainer.appendChild(tableContainer);
 
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<ExternalScrollRow>(tableContainer, {
       columns: headers,
       rows: createRows(2000),
       getRowId: (p) => String((p.row as { id?: number })?.id),
       scrollParent: scrollContainer,
     });
     table.mount();
-    (wrapper as unknown as { _table?: SimpleTableVanilla })._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -113,7 +119,7 @@ export const ExternalScrollFiresOnLoadMore = {
     const tableContainer = document.createElement("div");
     scrollContainer.appendChild(tableContainer);
 
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<ExternalScrollRow>(tableContainer, {
       columns: headers,
       rows: createRows(500),
       getRowId: (p) => String((p.row as { id?: number })?.id),
@@ -124,7 +130,7 @@ export const ExternalScrollFiresOnLoadMore = {
       },
     });
     table.mount();
-    (wrapper as unknown as { _table?: SimpleTableVanilla })._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -161,13 +167,13 @@ export const NoScrollParentRendersAll = {
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
 
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<ExternalScrollRow>(tableContainer, {
       columns: headers,
       rows: createRows(50),
       getRowId: (p) => String((p.row as { id?: number })?.id),
     });
     table.mount();
-    (wrapper as unknown as { _table?: SimpleTableVanilla })._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -197,7 +203,7 @@ export const HeightOverridesScrollParent = {
     const tableContainer = document.createElement("div");
     scrollContainer.appendChild(tableContainer);
 
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<ExternalScrollRow>(tableContainer, {
       columns: headers,
       rows: createRows(500),
       getRowId: (p) => String((p.row as { id?: number })?.id),
@@ -205,7 +211,7 @@ export const HeightOverridesScrollParent = {
       scrollParent: scrollContainer,
     });
     table.mount();
-    (wrapper as unknown as { _table?: SimpleTableVanilla })._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -246,14 +252,14 @@ export const StickyHeaderInExternalScroll = {
     const tableContainer = document.createElement("div");
     scrollContainer.appendChild(tableContainer);
 
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<ExternalScrollRow>(tableContainer, {
       columns: headers,
       rows: createRows(2000),
       getRowId: (p) => String((p.row as { id?: number })?.id),
       scrollParent: scrollContainer,
     });
     table.mount();
-    (wrapper as unknown as { _table?: SimpleTableVanilla })._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -304,7 +310,20 @@ export const StickyHeaderInExternalScroll = {
 // so grouped parent rows pin under the sticky header instead of scrolling away.
 // ============================================================================
 
-const groupedHeaders: ColumnDef[] = [
+interface GroupedExternalScrollChildRow {
+  id: string;
+  name: string;
+  value: number;
+}
+
+interface GroupedExternalScrollRow {
+  id: string;
+  name: string;
+  value: number;
+  children: GroupedExternalScrollChildRow[];
+}
+
+const groupedHeaders: ColumnDef<GroupedExternalScrollRow>[] = [
   // `expandable: true` is required for the column to render the
   // expand/collapse chevron next to grouped parent rows.
   { accessor: "name", label: "Name", width: 240, expandable: true },
@@ -312,7 +331,7 @@ const groupedHeaders: ColumnDef[] = [
   { accessor: "value", label: "Value", width: 120, type: "number" },
 ];
 
-const createGroupedRows = (groupCount: number, childrenPerGroup: number) =>
+const createGroupedRows = (groupCount: number, childrenPerGroup: number): GroupedExternalScrollRow[] =>
   Array.from({ length: groupCount }, (_, gi) => ({
     id: `group-${gi + 1}`,
     name: `Group ${gi + 1}`,
@@ -342,17 +361,17 @@ export const RowGroupingInExternalScroll = {
 
     // 50 groups × 20 children fully expanded = 1050 visible rows — plenty for
     // virtualization to kick in inside a 400px viewport.
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<GroupedExternalScrollRow>(tableContainer, {
       columns: groupedHeaders,
       rows: createGroupedRows(50, 20),
-      getRowId: ({ row }) => String((row as { id?: string }).id),
+      getRowId: ({ row }) => String((row as GroupedExternalScrollRow).id),
       rowGrouping: ["children"],
       expandAll: true,
       enableStickyParents: true,
       scrollParent: scrollContainer,
     });
     table.mount();
-    (wrapper as unknown as { _table?: SimpleTableVanilla })._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     return wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {

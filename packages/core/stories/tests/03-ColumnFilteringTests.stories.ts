@@ -6,7 +6,7 @@
 import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent } from "@storybook/test";
 import { waitForTable } from "./testUtils";
-import { renderVanillaTable, addParagraph, type RenderVanillaTableResult } from "../utils";
+import { renderVanillaTable, addParagraph } from "../utils";
 import type { Meta } from "@storybook/html";
 
 const meta: Meta = {
@@ -29,7 +29,18 @@ export default meta;
 // TEST DATA
 // ============================================================================
 
-const createFilterableData = () => [
+interface FilterableTestRow {
+  id: number;
+  name: string;
+  age: number;
+  salary: number;
+  joinDate: string;
+  isActive: boolean;
+  status: string;
+  department: string;
+}
+
+const createFilterableData = (): FilterableTestRow[] => [
   { id: 1, name: "Alice Johnson", age: 28, salary: 75000, joinDate: "2024-01-10", isActive: true, status: "active", department: "Engineering" },
   { id: 2, name: "Bob Smith", age: 35, salary: 85000, joinDate: "2023-03-15", isActive: true, status: "active", department: "Sales" },
   { id: 3, name: "Charlie Brown", age: 42, salary: 95000, joinDate: "2022-11-20", isActive: false, status: "inactive", department: "Engineering" },
@@ -81,14 +92,14 @@ const getColumnData = (canvasElement: HTMLElement, accessor: string) => {
 
 export const BasicFilterableColumns = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<FilterableTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
     ];
     const data = createFilterableData();
-    const { wrapper, h2 } = renderVanillaTable(headers, data, { height: "400px" });
+    const { wrapper, h2 } = renderVanillaTable<FilterableTestRow>(headers, data, { height: "400px" });
     h2.textContent = "Basic Filterable Columns";
     addParagraph(wrapper, "Name, Age, and Department columns have filter icons");
     return wrapper;
@@ -168,19 +179,19 @@ export const ProgrammaticApplyFilter = {
     wrapper.appendChild(filterStatusDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:ColumnDef[] = [
+    const headers:ColumnDef<FilterableTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
     ];
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<FilterableTestRow>(tableContainer, {
       columns: headers,
       rows: createFilterableData(),
       height: "400px",
     });
     table.mount();
-    (wrapper as RenderVanillaTableResult["wrapper"])._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     const updateFilterInfo = () => {
       const filters = table.getAPI().getFilterState();
       const count = Object.keys(filters).length;
@@ -283,19 +294,19 @@ export const ProgrammaticClearFilter = {
     wrapper.appendChild(filterStatusDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:ColumnDef[] = [
+    const headers:ColumnDef<FilterableTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
     ];
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<FilterableTestRow>(tableContainer, {
       columns: headers,
       rows: createFilterableData(),
       height: "400px",
     });
     table.mount();
-    (wrapper as RenderVanillaTableResult["wrapper"])._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     const updateFilterInfo = () => {
       const filters = table.getAPI().getFilterState();
       const count = Object.keys(filters).length;
@@ -368,13 +379,13 @@ export const OnFilterChangeCallback = {
     wrapper.appendChild(callbackDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:ColumnDef[] = [
+    const headers:ColumnDef<FilterableTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
     ];
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<FilterableTestRow>(tableContainer, {
       columns: headers,
       rows: createFilterableData(),
       height: "400px",
@@ -425,14 +436,14 @@ export const ExternalFilterHandling = {
     wrapper.appendChild(stateDiv);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:ColumnDef[] = [
+    const headers:ColumnDef<FilterableTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
     ];
     let filterAppliedRef = false;
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<FilterableTestRow>(tableContainer, {
       columns: headers,
       rows: filteredData,
       height: "400px",
@@ -488,7 +499,7 @@ export const ExternalFilterHandling = {
 
 export const FilterDifferentDataTypes = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<FilterableTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number", filterable: true },
       { accessor: "name", label: "Name (String)", width: 200, type: "string", filterable: true },
       { accessor: "age", label: "Age (Number)", width: 120, type: "number", filterable: true },
@@ -501,7 +512,7 @@ export const FilterDifferentDataTypes = {
         { label: "Suspended", value: "suspended" },
       ] },
     ];
-    const { wrapper, h2 } = renderVanillaTable(headers, createFilterableData(), { height: "400px" });
+    const { wrapper, h2 } = renderVanillaTable<FilterableTestRow>(headers, createFilterableData(), { height: "400px" });
     h2.textContent = "Filter Different Data Types";
     addParagraph(wrapper, "All columns are filterable with type-specific operators");
     return wrapper;
@@ -553,19 +564,19 @@ export const GetFilterState = {
     wrapper.appendChild(preEl);
     const tableContainer = document.createElement("div");
     wrapper.appendChild(tableContainer);
-    const headers:ColumnDef[] = [
+    const headers:ColumnDef<FilterableTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "age", label: "Age", width: 100, type: "number", filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
     ];
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<FilterableTestRow>(tableContainer, {
       columns: headers,
       rows: createFilterableData(),
       height: "400px",
     });
     table.mount();
-    (wrapper as RenderVanillaTableResult["wrapper"])._table = table;
+    (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
     applyBtn.onclick = async () => {
       await table.getAPI().applyFilter({ accessor: "name", operator: "contains", value: "Smith" });
       const filters = table.getAPI().getFilterState();
@@ -600,12 +611,12 @@ export const OnFilterChangeCallbackFires = {
     const capturedFilters: unknown[] = [];
     (window as unknown as { __filterChangeCapture?: unknown[] }).__filterChangeCapture = capturedFilters;
 
-    const filterHeaders: ColumnDef[] = [
+    const filterHeaders: ColumnDef<FilterableTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 200, filterable: true },
       { accessor: "department", label: "Department", width: 150, filterable: true },
     ];
-    const { wrapper } = renderVanillaTable(filterHeaders, createFilterableData(), {
+    const { wrapper } = renderVanillaTable<FilterableTestRow>(filterHeaders, createFilterableData(), {
       height: "400px",
       onFilterChange: (filters: unknown) => {
         capturedFilters.push(filters);
@@ -621,7 +632,9 @@ export const OnFilterChangeCallbackFires = {
 
     // Apply a filter programmatically via the table ref
     const wrapper = canvasElement.querySelector(".simple-table-root")?.closest("[style]") as HTMLElement | null;
-    const tableWrapper = canvasElement.querySelector("div[style]") as HTMLDivElement & { _table?: InstanceType<typeof SimpleTableVanilla> } | null;
+    const tableWrapper = canvasElement.querySelector("div[style]") as
+      | (HTMLDivElement & { _table?: SimpleTableVanilla<FilterableTestRow> })
+      | null;
     const table = tableWrapper?._table;
     if (table) {
       await table.getAPI().applyFilter({ accessor: "name", operator: "contains", value: "Alice" });
@@ -640,14 +653,20 @@ export const OnFilterChangeCallbackFires = {
 // TEST 9: ENUM FILTER WITH > 10 OPTIONS SHOWS SEARCH INPUT
 // ============================================================================
 
+interface EnumFilterRow {
+  id: number;
+  name: string;
+  category: string;
+}
+
 export const EnumFilterMoreThan10OptionsShowsSearch = {
   render: () => {
-    const enumData = Array.from({ length: 15 }, (_, i) => ({
+    const enumData: EnumFilterRow[] = Array.from({ length: 15 }, (_, i) => ({
       id: i + 1,
       name: `Item ${i + 1}`,
       category: `Category ${i + 1}`,
     }));
-    const enumHeaders: ColumnDef[] = [
+    const enumHeaders: ColumnDef<EnumFilterRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
       {
@@ -662,7 +681,7 @@ export const EnumFilterMoreThan10OptionsShowsSearch = {
         })),
       },
     ];
-    const { wrapper } = renderVanillaTable(enumHeaders, enumData, {
+    const { wrapper } = renderVanillaTable<EnumFilterRow>(enumHeaders, enumData, {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "400px",
     });
@@ -691,7 +710,7 @@ export const EnumFilterMoreThan10OptionsShowsSearch = {
 
 export const LimitFilterOperators = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<FilterableTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "name",
@@ -711,7 +730,7 @@ export const LimitFilterOperators = {
         filterOperators: ["greaterThan", "lessThan", "between", "contains"],
       },
     ];
-    const { wrapper, h2 } = renderVanillaTable(headers, createFilterableData(), { height: "400px" });
+    const { wrapper, h2 } = renderVanillaTable<FilterableTestRow>(headers, createFilterableData(), { height: "400px" });
     h2.textContent = "Limit Filter Operators";
     addParagraph(wrapper, "Name allows only Contains/Equals; Age allows only range operators");
     return wrapper;
@@ -752,7 +771,7 @@ export const LimitFilterOperators = {
 
 export const LimitFilterOperatorsFallbackDefault = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<FilterableTestRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "name",
@@ -764,7 +783,7 @@ export const LimitFilterOperatorsFallbackDefault = {
         filterOperators: ["startsWith", "endsWith"],
       },
     ];
-    const { wrapper, h2 } = renderVanillaTable(headers, createFilterableData(), { height: "400px" });
+    const { wrapper, h2 } = renderVanillaTable<FilterableTestRow>(headers, createFilterableData(), { height: "400px" });
     h2.textContent = "Filter Operators Default Fallback";
     addParagraph(wrapper, "Name defaults to 'Starts with' since 'Contains' is excluded");
     return wrapper;

@@ -29,21 +29,75 @@ const meta: Meta = {
 
 export default meta;
 
-type TableInstance = InstanceType<typeof SimpleTableVanilla>;
-type WrapperWithTable = HTMLDivElement & { _table?: TableInstance };
+interface TableRefRow {
+  id: number;
+  name: string;
+}
+
+interface GroupItemRow {
+  id: number;
+  name: string;
+}
+
+interface GroupParentRow {
+  id: string;
+  name: string;
+  items: GroupItemRow[];
+}
+
+interface NestedGroupLeafRow {
+  id: number;
+  label: string;
+  n: number;
+}
+
+interface NestedGroupKidRow {
+  id: string;
+  label: string;
+  leaves: NestedGroupLeafRow[];
+}
+
+interface NestedGroupRootRow {
+  id: string;
+  label: string;
+  kids: NestedGroupKidRow[];
+}
+
+type FlatTableInstance = SimpleTableVanilla<TableRefRow>;
+type GroupTableInstance = SimpleTableVanilla<GroupParentRow>;
+type NestedGroupTableInstance = SimpleTableVanilla<NestedGroupRootRow>;
+type WrapperWithTable = HTMLDivElement & { _table?: FlatTableInstance };
 
 const TABLE_REF_KEY = "__storybook_table_ref";
-const getTable = (_canvasElement: HTMLElement): TableInstance => {
-  const t = (globalThis as unknown as Record<string, TableInstance | undefined>)[TABLE_REF_KEY];
+const getTable = (_canvasElement: HTMLElement): FlatTableInstance => {
+  const t = (globalThis as unknown as Record<string, FlatTableInstance | undefined>)[TABLE_REF_KEY];
   if (!t) throw new Error("Table ref not set (run render first)");
   return t;
 };
 
-const headers: ColumnDef[] = [
+const GROUP_TABLE_REF_KEY = "__storybook_group_table_ref";
+const getGroupTable = (_canvasElement: HTMLElement): GroupTableInstance => {
+  const t = (globalThis as unknown as Record<string, GroupTableInstance | undefined>)[
+    GROUP_TABLE_REF_KEY
+  ];
+  if (!t) throw new Error("Group table ref not set (run render first)");
+  return t;
+};
+
+const NESTED_GROUP_TABLE_REF_KEY = "__storybook_nested_group_table_ref";
+const getNestedGroupTable = (_canvasElement: HTMLElement): NestedGroupTableInstance => {
+  const t = (globalThis as unknown as Record<string, NestedGroupTableInstance | undefined>)[
+    NESTED_GROUP_TABLE_REF_KEY
+  ];
+  if (!t) throw new Error("Nested group table ref not set (run render first)");
+  return t;
+};
+
+const headers: ColumnDef<TableRefRow>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 150, type: "string", sortable: true },
 ];
-const data = () => [
+const data = (): TableRefRow[] => [
   { id: 1, name: "Alice" },
   { id: 2, name: "Bob" },
   { id: 3, name: "Carol" },
@@ -53,11 +107,11 @@ const data = () => [
 
 export const GetVisibleRowsGetAllRowsGetHeaders = {
   render: () => {
-    const result = renderVanillaTable(headers, data(), {
+    const result = renderVanillaTable<TableRefRow>(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, FlatTableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -77,11 +131,11 @@ export const GetVisibleRowsGetAllRowsGetHeaders = {
 
 export const GetSortStateApplySortState = {
   render: () => {
-    const result = renderVanillaTable(headers, data(), {
+    const result = renderVanillaTable<TableRefRow>(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, FlatTableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -101,15 +155,15 @@ export const GetSortStateApplySortState = {
 
 export const GetFilterStateApplyFilterClearFilter = {
   render: () => {
-    const filterHeaders: ColumnDef[] = [
+    const filterHeaders: ColumnDef<TableRefRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number", filterable: true },
       { accessor: "name", label: "Name", width: 150, type: "string", filterable: true },
     ];
-    const result = renderVanillaTable(filterHeaders, data(), {
+    const result = renderVanillaTable<TableRefRow>(filterHeaders, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, FlatTableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -131,13 +185,13 @@ export const GetFilterStateApplyFilterClearFilter = {
 
 export const GetCurrentPageSetPage = {
   render: () => {
-    const result = renderVanillaTable(headers, data(), {
+    const result = renderVanillaTable<TableRefRow>(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
       enablePagination: true,
       rowsPerPage: 2,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, FlatTableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -155,7 +209,7 @@ export const SetQuickFilter = {
   render: () => {
     const captured: { value: string } = { value: "" };
     (window as unknown as { __quickFilterCapture?: { value: string } }).__quickFilterCapture = captured;
-    const result = renderVanillaTable(headers, data(), {
+    const result = renderVanillaTable<TableRefRow>(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
       quickFilter: {
@@ -164,7 +218,7 @@ export const SetQuickFilter = {
         },
       },
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, FlatTableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -180,12 +234,12 @@ export const SetQuickFilter = {
 
 export const ToggleColumnEditorApplyColumnVisibility = {
   render: () => {
-    const result = renderVanillaTable(headers, data(), {
+    const result = renderVanillaTable<TableRefRow>(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
       enableColumnEditor: true,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, FlatTableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -206,12 +260,12 @@ export const ToggleColumnEditorApplyColumnVisibility = {
 
 export const ToggleColumnEditorNoArgsRepeated = {
   render: () => {
-    const result = renderVanillaTable(headers, data(), {
+    const result = renderVanillaTable<TableRefRow>(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
       enableColumnEditor: true,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, FlatTableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -241,26 +295,26 @@ export const ToggleColumnEditorNoArgsRepeated = {
 
 export const ExpandAllCollapseAllGetExpandedDepths = {
   render: () => {
-    const groupHeaders: ColumnDef[] = [
+    const groupHeaders: ColumnDef<GroupParentRow>[] = [
       { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
       { accessor: "id", label: "ID", width: 80, type: "number" },
     ];
-    const groupData = [
+    const groupData: GroupParentRow[] = [
       { id: "g1", name: "Group A", items: [{ id: 1, name: "A1" }, { id: 2, name: "A2" }] },
       { id: "g2", name: "Group B", items: [{ id: 3, name: "B1" }] },
     ];
-    const result = renderVanillaTable(groupHeaders, groupData, {
-      getRowId: (p) => String((p.row as { id?: string })?.id),
+    const result = renderVanillaTable<GroupParentRow>(groupHeaders, groupData, {
+      getRowId: (p) => String((p.row as GroupParentRow).id),
       height: "300px",
       rowGrouping: ["items"],
       expandAll: false,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, GroupTableInstance>)[GROUP_TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    const table = getTable(canvasElement);
+    const table = getGroupTable(canvasElement);
     const api = table.getAPI();
     let depths = api.getExpandedDepths();
     expect(depths.size).toBe(0);
@@ -281,11 +335,11 @@ export const ExpandAllCollapseAllGetExpandedDepths = {
 
 export const SetHeaderRename = {
   render: () => {
-    const result = renderVanillaTable(headers, data(), {
+    const result = renderVanillaTable<TableRefRow>(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, FlatTableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -306,15 +360,15 @@ export const SetHeaderRename = {
 
 export const ClearAllFilters = {
   render: () => {
-    const filterHeaders: ColumnDef[] = [
+    const filterHeaders: ColumnDef<TableRefRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number", filterable: true },
       { accessor: "name", label: "Name", width: 150, type: "string", filterable: true },
     ];
-    const result = renderVanillaTable(filterHeaders, data(), {
+    const result = renderVanillaTable<TableRefRow>(filterHeaders, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, FlatTableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -343,15 +397,15 @@ export const ClearAllFilters = {
 
 export const GetAndApplyPinnedState = {
   render: () => {
-    const pinnedHeaders: ColumnDef[] = [
+    const pinnedHeaders: ColumnDef<TableRefRow>[] = [
       { accessor: "id", label: "ID", width: 60, type: "number", pinned: "left" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
     ];
-    const result = renderVanillaTable(pinnedHeaders, data(), {
+    const result = renderVanillaTable<TableRefRow>(pinnedHeaders, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, FlatTableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -379,29 +433,29 @@ export const GetAndApplyPinnedState = {
 // TOGGLE DEPTH / SET EXPANDED DEPTHS
 // ============================================================================
 
-const groupHeaders: ColumnDef[] = [
+const groupHeaders: ColumnDef<GroupParentRow>[] = [
   { accessor: "name", label: "Name", width: 150, expandable: true, type: "string" },
   { accessor: "id", label: "ID", width: 80, type: "number" },
 ];
-const groupData = () => [
+const groupData = (): GroupParentRow[] => [
   { id: "g1", name: "Group A", items: [{ id: 1, name: "A1" }, { id: 2, name: "A2" }] },
   { id: "g2", name: "Group B", items: [{ id: 3, name: "B1" }] },
 ];
 
 export const ToggleDepth = {
   render: () => {
-    const result = renderVanillaTable(groupHeaders, groupData(), {
-      getRowId: (p) => String((p.row as { id?: string })?.id),
+    const result = renderVanillaTable<GroupParentRow>(groupHeaders, groupData(), {
+      getRowId: (p) => String((p.row as GroupParentRow).id),
       height: "300px",
       rowGrouping: ["items"],
       expandAll: false,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, GroupTableInstance>)[GROUP_TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    const table = getTable(canvasElement);
+    const table = getGroupTable(canvasElement);
     const api = table.getAPI();
 
     let depths = api.getExpandedDepths();
@@ -421,18 +475,18 @@ export const ToggleDepth = {
 
 export const SetExpandedDepths = {
   render: () => {
-    const result = renderVanillaTable(groupHeaders, groupData(), {
-      getRowId: (p) => String((p.row as { id?: string })?.id),
+    const result = renderVanillaTable<GroupParentRow>(groupHeaders, groupData(), {
+      getRowId: (p) => String((p.row as GroupParentRow).id),
       height: "300px",
       rowGrouping: ["items"],
       expandAll: true,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, GroupTableInstance>)[GROUP_TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    const table = getTable(canvasElement);
+    const table = getGroupTable(canvasElement);
     const api = table.getAPI();
 
     // Set only depth 0 expanded
@@ -450,18 +504,18 @@ export const SetExpandedDepths = {
 
 export const GetGroupingPropertyAndDepth = {
   render: () => {
-    const result = renderVanillaTable(groupHeaders, groupData(), {
-      getRowId: (p) => String((p.row as { id?: string })?.id),
+    const result = renderVanillaTable<GroupParentRow>(groupHeaders, groupData(), {
+      getRowId: (p) => String((p.row as GroupParentRow).id),
       height: "300px",
       rowGrouping: ["items"],
       expandAll: true,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, GroupTableInstance>)[GROUP_TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    const table = getTable(canvasElement);
+    const table = getGroupTable(canvasElement);
     const api = table.getAPI();
 
     const property = api.getGroupingProperty(0);
@@ -479,13 +533,13 @@ export const GetGroupingPropertyAndDepth = {
 export const GetTotalPagesViaAPI = {
   tags: ["table-api-remaining"],
   render: () => {
-    const result = renderVanillaTable(headers, data(), {
+    const result = renderVanillaTable<TableRefRow>(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
       enablePagination: true,
       rowsPerPage: 2,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, FlatTableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -503,12 +557,12 @@ export const GetTotalPagesViaAPI = {
 export const ResetColumnsViaAPI = {
   tags: ["table-api-remaining"],
   render: () => {
-    const result = renderVanillaTable(headers, data(), {
+    const result = renderVanillaTable<TableRefRow>(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
       enableColumnEditor: true,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, FlatTableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -524,12 +578,12 @@ export const ResetColumnsViaAPI = {
 export const SelectionViaTableAPI = {
   tags: ["table-api-remaining"],
   render: () => {
-    const result = renderVanillaTable(headers, data(), {
+    const result = renderVanillaTable<TableRefRow>(headers, data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "300px",
       selectableCells: true,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, FlatTableInstance>)[TABLE_REF_KEY] = result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -561,11 +615,11 @@ export const SelectionViaTableAPI = {
   },
 };
 
-const nestedGroupingHeaders: ColumnDef[] = [
+const nestedGroupingHeaders: ColumnDef<NestedGroupRootRow>[] = [
   { accessor: "label", label: "Label", width: 120, expandable: true, type: "string" },
   { accessor: "n", label: "N", width: 40, type: "number" },
 ];
-const nestedGroupingRows = () => [
+const nestedGroupingRows = (): NestedGroupRootRow[] => [
   {
     id: "r1",
     label: "Root",
@@ -576,18 +630,19 @@ const nestedGroupingRows = () => [
 export const GetGroupingPropertyTwoLevels = {
   tags: ["table-api-remaining"],
   render: () => {
-    const result = renderVanillaTable(nestedGroupingHeaders, nestedGroupingRows(), {
-      getRowId: (p) => String((p.row as { id?: string | number })?.id),
+    const result = renderVanillaTable<NestedGroupRootRow>(nestedGroupingHeaders, nestedGroupingRows(), {
+      getRowId: (p) => String((p.row as NestedGroupRootRow).id),
       height: "260px",
       rowGrouping: ["kids", "leaves"],
       expandAll: true,
     });
-    (globalThis as unknown as Record<string, TableInstance>)[TABLE_REF_KEY] = result.table;
+    (globalThis as unknown as Record<string, NestedGroupTableInstance>)[NESTED_GROUP_TABLE_REF_KEY] =
+      result.table;
     return result.wrapper;
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    const api = getTable(canvasElement).getAPI();
+    const api = getNestedGroupTable(canvasElement).getAPI();
     expect(api.getGroupingProperty(0)).toBe("kids");
     expect(api.getGroupingProperty(1)).toBe("leaves");
     expect(api.getGroupingDepth("kids")).toBe(0);

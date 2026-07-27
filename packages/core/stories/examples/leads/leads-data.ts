@@ -1,9 +1,9 @@
 /**
  * Leads example data – same structure as React BACKUP_LEADS_DATA.
  */
-import type { Row } from "../../../src/index";
+import type { LeadRow } from "./leads-headers";
 
-export const LEADS_DATA: Row[] = [
+export const LEADS_DATA: LeadRow[] = [
   { id: "LEAD-00000", name: "Glenn Lindley", title: "Founder and CTO (Chief Taco Officer)", company: "Talent IP (In Person)", signal: "Top 5% most active in your ICP (LinkedIn)", aiScore: 2, emailStatus: "Enrich", timeAgo: "8 hours ago", list: "Leads", linkedin: true },
   { id: "LEAD-00001", name: "Gloria Oppong", title: "Co-founder & CEO", company: "Cleanster", signal: "Recently changed job title", aiScore: 3, emailStatus: "Verified", timeAgo: "12 hours ago", list: "Hot Leads", linkedin: true },
   { id: "LEAD-00002", name: "Vishal Bhalla", title: "CEO & Co-Founder", company: "AnalytAIX", signal: "Engaged with your content 3x this week", aiScore: 3, emailStatus: "Verified", timeAgo: "1 day ago", list: "Hot Leads", linkedin: true },

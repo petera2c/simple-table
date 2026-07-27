@@ -13,7 +13,8 @@ import type { ColumnDef } from "simple-table-core";
  */
 
 let container: HTMLDivElement | null = null;
-let table: SimpleTableVanilla | null = null;
+// Invariant in TData: inferred domain rows are not assignable to SimpleTableVanilla<Row>.
+let table: SimpleTableVanilla<any> | null = null;
 
 afterEach(() => {
   table?.destroy();

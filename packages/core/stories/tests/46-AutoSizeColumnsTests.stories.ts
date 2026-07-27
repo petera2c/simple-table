@@ -77,14 +77,36 @@ const longText =
   "This is a very long cell value that should make a content-fit column grow much wider than the header label";
 
 // Module-level handles so play() can drive update()/sort on the mounted table.
-let refitTable: SimpleTableVanilla | null = null;
-let sortTable: SimpleTableVanilla | null = null;
-let sortReserveTable: SimpleTableVanilla | null = null;
-let truncationTable: SimpleTableVanilla | null = null;
+interface RefitRow {
+  id: number;
+  text: string;
+}
+interface SortAutoSizeRow {
+  id: number;
+  name: string;
+}
+interface TruncationRow {
+  id: number;
+  status: string;
+  note: string;
+}
+interface EmptyHeaderRow {
+  id: number;
+  description: string;
+}
+interface LoadingIdentityRow extends Record<string, string | number> {
+  id: number;
+  identity: string;
+}
+
+let refitTable: SimpleTableVanilla<RefitRow> | null = null;
+let sortTable: SimpleTableVanilla<SortAutoSizeRow> | null = null;
+let sortReserveTable: SimpleTableVanilla<SortAutoSizeRow> | null = null;
+let truncationTable: SimpleTableVanilla<TruncationRow> | null = null;
 let truncationFill: (() => void) | null = null;
-let emptyHeaderTable: SimpleTableVanilla | null = null;
+let emptyHeaderTable: SimpleTableVanilla<EmptyHeaderRow> | null = null;
 let emptyHeaderFill: (() => void) | null = null;
-let loadingIdentityTable: SimpleTableVanilla | null = null;
+let loadingIdentityTable: SimpleTableVanilla<LoadingIdentityRow> | null = null;
 let loadingIdentityFill: (() => void) | null = null;
 
 // ============================================================================
@@ -288,7 +310,7 @@ export const AutoSizeMeasuresCustomHeaderRenderer = {
 export const AutoSizeSortIconDoesNotTruncateLabel = {
   parameters: { tags: ["auto-size-sort-icon-reserve"] },
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<SortAutoSizeRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "name",
@@ -301,7 +323,7 @@ export const AutoSizeSortIconDoesNotTruncateLabel = {
     // Short cells so the header label (plus reserved sort icon space) defines
     // the column width.
     const data = makeRows(30, (i) => ({ id: i + 1, name: `n${i}` }));
-    const { wrapper, table } = renderVanillaTable(headers, data, {
+    const { wrapper, table } = renderVanillaTable<SortAutoSizeRow>(headers, data, {
       getRowId: (params: any) => String(params.row.id),
       height: "300px",
     });
@@ -680,12 +702,12 @@ export const AutoSize50kWidespreadLongGrows = {
 export const AutoSizeRefitsOnDataChange = {
   parameters: { tags: ["auto-size-refit"] },
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<RefitRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "text", label: "Text", width: "auto", type: "string" },
     ];
     const shortData = makeRows(30, (i) => ({ id: i + 1, text: `s${i}` }));
-    const { wrapper, table } = renderVanillaTable(headers, shortData, {
+    const { wrapper, table } = renderVanillaTable<RefitRow>(headers, shortData, {
       getRowId: (params: any) => String(params.row.id),
       height: "300px",
     });
@@ -1030,14 +1052,15 @@ export const AutoSizeRefitsAfterLoadingWithMultilineRenderer = {
     // Wide column set (~4k+ px) so the table scrolls horizontally in a normal
     // Storybook canvas without constraining the wrapper width.
     // Empty rows + isLoading → full skeleton page (auto-size skips skeleton cells).
-    const { wrapper, table } = renderVanillaTable(headers, [], {
+    const { wrapper, table } = renderVanillaTable<LoadingIdentityRow>(headers, [], {
       getRowId: (params: any) => String(params.row.id),
       height: "420px",
       isLoading: true,
       customTheme: { rowHeight: 72 },
     });
-    (globalThis as unknown as Record<string, SimpleTableVanilla>)[LOADING_IDENTITY_TABLE_KEY] =
-      table;
+    (globalThis as unknown as Record<string, SimpleTableVanilla<LoadingIdentityRow>>)[
+      LOADING_IDENTITY_TABLE_KEY
+    ] = table;
     loadingIdentityTable = table;
 
     (globalThis as unknown as Record<string, typeof ARTISTS>)[
@@ -1057,7 +1080,7 @@ export const AutoSizeRefitsAfterLoadingWithMultilineRenderer = {
     await waitUntil(() => canvasElement.querySelectorAll(".st-loading-skeleton").length > 0);
 
     const table =
-      (globalThis as unknown as Record<string, SimpleTableVanilla | undefined>)[
+      (globalThis as unknown as Record<string, SimpleTableVanilla<LoadingIdentityRow> | undefined>)[
         LOADING_IDENTITY_TABLE_KEY
       ] ?? loadingIdentityTable;
     expect(table).toBeTruthy();
@@ -1140,12 +1163,12 @@ export const AutoSizeRefitsAfterLoadingWithMultilineRenderer = {
 export const AutoSizeStableAcrossSort = {
   parameters: { tags: ["auto-size-sort-stable"] },
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<SortAutoSizeRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       { accessor: "name", label: "Name", width: "auto", type: "string", sortable: true },
     ];
     const data = makeRows(40, (i) => ({ id: i + 1, name: `Person ${String(i).padStart(2, "0")}` }));
-    const { wrapper, table } = renderVanillaTable(headers, data, {
+    const { wrapper, table } = renderVanillaTable<SortAutoSizeRow>(headers, data, {
       getRowId: (params: any) => String(params.row.id),
       height: "300px",
     });
@@ -1381,7 +1404,7 @@ export const AutoSizeAsyncRendererInternalTruncation = {
     const { cellRenderer, fill } = makeAsyncRenderer(buildContent);
     truncationFill = fill;
 
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<TruncationRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "status",
@@ -1408,7 +1431,7 @@ export const AutoSizeAsyncRendererInternalTruncation = {
       status: "Very long status text value",
       note: "This note is far too long to ever fit inside the capped column",
     }));
-    const { wrapper, table } = renderVanillaTable(headers, data, {
+    const { wrapper, table } = renderVanillaTable<TruncationRow>(headers, data, {
       getRowId: (params: any) => String(params.row.id),
       height: "300px",
     });
@@ -1550,7 +1573,7 @@ export const AutoSizeEmptyStateAsyncHeaderRenderer = {
       }
     };
 
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<EmptyHeaderRow>[] = [
       { accessor: "id", label: "ID", width: 80, type: "number" },
       {
         accessor: "description",
@@ -1564,7 +1587,7 @@ export const AutoSizeEmptyStateAsyncHeaderRenderer = {
         },
       },
     ];
-    const { wrapper, table } = renderVanillaTable(headers, [], {
+    const { wrapper, table } = renderVanillaTable<EmptyHeaderRow>(headers, [], {
       getRowId: (params: any) => String(params.row.id),
       height: "300px",
     });
@@ -1808,13 +1831,21 @@ export const AutoSizeLongHeaderConsistentAcrossContainerWidths = {
 // HORIZONTAL SCROLLBAR — must account for header/content width, not body alone
 // ============================================================================
 
+interface EmptyScrollbarRow {
+  id: number;
+  name: string;
+  email: string;
+  dept: string;
+  role: string;
+}
+
 export const HorizontalScrollbarShowsWhenHeaderOverflowsEmptyState = {
   parameters: { tags: ["horizontal-scrollbar-empty-header"] },
   render: () => {
     // Empty table: body is a full-width non-scrolling empty message, but
     // headers are still wider than the container. Scrollbar visibility must
     // use content/header width, not body scrollWidth.
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<EmptyScrollbarRow>[] = [
       { accessor: "id", label: "ID", width: 120, type: "number" },
       { accessor: "name", label: "Full Legal Name", width: 220, type: "string" },
       { accessor: "email", label: "Work Email Address", width: 260, type: "string" },
@@ -1825,13 +1856,13 @@ export const HorizontalScrollbarShowsWhenHeaderOverflowsEmptyState = {
     // narrow viewport on first paint (setting width after mount races the
     // initial scrollbar visibility check).
     const wrapper = document.createElement("div") as HTMLDivElement & {
-      _table?: SimpleTableVanilla;
+      _table?: SimpleTableVanilla<EmptyScrollbarRow>;
     };
     wrapper.style.padding = "2rem";
     const tableContainer = document.createElement("div");
     tableContainer.style.width = "360px";
     wrapper.appendChild(tableContainer);
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<EmptyScrollbarRow>(tableContainer, {
       columns: headers,
       rows: [],
       getRowId: (params: any) => String(params.row.id),

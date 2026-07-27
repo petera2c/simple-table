@@ -3,7 +3,7 @@
  * Ported from React - same tests, vanilla table only.
  */
 
-import { ColumnDef, Row, SimpleTableVanilla } from "../../src/index";
+import { ColumnDef, SimpleTableVanilla } from "../../src/index";
 import { expect } from "@storybook/test";
 import { expectPinnedSectionsDomOrder, waitForTable } from "./testUtils";
 import { renderVanillaTable } from "../utils";
@@ -24,7 +24,18 @@ const meta: Meta = {
 
 export default meta;
 
-const createEmployeeData = () => [
+type EmployeeRow = {
+  id: number;
+  name: string;
+  email: string;
+  department: string;
+  position: string;
+  salary: number;
+  startDate: string;
+  projects: number;
+};
+
+const createEmployeeData = (): EmployeeRow[] => [
   { id: 1, name: "Alice Johnson", email: "alice@example.com", department: "Engineering", position: "Senior Engineer", salary: 120000, startDate: "2020-01-15", projects: 5 },
   { id: 2, name: "Bob Smith", email: "bob@example.com", department: "Design", position: "Lead Designer", salary: 95000, startDate: "2019-03-22", projects: 3 },
   { id: 3, name: "Charlie Brown", email: "charlie@example.com", department: "Engineering", position: "Staff Engineer", salary: 140000, startDate: "2018-07-10", projects: 8 },
@@ -59,7 +70,7 @@ const hasBorder = (element: Element | null, side: "left" | "right") => {
 };
 
 function renderPinned(width = "600px") {
-  return (headers: ColumnDef[], data: Row[], options: Record<string, unknown> = {}) => {
+  return (headers: ColumnDef<EmployeeRow>[], data: EmployeeRow[], options: Record<string, unknown> = {}) => {
     const { wrapper } = renderVanillaTable(headers, data, { getRowId: (params) => String(params.row?.id), ...options });
     wrapper.style.width = width;
     return wrapper;
@@ -314,15 +325,15 @@ export const PinnedColumnsWithAlignment = {
 
 export const IsEssentialColumnLockedInEditor = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<EmployeeRow>[] = [
       { accessor: "id", label: "ID", width: 60, pinned: "left", essential: true, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "department", label: "Department", width: 150, type: "string" },
     ];
     const tableContainer = document.createElement("div");
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<EmployeeRow>(tableContainer, {
       columns: headers,
-      rows: createEmployeeData() as Row[],
+      rows: createEmployeeData(),
       height: "400px",
       enableColumnEditor: true,
       selectableColumns: true,
@@ -368,16 +379,16 @@ export const IsEssentialColumnLockedInEditor = {
 
 export const GetPinnedStateReturnsCorrectSections = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<EmployeeRow>[] = [
       { accessor: "id", label: "ID", width: 60, pinned: "left", type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
       { accessor: "salary", label: "Salary", width: 120, pinned: "right", type: "number" },
     ];
     const tableContainer = document.createElement("div");
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<EmployeeRow>(tableContainer, {
       columns: headers,
-      rows: createEmployeeData() as Row[],
+      rows: createEmployeeData(),
       height: "400px",
     });
     table.mount();
@@ -390,7 +401,7 @@ export const GetPinnedStateReturnsCorrectSections = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
     const tableEl = canvasElement.querySelector("div[style]") as HTMLDivElement & {
-      _table?: InstanceType<typeof SimpleTableVanilla>;
+      _table?: SimpleTableVanilla<EmployeeRow>;
     };
     const table = tableEl?._table;
     if (!table) {
@@ -413,16 +424,16 @@ export const GetPinnedStateReturnsCorrectSections = {
 
 export const ApplyPinnedStateMoveColumn = {
   render: () => {
-    const headers: ColumnDef[] = [
+    const headers: ColumnDef<EmployeeRow>[] = [
       { accessor: "id", label: "ID", width: 60, type: "number" },
       { accessor: "name", label: "Name", width: 150, type: "string" },
       { accessor: "email", label: "Email", width: 200, type: "string" },
       { accessor: "salary", label: "Salary", width: 120, type: "number" },
     ];
     const tableContainer = document.createElement("div");
-    const table = new SimpleTableVanilla(tableContainer, {
+    const table = new SimpleTableVanilla<EmployeeRow>(tableContainer, {
       columns: headers,
-      rows: createEmployeeData() as Row[],
+      rows: createEmployeeData(),
       height: "400px",
     });
     table.mount();
@@ -438,7 +449,7 @@ export const ApplyPinnedStateMoveColumn = {
     expect(canvasElement.querySelector(".st-header-pinned-left")).toBeNull();
 
     const tableEl = canvasElement.querySelector("div[style]") as HTMLDivElement & {
-      _table?: InstanceType<typeof SimpleTableVanilla>;
+      _table?: SimpleTableVanilla<EmployeeRow>;
     };
     const table = tableEl?._table;
     if (!table) return;

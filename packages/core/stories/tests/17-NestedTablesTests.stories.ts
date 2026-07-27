@@ -498,15 +498,15 @@ const clickExpandOnMainRow = async (canvasElement: HTMLElement, rowIndex: number
   await new Promise((r) => setTimeout(r, 350));
 };
 
-const getStoryTableWrapper = (
+const getStoryTableWrapper = <T extends Row>(
   canvasElement: HTMLElement,
-): HTMLElement & { _table?: InstanceType<typeof SimpleTableVanilla> } => {
+): HTMLElement & { _table?: SimpleTableVanilla<T> } => {
   const byPadding = canvasElement.querySelector("[style*='2rem']") as
-    | (HTMLElement & { _table?: InstanceType<typeof SimpleTableVanilla> })
+    | (HTMLElement & { _table?: SimpleTableVanilla<T> })
     | null;
   if (byPadding?._table) return byPadding;
   const first = canvasElement.firstElementChild as HTMLElement & {
-    _table?: InstanceType<typeof SimpleTableVanilla>;
+    _table?: SimpleTableVanilla<T>;
   };
   if (first?._table) return first;
   throw new Error("Could not find vanilla table wrapper with _table ref");
@@ -514,7 +514,7 @@ const getStoryTableWrapper = (
 
 /** Expands all rows at the first grouping depth (e.g. `divisions`) — reliable in test-runner vs DOM clicks. */
 const expandRowGroupsDepth0ViaApi = async (canvasElement: HTMLElement): Promise<void> => {
-  const table = getStoryTableWrapper(canvasElement)._table;
+  const table = getStoryTableWrapper<NestedCompany>(canvasElement)._table;
   if (!table) throw new Error("SimpleTableVanilla instance missing");
   table.getAPI().expandDepth(0);
   await new Promise((r) => setTimeout(r, 400));
@@ -874,7 +874,7 @@ export const NestedTableLazyLoadDivisions = {
     ];
 
     let rows: LazyCompany[] = initialRows.map((r) => ({ ...r }));
-    let tableInstance: InstanceType<typeof SimpleTableVanilla> | undefined;
+    let tableInstance: SimpleTableVanilla<LazyCompany> | undefined;
 
     const handleExpand = ({
       row,
@@ -895,7 +895,7 @@ export const NestedTableLazyLoadDivisions = {
       setLoading(false);
     };
 
-    const { wrapper, table } = renderVanillaTable(headers, rows as Row[], {
+    const { wrapper, table } = renderVanillaTable<LazyCompany>(headers, rows, {
       height: "480px",
       rowGrouping: ["divisions"],
       getRowId: ({ row }) => (row as LazyCompany).id,
@@ -916,11 +916,11 @@ export const NestedTableLazyLoadDivisions = {
     try {
       await waitUntil(hasLoaded, { timeoutMs: 2500 });
     } catch {
-      const table = getStoryTableWrapper(canvasElement)._table!;
+      const table = getStoryTableWrapper<LazyCompany>(canvasElement)._table!;
       table.updateConfig({
         rows: [
           { ...LAZY_CORP_ROW, divisions: cloneNestedDivisions(LAZY_LOADED_DIVISIONS) },
-        ] as Row[],
+        ],
       });
       table.getAPI().expandDepth(0);
       await new Promise((r) => setTimeout(r, 500));
@@ -1021,7 +1021,7 @@ export const NestedTableExpandCollapse = {
     await waitForTable();
     await expandRowGroupsDepth0ViaApi(canvasElement);
     await waitForNestedCellContains(canvasElement, "divisionId", "DIV-010");
-    getStoryTableWrapper(canvasElement)._table!.getAPI().collapseDepth(0);
+    getStoryTableWrapper<NestedCompany>(canvasElement)._table!.getAPI().collapseDepth(0);
     await new Promise((r) => setTimeout(r, 400));
     await waitUntil(() => getNestedTables(canvasElement).length === 0);
   },
@@ -1098,7 +1098,7 @@ export const NestedTableEmptyDivisions = {
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
     expect(findMainBodyRowIndexContaining(canvasElement, GAMMA_VENTURES)).toBe(0);
-    const scope = getStoryTableWrapper(canvasElement);
+    const scope = getStoryTableWrapper<NestedCompany>(canvasElement);
     await clickExpandOnMainRow(canvasElement, 0);
     await new Promise((r) => setTimeout(r, 600));
     const nestedRoots = scope.querySelectorAll(".st-nested-grid-row .simple-table-root");

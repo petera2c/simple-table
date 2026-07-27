@@ -1,9 +1,50 @@
 /**
  * Manufacturing example headers – ported from React manufacturing-headers (vanilla-compatible).
  */
-import type { ColumnDef } from "../../../src/index";
+import type { CellRendererProps, ColumnDef } from "../../../src/index";
 
-export const MANUFACTURING_HEADERS: ColumnDef[] = [
+export interface ManufacturingStationRow {
+  id: string;
+  productLine?: string;
+  station?: string;
+  machineType?: string;
+  operator?: string;
+  productType?: string;
+  outputRate?: number;
+  cycletime?: string | number;
+  efficiency?: number;
+  defectRate?: string;
+  defectCount?: number;
+  downtime?: string;
+  utilization?: number;
+  energy?: number;
+  status?: string;
+  maintenanceDate?: string;
+  cycleTimeData?: string;
+}
+
+export interface ManufacturingRow {
+  id: string;
+  productLine: string;
+  stations?: ManufacturingStationRow[];
+  station?: string;
+  machineType?: string;
+  operator?: string;
+  productType?: string;
+  outputRate?: number;
+  cycletime?: string | number;
+  efficiency?: number;
+  defectRate?: string;
+  defectCount?: number;
+  downtime?: string;
+  utilization?: number;
+  energy?: number;
+  status?: string;
+  maintenanceDate?: string;
+  cycleTimeData?: string;
+}
+
+export const MANUFACTURING_HEADERS: ColumnDef<ManufacturingRow>[] = [
   {
     accessor: "productLine",
     label: "Production Line",
@@ -13,7 +54,7 @@ export const MANUFACTURING_HEADERS: ColumnDef[] = [
     editable: false,
     align: "left",
     type: "string",
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+    cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) =>
       String(row.productLine ?? ""),
   },
   {
@@ -24,7 +65,7 @@ export const MANUFACTURING_HEADERS: ColumnDef[] = [
     editable: false,
     align: "left",
     type: "string",
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+    cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
       const hasChildren = row.stations && Array.isArray(row.stations);
       if (hasChildren) return String(row.id ?? "");
       return `${row.id ?? ""} ${row.station ?? ""}`.trim();
@@ -47,7 +88,7 @@ export const MANUFACTURING_HEADERS: ColumnDef[] = [
     editable: false,
     align: "center",
     type: "string",
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+    cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
       const hasChildren = row.stations && Array.isArray(row.stations);
       if (hasChildren) return "—";
       return String(row.status ?? "");
@@ -62,7 +103,7 @@ export const MANUFACTURING_HEADERS: ColumnDef[] = [
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+    cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) =>
       row.outputRate != null ? String(row.outputRate) : "—",
   },
   {
@@ -74,7 +115,7 @@ export const MANUFACTURING_HEADERS: ColumnDef[] = [
     align: "right",
     type: "number",
     aggregation: { type: "average" },
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+    cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
       const val = row.cycletime;
       if (val == null) return "—";
       return typeof val === "number" ? val.toFixed(1) : String(val);
@@ -89,7 +130,7 @@ export const MANUFACTURING_HEADERS: ColumnDef[] = [
     align: "center",
     type: "number",
     aggregation: { type: "average" },
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+    cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) =>
       row.efficiency != null ? `${row.efficiency}%` : "—",
   },
   {
@@ -101,7 +142,7 @@ export const MANUFACTURING_HEADERS: ColumnDef[] = [
     align: "right",
     type: "number",
     aggregation: { type: "average" },
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+    cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
       const val = row.defectRate;
       if (val == null) return "—";
       const rate = typeof val === "string" ? parseFloat(val) : Number(val);
@@ -117,7 +158,7 @@ export const MANUFACTURING_HEADERS: ColumnDef[] = [
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+    cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) =>
       row.defectCount != null ? Number(row.defectCount).toLocaleString() : "—",
   },
   {
@@ -129,7 +170,7 @@ export const MANUFACTURING_HEADERS: ColumnDef[] = [
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+    cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
       const val = row.downtime;
       if (val == null) return "—";
       return typeof val === "string" ? val : String(Number(val).toFixed(2));
@@ -144,7 +185,7 @@ export const MANUFACTURING_HEADERS: ColumnDef[] = [
     align: "right",
     type: "number",
     aggregation: { type: "average" },
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+    cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) =>
       row.utilization != null ? `${row.utilization}%` : "—",
   },
   {
@@ -156,7 +197,7 @@ export const MANUFACTURING_HEADERS: ColumnDef[] = [
     align: "right",
     type: "number",
     aggregation: { type: "sum" },
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) =>
+    cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) =>
       row.energy != null ? Number(row.energy).toLocaleString() : "—",
   },
   {
@@ -167,7 +208,7 @@ export const MANUFACTURING_HEADERS: ColumnDef[] = [
     editable: false,
     align: "center",
     type: "date",
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+    cellRenderer: ({ row }: CellRendererProps<ManufacturingRow>) => {
       const hasChildren = row.stations && Array.isArray(row.stations);
       if (hasChildren) return "—";
       const dateStr = row.maintenanceDate;

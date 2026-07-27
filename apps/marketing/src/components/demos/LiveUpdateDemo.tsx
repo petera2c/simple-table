@@ -3,8 +3,18 @@ import type { TableAPI, ReactColumnDef, Theme, CellRendererProps } from "@simple
 import { useRef, useEffect } from "react";
 import "@simple-table/react/styles.css";
 
+type LiveProduct = {
+  id: number;
+  product: string;
+  price: number;
+  stock: number;
+  sales: number;
+  stockHistory: number[];
+  salesHistory: number[];
+};
+
 // Define headers
-const headers: ReactColumnDef[] = [
+const headers: ReactColumnDef<LiveProduct>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "product", label: "Product", width: 180, type: "string" },
   {
@@ -12,7 +22,7 @@ const headers: ReactColumnDef[] = [
     label: "Price",
     width: "1fr",
     type: "number",
-    cellRenderer: ({ row }: CellRendererProps) => {
+    cellRenderer: ({ row }: CellRendererProps<LiveProduct>) => {
       const price = row.price;
       if (typeof price === "number") {
         return `$${price.toFixed(2)}`;
@@ -74,7 +84,7 @@ const generateSalesHistory = (_currentSales: number, length = 12) => {
 };
 
 // Sample data
-const initialData = [
+const initialData: LiveProduct[] = [
   {
     id: 1,
     product: "Organic Green Tea",
@@ -193,15 +203,15 @@ const LiveUpdateDemo = ({
   theme?: Theme;
 }) => {
   // Keep a local copy of the data to update
-  const tableRef = useRef<TableAPI | null>(null);
+  const tableRef = useRef<TableAPI<LiveProduct> | null>(null);
 
   // Set up intervals for automatic updates (like Infrastructure example)
   useEffect(() => {
     // Keep a copy of the current data in memory for calculations
-    const currentData = JSON.parse(JSON.stringify(initialData));
-    const timerMap = new Map<string | number, NodeJS.Timeout>();
+    const currentData: LiveProduct[] = JSON.parse(JSON.stringify(initialData));
+    const timerMap = new Map<number, NodeJS.Timeout>();
     // Track sales in the current period for each product
-    const currentPeriodSales = new Map<string | number, number>();
+    const currentPeriodSales = new Map<number, number>();
     let isActive = true;
 
     // Configuration for individual product update timers
@@ -211,7 +221,7 @@ const LiveUpdateDemo = ({
     };
 
     // Function to create an update timer for a specific row
-    const createRowTimer = (rowId: string | number) => {
+    const createRowTimer = (rowId: number) => {
       const scheduleUpdate = () => {
         if (!isActive) return;
 
@@ -224,9 +234,7 @@ const LiveUpdateDemo = ({
           if (!isActive || !tableRef.current) return;
 
           // Find the current row in data
-          const actualRowIndex = currentData.findIndex(
-            (row: (typeof initialData)[0]) => row.id === rowId,
-          );
+          const actualRowIndex = currentData.findIndex((row) => row.id === rowId);
           if (actualRowIndex === -1) {
             return;
           }
@@ -234,66 +242,50 @@ const LiveUpdateDemo = ({
           const product = currentData[actualRowIndex];
 
           // Update price (±5% from current)
-          const currentPrice = product.price as number;
-          if (typeof currentPrice === "number") {
-            const randomFactor = 0.95 + Math.random() * 0.1;
-            const newPrice = parseFloat((currentPrice * randomFactor).toFixed(2));
-
-            currentData[actualRowIndex].price = newPrice;
-
-            tableRef.current?.updateData({
-              accessor: "price",
-              rowId,
-              newValue: newPrice,
-            });
-          }
+          const randomFactor = 0.95 + Math.random() * 0.1;
+          const newPrice = parseFloat((product.price * randomFactor).toFixed(2));
+          currentData[actualRowIndex].price = newPrice;
+          tableRef.current?.updateData({
+            accessor: "price",
+            rowId,
+            newValue: newPrice,
+          });
 
           // Update stock (small fluctuations)
-          const currentStock = product.stock as number;
-          if (typeof currentStock === "number") {
-            const stockChange = Math.floor((Math.random() - 0.5) * 6); // -3 to +3
-            const newStock = Math.max(0, currentStock + stockChange);
+          const stockChange = Math.floor((Math.random() - 0.5) * 6); // -3 to +3
+          const newStock = Math.max(0, product.stock + stockChange);
+          currentData[actualRowIndex].stock = newStock;
+          tableRef.current?.updateData({
+            accessor: "stock",
+            rowId,
+            newValue: newStock,
+          });
 
-            currentData[actualRowIndex].stock = newStock;
-
+          // Update stock history chart
+          if (product.stockHistory.length > 0) {
+            const updatedStockHistory = [...product.stockHistory.slice(1), newStock];
+            currentData[actualRowIndex].stockHistory = updatedStockHistory;
             tableRef.current?.updateData({
-              accessor: "stock",
+              accessor: "stockHistory",
               rowId,
-              newValue: newStock,
+              newValue: updatedStockHistory,
             });
-
-            // Update stock history chart
-            const currentStockHistory = product.stockHistory as number[];
-            if (Array.isArray(currentStockHistory) && currentStockHistory.length > 0) {
-              const updatedStockHistory = [...currentStockHistory.slice(1), newStock];
-              currentData[actualRowIndex].stockHistory = updatedStockHistory;
-              tableRef.current?.updateData({
-                accessor: "stockHistory",
-                rowId,
-                newValue: updatedStockHistory,
-              });
-            }
           }
 
           // Update sales (60% chance)
           if (Math.random() < 0.6) {
-            const currentSales = product.sales as number;
-            if (typeof currentSales === "number") {
-              const salesIncrement = Math.floor(Math.random() * 3) + 1; // 1-3 sales
-              const newSales = currentSales + salesIncrement;
+            const salesIncrement = Math.floor(Math.random() * 3) + 1; // 1-3 sales
+            const newSales = product.sales + salesIncrement;
+            currentData[actualRowIndex].sales = newSales;
+            tableRef.current?.updateData({
+              accessor: "sales",
+              rowId,
+              newValue: newSales,
+            });
 
-              currentData[actualRowIndex].sales = newSales;
-
-              tableRef.current?.updateData({
-                accessor: "sales",
-                rowId,
-                newValue: newSales,
-              });
-
-              // Track sales for the current period (for the bar chart)
-              const currentPeriodCount = currentPeriodSales.get(rowId) || 0;
-              currentPeriodSales.set(rowId, currentPeriodCount + salesIncrement);
-            }
+            // Track sales for the current period (for the bar chart)
+            const currentPeriodCount = currentPeriodSales.get(rowId) || 0;
+            currentPeriodSales.set(rowId, currentPeriodCount + salesIncrement);
           }
 
           // Schedule the next update for this row
@@ -311,7 +303,7 @@ const LiveUpdateDemo = ({
       if (!tableRef.current) return;
 
       const visibleRows = tableRef.current.getVisibleRows();
-      const visibleRowIds = new Set(visibleRows.map((vr) => vr.row.id as string | number));
+      const visibleRowIds = new Set(visibleRows.map((vr) => vr.row.id));
 
       // Remove timers for rows that are no longer visible
       timerMap.forEach((timerId, rowId) => {
@@ -323,7 +315,7 @@ const LiveUpdateDemo = ({
 
       // Create timers for newly visible rows
       visibleRows.forEach((visibleRow) => {
-        const rowId = visibleRow.row.id as string | number;
+        const rowId = visibleRow.row.id;
         if (!timerMap.has(rowId)) {
           createRowTimer(rowId);
         }
@@ -334,15 +326,14 @@ const LiveUpdateDemo = ({
     const salesRotateInterval = setInterval(() => {
       if (!tableRef.current || !isActive) return;
 
-      currentData.forEach((row: (typeof initialData)[0], rowIndex: number) => {
-        const currentSalesHistory = row.salesHistory as number[];
-        if (Array.isArray(currentSalesHistory) && currentSalesHistory.length > 0) {
+      currentData.forEach((row, rowIndex) => {
+        if (row.salesHistory.length > 0) {
           // Get the sales count for this period (default to 0 if no sales)
-          const rowId = row.id as string | number;
+          const rowId = row.id;
           const salesInPeriod = currentPeriodSales.get(rowId) || 0;
 
           // Rotate: remove first bar and add new bar with the period's sales
-          const updatedSalesHistory = [...currentSalesHistory.slice(1), salesInPeriod];
+          const updatedSalesHistory = [...row.salesHistory.slice(1), salesInPeriod];
           currentData[rowIndex].salesHistory = updatedSalesHistory;
           tableRef.current?.updateData({
             accessor: "salesHistory",
@@ -377,7 +368,7 @@ const LiveUpdateDemo = ({
       columns={headers}
       rows={initialData}
       ref={tableRef}
-      getRowId={({ row }) => (row as { id: number }).id}
+      getRowId={({ row }) => row.id}
       height={height}
       theme={theme}
     />

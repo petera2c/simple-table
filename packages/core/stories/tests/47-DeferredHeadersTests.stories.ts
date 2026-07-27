@@ -31,7 +31,12 @@ const meta: Meta = {
 
 export default meta;
 
-type TableInstance = InstanceType<typeof SimpleTableVanilla>;
+interface DeferredHeadersRow {
+  id: number;
+  name: string;
+}
+
+type TableInstance = SimpleTableVanilla<DeferredHeadersRow>;
 
 const TABLE_REF_KEY = "__storybook_deferred_headers_table_ref";
 const getTable = (): TableInstance => {
@@ -40,12 +45,12 @@ const getTable = (): TableInstance => {
   return t;
 };
 
-const headers: ColumnDef[] = [
+const headers: ColumnDef<DeferredHeadersRow>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", width: 160, type: "string" },
 ];
 
-const data = () => [
+const data = (): DeferredHeadersRow[] => [
   { id: 1, name: "Alice" },
   { id: 2, name: "Bob" },
   { id: 3, name: "Carol" },
@@ -55,7 +60,7 @@ export const PopulateHeadersAfterMount = {
   render: () => {
     // Mount with an empty header set, like a parent that hasn't resolved its
     // columns yet, but with rows already available.
-    const result = renderVanillaTable([], data(), {
+    const result = renderVanillaTable<DeferredHeadersRow>([], data(), {
       getRowId: (p) => String((p.row as { id?: number })?.id),
       height: "250px",
     });

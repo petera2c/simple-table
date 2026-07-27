@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme, TableAPI, CellValue } from "@simple-table/react";
+import type { Theme, TableAPI } from "@simple-table/react";
 import { cryptoConfig, type CryptoCoin } from "./crypto.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -18,40 +18,28 @@ function pickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function applyRowPatch(
-  api: TableAPI<CryptoCoin>,
-  rowId: string,
-  patch: Partial<CryptoCoin>,
-) {
-  for (const accessor of Object.keys(patch) as (keyof CryptoCoin)[]) {
-    const newValue = patch[accessor];
-    if (newValue === undefined) continue;
-    api.updateData({ accessor, rowId, newValue: newValue as CellValue });
-  }
-}
-
 function runTick(getApi: () => TableAPI<CryptoCoin> | null | undefined) {
   const api = getApi();
   if (!api) return;
   const visible = api.getVisibleRows();
   if (!visible.length) return;
   for (const vr of pickRandomSubset(visible, ROWS_PER_TICK)) {
-    const rowId = vr.row.id;
-    if (typeof rowId !== "string" || rowId === "") continue;
-    const currentPrice = vr.row.price;
-    if (typeof currentPrice !== "number") continue;
+    const row = vr.row;
+    const rowId = row.id;
     const drift = (Math.random() - 0.5) * 0.012;
-    const newPrice = Math.max(currentPrice * (1 + drift), currentPrice * 0.0001);
+    const newPrice = Math.max(row.price * (1 + drift), row.price * 0.0001);
     const round = newPrice >= 1 ? 1e2 : 1e6;
     const newPriceRounded = Math.round(newPrice * round) / round;
-    const currentChange = typeof vr.row.change24h === "number" ? vr.row.change24h : 0;
-    const newChange = Math.round((currentChange + drift * 100) * 100) / 100;
-    const history = vr.row.priceHistory;
-    const patch: Partial<CryptoCoin> = { price: newPriceRounded, change24h: newChange };
-    if (Array.isArray(history) && history.length > 0) {
-      patch.priceHistory = [...history.slice(1), newPriceRounded];
+    const newChange = Math.round((row.change24h + drift * 100) * 100) / 100;
+    api.updateData({ accessor: "price", rowId, newValue: newPriceRounded });
+    api.updateData({ accessor: "change24h", rowId, newValue: newChange });
+    if (row.priceHistory.length > 0) {
+      api.updateData({
+        accessor: "priceHistory",
+        rowId,
+        newValue: [...row.priceHistory.slice(1), newPriceRounded],
+      });
     }
-    applyRowPatch(api, rowId, patch);
   }
 }
 

@@ -14,7 +14,6 @@ import type {
   Row,
 } from "../../src/index";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
-
 const ROW_COUNT = 3235;
 const ROW_HEIGHT = 65;
 const HEADER_HEIGHT = 36;
@@ -332,6 +331,6 @@ export function renderRadioStationsExample(args?: Partial<UniversalVanillaArgs>)
   });
   table.mount();
 
-  (wrapper as HTMLDivElement & { _table?: SimpleTableVanilla })._table = table;
+  (wrapper as HTMLDivElement & { _table?: typeof table })._table = table;
   return wrapper;
 }

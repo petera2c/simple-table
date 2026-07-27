@@ -144,10 +144,36 @@ const randomInt = (min: number, max: number): number =>
 const randomFloat = (min: number, max: number, decimals: number = 1): number =>
   Number((Math.random() * (max - min) + min).toFixed(decimals));
 
+type NestedDivision = {
+  id: string;
+  divisionId: string;
+  divisionName: string;
+  revenue: string;
+  profitMargin: string;
+  headcount: number;
+  location: string;
+};
+
+type NestedCompany = {
+  id: number;
+  companyName: string;
+  industry: string;
+  founded: number;
+  headquarters: string;
+  stockSymbol: string;
+  marketCap: string;
+  ceo: string;
+  revenue: string;
+  employees: number;
+  divisions: NestedDivision[];
+};
+
 // Generate division data
-const generateDivision = (divisionIndex: number, companyIndex: number) => {
+const generateDivision = (divisionIndex: number, companyIndex: number): NestedDivision => {
+  const divisionId = `DIV-${String(companyIndex * 10 + divisionIndex).padStart(3, "0")}`;
   return {
-    divisionId: `DIV-${String(companyIndex * 10 + divisionIndex).padStart(3, "0")}`,
+    id: divisionId,
+    divisionId,
     divisionName: randomElement(divisionTypes),
     revenue: `$${randomInt(5, 25)}B`,
     profitMargin: `${randomInt(15, 50)}%`,
@@ -157,7 +183,7 @@ const generateDivision = (divisionIndex: number, companyIndex: number) => {
 };
 
 // Generate company data
-const generateCompany = (companyIndex: number) => {
+const generateCompany = (companyIndex: number): NestedCompany => {
   const divisionsCount = randomInt(3, 7);
   const divisions = Array.from({ length: divisionsCount }, (_, i) =>
     generateDivision(i, companyIndex),
@@ -220,7 +246,7 @@ const generateSampleData = (count: number = 25) => {
 };
 
 // Child grid for divisions: 6 columns with detailed metrics
-const divisionHeaders: ReactColumnDef[] = [
+const divisionHeaders: ReactColumnDef<NestedDivision>[] = [
   { accessor: "divisionId", label: "Division ID", width: 120 },
   { accessor: "revenue", label: "Revenue", width: 120 },
   { accessor: "profitMargin", label: "Profit Margin", width: 130 },
@@ -229,7 +255,7 @@ const divisionHeaders: ReactColumnDef[] = [
 ];
 
 // Parent grid: 9 columns for companies
-const companyHeaders: ReactColumnDef[] = [
+const companyHeaders: ReactColumnDef<NestedCompany>[] = [
   {
     accessor: "companyName",
     label: "Company",
@@ -261,7 +287,7 @@ const NestedTablesDemo = ({
       columns={companyHeaders}
       rows={sampleData}
       rowGrouping={["divisions"]}
-      getRowId={({ row }) => row.id as string}
+      getRowId={({ row }) => row.id}
       expandAll={false}
       columnResizing={true}
       height={height}

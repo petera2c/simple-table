@@ -7,8 +7,6 @@ import { SimpleTableVanilla } from "../../src/index";
 import { renderVanillaTable } from "../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../vanillaStoryConfig";
 
-type TableInstance = InstanceType<typeof SimpleTableVanilla>;
-
 interface DynamicCompany extends Row {
   id: string;
   companyName: string;
@@ -213,7 +211,7 @@ export function renderDynamicNestedTableExample(args?: Partial<UniversalVanillaA
   const options = { ...defaultVanillaArgs, ...dynamicNestedTableExampleDefaults, ...args };
 
   let rows: DynamicCompany[] = INITIAL_COMPANIES.map((r) => ({ ...r }));
-  const tableRef: { current?: InstanceType<typeof SimpleTableVanilla> } = {};
+  const tableRef: { current?: SimpleTableVanilla<DynamicCompany> } = {};
 
   const handleCompanyExpand = async ({
     row,

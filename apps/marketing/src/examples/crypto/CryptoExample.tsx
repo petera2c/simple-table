@@ -3,7 +3,7 @@ import { SimpleTable } from "@simple-table/react";
 import type { TableAPI, Theme, ReactIconsConfig } from "@simple-table/react";
 import "@simple-table/react/styles.css";
 import { HEADERS } from "./crypto-headers";
-import { useCryptoData } from "./useCryptoData";
+import { useCryptoData, type CryptoCoin } from "./useCryptoData";
 import { useCryptoTicker } from "./useCryptoTicker";
 
 export default function CryptoExample({
@@ -14,7 +14,7 @@ export default function CryptoExample({
   icons?: ReactIconsConfig;
   theme?: Theme;
 }) {
-  const tableRef = useRef<TableAPI | null>(null);
+  const tableRef = useRef<TableAPI<CryptoCoin> | null>(null);
   const { data } = useCryptoData();
 
   // Live "market feed" - ticks visible rows so prices, 24h change, and the
@@ -33,7 +33,7 @@ export default function CryptoExample({
       customTheme={{ headerHeight: 40, rowHeight: 64 }}
       columns={HEADERS}
       enableColumnEditor
-      getRowId={({ row }) => (row as { id: string | number }).id}
+      getRowId={({ row }) => row.id}
       icons={icons}
       rows={data}
       selectableCells

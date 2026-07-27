@@ -12,7 +12,7 @@
  * - rowHeight 90, headerHeight 36
  */
 import { SimpleTableVanilla } from "../../../src/index";
-import type { FooterRendererProps, Row } from "../../../src/index";
+import type { FooterRendererProps } from "../../../src/index";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../../vanillaStoryConfig";
 import { generateInfluencerData } from "./influencers-data";
 import {
@@ -111,10 +111,10 @@ export function renderInfluencersExample(args?: Partial<UniversalVanillaArgs>): 
   const footerRenderer = (_props: FooterRendererProps): HTMLElement =>
     createFooter(countLoadedRows(rows), TOTAL_INFLUENCERS, loading);
 
-  const table = new SimpleTableVanilla(tableContainer, {
+  const table = new SimpleTableVanilla<InfluencerRow>(tableContainer, {
     columns: buildInfluencerHeaders(),
-    rows: rows as Row[],
-    getRowId: (p) => String((p.row as InfluencerRow | undefined)?.id),
+    rows,
+    getRowId: (p) => String(p.row?.id),
     theme: options.theme,
     customTheme: options.customTheme,
     height: "100%",
@@ -143,7 +143,7 @@ export function renderInfluencersExample(args?: Partial<UniversalVanillaArgs>): 
       const withoutSkeletons = rows.filter((row) => !isSkeletonRow(row));
       rows = [...withoutSkeletons, ...createSkeletonRows(loaded, batch)];
       table.update({
-        rows: rows as Row[],
+        rows,
         footerRenderKey: "loading",
       });
 
@@ -159,7 +159,7 @@ export function renderInfluencersExample(args?: Partial<UniversalVanillaArgs>): 
         loading = false;
         loadingGuard = false;
         table.update({
-          rows: rows as Row[],
+          rows,
           footerRenderKey: "idle",
         });
       }, LOAD_DELAY_MS);
@@ -167,6 +167,6 @@ export function renderInfluencersExample(args?: Partial<UniversalVanillaArgs>): 
   });
   table.mount();
 
-  (wrapper as HTMLDivElement & { _table?: SimpleTableVanilla })._table = table;
+  (wrapper as HTMLDivElement & { _table?: SimpleTableVanilla<InfluencerRow> })._table = table;
   return wrapper;
 }

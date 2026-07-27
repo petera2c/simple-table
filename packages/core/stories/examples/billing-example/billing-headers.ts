@@ -1,12 +1,25 @@
 /**
  * Billing example headers – ported from React billing-headers (vanilla-compatible).
  */
-import type { ColumnDef } from "../../../src/index";
+import type { CellRendererProps, ColumnDef } from "../../../src/index";
+
+export interface BillingRow {
+  id: string;
+  type?: string;
+  name?: string;
+  status?: string;
+  createdDate?: string;
+  dueDate?: string;
+  amount?: number;
+  invoices?: BillingRow[];
+  charges?: BillingRow[];
+  [key: string]: string | number | boolean | BillingRow[] | undefined;
+}
 
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-function generateMonthHeaders(): ColumnDef[] {
-  const headers: ColumnDef[] = [];
+function generateMonthHeaders(): ColumnDef<BillingRow>[] {
+  const headers: ColumnDef<BillingRow>[] = [];
   const year = 2024;
 
   for (let monthIndex = 11; monthIndex >= 0; monthIndex--) {
@@ -66,7 +79,7 @@ function generateMonthHeaders(): ColumnDef[] {
   return headers;
 }
 
-export const BILLING_HEADERS: ColumnDef[] = [
+export const BILLING_HEADERS: ColumnDef<BillingRow>[] = [
   {
     accessor: "name",
     label: "Name",
@@ -77,7 +90,7 @@ export const BILLING_HEADERS: ColumnDef[] = [
     align: "left",
     pinned: "left",
     type: "string",
-    cellRenderer: ({ row }: { row: Record<string, unknown> }) => String(row.name ?? ""),
+    cellRenderer: ({ row }: CellRendererProps<BillingRow>) => String(row.name ?? ""),
   },
   {
     accessor: "amount",

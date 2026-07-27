@@ -1,8 +1,24 @@
 import { useEffect, useState } from "react";
 import type { Row } from "@simple-table/react";
 
+/** Server metrics row shape used by the infrastructure marketing demo. */
+export interface InfrastructureServer extends Row {
+  id: string | number;
+  serverId?: string;
+  serverName?: string;
+  cpuUsage?: number;
+  cpuHistory?: number[];
+  memoryUsage?: number;
+  networkIn?: number;
+  networkOut?: number;
+  responseTime?: number;
+  activeConnections?: number;
+  requestsPerSec?: number;
+  status?: string;
+}
+
 export function useInfrastructureData() {
-  const [data, setData] = useState<Row[]>([]);
+  const [data, setData] = useState<InfrastructureServer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -11,13 +27,13 @@ export function useInfrastructureData() {
         setIsLoading(true);
         const response = await fetch("https://www.simple-table.com/api/data/infrastructure");
         if (response.ok) {
-          const data = await response.json();
-          setData(data);
+          const payload = (await response.json()) as InfrastructureServer[];
+          setData(payload);
         }
       } catch {
         const response = await fetch("/data/infrastructure-data.json");
-        const data = await response.json();
-        setData(data);
+        const payload = (await response.json()) as InfrastructureServer[];
+        setData(payload);
       } finally {
         setIsLoading(false);
       }
