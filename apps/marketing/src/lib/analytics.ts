@@ -46,8 +46,9 @@ export function trackCtaClick(params: {
   trackEvent("cta_click", params);
 }
 
-export function trackViewPricing(source: string = "pricing_page"): void {
-  trackEvent("view_pricing", { source });
+export function trackViewPricing(entryPoint: string = "pricing_page"): void {
+  // Use entry_point — GA4 treats `source` as a reserved campaign attribution field.
+  trackEvent("view_pricing", { entry_point: entryPoint });
 }
 
 export function trackBeginCheckout(params: {
@@ -62,8 +63,9 @@ export function trackBeginCheckout(params: {
   });
 }
 
-export function trackContactSubmit(source: string = "contact_modal"): void {
-  trackEvent("contact_submit", { source });
+export function trackContactSubmit(entryPoint: string = "contact_modal"): void {
+  // Use entry_point — GA4 treats `source` as a reserved campaign attribution field.
+  trackEvent("contact_submit", { entry_point: entryPoint });
 }
 
 export function trackCopyInstallCommand(params: {
