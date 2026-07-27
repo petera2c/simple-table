@@ -3,10 +3,10 @@
  * Uses `h(SimpleTable, props)` — Vue's attrs runtime; typed via the generic export cast.
  * Calls are behind `false &&` so the component body never runs.
  */
-import { h } from "vue";
+import { h, ref } from "vue";
 import { describe, it, expect } from "vitest";
 import { SimpleTable } from "../index";
-import type { VueColumnDef } from "../index";
+import type { SimpleTableExposed, VueColumnDef } from "../index";
 
 interface AnalyticsFactRow {
   id: number;
@@ -49,6 +49,15 @@ false &&
     rows: [{ x: 1 }],
     getRowId: ({ row }) => row.x,
   });
+
+// Template-ref handle: getAPI is TableAPI<AnalyticsFactRow>
+const tableRef = ref<SimpleTableExposed<AnalyticsFactRow> | null>(null);
+const api = tableRef.value?.getAPI() ?? null;
+const metric: string | undefined = api?.getVisibleRows()[0]?.row.metric;
+// @ts-expect-error — AnalyticsFactRow has no `missing`
+const missing: string | undefined = api?.getVisibleRows()[0]?.row.missing;
+void metric;
+void missing;
 
 describe("SimpleTable TData inference", () => {
   it("compiles without an explicit type argument", () => {

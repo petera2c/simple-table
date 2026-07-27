@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, GetRowIdParams } from "@simple-table/vue";
+import type { Theme, GetRowIdParams, SimpleTableExposed } from "@simple-table/vue";
 import { rowGroupingConfig } from "./row-grouping.demo-data";
 import type { OrgUnit } from "./row-grouping.demo-data";
 import "@simple-table/vue/styles.css";
@@ -34,7 +34,7 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
 
-const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
+const tableRef = ref<SimpleTableExposed<OrgUnit> | null>(null);
 const getRowId = ({ row }: GetRowIdParams<OrgUnit>) => row.id;
 
 function btnStyle(color: string) {

@@ -108,7 +108,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { TableAPI, Theme, GetRowIdParams } from "@simple-table/vue";
+import type { Theme, GetRowIdParams, SimpleTableExposed } from "@simple-table/vue";
 import { analyticsDemoConfig, analyticsPresets } from "./analytics.demo-data";
 import type { AnalyticsFactRow } from "./analytics.demo-data";
 import "@simple-table/vue/styles.css";
@@ -118,7 +118,7 @@ const props = withDefaults(defineProps<{ height?: string | number | null; theme?
 });
 
 const activeId = ref(analyticsPresets[0].id);
-const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
+const tableRef = ref<SimpleTableExposed<AnalyticsFactRow> | null>(null);
 const active = computed(
   () => analyticsPresets.find((p) => p.id === activeId.value) ?? analyticsPresets[0]
 );

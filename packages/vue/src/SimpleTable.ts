@@ -9,6 +9,7 @@ import type { SimpleTableConfig, TableAPI } from "simple-table-core";
 import { buildVanillaConfig, resolveVueColumns } from "./buildVanillaConfig";
 import { MountRegistry } from "./MountRegistry";
 import type {
+  SimpleTableExposed,
   SimpleTableVueProps,
   TableInstance,
   VueDefaultRowData,
@@ -33,8 +34,8 @@ import type {
  *
  * <script setup lang="ts">
  * import { ref } from 'vue'
- * import type { TableAPI } from '@simple-table/vue'
- * const tableRef = ref<{ getAPI: () => TableAPI<HREmployee> | null } | null>(null)
+ * import type { SimpleTableExposed } from '@simple-table/vue'
+ * const tableRef = ref<SimpleTableExposed<HREmployee> | null>(null)
  * </script>
  */
 /**
@@ -125,11 +126,11 @@ const SimpleTableInner = defineComponent({
       registry.clear();
     });
 
-    // Expose TableAPI methods via template ref so consumers can call
-    // tableRef.value.sort(...), tableRef.value.filter(...), etc.
+    // Expose TableAPI via template ref. Type the ref as
+    // `SimpleTableExposed<TData>` for a typed `getAPI()` return.
     expose({
       getAPI: (): TableAPI | null => instance?.getAPI() ?? null,
-    });
+    } satisfies SimpleTableExposed);
 
     return () => h("div", { ref: containerRef });
   },

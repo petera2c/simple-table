@@ -109,8 +109,12 @@ const badNestedColumns: NestedSvelteColumnDef[] = [
 void badNestedColumns;
 
 // Typed imperative handle shape consumers use with bind:this.
-const apiProbe: TableAPI<HREmployee> | null = null;
-void apiProbe;
+type SvelteTableHandle<TData> = { getAPI: () => TableAPI<TData> | null };
+const tableHandle: SvelteTableHandle<HREmployee> = {
+  getAPI: () => null,
+};
+const apiFromHandle = tableHandle.getAPI();
+void apiFromHandle;
 
 const probeVisibleRows = (api: TableAPI<HREmployee>) => {
   const id: number | undefined = api.getVisibleRows()[0]?.row.id;
@@ -121,6 +125,16 @@ const probeVisibleRows = (api: TableAPI<HREmployee>) => {
   void api.getAllRows();
 };
 void probeVisibleRows;
+
+const probeHandleGetAPI = (handle: SvelteTableHandle<HREmployee>) => {
+  const api = handle.getAPI();
+  const id: number | undefined = api?.getVisibleRows()[0]?.row.id;
+  // @ts-expect-error HREmployee has no `missing`
+  const missing: string | undefined = api?.getVisibleRows()[0]?.row.missing;
+  void id;
+  void missing;
+};
+void probeHandleGetAPI;
 
 describe("generic row data types", () => {
   it("compiles typed SimpleTable props", () => {

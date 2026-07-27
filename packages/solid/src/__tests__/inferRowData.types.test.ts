@@ -26,6 +26,11 @@ false &&
   SimpleTable({
     ref: (api) => {
       tableApi = api;
+      const metric: string | undefined = api.getVisibleRows()[0]?.row.metric;
+      // @ts-expect-error — AnalyticsFactRow has no `missing`
+      const missing: string | undefined = api.getVisibleRows()[0]?.row.missing;
+      void metric;
+      void missing;
     },
     columns,
     rows,

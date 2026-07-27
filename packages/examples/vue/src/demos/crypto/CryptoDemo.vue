@@ -18,14 +18,14 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, CellValue, GetRowIdParams } from "@simple-table/vue";
+import type { Theme, TableAPI, CellValue, GetRowIdParams, SimpleTableExposed } from "@simple-table/vue";
 import { cryptoConfig } from "./crypto.demo-data";
 import type { CryptoCoin } from "./crypto.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), { height: "70dvh" });
 
-const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
+const tableRef = ref<SimpleTableExposed<CryptoCoin> | null>(null);
 const getRowId = ({ row }: GetRowIdParams<CryptoCoin>) => row.id;
 let cleanupFn: (() => void) | null = null;
 
@@ -43,7 +43,7 @@ function pickRandomSubset<T>(arr: T[], n: number): T[] {
   return copy.slice(0, Math.min(n, copy.length));
 }
 
-function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<CryptoCoin>) {
+function applyRowPatch(api: TableAPI<CryptoCoin>, rowId: string | number, patch: Partial<CryptoCoin>) {
   for (const accessor of Object.keys(patch)) {
     const newValue = patch[accessor as keyof CryptoCoin];
     if (newValue === undefined) continue;
@@ -51,7 +51,7 @@ function applyRowPatch(api: TableAPI, rowId: string | number, patch: Partial<Cry
   }
 }
 
-function runTick(getApi: () => TableAPI | null | undefined) {
+function runTick(getApi: () => TableAPI<CryptoCoin> | null | undefined) {
   const api = getApi();
   if (!api) return;
   const visible = api.getVisibleRows();

@@ -17,7 +17,16 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, VueColumnDef, CellRendererProps, Row, CellValue, GetRowIdParams } from "@simple-table/vue";
+import type {
+  Theme,
+  TableAPI,
+  VueColumnDef,
+  CellRendererProps,
+  Row,
+  CellValue,
+  GetRowIdParams,
+  SimpleTableExposed,
+} from "@simple-table/vue";
 import {
   infrastructureConfig,
   infrastructureData,
@@ -106,7 +115,9 @@ function infraComputeMetricPatch(row: Row, slot: InfraMetricSlot): Partial<Row> 
   }
 }
 
-function startInfraDemoLiveUpdates(getApi: () => TableAPI | null | undefined): () => void {
+function startInfraDemoLiveUpdates(
+  getApi: () => TableAPI<InfrastructureServer> | null | undefined,
+): () => void {
   let isActive = true;
   const tick = () => {
     if (!isActive) return;
@@ -138,7 +149,7 @@ const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme
   height: "400px",
 });
 
-const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
+const tableRef = ref<SimpleTableExposed<InfrastructureServer> | null>(null);
 const getRowId = ({ row }: GetRowIdParams<InfrastructureServer>) => row.id;
 
 function applyRenderers(

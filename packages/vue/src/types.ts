@@ -36,6 +36,14 @@ export interface TableInstance {
   getAPI(): TableAPI;
 }
 
+/**
+ * Imperative handle exposed on Vue template refs (`ref="tableRef"`).
+ * Prefer `ref<SimpleTableExposed<MyRow> | null>(null)` so `getAPI()` is typed.
+ */
+export interface SimpleTableExposed<TData extends VueDefaultRowData = VueDefaultRowData> {
+  getAPI(): TableAPI<TData> | null;
+}
+
 // ─── Icon overrides ───────────────────────────────────────────────────────────
 // Accept VNode in place of SVGSVGElement | HTMLElement | string
 export type VueIconElement = VNode;
@@ -116,7 +124,7 @@ export interface VueColumnDef<
 
 // ─── Top-level props ──────────────────────────────────────────────────────────
 // Mirrors SimpleTableProps with Vue-specific renderer/icon types.
-// Use a template ref and `ref.value?.getAPI()` for the imperative TableAPI.
+// Use a template ref typed as `SimpleTableExposed<TData>` for `getAPI()`.
 //
 //   Overridden to Vue equivalents:
 //     - columns → ReadonlyArray<VueColumnDef<TData>>

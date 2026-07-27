@@ -12,14 +12,14 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, GetRowIdParams } from "@simple-table/vue";
+import type { Theme, GetRowIdParams, SimpleTableExposed } from "@simple-table/vue";
 import { liveUpdateConfig, liveUpdateData } from "./live-update.demo-data";
 import type { LiveUpdateProduct } from "./live-update.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), { height: "400px" });
 
-const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
+const tableRef = ref<SimpleTableExposed<LiveUpdateProduct> | null>(null);
 const getRowId = ({ row }: GetRowIdParams<LiveUpdateProduct>) => row.id;
 
 let cleanupFn: (() => void) | null = null;

@@ -10,6 +10,7 @@ import type {
   VueColumnDef,
   NestedVueColumnDef,
   CellChangeProps,
+  SimpleTableExposed,
   SimpleTableVueProps,
 } from "../index";
 
@@ -114,8 +115,11 @@ const badNestedColumns: NestedVueColumnDef[] = [
 void badNestedColumns;
 
 // Typed imperative handle shape consumers use with template refs.
-const apiProbe: TableAPI<HREmployee> | null = null;
-void apiProbe;
+const tableRef: SimpleTableExposed<HREmployee> = {
+  getAPI: () => null,
+};
+const apiFromExpose = tableRef.getAPI();
+void apiFromExpose;
 
 const probeVisibleRows = (api: TableAPI<HREmployee>) => {
   const id: number | undefined = api.getVisibleRows()[0]?.row.id;
@@ -126,6 +130,16 @@ const probeVisibleRows = (api: TableAPI<HREmployee>) => {
   void api.getAllRows();
 };
 void probeVisibleRows;
+
+const probeExposedGetAPI = (handle: SimpleTableExposed<HREmployee>) => {
+  const api = handle.getAPI();
+  const id: number | undefined = api?.getVisibleRows()[0]?.row.id;
+  // @ts-expect-error HREmployee has no `missing`
+  const missing: string | undefined = api?.getVisibleRows()[0]?.row.missing;
+  void id;
+  void missing;
+};
+void probeExposedGetAPI;
 
 // h() accepts typed props bag
 void h(SimpleTable, props);

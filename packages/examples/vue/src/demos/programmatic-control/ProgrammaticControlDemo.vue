@@ -34,7 +34,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, VueColumnDef, CellRendererProps, GetRowIdParams } from "@simple-table/vue";
+import type {
+  Theme,
+  VueColumnDef,
+  CellRendererProps,
+  GetRowIdParams,
+  SimpleTableExposed,
+} from "@simple-table/vue";
 import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
 import type { ProgrammaticControlProduct } from "./programmatic-control.demo-data";
 import "@simple-table/vue/styles.css";
@@ -43,7 +49,7 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
 
-const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
+const tableRef = ref<SimpleTableExposed<ProgrammaticControlProduct> | null>(null);
 const statusMessage = ref("No status message");
 const getRowId = ({ row }: GetRowIdParams<ProgrammaticControlProduct>) => row.id;
 

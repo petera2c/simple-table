@@ -5,6 +5,7 @@ export { asRows } from "simple-table-core";
 // Vue-specific props and type overrides
 export type {
   SimpleTableVueProps,
+  SimpleTableExposed,
   TableInstance,
   VueColumnDef,
   NestedVueColumnDef,

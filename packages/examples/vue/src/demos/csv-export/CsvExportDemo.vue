@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, VueColumnDef, GetRowIdParams } from "@simple-table/vue";
+import type { Theme, VueColumnDef, GetRowIdParams, SimpleTableExposed } from "@simple-table/vue";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
 import type { CsvProduct } from "./csv-export.demo-data";
 import "@simple-table/vue/styles.css";
@@ -30,7 +30,7 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
 
-const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
+const tableRef = ref<SimpleTableExposed<CsvProduct> | null>(null);
 const getRowId = ({ row }: GetRowIdParams<CsvProduct>) => row.id;
 
 const headers: VueColumnDef<CsvProduct>[] = csvExportHeaders.map((col) => {
