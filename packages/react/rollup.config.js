@@ -18,9 +18,10 @@ const isDev = process.env.ROLLUP_WATCH === "true";
  * Rollup build to finish first.
  *
  * Core's source has side-effect CSS imports (all-themes.css). In dev we don't
- * need to process or bundle CSS here — consumers should import
- * `simple-table-core/styles.css` in their app entry point — so the ignoreCss
- * plugin silently drops those imports.
+ * process or bundle CSS here — `copy-core-styles` copies `core/dist/styles.css`
+ * into this package's dist (and watches that file so a core watch rebuild
+ * re-copies for Next HMR). Run core's `preview` alongside this watch
+ * (`pnpm run dev:marketing:watch`) so CSS edits regenerate core's styles.css.
  *
  * In production mode everything stays external and core is published separately.
  */
@@ -112,6 +113,13 @@ export default {
 
     {
       name: "copy-core-styles",
+      buildStart() {
+        // When core's watch rebuild writes dist/styles.css, re-run this bundle so
+        // we re-copy into @simple-table/react/styles.css for Next HMR.
+        if (isDev) {
+          this.addWatchFile(path.resolve(__dirname, "../core/dist/styles.css"));
+        }
+      },
       writeBundle() {
         const src = path.resolve(__dirname, "../core/dist/styles.css");
         const dest = path.resolve(__dirname, "dist/styles.css");

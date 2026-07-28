@@ -261,6 +261,13 @@ export function wrapReactFooterRenderer(
 /**
  * Like {@link wrapReactRenderer} for column editor rows: core passes `components.*`
  * as live DOM nodes; this maps them to React nodes so consumers can use normal JSX.
+ *
+ * Reuses one portal host per column `accessor` so popout list rebuilds
+ * (`listsContainer.innerHTML = ""` then re-invoke) update props in place via
+ * {@link PortalBridge.update} instead of remounting the React subtree and wiping
+ * local state (open tooltips, toggles, etc.). Unlike headerRenderer — which gets
+ * one wrapper per column — a single rowRenderer serves every editor row, so hosts
+ * are keyed by accessor.
  */
 export function wrapReactColumnEditorRowRenderer(
   bridge: PortalBridge,
@@ -269,14 +276,22 @@ export function wrapReactColumnEditorRowRenderer(
   if (isWrappedRenderer(Component)) {
     return Component as unknown as (props: VanillaColumnEditorRowRendererProps) => HTMLElement;
   }
+  const hosts = new Map<string, HTMLElement>();
   return markWrapped((props: VanillaColumnEditorRowRendererProps): HTMLElement => {
-    const container = document.createElement("div");
     const reactProps = {
       ...props,
       components: mapColumnEditorRowComponentsForReact(props.components),
     };
-    bridge.register(<Component {...(reactProps as any)} />, container);
-    return container;
+    const node = <Component {...(reactProps as any)} />;
+    const key = String(props.accessor);
+    const existing = hosts.get(key);
+    if (existing && bridge.update(existing, node)) {
+      return existing;
+    }
+    const host = document.createElement("div");
+    bridge.register(node, host);
+    hosts.set(key, host);
+    return host;
   });
 }
 

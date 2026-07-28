@@ -13,6 +13,7 @@ import {
   createDescIcon,
   createDragIcon,
   createFilterIcon,
+  createMinusIcon,
   createSelectIcon,
 } from "../../src/icons";
 import { ColumnDef } from "../../src/index";
@@ -147,6 +148,16 @@ const ICONS: IconEntry[] = [
     crispRisk: "low",
     notes: "Stroke check via createCheckIcon → createCheckbox.",
     className: "st-checkbox-checkmark",
+  },
+  {
+    name: "Minus",
+    role: "checkbox indeterminate",
+    factory: createMinusIcon,
+    sizeNote: "12×12 · minus",
+    viewBox: "0 0 24 24",
+    crispRisk: "low",
+    notes: "Stroke minus via createMinusIcon → indeterminate createCheckbox.",
+    className: "st-checkbox-minus",
   },
   {
     name: "Select",

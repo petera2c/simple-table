@@ -11,6 +11,38 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_1_0: ChangelogEntry = {
+  version: "4.1.0",
+  date: "2026-07-28",
+  title: "Indeterminate column group checkboxes",
+  description:
+    "Column editor group rows now show a minus mark when only some child columns are visible, with proper mixed accessibility state.",
+  changes: [
+    {
+      type: "feature",
+      description:
+        "Group title checkboxes in the column editor use a tri-state: unchecked, indeterminate (partial selection with a minus icon and aria-checked=\"mixed\"), or checked when all children are visible.",
+      link: "/docs/column-visibility",
+    },
+    {
+      type: "improvement",
+      description:
+        "Clicking an indeterminate group checkbox shows all descendant columns under that group, so the control resolves to fully checked instead of snapping back to mixed.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "React columnEditorConfig.rowRenderer reuses its portal host per column so tooltips and other local UI state survive column-editor list re-renders.",
+      link: "/docs/column-visibility",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Sticky headers no longer go transparent from a CSS cascade override, so body rows no longer bleed through while scrolling (most visible on modern-light).",
+    },
+  ],
+};
+
 export const v4_0_9: ChangelogEntry = {
   version: "4.0.9",
   date: "2026-07-26",
@@ -2436,6 +2468,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_1_0,
   v4_0_9,
   v4_0_8,
   v4_0_7,

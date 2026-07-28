@@ -10,6 +10,8 @@ export { createAngleUpIcon } from "./AngleUpIcon";
 export { createAscIcon } from "./AscIcon";
 export { createCheckIcon } from "./CheckIcon";
 export { createDescIcon } from "./DescIcon";
+export { createMinusIcon } from "./MinusIcon";
+
 export { createDragIcon } from "./DragIcon";
 export { createFilterIcon } from "./FilterIcon";
 export { createSelectIcon } from "./SelectIcon";

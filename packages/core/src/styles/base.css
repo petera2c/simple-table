@@ -270,6 +270,7 @@ input {
 .st-header-pinned-right {
   overflow-x: auto;
   overflow-y: hidden;
+  background-color: var(--st-header-background-color);
 }
 
 .st-header-main::-webkit-scrollbar {
@@ -521,7 +522,8 @@ input {
   background-color: var(--st-header-highlight-indicator-color);
 }
 
-/* Common styles for table header and cells */
+/* Common layout for header and body cells. Background stays on `.st-header-cell`
+   / `.st-cell` separately — a shared transparent bg would override the header. */
 .st-header-cell,
 .st-cell {
   position: relative;
@@ -530,7 +532,9 @@ input {
   color: var(--st-cell-color);
   gap: var(--st-spacing-small);
   overflow: hidden;
-  /* mix-blend-mode: multiply; */
+}
+
+.st-cell {
   background-color: transparent;
 }
 
@@ -1359,6 +1363,7 @@ input {
 .st-expand-icon[fill="none"] path,
 .st-next-prev-icon[fill="none"] path,
 .st-checkbox-checkmark[fill="none"] path,
+.st-checkbox-minus[fill="none"] path,
 .st-custom-select-arrow[fill="none"] path {
   fill: none;
 }
@@ -1446,12 +1451,14 @@ input {
     border-color var(--st-transition-duration) var(--st-transition-ease);
 }
 
-.st-checkbox-custom.st-checked {
+.st-checkbox-custom.st-checked,
+.st-checkbox-custom.st-indeterminate {
   background-color: var(--st-checkbox-checked-background-color);
   border-color: var(--st-checkbox-checked-border-color);
 }
 
-.st-checkbox-checkmark {
+.st-checkbox-checkmark,
+.st-checkbox-minus {
   color: var(--st-button-active-text-color);
 }
 

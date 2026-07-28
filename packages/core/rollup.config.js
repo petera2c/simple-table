@@ -4,6 +4,8 @@ import typescript from "rollup-plugin-typescript2";
 import { terser } from "rollup-plugin-terser";
 import del from "rollup-plugin-delete";
 
+const isDev = process.env.ROLLUP_WATCH === "true";
+
 export default {
   input: "src/index.ts",
   output: [
@@ -25,7 +27,9 @@ export default {
     },
   ],
   plugins: [
-    del({ targets: "dist/*" }),
+    // In watch mode keep dist/ stable — marketing / adapter watchers read styles.css
+    // from here; wiping on every rebuild causes brief empty-package races.
+    !isDev && del({ targets: "dist/*" }),
     postcss({
       extract: "styles.css", // All-in-one file for backward compatibility
       inject: false,
@@ -99,6 +103,6 @@ export default {
         comments: false, // Remove all comments
       },
     }),
-  ],
+  ].filter(Boolean),
   external: [],
 };

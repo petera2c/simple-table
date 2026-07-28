@@ -1768,6 +1768,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
 
   update(config: Partial<SimpleTableConfigInput<TData>>): void {
     this.isUpdating = true;
+    const previousTheme = this.config.theme;
     const patch = normalizeConfigPatch(config as unknown as Partial<SimpleTableConfigInput>);
     this.config = { ...this.config, ...patch };
 
@@ -1879,6 +1880,15 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
 
     if (config.theme !== undefined) {
       this.domManager.updateTheme(config.theme);
+      // Theme only swapped the root CSS class before, so custom cell/header/
+      // footer renderers kept stale theme props (and memoization skipped
+      // rebuilds). Tear down all rendered cells + context so the ensuing
+      // render remounts everything with the new theme — consumers should not
+      // need to remount the table themselves.
+      if (config.theme !== previousTheme) {
+        this.renderOrchestrator.invalidateCache("all");
+        this.renderOrchestrator.invalidateCustomFooterCache();
+      }
     }
 
     if (config.footerPosition !== undefined) {

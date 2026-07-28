@@ -739,3 +739,66 @@ export const ColumnEditorConfigShowToggleFalse = {
     expect(getComputedStyle(root!).getPropertyValue("--st-editor-width").trim()).toBe("0px");
   },
 };
+
+export const ColumnEditorGroupPartialSelection = {
+  render: () => {
+    const headers: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      {
+        accessor: "location",
+        label: "Location",
+        width: 150,
+        type: "string",
+        children: [
+          { accessor: "city", label: "City", width: 150, type: "string" },
+          { accessor: "region", label: "Region", width: 120, type: "string", hide: true },
+        ],
+      },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      getRowId: (p) => String(p.row?.id),
+      height: "300px",
+      enableColumnEditor: true,
+      enableColumnEditorInitOpen: true,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await new Promise((r) => setTimeout(r, 300));
+
+    const popout =
+      canvasElement.querySelector(".st-column-editor-popout.open") ??
+      canvasElement.querySelector(".st-column-editor-popout");
+    expect(popout).toBeTruthy();
+
+    const items = getColumnCheckboxItems(popout!);
+    const locationItem = items.find((item) => getColumnLabelFromCheckbox(item) === "Location");
+    expect(locationItem).toBeTruthy();
+
+    const locationInput = getCheckboxInput(locationItem!);
+    expect(locationInput.getAttribute("aria-checked")).toBe("mixed");
+    expect(locationInput.indeterminate).toBe(true);
+    expect(locationItem!.querySelector(".st-checkbox-custom.st-indeterminate")).toBeTruthy();
+    expect(locationItem!.querySelector(".st-checkbox-minus")).toBeTruthy();
+    expect(locationItem!.querySelector(".st-checkbox-checkmark")).toBeNull();
+
+    // Clicking indeterminate selects all children in the group.
+    await toggleColumnVisibility(locationItem!);
+
+    const updatedItems = getColumnCheckboxItems(
+      (canvasElement.querySelector(".st-column-editor-popout.open") ??
+        canvasElement.querySelector(".st-column-editor-popout"))!,
+    );
+    const updatedLocation = updatedItems.find(
+      (item) => getColumnLabelFromCheckbox(item) === "Location",
+    );
+    expect(updatedLocation).toBeTruthy();
+    const updatedInput = getCheckboxInput(updatedLocation!);
+    expect(updatedInput.getAttribute("aria-checked")).toBe("true");
+    expect(updatedInput.indeterminate).toBe(false);
+    expect(updatedLocation!.querySelector(".st-checkbox-checkmark")).toBeTruthy();
+    expect(isColumnVisible(canvasElement, "City")).toBe(true);
+    expect(isColumnVisible(canvasElement, "Region")).toBe(true);
+  },
+};

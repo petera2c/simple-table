@@ -1,4 +1,4 @@
-import React, { createContext, createElement, useContext } from "react";
+import React, { createContext, createElement, useContext, useEffect } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { PortalBridge, useTablePortals } from "../PortalBridge";
@@ -170,11 +170,55 @@ describe("wrapReact*Renderer slot mapping (DOM node -> React node)", () => {
       return createElement("span", { className: "row" }, components?.dragIcon);
     }
     const container = wrapReactColumnEditorRowRenderer(bridge, Row)({
+      accessor: "name",
       components: { dragIcon },
     } as any);
 
     await waitFor(() => container.querySelector(".row #drag-node") !== null);
     expect(container.querySelector(".row #drag-node")).not.toBeNull();
+  });
+
+  it("wrapReactColumnEditorRowRenderer reuses the portal host per accessor across rebuilds", async () => {
+    const bridge = new PortalBridge();
+    mountBridge(bridge);
+
+    let mounts = 0;
+    function Row({ components }: any) {
+      useEffect(() => {
+        mounts += 1;
+      }, []);
+      return createElement("span", { className: "row" }, components?.dragIcon);
+    }
+
+    const render = wrapReactColumnEditorRowRenderer(bridge, Row);
+    const dragA = document.createElement("i");
+    dragA.id = "drag-a";
+    const first = render({
+      accessor: "name",
+      components: { dragIcon: dragA },
+    } as any);
+
+    await waitFor(() => first.querySelector(".row #drag-a") !== null);
+    expect(mounts).toBe(1);
+
+    // Simulate popout list wipe: detach host, then re-invoke with new slots.
+    first.remove();
+    const dragB = document.createElement("i");
+    dragB.id = "drag-b";
+    const second = render({
+      accessor: "name",
+      components: { dragIcon: dragB },
+    } as any);
+
+    expect(second).toBe(first);
+    await waitFor(() => second.querySelector(".row #drag-b") !== null);
+    expect(mounts).toBe(1);
+
+    const other = render({
+      accessor: "status",
+      components: { dragIcon: document.createElement("i") },
+    } as any);
+    expect(other).not.toBe(first);
   });
 
   it("wrapReactColumnEditorCustomRenderer maps section DOM nodes to React nodes", async () => {

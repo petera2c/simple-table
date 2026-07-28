@@ -4,7 +4,9 @@ import { IconsConfig } from "../../types/IconsConfig";
 import { ColumnEditorRowRendererComponents } from "../../types/ColumnEditorRowRendererProps";
 import {
   areAllChildrenHidden,
+  areAllChildrenVisible,
   findAndMarkParentsVisible,
+  showAllDescendants,
   updateParentHeaders,
   buildColumnVisibilityState,
   findClosestValidSeparatorIndex,
@@ -95,10 +97,23 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
   const paddingLeft = `${depth * 16}px`;
   const hasChildren = header.children && header.children.length > 0;
 
-  const isChecked = !(
-    header.hide ||
-    (hasChildren && header.children && areAllChildrenHidden(header.children))
-  );
+  // Group rows use a tri-state checkbox: unchecked / indeterminate (partial) / checked.
+  let isChecked = !header.hide;
+  let isIndeterminate = false;
+  if (hasChildren && header.children) {
+    const allHidden = areAllChildrenHidden(header.children);
+    const allVisible = areAllChildrenVisible(header.children);
+    if (header.hide || allHidden) {
+      isChecked = false;
+      isIndeterminate = false;
+    } else if (allVisible) {
+      isChecked = true;
+      isIndeterminate = false;
+    } else {
+      isChecked = false;
+      isIndeterminate = true;
+    }
+  }
 
   const isExpanded = expandedHeaders.has(header.accessor);
   const shouldExpand = forceExpanded || isExpanded;
@@ -146,9 +161,14 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
       findAndMarkParentsVisible(allHeaders, header.accessor);
 
       if (hasChildren && header.children && header.children.length > 0) {
-        const allChildrenCurrentlyHidden = header.children.every((child) => child.hide === true);
+        const wasPartial =
+          !areAllChildrenHidden(header.children) && !areAllChildrenVisible(header.children);
 
-        if (allChildrenCurrentlyHidden && header.children[0]) {
+        if (wasPartial) {
+          // Indeterminate → checked: show every descendant under this group.
+          showAllDescendants(header.children);
+        } else if (areAllChildrenHidden(header.children) && header.children[0]) {
+          // Fully hidden group → checked: reveal the first child (existing behavior).
           header.children[0].hide = false;
           findAndMarkParentsVisible(allHeaders, header.children[0].accessor);
         }
@@ -372,6 +392,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
 
   const checkboxObj = createCheckbox({
     checked: isChecked,
+    indeterminate: isIndeterminate,
     onChange: handleCheckboxChange,
   });
   if (!canToggleVisibility) {

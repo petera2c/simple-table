@@ -49,6 +49,20 @@ export const areAllChildrenHidden = (children: ColumnDef[]) => {
   return children.every((child) => child.hide);
 };
 
+export const areAllChildrenVisible = (children: ColumnDef[]) => {
+  return children.every((child) => !child.hide);
+};
+
+/** Recursively marks every header in the subtree as visible. */
+export const showAllDescendants = (children: ColumnDef[]) => {
+  for (const child of children) {
+    child.hide = false;
+    if (child.children && child.children.length > 0) {
+      showAllDescendants(child.children);
+    }
+  }
+};
+
 export const updateParentHeaders = (headers: ColumnDef[]) => {
   headers.forEach((header) => {
     if (header.children && header.children.length > 0) {
