@@ -1745,6 +1745,73 @@ export function themeStylingFlagsSnippets(): Record<Framework, string> {
   };
 }
 
+/** Highlight specific rows with getRowClass (classes apply to each body cell). */
+export function getRowClassSnippets(): Record<Framework, string> {
+  return {
+    react: `const [jumpId, setJumpId] = useState(null);
+
+<SimpleTable
+  columns={columns}
+  rows={rows}
+  getRowClass={({ row }) =>
+    jumpId && row.id === jumpId ? "jump-row" : undefined
+  }
+/>
+
+/* CSS */
+.jump-row { background-color: #fef3c7; }`,
+    solid: `<SimpleTable
+  columns={columns}
+  rows={rows()}
+  getRowClass={({ row }) =>
+    jumpId() && row.id === jumpId() ? "jump-row" : undefined
+  }
+/>
+
+/* CSS */
+.jump-row { background-color: #fef3c7; }`,
+    vue: `<SimpleTable
+  :columns="columns"
+  :rows="rows"
+  :get-row-class="({ row }) =>
+    jumpId && row.id === jumpId ? 'jump-row' : undefined
+  "
+/>
+
+/* CSS */
+.jump-row { background-color: #fef3c7; }`,
+    angular: `<simple-table
+  [columns]="columns"
+  [rows]="rows"
+  [getRowClass]="getRowClass"
+></simple-table>
+
+/* getRowClass = ({ row }) => jumpId && row.id === jumpId ? 'jump-row' : undefined */
+
+/* CSS */
+.jump-row { background-color: #fef3c7; }`,
+    svelte: `<SimpleTable
+  {columns}
+  {rows}
+  getRowClass={({ row }) =>
+    jumpId && row.id === jumpId ? "jump-row" : undefined
+  }
+/>
+
+/* CSS */
+.jump-row { background-color: #fef3c7; }`,
+    vanilla: `new SimpleTableVanilla(container, {
+  columns,
+  rows,
+  getRowClass: ({ row }) =>
+    jumpId && row.id === jumpId ? "jump-row" : undefined,
+});
+
+/* CSS */
+.jump-row { background-color: #fef3c7; }`,
+  };
+}
+
 /** Call TableAPI.exportToCSV from a button / handler. */
 export function exportToCSVSnippets(): Record<Framework, string> {
   return {

@@ -22,6 +22,7 @@ import { RowButton } from "./RowButton";
 import Theme from "./Theme";
 import { CustomThemeProps } from "./CustomTheme";
 import { GetRowId } from "./GetRowId";
+import { GetRowClass } from "./GetRowClass";
 import { ColumnEditorConfig } from "./ColumnEditorConfig";
 import { IconsConfig } from "./IconsConfig";
 import { QuickFilterConfig } from "./QuickFilterTypes";
@@ -142,6 +143,11 @@ export interface SimpleTableProps<TData extends RowData = Row> {
    */
   rowGrouping?: Accessor<TData>[];
   getRowId?: GetRowId<TData>; // Stable business id for a row. Return null/undefined when the row has no id (pivot aggregates, loading) to use reference-based identity.
+  /**
+   * Return CSS class name(s) for the row. Applied to each body cell — style with
+   * `.st-cell.yourClass`. Return null/undefined for default styling.
+   */
+  getRowClass?: GetRowClass<TData>;
   rows: TData[]; // Rows data
   rowsPerPage?: number; // Rows per page
   scrollParent?: HTMLElement | "window" | (() => HTMLElement | null); // External scroll container that drives virtualization and onLoadMore when neither height nor maxHeight is set. Accepts an element, the string "window", or a getter (useful for refs that resolve after first render).

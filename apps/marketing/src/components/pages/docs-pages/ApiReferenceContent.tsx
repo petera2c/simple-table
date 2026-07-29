@@ -24,6 +24,7 @@ import {
   EXPORT_VALUE_PROPS,
   CELL_CLICK_PROPS,
   ON_ROW_GROUP_EXPAND_PROPS,
+  GET_ROW_CLASS_PARAMS,
   HEADER_RENDERER_PROPS,
   COLUMN_EDITOR_ROW_RENDERER_PROPS,
   ANIMATIONS_CONFIG_PROPS,
@@ -216,6 +217,10 @@ const ApiReferenceContent = () => {
 
       <div style={{ scrollMarginTop: `${HEADER_HEIGHT}px` }} id="on-row-group-expand-props">
         <PropTable props={ON_ROW_GROUP_EXPAND_PROPS} title="OnRowGroupExpandProps" />
+      </div>
+
+      <div style={{ scrollMarginTop: `${HEADER_HEIGHT}px` }} id="get-row-class-params">
+        <PropTable props={GET_ROW_CLASS_PARAMS} title="GetRowClassParams" />
       </div>
 
       <div style={{ scrollMarginTop: `${HEADER_HEIGHT}px` }} id="header-renderer-props">

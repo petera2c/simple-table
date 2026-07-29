@@ -14,10 +14,16 @@ export interface ChangelogEntry {
 export const v4_1_1: ChangelogEntry = {
   version: "4.1.1",
   date: "2026-07-29",
-  title: "Row grouping leaf-row alignment",
+  title: "getRowClass and row grouping leaf alignment",
   description:
-    "Non-expandable rows at an expandable depth again reserve caret space so nested and leaf rows stay text-aligned.",
+    "Add getRowClass for data-driven row styling, and restore caret-space alignment for non-expandable rows at an expandable depth.",
   changes: [
+    {
+      type: "feature",
+      description:
+        "New getRowClass callback for data-driven row styling (e.g. search jump, compare highlights). Classes apply to each body cell — see Themes docs.",
+      link: "/docs/themes",
+    },
     {
       type: "bugfix",
       description:

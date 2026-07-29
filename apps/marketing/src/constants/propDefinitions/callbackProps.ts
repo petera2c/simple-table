@@ -704,3 +704,38 @@ if (data.length === 0) {
 props.setEmpty(false);`,
   },
 ];
+
+export const GET_ROW_CLASS_PARAMS: PropInfo[] = [
+  {
+    key: "row",
+    name: "row",
+    required: true,
+    description: "The row data object for the row being styled.",
+    type: "TData",
+    example: `params.row // { id: 3, name: "Carol" }`,
+  },
+  {
+    key: "rowId",
+    name: "rowId",
+    required: true,
+    description: "Table identity string for the row. Prefer matching on `row` for business ids.",
+    type: "string",
+    example: `params.rowId // "2-3"`,
+  },
+  {
+    key: "position",
+    name: "position",
+    required: true,
+    description: "0-based index of the row in the table.",
+    type: "number",
+    example: `params.position // 2`,
+  },
+  {
+    key: "depth",
+    name: "depth",
+    required: true,
+    description: "Nesting depth of the row (0 for top-level rows).",
+    type: "number",
+    example: `params.depth // 0`,
+  },
+];

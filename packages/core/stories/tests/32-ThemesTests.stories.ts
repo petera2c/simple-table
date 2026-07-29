@@ -6,7 +6,7 @@
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
 import { ColumnDef } from "../../src/index";
-import { waitForTable } from "./testUtils";
+import { waitForTable, getRowCount } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
 const meta: Meta = {
@@ -359,5 +359,153 @@ export const ColumnBorders = {
       root!.className.includes("column-border") ||
       root!.getAttribute("data-column-borders") === "true";
     expect(hasColumnBordersClass || root !== null).toBe(true);
+  },
+};
+
+// ============================================================================
+// getRowClass
+// ============================================================================
+
+const jumpHighlightData = () =>
+  Array.from({ length: 500 }, (_, i) => ({
+    id: i + 1,
+    name: `Person ${i + 1}`,
+  }));
+
+export const GetRowClassHighlightsMatchingRow = {
+  tags: ["get-row-class"],
+  render: () => {
+    const { wrapper } = renderVanillaTable(headers, stripedData(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "250px",
+      getRowClass: ({ row }) =>
+        (row as { id?: number }).id === 3 ? "test-jump-row" : undefined,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    // Path-based row id: [index, getRowId] → "2-3" for id 3 at index 2
+    const highlighted = canvasElement.querySelectorAll<HTMLElement>(
+      '.st-cell[data-row-id="2-3"].test-jump-row',
+    );
+    expect(highlighted.length).toBeGreaterThan(0);
+    // Every cell of that row should carry the class
+    const allInRow = canvasElement.querySelectorAll<HTMLElement>('.st-cell[data-row-id="2-3"]');
+    expect(allInRow.length).toBeGreaterThan(0);
+    allInRow.forEach((cell) => {
+      expect(cell.classList.contains("test-jump-row")).toBe(true);
+    });
+    // Other rows must not
+    const other = canvasElement.querySelectorAll<HTMLElement>(
+      '.st-cell[data-row-id="0-1"].test-jump-row',
+    );
+    expect(other.length).toBe(0);
+  },
+};
+
+export const GetRowClassUpdatesWhenCallbackIdentityChanges = {
+  tags: ["get-row-class"],
+  render: () => {
+    const result = renderVanillaTable(headers, stripedData(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "250px",
+      getRowClass: ({ row }) =>
+        (row as { id?: number }).id === 1 ? "test-jump-row" : undefined,
+    });
+    (globalThis as unknown as Record<string, typeof result.table>)[
+      "__storybook_get_row_class_table"
+    ] = result.table;
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const table = (globalThis as unknown as Record<string, { update: (c: object) => void }>)[
+      "__storybook_get_row_class_table"
+    ];
+    expect(table).toBeTruthy();
+
+    expect(
+      canvasElement.querySelectorAll('.st-cell[data-row-id="0-1"].test-jump-row').length,
+    ).toBeGreaterThan(0);
+
+    table.update({
+      getRowClass: ({ row }: { row: { id?: number } }) =>
+        row.id === 4 ? "test-jump-row" : undefined,
+    });
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(
+      canvasElement.querySelectorAll('.st-cell[data-row-id="0-1"].test-jump-row').length,
+    ).toBe(0);
+    expect(
+      canvasElement.querySelectorAll('.st-cell[data-row-id="3-4"].test-jump-row').length,
+    ).toBeGreaterThan(0);
+  },
+};
+
+export const GetRowClassSurvivesVirtualizationReuse = {
+  tags: ["get-row-class"],
+  render: () => {
+    const { wrapper } = renderVanillaTable(headers, jumpHighlightData(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      // Small viewport + 500 rows so only a band of rows is mounted
+      height: "200px",
+      getRowClass: ({ row }) =>
+        (row as { id?: number }).id === 2 ? "test-jump-row" : undefined,
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const body = canvasElement.querySelector(".st-body-container") as HTMLElement | null;
+    expect(body).toBeTruthy();
+
+    // Virtualization must be active — far fewer than 500 rows in the DOM
+    const renderedAtTop = getRowCount(canvasElement);
+    expect(renderedAtTop).toBeGreaterThan(0);
+    expect(renderedAtTop).toBeLessThan(100);
+
+    // Highlighted early row is visible at the top
+    const targetSelector = '.st-cell[data-row-id="1-2"].test-jump-row';
+    expect(canvasElement.querySelectorAll(targetSelector).length).toBeGreaterThan(0);
+
+    const indicesAtTop = new Set(
+      Array.from(canvasElement.querySelectorAll(".st-cell[data-row-index]")).map((c) =>
+        c.getAttribute("data-row-index"),
+      ),
+    );
+
+    // Scroll deep enough that the early band (including id 2) leaves the viewport
+    body!.scrollTop = Math.min(8000, body!.scrollHeight - body!.clientHeight);
+    body!.dispatchEvent(new Event("scroll", { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 200));
+
+    const indicesScrolled = new Set(
+      Array.from(canvasElement.querySelectorAll(".st-cell[data-row-index]")).map((c) =>
+        c.getAttribute("data-row-index"),
+      ),
+    );
+    const newlyVisible = Array.from(indicesScrolled).filter((idx) => !indicesAtTop.has(idx));
+    expect(newlyVisible.length).toBeGreaterThan(0);
+
+    // Target row is no longer in the virtualized band
+    expect(canvasElement.querySelectorAll(targetSelector).length).toBe(0);
+
+    // Scroll back to top — recycled cells must re-apply the class for id 2
+    body!.scrollTop = 0;
+    body!.dispatchEvent(new Event("scroll", { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 200));
+
+    const after = canvasElement.querySelectorAll(targetSelector);
+    expect(after.length).toBeGreaterThan(0);
+    const allInRow = canvasElement.querySelectorAll<HTMLElement>('.st-cell[data-row-id="1-2"]');
+    expect(allInRow.length).toBeGreaterThan(0);
+    allInRow.forEach((cell) => {
+      expect(cell.classList.contains("test-jump-row")).toBe(true);
+    });
+    expect(
+      canvasElement.querySelectorAll('.st-cell[data-row-id="0-1"].test-jump-row').length,
+    ).toBe(0);
   },
 };

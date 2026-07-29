@@ -27,6 +27,20 @@ import {
 } from "../../utils/nestedGridRowRenderer";
 import { createStateRow, type StateRowRenderContext } from "../../utils/stateRowRenderer";
 
+/** Stable ids for callback refs so context cache invalidates when identity changes. */
+const callbackIdentityIds = new WeakMap<object, number>();
+let nextCallbackIdentityId = 1;
+
+const callbackIdentityKey = (fn: unknown): string => {
+  if (typeof fn !== "function") return "none";
+  let id = callbackIdentityIds.get(fn);
+  if (id === undefined) {
+    id = nextCallbackIdentityId++;
+    callbackIdentityIds.set(fn, id);
+  }
+  return String(id);
+};
+
 export interface HeaderSectionParams {
   headers: ColumnDef[];
   collapsedHeaders: Set<Accessor>;
@@ -1082,6 +1096,11 @@ export class SectionRenderer {
       "enableVirtualization",
     ];
     let hash = keys.map((k) => `${k}:${context[k]}`).join("|");
+
+    // Callback identity (not toString) so a new `getRowClass` closure — e.g.
+    // React useCallback deps changing for a jump/highlight target — invalidates
+    // the cached body context and refreshes cell classes.
+    hash += `|getRowClass:${callbackIdentityKey(context.getRowClass)}`;
 
     // Include heightOffsets so contexts captured for body sections invalidate
     // when nested tables expand/collapse above an existing nested row. Without
