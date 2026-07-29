@@ -987,8 +987,16 @@ export const CanExpandRowGroupConditional = {
     const secondRowCells = bodyContainer.querySelectorAll(
       '.st-cell[data-row-index="1"]',
     );
+    // Non-expandable siblings keep an invisible placeholder caret for alignment,
+    // but it must not be exposed as an interactive expand control.
     const secondRowIcon = findExpandIconInRow(Array.from(secondRowCells));
     expect(secondRowIcon).toBeFalsy();
+    const secondRowPlaceholder = Array.from(secondRowCells)
+      .map((cell) =>
+        (cell as Element).querySelector(".st-expand-icon-container.placeholder"),
+      )
+      .find(Boolean);
+    expect(secondRowPlaceholder).toBeTruthy();
   },
 };
 

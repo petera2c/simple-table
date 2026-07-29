@@ -3,24 +3,32 @@ import { addTrackedEventListener } from "./eventTracking";
 import { isRowExpanded, expandStateKey } from "../rowUtils";
 import { cellLiveRefMap } from "./cellLiveRef";
 
+export type CreateExpandIconOptions = {
+  /**
+   * Invisible spacer that reserves the same width as a real expand caret.
+   * Used so leaf / non-expandable rows align with expandable siblings.
+   */
+  placeholder?: boolean;
+};
+
 // Create expand/collapse icon container for row grouping
 // Uses the icon from context.icons.expand (configured by user or default)
 export const createExpandIcon = (
   cell: AbsoluteBodyCell,
   context: CellRenderContext,
   isExpanded: boolean,
+  options?: CreateExpandIconOptions,
 ): HTMLElement => {
+  const isPlaceholder = options?.placeholder === true;
+
   // Create outer container with proper classes matching old React implementation
   const outerContainer = document.createElement("div");
   outerContainer.className = `st-icon-container st-expand-icon-container ${
-    isExpanded ? "expanded" : "collapsed"
+    isPlaceholder ? "placeholder" : isExpanded ? "expanded" : "collapsed"
   }`;
-  outerContainer.setAttribute("role", "button");
-  outerContainer.setAttribute("aria-label", isExpanded ? "Collapse row" : "Expand row");
-  outerContainer.setAttribute("aria-expanded", String(isExpanded));
-  outerContainer.setAttribute("tabindex", "0");
 
-  // Use the icon from context (matches React implementation: {icons.expand})
+  // Use the icon from context (matches React implementation: {icons.expand}).
+  // Placeholders clone the same icon so custom expand icons keep leaf rows aligned.
   const icon = context.icons.expand;
   if (icon) {
     if (typeof icon === "string") {
@@ -31,6 +39,18 @@ export const createExpandIcon = (
       outerContainer.appendChild(icon.cloneNode(true) as HTMLElement);
     }
   }
+
+  if (isPlaceholder) {
+    outerContainer.setAttribute("role", "presentation");
+    outerContainer.setAttribute("aria-hidden", "true");
+    outerContainer.setAttribute("tabindex", "-1");
+    return outerContainer;
+  }
+
+  outerContainer.setAttribute("role", "button");
+  outerContainer.setAttribute("aria-label", isExpanded ? "Collapse row" : "Expand row");
+  outerContainer.setAttribute("aria-expanded", String(isExpanded));
+  outerContainer.setAttribute("tabindex", "0");
 
   const handleToggle = (event: Event) => {
     event.stopPropagation();
@@ -201,6 +221,8 @@ export const updateExpandIconState = (
 ): void => {
   const iconContainer = cellElement.querySelector(".st-expand-icon-container");
   if (!iconContainer || !(iconContainer instanceof HTMLElement)) return;
+  // Invisible alignment spacers are not interactive expand controls.
+  if (iconContainer.classList.contains("placeholder")) return;
 
   const currentlyExpanded = iconContainer.classList.contains("expanded");
 
