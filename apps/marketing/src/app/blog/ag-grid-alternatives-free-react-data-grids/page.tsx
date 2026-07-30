@@ -69,7 +69,7 @@ export default function AgGridAlternativesPage() {
       {/* Hero Section */}
       <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
-          AG Grid Alternatives: 7 Best Free React Data Grids (2026)
+          AG Grid Alternatives 2026: 7 Best Free React Data Grids
         </h1>
 
         <div className="flex justify-center mb-4 gap-2 flex-wrap">

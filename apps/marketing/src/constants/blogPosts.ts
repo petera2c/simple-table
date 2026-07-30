@@ -81,13 +81,13 @@ export const nestedHeadersReactTablesPost: BlogPostMetadata = {
 };
 
 export const bestFreeReactDataGridPost: BlogPostMetadata = {
-  title: "Best Free & Open-Source React Data Grids (2026)",
+  title: "Best Free React Data Grid 2026 (No License Fee)",
   description:
-    "The best 100% free and open-source React data grids in 2026 — no per-seat license, no paywalled features. Compared on bundle size, features, and licensing.",
+    "Best free React data grid in 2026 with no per-seat license and no paywalled features. Compared on bundle size, features, and licensing vs AG Grid and TanStack.",
   slug: "best-free-react-data-grid-2026",
   tags: ["react", "comparison", "alternatives", "best-practices"],
   createdAt: "2025-06-21",
-  updatedAt: "2026-06-22",
+  updatedAt: "2026-07-29",
 };
 
 export const customizingReactTableLookPost: BlogPostMetadata = {
@@ -142,13 +142,13 @@ export const replicatingGojiberryUIPost: BlogPostMetadata = {
 };
 
 export const agGridAlternativesPost: BlogPostMetadata = {
-  title: "AG Grid Alternatives: 7 Best Free React Data Grids (2026)",
+  title: "AG Grid Alternatives 2026: 7 Best Free React Data Grids",
   description:
-    "Looking for an AG Grid alternative? Discover 7 powerful, free React data grids that deliver enterprise features without the enterprise price tag or vendor lock-in.",
+    "Looking for AG Grid alternatives? Compare 7 free React data grids for 2026 — features, pricing, and bundle size without the enterprise license.",
   slug: "ag-grid-alternatives-free-react-data-grids",
   tags: ["react", "alternatives", "comparison", "ag-grid"],
   createdAt: "2025-11-15",
-  updatedAt: "2026-06-22",
+  updatedAt: "2026-07-29",
 };
 
 export const bundleSizeComparisonPost: BlogPostMetadata = {
@@ -182,13 +182,13 @@ export const handsontableAlternativesPost: BlogPostMetadata = {
 };
 
 export const agGridPricing2026Post: BlogPostMetadata = {
-  title: "AG Grid License Cost & Pricing 2026 (Per Developer)",
+  title: "AG Grid Pricing 2026: $999/Dev Enterprise License Cost",
   description:
-    "AG Grid Enterprise license is $999/developer/year. Full 2026 license cost breakdown: Community vs Enterprise, pricing tiers, renewals, real team costs, and free alternatives.",
+    "AG Grid Enterprise is $999 per developer per year. 2026 pricing breakdown: Community (MIT) vs Enterprise, license cost, renewals, team totals, and free alternatives.",
   slug: "ag-grid-pricing-license-breakdown-2026",
   tags: ["react", "ag-grid", "pricing", "comparison"],
   createdAt: "2025-11-22",
-  updatedAt: "2026-07-12",
+  updatedAt: "2026-07-29",
 };
 
 export const tanstackVsSimpleTablePost: BlogPostMetadata = {

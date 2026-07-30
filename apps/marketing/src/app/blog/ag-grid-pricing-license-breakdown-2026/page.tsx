@@ -59,7 +59,7 @@ export default function AgGridPricingPage() {
       {/* Hero Section */}
       <section className="bg-linear-to-r from-red-50 to-orange-50 dark:from-red-900 dark:to-orange-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
-          AG Grid License Cost & Pricing 2026: What You Actually Pay
+          AG Grid Pricing 2026: $999/Dev Enterprise License Cost
         </h1>
 
         <div className="flex justify-center mb-4 gap-2 flex-wrap">
