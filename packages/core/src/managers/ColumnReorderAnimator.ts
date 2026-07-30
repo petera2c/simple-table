@@ -1,11 +1,13 @@
 /**
  * Dedicated column-drag reorder animator.
  *
- * Unlike the general FLIP coordinator (capture → pinSettled → double-rAF →
- * CSS transition), this retargets a WAAPI from the live visual to identity in
- * the same turn as the style.left write. Mid-flight columns keep sliding;
- * retargets cancel and restart from the current matrix — no soft-pause,
- * pinSettled invent, body mirror loop, or double-rAF hold.
+ * Model (sortable-list retarget):
+ * 1. beginOrderChange — snapshot style-space visual per accessor
+ * 2. Render writes plain style.left (no invent / pinSettled)
+ * 3. commitOrderChange — hold = snapVisual − newLeft, then WAAPI → 0
+ *
+ * Mid-flight retargets cancel and replace from the snap remain. Same-dest
+ * accessors are left alone. Bodies get the same transform as headers.
  */
 
 import { parseCssTranslate } from "../utils/setAbsoluteCellPosition";
@@ -32,8 +34,7 @@ type VisualSnap = {
 
 /**
  * Style-space visual X: style.left + live translate X.
- * Prefer running WAAPI matrix via getComputedStyle so mid-flight remains are
- * accurate without getBoundingClientRect (forced reflow).
+ * Prefer getComputedStyle so mid-flight WAAPI remains are accurate.
  */
 const readVisualStyleLeft = (el: HTMLElement): number => {
   const styleLeft = parsePx(el.style.left);
@@ -131,8 +132,8 @@ export class ColumnReorderAnimator {
 
   /**
    * Call after style.left rewrites in the same task (before paint).
-   * Retargets WAAPI for accessors whose logical left changed; leaves
-   * same-dest mid-flight animations untouched.
+   * Hold = pre-write visual − newLeft (never trust post-write live remain —
+   * a naked left write has already shifted paint by the slot delta).
    */
   commitOrderChange(root: ParentNode): void {
     if (!this.active) {
@@ -155,9 +156,7 @@ export class ColumnReorderAnimator {
         : 2000;
 
     const headers = root.querySelectorAll<HTMLElement>(".st-header-cell[data-accessor]");
-    /** accessor → remain X to animate (or 0 to snap-clear). */
     const remains = new Map<string, number>();
-    /** First header element per accessor (for width / cull). */
     const headerByAccessor = new Map<string, HTMLElement>();
 
     for (let i = 0; i < headers.length; i++) {
@@ -175,12 +174,13 @@ export class ColumnReorderAnimator {
         continue;
       }
 
+      // Authoritative hold from pre-write snapshot only.
       const remain = prev.visualLeft - newLeft;
       const width = parsePx(el.style.width) || 120;
       const nearNow = isNearHorizontalViewport(newLeft, width, scrollLeft, clientWidth);
       const nearBefore = isNearHorizontalViewport(prev.styleLeft, width, scrollLeft, clientWidth);
       if (!nearNow && !nearBefore) {
-        remains.set(accessor, 0); // snap
+        remains.set(accessor, 0);
         continue;
       }
       if (Math.abs(remain) < MIN_DELTA) {
@@ -192,7 +192,6 @@ export class ColumnReorderAnimator {
 
     if (remains.size === 0) return;
 
-    // Apply header anims first, then one body query for all accessors.
     for (const [accessor, remain] of remains) {
       const header = headerByAccessor.get(accessor);
       if (!header) continue;
@@ -202,7 +201,6 @@ export class ColumnReorderAnimator {
     const bodyCells = root.querySelectorAll<HTMLElement>(".st-cell[data-accessor]");
     for (let i = 0; i < bodyCells.length; i++) {
       const el = bodyCells[i];
-      // Skip header cells that also carry st-cell in some themes.
       if (el.classList.contains("st-header-cell")) continue;
       const accessor = el.getAttribute("data-accessor");
       if (!accessor || !remains.has(accessor)) continue;
@@ -230,64 +228,58 @@ export class ColumnReorderAnimator {
     }
 
     if (typeof el.animate !== "function") {
-      // No WAAPI — hold then clear (no animation).
       el.style.transform = `translate3d(${remainX}px, 0, 0)`;
       el.classList.add(FLIP_ACTIVE_CLASS);
       return;
     }
 
-    const dist = Math.abs(remainX);
-    const duration = Math.max(this.duration, Math.min(2500, Math.round(dist * 3)));
+    const duration = Math.max(
+      this.duration,
+      Math.min(2500, Math.round(Math.abs(remainX) * 3)),
+    );
 
+    // Hold paint at the pre-write visual, then tween to identity in-turn.
     el.style.transform = `translate3d(${remainX}px, 0, 0)`;
     el.style.willChange = "transform";
     el.classList.add(FLIP_ACTIVE_CLASS);
     if (isHeader) this.running.add(accessor);
 
-    // Hold one frame so the invert paints before the tween starts (avoids a
-    // same-frame invert→identity race). Unlike the old double-rAF FLIP path,
-    // same-dest columns are never paused — only retargeted accessors wait.
-    const startRemain = remainX;
-    const startDuration = duration;
-    requestAnimationFrame(() => {
-      // A newer retarget may have cancelled/replaced this hold.
-      if (typeof el.getAnimations === "function") {
-        for (const a of el.getAnimations()) {
-          if ((a as Animation & { id?: string }).id === ANIM_ID) return;
-        }
-      }
-      const live = parseCssTranslate(el.style.transform || "");
-      const fromX = live && Math.abs(live.x) > MIN_DELTA ? live.x : startRemain;
-      if (Math.abs(fromX) < MIN_DELTA) {
-        clearTransform(el);
-        if (isHeader) this.running.delete(accessor);
-        return;
-      }
-      const anim = el.animate(
-        [
-          { transform: `translate3d(${fromX}px, 0, 0)` },
-          { transform: "translate3d(0px, 0px, 0)" },
-        ],
-        {
-          duration: startDuration,
-          easing: "linear",
-          fill: "forwards",
-        },
-      );
-      anim.id = ANIM_ID;
+    const anim = el.animate(
+      [
+        { transform: `translate3d(${remainX}px, 0, 0)` },
+        { transform: "translate3d(0px, 0px, 0)" },
+      ],
+      {
+        duration,
+        easing: "linear",
+        fill: "forwards",
+      },
+    );
+    anim.id = ANIM_ID;
 
-      const finish = () => {
-        const current = el
-          .getAnimations?.()
-          .find((a) => (a as Animation & { id?: string }).id === ANIM_ID);
-        if (current && current !== anim) return;
-        clearTransform(el);
-        if (isHeader) this.running.delete(accessor);
-      };
+    const finish = () => {
+      const current = el
+        .getAnimations?.()
+        .find((a) => (a as Animation & { id?: string }).id === ANIM_ID);
+      if (current && current !== anim) return;
+      try {
+        // Write the end state into style before dropping the effect.
+        anim.commitStyles?.();
+      } catch {
+        // ignore
+      }
+      clearTransform(el);
+      try {
+        anim.cancel();
+      } catch {
+        // ignore
+      }
+      if (isHeader) this.running.delete(accessor);
+    };
 
-      anim.finished.then(finish).catch(() => {
-        // Cancelled by a later retarget.
-      });
+    anim.onfinish = finish;
+    anim.finished.then(finish).catch(() => {
+      // Cancelled by a later retarget.
     });
   }
 }

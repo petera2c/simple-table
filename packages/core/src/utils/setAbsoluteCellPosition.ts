@@ -5,6 +5,9 @@
  * Updating left/top without adjusting that translate moves the painted cell by
  * the same delta — then `play()` "corrects" it with a new invert, which reads
  * as a jump during rapid reorders.
+ *
+ * Column-drag does NOT compensate here: {@link ColumnReorderAnimator} snapshots
+ * visuals before left writes and applies the hold+tween after.
  */
 
 /** When false, left/top writes do not counter-shift FLIP translates. */

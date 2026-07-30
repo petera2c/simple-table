@@ -324,15 +324,13 @@ export class AnimationCoordinator {
 
   /**
    * Enter/leave column-header drag-reorder mode. Motion is owned by
-   * {@link ColumnReorderAnimator}. Flip-compensation is OFF so left writes
-   * stay plain; the animator holds+tweens in the same turn.
+   * {@link ColumnReorderAnimator}. Flip compensation is OFF so left writes
+   * stay plain; the animator applies hold+tween after those writes.
    */
   setColumnReordering(active: boolean): void {
     if (this.columnReordering === active) return;
     this.columnReordering = active;
     this.columnReorderAnimator.setActive(active);
-    // Animator owns paint continuity — compensating into style.transform
-    // would fight WAAPI retargets.
     setFlipCompensationEnabled(!active);
   }
 

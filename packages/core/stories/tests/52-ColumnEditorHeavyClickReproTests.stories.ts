@@ -1251,7 +1251,11 @@ const dragOverUntilReorder = async (
     watchLabel?: string;
     dragged?: string;
   },
-): Promise<{ ok: boolean; visualsBeforeReorder: Map<string, number> }> => {
+): Promise<{
+  ok: boolean;
+  visualsBeforeReorder: Map<string, number>;
+  visualsAtCommit: Map<string, number>;
+}> => {
   const targetLabel = findHeaderLabel(canvasElement, targetAccessor);
   const targetCell = targetLabel.closest(".st-header-cell") ?? targetLabel;
   const targetRect = targetLabel.getBoundingClientRect();
@@ -1394,14 +1398,17 @@ const dragOverUntilReorder = async (
             },
           );
         }
+        // Capture hold visuals NOW — any await (watchFrames / expect) lets WAAPI
+        // advance and would falsely fail a post-await jump check.
+        const visualsAtCommit = snapshotLeafVisuals(canvasElement);
         const ok = opts?.expectOrder ? orderNow === opts.expectOrder : true;
         await watchFrames(DRAGOVER_FRAMES_PER_STEP);
-        return { ok, visualsBeforeReorder };
+        return { ok, visualsBeforeReorder, visualsAtCommit };
       }
       await watchFrames(DRAGOVER_FRAMES_PER_STEP);
     }
   }
-  return { ok: false, visualsBeforeReorder };
+  return { ok: false, visualsBeforeReorder, visualsAtCommit: visualsBeforeReorder };
 };
 
 /**
@@ -1778,7 +1785,14 @@ const pickReorderTarget = (
 };
 
 const isSettledLeaf = (canvasElement: HTMLElement, accessor: string): boolean => {
-  if (hasActiveFlip(canvasElement, accessor)) return false;
+  const cell = findHeaderCell(canvasElement, accessor);
+  if (!cell) return false;
+  // Prefer computed/paint over style.transform: WAAPI fill:forwards can leave a
+  // stale start translate on style while the painted matrix is already identity.
+  const computed = window.getComputedStyle(cell).transform;
+  if (computed && computed !== "none" && Math.abs(parseTranslateX(computed)) > 0.5) {
+    return false;
+  }
   const visual = visualLeftOf(canvasElement, accessor);
   const box = styleBoxLeftOf(canvasElement, accessor);
   return Math.abs(visual - box) < 1.5;
@@ -1853,17 +1867,16 @@ const runInterruptSwap = async (
   const expectedDest = expectedLeftMap(expectedOrder, slots);
   const expectOrderKey = expectedOrder.join(",");
 
-  const { ok: reordered, visualsBeforeReorder } = await dragOverUntilReorder(
-    canvasElement,
-    session,
-    target!,
-    {
-      expectOrder: expectOrderKey,
-      motions,
-      watchLabel: `${label} dragover`,
-      dragged,
-    },
-  );
+  const {
+    ok: reordered,
+    visualsBeforeReorder,
+    visualsAtCommit,
+  } = await dragOverUntilReorder(canvasElement, session, target!, {
+    expectOrder: expectOrderKey,
+    motions,
+    watchLabel: `${label} dragover`,
+    dragged,
+  });
   await expect(
     reordered,
     `${label}: drag ${dragged} → ${target} should apply insert reorder. ` +
@@ -1871,10 +1884,9 @@ const runInterruptSwap = async (
       `actual=${leafLeftOrder(canvasElement, SPOTIFY_7D_LEAVES)}`,
   ).toBe(true);
 
-  // Capture visuals immediately after commit (before await expects below let
-  // the WAAPI clock advance). Commit-sync in dragOverUntilReorder already
-  // asserted hold; this re-check uses the same instant.
-  const visualsAtCommit = snapshotLeafVisuals(canvasElement);
+  // visualsAtCommit was sampled in the same turn as the reorder hold
+  // (before watchFrames / this await). Do not re-snapshot here — WAAPI will
+  // have advanced and a <1px jump check against pre-reorder would flake.
 
   for (const accessor of SPOTIFY_7D_LEAVES) {
     const actual = styleLeftOf(canvasElement, accessor);
@@ -1900,7 +1912,8 @@ const runInterruptSwap = async (
     const swapJump = Math.abs(visual - prevVisual);
     const isDraggedLeaf = accessor === dragged;
 
-    // Reorder commit: invert must hold paint — especially the dragged header.
+    // Hold was already assertTrue'd sync in dragOverUntilReorder; keep this
+    // as a belt-and-suspenders check on the same captured map.
     await expect(
       swapJump < 1,
       `${label}: ${accessor}${isDraggedLeaf ? " (dragged)" : ""} jumped at reorder start ` +
@@ -2249,16 +2262,20 @@ export const TrackListTenInterruptContinuity = {
       const finalOrder = orderedLeaves(canvasElement, SPOTIFY_7D_LEAVES);
       await expect(finalOrder.join(",")).toBe(order.join(","));
 
-      // Watch through final settle — no teleports as FLIPs finish.
+      // Watch through final settle — cover distance-scaled WAAPI (up to ~2500ms).
       totalWatchFrames += await watchLeafContinuity(canvasElement, motions, "final settle", {
-        durationMs: CONTINUITY_DURATION + 250,
+        durationMs: Math.max(CONTINUITY_DURATION, 2500) + 250,
         watchAllLeaves: true,
       });
       const settledDest = expectedLeftMap(order, slots);
       for (const accessor of SPOTIFY_7D_LEAVES) {
-        const cell = findHeaderCell(canvasElement, accessor)!;
-        const t = cell.style.transform;
-        await expect(t === "" || t === "none" || Math.abs(parseTranslateX(t)) < 0.5).toBe(true);
+        // Paint/layout settle — do not require style.transform === "" yet.
+        // WAAPI fill:forwards can leave a stale start translate on style until
+        // the finished handler clears it, while getBoundingClientRect is home.
+        await expect(
+          isSettledLeaf(canvasElement, accessor),
+          `${accessor} not visually settled after final watch`,
+        ).toBe(true);
         await expect(
           Math.abs(styleLeftOf(canvasElement, accessor) - settledDest.get(accessor)!) < 1.5,
           `${accessor} settled style.left mismatch`,

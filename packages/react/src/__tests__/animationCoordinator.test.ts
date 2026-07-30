@@ -142,8 +142,8 @@ describe("AnimationCoordinator — spam-sort coalescing", () => {
 
 describe("AnimationCoordinator — column reorder mode", () => {
   it("allows ColumnReorderAnimator to own paint continuity during column drag", () => {
-    // During column-reorder, flip compensation is off so left writes stay
-    // plain — the animator holds+tweens instead of fighting style.transform.
+    // During column-reorder, left writes stay plain — the animator holds+tweens
+    // after commit from the pre-write visual snapshot.
     coordinator.setColumnReordering(true);
     expect(coordinator.isColumnReordering()).toBe(true);
 
@@ -153,7 +153,6 @@ describe("AnimationCoordinator — column reorder mode", () => {
 
     setAbsoluteCellPosition(cell, 120, 0);
 
-    // No holding invert invent — animator owns continuity.
     expect(cell.style.transform).toBe("");
     expect(cell.style.left).toBe("120px");
   });
