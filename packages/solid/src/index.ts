@@ -74,6 +74,8 @@ export type {
   FooterPosition,
   GetRowId,
   GetRowIdParams,
+  GetRowClass,
+  GetRowClassParams,
   HeaderDropdown,
   HeaderDropdownProps,
   HeaderRenderer,

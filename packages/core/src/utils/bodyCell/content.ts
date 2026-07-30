@@ -111,21 +111,25 @@ export const createCellContent = (
   // Check if we need to render expand icon
   const currentGroupingKey = context.rowGrouping && context.rowGrouping[depth];
   const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
-  const canExpandFurther = context.rowGrouping && depth < context.rowGrouping.length;
+  const canExpandFurther = Boolean(context.rowGrouping && depth < context.rowGrouping.length);
   const isRowExpandable = context.canExpandRowGroup ? context.canExpandRowGroup(row) : true;
   const hasNestedTableConfig = !!header.nestedTable;
-  
+
   // Support dynamic row loading: show expand icon if onRowGroupExpand is provided
   // even when row has no children yet (they'll be loaded on expand)
   const hasDynamicLoading = !!context.onRowGroupExpand;
-  
+
   const shouldShowExpandIcon =
     header.expandable &&
-    ((cellHasChildren && canExpandFurther && isRowExpandable) || 
-     hasNestedTableConfig ||
-     (hasDynamicLoading && canExpandFurther && isRowExpandable));
+    ((cellHasChildren && canExpandFurther && isRowExpandable) ||
+      hasNestedTableConfig ||
+      (hasDynamicLoading && canExpandFurther && isRowExpandable));
 
-  if (shouldShowExpandIcon) {
+  // Reserve caret width for non-expandable siblings at an expandable depth so
+  // mixed nested / leaf rows stay text-aligned (v2 placeholder behavior).
+  const shouldReserveExpandSpace = Boolean(header.expandable && canExpandFurther);
+
+  if (shouldShowExpandIcon || shouldReserveExpandSpace) {
     const expandedDepthsSet = new Set(context.expandedDepths);
     const expandRowKey = expandStateKey(cell.tableRow);
     const isExpanded = getIsRowExpanded(
@@ -136,7 +140,9 @@ export const createCellContent = (
       context.collapsedRows,
     );
 
-    const expandIcon = createExpandIcon(cell, context, isExpanded);
+    const expandIcon = createExpandIcon(cell, context, isExpanded, {
+      placeholder: !shouldShowExpandIcon,
+    });
     contentSpan.appendChild(expandIcon);
   }
 

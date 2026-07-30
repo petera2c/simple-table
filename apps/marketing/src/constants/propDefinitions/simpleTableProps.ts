@@ -671,6 +671,30 @@ useEffect(() => {
     example: `oddEvenRowBackground={true}`,
   },
   {
+    key: "getRowClass",
+    name: "getRowClass",
+    required: false,
+    description:
+      "Return CSS class name(s) for a row. Applied to each body cell — style with `.st-cell.yourClass`. Return a string, string[], or null/undefined for default styling.",
+    type: "(params: GetRowClassParams) => string | string[] | undefined | null",
+    link: "#get-row-class-params",
+    example: `// artists items have an \`id\` field on the data itself
+const [jumpArtistId, setJumpArtistId] = useState<string | null>(null);
+
+<SimpleTable
+  columns={columns}
+  rows={artists}
+  getRowClass={({ row }) =>
+    jumpArtistId && row.id === jumpArtistId ? "jump-row" : undefined
+  }
+/>
+
+/* CSS */
+.jump-row {
+  background-color: #fef3c7;
+}`,
+  },
+  {
     key: "enableRowSelection",
     name: "enableRowSelection",
     required: false,

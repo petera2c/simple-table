@@ -44,18 +44,25 @@ const applyCheckboxVisual = (
 /**
  * Updates an existing checkbox DOM (created by createCheckbox) to match the given checked state.
  * Use when the checkbox element is reused (e.g. from cache) and selection state changed.
- * Clears any indeterminate state.
+ * Clears any indeterminate state unless `indeterminate` is passed as true.
  * @param container - Element that contains .st-checkbox-input and .st-checkbox-custom (the label or a parent)
  */
 export const updateCheckboxElement = (
   container: HTMLElement,
   checked: boolean,
+  indeterminate = false,
 ): void => {
   const input = container.querySelector<HTMLInputElement>(".st-checkbox-input");
   const customCheckbox = container.querySelector<HTMLSpanElement>(".st-checkbox-custom");
   if (!input || !customCheckbox) return;
-  if (input.checked === checked && !input.indeterminate) return;
-  applyCheckboxVisual(input, customCheckbox, checked, false);
+  if (
+    input.checked === checked &&
+    input.indeterminate === indeterminate &&
+    input.getAttribute("aria-checked") === (indeterminate ? "mixed" : String(checked))
+  ) {
+    return;
+  }
+  applyCheckboxVisual(input, customCheckbox, checked, indeterminate);
 };
 
 export const createCheckbox = ({

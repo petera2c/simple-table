@@ -92,6 +92,47 @@ export const buildColumnVisibilityState = (headers: ColumnDef[]): ColumnVisibili
   return visibilityState;
 };
 
+/** Find a header node by accessor anywhere in the tree. */
+export const findHeaderByAccessor = (
+  headers: ColumnDef[],
+  accessor: Accessor,
+): ColumnDef | null => {
+  for (const header of headers) {
+    if (header.accessor === accessor) return header;
+    if (header.children?.length) {
+      const nested = findHeaderByAccessor(header.children, accessor);
+      if (nested) return nested;
+    }
+  }
+  return null;
+};
+
+/**
+ * Tri-state checkbox values for a column-editor row (matches createColumnEditorRow).
+ */
+export const getColumnEditorCheckboxState = (
+  header: ColumnDef,
+): { checked: boolean; indeterminate: boolean } => {
+  const hasChildren = Boolean(header.children && header.children.length > 0);
+  let checked = !header.hide;
+  let indeterminate = false;
+  if (hasChildren && header.children) {
+    const allHidden = areAllChildrenHidden(header.children);
+    const allVisible = areAllChildrenVisible(header.children);
+    if (header.hide || allHidden) {
+      checked = false;
+      indeterminate = false;
+    } else if (allVisible) {
+      checked = true;
+      indeterminate = false;
+    } else {
+      checked = false;
+      indeterminate = true;
+    }
+  }
+  return { checked, indeterminate };
+};
+
 export const findClosestValidSeparatorIndex = ({
   flattenedHeaders,
   draggingRow,

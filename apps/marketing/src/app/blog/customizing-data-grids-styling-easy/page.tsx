@@ -195,8 +195,11 @@ export default function CustomizingDataGridsStylingEasyPage() {
             </h3>
 
             <p className="mb-6 text-gray-700 dark:text-gray-300">
-              Simple Table works seamlessly with Tailwind CSS. You can apply utility classes
-              directly to customize the appearance:
+              Simple Table works with Tailwind CSS. Pass utility classes via{" "}
+              <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-sm">className</code>{" "}
+              on the table, or return them from{" "}
+              <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-sm">getRowClass</code>{" "}
+              for conditional row highlights:
             </p>
 
             <pre className="bg-gray-900 dark:bg-gray-950 text-gray-100 p-4 rounded-lg overflow-auto mb-6 text-sm leading-relaxed">
@@ -206,10 +209,10 @@ export default function CustomizingDataGridsStylingEasyPage() {
   columns={headers}
   rows={data}
   className="rounded-xl shadow-2xl border-2 border-indigo-200"
-  headerClassName="bg-linear-to-r from-purple-500 to-pink-500 text-white"
-  rowClassName="hover:bg-blue-50 transition-colors duration-200"
-  cellClassName="border-b border-gray-100 px-4 py-3"
   theme="modern-light"
+  getRowClass={({ row }) =>
+    row.id === highlightedId ? "bg-blue-50" : undefined
+  }
 />`}
             </pre>
 

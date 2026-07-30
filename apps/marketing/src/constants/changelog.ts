@@ -11,6 +11,40 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_1_1: ChangelogEntry = {
+  version: "4.1.1",
+  date: "2026-07-29",
+  title: "getRowClass, row grouping alignment, and column editor click fix",
+  description:
+    "Add getRowClass for data-driven row styling, restore caret-space alignment for non-expandable rows at an expandable depth, and keep column editor checkboxes responsive on heavy nested tables.",
+  changes: [
+    {
+      type: "feature",
+      description:
+        "New getRowClass callback for data-driven row styling (e.g. search jump, compare highlights). Classes apply to each body cell — see Themes docs.",
+      link: "/docs/themes",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Leaf and otherwise non-expandable row-group siblings render an invisible expand-icon placeholder (same icon, opacity 0) so labels line up with expandable rows — restoring v2 alignment.",
+      link: "/docs/row-grouping",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Column editor visibility toggles sync checkbox state in place when the editor list structure is unchanged, so nested checkboxes on heavy tables no longer need multiple clicks after setHeaders re-renders the table.",
+      link: "/docs/column-visibility",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Rapid column hide/show no longer stacks horizontal accordion grow/shrink (especially in pinned sections); interrupting toggles cancel in-flight ghosts and snap to the latest layout.",
+      link: "/docs/column-visibility",
+    },
+  ],
+};
+
 export const v4_1_0: ChangelogEntry = {
   version: "4.1.0",
   date: "2026-07-28",
@@ -2468,6 +2502,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_1_1,
   v4_1_0,
   v4_0_9,
   v4_0_8,

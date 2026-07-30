@@ -7,6 +7,7 @@ import type TableRow from "../../types/TableRow";
 import type RowState from "../../types/RowState";
 import type { RowButton } from "../../types/RowButton";
 import type { CustomTheme } from "../../types/CustomTheme";
+import type { GetRowClass } from "../../types/GetRowClass";
 import type { HeightOffsets } from "../infiniteScrollUtils";
 import type { AccordionAxis } from "../accordionAnimation";
 import type {
@@ -100,6 +101,8 @@ export interface CellRenderContext {
    */
   hoverScopeId: string;
   oddEvenRowBackground?: boolean;
+  /** Optional callback that returns CSS class name(s) for every body cell in a row. */
+  getRowClass?: GetRowClass;
   rowGrouping?: string[];
   headers: ColumnDef[];
   /**

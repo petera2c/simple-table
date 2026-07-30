@@ -6,6 +6,8 @@ import {
   areAllChildrenHidden,
   areAllChildrenVisible,
   findAndMarkParentsVisible,
+  findHeaderByAccessor,
+  getColumnEditorCheckboxState,
   showAllDescendants,
   updateParentHeaders,
   buildColumnVisibilityState,
@@ -49,6 +51,12 @@ export interface CreateColumnEditorRowOptions {
   icons?: IconsConfig;
   essentialAccessors?: ReadonlySet<string>;
   headers: ColumnDef[];
+  /**
+   * When set, visibility toggles read the latest header tree from here so the
+   * popout can keep row DOM across setHeaders (in-place checkbox sync) without
+   * stale closures overwriting newer hide flags.
+   */
+  getHeaders?: () => ColumnDef[];
   setHeaders: (headers: ColumnDef[]) => void;
   onColumnVisibilityChange?: (state: ColumnVisibilityState) => void;
   onColumnOrderChange?: (headers: ColumnDef[]) => void;
@@ -64,7 +72,7 @@ export interface CreateColumnEditorRowResult {
 
 export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): CreateColumnEditorRowResult => {
   const {
-    allHeaders,
+    allHeaders: _allHeaders,
     clearHoverSeparator,
     depth,
     doesAnyHeaderHaveChildren,
@@ -82,11 +90,14 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
     setExpandedHeaders,
     setHoveredSeparator,
     headers,
+    getHeaders,
     setHeaders,
     onColumnVisibilityChange,
     onColumnOrderChange,
     previousExpandedHeaders,
   } = options;
+
+  const resolveHeaders = (): ColumnDef[] => (getHeaders ? getHeaders() : headers);
 
   const essentialAccessors: ReadonlySet<string> = options.essentialAccessors ?? new Set();
   const allowColumnPinning = options.columnEditorConfig.allowColumnPinning !== false;
@@ -98,22 +109,8 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
   const hasChildren = header.children && header.children.length > 0;
 
   // Group rows use a tri-state checkbox: unchecked / indeterminate (partial) / checked.
-  let isChecked = !header.hide;
-  let isIndeterminate = false;
-  if (hasChildren && header.children) {
-    const allHidden = areAllChildrenHidden(header.children);
-    const allVisible = areAllChildrenVisible(header.children);
-    if (header.hide || allHidden) {
-      isChecked = false;
-      isIndeterminate = false;
-    } else if (allVisible) {
-      isChecked = true;
-      isIndeterminate = false;
-    } else {
-      isChecked = false;
-      isIndeterminate = true;
-    }
-  }
+  const { checked: isChecked, indeterminate: isIndeterminate } =
+    getColumnEditorCheckboxState(header);
 
   const isExpanded = expandedHeaders.has(header.accessor);
   const shouldExpand = forceExpanded || isExpanded;
@@ -135,6 +132,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
 
   const rowContainer = document.createElement("div");
   rowContainer.className = "st-header-checkbox-item";
+  rowContainer.dataset.accessor = String(header.accessor);
   rowContainer.style.paddingLeft = paddingLeft;
   rowContainer.draggable = true;
 
@@ -153,29 +151,34 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
   const handleCheckboxChange = (checked: boolean) => {
     if (!canToggleVisibility) return;
 
-    header.hide = !checked;
+    const latestHeaders = resolveHeaders();
+    const target = findHeaderByAccessor(latestHeaders, header.accessor);
+    if (!target) return;
+
+    const targetHasChildren = Boolean(target.children && target.children.length > 0);
+    target.hide = !checked;
 
     if (!checked) {
-      updateParentHeaders(allHeaders);
+      updateParentHeaders(latestHeaders);
     } else {
-      findAndMarkParentsVisible(allHeaders, header.accessor);
+      findAndMarkParentsVisible(latestHeaders, target.accessor);
 
-      if (hasChildren && header.children && header.children.length > 0) {
+      if (targetHasChildren && target.children && target.children.length > 0) {
         const wasPartial =
-          !areAllChildrenHidden(header.children) && !areAllChildrenVisible(header.children);
+          !areAllChildrenHidden(target.children) && !areAllChildrenVisible(target.children);
 
         if (wasPartial) {
           // Indeterminate → checked: show every descendant under this group.
-          showAllDescendants(header.children);
-        } else if (areAllChildrenHidden(header.children) && header.children[0]) {
+          showAllDescendants(target.children);
+        } else if (areAllChildrenHidden(target.children) && target.children[0]) {
           // Fully hidden group → checked: reveal the first child (existing behavior).
-          header.children[0].hide = false;
-          findAndMarkParentsVisible(allHeaders, header.children[0].accessor);
+          target.children[0].hide = false;
+          findAndMarkParentsVisible(latestHeaders, target.children[0].accessor);
         }
       }
     }
 
-    const updatedHeaders = [...headers];
+    const updatedHeaders = [...latestHeaders];
     setHeaders(deepClone(updatedHeaders));
 
     if (onColumnVisibilityChange) {
@@ -299,8 +302,9 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
     // section is flattened independently), but `swapHeaders` mutates the full
     // `headers` tree. Resolve the real tree paths from the accessors so the
     // swap targets the correct columns when pinned sections offset the indices.
-    const draggedGlobalPath = getHeaderIndexPath(headers, currentDraggingRow.header.accessor);
-    const hoveredGlobalPath = getHeaderIndexPath(headers, hoveredHeader.header.accessor);
+    const latestHeaders = resolveHeaders();
+    const draggedGlobalPath = getHeaderIndexPath(latestHeaders, currentDraggingRow.header.accessor);
+    const hoveredGlobalPath = getHeaderIndexPath(latestHeaders, hoveredHeader.header.accessor);
 
     if (!draggedGlobalPath || !hoveredGlobalPath) {
       cancelDrag();
@@ -308,7 +312,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
     }
 
     const { newHeaders, emergencyBreak } = swapHeaders(
-      headers,
+      latestHeaders,
       draggedGlobalPath,
       hoveredGlobalPath,
     );
@@ -423,17 +427,17 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
   const canPinRight = !pinnedSide && panelSection === "main";
 
   const pinLeft = () => {
-    const next = moveRootColumnPinSide(headers, header.accessor, "left", essentialAccessors);
+    const next = moveRootColumnPinSide(resolveHeaders(), header.accessor, "left", essentialAccessors);
     if (next) applyHeaderOrder(next);
   };
 
   const pinRight = () => {
-    const next = moveRootColumnPinSide(headers, header.accessor, "right", essentialAccessors);
+    const next = moveRootColumnPinSide(resolveHeaders(), header.accessor, "right", essentialAccessors);
     if (next) applyHeaderOrder(next);
   };
 
   const unpin = () => {
-    const next = moveRootColumnPinSide(headers, header.accessor, "main", essentialAccessors);
+    const next = moveRootColumnPinSide(resolveHeaders(), header.accessor, "main", essentialAccessors);
     if (next) applyHeaderOrder(next);
   };
 

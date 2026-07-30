@@ -15,6 +15,7 @@ import {
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useGitHubStars } from "@/hooks/useGitHubStars";
 import { Suspense, useState } from "react";
 import dynamic from "next/dynamic";
@@ -145,7 +146,7 @@ export default function HomeContent() {
             </motion.h1>
 
             <motion.p
-              className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto"
+              className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-4 max-w-3xl mx-auto"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.1 }}
@@ -153,6 +154,29 @@ export default function HomeContent() {
               A lightweight data grid packed with 30+ features, dropped into React, Vue, Angular,
               Svelte, Solid, or vanilla TypeScript in minutes — backed by support that actually
               replies.
+            </motion.p>
+
+            <motion.p
+              className="text-sm md:text-base text-gray-500 dark:text-gray-400 mb-8 max-w-3xl mx-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4, delay: 0.12 }}
+            >
+              Comparing options? See{" "}
+              <Link
+                href="/blog/ag-grid-alternatives-free-react-data-grids"
+                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              >
+                free AG Grid alternatives
+              </Link>
+              {" · "}
+              <Link
+                href="/blog/best-vanilla-js-data-grid-2026"
+                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+              >
+                best JavaScript table libraries
+              </Link>
+              .
             </motion.p>
 
             <motion.div

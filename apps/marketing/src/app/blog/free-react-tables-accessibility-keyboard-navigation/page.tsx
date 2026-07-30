@@ -51,7 +51,7 @@ export default function AccessibilityComparisonPage() {
       {/* Hero Section */}
       <section className="bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900 dark:to-blue-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
-          Free React Tables: Accessibility & Keyboard Navigation Comparison
+          React Table Accessibility & Keyboard Navigation (2026)
         </h1>
 
         <div className="flex justify-center mb-4 gap-2 flex-wrap">

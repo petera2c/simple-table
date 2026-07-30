@@ -22,6 +22,7 @@ import { RowButton } from "./RowButton";
 import Theme from "./Theme";
 import { CustomThemeProps } from "./CustomTheme";
 import { GetRowId } from "./GetRowId";
+import { GetRowClass } from "./GetRowClass";
 import { ColumnEditorConfig } from "./ColumnEditorConfig";
 import { VanillaIconsConfig } from "./IconsConfig";
 import { QuickFilterConfig } from "./QuickFilterTypes";
@@ -142,6 +143,8 @@ export interface SimpleTableConfig<TData extends RowData = Row> {
    */
   rowGrouping?: Accessor<TData>[];
   getRowId?: GetRowId<TData>;
+  /** @see SimpleTableProps.getRowClass */
+  getRowClass?: GetRowClass<TData>;
   rows: TData[];
   rowsPerPage?: number;
   scrollParent?: HTMLElement | "window" | (() => HTMLElement | null);

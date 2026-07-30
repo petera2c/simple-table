@@ -18,6 +18,7 @@ import { useThemeContext } from "@/providers/ThemeProvider";
 import {
   themeSnippets,
   themeStylingFlagsSnippets,
+  getRowClassSnippets,
   type CodeByFramework,
 } from "@/constants/docsSnippets";
 
@@ -67,6 +68,20 @@ const THEME_PATTERNS: ThemePattern[] = [
     ),
     codeByFramework: themeStylingFlagsSnippets(),
   },
+  {
+    title: "Conditional row classes",
+    body: (
+      <>
+        Use{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">getRowClass</code> to
+        highlight rows by data (e.g. a search jump target). Classes apply to each body{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">.st-cell</code> — style
+        with selectors like{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">.jump-row</code>.
+      </>
+    ),
+    codeByFramework: getRowClassSnippets(),
+  },
 ];
 
 const THEME_PROPS: PropInfo[] = [
@@ -95,6 +110,16 @@ const THEME_PROPS: PropInfo[] = [
     description: "Alternate row background colors. Defaults to true.",
     type: "boolean",
     example: `oddEvenRowBackground={true}`,
+  },
+  {
+    key: "getRowClass",
+    name: "getRowClass",
+    required: false,
+    description:
+      "Return CSS class name(s) for a row. Applied to each body cell — style with `.st-cell.yourClass`.",
+    type: "(params: GetRowClassParams) => string | string[] | undefined | null",
+    link: "/docs/api-reference#get-row-class-params",
+    example: `getRowClass={({ row }) => row.id === jumpId ? "jump-row" : undefined}`,
   },
   {
     key: "oddColumnBackground",

@@ -548,6 +548,7 @@ export class TableRenderer {
       hoverRowBackground: deps.config.hoverRowBackground ?? true,
       hoverScopeId: deps.hoverScopeId,
       oddEvenRowBackground: deps.config.oddEvenRowBackground,
+      getRowClass: deps.config.getRowClass,
       rowGrouping: deps.config.rowGrouping,
       headers: deps.effectiveHeaders,
       rowHeaderAccessor,

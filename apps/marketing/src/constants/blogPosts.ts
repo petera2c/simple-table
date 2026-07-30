@@ -81,13 +81,13 @@ export const nestedHeadersReactTablesPost: BlogPostMetadata = {
 };
 
 export const bestFreeReactDataGridPost: BlogPostMetadata = {
-  title: "Best Free & Open-Source React Data Grids (2026)",
+  title: "Best Free React Data Grid 2026 (No License Fee)",
   description:
-    "The best 100% free and open-source React data grids in 2026 — no per-seat license, no paywalled features. Compared on bundle size, features, and licensing.",
+    "Best free React data grid in 2026 with no per-seat license and no paywalled features. Compared on bundle size, features, and licensing vs AG Grid and TanStack.",
   slug: "best-free-react-data-grid-2026",
   tags: ["react", "comparison", "alternatives", "best-practices"],
   createdAt: "2025-06-21",
-  updatedAt: "2026-06-22",
+  updatedAt: "2026-07-29",
 };
 
 export const customizingReactTableLookPost: BlogPostMetadata = {
@@ -142,13 +142,13 @@ export const replicatingGojiberryUIPost: BlogPostMetadata = {
 };
 
 export const agGridAlternativesPost: BlogPostMetadata = {
-  title: "AG Grid Alternatives: 7 Best Free React Data Grids (2026)",
+  title: "AG Grid Alternatives 2026: 7 Best Free React Data Grids",
   description:
-    "Looking for an AG Grid alternative? Discover 7 powerful, free React data grids that deliver enterprise features without the enterprise price tag or vendor lock-in.",
+    "Looking for AG Grid alternatives? Compare 7 free React data grids for 2026 — features, pricing, and bundle size without the enterprise license.",
   slug: "ag-grid-alternatives-free-react-data-grids",
   tags: ["react", "alternatives", "comparison", "ag-grid"],
   createdAt: "2025-11-15",
-  updatedAt: "2026-06-22",
+  updatedAt: "2026-07-29",
 };
 
 export const bundleSizeComparisonPost: BlogPostMetadata = {
@@ -182,13 +182,13 @@ export const handsontableAlternativesPost: BlogPostMetadata = {
 };
 
 export const agGridPricing2026Post: BlogPostMetadata = {
-  title: "AG Grid License Cost & Pricing 2026 (Per Developer)",
+  title: "AG Grid Pricing 2026: $999/Dev Enterprise License Cost",
   description:
-    "AG Grid Enterprise license is $999/developer/year. Full 2026 license cost breakdown: Community vs Enterprise, pricing tiers, renewals, real team costs, and free alternatives.",
+    "AG Grid Enterprise is $999 per developer per year. 2026 pricing breakdown: Community (MIT) vs Enterprise, license cost, renewals, team totals, and free alternatives.",
   slug: "ag-grid-pricing-license-breakdown-2026",
   tags: ["react", "ag-grid", "pricing", "comparison"],
   createdAt: "2025-11-22",
-  updatedAt: "2026-07-12",
+  updatedAt: "2026-07-29",
 };
 
 export const tanstackVsSimpleTablePost: BlogPostMetadata = {
@@ -201,13 +201,13 @@ export const tanstackVsSimpleTablePost: BlogPostMetadata = {
 };
 
 export const mitLicensedAccessibilityPost: BlogPostMetadata = {
-  title: "Free React Tables: Accessibility & Keyboard Navigation Comparison",
+  title: "React Table Accessibility & Keyboard Navigation (2026)",
   description:
-    "Which free React data grids actually work for keyboard users and screen readers? Comprehensive WCAG 2.1 comparison of accessibility features across free React table libraries.",
+    "React table accessibility guide: keyboard navigation, screen readers, and WCAG 2.1 across free React data grids including Simple Table and TanStack Table.",
   slug: "free-react-tables-accessibility-keyboard-navigation",
   tags: ["react", "accessibility"],
   createdAt: "2025-11-22",
-  updatedAt: "2025-11-22",
+  updatedAt: "2026-07-29",
 };
 
 export const columnPinningTutorialPost: BlogPostMetadata = {
@@ -379,13 +379,13 @@ export const kaTableVsSimpleTablePost: BlogPostMetadata = {
 };
 
 export const mantineDatatableVsSimpleTablePost: BlogPostMetadata = {
-  title: "Mantine DataTable vs Simple Table (2026 Comparison)",
+  title: "Mantine DataTable Alternative (2026): Features & Bundle Size",
   description:
-    "Mantine DataTable vs Simple Table: compare bundle size (95KB vs 42KB), the Mantine UI dependency, features, and which React grid fits your project in 2026.",
+    "Looking for a Mantine DataTable alternative? Compare bundle size, the Mantine UI dependency, features, and which React grid fits your project in 2026.",
   slug: "mantine-datatable-vs-simple-table",
   tags: ["react", "comparison", "alternatives"],
   createdAt: "2026-02-05",
-  updatedAt: "2026-06-22",
+  updatedAt: "2026-07-29",
 };
 
 export const muiDatatablesVsSimpleTablePost: BlogPostMetadata = {
@@ -557,13 +557,13 @@ export const simpleTableVsKendoGridAngularPost: BlogPostMetadata = {
 };
 
 export const agGridAlternativesAngularPost: BlogPostMetadata = {
-  title: "AG Grid Alternatives: Best Free Angular Data Grids in 2026",
+  title: "Angular AG Grid Alternatives 2026: Best Free Data Grids",
   description:
     "Looking for AG Grid Angular alternatives? Compare Simple Table for Angular, ngx-datatable, PrimeNG Table, Angular Material mat-table, and others. Free, signals-friendly options without enterprise licensing.",
   slug: "ag-grid-alternatives-free-angular-data-grids-2026",
   tags: ["angular", "alternatives", "comparison", "ag-grid"],
   createdAt: "2026-04-26",
-  updatedAt: "2026-04-26",
+  updatedAt: "2026-07-29",
 };
 
 // Vue
@@ -578,13 +578,13 @@ export const simpleTableVsVuetifyDataTablePost: BlogPostMetadata = {
 };
 
 export const simpleTableVsPrimeVueDatatablePost: BlogPostMetadata = {
-  title: "Simple Table vs PrimeVue DataTable: Lightweight Vue 3 Data Grid",
+  title: "PrimeVue DataTable Alternative: Lightweight Vue 3 Grid",
   description:
-    "PrimeVue DataTable bundles in PrimeVue's runtime + theme + PrimeIcons. Simple Table for Vue is a focused source-available alternative for Vue 3 / Nuxt with virtualization, pinning, grouping, and editing in one library.",
+    "Looking for a PrimeVue DataTable alternative? Compare runtime/theme cost vs Simple Table for Vue — virtualization, pinning, grouping, and editing without the PrimeVue bundle tax.",
   slug: "simple-table-vs-primevue-datatable",
   tags: ["vue", "comparison", "alternatives"],
   createdAt: "2026-04-26",
-  updatedAt: "2026-04-26",
+  updatedAt: "2026-07-29",
 };
 
 export const simpleTableVsVueGoodTablePost: BlogPostMetadata = {
@@ -742,13 +742,13 @@ export const simpleTableVsHandsontableVanillaPost: BlogPostMetadata = {
 };
 
 export const bestVanillaJsDataGridPost: BlogPostMetadata = {
-  title: "Best Vanilla JS Data Grid 2026: Free Options Compared",
+  title: "Best JavaScript Table Library 2026: Vanilla JS Data Grids",
   description:
-    "The best free vanilla JS & TypeScript data grids in 2026 — simple-table-core, Tabulator, Jspreadsheet, Grid.js, Handsontable — compared on size, TS, and license.",
+    "Best JavaScript table library and vanilla JS/TypeScript data grids in 2026 — simple-table-core, Tabulator, Jspreadsheet, Grid.js, Handsontable — compared on size, TS, and license.",
   slug: "best-vanilla-js-data-grid-2026",
   tags: ["vanilla", "comparison", "alternatives", "best-practices"],
   createdAt: "2026-04-26",
-  updatedAt: "2026-06-22",
+  updatedAt: "2026-07-29",
 };
 
 // Tier 2 — framework-mirrored tutorial posts (column resizing, row selection,

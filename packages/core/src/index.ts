@@ -89,6 +89,7 @@ import type { CustomTheme, CustomThemeProps } from "./types/CustomTheme";
 import type { ColumnEditorConfig, ColumnEditorSearchFunction } from "./types/ColumnEditorConfig";
 import type { IconsConfig } from "./types/IconsConfig";
 import type { GetRowId, GetRowIdParams } from "./types/GetRowId";
+import type { GetRowClass, GetRowClassParams } from "./types/GetRowClass";
 import type { SimpleTableConfig } from "./types/SimpleTableConfig";
 import type { SimpleTableProps } from "./types/SimpleTableProps";
 import type { AnimationsConfig } from "./types/AnimationsConfig";
@@ -171,6 +172,8 @@ export type {
   FooterPosition,
   GetRowId,
   GetRowIdParams,
+  GetRowClass,
+  GetRowClassParams,
   IconsConfig,
   LoadingStateRenderer,
   LoadingStateRendererProps,

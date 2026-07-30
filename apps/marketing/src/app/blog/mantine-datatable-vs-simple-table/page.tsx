@@ -51,7 +51,7 @@ export default function MantineDatatableVsSimpleTablePage() {
       {/* Hero Section */}
       <section className="bg-linear-to-r from-blue-50 to-cyan-50 dark:from-blue-900 dark:to-cyan-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
-          Mantine DataTable vs Simple Table: Mantine UI Integration vs Standalone Grid
+          Mantine DataTable Alternative (2026): Features & Bundle Size
         </h1>
 
         <div className="flex justify-center mb-4 gap-2 flex-wrap">

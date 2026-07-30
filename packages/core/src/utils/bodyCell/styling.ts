@@ -197,9 +197,33 @@ const calculateBodyCellClasses = (cell: AbsoluteBodyCell, context: CellRenderCon
     context.activeRowId != null && String(context.activeRowId) === String(rowId)
       ? "st-row-active"
       : "",
+    ...normalizeGetRowClassResult(
+      context.getRowClass?.({
+        row: cell.row,
+        rowId,
+        position: cell.tableRow.position,
+        depth,
+      }),
+    ),
   ]
     .filter(Boolean)
     .join(" ");
+};
+
+/** Flatten `getRowClass` return into discrete class tokens. */
+const normalizeGetRowClassResult = (
+  result: string | string[] | undefined | null,
+): string[] => {
+  if (result == null) return [];
+  const parts = Array.isArray(result) ? result : [result];
+  const out: string[] = [];
+  for (const part of parts) {
+    if (typeof part !== "string") continue;
+    for (const token of part.trim().split(/\s+/)) {
+      if (token) out.push(token);
+    }
+  }
+  return out;
 };
 
 // Create a single body cell element
