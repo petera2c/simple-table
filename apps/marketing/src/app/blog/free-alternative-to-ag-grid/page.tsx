@@ -28,7 +28,8 @@ export const metadata: Metadata = {
     images: SEO_STRINGS.site.ogImage.url,
   },
   alternates: {
-    canonical: "/blog/free-alternative-to-ag-grid",
+    // Consolidate generic "AG Grid alternative" intent onto the React roundup.
+    canonical: "/blog/ag-grid-alternatives-free-react-data-grids",
   },
 };
 
@@ -56,8 +57,17 @@ export default function FreeAlternativeToAgGridPage() {
           </span>
         </div>
 
-        <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
+        <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300 mb-4">
           {freeAlternativeToAgGridPost.description}
+        </p>
+        <p className="text-center text-gray-700 dark:text-gray-300">
+          Looking for a full list of options?{" "}
+          <Link
+            href="/blog/ag-grid-alternatives-free-react-data-grids"
+            className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+          >
+            Compare 7 free AG Grid alternatives for React →
+          </Link>
         </p>
       </section>
 

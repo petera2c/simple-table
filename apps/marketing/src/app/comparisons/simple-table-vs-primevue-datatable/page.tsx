@@ -3,10 +3,10 @@ import { faBolt, faDollarSign, faPalette, faTrophy } from "@fortawesome/free-sol
 import FrameworkVsCompetitorLayout from "@/components/comparisons/FrameworkVsCompetitorLayout";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 
-const TITLE = "Simple Table vs PrimeVue DataTable: Vue 3 Data Grid Comparison";
+const TITLE = "PrimeVue DataTable Alternative: Lightweight Vue 3 Grid";
 const DESCRIPTION =
-  "Compare @simple-table/vue against PrimeVue DataTable for Vue 3 / Nuxt: features, virtualization, bundle size, theming, and migration path. Pick the right Vue data grid in 2026.";
-const CANONICAL = "/comparisons/simple-table-vs-primevue-datatable";
+  "Looking for a PrimeVue DataTable alternative? Compare @simple-table/vue vs PrimeVue DataTable for Vue 3 / Nuxt: features, virtualization, bundle size, and theming.";
+const CANONICAL = "/blog/simple-table-vs-primevue-datatable";
 
 export const metadata: Metadata = {
   title: TITLE,

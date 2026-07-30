@@ -21,7 +21,8 @@ export const metadata: Metadata = {
     images: SEO_STRINGS.site.ogImage.url,
   },
   alternates: {
-    canonical: "/comparisons/simple-table-vs-handsontable",
+    // Prefer the Handsontable alternatives roundup for "alternative" intent.
+    canonical: "/blog/handsontable-alternatives-free-react",
   },
 };
 

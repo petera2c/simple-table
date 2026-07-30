@@ -21,7 +21,8 @@ export const metadata: Metadata = {
     images: SEO_STRINGS.site.ogImage.url,
   },
   alternates: {
-    canonical: "/comparisons/simple-table-vs-material-react",
+    // Prefer the deeper blog comparison for Material React Table intent.
+    canonical: "/blog/material-react-table-vs-simple-table",
   },
 };
 

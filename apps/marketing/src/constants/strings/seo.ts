@@ -1,5 +1,6 @@
 import {
   freeAlternativeToAgGridPost,
+  mitLicensedAccessibilityPost,
   handlingOneMillionRowsPost,
   customizingDataGridsStylingEasyPost,
   nestedHeadersReactTablesPost,
@@ -63,10 +64,10 @@ export const SEO_STRINGS = {
   site: {
     url: "https://www.simple-table.com",
     name: "Simple Table",
-    title: "Simple Table: JavaScript Data Grid & Table Library | Free Plan Available",
-    description: `Simple Table: A ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} JavaScript data grid for React, Vue, Angular, Svelte, Solid, and vanilla JavaScript or TypeScript (simple-table-core). Build responsive datagrids with sorting, filtering, editing, and full TypeScript support. Free plan available! The lightweight alternative to AG Grid, TanStack Table, and Handsontable.`,
+    title: "Simple Table: Multi-Framework JavaScript Data Grid | Free Plan",
+    description: `Simple Table is a ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} multi-framework data grid with official adapters for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript (simple-table-core). Sorting, filtering, editing, and full TypeScript support. Free plan available — a lightweight alternative to AG Grid and TanStack Table.`,
     defaultKeywords:
-      "simple-table, simple-table-core, @simple-table/react, @simple-table/vue, @simple-table/angular, @simple-table/svelte, @simple-table/solid, javascript data grid, typescript data grid, typescript table, react data grid, react table, vue 3 datagrid, vue data grid, nuxt data table, angular data grid, svelte data grid, sveltekit data grid, solidjs table, solid table, vanilla js data grid, vanilla typescript table, multi-framework data grid, data-grid, datagrid, data table, table, grid, spreadsheet, ag grid alternative, handsontable alternative, tanstack table alternative, free data grid, lightweight data grid, best data grid library",
+      "simple-table, simple-table-core, @simple-table/react, @simple-table/vue, @simple-table/angular, @simple-table/svelte, @simple-table/solid, react data grid, vue data grid, angular data grid, svelte data grid, solidjs table, vanilla js data grid, multi-framework data grid, ag grid alternative, handsontable alternative, tanstack table alternative, free data grid, lightweight data grid",
     creator: "@simpletable",
     ogImage: {
       url: "https://www.simple-table.com/og-image.png",
@@ -76,10 +77,10 @@ export const SEO_STRINGS = {
     },
   },
   home: {
-    title: "Simple Table: JavaScript Data Grid & Table Library | Free Plan Available",
-    description: `Simple Table: A ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} JavaScript data grid for React, Vue, Angular, Svelte, Solid, and vanilla JavaScript or TypeScript (simple-table-core). Build responsive datagrids with sorting, filtering, editing, and full TypeScript support. Free plan available! The lightweight alternative to AG Grid, TanStack Table, and Handsontable.`,
+    title: "Simple Table: Multi-Framework JavaScript Data Grid | Free Plan",
+    description: `Simple Table is a ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} multi-framework data grid with official adapters for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript (simple-table-core). Sorting, filtering, editing, and full TypeScript support. Free plan available — a lightweight alternative to AG Grid and TanStack Table.`,
     keywords:
-      "simple-table, simple-table-core, @simple-table/react, @simple-table/vue, @simple-table/angular, @simple-table/svelte, @simple-table/solid, javascript data grid, typescript data grid, typescript table, react data grid, react table, vue 3 datagrid, vue data grid, nuxt data table, angular data grid, svelte data grid, sveltekit data grid, solidjs table, solid table, vanilla js data grid, multi-framework data grid, data-grid, datagrid, data table, table, grid, spreadsheet, ag grid alternative, handsontable alternative, tanstack table alternative, free data grid, lightweight data grid, best data grid library",
+      "simple-table, simple-table-core, @simple-table/react, @simple-table/vue, @simple-table/angular, @simple-table/svelte, @simple-table/solid, react data grid, vue data grid, angular data grid, svelte data grid, solidjs table, vanilla js data grid, multi-framework data grid, ag grid alternative, handsontable alternative, tanstack table alternative, free data grid, lightweight data grid",
   },
   blog: {
     title: "Data Grid Blog: Tutorials, Comparisons & Best Practices",
@@ -382,9 +383,8 @@ export const SEO_STRINGS = {
       ],
     },
     mitLicensedAccessibility: {
-      title: "React Table Keyboard Navigation & Accessibility | WCAG 2.1 Compliant",
-      description:
-        "Build accessible React tables with keyboard navigation, screen reader support, and WCAG 2.1 compliance. Compare accessibility features in Simple Table, TanStack Table, and other free React grids.",
+      title: mitLicensedAccessibilityPost.title,
+      description: mitLicensedAccessibilityPost.description,
       keywords: [
         "react table accessibility",
         "react table keyboard navigation",
