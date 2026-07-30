@@ -3,10 +3,14 @@ import { ColumnEditorSearchFunction, ColumnEditorConfig } from "../../types/Colu
 import { ColumnEditorCustomRenderer } from "../../types/ColumnEditorCustomRendererProps";
 import { FlattenedHeader } from "../../types/FlattenedHeader";
 import { createColumnEditorRow } from "./createColumnEditorRow";
-import { HoveredSeparator } from "./columnEditorUtils";
+import {
+  getColumnEditorCheckboxState,
+  HoveredSeparator,
+} from "./columnEditorUtils";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
 import { IconsConfig } from "../../types/IconsConfig";
 import { partitionRootHeadersByPin, PanelSection } from "../../utils/pinnedColumnUtils";
+import { updateCheckboxElement } from "./createCheckbox";
 
 export interface CreateColumnEditorPopoutOptions {
   headers: ColumnDef[];
@@ -370,6 +374,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
         icons,
         essentialAccessors: essentialAccessors ?? new Set(),
         headers,
+        getHeaders: () => headers,
         setHeaders,
         onColumnVisibilityChange,
         onColumnOrderChange,
@@ -397,6 +402,52 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     }
   };
 
+  /**
+   * When the visible editor row structure is unchanged, sync checkbox visuals
+   * in place instead of wiping the list (avoids destroying the checkbox under
+   * the cursor during heavy setHeaders → onRender work).
+   */
+  const syncVisibilityInPlace = (nextHeaders: ColumnDef[]): boolean => {
+    const items = Array.from(
+      listsContainer.querySelectorAll<HTMLElement>(".st-header-checkbox-item"),
+    );
+    if (items.length === 0) return false;
+
+    const allowColumnPinning = columnEditorConfig.allowColumnPinning !== false;
+    const { pinnedLeft, unpinned, pinnedRight } = partitionRootHeadersByPin(nextHeaders);
+    const sections: Array<{ headers: ColumnDef[]; panelSection: PanelSection }> = allowColumnPinning
+      ? [
+          { headers: pinnedLeft, panelSection: "left" },
+          { headers: unpinned, panelSection: "main" },
+          { headers: pinnedRight, panelSection: "right" },
+        ]
+      : [
+          {
+            headers: [...pinnedLeft, ...unpinned, ...pinnedRight],
+            panelSection: "main",
+          },
+        ];
+
+    const expected: FlattenedHeader[] = [];
+    for (const section of sections) {
+      if (section.headers.length === 0) continue;
+      expected.push(...getFlattenedHeaders(section.headers, section.panelSection));
+    }
+
+    if (expected.length !== items.length) return false;
+    for (let i = 0; i < expected.length; i++) {
+      if (items[i].dataset.accessor !== String(expected[i].header.accessor)) {
+        return false;
+      }
+    }
+
+    for (let i = 0; i < expected.length; i++) {
+      const { checked, indeterminate } = getColumnEditorCheckboxState(expected[i].header);
+      updateCheckboxElement(items[i], checked, indeterminate);
+    }
+    return true;
+  };
+
   render();
 
   const rebuildContentLayout = () => {
@@ -413,11 +464,19 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
   };
 
   const update = (newOptions: Partial<CreateColumnEditorPopoutOptions>) => {
-    if (newOptions.headers !== undefined) headers = newOptions.headers;
-    if (newOptions.searchEnabled !== undefined) searchEnabled = newOptions.searchEnabled;
+    let structureDirty = false;
+    let headersUpdated = false;
+
+    if (newOptions.searchEnabled !== undefined && newOptions.searchEnabled !== searchEnabled) {
+      searchEnabled = newOptions.searchEnabled;
+      structureDirty = true;
+    }
     if (newOptions.searchPlaceholder !== undefined)
       searchPlaceholder = newOptions.searchPlaceholder;
-    if (newOptions.searchFunction !== undefined) searchFunction = newOptions.searchFunction;
+    if (newOptions.searchFunction !== undefined) {
+      searchFunction = newOptions.searchFunction;
+      structureDirty = true;
+    }
     if (newOptions.icons !== undefined) icons = newOptions.icons;
     if (newOptions.essentialAccessors !== undefined) essentialAccessors = newOptions.essentialAccessors;
     if (newOptions.setHeaders !== undefined) setHeaders = newOptions.setHeaders;
@@ -434,6 +493,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
       if (newCustomRenderer !== activeCustomRenderer) {
         activeCustomRenderer = newCustomRenderer;
         needsLayoutRebuild = true;
+        structureDirty = true;
       }
       columnEditorConfig = newOptions.columnEditorConfig;
     }
@@ -451,11 +511,22 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
       searchInput.placeholder = newOptions.searchPlaceholder;
     }
 
+    if (newOptions.headers !== undefined) {
+      headers = newOptions.headers;
+      headersUpdated = true;
+    }
+
     if (needsLayoutRebuild) {
       rebuildContentLayout();
     }
 
-    render();
+    if (!structureDirty && headersUpdated && syncVisibilityInPlace(headers)) {
+      return;
+    }
+
+    if (structureDirty || headersUpdated || needsLayoutRebuild) {
+      render();
+    }
   };
 
   const destroy = () => {
