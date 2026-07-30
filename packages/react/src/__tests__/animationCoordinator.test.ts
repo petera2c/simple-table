@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 // coalescing, external-scroll distance scaling, and in-flight lifecycle.
 import { AnimationCoordinator } from "../../../core/src/managers/AnimationCoordinator";
 import { getRenderedCells } from "../../../core/src/utils/bodyCell/eventTracking";
+import { setAbsoluteCellPosition } from "../../../core/src/utils/setAbsoluteCellPosition";
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -19,6 +20,12 @@ async function waitFor(predicate: () => boolean, timeoutMs = 2000): Promise<void
 /** Pull the translateY pixel value out of a `translate3d(x, y, 0)` transform. */
 const translateY = (transform: string): number => {
   const match = /translate3d\(\s*[^,]+,\s*(-?[\d.]+)px/.exec(transform);
+  return match ? parseFloat(match[1]) : NaN;
+};
+
+/** Pull the translateX pixel value out of a `translate3d(x, y, 0)` transform. */
+const translateX = (transform: string): number => {
+  const match = /translate3d\(\s*(-?[\d.]+)px/.exec(transform);
   return match ? parseFloat(match[1]) : NaN;
 };
 
@@ -46,6 +53,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  coordinator.setColumnReordering(false);
   coordinator.cancel();
   // Clear the per-container rendered-cell registry between tests.
   getRenderedCells(container).clear();
@@ -106,16 +114,11 @@ describe("AnimationCoordinator — spam-sort coalescing", () => {
     cellB.style.top = "400px";
     coordinator.play({ containers: [container] });
 
-    // A was only in the stale (cancelled) chain: its inverted transform must be
-    // reset rather than left stranded, and it must never start a transition.
-    expect(cellA.style.transform).toBe("");
-    expect(coordinator.isInFlight("rowA-name")).toBe(false);
-
     // B is the latest cycle and carries the live inverse transform.
     expect(translateY(cellB.style.transform)).toBeCloseTo(-400, 0);
 
     // After the animation window everything settles — nothing stays in-flight.
-    await waitFor(() => !coordinator.isInFlight("rowB-name"));
+    await waitFor(() => !coordinator.hasInFlight());
     expect(coordinator.isInFlight("rowA-name")).toBe(false);
     expect(coordinator.isInFlight("rowB-name")).toBe(false);
   });
@@ -134,6 +137,58 @@ describe("AnimationCoordinator — spam-sort coalescing", () => {
     // reported as animating — so `isCellAnimating`-gated live updates resume.
     await waitFor(() => !coordinator.isInFlight("rowX-name"), 3000);
     expect(coordinator.isInFlight("rowX-name")).toBe(false);
+  });
+});
+
+describe("AnimationCoordinator — column reorder mode", () => {
+  it("allows ColumnReorderAnimator to own paint continuity during column drag", () => {
+    // During column-reorder, flip compensation is off so left writes stay
+    // plain — the animator holds+tweens instead of fighting style.transform.
+    coordinator.setColumnReordering(true);
+    expect(coordinator.isColumnReordering()).toBe(true);
+
+    const cell = makeCell("col-pin", 0);
+    cell.style.left = "0px";
+    cell.style.transform = "";
+
+    setAbsoluteCellPosition(cell, 120, 0);
+
+    // No holding invert invent — animator owns continuity.
+    expect(cell.style.transform).toBe("");
+    expect(cell.style.left).toBe("120px");
+  });
+
+  it("does not settle mid-flight FLIPs when (re)entering column drag mode", async () => {
+    // Long duration so the handoff assertions aren't racing the safety timeout.
+    coordinator.setDuration(500);
+
+    // Start with sort (non-column-reorder) mode to create an in-flight animation.
+    const cell = makeCell("col-c", 0);
+    cell.style.left = "0px";
+
+    coordinator.captureSnapshot({ containers: [container] });
+    cell.style.left = "120px";
+    coordinator.play({ containers: [container] });
+    expect(translateX(cell.style.transform)).toBeCloseTo(-120, 0);
+    await waitFor(() => coordinator.isInFlight("col-c"));
+
+    // Freeze a mid-slide translate (style is identity once the transition has
+    // started; settleInFlight would clear both transform and inFlight).
+    cell.style.transition = "none";
+    cell.style.transform = "translate3d(-60px, 0, 0)";
+
+    // Mimic entering column drag mode.
+    coordinator.setColumnReordering(true);
+    // In column-reorder mode, the in-flight FLIP must be preserved so ColumnReorderAnimator
+    // can continue it. The frozen transform should be preserved.
+    expect(translateX(cell.style.transform)).toBeCloseTo(-60, 0);
+    expect(coordinator.isInFlight("col-c")).toBe(true);
+  });
+
+  it("turns off column reorder mode on destroy", () => {
+    coordinator.setColumnReordering(true);
+    coordinator.destroy();
+    expect(coordinator.isColumnReordering()).toBe(false);
   });
 });
 

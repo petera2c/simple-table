@@ -7,6 +7,9 @@ import { findParentHeader } from "../utils/collapseUtils";
 
 const REVERT_TO_PREVIOUS_HEADERS_DELAY = 1500;
 
+/** Cleared on the next dragstart so a rapid A→B handoff isn't interrupted by A's dragend commit. */
+let dragEndCommitTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
 export const getHeaderIndexPath = (
   headers: ColumnDef[],
   targetAccessor: Accessor,
@@ -84,44 +87,50 @@ export const updateHeaderPinnedProperty = (
   return updatedHeader;
 };
 
+/**
+ * Reorder siblings by moving the dragged header to the hovered index
+ * (remove + insert), shifting everything in between by one slot.
+ *
+ * Historically this pairwise-swapped the two headers. That made the hovered
+ * (non-dragged) column fly to the dragged slot while intermediates stayed put —
+ * which reads as "weird animations on columns that aren't being dragged" when
+ * the cursor jumps across several columns.
+ */
 export function swapHeaders(
   headers: ColumnDef[],
   draggedPath: number[],
   hoveredPath: number[],
 ): { newHeaders: ColumnDef[]; emergencyBreak: boolean } {
   const newHeaders = deepClone(headers);
-  let emergencyBreak = false;
 
-  function getHeaderAtPath(headers: ColumnDef[], path: number[]): ColumnDef {
-    let current = headers;
-    let header: ColumnDef | undefined;
-    for (let i = 0; i < path.length - 1; i++) {
-      current = current[path[i]].children!;
+  if (draggedPath.length !== hoveredPath.length) {
+    return { newHeaders, emergencyBreak: true };
+  }
+  for (let i = 0; i < draggedPath.length - 1; i++) {
+    if (draggedPath[i] !== hoveredPath[i]) {
+      return { newHeaders, emergencyBreak: true };
     }
-    header = current[path[path.length - 1]];
-    return header;
   }
 
-  function setHeaderAtPath(headers: ColumnDef[], path: number[], value: ColumnDef): void {
-    let current = headers;
-    for (let i = 0; i < path.length - 1; i++) {
-      if (current[path[i]].children) {
-        current = current[path[i]].children!;
-      } else {
-        emergencyBreak = true;
-        break;
-      }
-    }
-    current[path[path.length - 1]] = value;
+  const fromIndex = draggedPath[draggedPath.length - 1];
+  const toIndex = hoveredPath[hoveredPath.length - 1];
+  if (fromIndex === toIndex) {
+    return { newHeaders, emergencyBreak: false };
   }
 
-  const draggedHeader = getHeaderAtPath(newHeaders, draggedPath);
-  const hoveredHeader = getHeaderAtPath(newHeaders, hoveredPath);
+  const siblings = getSiblingArray(newHeaders, draggedPath);
+  if (
+    fromIndex < 0 ||
+    toIndex < 0 ||
+    fromIndex >= siblings.length ||
+    toIndex >= siblings.length
+  ) {
+    return { newHeaders, emergencyBreak: true };
+  }
 
-  setHeaderAtPath(newHeaders, draggedPath, hoveredHeader);
-  setHeaderAtPath(newHeaders, hoveredPath, draggedHeader);
-
-  return { newHeaders, emergencyBreak };
+  const [removed] = siblings.splice(fromIndex, 1);
+  siblings.splice(toIndex, 0, removed);
+  return { newHeaders: setSiblingArray(newHeaders, draggedPath, siblings), emergencyBreak: false };
 }
 
 export function insertHeaderAcrossSections({
@@ -204,6 +213,10 @@ export class DragHandlerManager {
   }
 
   handleDragStart(header: ColumnDef): void {
+    if (dragEndCommitTimeoutId !== null) {
+      clearTimeout(dragEndCommitTimeoutId);
+      dragEndCommitTimeoutId = null;
+    }
     this.draggedHeader = header;
     this.prevUpdateTime = Date.now();
   }
@@ -319,7 +332,13 @@ export class DragHandlerManager {
     this.draggedHeader = null;
     this.hoveredHeader = null;
 
-    setTimeout(() => {
+    if (dragEndCommitTimeoutId !== null) {
+      clearTimeout(dragEndCommitTimeoutId);
+    }
+    dragEndCommitTimeoutId = setTimeout(() => {
+      dragEndCommitTimeoutId = null;
+      // Skip if a new drag already started (rapid column handoff mid-FLIP).
+      if (this.draggedHeader) return;
       if (this.config.onHeadersChange) {
         this.config.onHeadersChange([...this.config.headers]);
       }

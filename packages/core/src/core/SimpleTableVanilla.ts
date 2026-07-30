@@ -353,33 +353,23 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
   }
 
   /**
-   * All cell-bearing containers — body sections AND header sections — that the
-   * animation coordinator needs to inspect. Headers participate in FLIP for
-   * column reorder so their cells slide to their new slot rather than
-   * teleporting.
+   * Containers the animation coordinator inspects for FLIP (sort / accordion).
+   * Column-drag uses {@link AnimationCoordinator.beginColumnReorder} instead.
    */
   private getAnimatableContainers(): HTMLElement[] {
     return [...this.getBodyContainers(), ...this.getHeaderContainers()];
   }
 
   /**
-   * Capture pre-change cell positions for the FLIP animation, including
-   * conceptual positions for cells outside the virtualization viewport so
-   * incoming cells can animate from off-screen on column reorder/sort. The
-   * `play` step that runs at the end of the next render consumes this
-   * snapshot to inverse-transform cells from their old visual positions and
-   * tween them to their new ones.
-   *
-   * Called on every layout-affecting state change — including the chain of
-   * mid-drag `setHeaders` calls that fire on each `dragover` swap — so that
-   * displaced columns slide smoothly out of the dragged column's way rather
-   * than snapping into place.
-   */
-  /**
    * Build a key summarizing the leaf columns that will paint (accessor +
    * pinned section). Hidden leaves and excluded subtrees drop out; nested
    * children are flattened so a parent collapse/expand counts as a
    * visibility change at the leaf level too.
+   *
+   * Parts are sorted so sibling reorder does not look like a visibility
+   * change — otherwise mid-drag `setHeaders` opens the horizontal accordion
+   * path, and the accordion interrupt `cancel()` snaps in-flight FLIP
+   * animations (flicker).
    */
   private buildVisibilityKey(headers: ColumnDef[]): string {
     const parts: string[] = [];
@@ -393,6 +383,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       }
     };
     for (const header of headers) walk(header, undefined);
+    parts.sort();
     return parts.join("|");
   }
 
@@ -414,10 +405,22 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     return this.lastRenderedVisibilityKey !== null && nextKey !== this.lastRenderedVisibilityKey;
   }
 
+  /**
+   * Capture pre-change cell positions for the FLIP animation, including
+   * conceptual positions for cells outside the virtualization viewport so
+   * incoming cells can animate from off-screen on sort/accordion. The `play`
+   * step that runs at the end of the next render consumes this snapshot to
+   * inverse-transform cells from their old visual positions and tween them
+   * to their new ones.
+   *
+   * Column-drag reorders use {@link AnimationCoordinator.beginColumnReorder}
+   * instead of this path.
+   */
   private captureAnimationSnapshot(): void {
     // Skip the (potentially large) full-section pre-layout build when
     // animations are disabled — captureSnapshot would discard the result
     // anyway, but the argument is evaluated eagerly before the bail-out.
+    // Mid-drag column reorder uses beginColumnReorder instead of this path.
     const preLayouts = this.animationCoordinator.isEnabled()
       ? this.renderOrchestrator.getCurrentBodyLayouts()
       : undefined;
@@ -426,8 +429,9 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     // Feed the real visible viewport (the same metrics that drive
     // virtualization) so sort slides stay bounded to the on-screen area.
     this.updateAnimationVerticalScroll();
+    const containers = this.getAnimatableContainers();
     this.animationCoordinator.captureSnapshot({
-      containers: this.getAnimatableContainers(),
+      containers,
       preLayouts,
     });
   }
@@ -1344,6 +1348,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       rowSelectionManager: this.rowSelectionManager,
       rowStateMap: this.rowStateMap,
       positionOnlyBody: this._positionOnlyBody,
+      columnDragging: Boolean(this.draggedHeaderRef.current),
       // Drives the virtualization window (calculateContentHeight) in external
       // scroll mode. Gate purely on a positive cached viewport — NOT on
       // `resolvedScrollParent` — so the provisional viewport seeded before a
@@ -1381,6 +1386,14 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
         const visibilityChanged = this.didColumnVisibilityChange(headers);
         if (visibilityChanged) {
           this.beginAccordionAnimation("horizontal");
+        } else if (
+          this.draggedHeaderRef.current ||
+          this.animationCoordinator.isColumnReordering()
+        ) {
+          // Column-drag: dedicated animator snapshots visuals; skip FLIP capture.
+          const root =
+            this.domManager.getElements()?.rootElement ?? this.container;
+          this.animationCoordinator.beginColumnReorder(root);
         } else {
           this.captureAnimationSnapshot();
         }
@@ -1685,8 +1698,12 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       return;
     }
 
-    // During scroll use position-only body updates; full update on scroll-end or other triggers
-    this._positionOnlyBody = source === "scroll-raf" && this.isScrolling === true;
+    // During scroll use position-only body updates; full update on scroll-end or other triggers.
+    // Mid column-drag: same fast path — only left/top change; full body content
+    // refresh on every dragover was a major main-thread stall (~300ms clock-leaps).
+    const columnDragging = Boolean(this.draggedHeaderRef.current);
+    this._positionOnlyBody =
+      (source === "scroll-raf" && this.isScrolling === true) || columnDragging;
 
     const elements = this.domManager.getElements();
     const refs = this.domManager.getRefs();
@@ -1723,11 +1740,15 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     // in-coming cells aren't FLIP-tweened during vertical scrolls. Live-sort
     // reorders (from updateData) also skip play so they don't interrupt an
     // in-flight user sort or thrash retained-cell cleanup every tick.
-    // Every other render — including the chain of mid-drag `setHeaders` renders
-    // that fire on each `dragover` swap — runs play so columns being
-    // displaced by the drag slide smoothly to their new slots.
+    // Column-drag uses ColumnReorderAnimator (commit after left writes) instead
+    // of the general capture/play FLIP path.
     if (source !== "scroll-raf" && source !== "live-sort") {
-      this.animationCoordinator.play({ containers: this.getAnimatableContainers() });
+      if (columnDragging || this.animationCoordinator.isColumnReordering()) {
+        const root = elements.rootElement ?? this.container;
+        this.animationCoordinator.commitColumnReorder(root);
+      } else {
+        this.animationCoordinator.play({ containers: this.getAnimatableContainers() });
+      }
     }
 
     this.maybeScheduleUnvirtualizedRowsWarning();

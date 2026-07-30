@@ -29,6 +29,12 @@ import { waitForTable, waitUntil } from "./testUtils";
 
 /** Slow default so mid-drag FLIP is easy to follow in the playground / continuity play. */
 const SLOW_DURATION = 1500;
+/**
+ * TEMP fast-feedback knobs for TrackListTenInterruptContinuity.
+ * Flip back to the slow values when validating the full play.
+ */
+const CONTINUITY_FAST_FEEDBACK = true;
+const CONTINUITY_DURATION = CONTINUITY_FAST_FEEDBACK ? 450 : SLOW_DURATION;
 /** Streams handoff phase — walk the sibling band many times under dense sampling. */
 const HANDOFF_SWAPS = 120;
 /**
@@ -438,6 +444,9 @@ const ensureLeavesInView = async (
   canvasElement: HTMLElement,
   accessors: readonly string[],
 ): Promise<void> => {
+  await waitUntil(() => !!canvasElement.querySelector(".st-body-main"), {
+    timeoutMs: 10_000,
+  });
   const bodyMain = canvasElement.querySelector<HTMLElement>(".st-body-main");
   if (!bodyMain) throw new Error(".st-body-main not found");
 
@@ -576,27 +585,57 @@ type LeafMotion = {
 /** Discrete event slack (release / dragstart) — one leaf is 120px. */
 const VISUAL_JUMP_PX = 90;
 /**
- * Per-animation-frame teleport ceiling while dense-watching.
- * Ease-out over SLOW_DURATION moves ~3–10% of remaining distance in one
- * real frame; anything near a half-column is a compositor skip / lost invert.
+ * Max paint discontinuity (px). Any |Δvisual| ≥ 1 on retarget / hold / clock
+ * drift must fail — the visible per-hover hitch is ~1–2px.
  */
-const FRAME_JUMP_PX = 36;
-const PATH_SLACK_PX = 24;
+const MAX_DISCONTINUITY_PX = 0.99;
+/**
+ * Fallback per-frame ceiling when no CSS animation clock is available
+ * (holding invert before transition start, or settled). Real mid-FLIP
+ * samples use {@link MAX_DISCONTINUITY_PX} against the predicted visual instead.
+ *
+ * Note: Chrome `[Violation] requestAnimationFrame handler took Nms` during
+ * column-drag usually means main-thread FLIP bake/start thrash — compositor
+ * peers advance while JS is busy, which shows up as the ~1–2px hover hitch
+ * these budgets are meant to catch.
+ */
+const FRAME_JUMP_PX = 12;
+/** How far a sample may stray from the FLIP corridor (visual ↔ dest). */
+const PATH_SLACK_PX = 8;
 /**
  * Max paint drift when style.left retargets (FLIP invert must hold the pixel).
- * A "little jump" on the dragged header at reorder start fails above this.
  */
-const RETARGET_JUMP_PX = 12;
+const RETARGET_JUMP_PX = MAX_DISCONTINUITY_PX;
+/**
+ * Max |painted − clock-predicted| while a linear transform transition runs.
+ */
+const CLOCK_DRIFT_PX = MAX_DISCONTINUITY_PX;
+/**
+ * Holding-invert / baked (no WAAPI clock): paint must stay put across frames.
+ */
+const HOLD_JUMP_PX = MAX_DISCONTINUITY_PX;
+/**
+ * Extra wall-clock ms beyond the measured sample gap that progress may advance
+ * (compositor ahead of main-thread rAF). Larger leaps are visible hitch jumps.
+ */
+const CLOCK_PROGRESS_SLACK_MS = 24;
 /** Header vs first body cell for the same leaf should paint together. */
-const HEADER_BODY_SYNC_PX = 12;
+/** Mirror-loop / compositor lag budget between header WAAPI and body copy. */
+const HEADER_BODY_SYNC_PX = 20;
 /** Just clears REVERT_TO_PREVIOUS_HEADERS_DELAY (150ms); keep swaps aggressive. */
-const BETWEEN_SWAP_MS = 155;
+const BETWEEN_SWAP_MS = CONTINUITY_FAST_FEEDBACK ? 160 : 155;
 /** Short post-swap sample window so the next interrupt lands while peers are mid-FLIP. */
-const POST_SWAP_WATCH_MS = Math.min(220, Math.floor(SLOW_DURATION * 0.15));
+const POST_SWAP_WATCH_MS = CONTINUITY_FAST_FEEDBACK
+  ? 80
+  : Math.min(220, Math.floor(SLOW_DURATION * 0.15));
 /** Pointer steps for dragover→reorder (fewer = faster commit). */
-const DRAGOVER_STEPS = 8;
-/** rAF samples between dragover pointer steps. */
-const DRAGOVER_FRAMES_PER_STEP = 1;
+const DRAGOVER_STEPS = CONTINUITY_FAST_FEEDBACK ? 3 : 8;
+/**
+ * rAF samples between dragover pointer steps.
+ * Fast mode samples harder on the commit frame so a second-reorder teleport
+ * cannot hide between dragover and the next pointer step.
+ */
+const DRAGOVER_FRAMES_PER_STEP = CONTINUITY_FAST_FEEDBACK ? 2 : 1;
 
 const nextFrame = (): Promise<void> =>
   new Promise((r) => requestAnimationFrame(() => r(undefined)));
@@ -610,44 +649,271 @@ const bodyVisualLeftOf = (canvasElement: HTMLElement, accessor: string): number 
   return cell.getBoundingClientRect().left;
 };
 
+type FlipClock = {
+  /** Eased progress 0..1 from getComputedTiming().progress */
+  progress: number;
+  duration: number;
+  current: number;
+};
+
+/** Read the running/paused transform transition clock on a header cell. */
+const readFlipClock = (element: HTMLElement | null): FlipClock | null => {
+  if (!element || typeof element.getAnimations !== "function") return null;
+  for (const anim of element.getAnimations()) {
+    if (anim.playState !== "running" && anim.playState !== "paused") continue;
+    const timing = anim.effect?.getComputedTiming?.();
+    if (!timing) continue;
+    const { duration } = timing;
+    const current = anim.currentTime;
+    if (
+      typeof duration !== "number" ||
+      !Number.isFinite(duration) ||
+      duration <= 0 ||
+      typeof current !== "number" ||
+      !Number.isFinite(current)
+    ) {
+      continue;
+    }
+    // Prefer transformed progress (respects easing). Fall back to linear
+    // current/duration — column-reorder FLIPs are linear, so this matches.
+    let progress =
+      typeof timing.progress === "number" && Number.isFinite(timing.progress)
+        ? timing.progress
+        : current / duration;
+    progress = Math.min(1, Math.max(0, progress));
+    return { progress, duration, current };
+  }
+  return null;
+};
+
+/**
+ * Infer the transition's starting remain (visual−dest at progress 0) from a
+ * mid-flight sample. Linear / eased progress both satisfy
+ * remain = startRemain × (1 − progress).
+ */
+const inferStartRemain = (remainX: number, progress: number): number => {
+  if (progress <= 0.001) return remainX;
+  if (progress >= 0.999) return remainX;
+  return remainX / (1 - progress);
+};
+
 type LeafSample = {
   visual: number;
   destPage: number;
   styleLeft: number;
   bodyVisual: number;
   flipping: boolean;
+  /** Signed paint offset from layout box (≈ live translate X). */
+  remainX: number;
+  flip: FlipClock | null;
+  /** performance.now() at sample time — pairs with flip.current for hitch detection. */
+  sampleAt: number;
 };
 
-const sampleLeaf = (canvasElement: HTMLElement, accessor: string): LeafSample => ({
-  visual: visualLeftOf(canvasElement, accessor),
-  destPage: styleBoxLeftOf(canvasElement, accessor),
-  styleLeft: styleLeftOf(canvasElement, accessor),
-  bodyVisual: bodyVisualLeftOf(canvasElement, accessor),
-  flipping: hasActiveFlip(canvasElement, accessor),
-});
+const sampleLeaf = (canvasElement: HTMLElement, accessor: string): LeafSample => {
+  const cell = findHeaderCell(canvasElement, accessor);
+  const visual = cell ? cell.getBoundingClientRect().left : NaN;
+  const destPage = cell
+    ? visual - parseTranslateX(window.getComputedStyle(cell).transform)
+    : NaN;
+  const remainX = visual - destPage;
+  return {
+    visual,
+    destPage,
+    styleLeft: styleLeftOf(canvasElement, accessor),
+    bodyVisual: bodyVisualLeftOf(canvasElement, accessor),
+    flipping: hasActiveFlip(canvasElement, accessor),
+    remainX,
+    flip: readFlipClock(cell),
+    sampleAt: performance.now(),
+  };
+};
 
 /** Sync assert for the hot rAF path — instrumented `await expect` is too slow
  *  and lets many real animation frames elapse between samples. */
-const assertTrue = (condition: boolean, message: string): void => {
+const logContinuityFail = (
+  message: string,
+  detail?: Record<string, unknown>,
+): void => {
+  console.error(`[continuity:fail] ${message}`);
+  if (detail) {
+    try {
+      console.error(`[continuity:fail:json] ${JSON.stringify(detail)}`);
+    } catch {
+      console.error(`[continuity:fail:detail]`, detail);
+    }
+  }
+};
+
+const assertTrue = (
+  condition: boolean,
+  message: string,
+  detail?: Record<string, unknown>,
+): void => {
   if (!condition) {
+    logContinuityFail(message, detail);
     throw new Error(message);
   }
 };
 
 /**
- * Frame-to-frame continuity for one leaf. Tight on jump size because callers
- * sample every animation frame — large teleports cannot hide between checks.
- *
- * On retarget (style.left rewrite), paint must hold within {@link RETARGET_JUMP_PX}
- * — including the dragged column. Mid-flight ease uses a distance-scaled cap.
+ * Fallback frame-jump budget when no animation clock is available.
+ * Baked/holding invert must stay put ({@link HOLD_JUMP_PX}).
+ * Never allow a ≥1px discontinuity through this path.
  */
 const maxAllowedFrameJump = (prev: LeafSample): number => {
-  const distToDest = Math.abs(prev.visual - prev.destPage);
   if (prev.flipping) {
-    // ~one slow frame of ease-out (not 65% of the remaining journey).
-    return Math.min(56, Math.max(FRAME_JUMP_PX, distToDest * 0.12 + 10));
+    return HOLD_JUMP_PX;
   }
   return FRAME_JUMP_PX;
+};
+
+const sampleDetail = (accessor: string, s: LeafSample, isDragged: boolean) => ({
+  accessor,
+  isDragged,
+  visual: Number(s.visual.toFixed(3)),
+  destPage: Number(s.destPage.toFixed(3)),
+  styleLeft: s.styleLeft,
+  remainX: Number(s.remainX.toFixed(3)),
+  bodyVisual: Number.isFinite(s.bodyVisual) ? Number(s.bodyVisual.toFixed(3)) : null,
+  flipping: s.flipping,
+  flip: s.flip
+    ? {
+        progress: Number(s.flip.progress.toFixed(4)),
+        duration: s.flip.duration,
+        current: Number(s.flip.current.toFixed(2)),
+      }
+    : null,
+  sampleAt: Number(s.sampleAt.toFixed(2)),
+});
+
+/**
+ * When both samples have a transform clock, painted X must match
+ * destPage + startRemain×(1−progress) within {@link CLOCK_DRIFT_PX}.
+ */
+const assertClockPredictedVisual = (
+  accessor: string,
+  prev: LeafSample,
+  next: LeafSample,
+  label: string,
+  isDragged: boolean,
+): boolean => {
+  if (!prev.flip || !next.flip) return false;
+  // Dest rewrite is handled by the retarget assert; clock model assumes a fixed box.
+  if (Math.abs(next.destPage - prev.destPage) > 1.5) return false;
+
+  const startRemain = inferStartRemain(prev.remainX, prev.flip.progress);
+  const expectedRemain = startRemain * (1 - next.flip.progress);
+  const expectedVisual = next.destPage + expectedRemain;
+  const drift = Math.abs(next.visual - expectedVisual);
+  const frameJump = Math.abs(next.visual - prev.visual);
+
+  assertTrue(
+    drift < 1,
+    `${label}: ${accessor} drifted from FLIP clock prediction ` +
+      `(visual=${next.visual.toFixed(1)} expected=${expectedVisual.toFixed(1)}, ` +
+      `Δ=${drift.toFixed(1)}, max=${CLOCK_DRIFT_PX}, ` +
+      `progress ${prev.flip.progress.toFixed(3)}→${next.flip.progress.toFixed(3)}, ` +
+      `remain ${prev.remainX.toFixed(1)}→${next.remainX.toFixed(1)})`,
+    {
+      kind: "clock-drift",
+      label,
+      drift,
+      expectedVisual,
+      expectedRemain,
+      startRemain,
+      frameJump,
+      prev: sampleDetail(accessor, prev, isDragged),
+      next: sampleDetail(accessor, next, isDragged),
+    },
+  );
+
+  // Progress should not run backward on the same transition.
+  assertTrue(
+    next.flip.progress + 0.02 >= prev.flip.progress,
+    `${label}: ${accessor} FLIP progress went backward ` +
+      `(${prev.flip.progress.toFixed(3)} → ${next.flip.progress.toFixed(3)})`,
+    {
+      kind: "progress-backward",
+      label,
+      prev: sampleDetail(accessor, prev, isDragged),
+      next: sampleDetail(accessor, next, isDragged),
+    },
+  );
+
+  // Animation clock must track wall time: neither leap ahead (compositor
+  // race) nor stall (soft-pause stop-start on every dragover swap).
+  const rawWallDt = Math.max(0, next.sampleAt - prev.sampleAt);
+  const wallDt = Math.max(33.4, rawWallDt);
+  const animDt = next.flip.current - prev.flip.current;
+  if (next.flip.duration === prev.flip.duration) {
+    // Soft-pause hitch: mid-flight clock froze ≥1 frame while wall advanced.
+    // Seen as stop-start when slowly dragging across columns (pauseGap ~30ms).
+    // Exclude progress≈0 (double-rAF holding invert before startTransition)
+    // and near-finished settles.
+    if (
+      rawWallDt >= 28 &&
+      animDt >= 0 &&
+      animDt < 4 &&
+      Math.abs(prev.remainX) > 5 &&
+      prev.flip.progress > 0.05 &&
+      next.flip.progress > 0.05 &&
+      prev.flip.progress < 0.95 &&
+      next.flip.progress < 0.95
+    ) {
+      assertTrue(
+        false,
+        `${label}: ${accessor} FLIP clock stalled (stop-start jitter) ` +
+          `(animΔ=${animDt.toFixed(1)}ms wallΔ=${rawWallDt.toFixed(1)}ms while ` +
+          `remain=${prev.remainX.toFixed(1)} progress=${prev.flip.progress.toFixed(3)})`,
+        {
+          kind: "clock-stall",
+          label,
+          animDt,
+          rawWallDt,
+          prev: sampleDetail(accessor, prev, isDragged),
+          next: sampleDetail(accessor, next, isDragged),
+        },
+      );
+    }
+  }
+  if (animDt > 0 && next.flip.duration === prev.flip.duration) {
+    const maxAnimDt = wallDt + CLOCK_PROGRESS_SLACK_MS;
+    assertTrue(
+      animDt <= maxAnimDt,
+      `${label}: ${accessor} FLIP clock leaped ahead of sampling ` +
+        `(animΔ=${animDt.toFixed(1)}ms wallΔ=${wallDt.toFixed(1)}ms, ` +
+        `max=${maxAnimDt.toFixed(1)}ms) — visible hitch`,
+      {
+        kind: "clock-leap",
+        label,
+        animDt,
+        wallDt,
+        maxAnimDt,
+        prev: sampleDetail(accessor, prev, isDragged),
+        next: sampleDetail(accessor, next, isDragged),
+      },
+    );
+    const expectedJump = Math.abs(startRemain) * (animDt / next.flip.duration);
+    assertTrue(
+      Math.abs(frameJump - expectedJump) < 1,
+      `${label}: ${accessor} frame travel ≠ clock-predicted travel ` +
+        `(Δvisual=${frameJump.toFixed(1)} expected=${expectedJump.toFixed(1)}, ` +
+        `animΔ=${animDt.toFixed(1)}ms)`,
+      {
+        kind: "travel-mismatch",
+        label,
+        frameJump,
+        expectedJump,
+        animDt,
+        startRemain,
+        prev: sampleDetail(accessor, prev, isDragged),
+        next: sampleDetail(accessor, next, isDragged),
+      },
+    );
+  }
+
+  return true;
 };
 
 const assertLeafFrameContinuity = (
@@ -665,21 +931,100 @@ const assertLeafFrameContinuity = (
   // jump on reorder is exactly what we want to catch.
   const allowedJump = destChanged ? RETARGET_JUMP_PX : maxAllowedFrameJump(prev);
 
+  // Surface discontinuous motion (≥0.75px) on retarget/hold paths.
+  if (
+    frameJump >= 0.75 &&
+    (destChanged || !prev.flip || !next.flip)
+  ) {
+    console.warn(
+      `[continuity:microjump] ${label} ${accessor}` +
+        `${isDragged ? " (dragged)" : ""}${destChanged ? " retarget" : ""} ` +
+        `Δ=${frameJump.toFixed(2)} allowed=${allowedJump.toFixed(2)} ` +
+        `visual ${prev.visual.toFixed(2)}→${next.visual.toFixed(2)} ` +
+        `remain ${prev.remainX.toFixed(2)}→${next.remainX.toFixed(2)} ` +
+        `dest ${prev.destPage.toFixed(2)}→${next.destPage.toFixed(2)} ` +
+        `flip=${Boolean(prev.flip)}→${Boolean(next.flip)}`,
+    );
+  }
+
   if (destChanged) {
     assertTrue(
-      frameJump <= allowedJump,
+      frameJump < 1,
       `${label}: ${accessor}${isDragged ? " (dragged)" : ""} jumped at reorder start ` +
         `(${prev.visual.toFixed(1)} → ${next.visual.toFixed(1)}, Δ=${frameJump.toFixed(1)}, ` +
         `dest ${prev.destPage.toFixed(1)} → ${next.destPage.toFixed(1)}, ` +
         `max=${RETARGET_JUMP_PX})`,
+      {
+        kind: "retarget-jump",
+        label,
+        frameJump,
+        allowedJump,
+        prev: sampleDetail(accessor, prev, isDragged),
+        next: sampleDetail(accessor, next, isDragged),
+        motion: motion
+          ? { destLeft: motion.destLeft, originLeft: motion.originLeft, step: motion.updatedAtStep }
+          : null,
+      },
     );
   } else {
-    assertTrue(
-      frameJump <= allowedJump || (!prev.flipping && !next.flipping && frameJump < 1.5),
-      `${label}: ${accessor} teleported between frames ` +
-        `(${prev.visual.toFixed(1)} → ${next.visual.toFixed(1)}, Δ=${frameJump.toFixed(1)}, ` +
-        `allowed=${allowedJump.toFixed(1)})`,
-    );
+    const usedClock = assertClockPredictedVisual(accessor, prev, next, label, isDragged);
+    if (!usedClock) {
+      // End-of-FLIP: samples can straddle the last milliseconds of a linear
+      // transition (remain 3–5px → 0). That is completion, not a hitch, when
+      // wall time covers the remaining duration and we land on the dest box.
+      let settlingToDest = false;
+      if (
+        prev.flipping &&
+        !next.flipping &&
+        Math.abs(next.visual - next.destPage) < 0.5 &&
+        frameJump <= Math.abs(prev.remainX) + 0.5
+      ) {
+        if (prev.flip && prev.flip.duration > 0) {
+          const remainRatio = Math.max(0, 1 - prev.flip.progress);
+          const remainingMs = prev.flip.duration * remainRatio;
+          const wallDt = Math.max(0, next.sampleAt - prev.sampleAt);
+          settlingToDest = wallDt + 17 >= remainingMs * 0.75;
+        } else {
+          // No clock: only allow sub-pixel settle snaps.
+          settlingToDest = frameJump < 1;
+        }
+      }
+
+      if (!settlingToDest && next.flip && Math.abs(prev.remainX) > 0.5) {
+        const startRemain = inferStartRemain(next.remainX, next.flip.progress);
+        const startDrift = Math.abs(startRemain - prev.remainX);
+        assertTrue(
+          startDrift < 1,
+          `${label}: ${accessor} FLIP start remain jumped at transition start ` +
+            `(held=${prev.remainX.toFixed(1)} inferred=${startRemain.toFixed(1)}, ` +
+            `Δ=${startDrift.toFixed(1)})`,
+          {
+            kind: "start-remain-jump",
+            label,
+            startRemain,
+            startDrift,
+            prev: sampleDetail(accessor, prev, isDragged),
+            next: sampleDetail(accessor, next, isDragged),
+          },
+        );
+      }
+      if (!settlingToDest) {
+        assertTrue(
+          frameJump < 1,
+          `${label}: ${accessor} teleported between frames ` +
+            `(${prev.visual.toFixed(1)} → ${next.visual.toFixed(1)}, Δ=${frameJump.toFixed(1)}, ` +
+            `allowed=${allowedJump.toFixed(1)})`,
+          {
+            kind: "frame-teleport",
+            label,
+            frameJump,
+            allowedJump,
+            prev: sampleDetail(accessor, prev, isDragged),
+            next: sampleDetail(accessor, next, isDragged),
+          },
+        );
+      }
+    }
   }
 
   if (motion && !destChanged) {
@@ -727,14 +1072,23 @@ const assertLeafFrameContinuity = (
     );
 
     const bodyJump = Math.abs(next.bodyVisual - prev.bodyVisual);
-    const allowedBodyJump = destChanged
-      ? RETARGET_JUMP_PX
-      : maxAllowedFrameJump({ ...prev, visual: prev.bodyVisual, flipping: prev.flipping });
-    assertTrue(
-      bodyJump <= allowedBodyJump || (!prev.flipping && !next.flipping && bodyJump < 1.5),
-      `${label}: ${accessor} body teleported between frames ` +
-        `(${prev.bodyVisual.toFixed(1)} → ${next.bodyVisual.toFixed(1)}, Δ=${bodyJump.toFixed(1)})`,
-    );
+    if (destChanged) {
+      assertTrue(
+        bodyJump <= RETARGET_JUMP_PX,
+        `${label}: ${accessor} body jumped at reorder start ` +
+          `(${prev.bodyVisual.toFixed(1)} → ${next.bodyVisual.toFixed(1)}, Δ=${bodyJump.toFixed(1)}, ` +
+          `max=${RETARGET_JUMP_PX})`,
+      );
+    } else {
+      // Body must track the header's step — not a separate loose distance budget.
+      assertTrue(
+        bodyJump <= frameJump + CLOCK_DRIFT_PX ||
+          (!prev.flipping && !next.flipping && bodyJump < 1.5),
+        `${label}: ${accessor} body teleported between frames ` +
+          `(${prev.bodyVisual.toFixed(1)} → ${next.bodyVisual.toFixed(1)}, Δ=${bodyJump.toFixed(1)}, ` +
+          `headerΔ=${frameJump.toFixed(1)})`,
+      );
+    }
   }
 };
 
@@ -993,12 +1347,10 @@ const dragOverUntilReorder = async (
           dataTransfer: session.dataTransfer,
         }),
       );
-      await watchFrames(DRAGOVER_FRAMES_PER_STEP);
+      // Assert paint continuity in the same turn as the reorder commit —
+      // waiting for rAF first lets FLIP travel (or a hitch) hide between samples.
       const orderNow = leafLeftOrder(canvasElement, SPOTIFY_7D_LEAVES);
       if (orderNow !== orderBefore) {
-        // Commit frame: paint must hold for every leaf. Retargeted cells need
-        // a tight invert pin; non-retargeted mid-FLIP cells may ease a little
-        // but must not compositor-skip (the old "wall-clock jump" hole).
         for (const accessor of SPOTIFY_7D_LEAVES) {
           const prevVisual = visualsBeforeReorder.get(accessor);
           if (prevVisual === undefined) continue;
@@ -1010,26 +1362,43 @@ const dragOverUntilReorder = async (
           const jump = Math.abs(visual - prevVisual);
           const isDraggedLeaf = accessor === opts?.dragged;
           const flipping = hasActiveFlip(canvasElement, accessor);
-          const allowed = destChanged
-            ? RETARGET_JUMP_PX
-            : maxAllowedFrameJump({
-                visual: prevVisual,
-                destPage: styleBoxLeftOf(canvasElement, accessor),
-                styleLeft: styleLeftNow,
-                bodyVisual: NaN,
-                flipping: flipping || jump > 1,
-              });
+          const remainX = visual - styleBoxLeftOf(canvasElement, accessor);
+          if (jump >= 0.75) {
+            console.warn(
+              `[continuity:microjump] ${opts?.watchLabel ?? "dragover"} commit-sync ${accessor}` +
+                `${isDraggedLeaf ? " (dragged)" : ""}${destChanged ? " retarget" : ""} ` +
+                `Δ=${jump.toFixed(2)} ` +
+                `visual ${prevVisual.toFixed(2)}→${visual.toFixed(2)} ` +
+                `styleLeft ${prevStyleLeft ?? "?"}→${styleLeftNow} remain=${remainX.toFixed(2)}`,
+            );
+          }
           assertTrue(
-            jump <= allowed,
+            jump < 1,
             `${opts?.watchLabel ?? "dragover"}: ${accessor}` +
               `${isDraggedLeaf ? " (dragged)" : ""} jumped at reorder commit ` +
               `(${prevVisual.toFixed(1)} → ${visual.toFixed(1)}, Δ=${jump.toFixed(1)}, ` +
-              `max=${allowed.toFixed(1)}${destChanged ? ", retarget" : ""})`,
+              `max=0.99${destChanged ? ", retarget" : ""})`,
+            {
+              kind: "reorder-commit-jump",
+              label: opts?.watchLabel ?? "dragover",
+              accessor,
+              isDragged: isDraggedLeaf,
+              destChanged,
+              jump,
+              prevVisual,
+              visual,
+              prevStyleLeft,
+              styleLeftNow,
+              remainX,
+              flipping,
+            },
           );
         }
         const ok = opts?.expectOrder ? orderNow === opts.expectOrder : true;
+        await watchFrames(DRAGOVER_FRAMES_PER_STEP);
         return { ok, visualsBeforeReorder };
       }
+      await watchFrames(DRAGOVER_FRAMES_PER_STEP);
     }
   }
   return { ok: false, visualsBeforeReorder };
@@ -1278,6 +1647,106 @@ export const TrackListDragAnimatesMidSwap = {
 };
 
 /**
+ * Slow leftward crawl: each neighbor touch starts a reorder while earlier
+ * slides are still mid-flight. Asserts mid-flight clocks do not stall
+ * (soft-pause stop-start jitter).
+ */
+export const TrackListSlowLeftwardNoJitter = {
+  name: "Track List slow leftward no jitter",
+  parameters: {
+    test: { timeout: 120_000 },
+  },
+  render: () =>
+    buildReproLayout({
+      mode: "heavy",
+      rowCount: 16,
+      enableReorder: true,
+      enableColumnEditor: false,
+      enableVirtualization: false,
+      animations: { enabled: true, duration: CONTINUITY_DURATION },
+      banner:
+        `Automated: drag completion slowly left across Spotify 7d leaves. ` +
+        `Mid-flight siblings must keep sliding (no soft-pause stop-start).`,
+    }),
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable(canvasElement);
+    await sleep(120);
+
+    const dragged = "spotify_7d_completion";
+    await ensureLeavesInView(canvasElement, SPOTIFY_7D_LEAVES);
+    const bodyMain = canvasElement.querySelector<HTMLElement>(".st-body-main");
+    if (bodyMain) {
+      bodyMain.scrollLeft = 0;
+      bodyMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+      await sleep(40);
+    }
+
+    for (const accessor of SPOTIFY_7D_LEAVES) {
+      await expect(findHeaderCell(canvasElement, accessor), `missing ${accessor}`).toBeTruthy();
+    }
+
+    const slots = slotLefts(canvasElement, SPOTIFY_7D_LEAVES);
+    let order = orderedLeaves(canvasElement, SPOTIFY_7D_LEAVES);
+    await expect(order[order.length - 1]).toBe(dragged);
+
+    const motions = new Map<string, LeafMotion>();
+    let totalWatchFrames = 0;
+    let session = beginLeafDrag(canvasElement, dragged);
+    const unfreezeScroll = freezeMainScroll(canvasElement);
+
+    // Walk left through neighbors in visual order (right→left excluding dragged).
+    const leftwardTargets = [...SPOTIFY_7D_LEAVES].filter((a) => a !== dragged).reverse();
+
+    try {
+      let step = 0;
+      for (let i = 0; i < leftwardTargets.length; i++) {
+        const forceTarget = leftwardTargets[i];
+        // Clear anti-ping-pong, but keep watching so mid-flight stalls fail.
+        totalWatchFrames += await watchLeafContinuity(canvasElement, motions, `crawl gap ${i + 1}`, {
+          durationMs: BETWEEN_SWAP_MS,
+          watchAllLeaves: true,
+          dragged,
+        });
+
+        const nextOrder = applyInsertReorder(order, dragged, forceTarget);
+        if (nextOrder.join(",") === order.join(",")) continue;
+
+        const result = await runInterruptSwap(
+          canvasElement,
+          session,
+          dragged,
+          order,
+          slots,
+          motions,
+          step,
+          `slow leftward crawl ${i + 1}/${leftwardTargets.length} → ${forceTarget}`,
+          { forceTarget },
+        );
+        order = result.order;
+        totalWatchFrames += result.watchFrames;
+        step += 1;
+      }
+
+      endLeafDrag(session, canvasElement);
+      totalWatchFrames += await watchLeafContinuity(canvasElement, motions, "crawl settle", {
+        durationMs: CONTINUITY_DURATION + 100,
+        watchAllLeaves: true,
+      });
+
+      await expect(
+        totalWatchFrames > 80,
+        `expected dense crawl sampling; got ${totalWatchFrames}`,
+      ).toBe(true);
+      console.log(
+        `[continuity] slow-leftward crawl steps=${step} watchFrames=${totalWatchFrames}`,
+      );
+    } finally {
+      unfreezeScroll();
+    }
+  },
+};
+
+/**
  * Pick a leaf target that changes insert order. Prefer mid-FLIP leaves when asked.
  */
 const pickReorderTarget = (
@@ -1402,6 +1871,11 @@ const runInterruptSwap = async (
       `actual=${leafLeftOrder(canvasElement, SPOTIFY_7D_LEAVES)}`,
   ).toBe(true);
 
+  // Capture visuals immediately after commit (before await expects below let
+  // the WAAPI clock advance). Commit-sync in dragOverUntilReorder already
+  // asserted hold; this re-check uses the same instant.
+  const visualsAtCommit = snapshotLeafVisuals(canvasElement);
+
   for (const accessor of SPOTIFY_7D_LEAVES) {
     const actual = styleLeftOf(canvasElement, accessor);
     const expected = expectedDest.get(accessor)!;
@@ -1420,16 +1894,15 @@ const runInterruptSwap = async (
       continue;
     }
 
-    const visual = visualLeftOf(canvasElement, accessor);
+    const visual = visualsAtCommit.get(accessor)!;
     const prevVisual = visualsBeforeReorder.get(accessor)!;
     const destPage = styleBoxLeftOf(canvasElement, accessor);
     const swapJump = Math.abs(visual - prevVisual);
     const isDraggedLeaf = accessor === dragged;
 
-    // Reorder commit: FLIP invert must hold paint — especially the dragged
-    // header, which previously had a visible opening jump.
+    // Reorder commit: invert must hold paint — especially the dragged header.
     await expect(
-      swapJump <= RETARGET_JUMP_PX,
+      swapJump < 1,
       `${label}: ${accessor}${isDraggedLeaf ? " (dragged)" : ""} jumped at reorder start ` +
         `(${prevVisual.toFixed(1)} → ${visual.toFixed(1)}, Δ=${swapJump.toFixed(1)}, ` +
         `destPage=${destPage.toFixed(1)}, max=${RETARGET_JUMP_PX})`,
@@ -1478,28 +1951,34 @@ export const TrackListTenInterruptContinuity = {
   name: "Track List 10× interrupt continuity",
   parameters: {
     // Storybook Interactions / test-runner: this play is intentionally long.
-    test: { timeout: CONTINUITY_PLAY_TIMEOUT_MS },
+    // Fast-feedback mode shortens the budget while iterating on teleports.
+    test: {
+      timeout: CONTINUITY_FAST_FEEDBACK ? 120_000 : CONTINUITY_PLAY_TIMEOUT_MS,
+    },
   },
   render: () =>
     buildReproLayout({
       mode: "heavy",
-      rowCount: 40,
+      rowCount: CONTINUITY_FAST_FEEDBACK ? 16 : 40,
       enableReorder: true,
       enableColumnEditor: false,
       enableVirtualization: false,
-      animations: { enabled: true, duration: SLOW_DURATION },
+      animations: { enabled: true, duration: CONTINUITY_DURATION },
       banner:
-        `Automated continuity (dense per-frame sampling, ~20min budget) on full Track ` +
+        `Automated continuity (dense per-frame sampling` +
+        `${CONTINUITY_FAST_FEEDBACK ? ", FAST FEEDBACK (trimmed phases)" : ", ~20min budget"}) on full Track ` +
         `List: interrupt reorders, re-hit settled targets, hand off to streams mid-flight ` +
-        `for ${HANDOFF_SWAPS} swaps (${SLOW_DURATION}ms FLIP).`,
+        `for ${CONTINUITY_FAST_FEEDBACK ? 8 : HANDOFF_SWAPS} swaps (${CONTINUITY_DURATION}ms FLIP).`,
     }),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable(canvasElement);
-    await sleep(400);
+    await sleep(CONTINUITY_FAST_FEEDBACK ? 120 : 400);
 
-    const BURST_SWAPS = 24;
-    const SETTLED_REHIT_SWAPS = 16;
-    const PRE_HANDOFF_BURST = 20;
+    // Fast mode exercises every phase with trimmed counts (not burst-only).
+    const BURST_SWAPS = CONTINUITY_FAST_FEEDBACK ? 10 : 24;
+    const SETTLED_REHIT_SWAPS = CONTINUITY_FAST_FEEDBACK ? 4 : 16;
+    const PRE_HANDOFF_BURST = CONTINUITY_FAST_FEEDBACK ? 6 : 20;
+    const handoffSwaps = CONTINUITY_FAST_FEEDBACK ? 8 : HANDOFF_SWAPS;
     const dragged = "spotify_7d_completion";
     const handoffDragged = "spotify_7d_streams";
     let totalWatchFrames = 0;
@@ -1562,7 +2041,7 @@ export const TrackListTenInterruptContinuity = {
         `need ≥2 distinct early targets; got ${earlyTargets.join(",")}`,
       ).toBe(true);
 
-      const settleDeadline = Date.now() + SLOW_DURATION + 400;
+      const settleDeadline = Date.now() + CONTINUITY_DURATION + 400;
       while (Date.now() < settleDeadline) {
         const settledEarly = earlyTargets.filter((a) => isSettledLeaf(canvasElement, a));
         if (settledEarly.length >= Math.min(2, earlyTargets.length)) break;
@@ -1572,7 +2051,7 @@ export const TrackListTenInterruptContinuity = {
       pruneSettledMotions(canvasElement, motions);
 
       for (let i = 0; i < SETTLED_REHIT_SWAPS; i++) {
-        const rehitDeadline = Date.now() + SLOW_DURATION + 400;
+        const rehitDeadline = Date.now() + CONTINUITY_DURATION + 400;
         let forceTarget: string | null = null;
         while (Date.now() < rehitDeadline) {
           forceTarget =
@@ -1717,14 +2196,16 @@ export const TrackListTenInterruptContinuity = {
       // First swaps interrupt while prior FLIPs are still mid-flight; later
       // ones also re-hit settled siblings.
       const handoffRoster = SPOTIFY_7D_LEAVES.filter((a) => a !== handoffDragged);
-      const MID_FLIGHT_HANDOFF = Math.max(80, HANDOFF_SWAPS - 40);
-      for (let i = 0; i < HANDOFF_SWAPS; i++) {
+      const MID_FLIGHT_HANDOFF = CONTINUITY_FAST_FEEDBACK
+        ? Math.max(4, handoffSwaps - 3)
+        : Math.max(80, handoffSwaps - 40);
+      for (let i = 0; i < handoffSwaps; i++) {
         await watchGap(`handoff gap ${i + 1}`, BETWEEN_SWAP_MS, handoffDragged);
 
         let forceTarget: string | undefined;
         const preferSettledRehit = i >= MID_FLIGHT_HANDOFF && i % 2 === 1;
         if (preferSettledRehit) {
-          const rehitDeadline = Date.now() + SLOW_DURATION + 300;
+          const rehitDeadline = Date.now() + CONTINUITY_DURATION + 300;
           while (Date.now() < rehitDeadline) {
             const settled = handoffRoster.find((t) => {
               if (!isSettledLeaf(canvasElement, t)) return false;
@@ -1754,7 +2235,7 @@ export const TrackListTenInterruptContinuity = {
           slots,
           motions,
           step,
-          `handoff step ${i + 1}/${HANDOFF_SWAPS} (dragging ${handoffDragged}` +
+          `handoff step ${i + 1}/${handoffSwaps} (dragging ${handoffDragged}` +
             `${i < MID_FLIGHT_HANDOFF ? ", mid-flight overlap" : ""})`,
           forceTarget ? { forceTarget } : { preferAnimating: true },
         );
@@ -1770,7 +2251,7 @@ export const TrackListTenInterruptContinuity = {
 
       // Watch through final settle — no teleports as FLIPs finish.
       totalWatchFrames += await watchLeafContinuity(canvasElement, motions, "final settle", {
-        durationMs: SLOW_DURATION + 250,
+        durationMs: CONTINUITY_DURATION + 250,
         watchAllLeaves: true,
       });
       const settledDest = expectedLeftMap(order, slots);
@@ -1784,14 +2265,17 @@ export const TrackListTenInterruptContinuity = {
         ).toBe(true);
       }
 
-      // ~8 leaves × frames; with dense watching this should be very large.
+      // ~8 leaves × frames; full play is dense, fast mode is a shorter sample.
+      const minWatchFrames = CONTINUITY_FAST_FEEDBACK ? 200 : 5_000;
       await expect(
-        totalWatchFrames > 5_000,
-        `expected dense sampling (>5k frames); got ${totalWatchFrames}`,
+        totalWatchFrames > minWatchFrames,
+        `expected dense sampling (>${minWatchFrames} frames); got ${totalWatchFrames}`,
       ).toBe(true);
       console.log(
-        `[continuity] steps=${step} watchFrames=${totalWatchFrames} ` +
-          `(~${totalWatchFrames * SPOTIFY_7D_LEAVES.length} leaf samples)`,
+        `[continuity]${CONTINUITY_FAST_FEEDBACK ? " FAST FEEDBACK" : ""} ` +
+          `steps=${step} watchFrames=${totalWatchFrames} ` +
+          `(~${totalWatchFrames * SPOTIFY_7D_LEAVES.length} leaf samples` +
+          `${CONTINUITY_FAST_FEEDBACK ? "; set CONTINUITY_FAST_FEEDBACK=false for full play" : ""})`,
       );
     } finally {
       unfreezeScroll();

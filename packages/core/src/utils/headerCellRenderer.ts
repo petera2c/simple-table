@@ -18,6 +18,7 @@ import { updateHeaderSelectionCheckbox } from "./headerCell/selection";
 import { updateHeaderCollapseIconState } from "./headerCell/collapsing";
 import { hasCollapsibleChildren, getHeaderColspan } from "./collapseUtils";
 import { getOrCreateRowElement, reconcileRowElements } from "./ariaRowOwnership";
+import { setAbsoluteCellPosition } from "./setAbsoluteCellPosition";
 import type ColumnDef from "../types/ColumnDef";
 
 // Re-export types for backward compatibility
@@ -214,8 +215,7 @@ export const renderHeaderCells = (
         cached.height !== cell.height;
 
       if (positionChanged) {
-        cellElement.style.left = `${cell.left}px`;
-        cellElement.style.top = `${cell.top}px`;
+        setAbsoluteCellPosition(cellElement, cell.left, cell.top);
         // Honor the accordion grow marker so a same-tick re-render after a
         // column collapse/expand toggle doesn't snap the cell to its final
         // size before the CSS transition picks up the 0 → final tween.
