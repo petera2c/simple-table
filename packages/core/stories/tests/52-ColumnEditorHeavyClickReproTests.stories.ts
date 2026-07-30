@@ -1,17 +1,17 @@
 /**
  * COLUMN EDITOR HEAVY-CLICK / HEADER-REORDER REPRO
  *
- * Chartmetric-style Track List stress case for two client-reported issues:
+ * Chartmetric-style Track List stress case for:
  * 1. Column editor checkboxes sometimes need multiple clicks (esp. nested columns
  *    on a heavy table) — suspected cause: setHeaders → full header re-render +
  *    column-editor popout rebuild (twice) destroying the checkbox mid-interaction.
- * 2. Header drag reorder can feel sticky; final animation sometimes settles at the
- *    previous position rather than the new one.
+ * 2. Header drag reorder animation quality under deep nested groups
+ *    (spotify_7d_* leaves under Spotify → 7d, etc.).
  *
  * Manual:
  * - Open Storybook → Tests/52 - Column Editor Heavy Click Repro
  * - Rapidly toggle nested checkboxes in the column editor (groups + leafs)
- * - Drag column headers left/right and watch settle animation
+ * - Open "Track List drag playground (slow)", set Duration, drag Spotify 7d leaves
  *
  * Light vs Heavy stories isolate whether render cost correlates with missed clicks
  * (customer could repro on Track List but not lighter Influencer List).
@@ -27,6 +27,16 @@ import {
 } from "../../src/index";
 import { waitForTable, waitUntil } from "./testUtils";
 
+/** Slow default so mid-drag FLIP is easy to follow in the playground / continuity play. */
+const SLOW_DURATION = 1500;
+/** Streams handoff phase — walk the sibling band many times under dense sampling. */
+const HANDOFF_SWAPS = 120;
+/**
+ * Storybook Interactions / test-runner budget for the long continuity play.
+ * Dense per-frame sampling + many interrupt swaps can run ~10–20 minutes.
+ */
+const CONTINUITY_PLAY_TIMEOUT_MS = 20 * 60 * 1000;
+
 const meta: Meta = {
   title: "Tests/52 - Column Editor Heavy Click Repro",
   // Helpers like resetClickRepro must not become blank CSF stories.
@@ -37,7 +47,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Track-List-style nested columns + expensive cells to reproduce column-editor multi-click and header-reorder settle glitches.",
+          "Track-List-style nested columns + expensive cells for column-editor multi-click and header-drag animation QA (slow duration control on the playground story).",
       },
     },
   },
@@ -145,9 +155,7 @@ const expensiveCell = ({ row, accessor }: CellRendererProps): HTMLElement => {
   const text = document.createElement("span");
   text.style.fontVariantNumeric = "tabular-nums";
   text.style.fontSize = "12px";
-  text.textContent = Number.isFinite(Number(value))
-    ? Number(value).toLocaleString()
-    : value;
+  text.textContent = Number.isFinite(Number(value)) ? Number(value).toLocaleString() : value;
 
   top.appendChild(spark);
   top.appendChild(text);
@@ -175,7 +183,7 @@ const createTrackHeaders = (): ColumnDef[] => {
     {
       accessor: "track",
       label: "Track",
-      width: 220,
+      width: "auto",
       type: "string",
       pinned: "left",
       sortable: true,
@@ -186,6 +194,7 @@ const createTrackHeaders = (): ColumnDef[] => {
       width: 160,
       type: "string",
       pinned: "left",
+      hide: true,
     },
     {
       accessor: "meta",
@@ -194,7 +203,7 @@ const createTrackHeaders = (): ColumnDef[] => {
       type: "string",
       children: [
         { accessor: "album", label: "Album", width: 160, type: "string" },
-        { accessor: "genre", label: "Genre", width: 120, type: "string" },
+        { accessor: "genre", label: "Genre", width: 120, type: "string", hide: true },
       ],
     },
   ];
@@ -273,10 +282,61 @@ const createLightRows = (count: number): Row[] =>
 // ---------------------------------------------------------------------------
 
 interface LayoutOptions {
-  mode: "heavy" | "light";
+  mode: "heavy" | "light" | "spotify7d";
   rowCount: number;
   enableReorder: boolean;
+  /** When false, hide the column editor so drag QA is unobstructed. Default true. */
+  enableColumnEditor?: boolean;
+  /** Open the editor on mount. Default true when editor is enabled. */
+  enableColumnEditorInitOpen?: boolean;
+  /** Default true. Continuity tests turn this off so all leaves stay mounted at scroll 0. */
+  enableVirtualization?: boolean;
+  animations?: { enabled: boolean; duration: number };
+  /** Optional banner above the table (playground instructions). */
+  banner?: string;
 }
+
+/** Lean Track List: identity + Spotify → 7d leaves only (fast continuity fixture). */
+const createSpotify7dHeaders = (): ColumnDef[] => [
+  {
+    accessor: "id",
+    label: "#",
+    width: 64,
+    type: "number",
+    pinned: "left",
+    sortable: true,
+  },
+  {
+    accessor: "track",
+    label: "Track",
+    width: 180,
+    type: "string",
+    pinned: "left",
+    sortable: true,
+  },
+  {
+    accessor: "spotify_group",
+    label: "Spotify",
+    width: 960,
+    type: "string",
+    children: [
+      {
+        accessor: "spotify_7d_group",
+        label: "7D",
+        width: 960,
+        type: "string",
+        children: METRIC_LEAVES.map((metric) => ({
+          accessor: `spotify_7d_${metric}`,
+          label: metric.charAt(0).toUpperCase() + metric.slice(1),
+          width: 120,
+          type: "number" as const,
+          align: "right" as const,
+          sortable: true,
+        })),
+      },
+    ],
+  },
+];
 
 function buildReproLayout(options: LayoutOptions): HTMLDivElement {
   resetClickRepro();
@@ -290,6 +350,16 @@ function buildReproLayout(options: LayoutOptions): HTMLDivElement {
   root.style.background = "#f8fafc";
   root.style.fontFamily = "system-ui, sans-serif";
 
+  if (options.banner) {
+    const banner = document.createElement("p");
+    banner.style.margin = "0 0 10px";
+    banner.style.fontSize = "13px";
+    banner.style.lineHeight = "1.45";
+    banner.style.color = "#334155";
+    banner.textContent = options.banner;
+    root.appendChild(banner);
+  }
+
   const tableHost = document.createElement("div");
   tableHost.dataset.testid = "table-host";
   tableHost.style.flex = "1";
@@ -297,9 +367,13 @@ function buildReproLayout(options: LayoutOptions): HTMLDivElement {
   root.appendChild(tableHost);
 
   const headers =
-    options.mode === "heavy" ? createTrackHeaders() : createLightHeaders();
-  const rows =
     options.mode === "heavy"
+      ? createTrackHeaders()
+      : options.mode === "spotify7d"
+        ? createSpotify7dHeaders()
+        : createLightHeaders();
+  const rows =
+    options.mode === "heavy" || options.mode === "spotify7d"
       ? createTrackRows(options.rowCount)
       : createLightRows(options.rowCount);
 
@@ -320,6 +394,8 @@ function buildReproLayout(options: LayoutOptions): HTMLDivElement {
     true,
   );
 
+  const enableColumnEditor = options.enableColumnEditor !== false;
+
   const table = new SimpleTableVanilla(tableHost, {
     columns: headers,
     rows,
@@ -328,11 +404,15 @@ function buildReproLayout(options: LayoutOptions): HTMLDivElement {
     theme: "modern-light",
     columnResizing: true,
     columnReordering: options.enableReorder,
-    enableColumnEditor: true,
-    enableColumnEditorInitOpen: true,
-    columnEditorConfig: {
-      searchEnabled: true,
-    },
+    enableVirtualization: options.enableVirtualization,
+    enableColumnEditor,
+    enableColumnEditorInitOpen: enableColumnEditor && options.enableColumnEditorInitOpen !== false,
+    columnEditorConfig: enableColumnEditor
+      ? {
+          searchEnabled: true,
+        }
+      : undefined,
+    animations: options.animations,
     onColumnVisibilityChange: () => {
       getSnapshot().visibilityChangeCount += 1;
     },
@@ -343,6 +423,649 @@ function buildReproLayout(options: LayoutOptions): HTMLDivElement {
   (root as HTMLDivElement & { __table?: SimpleTableVanilla }).__table = table;
   return root;
 }
+
+// ---------------------------------------------------------------------------
+// Drag helpers (Track List leaf reorder)
+// ---------------------------------------------------------------------------
+
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+
+/**
+ * Column virtualization culls off-screen leaves. Scroll the main pane until
+ * every accessor has a header cell in the DOM (or attempts are exhausted).
+ */
+const ensureLeavesInView = async (
+  canvasElement: HTMLElement,
+  accessors: readonly string[],
+): Promise<void> => {
+  const bodyMain = canvasElement.querySelector<HTMLElement>(".st-body-main");
+  if (!bodyMain) throw new Error(".st-body-main not found");
+
+  const allPresent = () =>
+    accessors.every((a) => !!canvasElement.querySelector(`.st-header-cell[data-accessor="${a}"]`));
+
+  if (allPresent()) return;
+
+  // Spotify 7d band sits just after the Metadata group — a modest scroll
+  // usually brings the full 8-leaf set into the virtualized window.
+  const candidates = [0, 120, 200, 280, 360, 480, 600, 800];
+  for (const scrollLeft of candidates) {
+    bodyMain.scrollLeft = scrollLeft;
+    bodyMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+    await sleep(80);
+    await new Promise((r) => requestAnimationFrame(() => r(undefined)));
+    if (allPresent()) return;
+  }
+
+  throw new Error(
+    `Could not bring leaves into view: missing ${accessors
+      .filter((a) => !canvasElement.querySelector(`.st-header-cell[data-accessor="${a}"]`))
+      .join(", ")}`,
+  );
+};
+
+const findHeaderCell = (canvasElement: HTMLElement, accessor: string): HTMLElement | null =>
+  canvasElement.querySelector<HTMLElement>(`.st-header-cell[data-accessor="${accessor}"]`);
+
+const findHeaderLabel = (canvasElement: HTMLElement, accessor: string): HTMLElement => {
+  const cell = findHeaderCell(canvasElement, accessor);
+  const label = cell?.querySelector<HTMLElement>(".st-header-label");
+  if (!label) throw new Error(`Header label for "${accessor}" not found`);
+  return label;
+};
+
+const parseTranslateX = (transform: string): number => {
+  if (!transform || transform === "none") return 0;
+  const t3 = transform.match(/translate3d\(\s*(-?[\d.]+)px/);
+  if (t3) return parseFloat(t3[1]);
+  const m = transform.match(/matrix\(\s*([^)]+)\)/);
+  if (m) {
+    const parts = m[1].split(",").map((p) => parseFloat(p.trim()));
+    if (parts.length >= 6) return parts[4];
+  }
+  return 0;
+};
+
+const leafLeftOrder = (canvasElement: HTMLElement, accessors: readonly string[]): string =>
+  accessors
+    .slice()
+    .sort((a, b) => {
+      const aL = parseFloat(findHeaderCell(canvasElement, a)?.style.left || "0");
+      const bL = parseFloat(findHeaderCell(canvasElement, b)?.style.left || "0");
+      return aL - bL;
+    })
+    .join(",");
+
+const SPOTIFY_7D_LEAVES = [
+  "spotify_7d_streams",
+  "spotify_7d_listeners",
+  "spotify_7d_followers",
+  "spotify_7d_saves",
+  "spotify_7d_shares",
+  "spotify_7d_playlists",
+  "spotify_7d_skipRate",
+  "spotify_7d_completion",
+] as const;
+
+const styleLeftOf = (canvasElement: HTMLElement, accessor: string): number =>
+  parseFloat(findHeaderCell(canvasElement, accessor)?.style.left || "0");
+
+/** Painted X (page coords) — includes FLIP translate. */
+const visualLeftOf = (canvasElement: HTMLElement, accessor: string): number => {
+  const cell = findHeaderCell(canvasElement, accessor);
+  if (!cell) return NaN;
+  return cell.getBoundingClientRect().left;
+};
+
+/**
+ * Page-space X of the element's layout box (style.left), stripping FLIP translate.
+ */
+const styleBoxLeftOf = (canvasElement: HTMLElement, accessor: string): number => {
+  const cell = findHeaderCell(canvasElement, accessor);
+  if (!cell) return NaN;
+  return (
+    cell.getBoundingClientRect().left - parseTranslateX(window.getComputedStyle(cell).transform)
+  );
+};
+
+const orderedLeaves = (canvasElement: HTMLElement, accessors: readonly string[]): string[] =>
+  accessors.slice().sort((a, b) => styleLeftOf(canvasElement, a) - styleLeftOf(canvasElement, b));
+
+/** Slot X positions currently occupied by the leaf set (sorted ascending). */
+const slotLefts = (canvasElement: HTMLElement, accessors: readonly string[]): number[] =>
+  orderedLeaves(canvasElement, accessors).map((a) => styleLeftOf(canvasElement, a));
+
+/** Insert-style sibling reorder (matches DragHandlerManager.swapHeaders). */
+const applyInsertReorder = (order: string[], fromAcc: string, toAcc: string): string[] => {
+  const next = order.slice();
+  const from = next.indexOf(fromAcc);
+  const to = next.indexOf(toAcc);
+  if (from < 0 || to < 0 || from === to) return next;
+  const [removed] = next.splice(from, 1);
+  next.splice(to, 0, removed);
+  return next;
+};
+
+const expectedLeftMap = (order: string[], slots: number[]): Map<string, number> => {
+  const map = new Map<string, number>();
+  order.forEach((accessor, index) => {
+    map.set(accessor, slots[index] ?? NaN);
+  });
+  return map;
+};
+
+const hasActiveFlip = (canvasElement: HTMLElement, accessor: string): boolean => {
+  const cell = findHeaderCell(canvasElement, accessor);
+  if (!cell) return false;
+  if (Math.abs(parseTranslateX(cell.style.transform || "")) > 0.5) return true;
+  const computed = window.getComputedStyle(cell).transform;
+  return Boolean(computed && computed !== "none" && Math.abs(parseTranslateX(computed)) > 0.5);
+};
+
+type LeafMotion = {
+  accessor: string;
+  /** Expected style.left destination after the swap that created/updated this motion */
+  destLeft: number;
+  /** Painted X when we last sampled */
+  visualAtSample: number;
+  /** style.left before the swap that last retargeted this motion */
+  originLeft: number;
+  updatedAtStep: number;
+};
+
+/** Discrete event slack (release / dragstart) — one leaf is 120px. */
+const VISUAL_JUMP_PX = 90;
+/** Per-animation-frame teleport ceiling while dense-watching. */
+const FRAME_JUMP_PX = 72;
+const PATH_SLACK_PX = 24;
+/**
+ * Max paint drift when style.left retargets (FLIP invert must hold the pixel).
+ * A "little jump" on the dragged header at reorder start fails above this.
+ */
+const RETARGET_JUMP_PX = 12;
+/** Header vs first body cell for the same leaf should paint together. */
+const HEADER_BODY_SYNC_PX = 10;
+/** Just clears REVERT_TO_PREVIOUS_HEADERS_DELAY (150ms); keep swaps aggressive. */
+const BETWEEN_SWAP_MS = 155;
+/** Short post-swap sample window so the next interrupt lands while peers are mid-FLIP. */
+const POST_SWAP_WATCH_MS = Math.min(220, Math.floor(SLOW_DURATION * 0.15));
+/** Pointer steps for dragover→reorder (fewer = faster commit). */
+const DRAGOVER_STEPS = 8;
+/** rAF samples between dragover pointer steps. */
+const DRAGOVER_FRAMES_PER_STEP = 1;
+
+const nextFrame = (): Promise<void> =>
+  new Promise((r) => requestAnimationFrame(() => r(undefined)));
+
+/** First painted body cell for a leaf (row 0 band) — catches header/body desync. */
+const bodyVisualLeftOf = (canvasElement: HTMLElement, accessor: string): number => {
+  const cell = canvasElement.querySelector<HTMLElement>(
+    `.st-body-main .st-cell[data-accessor="${accessor}"]`,
+  );
+  if (!cell) return NaN;
+  return cell.getBoundingClientRect().left;
+};
+
+type LeafSample = {
+  visual: number;
+  destPage: number;
+  styleLeft: number;
+  bodyVisual: number;
+  flipping: boolean;
+};
+
+const sampleLeaf = (canvasElement: HTMLElement, accessor: string): LeafSample => ({
+  visual: visualLeftOf(canvasElement, accessor),
+  destPage: styleBoxLeftOf(canvasElement, accessor),
+  styleLeft: styleLeftOf(canvasElement, accessor),
+  bodyVisual: bodyVisualLeftOf(canvasElement, accessor),
+  flipping: hasActiveFlip(canvasElement, accessor),
+});
+
+/** Sync assert for the hot rAF path — instrumented `await expect` is too slow
+ *  and lets many real animation frames elapse between samples. */
+const assertTrue = (condition: boolean, message: string): void => {
+  if (!condition) {
+    throw new Error(message);
+  }
+};
+
+/**
+ * Frame-to-frame continuity for one leaf. Tight on jump size because callers
+ * sample every animation frame — large teleports cannot hide between checks.
+ *
+ * On retarget (style.left rewrite), paint must hold within {@link RETARGET_JUMP_PX}
+ * — including the dragged column. Mid-flight ease uses a distance-scaled cap.
+ */
+const maxAllowedFrameJump = (prev: LeafSample): number => {
+  const distToDest = Math.abs(prev.visual - prev.destPage);
+  if (prev.flipping) {
+    return Math.min(240, Math.max(FRAME_JUMP_PX, distToDest * 0.65 + PATH_SLACK_PX));
+  }
+  return FRAME_JUMP_PX;
+};
+
+const assertLeafFrameContinuity = (
+  accessor: string,
+  prev: LeafSample,
+  next: LeafSample,
+  label: string,
+  motion: LeafMotion | undefined,
+  opts: { isDragged?: boolean } = {},
+): void => {
+  const isDragged = opts.isDragged === true;
+  const frameJump = Math.abs(next.visual - prev.visual);
+  const destChanged = Math.abs(next.destPage - prev.destPage) > 1.5;
+  // Retarget: invert must pin paint. Dragged column included — that opening
+  // jump on reorder is exactly what we want to catch.
+  const allowedJump = destChanged ? RETARGET_JUMP_PX : maxAllowedFrameJump(prev);
+
+  if (destChanged) {
+    assertTrue(
+      frameJump <= allowedJump,
+      `${label}: ${accessor}${isDragged ? " (dragged)" : ""} jumped at reorder start ` +
+        `(${prev.visual.toFixed(1)} → ${next.visual.toFixed(1)}, Δ=${frameJump.toFixed(1)}, ` +
+        `dest ${prev.destPage.toFixed(1)} → ${next.destPage.toFixed(1)}, ` +
+        `max=${RETARGET_JUMP_PX})`,
+    );
+  } else {
+    assertTrue(
+      frameJump <= allowedJump || (!prev.flipping && !next.flipping && frameJump < 1.5),
+      `${label}: ${accessor} teleported between frames ` +
+        `(${prev.visual.toFixed(1)} → ${next.visual.toFixed(1)}, Δ=${frameJump.toFixed(1)}, ` +
+        `allowed=${allowedJump.toFixed(1)})`,
+    );
+  }
+
+  if (motion && !destChanged) {
+    assertTrue(
+      Math.abs(next.styleLeft - motion.destLeft) < 1.5,
+      `${label}: ${accessor} style.left drifted from expected dest ` +
+        `(${next.styleLeft} vs ${motion.destLeft})`,
+    );
+  } else if (motion && destChanged) {
+    motion.destLeft = next.styleLeft;
+  }
+
+  if (!destChanged && (next.flipping || motion)) {
+    const pathMin = Math.min(prev.visual, next.destPage) - PATH_SLACK_PX;
+    const pathMax = Math.max(prev.visual, next.destPage) + PATH_SLACK_PX;
+    assertTrue(
+      next.visual >= pathMin && next.visual <= pathMax,
+      `${label}: ${accessor} left FLIP path between frames ` +
+        `(${prev.visual.toFixed(1)} → ${next.visual.toFixed(1)}, ` +
+        `destPage=${next.destPage.toFixed(1)})`,
+    );
+
+    const distBefore = Math.abs(prev.visual - prev.destPage);
+    const distNow = Math.abs(next.visual - next.destPage);
+    assertTrue(
+      distNow <= distBefore + PATH_SLACK_PX,
+      `${label}: ${accessor} moved away from dest between frames. ` +
+        `dist ${distBefore.toFixed(1)} → ${distNow.toFixed(1)}`,
+    );
+  } else if (!destChanged && !next.flipping && !motion) {
+    assertTrue(
+      Math.abs(next.visual - next.destPage) < 1.5,
+      `${label}: settled ${accessor} drifted from layout box ` +
+        `(visual=${next.visual.toFixed(1)} box=${next.destPage.toFixed(1)})`,
+    );
+  }
+
+  if (!isDragged && Number.isFinite(next.bodyVisual) && Number.isFinite(prev.bodyVisual)) {
+    const headerBodyGap = Math.abs(next.visual - next.bodyVisual);
+    assertTrue(
+      headerBodyGap <= HEADER_BODY_SYNC_PX,
+      `${label}: ${accessor} header/body desync ` +
+        `(header=${next.visual.toFixed(1)} body=${next.bodyVisual.toFixed(1)} ` +
+        `gap=${headerBodyGap.toFixed(1)})`,
+    );
+
+    const bodyJump = Math.abs(next.bodyVisual - prev.bodyVisual);
+    const allowedBodyJump = destChanged
+      ? RETARGET_JUMP_PX
+      : maxAllowedFrameJump({ ...prev, visual: prev.bodyVisual, flipping: prev.flipping });
+    assertTrue(
+      bodyJump <= allowedBodyJump || (!prev.flipping && !next.flipping && bodyJump < 1.5),
+      `${label}: ${accessor} body teleported between frames ` +
+        `(${prev.bodyVisual.toFixed(1)} → ${next.bodyVisual.toFixed(1)}, Δ=${bodyJump.toFixed(1)})`,
+    );
+  }
+};
+
+/**
+ * Sample every Spotify 7d leaf on every animation frame until duration elapses
+ * and/or `until` returns true. Updates motion.visualAtSample as it goes.
+ * Returns frames sampled (for density assertions / HUD).
+ */
+const watchLeafContinuity = async (
+  canvasElement: HTMLElement,
+  motions: Map<string, LeafMotion>,
+  label: string,
+  opts: {
+    durationMs?: number;
+    until?: () => boolean;
+    /** When true, also assert settled leaves stay glued (default true). */
+    watchAllLeaves?: boolean;
+    /** Active drag source — native drag paint needs looser per-frame limits. */
+    dragged?: string;
+  } = {},
+): Promise<number> => {
+  const watchAll = opts.watchAllLeaves !== false;
+  const last = new Map<string, LeafSample>();
+  for (const accessor of SPOTIFY_7D_LEAVES) {
+    last.set(accessor, sampleLeaf(canvasElement, accessor));
+  }
+
+  const deadline =
+    opts.durationMs !== undefined ? Date.now() + opts.durationMs : Number.POSITIVE_INFINITY;
+  let frames = 0;
+
+  while (Date.now() < deadline) {
+    if (opts.until?.()) break;
+    await nextFrame();
+    frames += 1;
+
+    // Read every leaf synchronously first so samples share one paint, then
+    // assert (also sync). Instrumented awaits between reads were letting
+    // ~100ms of FLIP elapse and looking like teleports.
+    const round = new Map<string, LeafSample>();
+    for (const accessor of SPOTIFY_7D_LEAVES) {
+      const motion = motions.get(accessor);
+      if (!watchAll && !motion && !hasActiveFlip(canvasElement, accessor)) continue;
+      round.set(accessor, sampleLeaf(canvasElement, accessor));
+    }
+    for (const [accessor, next] of round) {
+      const prev = last.get(accessor)!;
+      assertLeafFrameContinuity(
+        accessor,
+        prev,
+        next,
+        `${label}#f${frames}`,
+        motions.get(accessor),
+        {
+          isDragged: accessor === opts.dragged,
+        },
+      );
+      last.set(accessor, next);
+      const motion = motions.get(accessor);
+      if (motion) motion.visualAtSample = next.visual;
+    }
+  }
+
+  return frames;
+};
+
+type DragSession = {
+  dataTransfer: DataTransfer;
+  sourceAccessor: string;
+  lastClientX: number;
+  lastClientY: number;
+};
+
+const beginLeafDrag = (canvasElement: HTMLElement, sourceAccessor: string): DragSession => {
+  const sourceLabel = findHeaderLabel(canvasElement, sourceAccessor);
+  const rect = sourceLabel.getBoundingClientRect();
+  const clientX = rect.left + rect.width / 2;
+  const clientY = rect.top + rect.height / 2;
+  const dataTransfer = new DataTransfer();
+  dataTransfer.setData("text/plain", "column-drag");
+  dataTransfer.effectAllowed = "move";
+  sourceLabel.dispatchEvent(
+    new DragEvent("dragstart", {
+      bubbles: true,
+      cancelable: true,
+      clientX,
+      clientY,
+      screenX: clientX,
+      screenY: clientY,
+      dataTransfer,
+    }),
+  );
+  return { dataTransfer, sourceAccessor, lastClientX: clientX, lastClientY: clientY };
+};
+
+const endLeafDrag = (session: DragSession, canvasElement: HTMLElement): void => {
+  const sourceLabel = findHeaderLabel(canvasElement, session.sourceAccessor);
+  const { lastClientX: clientX, lastClientY: clientY, dataTransfer } = session;
+  sourceLabel.dispatchEvent(
+    new DragEvent("drop", {
+      bubbles: true,
+      cancelable: true,
+      clientX,
+      clientY,
+      screenX: clientX,
+      screenY: clientY,
+      dataTransfer,
+    }),
+  );
+  sourceLabel.dispatchEvent(
+    new DragEvent("dragend", {
+      bubbles: true,
+      cancelable: true,
+      clientX,
+      clientY,
+      screenX: clientX,
+      screenY: clientY,
+      dataTransfer,
+    }),
+  );
+};
+
+const snapshotLeafVisuals = (canvasElement: HTMLElement): Map<string, number> => {
+  const map = new Map<string, number>();
+  for (const accessor of SPOTIFY_7D_LEAVES) {
+    map.set(accessor, visualLeftOf(canvasElement, accessor));
+  }
+  return map;
+};
+
+/**
+ * Fire dragovers from the last pointer position onto target until style order
+ * changes (or attempts exhausted). Stays inside an open drag session.
+ *
+ * Starts at least 50px away from the target so dragging.ts distance gates
+ * (`distance < 10` and anti-ping-pong `distance < 40`) can clear.
+ *
+ * Returns visuals sampled immediately before the dragover that changed order —
+ * prior FLIPs may progress during the long pointer travel, so continuity
+ * asserts must compare against that moment (not against the pre-travel sample).
+ *
+ * When `motions` is provided, every animation frame during travel is checked
+ * so mid-drag teleports cannot hide between pointer steps.
+ */
+const dragOverUntilReorder = async (
+  canvasElement: HTMLElement,
+  session: DragSession,
+  targetAccessor: string,
+  opts?: {
+    expectOrder?: string;
+    motions?: Map<string, LeafMotion>;
+    watchLabel?: string;
+    dragged?: string;
+  },
+): Promise<{ ok: boolean; visualsBeforeReorder: Map<string, number> }> => {
+  const targetLabel = findHeaderLabel(canvasElement, targetAccessor);
+  const targetCell = targetLabel.closest(".st-header-cell") ?? targetLabel;
+  const targetRect = targetLabel.getBoundingClientRect();
+  const endX = targetRect.left + targetRect.width / 2;
+  const endY = targetRect.top + targetRect.height / 2;
+
+  // Guarantee a long enough pointer travel for the distance gates.
+  let startX = session.lastClientX;
+  let startY = session.lastClientY;
+  const travel = Math.hypot(endX - startX, endY - startY);
+  if (travel < 50) {
+    startX = endX - 60;
+    startY = endY;
+  }
+
+  const orderBefore = leafLeftOrder(canvasElement, SPOTIFY_7D_LEAVES);
+  let visualsBeforeReorder = snapshotLeafVisuals(canvasElement);
+  const lastSamples = new Map<string, LeafSample>();
+  for (const accessor of SPOTIFY_7D_LEAVES) {
+    lastSamples.set(accessor, sampleLeaf(canvasElement, accessor));
+  }
+  let frame = 0;
+
+  const watchFrames = async (count: number) => {
+    if (!opts?.motions) {
+      for (let i = 0; i < count; i++) await nextFrame();
+      return;
+    }
+    for (let i = 0; i < count; i++) {
+      await nextFrame();
+      frame += 1;
+      const round = new Map<string, LeafSample>();
+      for (const accessor of SPOTIFY_7D_LEAVES) {
+        round.set(accessor, sampleLeaf(canvasElement, accessor));
+      }
+      for (const [accessor, next] of round) {
+        const prev = lastSamples.get(accessor)!;
+        assertLeafFrameContinuity(
+          accessor,
+          prev,
+          next,
+          `${opts.watchLabel ?? "dragover"}#f${frame}`,
+          opts.motions.get(accessor),
+          { isDragged: accessor === opts.dragged },
+        );
+        lastSamples.set(accessor, next);
+        const motion = opts.motions.get(accessor);
+        if (motion) motion.visualAtSample = next.visual;
+      }
+    }
+  };
+
+  const attempts = 2;
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    if (attempt > 0) {
+      if (opts?.motions) {
+        await watchLeafContinuity(
+          canvasElement,
+          opts.motions,
+          `${opts.watchLabel ?? "dragover"} retry`,
+          {
+            durationMs: BETWEEN_SWAP_MS,
+            watchAllLeaves: true,
+            dragged: opts.dragged,
+          },
+        );
+      } else {
+        await sleep(BETWEEN_SWAP_MS);
+      }
+      startX = endX - 80 * (attempt % 2 === 0 ? 1 : -1);
+      startY = endY;
+    }
+    const steps = DRAGOVER_STEPS;
+    for (let i = 0; i <= steps; i++) {
+      const progress = i / steps;
+      const x = startX + (endX - startX) * progress;
+      const y = startY + (endY - startY) * progress;
+      session.lastClientX = x;
+      session.lastClientY = y;
+      // Sample before the event so we still have pre-reorder painted positions
+      // even if this dragover commits the swap synchronously.
+      visualsBeforeReorder = snapshotLeafVisuals(canvasElement);
+      targetCell.dispatchEvent(
+        new DragEvent("dragover", {
+          bubbles: true,
+          cancelable: true,
+          clientX: x,
+          clientY: y,
+          screenX: x,
+          screenY: y,
+          dataTransfer: session.dataTransfer,
+        }),
+      );
+      await watchFrames(DRAGOVER_FRAMES_PER_STEP);
+      const orderNow = leafLeftOrder(canvasElement, SPOTIFY_7D_LEAVES);
+      if (orderNow !== orderBefore) {
+        // Commit frame: paint must match the pre-dragover sample (FLIP invert).
+        // Catches the dragged-column opening jump before post-swap ease starts.
+        for (const accessor of SPOTIFY_7D_LEAVES) {
+          const prevVisual = visualsBeforeReorder.get(accessor);
+          if (prevVisual === undefined) continue;
+          const visual = visualLeftOf(canvasElement, accessor);
+          const jump = Math.abs(visual - prevVisual);
+          const isDraggedLeaf = accessor === opts?.dragged;
+          assertTrue(
+            jump <= RETARGET_JUMP_PX,
+            `${opts?.watchLabel ?? "dragover"}: ${accessor}` +
+              `${isDraggedLeaf ? " (dragged)" : ""} jumped at reorder commit ` +
+              `(${prevVisual.toFixed(1)} → ${visual.toFixed(1)}, Δ=${jump.toFixed(1)}, ` +
+              `max=${RETARGET_JUMP_PX})`,
+          );
+        }
+        const ok = opts?.expectOrder ? orderNow === opts.expectOrder : true;
+        return { ok, visualsBeforeReorder };
+      }
+    }
+  }
+  return { ok: false, visualsBeforeReorder };
+};
+
+/**
+ * Drag source leaf onto target leaf with enough distance to clear the
+ * drag throttle / distance gates in dragging.ts.
+ */
+const dragLeafOntoLeaf = async (
+  canvasElement: HTMLElement,
+  sourceAccessor: string,
+  targetAccessor: string,
+  opts?: { sampleFlip?: (saw: boolean) => void },
+): Promise<boolean> => {
+  const session = beginLeafDrag(canvasElement, sourceAccessor);
+  let sawFlip = false;
+  const pollFlip = () => {
+    if (sawFlip) return;
+    for (const accessor of [sourceAccessor, targetAccessor]) {
+      if (hasActiveFlip(canvasElement, accessor)) {
+        sawFlip = true;
+        opts?.sampleFlip?.(true);
+        return;
+      }
+    }
+  };
+
+  const steps = 10;
+  const targetLabel = findHeaderLabel(canvasElement, targetAccessor);
+  const targetCell = targetLabel.closest(".st-header-cell") ?? targetLabel;
+  const startX = session.lastClientX;
+  const startY = session.lastClientY;
+  const targetRect = targetLabel.getBoundingClientRect();
+  const endX = targetRect.left + targetRect.width / 2;
+  const endY = targetRect.top + targetRect.height / 2;
+
+  for (let i = 0; i <= steps; i++) {
+    const progress = i / steps;
+    const x = startX + (endX - startX) * progress;
+    const y = startY + (endY - startY) * progress;
+    session.lastClientX = x;
+    session.lastClientY = y;
+    targetCell.dispatchEvent(
+      new DragEvent("dragover", {
+        bubbles: true,
+        cancelable: true,
+        clientX: x,
+        clientY: y,
+        screenX: x,
+        screenY: y,
+        dataTransfer: session.dataTransfer,
+      }),
+    );
+    for (let frame = 0; frame < 4; frame++) {
+      await new Promise((r) => requestAnimationFrame(() => r(undefined)));
+      pollFlip();
+      if (sawFlip) break;
+    }
+  }
+
+  const sawBeforeDragEnd = sawFlip;
+  endLeafDrag(session, canvasElement);
+  await sleep(120);
+  return sawBeforeDragEnd;
+};
 
 // ---------------------------------------------------------------------------
 // Stories
@@ -360,9 +1083,7 @@ export const HeavyTrackListColumnEditor = {
     await waitForTable(canvasElement);
     await waitUntil(
       () =>
-        !!canvasElement.querySelector(
-          ".st-column-editor-popout.open, .st-column-editor-popout",
-        ),
+        !!canvasElement.querySelector(".st-column-editor-popout.open, .st-column-editor-popout"),
       { timeoutMs: 5000 },
     );
 
@@ -371,8 +1092,7 @@ export const HeavyTrackListColumnEditor = {
       canvasElement.querySelector(".st-column-editor-popout");
     expect(popout).toBeTruthy();
 
-    const items = () =>
-      Array.from(canvasElement.querySelectorAll(".st-header-checkbox-item"));
+    const items = () => Array.from(canvasElement.querySelectorAll(".st-header-checkbox-item"));
 
     // Prefer nested leaf rows (indented) — these are the ones that felt sticky.
     const nestedLeaves = items().filter((item) => {
@@ -394,10 +1114,9 @@ export const HeavyTrackListColumnEditor = {
       const input = leaves[i]?.querySelector(".st-checkbox-input") as HTMLInputElement | null;
       expect(input, `missing nested checkbox at index ${i}`).toBeTruthy();
       input!.click();
-      await waitUntil(
-        () => getSnapshot().visibilityChangeCount > beforeVisibility + i,
-        { timeoutMs: 3000 },
-      );
+      await waitUntil(() => getSnapshot().visibilityChangeCount > beforeVisibility + i, {
+        timeoutMs: 3000,
+      });
     }
 
     const after = getSnapshot();
@@ -415,10 +1134,9 @@ export const LightNestedColumnEditorControl = {
     }),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
-    await waitUntil(
-      () => !!canvasElement.querySelector(".st-header-checkbox-item"),
-      { timeoutMs: 3000 },
-    );
+    await waitUntil(() => !!canvasElement.querySelector(".st-header-checkbox-item"), {
+      timeoutMs: 3000,
+    });
     const items = canvasElement.querySelectorAll(".st-header-checkbox-item");
     expect(items.length).toBeGreaterThan(2);
   },
@@ -436,5 +1154,617 @@ export const HeavyHeaderReorderSettle = {
     await waitForTable();
     const labels = canvasElement.querySelectorAll(".st-header-label[draggable='true']");
     expect(labels.length).toBeGreaterThan(3);
+  },
+};
+
+type DragPlaygroundArgs = {
+  duration: number;
+};
+
+/**
+ * Manual QA surface for the exact Track List fixture from client repros.
+ * Use the Duration control to slow FLIP so header + body slides are visible.
+ */
+export const TrackListDragPlaygroundSlow = {
+  name: "Track List drag playground (slow)",
+  args: {
+    duration: SLOW_DURATION,
+  } satisfies DragPlaygroundArgs,
+  argTypes: {
+    duration: {
+      name: "Duration (ms)",
+      control: { type: "range", min: 400, max: 3000, step: 100 },
+      description: "animations.duration — slow down to watch mid-drag FLIP",
+    },
+  },
+  render: (args: DragPlaygroundArgs) =>
+    buildReproLayout({
+      mode: "heavy",
+      rowCount: 40,
+      enableReorder: true,
+      enableColumnEditor: false,
+      animations: { enabled: true, duration: args.duration ?? SLOW_DURATION },
+      banner:
+        `Drag Spotify → 7d leaves (e.g. Completion onto Shares). ` +
+        `FLIP duration: ${args.duration ?? SLOW_DURATION}ms. ` +
+        `Headers and body cells should slide on each dragover swap.`,
+    }),
+};
+
+/**
+ * Scripted drag of two Spotify 7d siblings; asserts mid-drag FLIP + order change.
+ */
+export const TrackListDragAnimatesMidSwap = {
+  name: "Track List drag animates mid-swap",
+  render: () =>
+    buildReproLayout({
+      mode: "heavy",
+      rowCount: 24,
+      enableReorder: true,
+      enableColumnEditor: false,
+      animations: { enabled: true, duration: SLOW_DURATION },
+      banner:
+        `Automated: drag spotify_7d_completion → spotify_7d_shares ` +
+        `(${SLOW_DURATION}ms). Expect FLIP during dragover and swapped left order.`,
+    }),
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable(canvasElement);
+    await sleep(400);
+
+    const source = "spotify_7d_completion";
+    const target = "spotify_7d_shares";
+    const siblings = [...SPOTIFY_7D_LEAVES];
+    await ensureLeavesInView(canvasElement, siblings);
+
+    for (const accessor of [source, target]) {
+      expect(findHeaderCell(canvasElement, accessor), `missing ${accessor}`).toBeTruthy();
+    }
+
+    const orderBefore = leafLeftOrder(canvasElement, siblings);
+    const sourceLeftBefore = parseFloat(findHeaderCell(canvasElement, source)!.style.left || "0");
+    const targetLeftBefore = parseFloat(findHeaderCell(canvasElement, target)!.style.left || "0");
+    expect(sourceLeftBefore).toBeGreaterThan(targetLeftBefore);
+
+    const sawFlipBeforeDragEnd = await dragLeafOntoLeaf(canvasElement, source, target);
+
+    const orderAfter = leafLeftOrder(canvasElement, siblings);
+    expect(
+      orderAfter !== orderBefore,
+      `Expected Spotify 7d leaf order to change after drag. before=${orderBefore} after=${orderAfter}`,
+    ).toBe(true);
+
+    expect(
+      sawFlipBeforeDragEnd,
+      "Expected a non-zero header FLIP transform/transition during dragover " +
+        "(before dragend) when reordering Track List leaves.",
+    ).toBe(true);
+
+    // Body cells for the moved columns should also have participated (or settled).
+    const bodySample = canvasElement.querySelector<HTMLElement>(
+      `.st-body-main .st-cell[data-accessor="${source}"]`,
+    );
+    expect(bodySample, "missing body cell for dragged leaf").toBeTruthy();
+  },
+};
+
+/**
+ * Pick a leaf target that changes insert order. Prefer mid-FLIP leaves when asked.
+ */
+const pickReorderTarget = (
+  canvasElement: HTMLElement,
+  order: string[],
+  dragged: string,
+  preferAnimating: boolean,
+  fallbackIndex: number,
+): string | null => {
+  const others = order.filter((a) => a !== dragged);
+  const candidates = preferAnimating
+    ? [
+        ...others.filter((a) => hasActiveFlip(canvasElement, a)),
+        ...others.filter((a) => !hasActiveFlip(canvasElement, a)),
+      ]
+    : others;
+
+  // Rotate fallback so we walk around the band instead of always picking the first.
+  const rotated = [
+    ...candidates.slice(fallbackIndex % candidates.length),
+    ...candidates.slice(0, fallbackIndex % candidates.length),
+  ];
+
+  for (const target of rotated) {
+    const next = applyInsertReorder(order, dragged, target);
+    if (next.join(",") !== order.join(",")) return target;
+  }
+  return null;
+};
+
+const isSettledLeaf = (canvasElement: HTMLElement, accessor: string): boolean => {
+  if (hasActiveFlip(canvasElement, accessor)) return false;
+  const visual = visualLeftOf(canvasElement, accessor);
+  const box = styleBoxLeftOf(canvasElement, accessor);
+  return Math.abs(visual - box) < 1.5;
+};
+
+/** Keep horizontal scroll fixed so viewport visuals aren't shifted by clamp/reflow. */
+const freezeMainScroll = (canvasElement: HTMLElement): (() => void) => {
+  const panes = [
+    canvasElement.querySelector<HTMLElement>(".st-body-main"),
+    canvasElement.querySelector<HTMLElement>(".st-header-main"),
+  ].filter((el): el is HTMLElement => !!el);
+  if (panes.length === 0) return () => undefined;
+  const locked = panes[0].scrollLeft;
+  for (const pane of panes) pane.scrollLeft = locked;
+  const onScroll = (event: Event) => {
+    const target = event.target as HTMLElement;
+    if (target.scrollLeft !== locked) target.scrollLeft = locked;
+  };
+  for (const pane of panes) pane.addEventListener("scroll", onScroll);
+  return () => {
+    for (const pane of panes) {
+      pane.removeEventListener("scroll", onScroll);
+      pane.scrollLeft = locked;
+    }
+  };
+};
+
+/** Drop motions that have finished so later progress checks don't treat them as mid-flight. */
+const pruneSettledMotions = (
+  canvasElement: HTMLElement,
+  motions: Map<string, LeafMotion>,
+): string[] => {
+  const settled: string[] = [];
+  for (const accessor of [...motions.keys()]) {
+    if (isSettledLeaf(canvasElement, accessor)) {
+      motions.delete(accessor);
+      settled.push(accessor);
+    }
+  }
+  return settled;
+};
+
+const runInterruptSwap = async (
+  canvasElement: HTMLElement,
+  session: DragSession,
+  dragged: string,
+  order: string[],
+  slots: number[],
+  motions: Map<string, LeafMotion>,
+  step: number,
+  label: string,
+  opts: { preferAnimating?: boolean; forceTarget?: string } = {},
+): Promise<{ order: string[]; target: string; watchFrames: number }> => {
+  let target = opts.forceTarget ?? null;
+  if (target) {
+    const next = applyInsertReorder(order, dragged, target);
+    if (next.join(",") === order.join(",")) {
+      target = null;
+    }
+  }
+  if (!target) {
+    target = pickReorderTarget(canvasElement, order, dragged, opts.preferAnimating ?? false, step);
+  }
+  await expect(target, `${label}: no reorder target from ${order.join(",")}`).toBeTruthy();
+
+  const originLefts = new Map<string, number>();
+  for (const accessor of SPOTIFY_7D_LEAVES) {
+    originLefts.set(accessor, styleLeftOf(canvasElement, accessor));
+  }
+
+  const expectedOrder = applyInsertReorder(order, dragged, target!);
+  const expectedDest = expectedLeftMap(expectedOrder, slots);
+  const expectOrderKey = expectedOrder.join(",");
+
+  const { ok: reordered, visualsBeforeReorder } = await dragOverUntilReorder(
+    canvasElement,
+    session,
+    target!,
+    {
+      expectOrder: expectOrderKey,
+      motions,
+      watchLabel: `${label} dragover`,
+      dragged,
+    },
+  );
+  await expect(
+    reordered,
+    `${label}: drag ${dragged} → ${target} should apply insert reorder. ` +
+      `before=${order.join(",")} expected=${expectOrderKey} ` +
+      `actual=${leafLeftOrder(canvasElement, SPOTIFY_7D_LEAVES)}`,
+  ).toBe(true);
+
+  for (const accessor of SPOTIFY_7D_LEAVES) {
+    const actual = styleLeftOf(canvasElement, accessor);
+    const expected = expectedDest.get(accessor)!;
+    await expect(
+      Math.abs(actual - expected) < 1.5,
+      `${label}: ${accessor} style.left=${actual}, expected dest=${expected}`,
+    ).toBe(true);
+  }
+
+  for (const accessor of SPOTIFY_7D_LEAVES) {
+    const destLeft = expectedDest.get(accessor)!;
+    const prevLeft = originLefts.get(accessor)!;
+    if (Math.abs(destLeft - prevLeft) < 1) {
+      const existing = motions.get(accessor);
+      if (existing) existing.destLeft = destLeft;
+      continue;
+    }
+
+    const visual = visualLeftOf(canvasElement, accessor);
+    const prevVisual = visualsBeforeReorder.get(accessor)!;
+    const destPage = styleBoxLeftOf(canvasElement, accessor);
+    const swapJump = Math.abs(visual - prevVisual);
+    const isDraggedLeaf = accessor === dragged;
+
+    // Reorder commit: FLIP invert must hold paint — especially the dragged
+    // header, which previously had a visible opening jump.
+    await expect(
+      swapJump <= RETARGET_JUMP_PX,
+      `${label}: ${accessor}${isDraggedLeaf ? " (dragged)" : ""} jumped at reorder start ` +
+        `(${prevVisual.toFixed(1)} → ${visual.toFixed(1)}, Δ=${swapJump.toFixed(1)}, ` +
+        `destPage=${destPage.toFixed(1)}, max=${RETARGET_JUMP_PX})`,
+    ).toBe(true);
+
+    const pathMin = Math.min(prevVisual, destPage) - PATH_SLACK_PX;
+    const pathMax = Math.max(prevVisual, destPage) + PATH_SLACK_PX;
+    await expect(
+      visual >= pathMin && visual <= pathMax,
+      `${label}: ${accessor} visual left the FLIP path on swap ` +
+        `(${prevVisual.toFixed(1)} → ${visual.toFixed(1)}, destPage=${destPage.toFixed(1)}). ` +
+        `originLeft=${prevLeft} destLeft=${destLeft}`,
+    ).toBe(true);
+
+    motions.set(accessor, {
+      accessor,
+      destLeft,
+      visualAtSample: visual,
+      originLeft: prevLeft,
+      updatedAtStep: step,
+    });
+  }
+
+  const watchFrames = await watchLeafContinuity(canvasElement, motions, `${label} post-swap`, {
+    durationMs: POST_SWAP_WATCH_MS,
+    watchAllLeaves: true,
+    dragged,
+  });
+  return { order: expectedOrder, target: target!, watchFrames };
+};
+
+/**
+ * Mid-flight interrupt continuity on Spotify 7d leaves:
+ *  1. Rapid dragover reorders while FLIPs are mid-flight
+ *  2. Hold the drag until early targets settle, then drag over them again
+ *  3. Mid-flight burst, then release and *immediately* start dragging
+ *     streams while those FLIPs are still flying
+ *  4. Streams keeps interrupting (and occasionally re-hitting settled leaves)
+ *
+ * Dense sampling: every animation frame checks every Spotify 7d leaf's painted
+ * header (+ matching body cell) for teleports / path breaks / header-body
+ * desync — during dragover travel, post-swap ease, between-swap gaps, and
+ * settle waits. Full Track List fixture + slow FLIP; play budget is 20 minutes.
+ */
+export const TrackListTenInterruptContinuity = {
+  name: "Track List 10× interrupt continuity",
+  parameters: {
+    // Storybook Interactions / test-runner: this play is intentionally long.
+    test: { timeout: CONTINUITY_PLAY_TIMEOUT_MS },
+  },
+  render: () =>
+    buildReproLayout({
+      mode: "heavy",
+      rowCount: 40,
+      enableReorder: true,
+      enableColumnEditor: false,
+      enableVirtualization: false,
+      animations: { enabled: true, duration: SLOW_DURATION },
+      banner:
+        `Automated continuity (dense per-frame sampling, ~20min budget) on full Track ` +
+        `List: interrupt reorders, re-hit settled targets, hand off to streams mid-flight ` +
+        `for ${HANDOFF_SWAPS} swaps (${SLOW_DURATION}ms FLIP).`,
+    }),
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable(canvasElement);
+    await sleep(400);
+
+    const BURST_SWAPS = 24;
+    const SETTLED_REHIT_SWAPS = 16;
+    const PRE_HANDOFF_BURST = 20;
+    const dragged = "spotify_7d_completion";
+    const handoffDragged = "spotify_7d_streams";
+    let totalWatchFrames = 0;
+
+    await ensureLeavesInView(canvasElement, SPOTIFY_7D_LEAVES);
+    const bodyMain = canvasElement.querySelector<HTMLElement>(".st-body-main");
+    if (bodyMain) {
+      bodyMain.scrollLeft = 0;
+      bodyMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+      await sleep(40);
+    }
+
+    for (const accessor of SPOTIFY_7D_LEAVES) {
+      await expect(findHeaderCell(canvasElement, accessor), `missing ${accessor}`).toBeTruthy();
+    }
+
+    const slots = slotLefts(canvasElement, SPOTIFY_7D_LEAVES);
+    await expect(slots.length).toBe(SPOTIFY_7D_LEAVES.length);
+
+    let order = orderedLeaves(canvasElement, SPOTIFY_7D_LEAVES);
+    await expect(order[order.length - 1]).toBe(dragged);
+
+    const motions = new Map<string, LeafMotion>();
+    const targetsHit: string[] = [];
+    let step = 0;
+    let session = beginLeafDrag(canvasElement, dragged);
+    const unfreezeScroll = freezeMainScroll(canvasElement);
+
+    const watchGap = async (label: string, durationMs: number, draggedCol: string = dragged) => {
+      totalWatchFrames += await watchLeafContinuity(canvasElement, motions, label, {
+        durationMs,
+        watchAllLeaves: true,
+        dragged: draggedCol,
+      });
+    };
+
+    try {
+      for (let i = 0; i < BURST_SWAPS; i++) {
+        await watchGap(`burst gap ${i + 1}`, BETWEEN_SWAP_MS);
+        const result = await runInterruptSwap(
+          canvasElement,
+          session,
+          dragged,
+          order,
+          slots,
+          motions,
+          step,
+          `burst step ${i + 1}`,
+          { preferAnimating: i % 2 === 1 },
+        );
+        order = result.order;
+        targetsHit.push(result.target);
+        totalWatchFrames += result.watchFrames;
+        step += 1;
+      }
+
+      const earlyTargets = [...new Set(targetsHit.filter((t) => t !== dragged))];
+      await expect(
+        earlyTargets.length >= 2,
+        `need ≥2 distinct early targets; got ${earlyTargets.join(",")}`,
+      ).toBe(true);
+
+      const settleDeadline = Date.now() + SLOW_DURATION + 400;
+      while (Date.now() < settleDeadline) {
+        const settledEarly = earlyTargets.filter((a) => isSettledLeaf(canvasElement, a));
+        if (settledEarly.length >= Math.min(2, earlyTargets.length)) break;
+        await watchGap("early-settle wait", 80);
+      }
+
+      pruneSettledMotions(canvasElement, motions);
+
+      for (let i = 0; i < SETTLED_REHIT_SWAPS; i++) {
+        const rehitDeadline = Date.now() + SLOW_DURATION + 400;
+        let forceTarget: string | null = null;
+        while (Date.now() < rehitDeadline) {
+          forceTarget =
+            earlyTargets.find((t) => {
+              if (!isSettledLeaf(canvasElement, t)) return false;
+              return applyInsertReorder(order, dragged, t).join(",") !== order.join(",");
+            }) ?? null;
+          if (forceTarget) break;
+          await watchGap(`re-hit wait ${i + 1}`, 80);
+        }
+        await expect(
+          forceTarget,
+          `re-hit ${i + 1}: no settled early target changes order from ${order.join(",")}`,
+        ).toBeTruthy();
+
+        await watchGap(`re-hit gap ${i + 1}`, BETWEEN_SWAP_MS);
+        const settledVisual = visualLeftOf(canvasElement, forceTarget!);
+        const settledBox = styleBoxLeftOf(canvasElement, forceTarget!);
+        await expect(
+          Math.abs(settledVisual - settledBox) < 1.5,
+          `re-hit ${i + 1}: ${forceTarget} not fully settled ` +
+            `(${settledVisual.toFixed(1)} vs ${settledBox.toFixed(1)})`,
+        ).toBe(true);
+
+        const result = await runInterruptSwap(
+          canvasElement,
+          session,
+          dragged,
+          order,
+          slots,
+          motions,
+          step,
+          `re-hit settled step ${i + 1} → ${forceTarget}`,
+          { forceTarget: forceTarget! },
+        );
+        order = result.order;
+        totalWatchFrames += result.watchFrames;
+        step += 1;
+      }
+
+      // Fresh mid-flight burst so the handoff starts against live FLIPs.
+      for (let i = 0; i < PRE_HANDOFF_BURST; i++) {
+        await watchGap(`pre-handoff gap ${i + 1}`, BETWEEN_SWAP_MS);
+        const result = await runInterruptSwap(
+          canvasElement,
+          session,
+          dragged,
+          order,
+          slots,
+          motions,
+          step,
+          `pre-handoff burst ${i + 1}`,
+          { preferAnimating: true },
+        );
+        order = result.order;
+        totalWatchFrames += result.watchFrames;
+        step += 1;
+      }
+
+      // Brief dense sample right before release so we catch last-frame glitches.
+      totalWatchFrames += await watchLeafContinuity(canvasElement, motions, "pre-release", {
+        durationMs: 120,
+        watchAllLeaves: true,
+        dragged,
+      });
+
+      const preReleaseVisuals = new Map<string, number>();
+      for (const accessor of SPOTIFY_7D_LEAVES) {
+        preReleaseVisuals.set(accessor, visualLeftOf(canvasElement, accessor));
+      }
+      const animatingBeforeRelease = SPOTIFY_7D_LEAVES.filter((a) =>
+        hasActiveFlip(canvasElement, a),
+      );
+      await expect(
+        animatingBeforeRelease.length > 0,
+        `expected mid-FLIP headers before release; order=${order.join(",")}`,
+      ).toBe(true);
+
+      // Release → grab streams immediately while prior FLIPs are still flying.
+      endLeafDrag(session, canvasElement);
+
+      const stillFlyingAfterRelease = SPOTIFY_7D_LEAVES.filter((a) =>
+        hasActiveFlip(canvasElement, a),
+      );
+      await expect(
+        stillFlyingAfterRelease.length > 0,
+        "prior-drag FLIPs must still be mid-flight when starting the streams drag",
+      ).toBe(true);
+
+      for (const accessor of animatingBeforeRelease) {
+        const visualNow = visualLeftOf(canvasElement, accessor);
+        const prev = preReleaseVisuals.get(accessor)!;
+        await expect(
+          Math.abs(visualNow - prev) < VISUAL_JUMP_PX,
+          `after release: ${accessor} teleported (${prev.toFixed(1)} → ${visualNow.toFixed(1)})`,
+        ).toBe(true);
+        const motion = motions.get(accessor);
+        if (motion) motion.visualAtSample = visualNow;
+      }
+
+      await expect(
+        order.includes(handoffDragged),
+        `handoff column ${handoffDragged} missing from order`,
+      ).toBe(true);
+
+      const visualsAtNewDragStart = new Map<string, number>();
+      for (const accessor of SPOTIFY_7D_LEAVES) {
+        visualsAtNewDragStart.set(accessor, visualLeftOf(canvasElement, accessor));
+        const motion = motions.get(accessor);
+        if (motion) motion.visualAtSample = visualsAtNewDragStart.get(accessor)!;
+      }
+
+      session = beginLeafDrag(canvasElement, handoffDragged);
+
+      // dragstart must not settle leftover FLIPs from the completion drag.
+      const stillFlyingAfterDragStart = SPOTIFY_7D_LEAVES.filter(
+        (a) => a !== handoffDragged && hasActiveFlip(canvasElement, a),
+      );
+      await expect(
+        stillFlyingAfterDragStart.length > 0,
+        "expected prior-drag FLIPs to keep flying after streams dragstart",
+      ).toBe(true);
+
+      for (const accessor of stillFlyingAfterRelease) {
+        if (accessor === handoffDragged) continue;
+        const visualNow = visualLeftOf(canvasElement, accessor);
+        const prev = visualsAtNewDragStart.get(accessor)!;
+        await expect(
+          Math.abs(visualNow - prev) < VISUAL_JUMP_PX,
+          `after dragstart(${handoffDragged}): ${accessor} teleported ` +
+            `(${prev.toFixed(1)} → ${visualNow.toFixed(1)})`,
+        ).toBe(true);
+      }
+
+      // Keep sampling through the handoff seam (release → new dragstart).
+      totalWatchFrames += await watchLeafContinuity(canvasElement, motions, "handoff seam", {
+        durationMs: 200,
+        watchAllLeaves: true,
+        dragged: handoffDragged,
+      });
+
+      // First swaps interrupt while prior FLIPs are still mid-flight; later
+      // ones also re-hit settled siblings.
+      const handoffRoster = SPOTIFY_7D_LEAVES.filter((a) => a !== handoffDragged);
+      const MID_FLIGHT_HANDOFF = Math.max(80, HANDOFF_SWAPS - 40);
+      for (let i = 0; i < HANDOFF_SWAPS; i++) {
+        await watchGap(`handoff gap ${i + 1}`, BETWEEN_SWAP_MS, handoffDragged);
+
+        let forceTarget: string | undefined;
+        const preferSettledRehit = i >= MID_FLIGHT_HANDOFF && i % 2 === 1;
+        if (preferSettledRehit) {
+          const rehitDeadline = Date.now() + SLOW_DURATION + 300;
+          while (Date.now() < rehitDeadline) {
+            const settled = handoffRoster.find((t) => {
+              if (!isSettledLeaf(canvasElement, t)) return false;
+              return applyInsertReorder(order, handoffDragged, t).join(",") !== order.join(",");
+            });
+            if (settled) {
+              forceTarget = settled;
+              break;
+            }
+            await watchGap(`handoff re-hit wait ${i + 1}`, 60, handoffDragged);
+          }
+          if (forceTarget)
+            await watchGap(`handoff re-hit gap ${i + 1}`, BETWEEN_SWAP_MS, handoffDragged);
+        }
+        if (!forceTarget) {
+          const candidate = handoffRoster[i % handoffRoster.length];
+          if (applyInsertReorder(order, handoffDragged, candidate).join(",") !== order.join(",")) {
+            forceTarget = candidate;
+          }
+        }
+
+        const result = await runInterruptSwap(
+          canvasElement,
+          session,
+          handoffDragged,
+          order,
+          slots,
+          motions,
+          step,
+          `handoff step ${i + 1}/${HANDOFF_SWAPS} (dragging ${handoffDragged}` +
+            `${i < MID_FLIGHT_HANDOFF ? ", mid-flight overlap" : ""})`,
+          forceTarget ? { forceTarget } : { preferAnimating: true },
+        );
+        order = result.order;
+        totalWatchFrames += result.watchFrames;
+        step += 1;
+      }
+
+      endLeafDrag(session, canvasElement);
+
+      const finalOrder = orderedLeaves(canvasElement, SPOTIFY_7D_LEAVES);
+      await expect(finalOrder.join(",")).toBe(order.join(","));
+
+      // Watch through final settle — no teleports as FLIPs finish.
+      totalWatchFrames += await watchLeafContinuity(canvasElement, motions, "final settle", {
+        durationMs: SLOW_DURATION + 250,
+        watchAllLeaves: true,
+      });
+      const settledDest = expectedLeftMap(order, slots);
+      for (const accessor of SPOTIFY_7D_LEAVES) {
+        const cell = findHeaderCell(canvasElement, accessor)!;
+        const t = cell.style.transform;
+        await expect(t === "" || t === "none" || Math.abs(parseTranslateX(t)) < 0.5).toBe(true);
+        await expect(
+          Math.abs(styleLeftOf(canvasElement, accessor) - settledDest.get(accessor)!) < 1.5,
+          `${accessor} settled style.left mismatch`,
+        ).toBe(true);
+      }
+
+      // ~8 leaves × frames; with dense watching this should be very large.
+      await expect(
+        totalWatchFrames > 5_000,
+        `expected dense sampling (>5k frames); got ${totalWatchFrames}`,
+      ).toBe(true);
+      console.log(
+        `[continuity] steps=${step} watchFrames=${totalWatchFrames} ` +
+          `(~${totalWatchFrames * SPOTIFY_7D_LEAVES.length} leaf samples)`,
+      );
+    } finally {
+      unfreezeScroll();
+    }
   },
 };
