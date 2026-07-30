@@ -36,6 +36,12 @@ export const v4_1_1: ChangelogEntry = {
         "Column editor visibility toggles sync checkbox state in place when the editor list structure is unchanged, so nested checkboxes on heavy tables no longer need multiple clicks after setHeaders re-renders the table.",
       link: "/docs/column-visibility",
     },
+    {
+      type: "bugfix",
+      description:
+        "Rapid column hide/show no longer stacks horizontal accordion grow/shrink (especially in pinned sections); interrupting toggles cancel in-flight ghosts and snap to the latest layout.",
+      link: "/docs/column-visibility",
+    },
   ],
 };
 

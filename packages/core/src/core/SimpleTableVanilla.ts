@@ -499,6 +499,39 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     if (!this.animationCoordinator.isEnabled()) return;
     if (axis === null) return;
     if (axis === "vertical" && (this.getEffectiveRowGrouping()?.length ?? 0) > 0) return;
+
+    // Apply to `.simple-table-root` (not the user-supplied outer container) so
+    // the CSS scope and the test/marketing surface match the documented root.
+    const root = this.domManager.getElements()?.rootElement ?? this.container;
+
+    // Rapid hide/show (column editor spam-clicks, especially pinned columns)
+    // used to restart accordion grow/shrink while prior ghosts were still
+    // in flight — dropping stale shrink-outs mid-transition looks broken.
+    // Interrupt: cancel in-flight accordion DOM and snap to the latest layout.
+    const interrupting =
+      axis === "horizontal" &&
+      (this.accordionCleanupTimerId !== null ||
+        root.classList.contains(ACCORDION_ANIMATION_CLASS));
+    if (interrupting) {
+      this.animationCoordinator.cancel();
+      if (this.accordionCleanupTimerId !== null) {
+        window.clearTimeout(this.accordionCleanupTimerId);
+        this.accordionCleanupTimerId = null;
+      }
+      root.classList.remove(ACCORDION_ANIMATION_CLASS);
+      root.style.removeProperty(ACCORDION_DURATION_VAR);
+      root.style.removeProperty(ACCORDION_EASING_VAR);
+      this.pendingAccordionAxis = null;
+      this.captureAnimationSnapshot();
+      // Keep the cleanup timer alive (without the CSS class) so further rapid
+      // toggles also snap instead of restarting grow/shrink every other click.
+      const duration = this.animationCoordinator.getDuration();
+      this.accordionCleanupTimerId = window.setTimeout(() => {
+        this.accordionCleanupTimerId = null;
+      }, duration + ACCORDION_CLEANUP_BUFFER_MS);
+      return;
+    }
+
     this.captureAnimationSnapshot();
     // Record which columns are renderable in the current (pre-change) layout so
     // the grow-from-zero gate can tell a freshly-expanded column apart from one
@@ -511,9 +544,6 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
 
     const duration = this.animationCoordinator.getDuration();
     const easing = this.animationCoordinator.getEasing();
-    // Apply to `.simple-table-root` (not the user-supplied outer container) so
-    // the CSS scope and the test/marketing surface match the documented root.
-    const root = this.domManager.getElements()?.rootElement ?? this.container;
     root.style.setProperty(ACCORDION_DURATION_VAR, `${duration}ms`);
     root.style.setProperty(ACCORDION_EASING_VAR, easing);
     root.classList.add(ACCORDION_ANIMATION_CLASS);
