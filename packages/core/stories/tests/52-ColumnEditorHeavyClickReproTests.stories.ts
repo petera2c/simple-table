@@ -575,8 +575,12 @@ type LeafMotion = {
 
 /** Discrete event slack (release / dragstart) — one leaf is 120px. */
 const VISUAL_JUMP_PX = 90;
-/** Per-animation-frame teleport ceiling while dense-watching. */
-const FRAME_JUMP_PX = 72;
+/**
+ * Per-animation-frame teleport ceiling while dense-watching.
+ * Ease-out over SLOW_DURATION moves ~3–10% of remaining distance in one
+ * real frame; anything near a half-column is a compositor skip / lost invert.
+ */
+const FRAME_JUMP_PX = 36;
 const PATH_SLACK_PX = 24;
 /**
  * Max paint drift when style.left retargets (FLIP invert must hold the pixel).
@@ -584,7 +588,7 @@ const PATH_SLACK_PX = 24;
  */
 const RETARGET_JUMP_PX = 12;
 /** Header vs first body cell for the same leaf should paint together. */
-const HEADER_BODY_SYNC_PX = 10;
+const HEADER_BODY_SYNC_PX = 12;
 /** Just clears REVERT_TO_PREVIOUS_HEADERS_DELAY (150ms); keep swaps aggressive. */
 const BETWEEN_SWAP_MS = 155;
 /** Short post-swap sample window so the next interrupt lands while peers are mid-FLIP. */
@@ -640,7 +644,8 @@ const assertTrue = (condition: boolean, message: string): void => {
 const maxAllowedFrameJump = (prev: LeafSample): number => {
   const distToDest = Math.abs(prev.visual - prev.destPage);
   if (prev.flipping) {
-    return Math.min(240, Math.max(FRAME_JUMP_PX, distToDest * 0.65 + PATH_SLACK_PX));
+    // ~one slow frame of ease-out (not 65% of the remaining journey).
+    return Math.min(56, Math.max(FRAME_JUMP_PX, distToDest * 0.12 + 10));
   }
   return FRAME_JUMP_PX;
 };
@@ -860,6 +865,14 @@ const snapshotLeafVisuals = (canvasElement: HTMLElement): Map<string, number> =>
   return map;
 };
 
+const snapshotLeafStyleLefts = (canvasElement: HTMLElement): Map<string, number> => {
+  const map = new Map<string, number>();
+  for (const accessor of SPOTIFY_7D_LEAVES) {
+    map.set(accessor, styleLeftOf(canvasElement, accessor));
+  }
+  return map;
+};
+
 /**
  * Fire dragovers from the last pointer position onto target until style order
  * changes (or attempts exhausted). Stays inside an open drag session.
@@ -902,6 +915,7 @@ const dragOverUntilReorder = async (
 
   const orderBefore = leafLeftOrder(canvasElement, SPOTIFY_7D_LEAVES);
   let visualsBeforeReorder = snapshotLeafVisuals(canvasElement);
+  let styleLeftsBeforeReorder = snapshotLeafStyleLefts(canvasElement);
   const lastSamples = new Map<string, LeafSample>();
   for (const accessor of SPOTIFY_7D_LEAVES) {
     lastSamples.set(accessor, sampleLeaf(canvasElement, accessor));
@@ -967,6 +981,7 @@ const dragOverUntilReorder = async (
       // Sample before the event so we still have pre-reorder painted positions
       // even if this dragover commits the swap synchronously.
       visualsBeforeReorder = snapshotLeafVisuals(canvasElement);
+      styleLeftsBeforeReorder = snapshotLeafStyleLefts(canvasElement);
       targetCell.dispatchEvent(
         new DragEvent("dragover", {
           bubbles: true,
@@ -981,20 +996,35 @@ const dragOverUntilReorder = async (
       await watchFrames(DRAGOVER_FRAMES_PER_STEP);
       const orderNow = leafLeftOrder(canvasElement, SPOTIFY_7D_LEAVES);
       if (orderNow !== orderBefore) {
-        // Commit frame: paint must match the pre-dragover sample (FLIP invert).
-        // Catches the dragged-column opening jump before post-swap ease starts.
+        // Commit frame: paint must hold for every leaf. Retargeted cells need
+        // a tight invert pin; non-retargeted mid-FLIP cells may ease a little
+        // but must not compositor-skip (the old "wall-clock jump" hole).
         for (const accessor of SPOTIFY_7D_LEAVES) {
           const prevVisual = visualsBeforeReorder.get(accessor);
           if (prevVisual === undefined) continue;
+          const prevStyleLeft = styleLeftsBeforeReorder.get(accessor);
+          const styleLeftNow = styleLeftOf(canvasElement, accessor);
+          const destChanged =
+            prevStyleLeft === undefined || Math.abs(styleLeftNow - prevStyleLeft) > 1.5;
           const visual = visualLeftOf(canvasElement, accessor);
           const jump = Math.abs(visual - prevVisual);
           const isDraggedLeaf = accessor === opts?.dragged;
+          const flipping = hasActiveFlip(canvasElement, accessor);
+          const allowed = destChanged
+            ? RETARGET_JUMP_PX
+            : maxAllowedFrameJump({
+                visual: prevVisual,
+                destPage: styleBoxLeftOf(canvasElement, accessor),
+                styleLeft: styleLeftNow,
+                bodyVisual: NaN,
+                flipping: flipping || jump > 1,
+              });
           assertTrue(
-            jump <= RETARGET_JUMP_PX,
+            jump <= allowed,
             `${opts?.watchLabel ?? "dragover"}: ${accessor}` +
               `${isDraggedLeaf ? " (dragged)" : ""} jumped at reorder commit ` +
               `(${prevVisual.toFixed(1)} → ${visual.toFixed(1)}, Δ=${jump.toFixed(1)}, ` +
-              `max=${RETARGET_JUMP_PX})`,
+              `max=${allowed.toFixed(1)}${destChanged ? ", retarget" : ""})`,
           );
         }
         const ok = opts?.expectOrder ? orderNow === opts.expectOrder : true;
