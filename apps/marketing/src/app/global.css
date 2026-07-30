@@ -6,6 +6,13 @@
   --breakpoint-nav: 1140px;
 }
 
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
 @source "../**/*.{html,tsx,ts,json,mdx}";
 
 .simple-table-root {
