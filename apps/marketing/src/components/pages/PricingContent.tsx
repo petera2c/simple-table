@@ -332,7 +332,7 @@ const PricingContent: React.FC = () => {
               href="/case-studies/chartmetric"
               className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
             >
-              $19K+ first-year savings
+              $19K+ first-year savings (~95% for their team)
             </Link>
             .
           </p>

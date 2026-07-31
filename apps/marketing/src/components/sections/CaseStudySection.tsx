@@ -21,28 +21,45 @@ export default function CaseStudySection() {
       transition={{ duration: 0.6 }}
       viewport={{ once: true }}
     >
-      <div className="text-center mb-4">
-        <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-          Trusted by teams at
-        </h3>
-      </div>
-      <div className="flex justify-center mb-8">
-        <div className="relative h-12 w-32 md:h-14 md:w-40">
-          <Image
-            src="/images/trusted-by/chart-metric.svg"
-            alt="ChartMetric logo"
-            fill
-            className="object-contain dark:hidden"
-            sizes="(max-width: 768px) 128px, 160px"
-          />
-          <Image
-            src="/images/trusted-by/chart-metric-dark.svg"
-            alt="ChartMetric logo"
-            fill
-            className="object-contain hidden dark:block"
-            sizes="(max-width: 768px) 128px, 160px"
-          />
+      {/* Mobile/tablet only — desktop hero already has Trusted by + ChartMetric */}
+      <div className="lg:hidden">
+        <div className="text-center mb-4">
+          <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            Trusted by teams at
+          </h3>
         </div>
+        <div className="flex justify-center mb-8">
+          <div className="relative h-12 w-32 md:h-14 md:w-40">
+            <Image
+              src="/images/trusted-by/chart-metric.svg"
+              alt="ChartMetric logo"
+              fill
+              className="object-contain dark:hidden"
+              sizes="(max-width: 768px) 128px, 160px"
+            />
+            <Image
+              src="/images/trusted-by/chart-metric-dark.svg"
+              alt="ChartMetric logo"
+              fill
+              className="object-contain hidden dark:block"
+              sizes="(max-width: 768px) 128px, 160px"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-center mb-6">
+        <a
+          href="https://github.com/brillout/awesome-react-components"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+        >
+          <FontAwesomeIcon icon={faGithub} />
+          <span>
+            Featured on <span className="font-semibold">Awesome React Components</span>
+          </span>
+        </a>
       </div>
 
       <div className="bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-xl p-8 md:p-12 border border-blue-100 dark:border-blue-800 shadow-lg">
@@ -74,9 +91,11 @@ export default function CaseStudySection() {
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">100%</div>
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                {chartmetric?.secondaryStat ?? "~95%"}
+              </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
-                Customization needs met
+                {chartmetric?.secondaryLabel ?? "ChartMetric cost cut vs AG Grid"}
               </div>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">
@@ -101,20 +120,6 @@ export default function CaseStudySection() {
             </Button>
           </div>
         </div>
-      </div>
-
-      <div className="flex justify-center mt-6">
-        <a
-          href="https://github.com/brillout/awesome-react-components"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-        >
-          <FontAwesomeIcon icon={faGithub} />
-          <span>
-            Featured on <span className="font-semibold">Awesome React Components</span>
-          </span>
-        </a>
       </div>
     </motion.section>
   );

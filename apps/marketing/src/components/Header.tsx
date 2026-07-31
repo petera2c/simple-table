@@ -11,6 +11,7 @@ import {
   faMoon,
   faQuestionCircle,
   faEnvelope,
+  faStar,
 } from "@fortawesome/free-solid-svg-icons";
 import { faDiscord, faNpm, faGithub } from "@fortawesome/free-brands-svg-icons";
 import { Dropdown, Divider } from "antd";
@@ -119,11 +120,15 @@ const GitHubLink = ({
   return (
     <button
       onClick={handleClick}
-      className={`flex items-center gap-1 px-2 py-1 min-w-[4.25rem] border border-gray-300 dark:border-gray-600 rounded-full bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors text-gray-700 dark:text-white text-sm tabular-nums ${
+      aria-label="Star us on GitHub"
+      title="Star us on GitHub"
+      className={`github-star-wobble flex items-center gap-1.5 px-2.5 py-1 border border-gray-300 dark:border-gray-600 rounded-full bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors text-gray-700 dark:text-white text-sm tabular-nums ${
         isMobile ? "justify-start w-fit" : ""
       }`}
     >
-      <FontAwesomeIcon icon={faGithub} style={{ fontSize: "1.5rem" }} />
+      <FontAwesomeIcon icon={faGithub} style={{ fontSize: "1.25rem" }} />
+      <span className="font-medium">Star us!</span>
+      <FontAwesomeIcon icon={faStar} className="text-yellow-400 text-xs" />
       <span className="min-w-[1.75rem] text-left">{isLoading ? "…" : stars}</span>
     </button>
   );
@@ -353,7 +358,7 @@ const Header = () => {
         ref={headerRef}
         className="backdrop-blur-md bg-white/80 dark:bg-gray-900/90 shadow-sm sticky top-0 z-50"
       >
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 min-h-[60px]">
+        <nav className="max-w-[100rem] mx-auto px-5 sm:px-8 lg:px-12 py-3 min-h-[60px]">
           <div className="flex items-center justify-between min-h-[36px]">
             <div className="flex items-center">
               <Link

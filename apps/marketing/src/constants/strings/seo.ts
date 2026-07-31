@@ -1428,7 +1428,7 @@ export const SEO_STRINGS = {
     index: {
       title: "Case Studies - Simple Table",
       description:
-        "See how ChartMetric chose Simple Table over AG Grid, TanStack Table, and Material UI Data Grid — and saved over $19K in the first year.",
+        "See how ChartMetric chose Simple Table over AG Grid, TanStack Table, and Material UI Data Grid — and saved over $19K (~95%) in the first year.",
       keywords: [
         "simple table case studies",
         "ag grid alternative case study",
@@ -1440,7 +1440,7 @@ export const SEO_STRINGS = {
     chartmetric: {
       title: "ChartMetric Case Study - Simple Table",
       description:
-        "Learn how ChartMetric chose Simple Table over AG Grid, TanStack Table, and Material UI Data Grid. Discover how they saved over $19K in the first year while getting responsive support and a customizable, lightweight data grid solution.",
+        "Learn how ChartMetric chose Simple Table over AG Grid, TanStack Table, and Material UI Data Grid. Discover how they saved over $19K (~95% lower cost) in the first year while getting responsive support and a customizable, lightweight data grid solution.",
       keywords: [
         "chartmetric case study",
         "simple table case study",

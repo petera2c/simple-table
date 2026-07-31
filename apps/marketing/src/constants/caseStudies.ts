@@ -7,6 +7,8 @@ export interface CaseStudyMeta {
   type: "customer";
   highlightStat: string;
   highlightLabel: string;
+  secondaryStat: string;
+  secondaryLabel: string;
 }
 
 export const CASE_STUDIES: CaseStudyMeta[] = [
@@ -20,5 +22,7 @@ export const CASE_STUDIES: CaseStudyMeta[] = [
     type: "customer",
     highlightStat: "$19K+",
     highlightLabel: "First-year savings vs AG Grid",
+    secondaryStat: "~95%",
+    secondaryLabel: "ChartMetric cost cut vs AG Grid",
   },
 ];

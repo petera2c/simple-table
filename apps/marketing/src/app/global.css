@@ -26,10 +26,50 @@ body {
 }
 
 .bg-grid-pattern {
-  background-size: 50px 50px;
+  background-size: 48px 48px;
   background-image:
-    linear-gradient(to right, rgba(100, 116, 139, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(100, 116, 139, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(100, 116, 139, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(100, 116, 139, 0.08) 1px, transparent 1px);
+}
+
+.dark .bg-grid-pattern {
+  background-image:
+    linear-gradient(to right, rgba(148, 163, 184, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.07) 1px, transparent 1px);
+}
+
+/* Header GitHub star: subtle wobble every 30s (~0.7s wobble at start of cycle) */
+@keyframes github-star-wobble {
+  0% {
+    transform: rotate(0deg);
+  }
+  0.5% {
+    transform: rotate(-8deg);
+  }
+  1% {
+    transform: rotate(7deg);
+  }
+  1.5% {
+    transform: rotate(-5deg);
+  }
+  2% {
+    transform: rotate(3deg);
+  }
+  2.4%,
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.github-star-wobble {
+  animation: github-star-wobble 30s linear infinite;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .github-star-wobble {
+    animation: none;
+  }
 }
 
 /* Keep header framework select content-sized (antd defaults can stretch in flex rows) */

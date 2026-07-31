@@ -9,10 +9,13 @@ import { useInfrastructureData, type InfrastructureServer } from "./useInfrastru
 
 export default function InfrastructureExample({
   height,
+  hideNameColumn = false,
   icons,
   theme,
 }: {
   height?: string | number;
+  /** Hide the "Name" (serverName) column — useful in tight hero layouts. */
+  hideNameColumn?: boolean;
   icons?: ReactIconsConfig;
   theme?: Theme;
 }) {
@@ -32,6 +35,10 @@ export default function InfrastructureExample({
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  const columns = hideNameColumn
+    ? HEADERS.filter((col) => col.accessor !== "serverName")
+    : HEADERS;
 
   if (isLoading) {
     return (
@@ -55,7 +62,7 @@ export default function InfrastructureExample({
       autoExpandColumns={!isMobile}
       columnReordering
       columnResizing
-      columns={HEADERS}
+      columns={columns}
       enableColumnEditor
       getRowId={({ row }) => row.id}
       height={height ? height : "60dvh"}
