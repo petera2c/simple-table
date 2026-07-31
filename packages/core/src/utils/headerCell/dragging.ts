@@ -163,8 +163,8 @@ export const attachDragHandlers = (
     // Resolve root at event time — handlers attach before the cell is in the DOM,
     // so a create-time closest() would be null and never add the reorder class.
     const root = cellElement.closest(".simple-table-root");
-    // Transparent header fills while columns slide past each other (see
-    // `.st-column-reordering` in base.css — same idea as `.st-cell` transparent).
+    // Pass-through fills on neighboring headers while columns slide (see
+    // `.st-column-reordering` in base.css). Dragged header keeps its fill.
     root?.classList.add("st-column-reordering");
     // Column-drag FLIP mode (no settle — mid-flight slides keep going if the
     // user grabs a different column before prior swaps finish).
@@ -235,7 +235,20 @@ export const attachDragHandlers = (
 
       const draggedHeader = draggedHeaderRef.current;
       if (!draggedHeader) return;
+      if (header.accessor === draggedHeader.accessor) return;
 
+      // Hit-testing follows the transformed (visual) box. Mid-slide neighbors can
+      // sit under the pointer and look like a new drop target — swapping with them
+      // often reverts the previous order once the short revert guard expires.
+      const hoverFlipActive = cellElement.classList.contains("st-flip-active");
+      const hoverHasReorderAnim =
+        typeof cellElement.getAnimations === "function" &&
+        cellElement
+          .getAnimations()
+          .some((a) => (a as Animation & { id?: string }).id === "st-column-reorder");
+      if (hoverFlipActive || hoverHasReorderAnim) {
+        return;
+      }
 
       const draggedSection = getHeaderSection(draggedHeader, liveHeaders);
       const hoveredSection = getHeaderSection(header, liveHeaders);
@@ -287,9 +300,6 @@ export const attachDragHandlers = (
         emergencyBreak = result.emergencyBreak;
       }
 
-      if (header.accessor === draggedHeader.accessor) {
-        return;
-      }
       if (distance < 10) {
         return;
       }

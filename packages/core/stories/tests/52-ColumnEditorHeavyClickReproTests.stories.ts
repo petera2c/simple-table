@@ -1719,24 +1719,27 @@ export const TrackListSlowLeftwardNoJitter = {
 };
 
 /**
- * Pick a leaf target that changes insert order. Prefer mid-FLIP leaves when asked.
+ * Pick a settled leaf target that changes insert order.
+ *
+ * Production ignores dragover on mid-FLIP headers (visual hit-testing would
+ * otherwise ping-pong / flip back). Continuity plays still exercise mid-flight
+ * motion — they just drop on settled siblings while others are sliding.
  */
 const pickReorderTarget = (
   canvasElement: HTMLElement,
   order: string[],
   dragged: string,
-  preferAnimating: boolean,
   fallbackIndex: number,
+  opts: { settledOnly?: boolean } = {},
 ): string | null => {
   const others = order.filter((a) => a !== dragged);
-  const candidates = preferAnimating
-    ? [
-        ...others.filter((a) => hasActiveFlip(canvasElement, a)),
-        ...others.filter((a) => !hasActiveFlip(canvasElement, a)),
-      ]
+  const settledOnly = opts.settledOnly !== false;
+  const candidates = settledOnly
+    ? others.filter((a) => !hasActiveFlip(canvasElement, a))
     : others;
 
   // Rotate fallback so we walk around the band instead of always picking the first.
+  if (candidates.length === 0) return null;
   const rotated = [
     ...candidates.slice(fallbackIndex % candidates.length),
     ...candidates.slice(0, fallbackIndex % candidates.length),
@@ -1809,7 +1812,11 @@ const runInterruptSwap = async (
   motions: Map<string, LeafMotion>,
   step: number,
   label: string,
-  opts: { preferAnimating?: boolean; forceTarget?: string } = {},
+  opts: {
+    /** When true, wait until some other leaf is mid-FLIP before picking a settled drop target. */
+    requireOthersAnimating?: boolean;
+    forceTarget?: string;
+  } = {},
 ): Promise<{ order: string[]; target: string; watchFrames: number }> => {
   let target = opts.forceTarget ?? null;
   if (target) {
@@ -1818,10 +1825,58 @@ const runInterruptSwap = async (
       target = null;
     }
   }
-  if (!target) {
-    target = pickReorderTarget(canvasElement, order, dragged, opts.preferAnimating ?? false, step);
+
+  // Wait for a settled drop target (and optional mid-flight context). Mid-FLIP
+  // headers are not valid drop targets anymore.
+  const pickDeadline = Date.now() + CONTINUITY_DURATION + 500;
+  let waitFrames = 0;
+  while (Date.now() < pickDeadline) {
+    if (opts.requireOthersAnimating) {
+      const othersAnimating = SPOTIFY_7D_LEAVES.some(
+        (a) => a !== dragged && hasActiveFlip(canvasElement, a),
+      );
+      if (!othersAnimating) {
+        // No live FLIPs yet — proceed with a settled target anyway.
+      }
+    }
+
+    if (target) {
+      if (!hasActiveFlip(canvasElement, target)) break;
+      // Forced target still sliding — wait for it to settle.
+    } else {
+      target = pickReorderTarget(canvasElement, order, dragged, step, { settledOnly: true });
+      if (target) {
+        if (!opts.requireOthersAnimating) break;
+        const othersAnimating = SPOTIFY_7D_LEAVES.some(
+          (a) => a !== dragged && a !== target && hasActiveFlip(canvasElement, a),
+        );
+        // Prefer dropping while siblings are mid-flight; if the band has fully
+        // settled, still take the settled target so the play can continue.
+        if (othersAnimating || Date.now() > pickDeadline - 80) break;
+      }
+    }
+
+    waitFrames += await watchLeafContinuity(
+      canvasElement,
+      motions,
+      `${label} wait-settled-target`,
+      {
+        durationMs: 60,
+        watchAllLeaves: true,
+        dragged,
+      },
+    );
+    if (!opts.forceTarget) target = null;
   }
-  await expect(target, `${label}: no reorder target from ${order.join(",")}`).toBeTruthy();
+
+  if (!target) {
+    target = pickReorderTarget(canvasElement, order, dragged, step, { settledOnly: true });
+  }
+  await expect(target, `${label}: no settled reorder target from ${order.join(",")}`).toBeTruthy();
+  await expect(
+    !hasActiveFlip(canvasElement, target!),
+    `${label}: drop target ${target} is still mid-FLIP (production ignores these)`,
+  ).toBe(true);
 
   const originLefts = new Map<string, number>();
   for (const accessor of SPOTIFY_7D_LEAVES) {
@@ -1904,17 +1959,20 @@ const runInterruptSwap = async (
     });
   }
 
-  const watchFrames = await watchLeafContinuity(canvasElement, motions, `${label} post-swap`, {
-    durationMs: POST_SWAP_WATCH_MS,
-    watchAllLeaves: true,
-    dragged,
-  });
+  const watchFrames =
+    waitFrames +
+    (await watchLeafContinuity(canvasElement, motions, `${label} post-swap`, {
+      durationMs: POST_SWAP_WATCH_MS,
+      watchAllLeaves: true,
+      dragged,
+    }));
   return { order: expectedOrder, target: target!, watchFrames };
 };
 
 /**
  * Mid-flight interrupt continuity on Spotify 7d leaves:
- *  1. Rapid dragover reorders while FLIPs are mid-flight
+ *  1. Rapid reorders via settled drop targets while other leaves are mid-FLIP
+ *     (production ignores dragover on mid-FLIP headers)
  *  2. Hold the drag until early targets settle, then drag over them again
  *  3. Mid-flight burst, then release and *immediately* start dragging
  *     streams while those FLIPs are still flying
@@ -1945,7 +2003,7 @@ export const TrackListTenInterruptContinuity = {
       banner:
         `Automated continuity (dense per-frame sampling` +
         `${CONTINUITY_FAST_FEEDBACK ? ", FAST FEEDBACK (trimmed phases)" : ", ~20min budget"}) on full Track ` +
-        `List: interrupt reorders, re-hit settled targets, hand off to streams mid-flight ` +
+        `List: settled-target reorders while others mid-FLIP, re-hit settled targets, hand off to streams mid-flight ` +
         `for ${CONTINUITY_FAST_FEEDBACK ? 8 : HANDOFF_SWAPS} swaps (${CONTINUITY_DURATION}ms FLIP).`,
     }),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
@@ -2005,7 +2063,7 @@ export const TrackListTenInterruptContinuity = {
           motions,
           step,
           `burst step ${i + 1}`,
-          { preferAnimating: i % 2 === 1 },
+          { requireOthersAnimating: i % 2 === 1 },
         );
         order = result.order;
         targetsHit.push(result.target);
@@ -2082,7 +2140,7 @@ export const TrackListTenInterruptContinuity = {
           motions,
           step,
           `pre-handoff burst ${i + 1}`,
-          { preferAnimating: true },
+          { requireOthersAnimating: true },
         );
         order = result.order;
         totalWatchFrames += result.watchFrames;
@@ -2171,8 +2229,8 @@ export const TrackListTenInterruptContinuity = {
         dragged: handoffDragged,
       });
 
-      // First swaps interrupt while prior FLIPs are still mid-flight; later
-      // ones also re-hit settled siblings.
+      // First swaps drop on settled siblings while prior FLIPs are mid-flight;
+      // later ones also re-hit settled siblings explicitly.
       const handoffRoster = SPOTIFY_7D_LEAVES.filter((a) => a !== handoffDragged);
       const MID_FLIGHT_HANDOFF = CONTINUITY_FAST_FEEDBACK
         ? Math.max(4, handoffSwaps - 3)
@@ -2199,9 +2257,14 @@ export const TrackListTenInterruptContinuity = {
             await watchGap(`handoff re-hit gap ${i + 1}`, BETWEEN_SWAP_MS, handoffDragged);
         }
         if (!forceTarget) {
-          const candidate = handoffRoster[i % handoffRoster.length];
-          if (applyInsertReorder(order, handoffDragged, candidate).join(",") !== order.join(",")) {
-            forceTarget = candidate;
+          // Prefer a settled candidate; skip mid-FLIP leaves (ignored in production).
+          for (let idx = 0; idx < handoffRoster.length; idx++) {
+            const rotated = handoffRoster[(i + idx) % handoffRoster.length];
+            if (hasActiveFlip(canvasElement, rotated)) continue;
+            if (applyInsertReorder(order, handoffDragged, rotated).join(",") !== order.join(",")) {
+              forceTarget = rotated;
+              break;
+            }
           }
         }
 
@@ -2215,7 +2278,9 @@ export const TrackListTenInterruptContinuity = {
           step,
           `handoff step ${i + 1}/${handoffSwaps} (dragging ${handoffDragged}` +
             `${i < MID_FLIGHT_HANDOFF ? ", mid-flight overlap" : ""})`,
-          forceTarget ? { forceTarget } : { preferAnimating: true },
+          forceTarget
+            ? { forceTarget }
+            : { requireOthersAnimating: i < MID_FLIGHT_HANDOFF },
         );
         order = result.order;
         totalWatchFrames += result.watchFrames;
