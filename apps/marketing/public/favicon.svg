@@ -1,4 +1,12 @@
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="32" height="32" rx="6" fill="#0F172A"/>
-  <text x="16" y="23" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-weight="900" font-size="20" fill="#3B82F6" letter-spacing="-1">ST</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+  <!-- Brand blue — pops on both light and dark Google UI -->
+  <rect width="32" height="32" rx="7" fill="#2563EB"/>
+  <!-- Table body (below header only for crisp edges) -->
+  <path d="M3 10.5H29V25C29 26.933 27.433 28.5 25.5 28.5H6.5C4.567 28.5 3 26.933 3 25V10.5Z" fill="#DBEAFE"/>
+  <!-- Header -->
+  <path d="M3 7C3 5.067 4.567 3.5 6.5 3.5H25.5C27.433 3.5 29 5.067 29 7V11H3V7Z" fill="#FFFFFF"/>
+  <!-- Row lines — slightly inset, clear at 16px -->
+  <rect x="6" y="14.25" width="20" height="2" rx="1" fill="#2563EB"/>
+  <rect x="6" y="19.25" width="20" height="2" rx="1" fill="#2563EB"/>
+  <rect x="6" y="24.25" width="20" height="2" rx="1" fill="#2563EB"/>
 </svg>

@@ -57,13 +57,23 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   icons: {
-    icon: { url: "/favicon.svg", type: "image/svg+xml" },
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
 };
 
+const themeInitScript = `(function(){try{var t=localStorage.getItem("theme");var dark=t?t==="dark":!window.matchMedia("(prefers-color-scheme: light)").matches;document.documentElement.classList.toggle("dark",dark);}catch(e){}})();`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className={nunito.className}>
         <AntdRegistry>
           <ChunkErrorHandler />

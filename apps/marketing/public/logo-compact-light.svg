@@ -1,23 +1,8 @@
-<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background -->
-  <rect width="200" height="200" fill="#F8FAFC" rx="16"/>
-  
-  <!-- Main table icon -->
-  <g transform="translate(15, 15)">
-    <!-- Table structure -->
-    <rect x="0" y="0" width="170" height="75" rx="6" fill="#3B82F6" opacity="0.15" stroke="#3B82F6" stroke-width="3"/>
-    <rect x="0" y="85" width="170" height="85" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
-    
-    <!-- Column divider -->
-    <line x1="85" y1="0" x2="85" y2="75" stroke="#CBD5E1" stroke-width="2"/>
-    <line x1="85" y1="85" x2="85" y2="170" stroke="#CBD5E1" stroke-width="2"/>
-    
-    <!-- Header highlights -->
-    <line x1="15" y1="37.5" x2="70" y2="37.5" stroke="#3B82F6" stroke-width="5" stroke-linecap="round"/>
-    <line x1="100" y1="37.5" x2="155" y2="37.5" stroke="#3B82F6" stroke-width="5" stroke-linecap="round"/>
-    
-    <!-- Data indicators -->
-    <circle cx="42.5" cy="127.5" r="8" fill="#10B981"/>
-    <circle cx="127.5" cy="127.5" r="8" fill="#8B5CF6"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 32 32" fill="none">
+  <!-- Same as logo-compact, white body for light mode -->
+  <path d="M2 10H30V26C30 28.209 28.209 30 26 30H6C3.791 30 2 28.209 2 26V10Z" fill="#FFFFFF"/>
+  <path d="M2 6C2 3.791 3.791 2 6 2H26C28.209 2 30 3.791 30 6V10.5H2V6Z" fill="#2563EB"/>
+  <rect x="5.5" y="14" width="21" height="2" rx="1" fill="#2563EB"/>
+  <rect x="5.5" y="19.5" width="21" height="2" rx="1" fill="#2563EB"/>
+  <rect x="5.5" y="25" width="21" height="2" rx="1" fill="#2563EB"/>
 </svg>

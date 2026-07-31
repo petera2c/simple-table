@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faTable,
   faBars,
   faXmark,
   faSun,
@@ -359,11 +358,24 @@ const Header = () => {
             <div className="flex items-center">
               <Link
                 href="/"
-                className="flex items-center text-xl font-bold text-gray-800 dark:!text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap"
+                className="flex items-center text-xl font-bold !text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-200 transition-colors whitespace-nowrap"
               >
-                <FontAwesomeIcon
-                  icon={faTable}
-                  className="text-blue-600 dark:text-blue-400 text-2xl mr-2"
+                {/* CSS theme toggle avoids JS theme flash on reload */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logo-compact-light.svg"
+                  alt=""
+                  width={28}
+                  height={28}
+                  className="mr-2 shrink-0 dark:hidden"
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logo-compact.svg"
+                  alt=""
+                  width={28}
+                  height={28}
+                  className="mr-2 hidden shrink-0 dark:block"
                 />
                 Simple Table
               </Link>
