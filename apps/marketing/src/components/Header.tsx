@@ -103,6 +103,8 @@ const LinkButton = ({
   );
 };
 
+const GITHUB_STAR_CLICKED_KEY = "simple-table-github-star-clicked";
+
 // GitHub link component with star count
 const GitHubLink = ({
   isMobile = false,
@@ -112,9 +114,28 @@ const GitHubLink = ({
   onMobileClick?: () => void;
 }) => {
   const { stars, isLoading } = useGitHubStars("petera2c", "simple-table");
+  // Default false to avoid a post-click wobble flash after hydration for returning users
+  const [shouldWobble, setShouldWobble] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(GITHUB_STAR_CLICKED_KEY) !== "true") {
+        setShouldWobble(true);
+      }
+    } catch {
+      setShouldWobble(true);
+    }
+  }, []);
 
   const handleClick = () => {
+    try {
+      localStorage.setItem(GITHUB_STAR_CLICKED_KEY, "true");
+    } catch {
+      // ignore quota / private mode errors
+    }
+    setShouldWobble(false);
     window.open("https://github.com/petera2c/simple-table", "_blank", "noopener,noreferrer");
+    onMobileClick?.();
   };
 
   return (
@@ -122,9 +143,9 @@ const GitHubLink = ({
       onClick={handleClick}
       aria-label="Star us on GitHub"
       title="Star us on GitHub"
-      className={`github-star-wobble flex items-center gap-1.5 px-2.5 py-1 border border-gray-300 dark:border-gray-600 rounded-full bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors text-gray-700 dark:text-white text-sm tabular-nums ${
-        isMobile ? "justify-start w-fit" : ""
-      }`}
+      className={`flex items-center gap-1.5 px-2.5 py-1 border border-gray-300 dark:border-gray-600 rounded-full bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors text-gray-700 dark:text-white text-sm tabular-nums ${
+        shouldWobble ? "github-star-wobble" : ""
+      } ${isMobile ? "justify-start w-fit" : ""}`}
     >
       <FontAwesomeIcon icon={faGithub} style={{ fontSize: "1.25rem" }} />
       <span className="font-medium">Star us!</span>

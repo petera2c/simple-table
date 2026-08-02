@@ -19,6 +19,13 @@ html {
 body {
 }
 
+/* Ensure interactive buttons show a pointer (antd / resets can leave default arrow) */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]) {
+  cursor: pointer;
+}
+
+
 #root {
   min-height: 100vh;
   position: relative;
