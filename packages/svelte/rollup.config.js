@@ -124,9 +124,31 @@ export default {
       writeBundle() {
         const src = path.resolve(__dirname, "../core/dist/styles.css");
         const dest = path.resolve(__dirname, "dist/styles.css");
-        if (fs.existsSync(src)) fs.copyFileSync(src, dest);
+        if (!fs.existsSync(src)) {
+          this.error(`Missing ${src}. Build simple-table-core first.`);
+        }
+        fs.copyFileSync(src, dest);
       },
     },
+
+    // rpt2 excludes .svelte, so index.d.ts re-exports "./SimpleTable.svelte"
+    // without emitting a declaration. Ship a hand-written one beside it.
+    !isDev && {
+      name: "copy-svelte-component-types",
+      writeBundle() {
+        const src = path.resolve(__dirname, "src/SimpleTable.svelte.d.ts");
+        const dest = path.resolve(
+          __dirname,
+          "dist/types/SimpleTable.svelte.d.ts",
+        );
+        if (!fs.existsSync(src)) {
+          this.error(`Missing ${src}`);
+        }
+        fs.mkdirSync(path.dirname(dest), { recursive: true });
+        fs.copyFileSync(src, dest);
+      },
+    },
+
 
     !isDev &&
       terser({

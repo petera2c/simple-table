@@ -11,6 +11,31 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_1_2: ChangelogEntry = {
+  version: "4.1.2",
+  date: "2026-08-01",
+  title: "Angular Package Format and Svelte published types",
+  description:
+    "Ship @simple-table/angular with Ivy partial-compilation metadata so Angular 19+ standalone imports work, and fix @simple-table/svelte published TypeScript declarations plus the Svelte 5 peer range.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "@simple-table/angular now builds with ng-packagr (Angular Package Format / partial Ivy). Standalone apps can import SimpleTableComponent without TS-992012 (“Component imports must be standalone…”).",
+    },
+    {
+      type: "bugfix",
+      description:
+        "@simple-table/svelte ships SimpleTable.svelte.d.ts in the published package so TypeScript can resolve the SimpleTable export from dist types.",
+    },
+    {
+      type: "breaking",
+      description:
+        "@simple-table/svelte peer dependency is now svelte >=5.0.0 (the adapter already used Svelte 5 mount/unmount APIs).",
+    },
+  ],
+};
+
 export const v4_1_1: ChangelogEntry = {
   version: "4.1.1",
   date: "2026-07-29",
@@ -2502,6 +2527,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_1_2,
   v4_1_1,
   v4_1_0,
   v4_0_9,

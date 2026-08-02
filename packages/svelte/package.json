@@ -1,6 +1,6 @@
 {
   "name": "@simple-table/svelte",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/types/index.d.ts",
@@ -8,7 +8,8 @@
     "build": "rollup -c",
     "preview": "rollup -c -w",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --exclude src/__tests__/consumerTypes.test.ts",
+    "test:consumer": "vitest run src/__tests__/consumerTypes.test.ts",
     "version:patch": "npm version patch && git push && git push --tags",
     "version:minor": "npm version minor && git push && git push --tags",
     "version:major": "npm version major && git push && git push --tags"
@@ -38,7 +39,7 @@
     "styles.css.d.ts"
   ],
   "peerDependencies": {
-    "svelte": ">=4.0.0"
+    "svelte": ">=5.0.0"
   },
   "dependencies": {
     "simple-table-core": "workspace:*"

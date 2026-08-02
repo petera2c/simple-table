@@ -10,13 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@angular/common": "^20.0.0",
-    "@angular/compiler": "^20.0.0",
-    "@angular/core": "^20.0.0",
-    "@angular/forms": "^20.0.0",
-    "@angular/platform-browser": "^20.0.0",
-    "rxjs": "^7.0.0",
+    "@angular/common": "^20.3.27",
+    "@angular/compiler": "^20.3.27",
+    "@angular/core": "^20.3.27",
+    "@angular/forms": "^20.3.27",
+    "@angular/platform-browser": "^20.3.27",
     "@simple-table/angular": "workspace:*",
+    "rxjs": "^7.0.0",
     "zone.js": "^0.15.0"
   },
   "devDependencies": {

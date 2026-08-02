@@ -32,3 +32,20 @@ jobs:
       # *source*, so no build step is required.
       - name: Run React adapter tests
         run: pnpm --filter @simple-table/react run test
+
+      - name: Run Angular adapter unit tests
+        run: pnpm --filter @simple-table/angular run test
+
+      # Consumer compile test imports the built package (not source). Requires
+      # Angular Package Format Ivy metadata in dist .d.ts files.
+      - name: Build Angular adapter
+        run: pnpm run build:angular
+
+      - name: Run Angular consumer standalone-import test
+        run: pnpm --filter @simple-table/angular run test:consumer
+
+      - name: Build Svelte adapter
+        run: pnpm run build:svelte
+
+      - name: Run Svelte consumer types test
+        run: pnpm --filter @simple-table/svelte run test:consumer

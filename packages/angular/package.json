@@ -1,14 +1,16 @@
 {
   "name": "@simple-table/angular",
-  "version": "4.1.1",
-  "main": "dist/cjs/index.js",
-  "module": "dist/index.es.js",
-  "types": "dist/types/index.d.ts",
+  "version": "4.1.2",
+  "type": "module",
+  "main": "./dist/fesm2022/simple-table-angular.mjs",
+  "module": "./dist/fesm2022/simple-table-angular.mjs",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "rollup -c",
-    "preview": "rollup -c -w",
+    "build": "ng-packagr -p ng-package.json -c tsconfig.lib.json && node scripts/copy-styles.mjs",
+    "preview": "node scripts/copy-styles.mjs && ng-packagr -p ng-package.json -c tsconfig.lib.json --watch",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --exclude src/__tests__/consumerStandaloneImport.compiler.test.ts",
+    "test:consumer": "vitest run src/__tests__/consumerStandaloneImport.compiler.test.ts",
     "version:patch": "npm version patch && git push && git push --tags",
     "version:minor": "npm version minor && git push && git push --tags",
     "version:major": "npm version major && git push && git push --tags"
@@ -19,9 +21,9 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/index.es.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/types/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/fesm2022/simple-table-angular.mjs",
+      "default": "./dist/fesm2022/simple-table-angular.mjs"
     },
     "./styles.css": {
       "types": "./styles.css.d.ts",
@@ -33,8 +35,12 @@
     "access": "public"
   },
   "files": [
-    "dist",
+    "dist/fesm2022",
+    "dist/index.d.ts",
+    "dist/index.d.ts.map",
+    "dist/styles.css",
     "LICENSE",
+    "README.md",
     "styles.css.d.ts"
   ],
   "peerDependencies": {
@@ -42,23 +48,17 @@
     "@angular/core": ">=17.0.0 <22.0.0"
   },
   "dependencies": {
-    "simple-table-core": "workspace:*"
+    "simple-table-core": "workspace:*",
+    "tslib": "^2.8.1"
   },
   "devDependencies": {
-    "@angular/common": "^20.0.0",
-    "@angular/compiler": "^20.0.0",
-    "@angular/compiler-cli": "^20.0.0",
-    "@angular/core": "^20.0.0",
-    "@rollup/plugin-alias": "4.0.0",
-    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@angular/common": "^20.3.27",
+    "@angular/compiler": "^20.3.27",
+    "@angular/compiler-cli": "^20.3.27",
+    "@angular/core": "^20.3.27",
     "@types/node": "^16.18.126",
     "jsdom": "^24.1.3",
-    "rollup": "^2.79.2",
-    "rollup-plugin-delete": "^2.1.0",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-typescript2": "^0.37.0",
-    "tslib": "^2.8.1",
+    "ng-packagr": "^20.3.2",
     "typescript": "^5.9.0",
     "vitest": "^2.1.9",
     "zone.js": "^0.15.0"

@@ -5,7 +5,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/petera2c/simple-table.svg)](https://github.com/petera2c/simple-table)
 [![License](https://img.shields.io/npm/l/@simple-table/svelte.svg)](LICENSE)
 
-**Simple Table** is the Svelte data grid and Svelte table component for fast UIs: Svelte 4+, reactive components, idiomatic templates, and full Svelte component support for cell renderers, headers, and footers. It is a **lightweight**, **high-performance** data grid with a **simple API**, **completely free features** for qualifying use, and strong TypeScript typings for data-heavy Svelte apps.
+**Simple Table** is the Svelte data grid and Svelte table component for fast UIs: Svelte 5+, reactive components, idiomatic templates, and full Svelte component support for cell renderers, headers, and footers. It is a **lightweight**, **high-performance** data grid with a **simple API**, **completely free features** for qualifying use, and strong TypeScript typings for data-heavy Svelte apps.
 
 <div align="center">
   <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Simple Table Infrastructure Dashboard" width="800" />
@@ -30,13 +30,13 @@ Simple Table is available for the most popular frameworks:
 npm install @simple-table/svelte
 ```
 
-**Peer dependencies:** `svelte >=4.0.0` (Svelte 5 with runes is fully supported, plus SvelteKit)
+**Peer dependencies:** `svelte >=5.0.0` (runes + SvelteKit supported)
 
 **[Follow our Quick Start Guide](https://www.simple-table.com/docs/quick-start)** for step-by-step instructions and live examples.
 
 ## Building with Svelte
 
-- Works with Svelte 4 and Svelte 5 (runes); SvelteKit is fully supported
+- Works with Svelte 5 (runes); SvelteKit is fully supported
 - Use Svelte components for cell renderers, header renderers, footer renderers, and more
 - Access the imperative `TableAPI` via `bind:this` for sorting, filtering, pagination, export, and more
 - Types and APIs are exported from this package
