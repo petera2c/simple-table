@@ -12,8 +12,10 @@
  * overflow clip turns those long off-screen translates into "appears to
  * slide in from the viewport edge" visually.
  *
- * Animations default to `true`. Live drag reorder is intentionally not
- * animated (we don't want to fight the user's pointer mid-drag).
+ * Animations default to `true`. Live drag-and-drop column reorder also FLIPs
+ * on each dragover swap (see HeaderCellsAnimateDuringDragReorder /
+ * DragAndDropColumnReorderShouldAnimate). Use a long `animations.duration`
+ * (SLOW_DURATION) so the motion is easy to follow in Storybook.
  */
 
 import { ColumnDef, Row, SimpleTableVanilla } from "../../src/index";

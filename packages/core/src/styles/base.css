@@ -774,6 +774,40 @@ input {
 .st-dragging.st-sub-header {
   background-color: var(--st-dragging-sub-header-background-color);
 }
+/* Keep the dragged header above neighbors while they slide past (DOM order
+   would otherwise flip who paints on top mid-animation). */
+.st-header-cell.st-dragging {
+  z-index: 2;
+}
+
+/*
+ * Column-drag / FLIP pass-through paint.
+ *
+ * Body cells use `background-color: transparent` so a shared row fill shows
+ * through — when two cells slide past each other you see labels overlap, not
+ * opaque rectangles stacking. Neighboring headers do the same during reorder
+ * (the header strip already paints `--st-header-background-color`).
+ * `.st-flip-active` covers slides that continue after dragend.
+ *
+ * The dragged header keeps `--st-dragging-background-color` (see below) so the
+ * active column stays visually marked.
+ */
+.simple-table-root.st-column-reordering .st-header-cell,
+.simple-table-root.st-column-reordering .st-header-cell.st-sub-header,
+.st-header-cell.st-flip-active,
+.st-header-cell.st-flip-active.st-sub-header {
+  background-color: transparent;
+}
+
+/* Dragged header fill wins over the pass-through rule above. */
+.simple-table-root.st-column-reordering .st-header-cell.st-dragging:not(.st-sub-header),
+.st-header-cell.st-flip-active.st-dragging:not(.st-sub-header) {
+  background-color: var(--st-dragging-background-color);
+}
+.simple-table-root.st-column-reordering .st-header-cell.st-dragging.st-sub-header,
+.st-header-cell.st-flip-active.st-dragging.st-sub-header {
+  background-color: var(--st-dragging-sub-header-background-color);
+}
 
 /* Loading skeleton styles */
 .st-loading-skeleton {

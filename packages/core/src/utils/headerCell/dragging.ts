@@ -24,6 +24,25 @@ import {
   setPrevHeaders,
 } from "./eventTracking";
 
+/** Cleared on the next dragstart so a rapid A→B handoff isn't interrupted by A's dragend commit. */
+let dragEndCommitTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+/** Cheap order fingerprint — avoids JSON.stringify of the full header tree on every dragover. */
+const headerOrderKey = (headers: ColumnDef[]): string => {
+  const parts: string[] = [];
+  const walk = (list: ColumnDef[]) => {
+    for (const h of list) {
+      if (h.children && h.children.length > 0) {
+        walk(h.children);
+      } else {
+        parts.push(String(h.accessor));
+      }
+    }
+  };
+  walk(headers);
+  return parts.join(">");
+};
+
 export const handleColumnHeaderClick = (
   event: MouseEvent,
   header: ColumnDef,
@@ -134,9 +153,22 @@ export const attachDragHandlers = (
   labelElement.setAttribute("draggable", "true");
 
   const handleDragStart = (event: Event) => {
+    if (dragEndCommitTimeoutId !== null) {
+      clearTimeout(dragEndCommitTimeoutId);
+      dragEndCommitTimeoutId = null;
+    }
     draggedHeaderRef.current = header;
     setPrevUpdateTime(Date.now());
     cellElement.classList.add("st-dragging");
+    // Resolve root at event time — handlers attach before the cell is in the DOM,
+    // so a create-time closest() would be null and never add the reorder class.
+    const root = cellElement.closest(".simple-table-root");
+    // Pass-through fills on neighboring headers while columns slide (see
+    // `.st-column-reordering` in base.css). Dragged header keeps its fill.
+    root?.classList.add("st-column-reordering");
+    // Column-drag FLIP mode (no settle — mid-flight slides keep going if the
+    // user grabs a different column before prior swaps finish).
+    context.animationCoordinator?.setColumnReordering(true);
   };
 
   addTrackedEventListener(labelElement, "dragstart", handleDragStart);
@@ -146,8 +178,31 @@ export const attachDragHandlers = (
     draggedHeaderRef.current = null;
     hoveredHeaderRef.current = null;
     cellElement.classList.remove("st-dragging");
+    context.animationCoordinator?.setColumnReordering(false);
 
-    setTimeout(() => {
+    // Keep pass-through header paint until in-flight FLIPs finish; individual
+    // cells also carry `.st-flip-active` as a belt-and-suspenders. If the user
+    // grab-starts another column before settle, leave the class alone.
+    const root = cellElement.closest(".simple-table-root");
+    const clearReorderClass = () => {
+      if (context.animationCoordinator?.isColumnReordering()) return;
+      if (context.animationCoordinator?.hasInFlight()) {
+        requestAnimationFrame(clearReorderClass);
+        return;
+      }
+      root?.classList.remove("st-column-reordering");
+    };
+    requestAnimationFrame(clearReorderClass);
+
+    // Notify order change after the browser finishes drag teardown. Skip if the
+    // user already grab-started another column — that re-render would interrupt
+    // leftover FLIPs from this drag that the new session is allowed to keep.
+    if (dragEndCommitTimeoutId !== null) {
+      clearTimeout(dragEndCommitTimeoutId);
+    }
+    dragEndCommitTimeoutId = setTimeout(() => {
+      dragEndCommitTimeoutId = null;
+      if (draggedHeaderRef.current) return;
       context.setHeaders((prev) => [...prev]);
       if (context.onColumnOrderChange) {
         context.onColumnOrderChange(deepClone(context.getHeaders()));
@@ -180,6 +235,20 @@ export const attachDragHandlers = (
 
       const draggedHeader = draggedHeaderRef.current;
       if (!draggedHeader) return;
+      if (header.accessor === draggedHeader.accessor) return;
+
+      // Hit-testing follows the transformed (visual) box. Mid-slide neighbors can
+      // sit under the pointer and look like a new drop target — swapping with them
+      // often reverts the previous order once the short revert guard expires.
+      const hoverFlipActive = cellElement.classList.contains("st-flip-active");
+      const hoverHasReorderAnim =
+        typeof cellElement.getAnimations === "function" &&
+        cellElement
+          .getAnimations()
+          .some((a) => (a as Animation & { id?: string }).id === "st-column-reorder");
+      if (hoverFlipActive || hoverHasReorderAnim) {
+        return;
+      }
 
       const draggedSection = getHeaderSection(draggedHeader, liveHeaders);
       const hoveredSection = getHeaderSection(header, liveHeaders);
@@ -200,7 +269,9 @@ export const attachDragHandlers = (
         const draggedHeaderIndexPath = getHeaderIndexPath(liveHeaders, draggedHeader.accessor);
         const hoveredHeaderIndexPath = getHeaderIndexPath(liveHeaders, header.accessor);
 
-        if (!draggedHeaderIndexPath || !hoveredHeaderIndexPath) return;
+        if (!draggedHeaderIndexPath || !hoveredHeaderIndexPath) {
+          return;
+        }
 
         const draggedHeaderDepth = draggedHeaderIndexPath.length;
         const hoveredHeaderDepth = hoveredHeaderIndexPath.length;
@@ -229,12 +300,13 @@ export const attachDragHandlers = (
         emergencyBreak = result.emergencyBreak;
       }
 
-      if (
-        header.accessor === draggedHeader.accessor ||
-        distance < 10 ||
-        JSON.stringify(newHeaders) === JSON.stringify(liveHeaders) ||
-        emergencyBreak
-      ) {
+      if (distance < 10) {
+        return;
+      }
+      if (headerOrderKey(newHeaders) === headerOrderKey(liveHeaders)) {
+        return;
+      }
+      if (emergencyBreak) {
         return;
       }
 
@@ -249,7 +321,7 @@ export const attachDragHandlers = (
 
       const now = Date.now();
       const arePreviousHeadersAndNewHeadersTheSame =
-        JSON.stringify(newHeaders) === JSON.stringify(prevHeaders);
+        prevHeaders != null && headerOrderKey(newHeaders) === headerOrderKey(prevHeaders);
       const shouldRevertToPreviousHeaders = now - prevUpdateTime < REVERT_TO_PREVIOUS_HEADERS_DELAY;
 
       if (
@@ -262,6 +334,7 @@ export const attachDragHandlers = (
       setPrevUpdateTime(now);
       setPrevDraggingPosition({ screenX, screenY });
       setPrevHeaders(liveHeaders);
+
 
       context.onTableHeaderDragEnd(newHeaders);
     }, DRAG_THROTTLE_LIMIT);

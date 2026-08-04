@@ -7,6 +7,7 @@ import { addTrackedEventListener } from "./eventTracking";
 import { createEditor } from "./editing";
 import { createCellContent } from "./content";
 import { CellLiveRef, cellLiveRefMap } from "./cellLiveRef";
+import { setAbsoluteCellPosition } from "../setAbsoluteCellPosition";
 
 // Re-exported for backwards compatibility with existing import sites.
 export { cellLiveRefMap };
@@ -272,8 +273,7 @@ export const createBodyCellElement = (
 
   // Apply absolute positioning like headers
   cellElement.style.position = "absolute";
-  cellElement.style.left = `${cell.left}px`;
-  cellElement.style.top = `${cell.top}px`;
+  setAbsoluteCellPosition(cellElement, cell.left, cell.top);
   cellElement.style.width = `${cell.width}px`;
   cellElement.style.height = `${cell.height}px`;
 
@@ -550,8 +550,7 @@ export const createBodyCellElement = (
 // snap back to the final value during scroll-RAF position updates that
 // happen to fire mid-animation.
 export const updateBodyCellPosition = (cellElement: HTMLElement, cell: AbsoluteBodyCell): void => {
-  cellElement.style.left = `${cell.left}px`;
-  cellElement.style.top = `${cell.top}px`;
+  setAbsoluteCellPosition(cellElement, cell.left, cell.top);
   const accordionGrowAxis = cellElement.dataset.stAccordionGrow;
   if (accordionGrowAxis !== "horizontal") {
     cellElement.style.width = `${cell.width}px`;
@@ -583,8 +582,7 @@ export const updateBodyCellElement = (
   // for the active axis so subsequent same-tick renders (e.g. the
   // microtask-batched onRender after a chevron toggle) don't trample the
   // inline 0 before the CSS transition can pick it up.
-  cellElement.style.left = `${cell.left}px`;
-  cellElement.style.top = `${cell.top}px`;
+  setAbsoluteCellPosition(cellElement, cell.left, cell.top);
   const accordionGrowAxis = cellElement.dataset.stAccordionGrow;
   if (accordionGrowAxis !== "horizontal") {
     cellElement.style.width = `${cell.width}px`;
