@@ -1745,6 +1745,20 @@ export function themeStylingFlagsSnippets(): Record<Framework, string> {
   };
 }
 
+/** Apply a CSS class to every body cell in a column via ColumnDef.cellClass. */
+export function cellClassSnippets(): Record<Framework, string> {
+  return forAllFrameworks(`{
+  accessor: "amount",
+  label: "Amount",
+  width: 120,
+  type: "number",
+  cellClass: "amount-col",
+}
+
+/* CSS */
+.amount-col { font-variant-numeric: tabular-nums; }`);
+}
+
 /** Highlight specific rows with getRowClass (classes apply to each body cell). */
 export function getRowClassSnippets(): Record<Framework, string> {
   return {

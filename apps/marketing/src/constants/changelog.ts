@@ -11,6 +11,21 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_1_4: ChangelogEntry = {
+  version: "4.1.4",
+  date: "2026-08-06",
+  title: "Column cellClass",
+  description: "Add a cellClass option on ColumnDef to style every body cell in a column.",
+  changes: [
+    {
+      type: "feature",
+      description:
+        "New cellClass on ColumnDef applies a CSS class to each body cell in that column.",
+      link: "/docs/themes",
+    },
+  ],
+};
+
 export const v4_1_3: ChangelogEntry = {
   version: "4.1.3",
   date: "2026-08-05",
@@ -2543,6 +2558,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_1_4,
   v4_1_3,
   v4_1_2,
   v4_1_1,
