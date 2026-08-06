@@ -10,7 +10,7 @@ import { FEATURE_LABELS } from "@/constants/featureLabels";
 import { FeatureStatusBadge } from "@/components/CommonFeatures";
 import { SIMPLE_TABLE_INFO } from "@/constants/packageInfo";
 import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
-import { trackCtaClick } from "@/lib/analytics";
+import { trackBookACall } from "@/lib/analytics";
 
 const { Title, Paragraph, Link } = Typography;
 
@@ -293,7 +293,7 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
               rel="noopener noreferrer"
               size="large"
               onClick={() =>
-                trackCtaClick({
+                trackBookACall({
                   cta_id: "comparison_book_a_call",
                   cta_text: "Book a free call",
                   destination: TECHNICAL_STRINGS.links.calendly,

@@ -14,10 +14,13 @@ function CheckoutSuccessInner() {
   const searchParams = useSearchParams();
   const plan = searchParams.get("plan") ?? undefined;
   const billing = searchParams.get("billing") ?? undefined;
+  const sessionId = searchParams.get("session_id");
 
   useEffect(() => {
-    trackPurchaseComplete({ plan, billing });
-  }, [plan, billing]);
+    // Only counts after begin_checkout in this browser (or a Stripe session_id).
+    // Visiting /checkout/success directly no longer inflates purchases.
+    trackPurchaseComplete({ plan, billing, session_id: sessionId });
+  }, [plan, billing, sessionId]);
 
   return (
     <PageWrapper>

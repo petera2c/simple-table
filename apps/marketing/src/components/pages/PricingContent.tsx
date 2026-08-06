@@ -17,7 +17,7 @@ import { openStripeCheckout } from "@/utils/stripe";
 import { STRIPE_CUSTOMER_PORTAL_URL } from "@/constants/stripe";
 import { SIMPLE_TABLE_PRICING } from "@/constants/simpleTablePricing";
 import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
-import { trackCtaClick, trackViewPricing } from "@/lib/analytics";
+import { trackBookACall, trackCtaClick, trackViewPricing } from "@/lib/analytics";
 import ContactModal, { type PlanInterest } from "@/components/ContactModal";
 
 interface PlanFeature {
@@ -53,7 +53,7 @@ const PricingContent: React.FC = () => {
   const calendlyUrl = TECHNICAL_STRINGS.links.calendly;
 
   const openBookACall = (ctaId: string, ctaText: string) => {
-    trackCtaClick({
+    trackBookACall({
       cta_id: ctaId,
       cta_text: ctaText,
       destination: calendlyUrl,

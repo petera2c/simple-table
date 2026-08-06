@@ -111,13 +111,13 @@ export const mobileCompatibilityReactTablesPost: BlogPostMetadata = {
 };
 
 export const bestReactTableLibraries2026Post: BlogPostMetadata = {
-  title: "Best React Table Libraries 2026: Ranked & Compared",
+  title: "Best React Table Library 2026: Compared & Ranked",
   description:
-    "Compare the best React table libraries in 2026 — Simple Table, TanStack Table, AG Grid, MUI, and more. Features, bundle size, pricing, and which one to pick.",
+    "Best React table library picks for 2026 — Simple Table, TanStack Table, AG Grid, MUI, and more. Compare features, bundle size, pricing, and which React table to choose.",
   slug: "best-react-table-libraries-2026",
   tags: ["react", "comparison", "alternatives"],
   createdAt: "2025-10-07",
-  updatedAt: "2026-06-22",
+  updatedAt: "2026-08-06",
 };
 
 export const customFooterRenderersPost: BlogPostMetadata = {
@@ -182,13 +182,13 @@ export const handsontableAlternativesPost: BlogPostMetadata = {
 };
 
 export const agGridPricing2026Post: BlogPostMetadata = {
-  title: "AG Grid Pricing 2026: $999/Dev Enterprise License Cost",
+  title: "AG Grid Enterprise License Cost 2026: $999/Developer",
   description:
-    "AG Grid Enterprise is $999 per developer per year. 2026 pricing breakdown: Community (MIT) vs Enterprise, license cost, renewals, team totals, and free alternatives.",
+    "AG Grid Enterprise license cost is $999 per developer per year. Full 2026 pricing: Community vs Enterprise, renewals, team totals, and free alternatives.",
   slug: "ag-grid-pricing-license-breakdown-2026",
   tags: ["react", "ag-grid", "pricing", "comparison"],
   createdAt: "2025-11-22",
-  updatedAt: "2026-07-29",
+  updatedAt: "2026-08-06",
 };
 
 export const tanstackVsSimpleTablePost: BlogPostMetadata = {

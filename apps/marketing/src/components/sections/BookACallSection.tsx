@@ -5,13 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarCheck } from "@fortawesome/free-solid-svg-icons";
 import { motion } from "framer-motion";
 import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
-import { trackCtaClick } from "@/lib/analytics";
+import { trackBookACall } from "@/lib/analytics";
 
 export default function BookACallSection() {
   const calendlyUrl = TECHNICAL_STRINGS.links.calendly;
 
   const handleBookClick = () => {
-    trackCtaClick({
+    trackBookACall({
       cta_id: "homepage_book_a_call",
       cta_text: "Book a free call",
       destination: calendlyUrl,

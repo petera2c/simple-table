@@ -3,6 +3,9 @@ type GtagWindow = Window & {
   dataLayer?: Record<string, unknown>[];
 };
 
+const CHECKOUT_STARTED_KEY = "st_checkout_started";
+const PURCHASE_TRACKED_PREFIX = "st_purchase_tracked_";
+
 function getAnalyticsWindow(): GtagWindow | null {
   if (typeof window === "undefined") return null;
   return window as GtagWindow;
@@ -46,6 +49,16 @@ export function trackCtaClick(params: {
   trackEvent("cta_click", params);
 }
 
+/** Primary conversion: user opens a Calendly booking link. */
+export function trackBookACall(params: {
+  cta_id: string;
+  cta_text: string;
+  location: string;
+  destination: string;
+}): void {
+  trackEvent("book_a_call", params);
+}
+
 export function trackViewPricing(entryPoint: string = "pricing_page"): void {
   // Use entry_point — GA4 treats `source` as a reserved campaign attribution field.
   trackEvent("view_pricing", { entry_point: entryPoint });
@@ -55,6 +68,15 @@ export function trackBeginCheckout(params: {
   plan: "pro" | "enterprise";
   billing: "monthly" | "annual";
 }): void {
+  try {
+    sessionStorage.setItem(
+      CHECKOUT_STARTED_KEY,
+      JSON.stringify({ plan: params.plan, billing: params.billing, at: Date.now() })
+    );
+  } catch {
+    // Private mode / blocked storage — purchase gating may skip; still track begin.
+  }
+
   trackEvent("begin_checkout", {
     currency: "USD",
     item_name: params.plan,
@@ -66,6 +88,17 @@ export function trackBeginCheckout(params: {
 export function trackContactSubmit(entryPoint: string = "contact_modal"): void {
   // Use entry_point — GA4 treats `source` as a reserved campaign attribution field.
   trackEvent("contact_submit", { entry_point: entryPoint });
+}
+
+/** Primary conversion: license quote form submitted successfully. */
+export function trackLicenseQuoteSubmit(params: {
+  plan_interest?: string;
+  replacing_ag_grid?: boolean;
+} = {}): void {
+  trackEvent("license_quote_submit", {
+    entry_point: "license_quote",
+    ...params,
+  });
 }
 
 export function trackCopyInstallCommand(params: {
@@ -90,14 +123,54 @@ export function trackCopyAiTablePrompt(params: {
   });
 }
 
-/** Fired on /checkout/success after Stripe Payment Link redirect. */
+/**
+ * Fired on /checkout/success only after a real checkout was started in this
+ * browser (sessionStorage flag from trackBeginCheckout). Skips test visits to
+ * the success URL and React Strict Mode double-mounts.
+ */
 export function trackPurchaseComplete(params: {
   plan?: string;
   billing?: string;
-} = {}): void {
+  session_id?: string | null;
+} = {}): boolean {
+  if (typeof window === "undefined") return false;
+
+  let started: { plan?: string; billing?: string } | null = null;
+  try {
+    const raw = sessionStorage.getItem(CHECKOUT_STARTED_KEY);
+    if (raw) {
+      started = JSON.parse(raw) as { plan?: string; billing?: string };
+    }
+  } catch {
+    started = null;
+  }
+
+  // Require either a Stripe session id or a prior begin_checkout in this tab.
+  if (!params.session_id && !started) {
+    return false;
+  }
+
+  const plan = params.plan ?? started?.plan;
+  const billing = params.billing ?? started?.billing;
+  const dedupeKey = `${PURCHASE_TRACKED_PREFIX}${params.session_id ?? `${plan ?? "unknown"}_${billing ?? "unknown"}`}`;
+
+  try {
+    if (sessionStorage.getItem(dedupeKey)) {
+      return false;
+    }
+    sessionStorage.setItem(dedupeKey, "1");
+    sessionStorage.removeItem(CHECKOUT_STARTED_KEY);
+  } catch {
+    // If storage fails, still fire once this call — caller should mount once.
+  }
+
   trackEvent("purchase", {
     currency: "USD",
-    transaction_id: `stripe_${Date.now()}`,
-    ...params,
+    transaction_id: params.session_id
+      ? `stripe_${params.session_id}`
+      : `stripe_${Date.now()}`,
+    plan,
+    billing,
   });
+  return true;
 }

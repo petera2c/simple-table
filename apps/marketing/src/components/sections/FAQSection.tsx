@@ -23,6 +23,7 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
+import { trackBookACall } from "@/lib/analytics";
 import { SIMPLE_TABLE_INFO, AG_GRID_TOTAL_SIZE } from "@/constants/packageInfo";
 import { DEFAULT_EXAMPLE_PATH } from "@/constants/global";
 import ExampleLink from "@/components/ExampleLink";
@@ -287,7 +288,15 @@ export default function FAQSection() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium"
-                      onClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        trackBookACall({
+                          cta_id: "faq_book_a_call",
+                          cta_text: "book a free 30-minute call",
+                          destination: TECHNICAL_STRINGS.links.calendly,
+                          location: "faq_support",
+                        });
+                      }}
                     >
                       book a free 30-minute call
                     </a>{" "}

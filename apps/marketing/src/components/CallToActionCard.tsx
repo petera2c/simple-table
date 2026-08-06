@@ -9,7 +9,7 @@ import { useThemeContext } from "@/providers/ThemeProvider";
 import { useFramework } from "@/providers/FrameworkProvider";
 import { getExampleUrl } from "@/utils/getExampleUrl";
 import { getAiTablePrompt } from "@/constants/aiTablePrompt";
-import { trackCtaClick, trackCopyAiTablePrompt } from "@/lib/analytics";
+import { trackBookACall, trackCtaClick, trackCopyAiTablePrompt } from "@/lib/analytics";
 
 export type CallToActionButton = {
   text: string;
@@ -97,10 +97,21 @@ export default function CallToActionCard({
     }
 
     const handleClick = () => {
+      const destination = button.href ?? "";
+      const isCalendly = destination.includes("calendly.com");
+      if (isCalendly) {
+        trackBookACall({
+          cta_id: ctaId,
+          cta_text: button.text,
+          destination,
+          location,
+        });
+        return;
+      }
       trackCtaClick({
         cta_id: ctaId,
         cta_text: button.text,
-        destination: button.href ?? "",
+        destination,
         location,
       });
     };
