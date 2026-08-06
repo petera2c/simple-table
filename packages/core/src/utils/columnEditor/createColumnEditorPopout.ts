@@ -439,6 +439,12 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
       if (items[i].dataset.accessor !== String(expected[i].header.accessor)) {
         return false;
       }
+      // Pin/unpin can preserve flattened accessor order while changing section
+      // membership — reject so section DOM is rebuilt.
+      const listEl = items[i].closest(".st-column-editor-list") as HTMLElement | null;
+      if ((listEl?.dataset.panelSection ?? null) !== (expected[i].panelSection ?? null)) {
+        return false;
+      }
     }
 
     for (let i = 0; i < expected.length; i++) {

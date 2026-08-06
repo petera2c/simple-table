@@ -11,6 +11,22 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_1_3: ChangelogEntry = {
+  version: "4.1.3",
+  date: "2026-08-05",
+  title: "Column editor pin section sync",
+  description:
+    "Fix the column editor leaving rows in the wrong pin section after pin or unpin when column order stays the same.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Pinning or unpinning a column in the column editor now moves the row into the correct section even when the overall column order does not change.",
+      link: "/docs/column-pinning",
+    },
+  ],
+};
+
 export const v4_1_2: ChangelogEntry = {
   version: "4.1.2",
   date: "2026-08-01",
@@ -2527,6 +2543,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_1_3,
   v4_1_2,
   v4_1_1,
   v4_1_0,
