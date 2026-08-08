@@ -368,7 +368,7 @@ const PivotContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.4 }}
       >
-        <LivePreview demoId="pivot" height="auto" demoHeight="auto" Preview={PivotDemo} />
+        <LivePreview demoId="pivot" height="500px" demoHeight="500px" Preview={PivotDemo} />
       </motion.div>
 
       <motion.h2
