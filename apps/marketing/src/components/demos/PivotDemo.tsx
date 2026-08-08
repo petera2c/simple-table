@@ -96,7 +96,7 @@ function generatePivotRows(): Row[] {
 const rows: Row[] = generatePivotRows();
 
 const INITIAL_PIVOT: PivotConfig = {
-  rows: ["region"],
+  rows: ["region", "product"],
   columns: ["quarter"],
   values: [{ accessor: "sales", aggregation: { type: "sum" } }],
 };

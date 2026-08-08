@@ -41,7 +41,7 @@ export class PivotDemoComponent {
   readonly headers: AngularColumnDef<PivotFact>[] = pivotDemoConfig.headers;
 
   pivot: PivotConfig | null = {
-    rows: ["region"],
+    rows: ["region", "product"],
     columns: ["quarter"],
     values: [{ accessor: "sales", aggregation: { type: "sum" } }],
   };

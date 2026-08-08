@@ -8,7 +8,7 @@
   let { height = "500px", theme }: { height?: string | number; theme?: Theme } = $props();
 
   let pivot = $state<PivotConfig | null>({
-    rows: ["region"],
+    rows: ["region", "product"],
     columns: ["quarter"],
     values: [{ accessor: "sales", aggregation: { type: "sum" } }],
   });

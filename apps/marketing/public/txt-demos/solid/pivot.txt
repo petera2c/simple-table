@@ -5,7 +5,7 @@ import { pivotDemoConfig } from "./pivot.demo-data";
 import "@simple-table/solid/styles.css";
 
 const INITIAL_PIVOT: PivotConfig = {
-  rows: ["region"],
+  rows: ["region", "product"],
   columns: ["quarter"],
   values: [{ accessor: "sales", aggregation: { type: "sum" } }],
 };
