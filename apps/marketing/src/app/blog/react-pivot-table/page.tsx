@@ -32,7 +32,7 @@ const FAQS = [
   {
     question: "Is there a free alternative to AG Grid pivot mode?",
     answer:
-      "Yes. Simple Table provides declarative matrix pivot without AG Grid Enterprise. You configure rows, columns, and values via props or TableAPI. An interactive drag-and-drop Pivot Panel is on the Simple Table Enterprise roadmap.",
+      "Yes. Simple Table provides declarative matrix pivot without AG Grid Enterprise. You configure rows, columns, and values via props or TableAPI, or use enablePivotPanel in the column editor for an in-table Pivot Panel.",
   },
   {
     question: "When should I use pivot vs row grouping in a React data grid?",
@@ -40,14 +40,14 @@ const FAQS = [
       "Use matrix pivot when you need cross-tab columns generated from data and aggregated cells. Use row grouping when you still need individual fact rows in an expand/collapse hierarchy with fixed columns.",
   },
   {
-    question: "Does Simple Table include a drag-and-drop Pivot Panel?",
+    question: "Does Simple Table include a Pivot Panel?",
     answer:
-      "Declarative pivot is available today. A first-party drag-and-drop Pivot Panel is coming for Simple Table Enterprise and will drive the same pivot config API.",
+      "Yes. Set enablePivotPanel (with enableColumnEditor) to place fields into Rows, Columns, and Values from the column editor. The panel drives the same pivot config API as props and setPivot.",
   },
   {
     question: "Can I update a React pivot table at runtime?",
     answer:
-      "Yes. The analytics and docs demos swap a controlled pivot prop (and expandAll for nested row fields). You can also call TableAPI.setPivot to enable, change, or clear pivot imperatively. getPivot, getPivotHeaders, and getPivotedRows inspect the active matrix.",
+      "Yes. Swap a controlled pivot prop, use the Pivot Panel, or call TableAPI.setPivot to enable, change, or clear pivot. getPivot, getPivotHeaders, and getPivotedRows inspect the active matrix.",
   },
 ];
 
@@ -140,8 +140,12 @@ export default function ReactPivotTablePage() {
                   AG Grid&apos;s
                 </Link>{" "}
                 interactive Pivot Panel is powerful—and priced accordingly. Simple Table ships{" "}
-                <strong>declarative matrix pivot today</strong> so you can build analytics views in
-                code or your own UI. A drag-and-drop Pivot Panel is on the Enterprise roadmap.
+                <strong>declarative matrix pivot</strong> plus an in-table{" "}
+                <strong>Pivot Panel</strong> (
+                <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
+                  enablePivotPanel
+                </code>
+                ) that drives the same config API.
               </p>
 
               <p className="mb-0 text-gray-700 dark:text-gray-300">
@@ -279,7 +283,7 @@ export default function ReactPivotTablePage() {
                 <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
                   pivot.rows
                 </code>{" "}
-                builds its own expandable tree (e.g. region → product).
+                stay flat — one grid row per combination (e.g. region × product).
               </p>
             </div>
           </div>
@@ -302,8 +306,11 @@ export default function ReactPivotTablePage() {
                 <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
                   pivot
                 </code>{" "}
-                config. Until the Enterprise Pivot Panel ships, your app owns the UI for choosing
-                dimensions—presets, selects, analytics chrome, or{" "}
+                config. End users can also arrange fields with{" "}
+                <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
+                  enablePivotPanel
+                </code>
+                , or your app can drive{" "}
                 <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
                   TableAPI.setPivot
                 </code>
@@ -312,9 +319,8 @@ export default function ReactPivotTablePage() {
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 That gives teams a practical{" "}
-                <strong>AG Grid pivot alternative</strong>: matrix pivoting without Enterprise
-                pricing today, with a first-party drag-and-drop panel coming for end-user field
-                arrangement.
+                <strong>AG Grid pivot alternative</strong>: matrix pivoting and an in-table Pivot
+                Panel without AG Grid Enterprise pricing.
               </p>
 
               <CodeBlock
@@ -379,15 +385,12 @@ export default function RevenuePivot() {
 
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-gray-100">
-                Nested row fields
+                Multiple row fields
               </h3>
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                One row field renders a flat pivot. Multiple row fields build an expandable tree
-                (docs/analytics &quot;Region → Product&quot; preset). Pass{" "}
-                <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
-                  expandAll
-                </code>{" "}
-                when you want nested levels open by default:
+                One or many row fields stay tabular: each distinct combination is its own grid row
+                (docs/analytics &quot;Region → Product&quot; style presets). No expand/collapse
+                hierarchy:
               </p>
 
               <CodeBlock
@@ -400,7 +403,6 @@ export default function RevenuePivot() {
     columns: ["quarter"],
     values: [{ accessor: "sales", aggregation: { type: "sum" } }],
   }}
-  expandAll // demos set this when pivot.rows.length > 1
   height="400px"
 />`}
               />
@@ -679,13 +681,16 @@ tableRef.current?.setPivot(null); // back to source rows`}
 
               <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-400 dark:border-blue-700 p-4 rounded-lg">
                 <p className="text-gray-700 dark:text-gray-300 mb-0">
-                  <strong>What&apos;s next:</strong> An interactive drag-and-drop Pivot Panel is
-                  coming for Simple Table Enterprise—end users will arrange row, column, and value
-                  fields without custom UI. Declarative{" "}
+                  <strong>Pivot Panel:</strong> Enable{" "}
+                  <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
+                    enablePivotPanel
+                  </code>{" "}
+                  with the column editor so end users place fields into Rows, Columns, and Values.
+                  Declarative{" "}
                   <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
                     pivot
                   </code>{" "}
-                  stays the foundation; the panel will drive the same config.
+                  stays the foundation; the panel drives the same config.
                 </p>
               </div>
             </div>
@@ -825,8 +830,11 @@ tableRef.current?.setPivot(null); // back to source rows`}
                     className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
-                    A clear path to an <strong>Enterprise Pivot Panel</strong> on the same config
-                    model
+                    An in-table <strong>Pivot Panel</strong> (
+                    <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
+                      enablePivotPanel
+                    </code>
+                    ) on the same config model
                   </span>
                 </li>
               </ul>
@@ -837,7 +845,7 @@ tableRef.current?.setPivot(null); // back to source rows`}
 
       <CallToActionCard
         title="Ready to add a React pivot table to your data grid?"
-        description="Simple Table ships declarative pivot with aggregations and totals today. Configure rows, columns, and values in TypeScript—and get ready for the upcoming Enterprise drag-and-drop Pivot Panel on the same API."
+        description="Simple Table ships declarative pivot with aggregations, totals, and an in-table Pivot Panel. Configure rows, columns, and values in TypeScript—or let users compose them with enablePivotPanel."
         primaryButton={{
           text: "View Pivot Docs",
           href: "/docs/pivot",

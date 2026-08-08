@@ -128,6 +128,16 @@ animations={{ enabled: false }}`,
     example: `enableColumnEditorInitOpen={true}`,
   },
   {
+    key: "enablePivotPanel",
+    name: "enablePivotPanel",
+    required: false,
+    description:
+      "Adds a Pivot Panel to the column editor (Available / Rows / Columns / Values). Requires enableColumnEditor. Pivot activates when Values has at least one measure.",
+    type: "boolean",
+    link: "/docs/pivot",
+    example: `enableColumnEditor={true} enablePivotPanel={true}`,
+  },
+  {
     key: "expandAll",
     name: "expandAll",
     required: false,

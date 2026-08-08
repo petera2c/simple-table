@@ -93,7 +93,7 @@ export default function Page() {
           title: "Existing AG Grid Enterprise with pivoting",
           body: "Pivoting and master/detail are core; renewal is committed.",
           recommendation: "competitor",
-          recommendationLabel: "Need an interactive Pivot Panel today? AG Grid Enterprise has it now. Simple Table ships declarative matrix pivoting today, with a drag-and-drop Pivot Panel on the Enterprise roadmap.",
+          recommendationLabel: "Need a Pivot Panel today? AG Grid Enterprise has a mature DnD panel. Simple Table ships declarative matrix pivoting plus enablePivotPanel in the column editor.",
         },
         {
           emoji: "📈",

@@ -475,7 +475,7 @@ export const PivotPanel: StoryObj = {
     docs: {
       description: {
         story:
-          "In-table Pivot Panel scaffold: enablePivotPanel adds a Pivot section (Rows / Columns / Values) to the column editor popout. Grow the field UI here incrementally.",
+          "In-table Pivot Panel: enablePivotPanel adds Available / Rows / Columns / Values to the column editor. Place fields, set aggregations, and the grid updates via setPivot (flat multi-dimension rows).",
       },
     },
   },

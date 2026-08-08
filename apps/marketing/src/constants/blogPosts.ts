@@ -243,7 +243,7 @@ export const reactGridFilteringPost: BlogPostMetadata = {
 export const reactPivotTablePost: BlogPostMetadata = {
   title: "React Pivot Table Tutorial: Matrix Aggregation Without AG Grid Enterprise (2026)",
   description:
-    "Build a React pivot table with row/column dimensions, aggregations, and totals—without AG Grid Enterprise. Code examples, pivot vs row grouping, and Pivot Panel roadmap.",
+    "Build a React pivot table with row/column dimensions, aggregations, totals, and an in-table Pivot Panel—without AG Grid Enterprise. Code examples and pivot vs row grouping.",
   slug: "react-pivot-table",
   tags: ["react", "pivot", "tutorials", "ag-grid"],
   createdAt: "2026-07-20",
