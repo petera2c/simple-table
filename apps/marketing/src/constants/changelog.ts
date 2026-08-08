@@ -14,26 +14,26 @@ export interface ChangelogEntry {
 export const v4_1_6: ChangelogEntry = {
   version: "4.1.6",
   date: "2026-08-08",
-  title: "In-table Pivot Panel and flat multi-dimension pivot rows",
+  title: "Pivot panel in the column editor",
   description:
-    "Compose Rows, Columns, and Values from the column editor with enablePivotPanel, and treat multiple pivot row dimensions as a flat combination grid instead of an expand/collapse tree.",
+    "You can now build a pivot from the column editor side panel, and multiple row fields show as normal rows instead of nested expand groups.",
   changes: [
     {
       type: "feature",
       description:
-        "New enablePivotPanel adds an in-table Pivot Panel to the column editor: Available fields plus Rows / Columns / Values, aggregation controls, and live updates via setPivot.",
+        "New enablePivotPanel option. Open the column editor to move fields into Rows, Columns, and Values, pick how numbers are totaled, and see the table update right away.",
       link: "/docs/pivot",
     },
     {
       type: "improvement",
       description:
-        "Multiple pivot.rows dimensions now emit one flat row per combination (e.g. Q1 × Gadget × East). Pivot no longer injects synthetic rowGrouping / expand chevrons.",
+        "If you put more than one field in Rows (for example Quarter and Product), the table shows a full row for each pair — not a collapsed group you have to expand.",
       link: "/docs/pivot",
     },
     {
       type: "improvement",
       description:
-        "Pivot Panel typography and controls align with column-editor and filter overlay sizing (shared overlay font tokens, SVG dismiss icon, full-size aggregation select).",
+        "Pivot panel text, buttons, and dropdowns match the size and look of the rest of the column editor.",
     },
   ],
 };
