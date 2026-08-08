@@ -25,12 +25,6 @@ export type PivotConfig<TData extends RowData = Row> = {
   showGrandTotal?: boolean;
 };
 
-/**
- * @deprecated Pivot rows are flat; this key is no longer written.
- * Kept for API compatibility with older consumers.
- */
-export const PIVOT_CHILDREN_KEY = "__pivotChildren";
-
 /** Marker on total rows for styling / identification. */
 export const PIVOT_IS_TOTAL_KEY = "__pivotIsTotal";
 
