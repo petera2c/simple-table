@@ -5,6 +5,11 @@ export interface ColumnEditorCustomRendererProps {
   headers: ColumnDef[];
   /** Pre-built search input section, or null if search is disabled */
   searchSection: HTMLElement | null;
+  /**
+   * Pre-built Pivot section (Rows / Columns / Values), or null when
+   * `enablePivotPanel` is false.
+   */
+  pivotSection: HTMLElement | null;
   /** Pre-built column list section with drag-and-drop, checkboxes, etc. */
   listSection: HTMLElement;
   /** Pre-built reset button section, or null if no default headers are configured */

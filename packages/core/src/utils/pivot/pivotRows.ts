@@ -10,7 +10,6 @@ import type {
 import {
   PIVOT_ACCESSOR_PREFIX,
   PIVOT_BLANK_LABEL,
-  PIVOT_CHILDREN_KEY,
   PIVOT_IS_TOTAL_KEY,
 } from "../../types/PivotTypes";
 import { aggregateValues } from "../aggregationUtils";
@@ -224,10 +223,9 @@ const buildColumnHeaders = ({
 
 const buildRowDimensionHeaders = (
   rowDims: Accessor[],
-  catalog: Map<string, ColumnDef>,
-  expandable: boolean
+  catalog: Map<string, ColumnDef>
 ): ColumnDef[] => {
-  return rowDims.map((accessor, index) => {
+  return rowDims.map((accessor) => {
     const field = findFieldHeader(catalog, accessor);
     return {
       accessor,
@@ -238,7 +236,8 @@ const buildRowDimensionHeaders = (
       pinned: "left" as const,
       sortable: field?.sortable ?? true,
       filterable: field?.filterable,
-      expandable: expandable && index === 0 ? true : field?.expandable,
+      // Flat pivot layout — never wire expand/collapse onto row dims.
+      expandable: false,
       valueFormatter: field?.valueFormatter,
       valueGetter: field?.valueGetter,
       minWidth: field?.minWidth,
@@ -332,9 +331,9 @@ const fillMeasureCells = ({
   }
 };
 
-const buildRowTree = ({
+/** One table row per distinct combination of row-dimension values (tabular / flat). */
+const buildFlatRows = ({
   rowDims,
-  prefixParts,
   distinctRowKeys,
   buckets,
   colKeys,
@@ -342,82 +341,27 @@ const buildRowTree = ({
   showRowTotals,
 }: {
   rowDims: Accessor[];
-  prefixParts: DimValue[];
   distinctRowKeys: string[];
   buckets: Map<string, CellValue[]>;
   colKeys: string[];
   values: PivotValueConfig[];
   showRowTotals: boolean;
 }): Row[] => {
-  const depth = prefixParts.length;
-
-  if (depth >= rowDims.length) {
-    return [];
-  }
-
-  const prefixKey = encodeKey(prefixParts);
-  const nextDimIndex = depth;
-  const childPartsByLabel = new Map<string, DimValue>();
-
-  for (const rowKey of distinctRowKeys) {
+  return distinctRowKeys.map((rowKey) => {
     const parts = decodeKey(rowKey);
-    if (prefixKey !== "") {
-      if (rowKey !== prefixKey && !rowKey.startsWith(prefixKey + KEY_SEP)) continue;
-    }
-    if (parts.length <= nextDimIndex) continue;
-    const part = parts[nextDimIndex];
-    childPartsByLabel.set(dimLabel(part), part);
-  }
-
-  const sortedLabels = Array.from(childPartsByLabel.keys()).sort(compareDimLabels);
-  const isLeafLevel = depth === rowDims.length - 1;
-
-  return sortedLabels.map((label) => {
-    const part = childPartsByLabel.get(label)!;
-    const nextPrefix = [...prefixParts, part];
-    const nextPrefixKey = encodeKey(nextPrefix);
     const row: Row = {};
-
     rowDims.forEach((accessor, i) => {
-      if (i <= depth) {
-        row[accessor] = nextPrefix[i];
-      }
+      row[accessor] = parts[i] ?? PIVOT_BLANK_LABEL;
     });
-
-    if (isLeafLevel) {
-      fillMeasureCells({
-        row,
-        buckets,
-        rowKeyPrefix: nextPrefixKey,
-        colKeys,
-        values,
-        showRowTotals,
-        exactRowKey: true,
-      });
-      return row;
-    }
-
-    const children = buildRowTree({
-      rowDims,
-      prefixParts: nextPrefix,
-      distinctRowKeys,
-      buckets,
-      colKeys,
-      values,
-      showRowTotals,
-    });
-    row[PIVOT_CHILDREN_KEY] = children;
-
     fillMeasureCells({
       row,
       buckets,
-      rowKeyPrefix: nextPrefixKey,
+      rowKeyPrefix: rowKey,
       colKeys,
       values,
       showRowTotals,
-      exactRowKey: false,
+      exactRowKey: true,
     });
-
     return row;
   });
 };
@@ -503,8 +447,7 @@ export const pivotRows = ({ rows, pivot, fieldHeaders }: PivotRowsProps): PivotR
     showRowTotals: effectiveShowRowTotals,
   });
 
-  const expandable = rowDims.length > 1;
-  const rowHeaders = buildRowDimensionHeaders(rowDims, catalog, expandable);
+  const rowHeaders = buildRowDimensionHeaders(rowDims, catalog);
   const headers: ColumnDef[] = [...rowHeaders, ...columnHeaders];
 
   let pivotedRows: Row[];
@@ -522,9 +465,8 @@ export const pivotRows = ({ rows, pivot, fieldHeaders }: PivotRowsProps): PivotR
     });
     pivotedRows = [row];
   } else {
-    pivotedRows = buildRowTree({
+    pivotedRows = buildFlatRows({
       rowDims,
-      prefixParts: [],
       distinctRowKeys,
       buckets,
       colKeys,
@@ -548,10 +490,5 @@ export const pivotRows = ({ rows, pivot, fieldHeaders }: PivotRowsProps): PivotR
     pivotedRows = [...pivotedRows, totalRow];
   }
 
-  const rowGrouping: Accessor[] | undefined =
-    rowDims.length > 1
-      ? Array.from({ length: rowDims.length - 1 }, () => PIVOT_CHILDREN_KEY)
-      : undefined;
-
-  return { rows: pivotedRows, headers, rowGrouping };
+  return { rows: pivotedRows, headers };
 };

@@ -11,7 +11,7 @@ export type PivotValueConfig<TData extends RowData = Row> = {
 };
 
 export type PivotConfig<TData extends RowData = Row> = {
-  /** Row dimension accessors (0+). Multi-level dims become an expandable tree. */
+  /** Row dimension accessors (0+). Multi-level dims → one flat row per combination. */
   rows: Accessor<TData>[];
   /** Column dimension accessors (0+). Distinct values become dynamic header groups. */
   columns: Accessor<TData>[];
@@ -25,7 +25,10 @@ export type PivotConfig<TData extends RowData = Row> = {
   showGrandTotal?: boolean;
 };
 
-/** Synthetic child-array key used for multi-level pivot row trees. */
+/**
+ * @deprecated Pivot rows are flat; this key is no longer written.
+ * Kept for API compatibility with older consumers.
+ */
 export const PIVOT_CHILDREN_KEY = "__pivotChildren";
 
 /** Marker on total rows for styling / identification. */
@@ -40,9 +43,4 @@ export const PIVOT_BLANK_LABEL = "(blank)";
 export type PivotResult = {
   rows: Row[];
   headers: ColumnDef[];
-  /**
-   * Internal rowGrouping while pivot is active (undefined when flat).
-   * Kept as open accessors — pivot injects synthetic keys.
-   */
-  rowGrouping?: Accessor[];
 };

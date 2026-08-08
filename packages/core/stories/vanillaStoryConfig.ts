@@ -12,6 +12,9 @@ export interface UniversalVanillaArgs {
   customTheme?: CustomThemeProps;
   enableColumnEditor?: boolean;
   enableColumnEditorInitOpen?: boolean;
+  enablePivotPanel?: boolean;
+  /** When false, every row/column is in the DOM (useful for DOM assertion tests). */
+  enableVirtualization?: boolean;
   expandAll?: boolean;
   externalFilterHandling?: boolean;
   externalSortHandling?: boolean;
@@ -36,6 +39,7 @@ export const defaultVanillaArgs: UniversalVanillaArgs = {
   customTheme: undefined,
   enableColumnEditor: false,
   enableColumnEditorInitOpen: false,
+  enablePivotPanel: false,
   expandAll: true,
   externalFilterHandling: false,
   externalSortHandling: false,
@@ -105,6 +109,10 @@ export const vanillaArgTypes = {
   enableColumnEditorInitOpen: {
     control: { type: "boolean" as const },
     description: "Open column editor on initial load",
+  },
+  enablePivotPanel: {
+    control: { type: "boolean" as const },
+    description: "Show Pivot section (Rows / Columns / Values) in the column editor",
   },
   selectableCells: {
     control: { type: "boolean" as const },

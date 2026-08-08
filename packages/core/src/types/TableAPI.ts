@@ -85,8 +85,8 @@ export type TableAPI<TData extends RowData = Row> = {
   /** Generated headers while pivot is active; otherwise current headers. */
   getPivotHeaders: () => ColumnDef[];
   /**
-   * Post-pivot rows (pre-flatten) while pivot is active; otherwise source rows.
-   * Always {@link Row} — pivot injects synthetic keys (e.g. `__pivotChildren`)
+   * Post-pivot rows while pivot is active; otherwise source rows.
+   * Always {@link Row} — pivot may inject synthetic measure accessors / total markers
    * that are not part of consumer `TData`.
    */
   getPivotedRows: () => Row[];
