@@ -389,7 +389,7 @@ export default function RevenuePivot() {
               </h3>
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 One or many row fields stay tabular: each distinct combination is its own grid row
-                (docs/analytics &quot;Region → Product&quot; style presets). No expand/collapse
+                (docs/analytics &quot;Region × Product&quot; style presets). No expand/collapse
                 hierarchy:
               </p>
 
@@ -532,11 +532,7 @@ pivot={{
                 <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
                   setPivot
                 </code>
-                ). Nested row presets also pass{" "}
-                <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-sm">
-                  expandAll
-                </code>
-                :
+                ):
               </p>
 
               <CodeBlock
@@ -557,8 +553,8 @@ const presets: { id: string; label: string; pivot: PivotConfig | null }[] = [
     },
   },
   {
-    id: "nested-rows",
-    label: "Region → Product",
+    id: "multi-rows",
+    label: "Region × Product",
     pivot: {
       rows: ["region", "product"],
       columns: ["quarter"],
@@ -570,7 +566,6 @@ const presets: { id: string; label: string; pivot: PivotConfig | null }[] = [
 export default function AnalyticsPivot() {
   const [activeId, setActiveId] = useState(presets[0].id);
   const active = presets.find((p) => p.id === activeId) ?? presets[0];
-  const nestedRows = (active.pivot?.rows.length ?? 0) > 1;
 
   return (
     <>
@@ -583,7 +578,6 @@ export default function AnalyticsPivot() {
         columns={headers}
         rows={rows}
         pivot={active.pivot}
-        expandAll={nestedRows}
         height="480px"
       />
     </>

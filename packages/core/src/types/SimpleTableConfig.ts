@@ -141,7 +141,7 @@ export interface SimpleTableConfig<TData extends RowData = Row> {
   /**
    * Property names that define the row grouping hierarchy.
    * `Accessor<TData>` keeps keyof autocomplete; the `string & {}` arm still
-   * allows dynamic / heterogeneous nesting keys and pivot-injected keys.
+   * allows dynamic / heterogeneous nesting keys.
    */
   rowGrouping?: Accessor<TData>[];
   getRowId?: GetRowId<TData>;

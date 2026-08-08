@@ -106,8 +106,6 @@
           :copy-headers-to-clipboard="true"
           :columns="analyticsDemoConfig.headers"
           :enable-column-editor="true"
-          :enable-sticky-parents="nestedRows"
-          :expand-all="nestedRows"
           :get-row-id="getRowId"
           height="100%"
           :include-headers-in-csv-export="true"
@@ -148,7 +146,6 @@ const active = computed(
   () => analyticsPresets.find((p) => p.id === activeId.value) ?? analyticsPresets[0]
 );
 const isPivoted = computed(() => active.value.pivot != null);
-const nestedRows = computed(() => (active.value.pivot?.rows.length ?? 0) > 1);
 const isDark = computed(() => props.theme === "dark" || props.theme === "modern-dark");
 const chromeBg = computed(() => (isDark.value ? "#0f172a" : "#f8fafc"));
 const chromeBorder = computed(() => (isDark.value ? "#1e293b" : "#e2e8f0"));

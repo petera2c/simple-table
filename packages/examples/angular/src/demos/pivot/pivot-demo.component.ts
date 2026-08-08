@@ -35,7 +35,6 @@ import type { PivotFact } from "./pivot.demo-data";
         [columns]="headers"
         [pivot]="pivot"
         [columnResizing]="true"
-        [expandAll]="nestedRows"
         [height]="height"
         [selectableCells]="true"
         [theme]="theme"
@@ -53,12 +52,10 @@ export class PivotDemoComponent {
 
   activeId = pivotPresets[0].id;
   pivot: PivotConfig = pivotPresets[0].pivot;
-  nestedRows = pivotPresets[0].pivot.rows.length > 1;
 
   selectPreset(preset: PivotPreset): void {
     this.activeId = preset.id;
     this.pivot = preset.pivot;
-    this.nestedRows = preset.pivot.rows.length > 1;
   }
 
   getRowId = ({ row }: GetRowIdParams<PivotFact>) => row.id;

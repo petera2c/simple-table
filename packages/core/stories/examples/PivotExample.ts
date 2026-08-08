@@ -275,7 +275,6 @@ function createChipRow(): HTMLDivElement {
 export const pivotExampleDefaults = {
   columnResizing: true,
   height: "480px",
-  expandAll: true,
   columnBorders: true,
   pivot: stateToPivot(DEFAULT_STATE),
 };
@@ -485,14 +484,6 @@ export function renderPivotExample(args?: Partial<UniversalVanillaArgs>): HTMLEl
     }
 
     actionsRow.replaceChildren();
-    const expandBtn = document.createElement("button");
-    expandBtn.textContent = "Expand all";
-    styleButton(expandBtn);
-    expandBtn.addEventListener("click", () => table.getAPI().expandAll());
-    const collapseBtn = document.createElement("button");
-    collapseBtn.textContent = "Collapse all";
-    styleButton(collapseBtn);
-    collapseBtn.addEventListener("click", () => table.getAPI().collapseAll());
     const csvBtn = document.createElement("button");
     csvBtn.textContent = "Export CSV";
     styleButton(csvBtn);
@@ -517,7 +508,7 @@ export function renderPivotExample(args?: Partial<UniversalVanillaArgs>): HTMLEl
       renderControls();
       applyPivot();
     });
-    actionsRow.append(expandBtn, collapseBtn, csvBtn, clearBtn, resetBtn);
+    actionsRow.append(csvBtn, clearBtn, resetBtn);
   };
 
   renderControls();

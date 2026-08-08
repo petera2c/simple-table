@@ -36,7 +36,6 @@ export function renderPivotDemo(
         const active = pivotPresets.find((p) => p.id === activeId) ?? pivotPresets[0];
         table?.updateConfig({
           pivot: active.pivot,
-          expandAll: active.pivot.rows.length > 1,
         });
       });
       buttons.appendChild(btn);
@@ -53,14 +52,12 @@ export function renderPivotDemo(
     rows: pivotDemoConfig.rows,
     pivot: active.pivot,
     columnResizing: true,
-    expandAll: active.pivot.rows.length > 1,
     height: options?.height ?? "400px",
     selectableCells: true,
     theme: options?.theme,
   });
   return table;
 }
-
 
 // pivot.demo-data.ts
 import type { ColumnDef, PivotConfig, Row } from "simple-table-core";
@@ -175,8 +172,8 @@ export const pivotPresets: PivotPreset[] = [
     },
   },
   {
-    id: "nested-rows",
-    label: "Region → Product",
+    id: "multi-rows",
+    label: "Region × Product",
     pivot: {
       rows: ["region", "product"],
       columns: ["quarter"],

@@ -13,7 +13,6 @@ const PivotDemo = ({
 }) => {
   const [activeId, setActiveId] = useState(pivotPresets[0].id);
   const active = pivotPresets.find((p) => p.id === activeId) ?? pivotPresets[0];
-  const nestedRows = active.pivot.rows.length > 1;
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
@@ -46,7 +45,6 @@ const PivotDemo = ({
         rows={pivotDemoConfig.rows}
         pivot={active.pivot}
         columnResizing
-        expandAll={nestedRows}
         height={height}
         selectableCells
         theme={theme}

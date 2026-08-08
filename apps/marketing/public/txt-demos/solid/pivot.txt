@@ -12,7 +12,6 @@ export default function PivotDemo(props: {
   const active = createMemo(
     () => pivotPresets.find((p) => p.id === activeId()) ?? pivotPresets[0]
   );
-  const nestedRows = createMemo(() => active().pivot.rows.length > 1);
 
   return (
     <div style={{ display: "flex", "flex-direction": "column", gap: "12px", width: "100%" }}>
@@ -46,7 +45,6 @@ export default function PivotDemo(props: {
         rows={pivotDemoConfig.rows}
         pivot={active().pivot}
         columnResizing
-        expandAll={nestedRows()}
         height={props.height ?? "400px"}
         selectableCells
         theme={props.theme}

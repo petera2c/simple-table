@@ -184,8 +184,8 @@ export const analyticsPresets: AnalyticsPreset[] = [
     },
   },
   {
-    id: "nested-rows",
-    label: "Region → Product",
+    id: "multi-rows",
+    label: "Region × Product",
     description: "Drill into products within each region",
     pivot: {
       rows: ["region", "product"],

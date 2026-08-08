@@ -8,7 +8,6 @@
 
   let activeId = $state(pivotPresets[0].id);
   const active = $derived(pivotPresets.find((p) => p.id === activeId) ?? pivotPresets[0]);
-  const nestedRows = $derived(active.pivot.rows.length > 1);
 </script>
 
 <div style="display: flex; flex-direction: column; gap: 12px; width: 100%">
@@ -31,7 +30,6 @@
     rows={pivotDemoConfig.rows}
     pivot={active.pivot}
     columnResizing={true}
-    expandAll={nestedRows}
     selectableCells={true}
     {height}
     {theme}

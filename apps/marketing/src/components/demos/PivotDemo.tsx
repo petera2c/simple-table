@@ -112,8 +112,8 @@ const PRESETS: Preset[] = [
     },
   },
   {
-    id: "nested-rows",
-    label: "Region → Product",
+    id: "multi-rows",
+    label: "Region × Product",
     pivot: {
       rows: ["region", "product"],
       columns: ["quarter"],
@@ -174,7 +174,6 @@ const PivotDemo = ({
 }) => {
   const [activeId, setActiveId] = useState(PRESETS[0].id);
   const active = PRESETS.find((p) => p.id === activeId) ?? PRESETS[0];
-  const nestedRows = active.pivot.rows.length > 1;
 
   return (
     <div className="flex flex-col gap-3 w-full">
@@ -210,7 +209,6 @@ const PivotDemo = ({
         columns={headers}
         rows={rows}
         columnResizing
-        expandAll={nestedRows}
         height={height}
         pivot={active.pivot}
         selectableCells
