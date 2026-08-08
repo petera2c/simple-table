@@ -21,7 +21,7 @@ import "@simple-table/angular/styles.css";
       [rows]="rows"
       [columns]="headers"
       [pivot]="pivot"
-      (pivotChange)="pivot = $event"
+      [onPivotChange]="onPivotChange"
       [columnResizing]="true"
       [enableColumnEditor]="true"
       [enableColumnEditorInitOpen]="true"
@@ -43,6 +43,10 @@ export class PivotDemoComponent {
     rows: ["region"],
     columns: ["quarter"],
     values: [{ accessor: "sales", aggregation: { type: "sum" } }],
+  };
+
+  onPivotChange = (next: PivotConfig | null) => {
+    this.pivot = next;
   };
 
   getRowId = ({ row }: GetRowIdParams<PivotFact>) =>

@@ -87,6 +87,7 @@ export class SimpleTableComponent<
   @Input() columnReordering?: SimpleTableAngularProps<TData>["columnReordering"];
   @Input() enableColumnEditor?: SimpleTableAngularProps<TData>["enableColumnEditor"];
   @Input() enableColumnEditorInitOpen?: SimpleTableAngularProps<TData>["enableColumnEditorInitOpen"];
+  @Input() enablePivotPanel?: SimpleTableAngularProps<TData>["enablePivotPanel"];
   @Input() selectableCells?: SimpleTableAngularProps<TData>["selectableCells"];
   @Input() selectableColumns?: SimpleTableAngularProps<TData>["selectableColumns"];
   @Input() enableHeaderEditing?: SimpleTableAngularProps<TData>["enableHeaderEditing"];
@@ -258,8 +259,7 @@ export class SimpleTableComponent<
     if (this.enableColumnEditor !== undefined) props.enableColumnEditor = this.enableColumnEditor;
     if (this.enableColumnEditorInitOpen !== undefined)
       props.enableColumnEditorInitOpen = this.enableColumnEditorInitOpen;
-    if (this.enableColumnEditorInitOpen !== undefined)
-      props.enableColumnEditorInitOpen = this.enableColumnEditorInitOpen;
+    if (this.enablePivotPanel !== undefined) props.enablePivotPanel = this.enablePivotPanel;
     if (this.selectableCells !== undefined) props.selectableCells = this.selectableCells;
     if (this.selectableColumns !== undefined) props.selectableColumns = this.selectableColumns;
     if (this.enableHeaderEditing !== undefined)
