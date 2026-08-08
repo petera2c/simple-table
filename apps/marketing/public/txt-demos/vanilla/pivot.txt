@@ -19,6 +19,7 @@ export function renderPivotDemo(
     columns: pivotDemoConfig.headers,
     rows: pivotDemoConfig.rows,
     pivot: INITIAL_PIVOT,
+    autoExpandColumns: true,
     columnResizing: true,
     enableColumnEditor: true,
     enableColumnEditorInitOpen: true,

@@ -55,6 +55,7 @@ const ROWS: Row[] = (() => {
 })();
 
 export const pivotPanelExampleDefaults = {
+  autoExpandColumns: true,
   columnResizing: true,
   columnReordering: true,
   selectableCells: true,

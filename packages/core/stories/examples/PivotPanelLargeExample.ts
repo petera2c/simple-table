@@ -96,6 +96,7 @@ export function buildLargePivotPanelRows(): Row[] {
 export const LARGE_PIVOT_ROWS = buildLargePivotPanelRows();
 
 export const pivotPanelLargeDefaults = {
+  autoExpandColumns: true,
   columnResizing: true,
   enableColumnEditor: true,
   enableColumnEditorInitOpen: true,

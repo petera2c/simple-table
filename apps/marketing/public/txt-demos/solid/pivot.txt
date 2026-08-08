@@ -20,6 +20,7 @@ export default function PivotDemo(props: {
     <SimpleTable
       columns={pivotDemoConfig.headers}
       rows={pivotDemoConfig.rows}
+      autoExpandColumns
       columnResizing
       enableColumnEditor
       enableColumnEditorInitOpen

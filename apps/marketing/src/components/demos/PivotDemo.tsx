@@ -114,6 +114,7 @@ const PivotDemo = ({
     <SimpleTable
       columns={headers}
       rows={rows}
+      autoExpandColumns
       columnResizing
       enableColumnEditor
       enableColumnEditorInitOpen

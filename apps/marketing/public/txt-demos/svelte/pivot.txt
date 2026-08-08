@@ -22,6 +22,7 @@
   rows={pivotDemoConfig.rows}
   {pivot}
   onPivotChange={(next) => (pivot = next)}
+  autoExpandColumns={true}
   columnResizing={true}
   enableColumnEditor={true}
   enableColumnEditorInitOpen={true}

@@ -4,6 +4,7 @@
     :rows="pivotDemoConfig.rows"
     :pivot="pivot"
     :onPivotChange="(next) => (pivot = next)"
+    :auto-expand-columns="true"
     :column-resizing="true"
     :enable-column-editor="true"
     :enable-column-editor-init-open="true"

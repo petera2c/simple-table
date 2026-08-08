@@ -23,6 +23,7 @@ const PivotDemo = ({
     <SimpleTable
       columns={pivotDemoConfig.headers}
       rows={pivotDemoConfig.rows}
+      autoExpandColumns
       columnResizing
       enableColumnEditor
       enableColumnEditorInitOpen

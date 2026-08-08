@@ -273,6 +273,7 @@ function createChipRow(): HTMLDivElement {
 }
 
 export const pivotExampleDefaults = {
+  autoExpandColumns: true,
   columnResizing: true,
   height: "480px",
   columnBorders: true,
