@@ -1153,6 +1153,8 @@ input {
   touch-action: auto;
   border-left: var(--st-border-width) solid var(--st-border-color);
   height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Column Editor Search Wrapper */
@@ -1194,11 +1196,12 @@ input {
   padding: var(--st-spacing-small) var(--st-spacing-medium) 0;
 }
 
-/* Pivot panel — align type/controls with column editor + filter overlays */
+/* Pivot panel — fill popout height and scroll when zones overflow */
 .st-pivot-panel {
-  flex-shrink: 0;
-  flex-grow: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   color: var(--st-column-editor-text-color);
   font-size: var(--st-overlay-font-size);
 }
