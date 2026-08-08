@@ -7,11 +7,13 @@ import { describe, it, expect } from "vitest";
 import { SimpleTable } from "../index";
 import type {
   TableAPI,
+  CellRendererProps,
   VueColumnDef,
   NestedVueColumnDef,
   CellChangeProps,
   SimpleTableExposed,
   SimpleTableVueProps,
+  VueDefaultRowData,
 } from "../index";
 
 interface HREmployee {
@@ -56,7 +58,9 @@ const props: SimpleTableVueProps<HREmployee> = {
 void props;
 
 // Explicit type arg still works when you want it:
-void (SimpleTable as <T>(props: SimpleTableVueProps<T>) => unknown)<HREmployee>;
+void (SimpleTable as <T extends VueDefaultRowData>(
+  props: SimpleTableVueProps<T>,
+) => unknown)<HREmployee>;
 
 // Untyped / default path still accepts open records (prior object[] escape).
 const loose: SimpleTableVueProps = {
@@ -77,18 +81,24 @@ interface NestDivision {
   divisionName: string;
 }
 
+// Function-arm annotation (not `VueCellRenderer`, which is `Fn | Component`)
+// so TData field checks stay strict.
+const divisionCellRenderer = ({
+  row,
+}: CellRendererProps<NestDivision>): string => {
+  const name: string = row.divisionName;
+  // @ts-expect-error NestDivision has no company-only fields
+  const missing: string = row.companyName;
+  void missing;
+  return name;
+};
+
 const divisionColumns: VueColumnDef<NestDivision>[] = [
   {
     accessor: "divisionName",
     label: "Division",
     width: 120,
-    cellRenderer: ({ row }) => {
-      const name: string = row.divisionName;
-      // @ts-expect-error NestDivision has no company-only fields
-      const missing: string = row.companyName;
-      void missing;
-      return name;
-    },
+    cellRenderer: divisionCellRenderer,
   },
 ];
 

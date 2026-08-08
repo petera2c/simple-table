@@ -12,6 +12,7 @@ import type { MountRegistry } from "./MountRegistry";
 import {
   wrapVueRenderer,
   wrapCachedVueRenderer,
+  wrapVueColumnEditorRowRenderer,
   wrapVueNode,
   vueNodeToHtmlString,
   isVueComponent,
@@ -40,7 +41,9 @@ function transformColumnEditorConfig(
   const { rowRenderer, customRenderer, ...rest } = config;
   return {
     ...rest,
-    ...(rowRenderer ? { rowRenderer: wrapVueRenderer(registry, rowRenderer) as any } : {}),
+    ...(rowRenderer
+      ? { rowRenderer: wrapVueColumnEditorRowRenderer(registry, rowRenderer) as any }
+      : {}),
     ...(customRenderer ? { customRenderer: wrapVueRenderer(registry, customRenderer) as any } : {}),
   };
 }

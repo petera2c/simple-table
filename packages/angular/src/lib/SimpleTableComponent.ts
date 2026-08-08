@@ -118,9 +118,25 @@ export class SimpleTableComponent<
     NonNullable<SimpleTableAngularProps<TData>["columns"]>[number]
   > | undefined;
   private syncedRows: SimpleTableAngularProps<TData>["rows"] | undefined;
+  private wasLoading = false;
+  private didInitialAutoSize = false;
   private hostEl = inject(ElementRef<HTMLElement>);
   private appRef = inject(ApplicationRef);
   private envInjector = inject(EnvironmentInjector);
+
+  private maybeRefitAutoSizeColumns(leftLoading: boolean): void {
+    if (!this.instance) return;
+    if (leftLoading) {
+      this.instance.refitAutoSizeColumns?.();
+      return;
+    }
+    // Angular mounts are synchronous, so custom renderer DOM is already present
+    // after the first paint that registered mounts (mirrors Vue/React).
+    if (!this.didInitialAutoSize && this.registry.size > 0) {
+      this.didInitialAutoSize = true;
+      this.instance.refitAutoSizeColumns?.();
+    }
+  }
 
   ngOnInit(): void {
     const container = this.hostEl.nativeElement.querySelector("div") as HTMLElement;
@@ -134,6 +150,8 @@ export class SimpleTableComponent<
     this.instance.mount();
     this.syncedDefaultHeaders = resolveAngularColumns(props);
     this.syncedRows = props.rows;
+    this.wasLoading = Boolean(props.isLoading);
+    this.maybeRefitAutoSizeColumns(false);
 
     this.tableReady.emit(this.instance.getAPI() as unknown as TableAPI<TData>);
   }
@@ -165,7 +183,12 @@ export class SimpleTableComponent<
       delete patch.rows;
     }
 
+    const isLoading = Boolean(props.isLoading);
+    const leftLoading = this.wasLoading && !isLoading;
+    this.wasLoading = isLoading;
+
     this.instance.update(patch);
+    this.maybeRefitAutoSizeColumns(leftLoading);
   }
 
   ngOnDestroy(): void {

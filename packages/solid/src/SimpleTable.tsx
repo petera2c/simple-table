@@ -45,6 +45,22 @@ export function SimpleTable<TData extends SolidDefaultRowData>(
     NonNullable<SimpleTableSolidProps<TData>["columns"]>[number]
   > | undefined;
   let syncedRows: SimpleTableSolidProps<TData>["rows"] | undefined;
+  let wasLoading = false;
+  let didInitialAutoSize = false;
+
+  function maybeRefitAutoSizeColumns(leftLoading: boolean) {
+    if (!instance) return;
+    if (leftLoading) {
+      instance.refitAutoSizeColumns?.();
+      return;
+    }
+    // Solid mounts are synchronous, so custom renderer DOM is already present
+    // after the first paint that registered mounts (mirrors Vue/React).
+    if (!didInitialAutoSize && registry.size > 0) {
+      didInitialAutoSize = true;
+      instance.refitAutoSizeColumns?.();
+    }
+  }
 
   onMount(() => {
     instance = new SimpleTableVanilla(
@@ -54,6 +70,8 @@ export function SimpleTable<TData extends SolidDefaultRowData>(
     instance.mount();
     syncedDefaultHeaders = resolveSolidColumns(props);
     syncedRows = props.rows;
+    wasLoading = Boolean(props.isLoading);
+    maybeRefitAutoSizeColumns(false);
 
     if (props.ref) {
       // Runtime API is Row-shaped; expose as TableAPI<TData> at the boundary.
@@ -89,7 +107,12 @@ export function SimpleTable<TData extends SolidDefaultRowData>(
       delete patch.rows;
     }
 
+    const isLoading = Boolean(props.isLoading);
+    const leftLoading = wasLoading && !isLoading;
+    wasLoading = isLoading;
+
     instance.update(patch);
+    maybeRefitAutoSizeColumns(leftLoading);
   });
 
   onCleanup(() => {

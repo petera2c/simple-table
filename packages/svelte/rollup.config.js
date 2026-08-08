@@ -64,8 +64,8 @@ export default {
       ],
 
   external: isDev
-    ? ["svelte", "svelte/internal"]
-    : ["svelte", "svelte/internal", "simple-table-core"],
+    ? ["svelte", "svelte/internal", "svelte/legacy"]
+    : ["svelte", "svelte/internal", "svelte/legacy", "simple-table-core"],
 
   plugins: [
     isDev &&

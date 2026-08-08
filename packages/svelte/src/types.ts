@@ -36,17 +36,21 @@ export interface TableInstance {
   update(config: Partial<SimpleTableConfig>): void;
   destroy(): void;
   getAPI(): TableAPI;
+  /** Re-measure `width: "auto"` columns after custom renderer DOM is present. */
+  refitAutoSizeColumns?(): void;
 }
 
 // ─── Renderer overrides ───────────────────────────────────────────────────────
-// Svelte components or core vanilla renderers (arity-1 functions pass through at runtime).
+// Arity-1 functions are core CellRenderer/HeaderRenderer (pass through at runtime).
+// Svelte components (arity ≥ 2) are wrapped. Keep the function arm first and use
+// the core aliases so typed arrow functions assign without casts.
 export type SvelteCellRenderer<
   TData extends SvelteDefaultRowData = SvelteDefaultRowData,
   TValue = CellValue,
-> = Component<CellRendererProps<TData, TValue>> | CellRenderer<TData, TValue>;
+> = CellRenderer<TData, TValue> | Component<CellRendererProps<TData, TValue>>;
 export type SvelteHeaderRenderer<TData extends SvelteDefaultRowData = SvelteDefaultRowData> =
-  | Component<HeaderRendererProps<TData>>
-  | HeaderRenderer<TData>;
+  | HeaderRenderer<TData>
+  | Component<HeaderRendererProps<TData>>;
 export type SvelteFooterRenderer = Component<FooterRendererProps>;
 export type SvelteHeaderDropdown = Component<HeaderDropdownProps>;
 export type SvelteColumnEditorRowRenderer = Component<ColumnEditorRowRendererProps>;

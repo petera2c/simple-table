@@ -22,6 +22,13 @@ export class MountRegistry {
     this.entries.set(id, dispose);
   }
 
+  /** True when `container` is a live registered mount host (not yet disposed). */
+  isRegistered(container: HTMLElement): boolean {
+    const id = container.getAttribute(MOUNT_ID_ATTR);
+    if (id === null) return false;
+    return this.entries.has(id);
+  }
+
   disposeHost = (host: HTMLElement): void => {
     if (typeof host.getAttribute !== "function") return;
     const ids: string[] = [];

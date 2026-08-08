@@ -12,6 +12,7 @@ import type { MountRegistry } from "./MountRegistry";
 import {
   wrapSvelteRenderer,
   wrapCachedSvelteRenderer,
+  wrapSvelteColumnEditorRowRenderer,
   wrapSvelteStatic,
   svelteComponentToHtmlString,
   isSvelteComponent,
@@ -39,7 +40,9 @@ function transformColumnEditorConfig(
   const { rowRenderer, customRenderer, ...rest } = config;
   return {
     ...rest,
-    ...(rowRenderer ? { rowRenderer: wrapSvelteRenderer(registry, rowRenderer) as any } : {}),
+    ...(rowRenderer
+      ? { rowRenderer: wrapSvelteColumnEditorRowRenderer(registry, rowRenderer) as any }
+      : {}),
     ...(customRenderer
       ? { customRenderer: wrapSvelteRenderer(registry, customRenderer) as any }
       : {}),

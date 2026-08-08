@@ -11,6 +11,31 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_1_5: ChangelogEntry = {
+  version: "4.1.5",
+  date: "2026-08-08",
+  title: "Framework wrapper updates and Vue data sync fix",
+  description:
+    "Fix Vue tables ignoring row and column changes after first render, and make custom header UI keep its state when sorting or filtering across Vue, Solid, Angular, and Svelte.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Vue: changing rows, columns, or callbacks after the table mounts now updates the table instead of sticking on the first data.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Vue, Solid, Angular, and Svelte: custom header UI no longer resets when you sort or filter (for example open menus and toggles stay as they were).",
+    },
+    {
+      type: "improvement",
+      description:
+        "Vue, Solid, Angular, and Svelte: auto-sized columns remeasure correctly after custom cell or header content loads, including when leaving a loading state.",
+    },
+  ],
+};
+
 export const v4_1_4: ChangelogEntry = {
   version: "4.1.4",
   date: "2026-08-06",
@@ -2558,6 +2583,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_1_5,
   v4_1_4,
   v4_1_3,
   v4_1_2,

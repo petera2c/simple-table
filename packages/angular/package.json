@@ -1,6 +1,6 @@
 {
   "name": "@simple-table/angular",
-  "version": "4.1.4",
+  "version": "4.1.5",
   "type": "module",
   "main": "./dist/fesm2022/simple-table-angular.mjs",
   "module": "./dist/fesm2022/simple-table-angular.mjs",
@@ -56,6 +56,7 @@
     "@angular/compiler": "^20.3.27",
     "@angular/compiler-cli": "^20.3.27",
     "@angular/core": "^20.3.27",
+    "@angular/platform-browser": "^20.3.27",
     "@types/node": "^16.18.126",
     "jsdom": "^24.1.3",
     "ng-packagr": "^20.3.2",
