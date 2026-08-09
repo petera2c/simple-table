@@ -1,54 +1,66 @@
 import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
-import type { Theme } from "@simple-table/react";
-import { pivotDemoConfig, pivotPresets } from "./pivot.demo-data";
+import type { PivotConfig, Theme } from "@simple-table/react";
+import { pivotDemoConfig } from "./pivot.demo-data";
 import "@simple-table/react/styles.css";
 
+const INITIAL_PIVOT: PivotConfig = {
+  rows: ["region", "product"],
+  columns: ["quarter"],
+  values: [{ accessor: "sales", aggregation: { type: "sum" } }],
+};
+
 const PivotDemo = ({
-  height = "400px",
-  theme
+  height = "500px",
+  theme,
 }: {
   height?: string | number;
   theme?: Theme;
 }) => {
-  const [activeId, setActiveId] = useState(pivotPresets[0].id);
-  const active = pivotPresets.find((p) => p.id === activeId) ?? pivotPresets[0];
+  const [pivotEnabled, setPivotEnabled] = useState(true);
+  const [pivot, setPivot] = useState<PivotConfig | null>(INITIAL_PIVOT);
+
+  const handlePivotEnabledChange = (enabled: boolean) => {
+    setPivotEnabled(enabled);
+    if (enabled && pivot === null) {
+      setPivot(INITIAL_PIVOT);
+    }
+  };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-        {pivotPresets.map((preset) => {
-          const selected = preset.id === activeId;
-          return (
-            <button
-              key={preset.id}
-              type="button"
-              onClick={() => setActiveId(preset.id)}
-              style={{
-                padding: "6px 12px",
-                borderRadius: 6,
-                border: "none",
-                cursor: "pointer",
-                fontSize: 13,
-                fontWeight: 500,
-                background: selected ? "#2563eb" : "#e5e7eb",
-                color: selected ? "#fff" : "#374151"
-              }}
-            >
-              {preset.label}
-            </button>
-          );
-        })}
-      </div>
+    <div>
+      <label
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+          marginBottom: 12,
+          fontSize: 14,
+          color: "#374151",
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={pivotEnabled}
+          onChange={(e) => handlePivotEnabledChange(e.target.checked)}
+          aria-label="Pivot mode"
+        />
+        Pivot mode
+      </label>
       <SimpleTable
         columns={pivotDemoConfig.headers}
         rows={pivotDemoConfig.rows}
-        pivot={active.pivot}
+        autoExpandColumns
         columnResizing
+        enableColumnEditor
+        enableColumnEditorInitOpen
+        enablePivotPanel={pivotEnabled}
         height={height}
+        pivot={pivotEnabled ? pivot : null}
+        onPivotChange={setPivot}
         selectableCells
         theme={theme}
-        getRowId={({ row }) => row.id}
+        getRowId={({ row }) => (row?.id == null ? undefined : String(row.id))}
       />
     </div>
   );

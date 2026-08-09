@@ -135,11 +135,11 @@ const PivotDemo = ({
         rows={rows}
         autoExpandColumns
         columnResizing
-          enableColumnEditor
-          enableColumnEditorInitOpen
-          enablePivotPanel={pivotEnabled}
-          height={height}
-          pivot={pivotEnabled ? pivot : null}
+        enableColumnEditor
+        enableColumnEditorInitOpen
+        enablePivotPanel={pivotEnabled}
+        height={height}
+        pivot={pivotEnabled ? pivot : null}
         onPivotChange={setPivot}
         selectableCells
         theme={theme}
