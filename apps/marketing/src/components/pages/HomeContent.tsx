@@ -70,8 +70,8 @@ const CaseStudySection = dynamic(() => import("@/components/sections/CaseStudySe
 /** Bottom-left proof metrics (social-proof KPIs). Desktop hero only. */
 const HERO_METRICS = [
   {
-    value: "$19,000",
-    label: "Saved by ChartMetric (~95%)",
+    value: "$19,000 saved",
+    label: "ChartMetric (~95%)",
     href: "/case-studies/chartmetric" as const,
   },
   {
