@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
+import { Button, message } from "antd";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRocket } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCopy, faRocket } from "@fortawesome/free-solid-svg-icons";
 import QuickStartDemo from "@/components/demos/QuickStartDemo";
 import PageWrapper from "@/components/PageWrapper";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
@@ -16,8 +18,11 @@ import {
   installSnippets,
   tableSnippets,
 } from "@/constants/docsSnippets";
+import { getAiTablePrompt, getAiThemePrompt } from "@/constants/aiTablePrompt";
+import { trackCopyAiTablePrompt, trackCopyAiThemePrompt } from "@/lib/analytics";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
+import { useFramework } from "@/providers/FrameworkProvider";
 
 const TABLE_PROPS: PropInfo[] = [
   {
@@ -170,6 +175,38 @@ const QUICK_START_STEPS: DocsStep[] = [
 ];
 
 const QuickStartContent = () => {
+  const { framework } = useFramework();
+  const [tablePromptCopied, setTablePromptCopied] = useState(false);
+  const [stylePromptCopied, setStylePromptCopied] = useState(false);
+
+  const copyTablePrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(getAiTablePrompt(framework));
+      trackCopyAiTablePrompt({ framework, location: "quick_start" });
+      setTablePromptCopied(true);
+      window.setTimeout(() => setTablePromptCopied(false), 2000);
+      message.success("Table prompt copied to clipboard");
+    } catch {
+      message.error("Could not copy table prompt");
+    }
+  };
+
+  const copyStylePrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(getAiThemePrompt(framework));
+      trackCopyAiThemePrompt({
+        framework,
+        location: "quick_start",
+        has_theme_css: false,
+      });
+      setStylePromptCopied(true);
+      window.setTimeout(() => setStylePromptCopied(false), 2000);
+      message.success("Style prompt copied to clipboard");
+    } catch {
+      message.error("Could not copy style prompt");
+    }
+  };
+
   return (
     <PageWrapper>
       <motion.div
@@ -185,13 +222,38 @@ const QuickStartContent = () => {
       </motion.div>
 
       <motion.p
-        className="text-gray-700 dark:text-gray-300 mb-8 text-lg"
+        className="text-gray-700 dark:text-gray-300 mb-4 text-lg"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
         Add Simple Table to your app in about 60 seconds.
       </motion.p>
+
+      <motion.div
+        className="flex flex-col gap-3 mb-8 max-w-md"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.22 }}
+      >
+        <Button
+          type="primary"
+          size="large"
+          className="w-full"
+          onClick={copyTablePrompt}
+          icon={<FontAwesomeIcon icon={tablePromptCopied ? faCheck : faCopy} />}
+        >
+          {tablePromptCopied ? "Copied!" : "Copy table prompt"}
+        </Button>
+        <Button
+          size="large"
+          className="w-full"
+          onClick={copyStylePrompt}
+          icon={<FontAwesomeIcon icon={stylePromptCopied ? faCheck : faCopy} />}
+        >
+          {stylePromptCopied ? "Copied!" : "Copy style prompt"}
+        </Button>
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0 }}

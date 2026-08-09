@@ -123,6 +123,18 @@ export function trackCopyAiTablePrompt(params: {
   });
 }
 
+export function trackCopyAiThemePrompt(params: {
+  framework: string;
+  location: string;
+  has_theme_css: boolean;
+}): void {
+  trackEvent("copy_ai_theme_prompt", {
+    framework: params.framework,
+    location: params.location,
+    has_theme_css: params.has_theme_css,
+  });
+}
+
 /**
  * Fired on /checkout/success only after a real checkout was started in this
  * browser (sessionStorage flag from trackBeginCheckout). Skips test visits to

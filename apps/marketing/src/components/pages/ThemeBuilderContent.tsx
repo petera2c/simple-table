@@ -29,11 +29,16 @@ import {
   faColumns,
   faChartLine,
   faLink,
+  faCopy,
+  faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { UI_STRINGS } from "@/constants/strings/ui";
 import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
+import { getAiThemePrompt } from "@/constants/aiTablePrompt";
+import { trackCopyAiThemePrompt } from "@/lib/analytics";
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { useThemeContext } from "@/providers/ThemeProvider";
+import { useFramework } from "@/providers/FrameworkProvider";
 
 // Import our reusable components
 import PageLayout from "@/components/PageLayout";
@@ -378,6 +383,8 @@ const setThemeToDocument = (theme: ThemeConfig) => {
 export default function ThemeBuilderContent() {
   const isMobile = useIsMobile();
   const { theme: appTheme } = useThemeContext();
+  const { framework } = useFramework();
+  const [stylePromptCopied, setStylePromptCopied] = useState(false);
 
   // Track user changes that apply to all themes
   const [userChanges, setUserChanges] = useState<Partial<ThemeConfig>>({});
@@ -553,6 +560,26 @@ export default function ThemeBuilderContent() {
       message.success("Share link copied to clipboard");
     } catch {
       message.error("Could not copy share link");
+    }
+  };
+
+  const copyStylePrompt = async () => {
+    const hasThemeCss = Object.keys(userChanges).length > 0;
+    const prompt = getAiThemePrompt(framework, {
+      currentThemeCss: hasThemeCss ? generateCSS() : undefined,
+    });
+    try {
+      await navigator.clipboard.writeText(prompt);
+      trackCopyAiThemePrompt({
+        framework,
+        location: "theme_builder",
+        has_theme_css: hasThemeCss,
+      });
+      setStylePromptCopied(true);
+      window.setTimeout(() => setStylePromptCopied(false), 2000);
+      message.success("Style prompt copied to clipboard");
+    } catch {
+      message.error("Could not copy style prompt");
     }
   };
 
@@ -1341,6 +1368,17 @@ export default function ThemeBuilderContent() {
     (rowHeightInput !== String(ROW_HEIGHT) ? 1 : 0) +
     (headerHeightInput !== String(HEADER_HEIGHT) ? 1 : 0);
 
+  const headerContent = (
+    <Button
+      className="w-full"
+      type="primary"
+      onClick={copyStylePrompt}
+      icon={<FontAwesomeIcon icon={stylePromptCopied ? faCheck : faCopy} />}
+    >
+      {stylePromptCopied ? "Copied!" : "Copy style prompt"}
+    </Button>
+  );
+
   // Create footer content
   const footerContent = (
     <div className="space-y-3">
@@ -1367,7 +1405,6 @@ export default function ThemeBuilderContent() {
 
       <Button
         className="w-full"
-        type="primary"
         onClick={downloadCSS}
         icon={<FontAwesomeIcon icon={faDownload} />}
       >
@@ -1389,6 +1426,7 @@ export default function ThemeBuilderContent() {
   const sidebarConfig: SidebarConfig = {
     title: UI_STRINGS.themeBuilder.title,
     icon: faPaintBrush,
+    headerContent,
     sidebarContent,
     footerContent,
     width: "380px", // Slightly smaller width that works better with single column layout
