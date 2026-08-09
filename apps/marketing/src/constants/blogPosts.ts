@@ -1129,17 +1129,27 @@ export const searchBlogPosts = (query: string): BlogPostMetadata[] => {
 };
 
 /**
- * Detect the canonical framework hub id a blog post targets from its tags.
+ * Detect the canonical framework hub id from blog tags.
  * Returns the first match in tag order, so primary frameworks should appear
  * before ecosystem aliases (e.g. tag a Nuxt post with both "vue" and "nuxt").
+ */
+export function getFrameworkIdFromTags(
+  tags: readonly string[] | undefined
+): HubFrameworkId | null {
+  if (!tags?.length) return null;
+  for (const tag of tags) {
+    const id = FRAMEWORK_TAG_TO_HUB_ID[tag.toLowerCase()];
+    if (id) return id;
+  }
+  return null;
+}
+
+/**
+ * Detect the canonical framework hub id a registry blog post targets from its tags.
  */
 export function getPostFrameworkId(slug: string): HubFrameworkId | null {
   if (!slug) return null;
   const post = getBlogPostBySlug(slug);
   if (!post) return null;
-  for (const tag of post.tags) {
-    const id = FRAMEWORK_TAG_TO_HUB_ID[tag.toLowerCase()];
-    if (id) return id;
-  }
-  return null;
+  return getFrameworkIdFromTags(post.tags);
 }

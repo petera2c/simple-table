@@ -6,7 +6,7 @@ import Link from "next/link";
 import {
   BLOG_POSTS,
   BlogPostMetadata,
-  getPostFrameworkId,
+  getFrameworkIdFromTags,
 } from "@/constants/blogPosts";
 import {
   FRAMEWORK_HUB_BY_ID,
@@ -113,7 +113,7 @@ export default function BlogPageContent({
             );
           });
     if (frameworkFilter === "all") return base;
-    return base.filter((post) => getPostFrameworkId(post.slug) === frameworkFilter);
+    return base.filter((post) => getFrameworkIdFromTags(post.tags) === frameworkFilter);
   }, [searchQuery, frameworkFilter, sortedBlogPosts]);
 
   const handleSearch = (value: string) => {

@@ -1,6 +1,7 @@
 import { readdirSync, readFileSync, existsSync } from "fs";
 import { join } from "path";
 import type { BlogPostMetadata } from "@/constants/blogPosts";
+import { inferSoroArticleTags } from "./inferSoroArticleTags";
 import type { SoroArticle } from "./types";
 
 const ARTICLES_DIR = join(process.cwd(), "content", "articles");
@@ -58,7 +59,7 @@ export function soroArticleToBlogPostMetadata(article: SoroArticle): BlogPostMet
     title: article.title,
     description: article.description,
     slug: article.slug,
-    tags: ["article"],
+    tags: inferSoroArticleTags(article),
     createdAt,
     updatedAt,
   };
