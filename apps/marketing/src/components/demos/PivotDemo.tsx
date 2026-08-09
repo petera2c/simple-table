@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Switch } from "antd";
 import { SimpleTable } from "@simple-table/react";
 import type { PivotConfig, ReactColumnDef, Row, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
@@ -108,24 +109,43 @@ const PivotDemo = ({
   height?: string | number;
   theme?: Theme;
 }) => {
+  const [pivotEnabled, setPivotEnabled] = useState(true);
   const [pivot, setPivot] = useState<PivotConfig | null>(INITIAL_PIVOT);
 
+  const handlePivotEnabledChange = (enabled: boolean) => {
+    setPivotEnabled(enabled);
+    if (enabled && pivot === null) {
+      setPivot(INITIAL_PIVOT);
+    }
+  };
+
   return (
-    <SimpleTable
-      columns={headers}
-      rows={rows}
-      autoExpandColumns
-      columnResizing
-      enableColumnEditor
-      enableColumnEditorInitOpen
-      enablePivotPanel
-      height={height}
-      pivot={pivot}
-      onPivotChange={setPivot}
-      selectableCells
-      theme={theme}
-      getRowId={({ row }) => (row?.id == null ? undefined : String(row.id))}
-    />
+    <div>
+      <label className="mb-3 flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+        <Switch
+          checked={pivotEnabled}
+          onChange={handlePivotEnabledChange}
+          size="small"
+          aria-label="Pivot mode"
+        />
+        Pivot mode
+      </label>
+      <SimpleTable
+        columns={headers}
+        rows={rows}
+        autoExpandColumns
+        columnResizing
+          enableColumnEditor
+          enableColumnEditorInitOpen
+          enablePivotPanel={pivotEnabled}
+          height={height}
+          pivot={pivotEnabled ? pivot : null}
+        onPivotChange={setPivot}
+        selectableCells
+        theme={theme}
+        getRowId={({ row }) => (row?.id == null ? undefined : String(row.id))}
+      />
+    </div>
   );
 };
 
