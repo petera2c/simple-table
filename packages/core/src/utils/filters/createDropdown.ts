@@ -19,6 +19,8 @@ export interface CreateDropdownOptions {
   width?: number;
   maxWidth?: number;
   positioning?: "fixed" | "absolute";
+  /** Extra class(es) preserved across open/position updates (e.g. `st-custom-select-dropdown`). */
+  className?: string;
   /**
    * When true, this panel does not clip overflowing descendants (e.g. nested operator menus inside
    * the filter popover). Uses overflow: visible and drops max-height on the shell — see
@@ -42,21 +44,24 @@ export const createDropdown = (options: CreateDropdownOptions) => {
     width,
     maxWidth,
     positioning = "fixed",
+    className = "",
     allowDescendantOverflow = false,
   } = options;
 
   let allowDescendantOverflowFlag = allowDescendantOverflow;
+  const extraClassName = className.trim();
 
   const descendantOverflowClass = "st-dropdown-content--allow-descendant-overflow";
 
-  const placementClassSuffix = () =>
-    allowDescendantOverflowFlag ? ` ${descendantOverflowClass}` : "";
+  const placementClassSuffix = () => {
+    const parts: string[] = [];
+    if (extraClassName) parts.push(extraClassName);
+    if (allowDescendantOverflowFlag) parts.push(descendantOverflowClass);
+    return parts.length ? ` ${parts.join(" ")}` : "";
+  };
 
   const dropdownElement = document.createElement("div");
-  dropdownElement.className = "st-dropdown-content";
-  if (allowDescendantOverflowFlag) {
-    dropdownElement.classList.add(descendantOverflowClass);
-  }
+  dropdownElement.className = `st-dropdown-content${placementClassSuffix()}`;
   dropdownElement.style.position = positioning;
   dropdownElement.style.overflow = allowDescendantOverflowFlag ? "visible" : overflow;
   if (width) {

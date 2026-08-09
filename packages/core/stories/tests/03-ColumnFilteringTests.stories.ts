@@ -696,8 +696,11 @@ export const EnumFilterMoreThan10OptionsShowsSearch = {
     filterIcon!.click();
     await new Promise((r) => setTimeout(r, 300));
 
-    // Dropdown should be open; with >10 enum options a search input appears
-    const filterDropdown = canvasElement.querySelector(".st-filter-dropdown, .st-filter-content, .st-dropdown-content");
+    // Dropdown should be open; with >10 enum options a search input appears.
+    // Prefer the filter shell — operator custom-select also portals `.st-dropdown-content`.
+    const filterDropdown = canvasElement.querySelector(
+      ".st-dropdown-content:has(input), .st-filter-dropdown, .st-filter-content",
+    );
     expect(filterDropdown).toBeTruthy();
     const searchInput = filterDropdown?.querySelector("input[type='text'], input[type='search'], input") as HTMLInputElement | null;
     expect(searchInput).toBeTruthy();

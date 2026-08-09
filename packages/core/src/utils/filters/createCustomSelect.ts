@@ -88,7 +88,8 @@ export const createCustomSelect = (options: CreateCustomSelectOptions) => {
   renderOptions();
 
   // Fixed + portaled to the table root (same as filter shells) so overflow:auto
-  // ancestors never clip the menu.
+  // ancestors never clip the menu. Distinct class so callers don't confuse this
+  // closed/open menu with the filter shell (also `.st-dropdown-content`).
   const dropdown = createDropdown({
     children: optionsContainer,
     containerRef,
@@ -100,6 +101,7 @@ export const createCustomSelect = (options: CreateCustomSelectOptions) => {
     open: isOpen,
     overflow: "auto",
     positioning: "fixed",
+    className: "st-custom-select-dropdown",
   });
 
   const syncValueFromSelection = (optionValue: string) => {
