@@ -1,5 +1,4 @@
 import type ColumnDef from "../types/ColumnDef";
-import type { Accessor } from "../types/ColumnDef";
 import type Row from "../types/Row";
 import type { PivotConfig, PivotResult } from "../types/PivotTypes";
 import { pivotRows } from "../utils/pivot/pivotRows";
@@ -14,7 +13,6 @@ export interface PivotManagerState {
   active: boolean;
   pivotedRows: Row[];
   headers: ColumnDef[];
-  rowGrouping?: Accessor[];
   pivot: PivotConfig | null;
 }
 
@@ -61,7 +59,6 @@ export class PivotManager {
         active: false,
         pivotedRows: config.sourceRows,
         headers: config.fieldHeaders,
-        rowGrouping: undefined,
         pivot: null,
       };
     }
@@ -78,7 +75,6 @@ export class PivotManager {
         active: false,
         pivotedRows: config.sourceRows,
         headers: config.fieldHeaders,
-        rowGrouping: undefined,
         pivot: null,
       };
     }
@@ -87,7 +83,6 @@ export class PivotManager {
       active: true,
       pivotedRows: result.rows,
       headers: result.headers,
-      rowGrouping: result.rowGrouping,
       pivot,
     };
   }

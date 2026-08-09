@@ -1,4 +1,5 @@
 import ColumnDef, { Accessor } from "../../types/ColumnDef";
+import type { PivotConfig } from "../../types/PivotTypes";
 import { SimpleTableConfig } from "../../types/SimpleTableConfig";
 import { CustomTheme } from "../../types/CustomTheme";
 import { FilterCondition } from "../../types/FilterTypes";
@@ -66,6 +67,8 @@ export interface TableRendererDeps {
   getHeaders: () => ColumnDef[];
   /** Pristine snapshot of the configured column definitions — the reset target for the column editor's reset button. */
   getPristineDefaultHeaders: () => ColumnDef[];
+  getPivot: () => PivotConfig | null;
+  setPivot: (pivot: PivotConfig | null) => void;
   getRowStateMap: () => Map<string | number, any>;
   headerRegistry: Map<string, any>;
   headers: ColumnDef[];
@@ -1043,11 +1046,18 @@ export class TableRenderer {
       }
     };
 
+    // Always the source field catalog — never pivoted live headers.
+    const pivotFields = deps.getPristineDefaultHeaders();
+
     if (this.columnEditorInstance) {
       this.columnEditorInstance.update({
         columnEditorText: mergedColumnEditorConfig.text,
         enableColumnEditor: deps.config.enableColumnEditor,
+        enablePivotPanel: deps.config.enablePivotPanel,
         headers: deps.headers,
+        pivotFields,
+        pivot: deps.getPivot(),
+        setPivot: deps.setPivot,
         open: columnEditorOpen,
         searchEnabled: mergedColumnEditorConfig.searchEnabled,
         searchPlaceholder: mergedColumnEditorConfig.searchPlaceholder,
@@ -1072,8 +1082,12 @@ export class TableRenderer {
     } else {
       const columnEditor = createColumnEditor({
         columnEditorText: mergedColumnEditorConfig.text,
-        enableColumnEditor: deps.config.enableColumnEditor,
+        enableColumnEditor: deps.config.enableColumnEditor ?? false,
+        enablePivotPanel: deps.config.enablePivotPanel,
         headers: deps.headers,
+        pivotFields,
+        pivot: deps.getPivot(),
+        setPivot: deps.setPivot,
         open: columnEditorOpen,
         searchEnabled: mergedColumnEditorConfig.searchEnabled,
         searchPlaceholder: mergedColumnEditorConfig.searchPlaceholder,

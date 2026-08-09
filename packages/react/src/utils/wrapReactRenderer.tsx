@@ -296,8 +296,8 @@ export function wrapReactColumnEditorRowRenderer(
 }
 
 /**
- * Maps `searchSection` / `listSection` / `resetSection` HTMLElement slots for
- * `columnEditorConfig.customRenderer` the same way as row slots.
+ * Maps `searchSection` / `pivotSection` / `listSection` / `resetSection`
+ * HTMLElement slots for `columnEditorConfig.customRenderer` the same way as row slots.
  */
 export function wrapReactColumnEditorCustomRenderer(
   bridge: PortalBridge,
@@ -311,6 +311,7 @@ export function wrapReactColumnEditorCustomRenderer(
     const reactProps = {
       ...props,
       searchSection: props.searchSection ? domSlotToReactNode(props.searchSection) : null,
+      pivotSection: props.pivotSection ? domSlotToReactNode(props.pivotSection) : null,
       listSection: domSlotToReactNode(props.listSection),
       resetSection: props.resetSection ? domSlotToReactNode(props.resetSection) : null,
     };

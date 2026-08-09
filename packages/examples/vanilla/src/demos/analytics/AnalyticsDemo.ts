@@ -63,7 +63,6 @@ export function renderAnalyticsDemo(
   const remountTable = () => {
     tableHost.replaceChildren();
     const active = analyticsPresets.find((p) => p.id === activeId) ?? analyticsPresets[0];
-    const nested = (active.pivot?.rows.length ?? 0) > 1;
     const pivoted = active.pivot != null;
     table = new SimpleTableVanilla(tableHost, {
       autoExpandColumns: true,
@@ -73,8 +72,6 @@ export function renderAnalyticsDemo(
       copyHeadersToClipboard: true,
       columns: analyticsDemoConfig.headers,
       enableColumnEditor: true,
-      enableStickyParents: nested,
-      expandAll: nested,
       getRowId: ({ row }) => {
         const id = row.id;
         return id == null ? undefined : String(id);

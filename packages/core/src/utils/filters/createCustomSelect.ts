@@ -87,6 +87,8 @@ export const createCustomSelect = (options: CreateCustomSelectOptions) => {
 
   renderOptions();
 
+  // Fixed + portaled to the table root (same as filter shells) so overflow:auto
+  // ancestors never clip the menu.
   const dropdown = createDropdown({
     children: optionsContainer,
     containerRef,
@@ -97,10 +99,8 @@ export const createCustomSelect = (options: CreateCustomSelectOptions) => {
     },
     open: isOpen,
     overflow: "auto",
-    positioning: "absolute",
+    positioning: "fixed",
   });
-
-  container.appendChild(dropdown.element);
 
   const syncValueFromSelection = (optionValue: string) => {
     value = optionValue;
@@ -110,10 +110,11 @@ export const createCustomSelect = (options: CreateCustomSelectOptions) => {
 
   const handleOptionClick = (optionValue: string) => {
     syncValueFromSelection(optionValue);
-    onChange(optionValue);
     setOpen(false);
     focusedIndex = -1;
     renderOptions();
+    // Fire after close so consumers can safely rebuild DOM (e.g. pivot panel).
+    onChange(optionValue);
   };
 
   const handleToggle = () => {
@@ -147,10 +148,10 @@ export const createCustomSelect = (options: CreateCustomSelectOptions) => {
         if (focusedIndex >= 0) {
           const v = selectOptions[focusedIndex].value;
           syncValueFromSelection(v);
-          onChange(v);
           setOpen(false);
           focusedIndex = -1;
           renderOptions();
+          onChange(v);
         }
         break;
       case "Escape":

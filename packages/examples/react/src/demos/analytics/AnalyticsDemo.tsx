@@ -24,7 +24,6 @@ const AnalyticsDemo = ({
   const [activeId, setActiveId] = useState(analyticsPresets[0].id);
   const active = analyticsPresets.find((p) => p.id === activeId) ?? analyticsPresets[0];
   const isPivoted = active.pivot != null;
-  const nestedRows = (active.pivot?.rows.length ?? 0) > 1;
   const isDark = theme === "dark" || theme === "modern-dark";
   const tableHostRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<TableAPI<AnalyticsFactRow>>(null);
@@ -161,8 +160,6 @@ const AnalyticsDemo = ({
               copyHeadersToClipboard
               columns={analyticsDemoConfig.headers}
               enableColumnEditor
-              enableStickyParents={nestedRows}
-              expandAll={nestedRows}
               getRowId={({ row }) => row.id}
               height={tableHeightPx}
               includeHeadersInCSVExport

@@ -125,7 +125,6 @@ export {
   pivotRows,
   buildPivotAccessor,
   buildPivotRowTotalAccessor,
-  PIVOT_CHILDREN_KEY,
   PIVOT_IS_TOTAL_KEY,
   PIVOT_ACCESSOR_PREFIX,
   PIVOT_BLANK_LABEL,

@@ -11,7 +11,6 @@
   let tableRef = $state<{ getAPI: () => TableAPI<AnalyticsFactRow> | null } | null>(null);
   const active = $derived(analyticsPresets.find((p) => p.id === activeId) ?? analyticsPresets[0]);
   const isPivoted = $derived(active.pivot != null);
-  const nestedRows = $derived((active.pivot?.rows.length ?? 0) > 1);
   const isDark = $derived(theme === "dark" || theme === "modern-dark");
   const chromeBg = $derived(isDark ? "#0f172a" : "#f8fafc");
   const chromeBorder = $derived(isDark ? "#1e293b" : "#e2e8f0");
@@ -77,8 +76,6 @@
           copyHeadersToClipboard={true}
           columns={analyticsDemoConfig.headers}
           enableColumnEditor={true}
-          enableStickyParents={nestedRows}
-          expandAll={nestedRows}
           {getRowId}
           height="100%"
           includeHeadersInCSVExport={true}

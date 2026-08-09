@@ -1153,6 +1153,8 @@ input {
   touch-action: auto;
   border-left: var(--st-border-width) solid var(--st-border-color);
   height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Column Editor Search Wrapper */
@@ -1192,6 +1194,108 @@ input {
   color: var(--st-column-editor-text-color);
   opacity: 0.75;
   padding: var(--st-spacing-small) var(--st-spacing-medium) 0;
+}
+
+/* Pivot panel — fill popout height and scroll when zones overflow */
+.st-pivot-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  color: var(--st-column-editor-text-color);
+  font-size: var(--st-overlay-font-size);
+}
+
+.st-pivot-panel-zone + .st-pivot-panel-zone {
+  border-top: var(--st-border-width) solid var(--st-border-color);
+}
+
+.st-pivot-panel-zone-title {
+  font-size: var(--st-overlay-font-size);
+  font-weight: 600;
+  color: var(--st-column-editor-text-color);
+  padding: var(--st-spacing-medium) var(--st-spacing-medium) var(--st-spacing-small);
+}
+
+.st-pivot-panel-zone-list {
+  padding-top: 0;
+  padding-bottom: var(--st-spacing-medium);
+}
+
+.st-pivot-panel-zone-empty {
+  padding-top: var(--st-spacing-small);
+  font-size: var(--st-overlay-font-size);
+  color: var(--st-column-editor-text-color);
+  opacity: 0.55;
+}
+
+.st-pivot-panel-field,
+.st-pivot-panel-chip {
+  display: flex;
+  align-items: center;
+  gap: var(--st-spacing-small);
+  padding-top: var(--st-spacing-small);
+  padding-bottom: var(--st-spacing-small);
+  color: var(--st-column-editor-text-color);
+}
+
+.st-pivot-panel-field-label,
+.st-pivot-panel-chip-label {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--st-overlay-font-size);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-pivot-panel-field-actions {
+  display: flex;
+  gap: var(--st-spacing-small);
+  flex-shrink: 0;
+}
+
+.st-pivot-panel-action {
+  padding: var(--st-spacing-small) var(--st-spacing-medium);
+  font-size: var(--st-overlay-font-size);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--st-column-editor-text-color);
+  background: transparent;
+  border: var(--st-border-width) solid var(--st-border-color);
+  border-radius: var(--st-border-radius);
+  cursor: pointer;
+  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
+}
+
+.st-pivot-panel-action:hover {
+  background-color: var(--st-button-hover-background-color);
+}
+
+.st-pivot-panel-remove {
+  flex-shrink: 0;
+  color: var(--st-column-editor-text-color);
+}
+
+/* Aggregation select — same size tokens as filter CustomSelect */
+.st-pivot-panel-agg {
+  width: auto;
+  min-width: 6.5rem;
+  max-width: 9rem;
+  flex-shrink: 0;
+}
+
+.st-pivot-panel-agg .st-custom-select-trigger {
+  background-color: transparent;
+  color: var(--st-column-editor-text-color);
+}
+
+.st-pivot-panel-agg .st-custom-select-value {
+  color: var(--st-column-editor-text-color);
+}
+
+.st-pivot-panel-agg .st-custom-select-arrow {
+  color: var(--st-column-editor-text-color);
 }
 
 .st-column-editor-list-section {

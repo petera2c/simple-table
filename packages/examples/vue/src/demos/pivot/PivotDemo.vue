@@ -26,7 +26,6 @@
       :get-row-id="getRowId"
       :pivot="active.pivot"
       :column-resizing="true"
-      :expand-all="nestedRows"
       :height="height"
       :selectable-cells="true"
       :theme="theme"
@@ -50,7 +49,6 @@ const activeId = ref(pivotPresets[0].id);
 const active = computed(
   () => pivotPresets.find((p) => p.id === activeId.value) ?? pivotPresets[0]
 );
-const nestedRows = computed(() => active.value.pivot.rows.length > 1);
 
 const getRowId = ({ row }: GetRowIdParams<PivotFact>) => row.id;
 </script>

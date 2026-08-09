@@ -90,7 +90,6 @@ import type { AnalyticsFactRow } from "./analytics.demo-data";
             [rows]="rows"
             [columns]="headers"
             [enableColumnEditor]="true"
-            [expandAll]="nestedRows"
             [getRowId]="getRowId"
             height="100%"
             [initialSortColumn]="isPivoted ? undefined : 'sales'"
@@ -116,7 +115,6 @@ export class AnalyticsDemoComponent {
 
   activeId = analyticsPresets[0].id;
   pivot: PivotConfig | null = analyticsPresets[0].pivot;
-  nestedRows = (analyticsPresets[0].pivot?.rows.length ?? 0) > 1;
   isPivoted = analyticsPresets[0].pivot != null;
 
   get formatHeight(): string {
@@ -156,7 +154,6 @@ export class AnalyticsDemoComponent {
   selectPreset(preset: AnalyticsPreset): void {
     this.activeId = preset.id;
     this.pivot = preset.pivot;
-    this.nestedRows = (preset.pivot?.rows.length ?? 0) > 1;
     this.isPivoted = preset.pivot != null;
   }
 

@@ -25,7 +25,6 @@ import type { SimpleTableConfigInput } from "./utils/normalizeConfig";
 import type { AggregationConfig, AggregationType } from "./types/AggregationTypes";
 import type { PivotConfig, PivotValueConfig, PivotResult } from "./types/PivotTypes";
 import {
-  PIVOT_CHILDREN_KEY,
   PIVOT_IS_TOTAL_KEY,
   PIVOT_ACCESSOR_PREFIX,
   PIVOT_BLANK_LABEL,
@@ -110,7 +109,6 @@ export {
   pivotRows,
   buildPivotAccessor,
   buildPivotRowTotalAccessor,
-  PIVOT_CHILDREN_KEY,
   PIVOT_IS_TOTAL_KEY,
   PIVOT_ACCESSOR_PREFIX,
   PIVOT_BLANK_LABEL,

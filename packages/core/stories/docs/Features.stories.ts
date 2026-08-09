@@ -107,6 +107,10 @@ import {
 } from "../examples/PaginationAPIExample";
 import { renderPivotExample, pivotExampleDefaults } from "../examples/PivotExample";
 import {
+  renderPivotPanelExample,
+  pivotPanelExampleDefaults,
+} from "../examples/PivotPanelExample";
+import {
   renderPinnedColumnsExample,
   pinnedColumnsExampleDefaults,
 } from "../examples/pinned-columns/PinnedColumns";
@@ -459,6 +463,19 @@ export const Pivot: StoryObj = {
       description: {
         story:
           "Declarative matrix pivot playground: toggle row/column/value fields, aggregations, and totals via TableAPI.setPivot.",
+      },
+    },
+  },
+};
+
+export const PivotPanel: StoryObj = {
+  ...storyArgs(pivotPanelExampleDefaults),
+  render: (args) => renderPivotPanelExample(args),
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "In-table Pivot Panel: enablePivotPanel adds Available / Rows / Columns / Values to the column editor. Place fields, set aggregations, and the grid updates via setPivot (flat multi-dimension rows).",
       },
     },
   },

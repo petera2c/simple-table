@@ -4,7 +4,6 @@ import type { Theme, GetRowIdParams } from "simple-table-core";
 import { pivotDemoConfig, pivotPresets } from "./pivot.demo-data";
 import "simple-table-core/styles.css";
 
-
 const getRowId = ({ row }: GetRowIdParams<PivotFact>) => row.id;
 export function renderPivotDemo(
   container: HTMLElement,
@@ -38,7 +37,6 @@ export function renderPivotDemo(
         const active = pivotPresets.find((p) => p.id === activeId) ?? pivotPresets[0];
         table?.updateConfig({
           pivot: active.pivot,
-          expandAll: active.pivot.rows.length > 1,
         });
       });
       buttons.appendChild(btn);
@@ -56,7 +54,6 @@ export function renderPivotDemo(
     rows: pivotDemoConfig.rows,
     pivot: active.pivot,
     columnResizing: true,
-    expandAll: active.pivot.rows.length > 1,
     height: options?.height ?? "400px",
     selectableCells: true,
     theme: options?.theme,

@@ -3,7 +3,6 @@ import {
   pivotRows,
   buildPivotAccessor,
   buildPivotRowTotalAccessor,
-  PIVOT_CHILDREN_KEY,
   PIVOT_IS_TOTAL_KEY,
   PIVOT_BLANK_LABEL,
   type ColumnDef,
@@ -41,7 +40,6 @@ describe("pivotRows", () => {
       },
     });
 
-    expect(result.rowGrouping).toBeUndefined();
     expect(result.rows).toHaveLength(2);
 
     const west = result.rows.find((r) => r.region === "West")!;
@@ -74,7 +72,7 @@ describe("pivotRows", () => {
     expect(totalRow[buildPivotRowTotalAccessor("sales")]).toBe(440);
   });
 
-  it("builds a tree for multi-level row dimensions", () => {
+  it("emits flat rows for multi-level row dimensions (one per combination)", () => {
     const result = pivotRows({
       rows: sampleRows,
       fieldHeaders,
@@ -87,15 +85,18 @@ describe("pivotRows", () => {
       },
     });
 
-    expect(result.rowGrouping).toEqual([PIVOT_CHILDREN_KEY]);
-    const west = result.rows.find((r) => r.region === "West")!;
-    const children = west[PIVOT_CHILDREN_KEY] as Row[];
-    expect(children).toHaveLength(2);
-    expect(west[buildPivotAccessor("Q1", "sales")]).toBe(150);
+    // East/A, East (none for B), West/A, West/B — sample has no East/B
+    expect(result.rows).toHaveLength(3);
+    expect(result.headers.some((h) => h.expandable)).toBe(false);
 
-    const productA = children.find((c) => c.product === "A")!;
-    expect(productA[buildPivotAccessor("Q1", "sales")]).toBe(100);
-    expect(productA[buildPivotAccessor("Q2", "sales")]).toBe(120);
+    const westA = result.rows.find((r) => r.region === "West" && r.product === "A")!;
+    const westB = result.rows.find((r) => r.region === "West" && r.product === "B")!;
+    const eastA = result.rows.find((r) => r.region === "East" && r.product === "A")!;
+
+    expect(westA[buildPivotAccessor("Q1", "sales")]).toBe(100);
+    expect(westA[buildPivotAccessor("Q2", "sales")]).toBe(120);
+    expect(westB[buildPivotAccessor("Q1", "sales")]).toBe(50);
+    expect(eastA[buildPivotAccessor("Q1", "sales")]).toBe(80);
   });
 
   it("supports multiple value measures", () => {

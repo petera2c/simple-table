@@ -87,7 +87,6 @@ export function renderAnalyticsDemo(
   const remountTable = () => {
     tableHost.replaceChildren();
     const active = analyticsPresets.find((p) => p.id === activeId) ?? analyticsPresets[0];
-    const nested = (active.pivot?.rows.length ?? 0) > 1;
     const pivoted = active.pivot != null;
     table = new SimpleTableVanilla(tableHost, {
       autoExpandColumns: true,
@@ -97,8 +96,6 @@ export function renderAnalyticsDemo(
       copyHeadersToClipboard: true,
       columns: analyticsDemoConfig.headers,
       enableColumnEditor: true,
-      enableStickyParents: nested,
-      expandAll: nested,
       getRowId: ({ row }) => String(row.id),
       height: "100%",
       includeHeadersInCSVExport: true,
@@ -146,7 +143,6 @@ export function renderAnalyticsDemo(
   remountTable();
   return table!;
 }
-
 
 // analytics.demo-data.ts
 import type { ColumnDef, PivotConfig, Row } from "simple-table-core";
@@ -335,8 +331,8 @@ export const analyticsPresets: AnalyticsPreset[] = [
     },
   },
   {
-    id: "nested-rows",
-    label: "Region → Product",
+    id: "multi-rows",
+    label: "Region × Product",
     description: "Drill into products within each region",
     pivot: {
       rows: ["region", "product"],

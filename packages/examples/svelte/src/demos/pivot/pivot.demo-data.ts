@@ -123,8 +123,8 @@ export const pivotPresets: PivotPreset[] = [
     },
   },
   {
-    id: "nested-rows",
-    label: "Region → Product",
+    id: "multi-rows",
+    label: "Region × Product",
     pivot: {
       rows: ["region", "product"],
       columns: ["quarter"],
