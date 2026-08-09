@@ -71,7 +71,7 @@ const CaseStudySection = dynamic(() => import("@/components/sections/CaseStudySe
 const HERO_METRICS = [
   {
     value: "$19,000 saved",
-    label: "ChartMetric (~95%)",
+    label: "By ChartMetric (~95%)",
     href: "/case-studies/chartmetric" as const,
   },
   {
@@ -449,14 +449,14 @@ export default function HomeContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
             >
-              <div className="grid grid-cols-3 gap-8">
+              <div className="grid grid-cols-[250px_1fr_1fr] gap-8">
                 {HERO_METRICS.map((metric) => {
                   const content = (
                     <>
-                      <div className="text-3xl xl:text-4xl font-bold text-gray-900 dark:text-white tracking-tight">
+                      <div className="text-3xl xl:text-4xl font-bold text-gray-900 dark:text-white tracking-tight whitespace-nowrap">
                         {metric.value}
                       </div>
-                      <div className="mt-1.5 text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                      <div className="mt-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
                         {metric.label}
                       </div>
                     </>
@@ -479,7 +479,7 @@ export default function HomeContent() {
               </div>
 
               <div className="justify-self-end">
-                <div className="text-[11px] font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
+                <div className="text-[11px] font-medium text-gray-500 dark:text-gray-400 mb-3">
                   Trusted by
                 </div>
                 <Link
