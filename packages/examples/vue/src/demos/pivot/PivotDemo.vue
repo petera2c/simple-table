@@ -48,14 +48,14 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "500px",
 });
 
-const INITIAL_PIVOT: PivotConfig = {
+const INITIAL_PIVOT: PivotConfig<PivotFact> = {
   rows: ["region", "product"],
   columns: ["quarter"],
   values: [{ accessor: "sales", aggregation: { type: "sum" } }],
 };
 
 const pivotEnabled = ref(true);
-const pivot = ref<PivotConfig | null>(INITIAL_PIVOT);
+const pivot = ref<PivotConfig<PivotFact> | null>(INITIAL_PIVOT);
 
 const onPivotEnabledChange = (enabled: boolean) => {
   pivotEnabled.value = enabled;

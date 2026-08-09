@@ -10,7 +10,7 @@ import { pivotDemoConfig } from "./pivot.demo-data";
 import type { PivotFact } from "./pivot.demo-data";
 import "@simple-table/angular/styles.css";
 
-const INITIAL_PIVOT: PivotConfig = {
+const INITIAL_PIVOT: PivotConfig<PivotFact> = {
   rows: ["region", "product"],
   columns: ["quarter"],
   values: [{ accessor: "sales", aggregation: { type: "sum" } }],
@@ -59,7 +59,7 @@ export class PivotDemoComponent {
   readonly headers: AngularColumnDef<PivotFact>[] = pivotDemoConfig.headers;
 
   pivotEnabled = true;
-  pivot: PivotConfig | null = INITIAL_PIVOT;
+  pivot: PivotConfig<PivotFact> | null = INITIAL_PIVOT;
 
   onPivotEnabledChange(enabled: boolean): void {
     this.pivotEnabled = enabled;
@@ -68,7 +68,7 @@ export class PivotDemoComponent {
     }
   }
 
-  onPivotChange = (next: PivotConfig | null) => {
+  onPivotChange = (next: PivotConfig<PivotFact> | null) => {
     this.pivot = next;
   };
 

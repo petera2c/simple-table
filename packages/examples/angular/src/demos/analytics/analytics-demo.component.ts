@@ -114,7 +114,7 @@ export class AnalyticsDemoComponent {
   readonly getRowId = ({ row }: GetRowIdParams<AnalyticsFactRow>) => row.id == null ? undefined : String(row.id);
 
   activeId = analyticsPresets[0].id;
-  pivot: PivotConfig | null = analyticsPresets[0].pivot;
+  pivot: PivotConfig<AnalyticsFactRow> | null = analyticsPresets[0].pivot;
   isPivoted = analyticsPresets[0].pivot != null;
 
   get formatHeight(): string {

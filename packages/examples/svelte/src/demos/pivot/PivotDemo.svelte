@@ -7,14 +7,14 @@
 
   let { height = "500px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  const INITIAL_PIVOT: PivotConfig = {
+  const INITIAL_PIVOT: PivotConfig<PivotFact> = {
     rows: ["region", "product"],
     columns: ["quarter"],
     values: [{ accessor: "sales", aggregation: { type: "sum" } }],
   };
 
   let pivotEnabled = $state(true);
-  let pivot = $state<PivotConfig | null>(INITIAL_PIVOT);
+  let pivot = $state<PivotConfig<PivotFact> | null>(INITIAL_PIVOT);
 
   const handlePivotEnabledChange = (enabled: boolean) => {
     pivotEnabled = enabled;

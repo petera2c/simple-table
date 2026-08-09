@@ -2,9 +2,10 @@ import { createSignal } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
 import type { PivotConfig, Theme } from "@simple-table/solid";
 import { pivotDemoConfig } from "./pivot.demo-data";
+import type { PivotFact } from "./pivot.demo-data";
 import "@simple-table/solid/styles.css";
 
-const INITIAL_PIVOT: PivotConfig = {
+const INITIAL_PIVOT: PivotConfig<PivotFact> = {
   rows: ["region", "product"],
   columns: ["quarter"],
   values: [{ accessor: "sales", aggregation: { type: "sum" } }],
@@ -15,7 +16,7 @@ export default function PivotDemo(props: {
   theme?: Theme;
 }) {
   const [pivotEnabled, setPivotEnabled] = createSignal(true);
-  const [pivot, setPivot] = createSignal<PivotConfig | null>(INITIAL_PIVOT);
+  const [pivot, setPivot] = createSignal<PivotConfig<PivotFact> | null>(INITIAL_PIVOT);
 
   const handlePivotEnabledChange = (enabled: boolean) => {
     setPivotEnabled(enabled);

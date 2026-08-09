@@ -2,9 +2,10 @@ import { useState } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { PivotConfig, Theme } from "@simple-table/react";
 import { pivotDemoConfig } from "./pivot.demo-data";
+import type { PivotFact } from "./pivot.demo-data";
 import "@simple-table/react/styles.css";
 
-const INITIAL_PIVOT: PivotConfig = {
+const INITIAL_PIVOT: PivotConfig<PivotFact> = {
   rows: ["region", "product"],
   columns: ["quarter"],
   values: [{ accessor: "sales", aggregation: { type: "sum" } }],
@@ -18,7 +19,7 @@ const PivotDemo = ({
   theme?: Theme;
 }) => {
   const [pivotEnabled, setPivotEnabled] = useState(true);
-  const [pivot, setPivot] = useState<PivotConfig | null>(INITIAL_PIVOT);
+  const [pivot, setPivot] = useState<PivotConfig<PivotFact> | null>(INITIAL_PIVOT);
 
   const handlePivotEnabledChange = (enabled: boolean) => {
     setPivotEnabled(enabled);

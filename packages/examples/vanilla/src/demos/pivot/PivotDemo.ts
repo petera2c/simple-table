@@ -1,9 +1,10 @@
 import { SimpleTableVanilla } from "simple-table-core";
 import type { PivotConfig, Theme } from "simple-table-core";
 import { pivotDemoConfig } from "./pivot.demo-data";
+import type { PivotFact } from "./pivot.demo-data";
 import "simple-table-core/styles.css";
 
-const INITIAL_PIVOT: PivotConfig = {
+const INITIAL_PIVOT: PivotConfig<PivotFact> = {
   rows: ["region", "product"],
   columns: ["quarter"],
   values: [{ accessor: "sales", aggregation: { type: "sum" } }],
@@ -12,10 +13,10 @@ const INITIAL_PIVOT: PivotConfig = {
 export function renderPivotDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<PivotFact> {
   let pivotEnabled = true;
-  let pivot: PivotConfig | null = INITIAL_PIVOT;
-  let table: SimpleTableVanilla | null = null;
+  let pivot: PivotConfig<PivotFact> | null = INITIAL_PIVOT;
+  let table: SimpleTableVanilla<PivotFact> | null = null;
 
   const root = document.createElement("div");
 
