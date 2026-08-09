@@ -137,19 +137,19 @@ Simple, transparent pricing that never changes based on your revenue or team siz
 
 **$0/forever**
 
-For side projects and pre-revenue teams. Unlimited users per product license with full access to all core features, built-in themes, TypeScript support, and the Simple Table Community License for **zero-revenue** companies only. If your company generates revenue, use Pro or Enterprise.
+Free for side projects and companies that aren't making money yet. You get the full library — same features as Pro. Once your company earns revenue, switch to Pro or Enterprise.
 
 ### PRO - For Growing Businesses
 
 **$85/month** or **$850/year**
 
-For revenue-generating companies: priority email and Discord support, bug support for production issues, and the commercial EULA. Unlimited users per product license.
+For companies that make money. Priority email and Discord support, help with production bugs, and a commercial license. One license covers your whole product — no per-seat fees.
 
 ### ENTERPRISE - For teams that need hands-on support
 
 **$350/month** or **$3,500/year**
 
-Premium support with faster response times, direct access to core developers, feature request prioritization, and the commercial EULA. Unlimited users per product license.
+Direct access to core developers and priority on feature requests. Same commercial license as Pro — one license per product, no seat fees.
 
 **[View Detailed Pricing](https://www.simple-table.com/pricing)**
 

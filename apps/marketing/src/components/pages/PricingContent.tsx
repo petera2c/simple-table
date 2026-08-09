@@ -77,15 +77,15 @@ const PricingContent: React.FC = () => {
     () => [
       {
         name: "FREE",
-        subtitle: "Pre-revenue & side projects",
+        subtitle: "Side projects & early teams",
         price: SIMPLE_TABLE_PRICING.freeDisplay,
         billingCycle: "forever",
-        description: "Full library. Community License: only while you're pre-revenue.",
+        description: "Full library. Free until your company makes money.",
         features: [
           { text: "All grid features (same as Pro)", included: true, highlight: true },
           { text: "Official adapters for every framework", included: true, highlight: true },
           { text: "Community Discord support", included: true, highlight: true },
-          { text: "Commercial use when you earn revenue → Pro", included: true, highlight: false },
+          { text: "When you earn revenue → Pro", included: true, highlight: false },
         ],
         cta: "Install free",
         ctaVariant: "default",
@@ -98,7 +98,7 @@ const PricingContent: React.FC = () => {
         billingCycle: isAnnual ? "per year" : "per month",
         description: "Commercial license + priority support. No per-seat fees as you hire.",
         features: [
-          { text: "Commercial EULA for paid / revenue products", included: true, highlight: true },
+          { text: "Commercial license for products that make money", included: true, highlight: true },
           { text: "Priority email & Discord support", included: true, highlight: true },
           { text: "Production bug coverage", included: true, highlight: true },
           { text: "Same full library as Free", included: true, highlight: true },
@@ -115,10 +115,9 @@ const PricingContent: React.FC = () => {
           : SIMPLE_TABLE_PRICING.enterpriseMonthly,
         originalPrice: isAnnual ? SIMPLE_TABLE_PRICING.enterpriseAnnualStrikethrough : undefined,
         billingCycle: isAnnual ? "per year" : "per month",
-        description: "Everything in Pro when you need faster answers and core-dev access.",
+        description: "Everything in Pro, plus direct access to core developers.",
         features: [
           { text: "Everything in Pro", included: true, highlight: true },
-          { text: "Faster support response times", included: true, highlight: true },
           { text: "Direct access to core developers", included: true, highlight: true },
           { text: "Feature request prioritization", included: true, highlight: true },
         ],
@@ -312,7 +311,7 @@ const PricingContent: React.FC = () => {
                   rel="noopener noreferrer"
                   className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
                 >
-                  {plan.name === "FREE" ? "Community License" : "Commercial EULA"}
+                  {plan.name === "FREE" ? "Community License" : "Commercial license"}
                 </a>
               </div>
             </motion.div>
