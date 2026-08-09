@@ -54,7 +54,7 @@ npm install simple-table-core
 
 ### Column Features
 
-- **[Column Sorting](https://www.simple-table.com/docs/column-sorting)** - Sort data by any column with single or multi-column support
+- **[Column Sorting](https://www.simple-table.com/docs/column-sorting)** - Sort data by any column in ascending or descending order
 - **[Column Filtering](https://www.simple-table.com/docs/column-filtering)** - Filter data with built-in text, number, and date filters
 - **[Column Resizing](https://www.simple-table.com/docs/column-resizing)** - Drag column borders to resize on the fly
 - **[Column Pinning](https://www.simple-table.com/docs/column-pinning)** - Pin important columns to the left or right
@@ -62,7 +62,6 @@ npm install simple-table-core
 - **[Column Visibility](https://www.simple-table.com/docs/column-visibility)** - Show or hide columns dynamically
 - **[Column Alignment](https://www.simple-table.com/docs/column-alignment)** - Align content left, center, or right
 - **[Column Selection](https://www.simple-table.com/docs/column-selection)** - Select entire columns for bulk operations
-- **[Column Editing](https://www.simple-table.com/docs/column-editing)** - Edit entire columns with custom editors
 - **[Nested Headers](https://www.simple-table.com/docs/nested-headers)** - Create multi-level header hierarchies
 - **[Collapsible Columns](https://www.simple-table.com/docs/collapsible-columns)** - Expand and collapse column groups
 
@@ -80,6 +79,7 @@ npm install simple-table-core
 - **[Cell Editing](https://www.simple-table.com/docs/cell-editing)** - Edit cells inline with custom editors
 - **[Cell Highlighting](https://www.simple-table.com/docs/cell-highlighting)** - Highlight cells based on conditions
 - **[Cell Renderer](https://www.simple-table.com/docs/cell-renderer)** - Custom cell rendering for any data type
+- **[Value Formatter](https://www.simple-table.com/docs/value-formatter)** - Format cell values for display without changing the underlying data
 - **[Chart Columns](https://www.simple-table.com/docs/chart-columns)** - Inline bar and line/area charts in cells
 - **[Cell Clicking](https://www.simple-table.com/docs/cell-clicking)** - Handle cell click events with ease
 
@@ -87,10 +87,13 @@ npm install simple-table-core
 
 - **[Quick Filter](https://www.simple-table.com/docs/quick-filter)** - Global search across all columns with simple or smart modes
 - **[Pagination](https://www.simple-table.com/docs/pagination)** - Server-side and client-side pagination support
-- **[Infinite Scroll](https://www.simple-table.com/docs/infinite-scroll)** - Fetch and display data as you scroll
+- **[Infinite Scroll](https://www.simple-table.com/docs/infinite-scroll)** - Fetch and display data as you scroll, with row and column virtualization
 - **[Live Updates](https://www.simple-table.com/docs/live-updates)** - Real-time data updates and websocket integration
 - **[CSV Export](https://www.simple-table.com/docs/csv-export)** - One-click CSV download of grid data
+- **[Animations](https://www.simple-table.com/docs/animations)** - Smooth FLIP animations for sort, reorder, and visibility changes
 - **[Header Renderer](https://www.simple-table.com/docs/header-renderer)** - Custom header rendering for advanced layouts
+- **[Footer Renderer](https://www.simple-table.com/docs/footer-renderer)** - Custom footer rendering for summaries and controls
+- **[Programmatic Control](https://www.simple-table.com/docs/programmatic-control)** - Control sorting, filtering, selection, and more via the TableAPI
 
 ### Customization
 
