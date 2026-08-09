@@ -31,8 +31,8 @@ import { useFramework, FRAMEWORKS, FRAMEWORK_LABELS } from "@/providers/Framewor
 import { getStackBlitzUrl } from "@/utils/getStackBlitzUrl";
 import FrameworkIcon from "@/components/FrameworkIcon";
 import { mapWebsiteThemeToTableTheme } from "@/utils/themeMapper";
-import { trackCtaClick, trackCopyAiTablePrompt, trackCopyAiThemePrompt } from "@/lib/analytics";
-import { getAiTablePrompt, getAiThemePrompt } from "@/constants/aiTablePrompt";
+import { trackCtaClick, trackCopyAiSetupPrompt } from "@/lib/analytics";
+import { getAiSetupPrompt } from "@/constants/aiTablePrompt";
 
 // Dynamically import heavy components that are below the fold or conditional.
 // `loading` is required with `ssr: true` so Next wraps React.lazy in Suspense;
@@ -92,7 +92,6 @@ export default function HomeContent() {
   const [selectedTheme, setSelectedTheme] = useState<Theme>();
   const [isCodeVisible, setIsCodeVisible] = useState(false);
   const [promptCopied, setPromptCopied] = useState(false);
-  const [stylePromptCopied, setStylePromptCopied] = useState(false);
   const { framework, setFramework } = useFramework();
   const tableIcons = getTableIcons(iconLibrary);
 
@@ -103,34 +102,21 @@ export default function HomeContent() {
     trackCtaClick({
       cta_id: "homepage_docs",
       cta_text: "Go to docs",
-      destination: "/docs/installation",
+      destination: "/docs/quick-start",
       location: "homepage_hero",
     });
-    router.push("/docs/installation");
+    router.push("/docs/quick-start");
   };
 
   const handleCopyPromptClick = () => {
-    const prompt = getAiTablePrompt(framework);
+    const prompt = getAiSetupPrompt(framework);
     navigator.clipboard.writeText(prompt).then(() => {
-      trackCopyAiTablePrompt({
+      trackCopyAiSetupPrompt({
         framework,
         location: "homepage_hero",
       });
       setPromptCopied(true);
       setTimeout(() => setPromptCopied(false), 2000);
-    });
-  };
-
-  const handleCopyStylePromptClick = () => {
-    const prompt = getAiThemePrompt(framework);
-    navigator.clipboard.writeText(prompt).then(() => {
-      trackCopyAiThemePrompt({
-        framework,
-        location: "homepage_hero",
-        has_theme_css: false,
-      });
-      setStylePromptCopied(true);
-      setTimeout(() => setStylePromptCopied(false), 2000);
     });
   };
 
@@ -232,7 +218,7 @@ export default function HomeContent() {
             </motion.p>
 
             <motion.div
-              className="flex flex-col sm:flex-row justify-center gap-4 sm:items-start"
+              className="flex flex-col sm:flex-row justify-center gap-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.15 }}
@@ -248,24 +234,14 @@ export default function HomeContent() {
                 <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
               </Button>
 
-              <div className="flex flex-col gap-3">
-                <Button
-                  size="large"
-                  icon={<FontAwesomeIcon icon={promptCopied ? faCheck : faCopy} />}
-                  onClick={handleCopyPromptClick}
-                  className="hover:scale-105 transition-transform"
-                >
-                  {promptCopied ? "Copied!" : "Copy table prompt"}
-                </Button>
-                <Button
-                  size="large"
-                  icon={<FontAwesomeIcon icon={stylePromptCopied ? faCheck : faCopy} />}
-                  onClick={handleCopyStylePromptClick}
-                  className="hover:scale-105 transition-transform"
-                >
-                  {stylePromptCopied ? "Copied!" : "Copy style prompt"}
-                </Button>
-              </div>
+              <Button
+                size="large"
+                icon={<FontAwesomeIcon icon={promptCopied ? faCheck : faCopy} />}
+                onClick={handleCopyPromptClick}
+                className="hover:scale-105 transition-transform"
+              >
+                {promptCopied ? "Copied!" : "Copy AI prompt"}
+              </Button>
             </motion.div>
           </motion.div>
         </section>
@@ -422,7 +398,7 @@ export default function HomeContent() {
                 </div>
 
                 <motion.div
-                  className="flex flex-row gap-3 items-start"
+                  className="flex flex-row gap-3"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.15 }}
@@ -438,24 +414,14 @@ export default function HomeContent() {
                     <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
                   </Button>
 
-                  <div className="flex flex-col gap-3">
-                    <Button
-                      size="large"
-                      icon={<FontAwesomeIcon icon={promptCopied ? faCheck : faCopy} />}
-                      onClick={handleCopyPromptClick}
-                      className="hover:scale-105 transition-transform"
-                    >
-                      {promptCopied ? "Copied!" : "Copy table prompt"}
-                    </Button>
-                    <Button
-                      size="large"
-                      icon={<FontAwesomeIcon icon={stylePromptCopied ? faCheck : faCopy} />}
-                      onClick={handleCopyStylePromptClick}
-                      className="hover:scale-105 transition-transform"
-                    >
-                      {stylePromptCopied ? "Copied!" : "Copy style prompt"}
-                    </Button>
-                  </div>
+                  <Button
+                    size="large"
+                    icon={<FontAwesomeIcon icon={promptCopied ? faCheck : faCopy} />}
+                    onClick={handleCopyPromptClick}
+                    className="hover:scale-105 transition-transform"
+                  >
+                    {promptCopied ? "Copied!" : "Copy AI prompt"}
+                  </Button>
                 </motion.div>
               </motion.div>
 

@@ -285,7 +285,7 @@ export default function TanStackVsAgGridPage() {
             href: "/docs/installation",
           }}
           secondaryButton={{
-            text: "Copy table prompt",
+            text: "Copy AI prompt",
             action: "copyPrompt",
           }}
         />
@@ -1255,7 +1255,7 @@ export default function TanStackVsAgGridPage() {
           href: "/docs/installation",
         }}
         secondaryButton={{
-          text: "Copy table prompt",
+          text: "Copy AI prompt",
           action: "copyPrompt",
         }}
       />

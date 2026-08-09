@@ -380,7 +380,7 @@ export default function BestReactTableLibraries2026Page() {
                 href: "/docs/installation",
               }}
               secondaryButton={{
-                text: "Copy table prompt",
+                text: "Copy AI prompt",
                 action: "copyPrompt",
               }}
             />
@@ -1020,7 +1020,7 @@ export default function BestReactTableLibraries2026Page() {
           href: "/docs/installation",
         }}
         secondaryButton={{
-          text: "Copy table prompt",
+          text: "Copy AI prompt",
           action: "copyPrompt",
         }}
       />

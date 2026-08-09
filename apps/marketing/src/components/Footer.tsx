@@ -31,22 +31,22 @@ export default function Footer() {
               <ul className="space-y-2">
                 <li>
                   <Link
-                    href="/docs/installation"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/docs/installation") ? "text-white font-medium" : ""
-                    }`}
-                  >
-                    Installation
-                  </Link>
-                </li>
-                <li>
-                  <Link
                     href="/docs/quick-start"
                     className={`text-gray-400 hover:text-white transition-colors ${
                       isActive("/docs/quick-start") ? "text-white font-medium" : ""
                     }`}
                   >
                     Quick Start
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/docs/installation"
+                    className={`text-gray-400 hover:text-white transition-colors ${
+                      isActive("/docs/installation") ? "text-white font-medium" : ""
+                    }`}
+                  >
+                    Installation
                   </Link>
                 </li>
                 <li>

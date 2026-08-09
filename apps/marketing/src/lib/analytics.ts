@@ -113,11 +113,12 @@ export function trackCopyInstallCommand(params: {
   });
 }
 
-export function trackCopyAiTablePrompt(params: {
+/** Unified install + data + style prompt (hero, quick start, installation). */
+export function trackCopyAiSetupPrompt(params: {
   framework: string;
   location: string;
 }): void {
-  trackEvent("copy_ai_table_prompt", {
+  trackEvent("copy_ai_setup_prompt", {
     framework: params.framework,
     location: params.location,
   });

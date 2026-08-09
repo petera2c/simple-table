@@ -363,7 +363,7 @@ const Header = () => {
   }, [isMenuOpen, isMobile]);
 
   const navLinks = [
-    { href: "/docs/installation", label: "Documentation", useActivePath: true },
+    { href: "/docs/quick-start", label: "Documentation", useActivePath: true },
     { href: getDefaultExampleUrl(theme), label: "Examples", useActivePath: true },
     { href: "/theme-builder", label: "Theme Builder" },
     { href: "/pricing", label: "Pricing" },

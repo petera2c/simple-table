@@ -8,8 +8,8 @@ import { faArrowRight, faBookOpen, faCheck, faCopy } from "@fortawesome/free-sol
 import { useThemeContext } from "@/providers/ThemeProvider";
 import { useFramework } from "@/providers/FrameworkProvider";
 import { getExampleUrl } from "@/utils/getExampleUrl";
-import { getAiTablePrompt } from "@/constants/aiTablePrompt";
-import { trackBookACall, trackCtaClick, trackCopyAiTablePrompt } from "@/lib/analytics";
+import { getAiSetupPrompt } from "@/constants/aiTablePrompt";
+import { trackBookACall, trackCtaClick, trackCopyAiSetupPrompt } from "@/lib/analytics";
 
 export type CallToActionButton = {
   text: string;
@@ -46,13 +46,13 @@ export default function CallToActionCard({
   const [promptCopied, setPromptCopied] = useState(false);
 
   const handleCopyPrompt = (ctaId: string, ctaText: string) => {
-    const prompt = getAiTablePrompt(framework);
+    const prompt = getAiSetupPrompt(framework);
     navigator.clipboard.writeText(prompt).then(() => {
-      trackCopyAiTablePrompt({ framework, location });
+      trackCopyAiSetupPrompt({ framework, location });
       trackCtaClick({
         cta_id: ctaId,
         cta_text: ctaText,
-        destination: "clipboard:ai_table_prompt",
+        destination: "clipboard:ai_setup_prompt",
         location,
       });
       setPromptCopied(true);
