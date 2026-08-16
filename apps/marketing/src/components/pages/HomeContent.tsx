@@ -343,9 +343,9 @@ export default function HomeContent() {
       <div className="hidden lg:block">
         <div className="relative max-w-[100rem] mx-auto px-8 lg:px-12 pt-6">
           <section className="relative mb-16 min-h-[calc(100dvh-6.5rem)] flex flex-col pb-2">
-            <div className="grid grid-cols-2 gap-12 xl:gap-14 flex-1 items-center py-6">
+            <div className="grid grid-cols-[minmax(20rem,2fr)_minmax(0,3fr)] gap-12 xl:gap-14 flex-1 items-center py-6">
               <motion.div
-                className="flex flex-col justify-center text-left max-w-lg 2xl:max-w-2xl -mt-10"
+                className="flex flex-col justify-center text-left -mt-10"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4 }}
@@ -444,7 +444,7 @@ export default function HomeContent() {
             </div>
 
             <motion.div
-              className="mt-auto pt-6 border-t border-gray-200 dark:border-gray-700 grid grid-cols-2 gap-12 items-end"
+              className="mt-auto pt-6 border-t border-gray-200 dark:border-gray-700 grid grid-cols-[minmax(20rem,2fr)_minmax(0,3fr)] gap-12 items-end"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
