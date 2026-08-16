@@ -1240,9 +1240,12 @@ const dragOverUntilReorder = async (
   let visualsBeforeReorder = snapshotLeafVisuals(canvasElement);
   let styleLeftsBeforeReorder = snapshotLeafStyleLefts(canvasElement);
   const lastSamples = new Map<string, LeafSample>();
-  for (const accessor of SPOTIFY_7D_LEAVES) {
-    lastSamples.set(accessor, sampleLeaf(canvasElement, accessor));
-  }
+  const captureLastSamples = () => {
+    for (const accessor of SPOTIFY_7D_LEAVES) {
+      lastSamples.set(accessor, sampleLeaf(canvasElement, accessor));
+    }
+  };
+  captureLastSamples();
   let frame = 0;
 
   const watchFrames = async (count: number) => {
@@ -1291,6 +1294,9 @@ const dragOverUntilReorder = async (
       } else {
         await sleep(BETWEEN_SWAP_MS);
       }
+      // Retry wait lets in-flight FLIPs advance; rAF continuity must start
+      // from paint after that wait, not from lastSamples before it.
+      captureLastSamples();
       startX = endX - 80 * (attempt % 2 === 0 ? 1 : -1);
       startY = endY;
     }
@@ -1366,6 +1372,18 @@ const dragOverUntilReorder = async (
         // Capture hold visuals NOW — any await (watchFrames / expect) lets WAAPI
         // advance and would falsely fail a post-await jump check.
         const visualsAtCommit = snapshotLeafVisuals(canvasElement);
+        // Post-commit dest + held paint: the next rAF is a new FLIP, not a
+        // dest-rewrite vs a stale pre-swap sample. Also point each motion at
+        // the new style.left so destLeft checks match this swap.
+        captureLastSamples();
+        if (opts?.motions) {
+          for (const accessor of SPOTIFY_7D_LEAVES) {
+            const motion = opts.motions.get(accessor);
+            if (!motion) continue;
+            motion.destLeft = styleLeftOf(canvasElement, accessor);
+            motion.visualAtSample = visualsAtCommit.get(accessor) ?? motion.visualAtSample;
+          }
+        }
         const ok = opts?.expectOrder ? orderNow === opts.expectOrder : true;
         await watchFrames(DRAGOVER_FRAMES_PER_STEP);
         return { ok, visualsBeforeReorder, visualsAtCommit };
