@@ -1,7 +1,7 @@
 import ColumnDef from "../../types/ColumnDef";
 import { HeaderRenderContext } from "./types";
 import { createSelectionCheckbox } from "./selection";
-import { addTrackedEventListener } from "./eventTracking";
+import { addTrackedEventListener, getHeaderTooltipEpoch } from "./eventTracking";
 
 export const createEditableInput = (
   header: ColumnDef,
@@ -98,7 +98,13 @@ export const createLabelContent = (
     let tooltipElement: HTMLElement | null = null;
     let tooltipTimeout: ReturnType<typeof setTimeout> | null = null;
     
+    const tableIsReorderingColumns = () =>
+      Boolean(
+        labelTextSpan.closest(".simple-table-root")?.classList.contains("st-column-reordering"),
+      );
+
     const showTooltip = () => {
+      if (tableIsReorderingColumns()) return;
       // Rapid mouseenter schedules multiple timeouts; cancel the previous one
       // and drop any tooltip this closure still owns before scheduling again.
       if (tooltipTimeout) {
@@ -109,8 +115,13 @@ export const createLabelContent = (
         tooltipElement.parentElement?.removeChild(tooltipElement);
         tooltipElement = null;
       }
+      const epoch = getHeaderTooltipEpoch();
       tooltipTimeout = setTimeout(() => {
-        if (!labelTextSpan.isConnected) {
+        if (
+          !labelTextSpan.isConnected ||
+          epoch !== getHeaderTooltipEpoch() ||
+          tableIsReorderingColumns()
+        ) {
           tooltipTimeout = null;
           return;
         }

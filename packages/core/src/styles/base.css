@@ -2399,6 +2399,10 @@ input {
   animation: st-tooltip-fade-in 0.2s ease-out;
 }
 
+.simple-table-root.st-column-reordering .st-tooltip {
+  display: none;
+}
+
 @keyframes st-tooltip-fade-in {
   from {
     opacity: 0;

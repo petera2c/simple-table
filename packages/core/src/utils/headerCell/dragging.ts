@@ -22,6 +22,7 @@ import {
   setPrevUpdateTime,
   setPrevDraggingPosition,
   setPrevHeaders,
+  removeFloatingHeaderTooltips,
 } from "./eventTracking";
 
 /** Cleared on the next dragstart so a rapid A→B handoff isn't interrupted by A's dragend commit. */
@@ -166,6 +167,7 @@ export const attachDragHandlers = (
     // Pass-through fills on neighboring headers while columns slide (see
     // `.st-column-reordering` in base.css). Dragged header keeps its fill.
     root?.classList.add("st-column-reordering");
+    removeFloatingHeaderTooltips(cellElement);
     // Column-drag FLIP mode (no settle — mid-flight slides keep going if the
     // user grabs a different column before prior swaps finish).
     context.animationCoordinator?.setColumnReordering(true);

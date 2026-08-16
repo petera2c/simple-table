@@ -11,6 +11,27 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_1_7: ChangelogEntry = {
+  version: "4.1.7",
+  date: "2026-08-16",
+  title: "Smoother column dragging",
+  description:
+    "When you drag a column to a new place, the other columns slide over instead of jumping.",
+  changes: [
+    {
+      type: "improvement",
+      description:
+        "Dragging a column now slides the headers and the cells under them into their new places as you drag.",
+      link: "/docs/column-reordering",
+    },
+    {
+      type: "improvement",
+      description:
+        "The column you are dragging stays highlighted. Neighboring headers stay see-through so labels don't cover each other as they pass.",
+    },
+  ],
+};
+
 export const v4_1_6: ChangelogEntry = {
   version: "4.1.6",
   date: "2026-08-08",
@@ -41,24 +62,24 @@ export const v4_1_6: ChangelogEntry = {
 export const v4_1_5: ChangelogEntry = {
   version: "4.1.5",
   date: "2026-08-08",
-  title: "Framework wrapper updates and Vue data sync fix",
+  title: "Vue data updates and custom headers",
   description:
-    "Fix Vue tables ignoring row and column changes after first render, and make custom header UI keep its state when sorting or filtering across Vue, Solid, Angular, and Svelte.",
+    "Vue tables now pick up new rows and columns after first render, and custom header UI stays as you left it when you sort or filter.",
   changes: [
     {
       type: "bugfix",
       description:
-        "Vue: changing rows, columns, or callbacks after the table mounts now updates the table instead of sticking on the first data.",
+        "Vue: changing rows, columns, or handlers after the table first appears now updates the table instead of keeping the first data.",
     },
     {
       type: "bugfix",
       description:
-        "Vue, Solid, Angular, and Svelte: custom header UI no longer resets when you sort or filter (for example open menus and toggles stay as they were).",
+        "Vue, Solid, Angular, and Svelte: custom header UI no longer resets when you sort or filter. Open menus and toggles stay as they were.",
     },
     {
       type: "improvement",
       description:
-        "Vue, Solid, Angular, and Svelte: auto-sized columns remeasure correctly after custom cell or header content loads, including when leaving a loading state.",
+        "Vue, Solid, Angular, and Svelte: columns that size to their content update correctly after custom cells or headers load, including when loading finishes.",
     },
   ],
 };
@@ -66,13 +87,12 @@ export const v4_1_5: ChangelogEntry = {
 export const v4_1_4: ChangelogEntry = {
   version: "4.1.4",
   date: "2026-08-06",
-  title: "Column cellClass",
-  description: "Add a cellClass option on ColumnDef to style every body cell in a column.",
+  title: "Style a whole column",
+  description: "Add a cellClass option on a column to style every cell in that column.",
   changes: [
     {
       type: "feature",
-      description:
-        "New cellClass on ColumnDef applies a CSS class to each body cell in that column.",
+      description: "New cellClass on a column applies a CSS class to every body cell in that column.",
       link: "/docs/themes",
     },
   ],
@@ -81,14 +101,14 @@ export const v4_1_4: ChangelogEntry = {
 export const v4_1_3: ChangelogEntry = {
   version: "4.1.3",
   date: "2026-08-05",
-  title: "Column editor pin section sync",
+  title: "Pin from the column editor",
   description:
-    "Fix the column editor leaving rows in the wrong pin section after pin or unpin when column order stays the same.",
+    "Pinning or unpinning a column in the column editor now moves it to the right list even if column order stays the same.",
   changes: [
     {
       type: "bugfix",
       description:
-        "Pinning or unpinning a column in the column editor now moves the row into the correct section even when the overall column order does not change.",
+        "Pinning or unpinning a column in the column editor now moves that row into the left, middle, or right list even when the overall column order does not change.",
       link: "/docs/column-pinning",
     },
   ],
@@ -97,24 +117,23 @@ export const v4_1_3: ChangelogEntry = {
 export const v4_1_2: ChangelogEntry = {
   version: "4.1.2",
   date: "2026-08-01",
-  title: "Angular Package Format and Svelte published types",
+  title: "Angular import fix and Svelte 5",
   description:
-    "Ship @simple-table/angular with Ivy partial-compilation metadata so Angular 19+ standalone imports work, and fix @simple-table/svelte published TypeScript declarations plus the Svelte 5 peer range.",
+    "Angular apps can import the table without a standalone-component error, and the Svelte package now works cleanly with Svelte 5 and TypeScript.",
   changes: [
     {
       type: "bugfix",
       description:
-        "@simple-table/angular now builds with ng-packagr (Angular Package Format / partial Ivy). Standalone apps can import SimpleTableComponent without TS-992012 (“Component imports must be standalone…”).",
+        "Angular 19+ apps can import the table in a standalone app without a compiler error about standalone components.",
     },
     {
       type: "bugfix",
       description:
-        "@simple-table/svelte ships SimpleTable.svelte.d.ts in the published package so TypeScript can resolve the SimpleTable export from dist types.",
+        "Svelte: TypeScript now finds the SimpleTable types when you install the package.",
     },
     {
       type: "breaking",
-      description:
-        "@simple-table/svelte peer dependency is now svelte >=5.0.0 (the adapter already used Svelte 5 mount/unmount APIs).",
+      description: "Svelte: the table now requires Svelte 5 or newer.",
     },
   ],
 };
@@ -122,32 +141,32 @@ export const v4_1_2: ChangelogEntry = {
 export const v4_1_1: ChangelogEntry = {
   version: "4.1.1",
   date: "2026-07-29",
-  title: "getRowClass, row grouping alignment, and column editor click fix",
+  title: "Row styles, grouping alignment, and column editor clicks",
   description:
-    "Add getRowClass for data-driven row styling, restore caret-space alignment for non-expandable rows at an expandable depth, and keep column editor checkboxes responsive on heavy nested tables.",
+    "Style whole rows from your data, keep grouped row labels lined up, and make column-editor checkboxes respond on the first click.",
   changes: [
     {
       type: "feature",
       description:
-        "New getRowClass callback for data-driven row styling (e.g. search jump, compare highlights). Classes apply to each body cell — see Themes docs.",
+        "New getRowClass option lets you add CSS classes to a row from its data — for example to highlight a search match.",
       link: "/docs/themes",
     },
     {
       type: "bugfix",
       description:
-        "Leaf and otherwise non-expandable row-group siblings render an invisible expand-icon placeholder (same icon, opacity 0) so labels line up with expandable rows — restoring v2 alignment.",
+        "In row grouping, rows that cannot expand now line up with rows that can, instead of sitting indented differently.",
       link: "/docs/row-grouping",
     },
     {
       type: "bugfix",
       description:
-        "Column editor visibility toggles sync checkbox state in place when the editor list structure is unchanged, so nested checkboxes on heavy tables no longer need multiple clicks after setHeaders re-renders the table.",
+        "Nested checkboxes in the column editor on large tables now toggle on the first click.",
       link: "/docs/column-visibility",
     },
     {
       type: "bugfix",
       description:
-        "Rapid column hide/show no longer stacks horizontal accordion grow/shrink (especially in pinned sections); interrupting toggles cancel in-flight ghosts and snap to the latest layout.",
+        "Hiding and showing columns quickly no longer leaves leftover slide animations, especially on pinned columns.",
       link: "/docs/column-visibility",
     },
   ],
@@ -156,31 +175,31 @@ export const v4_1_1: ChangelogEntry = {
 export const v4_1_0: ChangelogEntry = {
   version: "4.1.0",
   date: "2026-07-28",
-  title: "Indeterminate column group checkboxes",
+  title: "Partial column-group checkboxes",
   description:
-    "Column editor group rows now show a minus mark when only some child columns are visible, with proper mixed accessibility state.",
+    "In the column editor, a group checkbox shows a minus when only some of its columns are visible.",
   changes: [
     {
       type: "feature",
       description:
-        "Group title checkboxes in the column editor use a tri-state: unchecked, indeterminate (partial selection with a minus icon and aria-checked=\"mixed\"), or checked when all children are visible.",
+        "Group checkboxes in the column editor can be empty, mixed (minus mark), or fully checked when every child column is visible.",
       link: "/docs/column-visibility",
     },
     {
       type: "improvement",
       description:
-        "Clicking an indeterminate group checkbox shows all descendant columns under that group, so the control resolves to fully checked instead of snapping back to mixed.",
+        "Clicking a mixed group checkbox shows every column in that group, instead of snapping back to mixed.",
     },
     {
       type: "bugfix",
       description:
-        "React columnEditorConfig.rowRenderer reuses its portal host per column so tooltips and other local UI state survive column-editor list re-renders.",
+        "React: custom column-editor rows keep tooltips and other local UI when the list refreshes.",
       link: "/docs/column-visibility",
     },
     {
       type: "bugfix",
       description:
-        "Sticky headers no longer go transparent from a CSS cascade override, so body rows no longer bleed through while scrolling (most visible on modern-light).",
+        "Sticky headers stay opaque while you scroll, so rows no longer show through them (most noticeable on the modern-light theme).",
     },
   ],
 };
@@ -188,34 +207,34 @@ export const v4_1_0: ChangelogEntry = {
 export const v4_0_9: ChangelogEntry = {
   version: "4.0.9",
   date: "2026-07-26",
-  title: "Typed row data with TData generics",
+  title: "TypeScript knows your row shape",
   description:
-    "Opt-in domain row typing across core and every framework adapter, with safer nested-table column types and typed TableAPI accessors.",
+    "You can tell TypeScript what a row looks like. Column settings, table helpers, and nested tables then know your fields. Existing untyped code still works.",
   changes: [
     {
       type: "feature",
       description:
-        "ColumnDef, SimpleTableProps, TableAPI, and renderers/callbacks accept optional TData/TValue generics. Available on React, Solid, Vue, Svelte, Angular, and SimpleTableVanilla. Defaults preserve existing untyped usage.",
+        "Column definitions, table props, helpers, and cell/header functions can take your row type. Works in React, Solid, Vue, Svelte, Angular, and vanilla. If you skip the type, nothing changes.",
     },
     {
       type: "feature",
       description:
-        "TableAPI.getVisibleRows() and getAllRows() return TableRow<TData>[], so visible-row handlers see your domain row shape without casts.",
+        "getVisibleRows() and getAllRows() now return your row type, so you do not need to cast.",
     },
     {
       type: "improvement",
       description:
-        "updateData, filters, pivot config, and rowGrouping accept typed Accessor<TData> values, with keyof autocomplete for known columns.",
+        "Live updates, filters, pivot, and row grouping autocomplete column names from your row type.",
     },
     {
       type: "bugfix",
       description:
-        "Nested table columns can use a different child row type than the parent (NestedColumnDef / NestedReactColumnDef) without casts or any.",
+        "A nested table can use a different row type than the parent table, without extra casts.",
     },
     {
       type: "improvement",
       description:
-        "Filter and datepicker overlays match table density; calendar clipping and month/year drill-down in the cell editor are fixed.",
+        "Filter and date pickers match the table's compact or roomy spacing. Calendar clipping and picking a month or year in the cell editor are fixed.",
     },
   ],
 };
@@ -223,20 +242,20 @@ export const v4_0_9: ChangelogEntry = {
 export const v4_0_8: ChangelogEntry = {
   version: "4.0.8",
   date: "2026-07-26",
-  title: "Crisper default table icons",
+  title: "Sharper default icons",
   description:
-    "Default sort, filter, expand, pagination, checkbox, and select icons are redrawn as stroke SVGs at a consistent header size for sharper rendering.",
+    "Sort, filter, expand, pagination, checkbox, and select icons are redrawn so they look the same size and stay sharp.",
   changes: [
     {
       type: "improvement",
       description:
-        "Default glyphs are now a unified stroke icon set (filter uses tapering list bars). Header icons render at 20px with color via currentColor.",
+        "Built-in header icons are a matching set (the filter icon is a stack of bars). They follow the table text color.",
       link: "/docs/custom-icons",
     },
     {
       type: "improvement",
       description:
-        "Checkbox, select dropdown, column-editor drag handle, footer pagination, and datepicker nav now share the same icon factories instead of duplicated SVG strings.",
+        "Checkboxes, select menus, the column-editor drag handle, pagination, and date-picker arrows use the same icon style.",
     },
   ],
 };
@@ -244,14 +263,14 @@ export const v4_0_8: ChangelogEntry = {
 export const v4_0_7: ChangelogEntry = {
   version: "4.0.7",
   date: "2026-07-25",
-  title: "Opaque table body during overscroll",
+  title: "No flash behind the table when you overscroll",
   description:
-    "Momentum / rubber-band scroll no longer flashes the page behind the table at the top or bottom edge.",
+    "Pulling past the top or bottom of the table no longer flashes the page through empty gaps.",
   changes: [
     {
       type: "bugfix",
       description:
-        "`.st-content` now uses the even-row background color as a backplate, so overscroll gaps stay opaque instead of revealing content behind the table.",
+        "When you scroll past the first or last row, the table background stays solid instead of showing whatever is behind it.",
     },
   ],
 };
@@ -259,14 +278,14 @@ export const v4_0_7: ChangelogEntry = {
 export const v4_0_6: ChangelogEntry = {
   version: "4.0.6",
   date: "2026-07-25",
-  title: "Update cells by row id",
+  title: "Update a cell by row id",
   description:
-    "Live updates can target a row by stable id instead of finding its index in the source array.",
+    "Live updates can find a row by its id, even after you sort or filter, instead of only by position in the original list.",
   changes: [
     {
       type: "feature",
       description:
-        "TableAPI.updateData accepts rowId (from getRowId) in addition to rowIndex. When both are passed, rowId wins. The table keeps an internal id→source-index map so updates stay correct after sort or filter.",
+        "updateData now accepts rowId (from getRowId) as well as rowIndex. If you pass both, rowId is used. Updates still hit the right row after sort or filter.",
       link: "/docs/live-updates",
     },
   ],
@@ -275,15 +294,15 @@ export const v4_0_6: ChangelogEntry = {
 export const v4_0_5: ChangelogEntry = {
   version: "4.0.5",
   date: "2026-07-22",
-  title: "Renamed public API props and types",
+  title: "Clearer names for props and types",
   titleLink: "/migrations/v4-0-5",
   description:
-    "Several props and types are renamed for clearer naming. Consumers must update to the new names.",
+    "Several props and types have new names. You need to update your app to the new names.",
   changes: [
     {
       type: "breaking",
       description:
-        "Renamed: defaultHeaders → columns, HeaderObject / *HeaderObject → ColumnDef / *ColumnDef, editColumns → enableColumnEditor, shouldPaginate → enablePagination, onGridReady → onTableReady, useHoverRowBackground / useOdd* → hoverRowBackground / odd*, and isSortable / isEditable / isEssential → sortable / editable / essential (including values read back from headers).",
+        "Renamed: defaultHeaders → columns, HeaderObject / *HeaderObject → ColumnDef / *ColumnDef, editColumns → enableColumnEditor, shouldPaginate → enablePagination, onGridReady → onTableReady, useHoverRowBackground / useOdd* → hoverRowBackground / odd*, and isSortable / isEditable / isEssential → sortable / editable / essential (including values you read back from columns).",
       link: "/migrations/v4-0-5",
     },
   ],
@@ -292,20 +311,20 @@ export const v4_0_5: ChangelogEntry = {
 export const v4_0_3: ChangelogEntry = {
   version: "4.0.3",
   date: "2026-07-21",
-  title: "excludeFromRender layout and custom footers",
+  title: "Hidden columns and custom footers",
   description:
-    "Columns with excludeFromRender no longer reserve layout width, and custom footers can refresh from external state.",
+    "Columns with excludeFromRender no longer take up space, and custom footers can refresh when something outside the table changes.",
   changes: [
     {
       type: "bugfix",
       description:
-        "Columns with excludeFromRender: true no longer inflate row width, shift neighbors after resize, or steal space from fr columns — layout, section widths, and pinned-section math all skip them consistently with hide.",
+        "Columns with excludeFromRender: true no longer leave a gap, shove neighbors after a resize, or take space from flexible columns. They are skipped the same way as hidden columns, including in pinned areas.",
       link: "/docs/column-visibility",
     },
     {
       type: "feature",
       description:
-        "Added footerRenderKey so custom footerRenderer output can refresh when external state changes (e.g. loading) without changing the footer function identity. Updating rows also busts the custom footer cache when the row count is unchanged.",
+        "New footerRenderKey refreshes a custom footer when outside state changes (for example a loading flag), without rewriting the footer function. Updating rows also refreshes the footer even if the row count stays the same.",
       link: "/docs/footer-renderer",
     },
   ],
@@ -314,14 +333,14 @@ export const v4_0_3: ChangelogEntry = {
 export const v4_0_1: ChangelogEntry = {
   version: "4.0.1",
   date: "2026-07-20",
-  title: "Append loading skeletons",
+  title: "Loading rows appear under existing data",
   description:
-    "When isLoading is true with rows already loaded, skeleton rows append below instead of blanking the whole table.",
+    "When isLoading is true and rows are already on screen, placeholder rows appear underneath instead of wiping the whole table.",
   changes: [
     {
       type: "improvement",
       description:
-        "isLoading now keeps existing row content visible and appends skeleton placeholder rows underneath. An empty table still shows a full skeleton page; clear rows for a full-table reload. Ideal for pagination and infinite scroll.",
+        "isLoading keeps existing rows visible and adds skeleton rows below. An empty table still shows a full skeleton page. Clear the rows if you want a full reload. Useful for pagination and infinite scroll.",
       link: "/docs/loading-state",
     },
   ],
@@ -330,19 +349,20 @@ export const v4_0_1: ChangelogEntry = {
 export const v4_0_0: ChangelogEntry = {
   version: "4.0.0",
   date: "2026-07-20",
-  title: "Sticky parents after sort",
-  description: "Sticky parent rows stay in sync when grouped tables are sorted.",
+  title: "Pivot tables and sticky group headers after sort",
+  description:
+    "Turn flat rows into a pivot with the pivot prop. Grouped parent rows stay correct after you sort.",
   changes: [
     {
       type: "feature",
       description:
-        "Added declarative matrix pivot via the pivot prop and TableAPI (setPivot, getPivot, getPivotHeaders, getPivotedRows). Reshape flat rows into row/column dimensions with aggregations, nested headers, and totals — no drag-and-drop panel required.",
+        "New pivot prop and helpers (setPivot, getPivot, getPivotHeaders, getPivotedRows). Turn a flat list into rows, columns, totals, and nested headers — no drag-and-drop panel required.",
       link: "/docs/pivot",
     },
     {
       type: "bugfix",
       description:
-        "Sticky parent rows in row-grouped tables now update correctly after sorting (and other reorders). The sticky-parents cache no longer reuses stale row identities when the viewport band is unchanged.",
+        "In row grouping, sticky parent rows now show the right group after you sort or reorder, instead of keeping an old label while you scroll.",
       link: "/docs/row-grouping",
     },
   ],
@@ -351,18 +371,18 @@ export const v4_0_0: ChangelogEntry = {
 export const v3_9_9: ChangelogEntry = {
   version: "3.9.9",
   date: "2026-07-15",
-  title: "Disable virtualization flag",
-  description: "Opt out of row and column virtualization with one prop.",
+  title: "Show every row and column if you want",
+  description: "Turn off on-screen-only drawing with one prop, and fix empty loading placeholders.",
   changes: [
     {
       type: "feature",
       description:
-        "Added enableVirtualization (default true). Set to false to render every row and column in the DOM while keeping height/maxHeight layout.",
+        "New enableVirtualization (default true). Set it to false to draw every row and column, while height and maxHeight still work.",
     },
     {
       type: "bugfix",
       description:
-        "When isLoading is true with no rows, placeholder skeleton rows no longer share the same getRowId key (e.g. \"undefined\"), so every row renders skeleton cells instead of only the first.",
+        "When isLoading is true and there are no rows, every placeholder row shows a skeleton. Before, they could share the same getRowId (for example \"undefined\") so only the first row looked like a skeleton.",
       link: "/docs/loading-state",
     },
   ],
@@ -371,18 +391,18 @@ export const v3_9_9: ChangelogEntry = {
 export const v3_9_8: ChangelogEntry = {
   version: "3.9.8",
   date: "2026-07-14",
-  title: "Unstable column and row refs",
-  description: "Tables stay stable when columns or rows are rebuilt every render.",
+  title: "New column objects every render",
+  description: "The table stays stable if you rebuild columns or copy rows on every render.",
   changes: [
     {
       type: "bugfix",
       description:
-        "Hardened unstable props: rebuilding columns or cloning rows on every render no longer flickers header menus or breaks column resizing.",
+        "Rebuilding columns or copying rows on every render no longer flickers header menus or breaks column resizing.",
     },
     {
       type: "bugfix",
       description:
-        "Live cell updates now respect filters and sort — rows hide, show, or reorder when an updated value no longer matches.",
+        "Live cell updates now follow filters and sort — rows hide, show, or reorder when an updated value no longer matches.",
       link: "/docs/live-updates",
     },
   ],
@@ -391,12 +411,12 @@ export const v3_9_8: ChangelogEntry = {
 export const v3_9_7: ChangelogEntry = {
   version: "3.9.7",
   date: "2026-07-11",
-  title: "selectableColumns restored",
+  title: "selectableColumns works again",
   description: "selectableColumns is back as its own prop.",
   changes: [
     {
       type: "bugfix",
-      description: "Restored selectableColumns prop support.",
+      description: "The selectableColumns prop works again.",
     },
   ],
 };
@@ -432,7 +452,7 @@ export const v3_9_6: ChangelogEntry = {
     {
       type: "bugfix",
       description:
-        "Row expand chevrons no longer flip out of sync when collapseAll() and expandDepth() run back-to-back (e.g. Only Divisions).",
+        "Row expand arrows stay in sync when collapseAll() and expandDepth() run one after the other (for example Only Divisions).",
       link: "/docs/row-grouping",
     },
     {
@@ -443,7 +463,7 @@ export const v3_9_6: ChangelogEntry = {
     {
       type: "bugfix",
       description:
-        "Expandable columns in row-grouped tables now show and clear loading skeletons when isLoading toggles, instead of staying stuck on stale content or skeletons.",
+        "Expandable columns in row-grouped tables now show and clear loading placeholders when isLoading turns on and off, instead of staying on old content or skeletons.",
       link: "/docs/row-grouping",
     },
   ],
@@ -497,7 +517,7 @@ export const v3_9_3: ChangelogEntry = {
     {
       type: "bugfix",
       description:
-        "Double-click column autofit no longer freezes React tables with custom cell renderers (measure-time portal hosts are disposed, and already-wrapped renderers are not nested on controlled header updates).",
+        "Double-click to fit a column no longer freezes React tables that use custom cells.",
     },
   ],
 };
@@ -505,13 +525,13 @@ export const v3_9_3: ChangelogEntry = {
 export const v3_9_2: ChangelogEntry = {
   version: "3.9.2",
   date: "2026-07-08",
-  title: "Header portal cleanup on sort",
-  description: "Open tooltips and popovers in custom headers no longer stick around after sort.",
+  title: "Header menus close after sort",
+  description: "Open tooltips and popovers in custom headers no longer stick around after you sort.",
   changes: [
     {
       type: "bugfix",
       description:
-        "Fixed portal-based floating UI in header renderers (e.g. Radix tooltips/popovers) remaining open and unclosable after the header re-renders on sort.",
+        "Tooltips and popovers in custom headers (for example Radix) now close after you sort, instead of staying open with no way to dismiss them.",
     },
     {
       type: "bugfix",
@@ -532,18 +552,18 @@ export const v3_9_2: ChangelogEntry = {
 export const v3_9_1: ChangelogEntry = {
   version: "3.9.1",
   date: "2026-07-06",
-  title: "Smoother layout during nav resize",
-  description: "Tables no longer relayout on every frame while the container animates.",
+  title: "Smoother layout while a sidebar animates",
+  description: "The table waits until a container animation finishes before it resizes.",
   changes: [
     {
       type: "improvement",
       description:
-        "Container resize during animated layout shifts (e.g. a collapsing sidebar) is coalesced so the table relayouts once after the transition instead of on every frame.",
+        "If the table's container is animating (for example a collapsing sidebar), the table resizes once at the end instead of on every frame.",
     },
     {
       type: "bugfix",
       description:
-        "Fixed onRowGroupExpand passing a stale row snapshot when re-expanding a lazy-loaded group, which caused unnecessary refetches, loading states, and sibling row animation glitches on the second expand.",
+        "Expanding a lazy-loaded group again no longer uses an old row, which used to cause extra fetches, loading flashes, and jumpy sibling rows.",
     },
   ],
 };
@@ -551,20 +571,20 @@ export const v3_9_1: ChangelogEntry = {
 export const v3_9_0: ChangelogEntry = {
   version: "3.9.0",
   date: "2026-07-05",
-  title: "Mid-scroll sort animation fixes",
-  description: "Sort animations while scrolled are cleaner and more complete.",
+  title: "Sort animation while you are scrolled",
+  description: "Sorting while scrolled no longer looks incomplete or jumpy.",
   changes: [
     {
       type: "bugfix",
-      description: "Sorting mid-scroll no longer animates padding-band rows through the viewport.",
+      description: "Sorting while scrolled no longer slides empty spacer rows across the table.",
     },
     {
       type: "bugfix",
-      description: "Fixed empty pinned cells after sorting while scrolled.",
+      description: "Pinned cells no longer go blank after you sort while scrolled.",
     },
     {
       type: "bugfix",
-      description: "The first visible row now animates on sort like other rows.",
+      description: "The first visible row now moves on sort like the other rows.",
     },
   ],
 };
@@ -608,7 +628,7 @@ export const v3_8_7: ChangelogEntry = {
     {
       type: "bugfix",
       description:
-        "Callback props (e.g. onSortChange) are read at invocation time instead of being captured once at mount, so closures no longer go stale.",
+        "If you change a handler like onSortChange after the table first appears, the table uses the new handler.",
     },
     {
       type: "bugfix",
@@ -623,7 +643,7 @@ export const v3_8_7: ChangelogEntry = {
     {
       type: "bugfix",
       description:
-        '"auto" width measures custom cell renderer content at its natural width, so truncation styles (min-width: 0 / overflow: hidden) no longer produce under-sized columns. Pair with maxWidth to cap a column and truncate longer content.',
+        '"auto" width measures custom cell content at its natural size, so cells that clip long text no longer make the column too narrow. Use maxWidth if you want a cap and truncation.',
       link: "/docs/column-width#content-fit-auto",
     },
     {
@@ -665,23 +685,24 @@ export const v3_8_5: ChangelogEntry = {
   version: "3.8.5",
   date: "2026-06-27",
   title: "Bug fixes",
-  description: "External scroll height bug fix.",
+  description: "Fixes for tables that scroll with the page.",
   changes: [
     {
       type: "bugfix",
-      description: "Fixed external scroll virtualization.",
+      description:
+        "When the page or another box scrolls the table, rows now appear correctly as you scroll.",
     },
     {
       type: "bugfix",
-      description: "Spam-clicking sort no longer breaks animations.",
+      description: "Clicking sort many times in a row no longer breaks animations.",
     },
     {
       type: "improvement",
-      description: "Smoother sort animations with external scroll.",
+      description: "Smoother sort animations when the page scrolls the table.",
     },
     {
       type: "bugfix",
-      description: "Live updates resume after spamming sort.",
+      description: "Live updates start working again after you click sort many times.",
     },
   ],
 };
@@ -690,39 +711,40 @@ export const v3_8_4: ChangelogEntry = {
   version: "3.8.4",
   date: "2026-06-27",
   title: "Bug fixes",
-  description: "Scroll, virtualization, and render bug fixes.",
+  description: "Scroll, wide tables, and render bug fixes.",
   changes: [
     {
       type: "bugfix",
-      description: "maxHeight scrolls with empty server-side rows.",
+      description: "A table with maxHeight can still scroll when server-side rows are empty.",
     },
     {
       type: "bugfix",
-      description: "Custom footers now fetch server-side pages.",
+      description: "Custom footers load the right page when you use server-side pagination.",
     },
     {
       type: "bugfix",
-      description: "Column virtualization no longer renders every column.",
+      description: "Wide tables only draw columns you can see, instead of every column.",
     },
     {
       type: "bugfix",
-      description: "External scroll resolves late-mounting parents.",
+      description:
+        "If the scroll parent isn't ready when the table first appears, the table still picks it up.",
     },
     {
       type: "bugfix",
-      description: "External scroll fills initial viewport.",
+      description: "When the page scrolls the table, the first screen of rows fills in correctly.",
     },
     {
       type: "improvement",
-      description: "Cells skip rebuilds when inputs are unchanged.",
+      description: "The table does less work when cell data hasn't changed.",
     },
     {
       type: "feature",
-      description: "Limit per-column filter operators.",
+      description: "Limit which filter operators a column offers.",
     },
     {
       type: "bugfix",
-      description: "toggleColumnEditor() now toggles closed.",
+      description: "toggleColumnEditor() closes the editor if it is already open.",
     },
   ],
 };
@@ -731,15 +753,15 @@ export const v3_8_3: ChangelogEntry = {
   version: "3.8.3",
   date: "2026-06-25",
   title: "Bug fixes",
-  description: "Stale cell rendering bug fix.",
+  description: "Old cell content and calc() height fixes.",
   changes: [
     {
       type: "bugfix",
-      description: "Stale cells no longer linger.",
+      description: "Old cell content no longer stays on screen after data changes.",
     },
     {
       type: "bugfix",
-      description: "calc() maxHeight now scrolls.",
+      description: "maxHeight set with CSS calc() now scrolls correctly.",
     },
   ],
 };
@@ -752,7 +774,7 @@ export const v3_8_1: ChangelogEntry = {
   changes: [
     {
       type: "bugfix",
-      description: "Export-only columns no longer add empty horizontal scroll.",
+      description: "Export-only columns no longer add extra empty horizontal scroll.",
     },
     {
       type: "bugfix",
@@ -764,7 +786,7 @@ export const v3_8_1: ChangelogEntry = {
     },
     {
       type: "bugfix",
-      description: "Header row now renders when mounting with empty headers.",
+      description: "The header row still appears if the table starts with no columns.",
     },
     {
       type: "bugfix",
@@ -851,15 +873,16 @@ export const v3_6_4: ChangelogEntry = {
   version: "3.6.4",
   date: "2026-06-08",
   title: "Animation improvements",
-  description: "Animation improvements.",
+  description: "Row motion works when the footer sits above the table, and custom headers render correctly.",
   changes: [
     {
       type: "improvement",
-      description: "FLIP animations for footerPosition: 'top'.",
+      description:
+        "Row and column motion works when the footer is above the table (footerPosition: \"top\").",
     },
     {
       type: "bugfix",
-      description: "Custom headerRenderer fix.",
+      description: "Custom header content renders correctly.",
     },
   ],
 };
@@ -880,7 +903,7 @@ export const v3_6_3: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "Added a st-row-position-{position} class to every rendered row (body cells, state rows, and nested-grid rows), letting consumers style any specific row via CSS (e.g. .st-row-position-3 { ... }).",
+        "Every row gets a st-row-position-{n} class (body, empty/loading rows, and nested tables), so you can style a specific row in CSS — for example .st-row-position-3 { ... }.",
     },
   ],
 };
@@ -888,20 +911,20 @@ export const v3_6_3: ChangelogEntry = {
 export const v3_6_2: ChangelogEntry = {
   version: "3.6.2",
   date: "2026-05-16",
-  title: "Sticky row-group parents in external scroll",
+  title: "Sticky group headers when the page scrolls",
   description:
-    "enableStickyParents now works in external scroll mode. Grouped parent rows pin under the sticky header as you scroll past their children, instead of scrolling away with the table. Removes the warn-and-noop guard added in 3.6.0.",
+    "enableStickyParents now works with scrollParent. Grouped parent rows stay under the header as you scroll past their children, instead of sliding away. The warning from 3.6.0 is gone.",
   changes: [
     {
       type: "feature",
       description:
-        "enableStickyParents is now supported alongside scrollParent — pinned grouped parents stay flush under the sticky header in external scroll mode.",
+        "You can use enableStickyParents with scrollParent. Grouped parent rows stay under the sticky header when the page (or another box) scrolls the table.",
       link: "/docs/infinite-scroll",
     },
     {
       type: "improvement",
       description:
-        "Removed the one-shot console.warn that fired when enableStickyParents and scrollParent were combined; the conflict no longer exists.",
+        "No more console warning when enableStickyParents and scrollParent are used together.",
     },
   ],
 };
@@ -909,43 +932,43 @@ export const v3_6_2: ChangelogEntry = {
 export const v3_6_0: ChangelogEntry = {
   version: "3.6.0",
   date: "2026-05-15",
-  title: "Window / external scroll mode",
+  title: "Scroll with the page",
   description:
-    "New scrollParent prop lets the table grow to its natural height inside a page-level or custom scroll container, while that parent's scroll drives virtualization and onLoadMore. Header automatically pins to the top of the parent's scroll viewport.",
+    "New scrollParent prop lets the table grow to its natural height inside the page or another scroll box. That parent’s scroll loads rows and can fire onLoadMore. The header sticks to the top of that box.",
   changes: [
     {
       type: "feature",
       description:
-        'New scrollParent prop (HTMLElement | "window" | () => HTMLElement | null) opts the table into external scroll mode when no height/maxHeight is set; the parent\'s scroll drives row virtualization.',
+        'New scrollParent prop (HTMLElement | "window" | () => HTMLElement | null). Use it when you do not set height or maxHeight; the parent’s scroll loads rows as you move.',
       link: "/docs/infinite-scroll",
     },
     {
       type: "feature",
       description:
-        "onLoadMore now fires based on the external scroll parent's position relative to the table bottom when scrollParent is active.",
+        "With scrollParent, onLoadMore fires based on how close the bottom of the table is to the parent’s scroll position.",
       link: "/docs/infinite-scroll",
     },
     {
       type: "feature",
       description:
-        "New infiniteScrollThreshold prop (default 200px) exposes the bottom-distance at which onLoadMore fires.",
+        "New infiniteScrollThreshold prop (default 200px) is how close to the bottom onLoadMore fires.",
       link: "/docs/infinite-scroll",
     },
     {
       type: "feature",
       description:
-        "Header is automatically sticky-pinned to the top of the external scroll parent's viewport in scrollParent mode. Auto-compensates for parent padding-top.",
+        "In scrollParent mode, the header sticks to the top of the parent. Extra padding at the top of the parent is accounted for.",
       link: "/docs/infinite-scroll",
     },
     {
       type: "improvement",
       description:
-        "Suppresses the browser's elastic rubber-band on the scroll parent while external scroll mode is active so the sticky header stays put during overscroll. Restored on detach.",
+        "Pulling past the edge of the scroll parent no longer rubber-bands the sticky header out of place. Normal overscroll returns when the table unmounts.",
     },
     {
       type: "improvement",
       description:
-        "enableStickyParents (sticky row-group rows) is now safely no-op + warn when combined with scrollParent (incompatible CSS containing-block).",
+        "enableStickyParents does nothing and logs a warning if you also set scrollParent (they could not work together yet; this was fixed in 3.6.2).",
     },
   ],
 };
@@ -953,24 +976,24 @@ export const v3_6_0: ChangelogEntry = {
 export const v3_5_3: ChangelogEntry = {
   version: "3.5.3",
   date: "2026-05-09",
-  title: "Pinned & auto-expand resize fixes",
+  title: "Pinned columns and auto-expand resize",
   description:
-    "Fixes for nested pinned headers, auto-expand resize math, and viewport-based width caps.",
+    "Nested pinned headers, dragging to resize auto-expand columns, and width limits now match what you see.",
   changes: [
     {
       type: "bugfix",
       description:
-        "Column drag treats nested headers under a pinned parent as pinned (section detection).",
+        "Dragging a nested header under a pinned parent treats it as pinned, like the parent.",
     },
     {
       type: "bugfix",
       description:
-        "Auto-expand resize syncs leaf widths from the DOM and uses storage headers so drag math matches layout.",
+        "Resizing auto-expand columns uses the widths on screen, so the drag matches the layout.",
     },
     {
       type: "bugfix",
       description:
-        "Pinned/main auto-expand width caps use the real pinned strip and main body viewports; positive growth clamps only when the section actually widens.",
+        "Auto-expand width limits use the real pinned and main areas, and only cap growth when that area actually gets wider.",
     },
   ],
 };
@@ -988,7 +1011,7 @@ export const v3_5_2: ChangelogEntry = {
     {
       type: "improvement",
       description:
-        "Column hide/show and pin/unpin animate horizontally; pure reorders still FLIP (tracks last painted columns vs in-place editor mutations).",
+        "Hiding and showing columns, and pinning or unpinning, now slides sideways. Reordering columns still slides neighbors into place.",
     },
     {
       type: "improvement",
@@ -2610,6 +2633,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_1_7,
   v4_1_6,
   v4_1_5,
   v4_1_4,
