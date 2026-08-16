@@ -65,7 +65,7 @@ export interface RenderContext {
   getCollapsedHeaders?: () => Set<Accessor>;
   getExpandedRows: () => Map<string, number>;
   getHeaders: () => ColumnDef[];
-  /** Pristine snapshot of the configured column definitions — the reset target for the column editor's reset button. */
+  /** Last ingested column definitions — the reset target for the column editor's reset button. */
   getPristineDefaultHeaders: () => ColumnDef[];
   getPivot: () => PivotConfig | null;
   setPivot: (pivot: PivotConfig | null) => void;

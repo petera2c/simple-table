@@ -151,17 +151,17 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
   const handleCheckboxChange = (checked: boolean) => {
     if (!canToggleVisibility) return;
 
-    const latestHeaders = resolveHeaders();
-    const target = findHeaderByAccessor(latestHeaders, header.accessor);
+    const next = deepClone(resolveHeaders());
+    const target = findHeaderByAccessor(next, header.accessor);
     if (!target) return;
 
     const targetHasChildren = Boolean(target.children && target.children.length > 0);
     target.hide = !checked;
 
     if (!checked) {
-      updateParentHeaders(latestHeaders);
+      updateParentHeaders(next);
     } else {
-      findAndMarkParentsVisible(latestHeaders, target.accessor);
+      findAndMarkParentsVisible(next, target.accessor);
 
       if (targetHasChildren && target.children && target.children.length > 0) {
         const wasPartial =
@@ -173,16 +173,15 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
         } else if (areAllChildrenHidden(target.children) && target.children[0]) {
           // Fully hidden group → checked: reveal the first child (existing behavior).
           target.children[0].hide = false;
-          findAndMarkParentsVisible(latestHeaders, target.children[0].accessor);
+          findAndMarkParentsVisible(next, target.children[0].accessor);
         }
       }
     }
 
-    const updatedHeaders = [...latestHeaders];
-    setHeaders(deepClone(updatedHeaders));
+    setHeaders(next);
 
     if (onColumnVisibilityChange) {
-      const visibilityState = buildColumnVisibilityState(updatedHeaders);
+      const visibilityState = buildColumnVisibilityState(next);
       onColumnVisibilityChange(visibilityState);
     }
   };

@@ -101,14 +101,8 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
   private localRows: Row[] = [];
   private headers: ColumnDef[] = [];
   /**
-   * Pristine deep-cloned snapshot of the column definitions as configured
-   * (constructor / update with `columns`). `this.headers` shares object
-   * references with `config.columns` at mount, and the column editor
-   * mutates header objects in place (e.g. `header.hide = true`) — so
-   * `config.columns` drifts with runtime state and cannot serve as the
-   * reset target. `resetColumns()` restores from this snapshot instead, giving
-   * a well-defined default: every column visible except those explicitly
-   * configured with `hide: true` in the definitions.
+   * Last ingested column definitions. `resetColumns()` restores from this
+   * snapshot. Runtime hide, width, and pin live on `this.headers`.
    */
   private pristineDefaultHeaders: ColumnDef[] = [];
   private essentialAccessors: Set<string> = new Set();
@@ -241,16 +235,6 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
   private pendingAccordionAxis: AccordionAxis = null;
   /** Pending timeout id used to remove the accordion CSS class. */
   private accordionCleanupTimerId: number | null = null;
-  /**
-   * Visible-leaf-headers key as of the last render that committed to the DOM.
-   * Used by `setHeaders` to detect hide/show/pin/unpin and trigger the
-   * accordion-horizontal animation. Comparing against `this.headers` directly
-   * doesn't work because the column editor mutates header objects in place
-   * (e.g. `header.hide = true`) BEFORE invoking setHeaders, so by the time
-   * setHeaders runs, the prev and next trees already point to the same
-   * mutated header instances.
-   */
-  private lastRenderedVisibilityKey: string | null = null;
 
   constructor(container: HTMLElement, config: SimpleTableConfigInput<TData>) {
     this.container = container;
@@ -264,8 +248,8 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     this.resolvedIcons = TableInitializer.resolveIcons(resolved);
 
     this.localRows = [...resolved.rows];
-    this.headers = [...resolved.columns];
-    this.pristineDefaultHeaders = deepClone(resolved.columns);
+    this.ingestColumnSnapshot(resolved.columns);
+    this.headers = deepClone(this.pristineDefaultHeaders);
     this.columnEditorOpen = resolved.enableColumnEditorInitOpen ?? false;
     this.internalIsLoading = resolved.isLoading ?? false;
 
@@ -307,6 +291,13 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
 
     this.rebuildRowIndexMap();
     this.initializeManagers();
+  }
+
+  /** Copy caller columns into `config.columns` and `pristineDefaultHeaders`. */
+  private ingestColumnSnapshot(columns: ColumnDef[]): void {
+    const ingested = deepClone(columns);
+    this.config.columns = ingested;
+    this.pristineDefaultHeaders = ingested;
   }
 
   private applyAnimationsConfig(animations: SimpleTableConfig["animations"]): void {
@@ -398,21 +389,11 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
   }
 
   /**
-   * True when the visible-leaf-set (or its pinned-section assignment) for
-   * `nextHeaders` differs from the last render that committed to the DOM.
-   *
-   * We deliberately compare against {@link lastRenderedVisibilityKey} rather
-   * than `this.headers`: the column editor mutates header objects in place
-   * before invoking setHeaders (e.g. `header.hide = true`, then
-   * `setHeaders(deepClone(headers))`), and `this.headers` shares those
-   * mutated references — so a prev-vs-next compare always reads the same
-   * state and reports no change. Comparing to the last-rendered key sees
-   * the user's actually-painted state and correctly detects hide/show and
-   * pin/unpin changes.
+   * True when the visible-leaf-set or pinned section of `nextHeaders` differs
+   * from the current `this.headers` tree.
    */
   private didColumnVisibilityChange(nextHeaders: ColumnDef[]): boolean {
-    const nextKey = this.buildVisibilityKey(nextHeaders);
-    return this.lastRenderedVisibilityKey !== null && nextKey !== this.lastRenderedVisibilityKey;
+    return this.buildVisibilityKey(this.headers) !== this.buildVisibilityKey(nextHeaders);
   }
 
   private captureAnimationSnapshot(): void {
@@ -1383,11 +1364,9 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
         }
       },
       setHeaders: (headers: ColumnDef[]) => {
-        // When the visible/pinned set of columns changed (hide/show, pin/unpin),
-        // open the accordion-horizontal animation window so incoming cells
-        // grow from width 0 and outgoing cells shrink to width 0 in their
-        // current section. Otherwise (drag-reorder within the same section
-        // / set), just snapshot for plain FLIP.
+        // When the visible or pinned set of columns changed, open the
+        // accordion-horizontal animation so incoming cells grow from width 0
+        // and outgoing cells shrink to width 0. Otherwise snapshot for FLIP.
         const visibilityChanged = this.didColumnVisibilityChange(headers);
         if (visibilityChanged) {
           this.beginAccordionAnimation("horizontal");
@@ -1731,12 +1710,6 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     // happen to create.
     this.pendingAccordionAxis = null;
 
-    // Snapshot the visible-leaf-set we just painted so the next setHeaders
-    // can detect a hide/show/pin/unpin change against the user-perceived
-    // state (rather than against `this.headers`, whose objects the column
-    // editor mutates in place before calling setHeaders).
-    this.lastRenderedVisibilityKey = this.buildVisibilityKey(this.headers);
-
     // FLIP play step. No-op when no snapshot is armed or when scroll-driven.
     // Position-only scroll renders deliberately skip play so out-going /
     // in-coming cells aren't FLIP-tweened during vertical scrolls. Live-sort
@@ -1885,7 +1858,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       // a fresh columns tree with stale widths, which would replace
       // this.headers, clear naturalWidths, and fight the in-progress resize.
       this.captureAnimationSnapshot();
-      this.pristineDefaultHeaders = deepClone(config.columns as ColumnDef[]);
+      this.ingestColumnSnapshot(patch.columns as ColumnDef[]);
       // Field catalog drives filters; visible headers come from pivot when active.
       if (this.filterManager) {
         this.filterManager.updateConfig({ headers: this.pristineDefaultHeaders });
@@ -1893,7 +1866,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       if (this.pivotManager?.isActive()) {
         this.syncPivotPipeline(this.filterManager?.getFilteredRows() ?? this.localRows);
       } else {
-        this.headers = [...(config.columns as ColumnDef[])];
+        this.headers = deepClone(this.pristineDefaultHeaders);
         this.essentialAccessors = TableInitializer.buildEssentialAccessors(this.headers);
         if (this.sortManager) {
           this.sortManager.updateConfig({ headers: this.headers });
@@ -2294,10 +2267,8 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
         }
       },
       setHeaders: (headers: ColumnDef[]) => {
-        // Same trigger as the renderContext.setHeaders path: open the
-        // accordion-horizontal animation window when the visible/pinned set
-        // changed (hide/show/pin/unpin from the column editor). Pure
-        // reorders fall through to the plain-snapshot FLIP path.
+        // Same trigger as the renderContext.setHeaders path: accordion-horizontal
+        // when the visible or pinned set changed; otherwise snapshot for FLIP.
         const visibilityChanged = this.didColumnVisibilityChange(headers);
         if (visibilityChanged) {
           this.beginAccordionAnimation("horizontal");

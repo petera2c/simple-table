@@ -65,7 +65,7 @@ export interface TableRendererDeps {
   getCollapsedRows: () => Map<string, number>;
   getExpandedRows: () => Map<string, number>;
   getHeaders: () => ColumnDef[];
-  /** Pristine snapshot of the configured column definitions — the reset target for the column editor's reset button. */
+  /** Last ingested column definitions — the reset target for the column editor's reset button. */
   getPristineDefaultHeaders: () => ColumnDef[];
   getPivot: () => PivotConfig | null;
   setPivot: (pivot: PivotConfig | null) => void;
@@ -1036,9 +1036,7 @@ export class TableRenderer {
     }
 
     const resetColumns = () => {
-      // Restore the pristine column definitions — NOT config.columns,
-      // whose header objects are mutated in place by runtime visibility
-      // changes (column editor) and so drift away from the configured state.
+      // Restore the last ingested column definitions.
       const pristineHeaders = deps.getPristineDefaultHeaders();
       if (pristineHeaders) {
         deps.setHeaders(deepClone(pristineHeaders));

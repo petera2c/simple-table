@@ -36,7 +36,7 @@ export interface TableAPIContext {
   localRows: Row[];
   effectiveHeaders: ColumnDef[];
   headers: ColumnDef[];
-  /** Pristine snapshot of the configured column definitions (see SimpleTableVanilla.pristineDefaultHeaders). */
+  /** Last ingested column definitions (see SimpleTableVanilla.pristineDefaultHeaders). */
   getPristineDefaultHeaders: () => ColumnDef[];
   essentialAccessors: Set<string>;
   customTheme: CustomTheme;
@@ -424,11 +424,8 @@ export class TableAPIImpl {
       },
 
       resetColumns: () => {
-        // Restore the pristine column definitions — NOT config.columns,
-        // whose header objects are mutated in place by runtime visibility
-        // changes (column editor) and so drift away from the configured state.
-        // While pivot is active, restore generated pivot headers (not the
-        // source field catalog).
+        // Restore the last ingested column definitions. While pivot is active,
+        // restore generated pivot headers.
         const headers = context.getPivot()
           ? deepClone(context.getPivotHeaders())
           : deepClone(context.getPristineDefaultHeaders());
