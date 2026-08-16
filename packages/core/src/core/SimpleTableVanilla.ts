@@ -633,7 +633,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     // in-coming cells aren't FLIP-tweened during vertical scrolls. Live-sort
     // reorders (from updateData) also skip play so they don't interrupt an
     // in-flight user sort or thrash retained-cell cleanup every tick.
-    // Column-drag commits through ColumnReorderAnimator after left writes.
+    // Column-drag commits through CellSlideAnimator after left writes.
     if (source !== "scroll-raf" && source !== "live-sort") {
       if (columnDragging || this.animationCoordinator.isColumnReordering()) {
         const root = elements.rootElement ?? this.container;

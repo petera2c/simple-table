@@ -200,7 +200,18 @@ const announce = (status: HTMLElement, msg: string): void => {
  */
 const countAnimatingArmed = (canvasElement: HTMLElement): number => {
   return Array.from(canvasElement.querySelectorAll<HTMLElement>(`.st-body-main .st-cell`)).filter(
-    (el) => el.style.transition.includes("transform") && el.style.transform.includes("translate"),
+    (el) => {
+      const tx = el.style.transform || "";
+      if (!tx.includes("translate")) return false;
+      if (el.classList.contains("st-flip-active")) return true;
+      if (typeof el.getAnimations === "function") {
+        return el.getAnimations().some((a) => {
+          const id = (a as Animation & { id?: string }).id;
+          return id === "st-cell-slide" || id === "st-column-reorder" || a.playState === "running";
+        });
+      }
+      return true;
+    },
   ).length;
 };
 
@@ -700,11 +711,11 @@ export const ReorderAtMultipleScrollPositions = {
  *   - Cells whose pre-reverse position is currently on-screen (or whose true
  *     journey fits within ~one viewport) must FLIP exactly to that position
  *     (`txX === oldLeft - newLeft` to within sub-pixel rounding).
- *   - Cells whose pre-reverse position is far off-screen are scaled by
- *     `AnimationCoordinator.scaleFlipDistance` so the visible slide stays
- *     bounded. For those, we relax the strict equality to: same sign as the
- *     true journey, magnitude < the true journey, and magnitude inside the
- *     `[viewport, ~2 × viewport]` band the scaler produces.
+ *   - Cells whose pre-reverse position is far off-screen are parked just
+ *     outside the viewport and staggered so they do not stack. For those,
+ *     we relax the strict equality to: same sign as the true journey,
+ *     magnitude smaller than the true journey, and start positions that
+ *     are not all identical.
  *
  * Catches regressions where the snapshot is captured against the post-
  * mutation layout, where preLayouts overwrites live DOM positions, where
@@ -826,11 +837,9 @@ export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
         )
         .join(" | ");
 
-      // Mirror the predicate in `scaleFlipDistance`: a cell is scaled iff its
-      // pre-reverse position is OUTSIDE the live viewport AND the raw journey
-      // exceeds the viewport+cell band. Otherwise the scaler passes through and
-      // the FLIP must equal the true journey exactly.
-      const isScaled = (s: (typeof samples)[number]): boolean => {
+      // Far sources are parked just outside the viewport (not the true 15k-px
+      // layout). In-viewport sources must match the true journey exactly.
+      const isParked = (s: (typeof samples)[number]): boolean => {
         const buffer = s.cellWidth > 0 ? s.cellWidth : 0;
         const inViewport =
           s.oldLeft >= scrollLeftPre - buffer && s.oldLeft <= scrollLeftPre + clientWidth;
@@ -841,7 +850,7 @@ export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
 
       for (const s of samples) {
         const expected = s.oldLeft - s.newLeft;
-        if (!isScaled(s)) {
+        if (!isParked(s)) {
           if (Math.abs(s.txX - expected) >= 1.5) {
             throw new Error(
               `${label}: FLIP dx mismatch for "${s.accessor}" (expected ${expected}, got ${s.txX}). ${summary}`,
@@ -850,52 +859,45 @@ export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
           continue;
         }
 
-        // Scaled cells: the visible slide is bounded by the scaler. Magnitude
-        // must be (a) sign-correct, (b) at least one viewport (the scaler floor
-        // is `visibleRange` before the asymptotic overshoot is added), (c)
-        // strictly less than the unscaled journey, and (d) bounded above by
-        // `visibleRange + maxOvershoot ≈ 2× clientWidth` plus a small slack.
         const expectedSign = Math.sign(expected);
         const actualSign = Math.sign(s.txX);
         if (expectedSign !== 0 && actualSign !== expectedSign) {
           throw new Error(
-            `${label}: FLIP dx sign wrong for scaled "${s.accessor}" (expected sign ${expectedSign}, got ${actualSign}). ${summary}`,
+            `${label}: parked dx sign wrong for "${s.accessor}" (expected sign ${expectedSign}, got ${actualSign}). ${summary}`,
           );
         }
         const absTx = Math.abs(s.txX);
         const absExpected = Math.abs(expected);
-        const visibleRange = clientWidth + s.cellWidth;
         if (absTx >= absExpected) {
           throw new Error(
-            `${label}: scaled FLIP dx for "${s.accessor}" should be smaller than the unscaled journey ` +
+            `${label}: parked dx for "${s.accessor}" should be smaller than the unscaled journey ` +
               `(|tx|=${absTx} vs |expected|=${absExpected}). ${summary}`,
           );
         }
-        if (absTx < visibleRange - 1) {
-          throw new Error(
-            `${label}: scaled FLIP dx for "${s.accessor}" should be at least one viewport (~${visibleRange}px), ` +
-              `got |tx|=${absTx}. ${summary}`,
-          );
-        }
-        const maxAllowed = clientWidth * 2 + s.cellWidth + 50;
+        const maxAllowed = clientWidth + s.cellWidth * 12 + 50;
         if (absTx > maxAllowed) {
           throw new Error(
-            `${label}: scaled FLIP dx for "${s.accessor}" exceeds the bounded slide window ` +
+            `${label}: parked dx for "${s.accessor}" exceeds the near-edge window ` +
               `(|tx|=${absTx} > maxAllowed=${maxAllowed}). ${summary}`,
           );
         }
       }
 
-      // Every rendered cell came from the far side of the table, so all should
-      // FLIP in the same direction — verify that direction is the expected one.
-      const scaled = samples.filter(isScaled);
-      if (scaled.length === 0) {
+      const parked = samples.filter(isParked);
+      if (parked.length === 0) {
         throw new Error(
-          `${label}: expected at least one scaled cell (oldLeft outside viewport with ` +
+          `${label}: expected at least one parked cell (oldLeft outside viewport with ` +
             `|dx| > viewport+cellWidth). ${summary}`,
         );
       }
-      const wrongSign = scaled.filter((s) => Math.sign(s.txX) !== expectedScaledSign);
+      const startVisuals = parked.map((s) => s.newLeft + s.txX).sort((a, b) => a - b);
+      const uniqueStarts = new Set(startVisuals.map((v) => Math.round(v)));
+      if (parked.length > 1 && uniqueStarts.size < 2) {
+        throw new Error(
+          `${label}: parked incoming starts should be staggered, not stacked. ${summary}`,
+        );
+      }
+      const wrongSign = parked.filter((s) => Math.sign(s.txX) !== expectedScaledSign);
       if (wrongSign.length > 0) {
         throw new Error(
           `${label}: expected all scaled cells to FLIP with sign ${expectedScaledSign}, ` +

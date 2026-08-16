@@ -6,7 +6,7 @@
  * the same delta — then `play()` "corrects" it with a new invert, which reads
  * as a jump during rapid reorders.
  *
- * Column-drag does NOT compensate here: {@link ColumnReorderAnimator} snapshots
+ * Column-drag does NOT compensate here: {@link CellSlideAnimator} snapshots
  * visuals before left writes and applies the hold+tween after.
  */
 

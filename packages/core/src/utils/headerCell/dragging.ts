@@ -6,6 +6,7 @@ import {
   insertHeaderAcrossSections,
   getHeaderSection,
 } from "../../managers/DragHandlerManager";
+import { CELL_SLIDE_ANIM_ID } from "../../managers/CellSlideAnimator";
 import { validateFullHeaderTreeEssentialOrder } from "../pinnedColumnUtils";
 import { deepClone } from "../../utils/generalUtils";
 import { DRAG_THROTTLE_LIMIT } from "../../consts/general-consts";
@@ -246,7 +247,10 @@ export const attachDragHandlers = (
         typeof cellElement.getAnimations === "function" &&
         cellElement
           .getAnimations()
-          .some((a) => (a as Animation & { id?: string }).id === "st-column-reorder");
+          .some((a) => {
+            const id = (a as Animation & { id?: string }).id;
+            return id === CELL_SLIDE_ANIM_ID || id === "st-column-reorder";
+          });
       if (hoverFlipActive || hoverHasReorderAnim) {
         return;
       }

@@ -72,8 +72,7 @@ describe("AnimationCoordinator — external-scroll FLIP scaling", () => {
     coordinator.play({ containers: [container] });
 
     // jsdom reports 0 for the body container's parent height, so without an
-    // external override scaleFlipDistance can't bound the slide: the inverse
-    // transform is the raw ~4900px journey.
+    // external override park-and-stagger passes the true position through.
     const rawDy = translateY(cell.style.transform);
     expect(rawDy).toBeGreaterThan(4000);
   });
@@ -89,11 +88,45 @@ describe("AnimationCoordinator — external-scroll FLIP scaling", () => {
 
     coordinator.play({ containers: [container] });
 
-    // Compressed journey asymptotes at ~2× viewport (visibleRange + maxOvershoot),
-    // so it must be far smaller than the raw 4900px and bounded by ~viewport*2.
+    // Parked just outside the 300px viewport, not the raw 4900px journey.
     const scaledDy = Math.abs(translateY(cell.style.transform));
     expect(scaledDy).toBeGreaterThan(0);
     expect(scaledDy).toBeLessThan(2 * 300 + 32);
+  });
+
+  it("parks two far-off incoming cells at staggered starts", () => {
+    const a = makeCell("rowA-name", 4000);
+    const b = makeCell("rowB-name", 5000);
+    coordinator.setExternalVerticalScroll({ clientHeight: 300, scrollHeight: 8000, scrollTop: 0 });
+
+    coordinator.captureSnapshot({ containers: [container] });
+    a.style.top = "40px";
+    b.style.top = "72px";
+    coordinator.play({ containers: [container] });
+
+    const startA = 40 + translateY(a.style.transform);
+    const startB = 72 + translateY(b.style.transform);
+    expect(Math.abs(startA - startB)).toBeGreaterThanOrEqual(31);
+  });
+
+  it("slides a preLayout incoming cell from a parked origin, not in place", () => {
+    coordinator.setExternalVerticalScroll({
+      clientHeight: 300,
+      scrollHeight: 8000,
+      scrollTop: 0,
+    });
+    const preLayouts = new Map<HTMLElement, Map<string, { left: number; top: number; width: number; height: number }>>();
+    preLayouts.set(
+      container,
+      new Map([["rowIn-id", { left: 0, top: 4000, width: 100, height: 32 }]]),
+    );
+    coordinator.captureSnapshot({ containers: [container], preLayouts });
+
+    const incoming = makeCell("rowIn-id", 40);
+    coordinator.play({ containers: [container] });
+
+    expect(incoming.style.transform).toMatch(/translate/);
+    expect(Math.abs(translateY(incoming.style.transform))).toBeGreaterThan(0);
   });
 });
 
@@ -235,5 +268,31 @@ describe("AnimationCoordinator — onHostDiscard teardown signal", () => {
 
     expect(reclaimed).toBe(cell);
     expect(discarded).toHaveLength(0);
+  });
+
+  it("removes a retained ghost after the slide even when the parked dest remain is non-zero", async () => {
+    coordinator.setDuration(50);
+    coordinator.setExternalVerticalScroll({
+      clientHeight: 300,
+      scrollHeight: 8000,
+      scrollTop: 0,
+    });
+
+    const cell = makeCell("rowPark-name", 40);
+    coordinator.captureSnapshot({ containers: [container] });
+    getRenderedCells(container).delete("rowPark-name");
+    coordinator.retainCell({
+      cellId: "rowPark-name",
+      element: cell,
+      container,
+      newPosition: { left: 0, top: 5000, width: 100, height: 32 },
+    });
+
+    coordinator.play({ containers: [container] });
+    expect(cell.isConnected).toBe(true);
+    expect(cell.style.transform).toMatch(/translate/);
+
+    await waitFor(() => !cell.isConnected, 2000);
+    expect(cell.isConnected).toBe(false);
   });
 });

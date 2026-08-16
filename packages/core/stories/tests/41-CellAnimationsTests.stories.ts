@@ -118,6 +118,19 @@ const tickFrames = async (count: number): Promise<void> => {
   }
 };
 
+/** True when a cell is mid-slide (inline translate or a running cell-slide animation). */
+const isTransformSliding = (el: HTMLElement): boolean => {
+  const tx = el.style.transform || "";
+  if (tx.includes("translate")) return true;
+  if (typeof el.getAnimations === "function") {
+    return el.getAnimations().some((a) => {
+      const id = (a as Animation & { id?: string }).id;
+      return id === "st-cell-slide" || id === "st-column-reorder" || a.playState === "running";
+    });
+  }
+  return el.classList.contains("st-flip-active");
+};
+
 // ============================================================================
 // STORIES
 // ============================================================================
@@ -199,7 +212,7 @@ export const ProgrammaticReorderAnimation = {
 
     const cellMid = findCellByRowAndAccessor(canvasElement, 0, "name");
     expect(cellMid).toBe(cellBefore);
-    expect(cellMid!.style.transition).toContain("transform");
+    expect(isTransformSliding(cellMid!)).toBe(true);
     expect(cellMid!.style.transform).toContain("translate");
 
     await sleep(SETTLE_PAUSE);
@@ -215,7 +228,7 @@ export const ProgrammaticReorderAnimation = {
     table.update({ columns: original });
     await tickFrames(2);
     const cellResetMid = findCellByRowAndAccessor(canvasElement, 0, "name");
-    expect(cellResetMid!.style.transition).toContain("transform");
+    expect(isTransformSliding(cellResetMid!)).toBe(true);
     await sleep(SETTLE_PAUSE);
 
     // Step 4: swap Name ↔ City — only those two columns animate.
@@ -456,9 +469,9 @@ export const SimpleThreeByThreeCenterToRightSwap = {
         for (const row of ROW_INDICES) {
           const cell = findCellByRowAndAccessor(canvasElement, row, accessor);
           expect(
-            cell!.style.transition,
-            `[${stepLabel}] r${row}.${accessor} should be transitioning transform`,
-          ).toContain("transform");
+            isTransformSliding(cell!),
+            `[${stepLabel}] r${row}.${accessor} should be sliding`,
+          ).toBe(true);
         }
       }
 
@@ -660,9 +673,9 @@ export const HeaderCellsAnimateOnColumnReorder = {
       for (const s of movedSamples) {
         const headerCell = findHeaderCell(s.accessor);
         expect(
-          headerCell!.style.transition,
-          `[${stepLabel}] header ${s.accessor} should be transitioning transform`,
-        ).toContain("transform");
+          isTransformSliding(headerCell!),
+          `[${stepLabel}] header ${s.accessor} should be sliding`,
+        ).toBe(true);
       }
 
       await sleep(SETTLE_PAUSE);
@@ -1262,8 +1275,8 @@ export const SortAnimationDemo = {
     // Once the FLIP "Play" RAF has fired, both cells should have the
     // transform transition CSS applied so the slide actually animates.
     await tickFrames(2);
-    expect(charlieMid!.style.transition).toContain("transform");
-    expect(aliceMid!.style.transition).toContain("transform");
+    expect(isTransformSliding(charlieMid!)).toBe(true);
+    expect(isTransformSliding(aliceMid!)).toBe(true);
 
     await sleep(SETTLE_PAUSE);
 
@@ -1435,7 +1448,7 @@ export const ReorderAnimatesFromPreviousPositionPerCell = {
     await tickFrames(2);
     for (const accessor of accessors) {
       const cell = findCellByRowAndAccessor(canvasElement, ROW_INDEX, accessor);
-      expect(cell!.style.transition).toContain("transform");
+      expect(isTransformSliding(cell!)).toBe(true);
     }
 
     await sleep(SETTLE_PAUSE);
@@ -1575,13 +1588,8 @@ export const SortSlidesRowsCrossingTheViewportBoundary = {
     const ghostsAfterPlay = Array.from(
       canvasElement.querySelectorAll<HTMLElement>(`[data-animating-out="true"]`),
     );
-    const ghostsMissingTransformTransition = ghostsAfterPlay.filter(
-      (el) => !el.style.transition.includes("transform"),
-    );
-    expect(
-      ghostsMissingTransformTransition.length,
-      "ghosts whose transition does not target transform",
-    ).toBe(0);
+    const ghostsMissingSlide = ghostsAfterPlay.filter((el) => !isTransformSliding(el));
+    expect(ghostsMissingSlide.length, "ghosts that are not sliding").toBe(0);
     const ghostsWithOpacityTransition = ghostsAfterPlay.filter((el) =>
       el.style.transition.includes("opacity"),
     );
