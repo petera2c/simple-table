@@ -9,7 +9,7 @@
  * Mid-flight retargets cancel and replace. Column-drag bodies copy the header remain.
  */
 
-import { parseCssTranslate } from "../utils/setAbsoluteCellPosition";
+import { readLiveTranslate } from "../utils/setAbsoluteCellPosition";
 import { isNearViewport, parkAndStagger, type ParkBand } from "../utils/parkAndStagger";
 
 const MIN_DELTA = 0.5;
@@ -49,22 +49,8 @@ type VisualSnap = {
 const readVisualStyle = (el: HTMLElement): { left: number; top: number } => {
   const styleLeft = parsePx(el.style.left);
   const styleTop = parsePx(el.style.top);
-  let tx = 0;
-  let ty = 0;
-  if (typeof getComputedStyle !== "undefined") {
-    const parsed = parseCssTranslate(getComputedStyle(el).transform);
-    if (parsed) {
-      tx = parsed.x;
-      ty = parsed.y;
-    }
-  } else {
-    const parsed = parseCssTranslate(el.style.transform || "");
-    if (parsed) {
-      tx = parsed.x;
-      ty = parsed.y;
-    }
-  }
-  return { left: styleLeft + tx, top: styleTop + ty };
+  const live = readLiveTranslate(el);
+  return { left: styleLeft + (live?.x ?? 0), top: styleTop + (live?.y ?? 0) };
 };
 
 const cancelCellSlideAnims = (el: HTMLElement): void => {
@@ -286,6 +272,14 @@ export class CellSlideAnimator {
     const toY = slide.toY ?? 0;
     const id = slide.id;
 
+    // Freeze the painted matrix into style before cancel so WAAPI does not
+    // snap back to the invert start keyframe. Caller fromX/fromY is the FLIP
+    // invert relative to the (possibly rewritten) layout box.
+    const live = readLiveTranslate(el);
+    if (live) {
+      el.style.transition = "none";
+      el.style.transform = `translate3d(${live.x}px, ${live.y}px, 0)`;
+    }
     cancelCellSlideAnims(el);
     el.style.transition = "none";
 
@@ -324,7 +318,7 @@ export class CellSlideAnimator {
     const anim = el.animate([{ transform: from }, { transform: to }], {
       duration,
       easing,
-      fill: "forwards",
+      fill: "both",
     });
     anim.id = CELL_SLIDE_ANIM_ID;
 

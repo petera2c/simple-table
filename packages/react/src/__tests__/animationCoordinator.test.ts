@@ -171,6 +171,72 @@ describe("AnimationCoordinator — spam-sort coalescing", () => {
     await waitFor(() => !coordinator.isInFlight("rowX-name"), 3000);
     expect(coordinator.isInFlight("rowX-name")).toBe(false);
   });
+
+  it("retargets an in-flight slide from the computed matrix, not the start keyframe", () => {
+    coordinator.setDuration(1000);
+    const cell = makeCell("rowA-name", 0);
+
+    coordinator.captureSnapshot({ containers: [container] });
+    cell.style.top = "300px";
+    coordinator.play({ containers: [container] });
+    expect(translateY(cell.style.transform)).toBeCloseTo(-300, 0);
+
+    const originalGcs = window.getComputedStyle.bind(window);
+    window.getComputedStyle = ((elt: Element, pseudo?: string | null) => {
+      const style = originalGcs(elt, pseudo);
+      if (elt !== cell) return style;
+      return new Proxy(style, {
+        get(target, prop) {
+          if (prop === "transform") return "matrix(1, 0, 0, 1, 0, -120)";
+          const value = Reflect.get(target, prop);
+          return typeof value === "function" ? (value as (...args: unknown[]) => unknown).bind(target) : value;
+        },
+      });
+    }) as typeof getComputedStyle;
+
+    try {
+      coordinator.captureSnapshot({ containers: [container] });
+      cell.style.top = "0px";
+      coordinator.play({ containers: [container] });
+      // Painted at snapshot: 300 + (-120) = 180. New dest 0 → hold 180px.
+      expect(translateY(cell.style.transform)).toBeCloseTo(180, 0);
+    } finally {
+      window.getComputedStyle = originalGcs;
+    }
+  });
+
+  it("counter-shifts a running slide when dest top is rewritten", () => {
+    coordinator.setDuration(1000);
+    const cell = makeCell("rowB-name", 0);
+
+    coordinator.captureSnapshot({ containers: [container] });
+    cell.style.top = "300px";
+    coordinator.play({ containers: [container] });
+    expect(translateY(cell.style.transform)).toBeCloseTo(-300, 0);
+    cell.style.willChange = "transform";
+    cell.classList.add("st-flip-active");
+
+    const originalGcs = window.getComputedStyle.bind(window);
+    window.getComputedStyle = ((elt: Element, pseudo?: string | null) => {
+      const style = originalGcs(elt, pseudo);
+      if (elt !== cell) return style;
+      return new Proxy(style, {
+        get(target, prop) {
+          if (prop === "transform") return "matrix(1, 0, 0, 1, 0, -120)";
+          const value = Reflect.get(target, prop);
+          return typeof value === "function" ? (value as (...args: unknown[]) => unknown).bind(target) : value;
+        },
+      });
+    }) as typeof getComputedStyle;
+
+    try {
+      // Dest 300 → 0. Live remain -120. Hold = -120 - (0-300) = 180.
+      setAbsoluteCellPosition(cell, 0, 0);
+      expect(translateY(cell.style.transform)).toBeCloseTo(180, 0);
+    } finally {
+      window.getComputedStyle = originalGcs;
+    }
+  });
 });
 
 describe("AnimationCoordinator — column reorder mode", () => {

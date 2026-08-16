@@ -9,7 +9,6 @@ import {
   normalizeConfig,
   type SimpleTableConfigInput,
 } from "../utils/normalizeConfig";
-
 import { AnimationCoordinator } from "../managers/AnimationCoordinator";
 import { AccordionController } from "../managers/AccordionController";
 import type { AutoScaleManager } from "../managers/AutoScaleManager";

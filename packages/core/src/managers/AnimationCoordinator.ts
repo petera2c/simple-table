@@ -2,6 +2,7 @@ import { getRenderedCells as getBodyRenderedCells } from "../utils/bodyCell/even
 import { getRenderedCells as getHeaderRenderedCells } from "../utils/headerCell/eventTracking";
 import {
   parseCssTranslate,
+  readLiveTranslate,
   setFlipCompensationEnabled,
 } from "../utils/setAbsoluteCellPosition";
 import { CELL_SLIDE_ANIM_ID, CellSlideAnimator } from "./CellSlideAnimator";
@@ -39,7 +40,6 @@ const FLIP_ACTIVE_CLASS = "st-flip-active";
  * accordion CSS transition can play.
  */
 const SHRINKING_OUT_ATTR = "data-shrinking-out";
-
 
 /**
  * The renderer keeps two independent per-container WeakMaps of rendered cells —
@@ -249,7 +249,6 @@ export class AnimationCoordinator {
 
   /** Shared slide helper for column-drag and sort/play position moves. */
   private readonly cellSlideAnimator = new CellSlideAnimator();
-
 
   /**
    * Invoked immediately BEFORE a retained/ghost element is permanently removed
@@ -1332,7 +1331,9 @@ export class AnimationCoordinator {
       this.scheduledFlip = null;
     }
 
-    if (pending.length === 0) return;
+    if (pending.length === 0) {
+      return;
+    }
 
     for (const item of pending) {
       const { cellId, element } = item;
@@ -1340,12 +1341,7 @@ export class AnimationCoordinator {
       const wasInFlight = this.inFlight.has(cellId);
       if (wasInFlight) {
         element.style.transition = "none";
-        if (!hasNonIdentityTranslate(element.style.transform || "")) {
-          const computed = getComputedStyle(element).transform;
-          if (computed && computed !== "none") {
-            element.style.transform = computed;
-          }
-        }
+        this.bakeLiveTransform(element);
       } else {
         element.style.transition = "none";
       }
@@ -1471,58 +1467,29 @@ export class AnimationCoordinator {
   ): CellSnapshot {
     const styleTop = parsePx(element.style.top);
     const styleLeft = parsePx(element.style.left);
-    // Use the live visual position whenever a FLIP transform is still on the
-    // element — including the double-rAF gap where invert is applied but
-    // `inFlight` is not set yet, and stranded-invert cases where scheduledFlip
-    // was cleared without clearing transforms. Capturing logical style.left
-    // here is what makes rapid reorders "jump then animate".
-    //
-    // During an active CSS transition, `style.transform` is already identity
-    // while the *computed* matrix is mid-slide. Prefer computed / `.st-flip-active`
-    // so a recycled-or-missed inFlight entry cannot fall through to style.left.
+    // WAAPI keeps `style.transform` at the invert start keyframe while the
+    // computed matrix is the painted remain. Prefer the computed translate so
+    // a mid-flight sort snapshots where the cell looks, not where the slide
+    // began. Capturing the start keyframe is what makes spam-click sorts
+    // teleport (hold jumps back to the previous invert).
     const markedFlipping = element.classList.contains(FLIP_ACTIVE_CLASS);
     const styleTransform = element.style.transform || "";
     const hasStyleTranslate = hasNonIdentityTranslate(styleTransform);
-    let computedTranslate: { x: number; y: number } | null = null;
-    if (
-      !hasStyleTranslate &&
-      (markedFlipping || this.inFlight.has(cellId)) &&
-      typeof getComputedStyle !== "undefined"
-    ) {
-      computedTranslate = parseCssTranslate(getComputedStyle(element).transform);
-    }
-    if (
+    const isSliding =
       this.inFlight.has(cellId) ||
       markedFlipping ||
       hasStyleTranslate ||
-      (computedTranslate &&
-        (Math.abs(computedTranslate.x) > MIN_DELTA || Math.abs(computedTranslate.y) > MIN_DELTA))
-    ) {
-      if (hasStyleTranslate) {
-        const live = parseCssTranslate(styleTransform);
-        if (live) {
-          return {
-            sourceContainer,
-            sourceContainerLeft,
-            sourceContainerTop,
-            left: styleLeft + live.x,
-            top: styleTop + live.y,
-            styleTop,
-            styleLeft,
-            fromDom: true,
-          };
-        }
-      }
-      if (
-        computedTranslate &&
-        (Math.abs(computedTranslate.x) > MIN_DELTA || Math.abs(computedTranslate.y) > MIN_DELTA)
-      ) {
+      this.hasRunningCellSlide(element);
+
+    if (isSliding) {
+      const live = readLiveTranslate(element);
+      if (live) {
         return {
           sourceContainer,
           sourceContainerLeft,
           sourceContainerTop,
-          left: styleLeft + computedTranslate.x,
-          top: styleTop + computedTranslate.y,
+          left: styleLeft + live.x,
+          top: styleTop + live.y,
           styleTop,
           styleLeft,
           fromDom: true,
@@ -1671,18 +1638,13 @@ export class AnimationCoordinator {
    * batch of bakes should use {@link flushLayoutOnce} once.
    */
   private bakeLiveTransform(element: HTMLElement): void {
-    if (typeof getComputedStyle !== "undefined") {
-      const computed = getComputedStyle(element).transform;
-      const parsed = parseCssTranslate(computed);
-      if (parsed && (Math.abs(parsed.x) > MIN_DELTA || Math.abs(parsed.y) > MIN_DELTA)) {
-        element.style.transition = "none";
-        // Normalize to translate3d so later compensation/parsers stay consistent
-        // (getComputedStyle returns matrix(...)).
-        element.style.transform = `translate3d(${parsed.x}px, ${parsed.y}px, 0)`;
-        element.style.willChange = "transform";
-        element.classList.add(FLIP_ACTIVE_CLASS);
-        return;
-      }
+    const parsed = readLiveTranslate(element);
+    if (parsed && (Math.abs(parsed.x) > MIN_DELTA || Math.abs(parsed.y) > MIN_DELTA)) {
+      element.style.transition = "none";
+      element.style.transform = `translate3d(${parsed.x}px, ${parsed.y}px, 0)`;
+      element.style.willChange = "transform";
+      element.classList.add(FLIP_ACTIVE_CLASS);
+      return;
     }
 
     const parent = element.offsetParent as HTMLElement | null;
