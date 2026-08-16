@@ -111,13 +111,13 @@ export const mobileCompatibilityReactTablesPost: BlogPostMetadata = {
 };
 
 export const bestReactTableLibraries2026Post: BlogPostMetadata = {
-  title: "Best React Table Libraries 2026: Ranked & Compared",
+  title: "Best React Table Library 2026: Compared & Ranked",
   description:
-    "Compare the best React table libraries in 2026 — Simple Table, TanStack Table, AG Grid, MUI, and more. Features, bundle size, pricing, and which one to pick.",
+    "Best React table library picks for 2026 — Simple Table, TanStack Table, AG Grid, MUI, and more. Compare features, bundle size, pricing, and which React table to choose.",
   slug: "best-react-table-libraries-2026",
   tags: ["react", "comparison", "alternatives"],
   createdAt: "2025-10-07",
-  updatedAt: "2026-06-22",
+  updatedAt: "2026-08-06",
 };
 
 export const customFooterRenderersPost: BlogPostMetadata = {
@@ -182,13 +182,13 @@ export const handsontableAlternativesPost: BlogPostMetadata = {
 };
 
 export const agGridPricing2026Post: BlogPostMetadata = {
-  title: "AG Grid Pricing 2026: $999/Dev Enterprise License Cost",
+  title: "AG Grid Enterprise License Cost 2026: $999/Developer",
   description:
-    "AG Grid Enterprise is $999 per developer per year. 2026 pricing breakdown: Community (MIT) vs Enterprise, license cost, renewals, team totals, and free alternatives.",
+    "AG Grid Enterprise license cost is $999 per developer per year. Full 2026 pricing: Community vs Enterprise, renewals, team totals, and free alternatives.",
   slug: "ag-grid-pricing-license-breakdown-2026",
   tags: ["react", "ag-grid", "pricing", "comparison"],
   createdAt: "2025-11-22",
-  updatedAt: "2026-07-29",
+  updatedAt: "2026-08-06",
 };
 
 export const tanstackVsSimpleTablePost: BlogPostMetadata = {
@@ -243,7 +243,7 @@ export const reactGridFilteringPost: BlogPostMetadata = {
 export const reactPivotTablePost: BlogPostMetadata = {
   title: "React Pivot Table Tutorial: Matrix Aggregation Without AG Grid Enterprise (2026)",
   description:
-    "Build a React pivot table with row/column dimensions, aggregations, and totals—without AG Grid Enterprise. Code examples, pivot vs row grouping, and Pivot Panel roadmap.",
+    "Build a React pivot table with row/column dimensions, aggregations, totals, and an in-table Pivot Panel—without AG Grid Enterprise. Code examples and pivot vs row grouping.",
   slug: "react-pivot-table",
   tags: ["react", "pivot", "tutorials", "ag-grid"],
   createdAt: "2026-07-20",
@@ -1129,17 +1129,27 @@ export const searchBlogPosts = (query: string): BlogPostMetadata[] => {
 };
 
 /**
- * Detect the canonical framework hub id a blog post targets from its tags.
+ * Detect the canonical framework hub id from blog tags.
  * Returns the first match in tag order, so primary frameworks should appear
  * before ecosystem aliases (e.g. tag a Nuxt post with both "vue" and "nuxt").
+ */
+export function getFrameworkIdFromTags(
+  tags: readonly string[] | undefined
+): HubFrameworkId | null {
+  if (!tags?.length) return null;
+  for (const tag of tags) {
+    const id = FRAMEWORK_TAG_TO_HUB_ID[tag.toLowerCase()];
+    if (id) return id;
+  }
+  return null;
+}
+
+/**
+ * Detect the canonical framework hub id a registry blog post targets from its tags.
  */
 export function getPostFrameworkId(slug: string): HubFrameworkId | null {
   if (!slug) return null;
   const post = getBlogPostBySlug(slug);
   if (!post) return null;
-  for (const tag of post.tags) {
-    const id = FRAMEWORK_TAG_TO_HUB_ID[tag.toLowerCase()];
-    if (id) return id;
-  }
-  return null;
+  return getFrameworkIdFromTags(post.tags);
 }

@@ -177,7 +177,7 @@ export default function SimpleTableVsAgGridAngularPage() {
         {
           question: "Does Simple Table support pivoting and integrated charts?",
           answer:
-            "Simple Table includes declarative matrix pivoting (configure row/column/value fields via props or TableAPI). AG Grid Enterprise still leads today on interactive Pivot Panel UI and integrated charts; Simple Table’s drag-and-drop Pivot Panel is on the Enterprise roadmap.",
+            "Simple Table includes declarative matrix pivoting plus an in-table Pivot Panel (enablePivotPanel in the column editor). AG Grid Enterprise still leads on mature drag-and-drop Pivot Panel UX and integrated charts.",
         },
       ]}
       conclusion={

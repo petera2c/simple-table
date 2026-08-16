@@ -589,8 +589,6 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     const pivotState = this.pivotManager?.getState();
     const initialSortRows =
       pivotState?.active ? pivotState.pivotedRows : this.localRows;
-    const initialSortGrouping =
-      pivotState?.active ? pivotState.rowGrouping : this.config.rowGrouping;
 
     this.sortManager = new SortManager({
       headers: this.headers,
@@ -599,7 +597,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       // Read from live config at invocation time so callback props updated via
       // update() (e.g. a React re-render with a fresh closure) aren't stale.
       onSortChange: (sort) => this.config.onSortChange?.(sort),
-      rowGrouping: initialSortGrouping,
+      rowGrouping: this.getEffectiveRowGrouping(),
       initialSortColumn: this.config.initialSortColumn,
       initialSortDirection: this.config.initialSortDirection,
       announce,
@@ -1222,11 +1220,14 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     }
   }
 
-  /** Row grouping used for flatten/expand while pivot is active (overrides consumer). */
+  /**
+   * Pivot emits a flat matrix — disable consumer rowGrouping while active so
+   * expand/collapse hierarchy does not wrap pivoted rows.
+   */
   private getEffectiveRowGrouping(): Accessor[] | undefined {
     const pivotState = this.pivotManager?.getState();
     if (pivotState?.active) {
-      return pivotState.rowGrouping;
+      return undefined;
     }
     return this.config.rowGrouping;
   }
@@ -1256,14 +1257,13 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       this.sortManager?.updateConfig({
         tableRows: state.pivotedRows,
         headers: state.headers,
-        rowGrouping: state.rowGrouping,
+        rowGrouping: undefined,
       });
       this.selectionManager?.updateConfig({ headers: state.headers });
+      // Flat pivot — clear any expand depths from consumer rowGrouping.
+      this.expandedDepthsManager?.updateRowGrouping(undefined);
       if (!wasActive) {
-        this.expandedDepthsManager?.updateRowGrouping(state.rowGrouping);
         this.collapsedHeaders = TableInitializer.getInitialCollapsedHeaders(state.headers);
-      } else {
-        this.expandedDepthsManager?.updateRowGrouping(state.rowGrouping);
       }
       if (this.dimensionManager) {
         const effectiveHeaders = this.renderOrchestrator.computeEffectiveHeaders(
@@ -1302,7 +1302,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     const pivotState = this.pivotManager?.getState();
     const effectiveConfig =
       pivotState?.active
-        ? { ...this.config, rowGrouping: pivotState.rowGrouping }
+        ? { ...this.config, rowGrouping: undefined }
         : this.config;
     const effectiveLocalRows =
       pivotState?.active ? pivotState.pivotedRows : this.localRows;
@@ -1441,6 +1441,15 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       getExpandedRows: () => this.expandedRows,
       getHeaders: () => this.headers,
       getPristineDefaultHeaders: () => this.pristineDefaultHeaders,
+      getPivot: () => this.pivotManager?.getPivot() ?? this.config.pivot ?? null,
+      setPivot: (pivotConfig) => {
+        this.config = { ...this.config, pivot: pivotConfig };
+        this.syncPivotPipeline(this.filterManager?.getFilteredRows() ?? this.localRows);
+        this.config.onPivotChange?.(pivotConfig);
+        this.renderOrchestrator.invalidateCache("header");
+        this.renderOrchestrator.invalidateCache("body");
+        this.render("setPivot");
+      },
       getRowStateMap: () => this.rowStateMap,
       setColumnEditorOpen: (open: boolean) => {
         this.columnEditorOpen = open;

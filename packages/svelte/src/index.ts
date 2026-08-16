@@ -1,5 +1,8 @@
 // Component
 export { default as SimpleTable } from "./SimpleTable.svelte";
+export { mountSimpleTable } from "./mountSimpleTable";
+export type { MountSimpleTableOptions } from "./mountSimpleTable";
+export type { SimpleTableComponent, SimpleTableExports } from "./SimpleTable.svelte";
 export { asRows } from "simple-table-core";
 
 // Svelte-specific props and type overrides
@@ -120,7 +123,6 @@ export {
   pivotRows,
   buildPivotAccessor,
   buildPivotRowTotalAccessor,
-  PIVOT_CHILDREN_KEY,
   PIVOT_IS_TOTAL_KEY,
   PIVOT_ACCESSOR_PREFIX,
   PIVOT_BLANK_LABEL,

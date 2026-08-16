@@ -34,6 +34,8 @@ export interface TableInstance {
   update(config: Partial<SimpleTableConfig>): void;
   destroy(): void;
   getAPI(): TableAPI;
+  /** Re-measure `width: "auto"` columns after custom renderer DOM settles. */
+  refitAutoSizeColumns?(): void;
 }
 
 // ─── Icon overrides ───────────────────────────────────────────────────────────

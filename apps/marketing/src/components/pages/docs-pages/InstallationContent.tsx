@@ -1,13 +1,17 @@
 "use client";
 
+import { useState } from "react";
+import { Button, message } from "antd";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCopy, faDownload } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import CodeBlock from "@/components/CodeBlock";
 import PageWrapper from "@/components/PageWrapper";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
+import { getAiSetupPrompt } from "@/constants/aiTablePrompt";
 import { FRAMEWORK_INSTALL_COMMANDS, FRAMEWORK_REQUIREMENTS } from "@/constants/strings/technical";
+import { trackCopyAiSetupPrompt } from "@/lib/analytics";
 import { useFramework, FRAMEWORK_LABELS } from "@/providers/FrameworkProvider";
 
 const InstallationContent = () => {
@@ -15,6 +19,19 @@ const InstallationContent = () => {
   const commands = FRAMEWORK_INSTALL_COMMANDS[framework];
   const requirement = FRAMEWORK_REQUIREMENTS[framework];
   const label = FRAMEWORK_LABELS[framework];
+  const [promptCopied, setPromptCopied] = useState(false);
+
+  const copySetupPrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(getAiSetupPrompt(framework));
+      trackCopyAiSetupPrompt({ framework, location: "installation" });
+      setPromptCopied(true);
+      window.setTimeout(() => setPromptCopied(false), 2000);
+      message.success("AI prompt copied to clipboard");
+    } catch {
+      message.error("Could not copy AI prompt");
+    }
+  };
 
   return (
     <PageWrapper>
@@ -31,7 +48,7 @@ const InstallationContent = () => {
       </motion.div>
 
       <motion.p
-        className="text-gray-700 dark:text-gray-300 mb-6 text-lg"
+        className="text-gray-700 dark:text-gray-300 mb-4 text-lg"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
@@ -39,6 +56,26 @@ const InstallationContent = () => {
         Getting started with Simple Table is easy. This guide will walk you through the installation
         process and help you set up the library in your {label} project.
       </motion.p>
+
+      <motion.div
+        className="flex flex-col gap-2 mb-8 max-w-md"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.22 }}
+      >
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Or paste this into your AI coding tool to install, wire your data, and match your styles.
+        </p>
+        <Button
+          type="primary"
+          size="large"
+          className="w-full"
+          onClick={copySetupPrompt}
+          icon={<FontAwesomeIcon icon={promptCopied ? faCheck : faCopy} />}
+        >
+          {promptCopied ? "Copied!" : "Copy AI prompt"}
+        </Button>
+      </motion.div>
 
       <CodeBlock className="mb-4" code={commands.npm} language="bash" />
       <CodeBlock className="mb-4" code={commands.yarn} language="bash" />

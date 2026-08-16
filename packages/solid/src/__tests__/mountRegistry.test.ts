@@ -22,10 +22,12 @@ describe("MountRegistry", () => {
 
     expect(registry.size).toBe(1);
     expect(container.getAttribute("data-st-mount-id")).toMatch(/^st-mount-/);
+    expect(registry.isRegistered(container)).toBe(true);
 
     registry.disposeHost(container);
     expect(dispose).toHaveBeenCalledTimes(1);
     expect(registry.size).toBe(0);
+    expect(registry.isRegistered(container)).toBe(false);
   });
 
   it("disposes nested mounts inside a discarded host", () => {

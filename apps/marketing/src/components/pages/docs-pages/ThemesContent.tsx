@@ -18,6 +18,7 @@ import { useThemeContext } from "@/providers/ThemeProvider";
 import {
   themeSnippets,
   themeStylingFlagsSnippets,
+  cellClassSnippets,
   getRowClassSnippets,
   type CodeByFramework,
 } from "@/constants/docsSnippets";
@@ -67,6 +68,20 @@ const THEME_PATTERNS: ThemePattern[] = [
       </>
     ),
     codeByFramework: themeStylingFlagsSnippets(),
+  },
+  {
+    title: "Column cell classes",
+    body: (
+      <>
+        Set{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">cellClass</code> on a{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">ColumnDef</code> to add a
+        CSS class to every body cell in that column. Space-separated names work. Style with
+        selectors like{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">.amount-col</code>.
+      </>
+    ),
+    codeByFramework: cellClassSnippets(),
   },
   {
     title: "Conditional row classes",

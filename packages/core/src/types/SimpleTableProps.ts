@@ -48,6 +48,11 @@ export interface SimpleTableProps<TData extends RowData = Row> {
   enableColumnEditor?: boolean;
   /** Open the column editor when the table loads. */
   enableColumnEditorInitOpen?: boolean;
+  /**
+   * Show a Pivot section in the column editor popout (Rows / Columns / Values).
+   * Requires `enableColumnEditor`. Does not apply a pivot by itself — pair with `pivot`.
+   */
+  enablePivotPanel?: boolean;
   emptyStateRenderer?: EmptyStateRenderer<TData>; // Custom renderer for empty states (for nested row states)
   enableHeaderEditing?: boolean; // Flag for enabling header label editing when clicking already active headers
   /** Enable client-side pagination. */
@@ -129,7 +134,8 @@ export interface SimpleTableProps<TData extends RowData = Row> {
   onSortChange?: (sort: SortColumn | null) => void; // Callback when sort is applied
   /**
    * Declarative matrix pivot. When set, flat `rows` are reshaped into a
-   * pivoted grid with dynamic columns. Ignores consumer `rowGrouping` while active.
+   * pivoted grid with dynamic columns (one row per row-dimension combination).
+   * Consumer `rowGrouping` is disabled while pivot is active.
    */
   pivot?: PivotConfig<TData> | null;
   /** Fired when pivot config changes via TableAPI.setPivot. */
@@ -139,7 +145,7 @@ export interface SimpleTableProps<TData extends RowData = Row> {
   /**
    * Property names that define the row grouping hierarchy.
    * `Accessor<TData>` keeps keyof autocomplete; the `string & {}` arm still
-   * allows dynamic / heterogeneous nesting keys and pivot-injected keys.
+   * allows dynamic / heterogeneous nesting keys.
    */
   rowGrouping?: Accessor<TData>[];
   getRowId?: GetRowId<TData>; // Stable business id for a row. Return null/undefined when the row has no id (pivot aggregates, loading) to use reference-based identity.

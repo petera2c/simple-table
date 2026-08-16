@@ -55,13 +55,23 @@ export default function CaseStudiesIndexPage() {
                 {study.title}
               </h2>
               <p className="text-gray-600 dark:text-gray-300 mb-4">{study.summary}</p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-2xl font-bold text-green-600 dark:text-green-400">
-                  {study.highlightStat}
-                </span>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  {study.highlightLabel}
-                </span>
+              <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+                    {study.highlightStat}
+                  </span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {study.highlightLabel}
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                    {study.secondaryStat}
+                  </span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {study.secondaryLabel}
+                  </span>
+                </div>
               </div>
               <span className="inline-block mt-4 text-blue-600 dark:text-blue-400 font-medium text-sm">
                 Read case study →

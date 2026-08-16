@@ -347,6 +347,16 @@ export default function KendoReactGridVsSimpleTablePage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
+                      <strong>ENTERPRISE:</strong> Contact us for custom features and direct
+                      developer access
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <FontAwesomeIcon
+                      icon={faCheckCircle}
+                      className="text-green-500 mt-1 shrink-0"
+                    />
+                    <span>
                       <strong>3-year savings:</strong> $7,185-$15,435 vs KendoReact (per product,
                       not per-developer)
                     </span>

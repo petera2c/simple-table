@@ -28,3 +28,6 @@ Object.defineProperty(HTMLElement.prototype, "clientWidth", {
     return 800;
   },
 });
+
+// Keep this file a module so `ResizeObserverStub` is not a global across packages.
+export {};

@@ -17,7 +17,7 @@ import { openStripeCheckout } from "@/utils/stripe";
 import { STRIPE_CUSTOMER_PORTAL_URL } from "@/constants/stripe";
 import { SIMPLE_TABLE_PRICING } from "@/constants/simpleTablePricing";
 import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
-import { trackCtaClick, trackViewPricing } from "@/lib/analytics";
+import { trackBookACall, trackCtaClick, trackViewPricing } from "@/lib/analytics";
 import ContactModal, { type PlanInterest } from "@/components/ContactModal";
 
 interface PlanFeature {
@@ -31,7 +31,7 @@ interface Plan {
   subtitle: string;
   price: string;
   originalPrice?: string;
-  billingCycle: string;
+  billingCycle?: string;
   description: string;
   features: PlanFeature[];
   cta: string;
@@ -53,7 +53,7 @@ const PricingContent: React.FC = () => {
   const calendlyUrl = TECHNICAL_STRINGS.links.calendly;
 
   const openBookACall = (ctaId: string, ctaText: string) => {
-    trackCtaClick({
+    trackBookACall({
       cta_id: ctaId,
       cta_text: ctaText,
       destination: calendlyUrl,
@@ -62,10 +62,14 @@ const PricingContent: React.FC = () => {
     window.open(calendlyUrl, "_blank", "noopener,noreferrer");
   };
 
-  const openLicenseQuote = (planInterest: PlanInterest = "unsure", ctaId?: string) => {
+  const openLicenseQuote = (
+    planInterest: PlanInterest = "unsure",
+    ctaId?: string,
+    ctaText = "Get a license quote",
+  ) => {
     trackCtaClick({
       cta_id: ctaId ?? `pricing_license_quote_${planInterest}`,
-      cta_text: "Get a license quote",
+      cta_text: ctaText,
       destination: "license_quote_modal",
       location: "pricing_page",
     });
@@ -77,15 +81,15 @@ const PricingContent: React.FC = () => {
     () => [
       {
         name: "FREE",
-        subtitle: "Pre-revenue & side projects",
+        subtitle: "Side projects & early teams",
         price: SIMPLE_TABLE_PRICING.freeDisplay,
         billingCycle: "forever",
-        description: "Full library. Community License: only while you're pre-revenue.",
+        description: "Full library. Free until your company makes money.",
         features: [
           { text: "All grid features (same as Pro)", included: true, highlight: true },
           { text: "Official adapters for every framework", included: true, highlight: true },
           { text: "Community Discord support", included: true, highlight: true },
-          { text: "Commercial use when you earn revenue → Pro", included: true, highlight: false },
+          { text: "When you earn revenue → Pro", included: true, highlight: false },
         ],
         cta: "Install free",
         ctaVariant: "default",
@@ -98,7 +102,7 @@ const PricingContent: React.FC = () => {
         billingCycle: isAnnual ? "per year" : "per month",
         description: "Commercial license + priority support. No per-seat fees as you hire.",
         features: [
-          { text: "Commercial EULA for paid / revenue products", included: true, highlight: true },
+          { text: "Commercial license for products that make money", included: true, highlight: true },
           { text: "Priority email & Discord support", included: true, highlight: true },
           { text: "Production bug coverage", included: true, highlight: true },
           { text: "Same full library as Free", included: true, highlight: true },
@@ -110,19 +114,14 @@ const PricingContent: React.FC = () => {
       {
         name: "ENTERPRISE",
         subtitle: "Hands-on support",
-        price: isAnnual
-          ? SIMPLE_TABLE_PRICING.enterpriseAnnual
-          : SIMPLE_TABLE_PRICING.enterpriseMonthly,
-        originalPrice: isAnnual ? SIMPLE_TABLE_PRICING.enterpriseAnnualStrikethrough : undefined,
-        billingCycle: isAnnual ? "per year" : "per month",
-        description: "Everything in Pro when you need faster answers and core-dev access.",
+        price: SIMPLE_TABLE_PRICING.enterpriseDisplay,
+        description: "Everything in Pro, plus direct access to core developers.",
         features: [
           { text: "Everything in Pro", included: true, highlight: true },
-          { text: "Faster support response times", included: true, highlight: true },
           { text: "Direct access to core developers", included: true, highlight: true },
-          { text: "Feature request prioritization", included: true, highlight: true },
+          { text: "Custom features", included: true, highlight: true },
         ],
-        cta: "Start Enterprise",
+        cta: "Contact us",
         ctaVariant: "default",
       },
     ],
@@ -140,15 +139,18 @@ const PricingContent: React.FC = () => {
       window.location.assign("/docs/installation");
       return;
     }
-    const product = planName === "ENTERPRISE" ? "enterprise" : "pro";
+    if (planName === "ENTERPRISE") {
+      openLicenseQuote("enterprise", "pricing_contact_enterprise", "Contact us");
+      return;
+    }
     trackCtaClick({
-      cta_id: `pricing_start_${product}`,
-      cta_text: planName === "ENTERPRISE" ? "Start Enterprise" : "Start Pro",
+      cta_id: "pricing_start_pro",
+      cta_text: "Start Pro",
       destination: "stripe_checkout",
       location: "pricing_page",
     });
     try {
-      openStripeCheckout(product, isAnnual);
+      openStripeCheckout("pro", isAnnual);
     } catch (error) {
       console.error("Error starting checkout:", error);
       alert("There was an error starting the checkout process. Please try again.");
@@ -263,7 +265,9 @@ const PricingContent: React.FC = () => {
                       {plan.originalPrice}
                     </span>
                   ) : null}
-                  <span className="text-gray-600 dark:text-gray-400">/{plan.billingCycle}</span>
+                  {plan.billingCycle ? (
+                    <span className="text-gray-600 dark:text-gray-400">/{plan.billingCycle}</span>
+                  ) : null}
                 </div>
                 <p className="mt-1 text-xs leading-snug text-gray-500 dark:text-gray-400">
                   {PLAN_CAPACITY_NOTE}
@@ -312,7 +316,7 @@ const PricingContent: React.FC = () => {
                   rel="noopener noreferrer"
                   className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
                 >
-                  {plan.name === "FREE" ? "Community License" : "Commercial EULA"}
+                  {plan.name === "FREE" ? "Community License" : "Commercial license"}
                 </a>
               </div>
             </motion.div>
@@ -332,7 +336,7 @@ const PricingContent: React.FC = () => {
               href="/case-studies/chartmetric"
               className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
             >
-              $19K+ first-year savings
+              $19K+ first-year savings (~95% for their team)
             </Link>
             .
           </p>

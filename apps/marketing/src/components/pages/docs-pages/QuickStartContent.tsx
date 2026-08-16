@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
+import { Button, message } from "antd";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRocket } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faCopy, faRocket } from "@fortawesome/free-solid-svg-icons";
 import QuickStartDemo from "@/components/demos/QuickStartDemo";
 import PageWrapper from "@/components/PageWrapper";
 import DocNavigationButtons from "@/components/DocNavigationButtons";
@@ -16,8 +18,11 @@ import {
   installSnippets,
   tableSnippets,
 } from "@/constants/docsSnippets";
+import { getAiSetupPrompt } from "@/constants/aiTablePrompt";
+import { trackCopyAiSetupPrompt } from "@/lib/analytics";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
+import { useFramework } from "@/providers/FrameworkProvider";
 
 const TABLE_PROPS: PropInfo[] = [
   {
@@ -170,6 +175,21 @@ const QUICK_START_STEPS: DocsStep[] = [
 ];
 
 const QuickStartContent = () => {
+  const { framework } = useFramework();
+  const [promptCopied, setPromptCopied] = useState(false);
+
+  const copySetupPrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(getAiSetupPrompt(framework));
+      trackCopyAiSetupPrompt({ framework, location: "quick_start" });
+      setPromptCopied(true);
+      window.setTimeout(() => setPromptCopied(false), 2000);
+      message.success("AI prompt copied to clipboard");
+    } catch {
+      message.error("Could not copy AI prompt");
+    }
+  };
+
   return (
     <PageWrapper>
       <motion.div
@@ -185,13 +205,34 @@ const QuickStartContent = () => {
       </motion.div>
 
       <motion.p
-        className="text-gray-700 dark:text-gray-300 mb-8 text-lg"
+        className="text-gray-700 dark:text-gray-300 mb-4 text-lg"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
         Add Simple Table to your app in about 60 seconds.
       </motion.p>
+
+      <motion.div
+        className="flex flex-col gap-2 mb-8 max-w-md"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.22 }}
+      >
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Paste into your AI coding tool to install Simple Table, map this app&apos;s data into
+          columns and rows, and match your design system.
+        </p>
+        <Button
+          type="primary"
+          size="large"
+          className="w-full"
+          onClick={copySetupPrompt}
+          icon={<FontAwesomeIcon icon={promptCopied ? faCheck : faCopy} />}
+        >
+          {promptCopied ? "Copied!" : "Copy AI prompt"}
+        </Button>
+      </motion.div>
 
       <motion.div
         initial={{ opacity: 0 }}

@@ -1,4 +1,4 @@
-import type { VNode, VNodeChild } from "vue";
+import type { Component, VNode, VNodeChild } from "vue";
 import type {
   SimpleTableProps,
   SimpleTableConfig,
@@ -34,6 +34,8 @@ export interface TableInstance {
   update(config: Partial<SimpleTableConfig>): void;
   destroy(): void;
   getAPI(): TableAPI;
+  /** Re-measure `width: "auto"` columns after custom renderer DOM settles. */
+  refitAutoSizeColumns?(): void;
 }
 
 /**
@@ -63,37 +65,43 @@ export interface VueIconsConfig {
 }
 
 // ─── Renderer overrides ───────────────────────────────────────────────────────
-// Function types (not `Component<…>` alone) so `h()`-style / functional
-// renderers get contextual typing from TData. Vue SFC / Options components
-// that match this call signature still assign.
+// Prefer function renderers for TData-contextual typing via `h()`-style props.
+// Also accept Vue SFC / `defineComponent` values — runtime wraps `Component`.
 export type VueCellRenderer<
   TData extends VueDefaultRowData = VueDefaultRowData,
   TValue = CellValue,
-> = (props: CellRendererProps<TData, TValue>) => VNodeChild;
-export type VueHeaderRenderer<TData extends VueDefaultRowData = VueDefaultRowData> = (
-  props: HeaderRendererProps<TData>,
-) => VNodeChild;
-export type VueFooterRenderer = (props: FooterRendererProps) => VNodeChild;
-export type VueHeaderDropdown = (props: HeaderDropdownProps) => VNodeChild;
-export type VueColumnEditorRowRenderer = (
-  props: ColumnEditorRowRendererProps,
-) => VNodeChild;
-export type VueColumnEditorCustomRenderer = (
-  props: ColumnEditorCustomRendererProps,
-) => VNodeChild;
-export type VueRowButton<TData extends VueDefaultRowData = VueDefaultRowData> = (
-  props: RowButtonProps<TData>,
-) => VNodeChild;
+> = ((props: CellRendererProps<TData, TValue>) => VNodeChild) | Component;
+export type VueHeaderRenderer<TData extends VueDefaultRowData = VueDefaultRowData> =
+  | ((props: HeaderRendererProps<TData>) => VNodeChild)
+  | Component;
+export type VueFooterRenderer =
+  | ((props: FooterRendererProps) => VNodeChild)
+  | Component;
+export type VueHeaderDropdown =
+  | ((props: HeaderDropdownProps) => VNodeChild)
+  | Component;
+export type VueColumnEditorRowRenderer =
+  | ((props: ColumnEditorRowRendererProps) => VNodeChild)
+  | Component;
+export type VueColumnEditorCustomRenderer =
+  | ((props: ColumnEditorCustomRendererProps) => VNodeChild)
+  | Component;
+export type VueRowButton<TData extends VueDefaultRowData = VueDefaultRowData> =
+  | ((props: RowButtonProps<TData>) => VNodeChild)
+  | Component;
 
-// State renderers can be a function (receives props) or a static VNode
+// State renderers: function, Vue component, or static VNode
 export type VueLoadingStateRenderer<TData extends VueDefaultRowData = VueDefaultRowData> =
   | ((props: LoadingStateRendererProps<TData>) => VNodeChild)
+  | Component
   | VNode;
 export type VueErrorStateRenderer<TData extends VueDefaultRowData = VueDefaultRowData> =
   | ((props: ErrorStateRendererProps<TData>) => VNodeChild)
+  | Component
   | VNode;
 export type VueEmptyStateRenderer<TData extends VueDefaultRowData = VueDefaultRowData> =
   | ((props: EmptyStateRendererProps<TData>) => VNodeChild)
+  | Component
   | VNode;
 
 // ─── Column editor config override ───────────────────────────────────────────

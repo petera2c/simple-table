@@ -198,6 +198,7 @@ const calculateBodyCellClasses = (cell: AbsoluteBodyCell, context: CellRenderCon
     context.activeRowId != null && String(context.activeRowId) === String(rowId)
       ? "st-row-active"
       : "",
+    header.cellClass ?? "",
     ...normalizeGetRowClassResult(
       context.getRowClass?.({
         row: cell.row,

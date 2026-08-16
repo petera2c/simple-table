@@ -509,3 +509,43 @@ export const GetRowClassSurvivesVirtualizationReuse = {
     ).toBe(0);
   },
 };
+
+// ============================================================================
+// cellClass
+// ============================================================================
+
+export const CellClassAppliesToColumnCells = {
+  tags: ["cell-class"],
+  render: () => {
+    const columnsWithClass: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      {
+        accessor: "name",
+        label: "Name",
+        width: 120,
+        type: "string",
+        cellClass: "test-col-class",
+      },
+    ];
+    const { wrapper } = renderVanillaTable(columnsWithClass, data(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "250px",
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const nameCells = canvasElement.querySelectorAll<HTMLElement>(
+      '.st-cell[data-accessor="name"]',
+    );
+    expect(nameCells.length).toBeGreaterThan(0);
+    nameCells.forEach((cell) => {
+      expect(cell.classList.contains("test-col-class")).toBe(true);
+    });
+    const idCells = canvasElement.querySelectorAll<HTMLElement>('.st-cell[data-accessor="id"]');
+    expect(idCells.length).toBeGreaterThan(0);
+    idCells.forEach((cell) => {
+      expect(cell.classList.contains("test-col-class")).toBe(false);
+    });
+  },
+};

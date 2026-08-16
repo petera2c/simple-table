@@ -1,5 +1,4 @@
 import { Component, Input } from "@angular/core";
-import type {  } from "@simple-table/angular";
 import type { BillingRow } from "./billing.demo-data";
 
 @Component({

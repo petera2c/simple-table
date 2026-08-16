@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "inlineSources": true,
+    "types": [],
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "noEmit": false
+  },
+  "angularCompilerOptions": {
+    "compilationMode": "partial",
+    "strictTemplates": true
+  },
+  "exclude": ["node_modules", "dist", "src/**/__tests__/**"]
+}

@@ -175,7 +175,7 @@ export type AnalyticsPreset = {
   label: string;
   description: string;
   /** `null` shows the flat fact table before any pivot is applied. */
-  pivot: PivotConfig | null;
+  pivot: PivotConfig<AnalyticsFactRow> | null;
 };
 
 export const analyticsPresets: AnalyticsPreset[] = [
@@ -196,8 +196,8 @@ export const analyticsPresets: AnalyticsPreset[] = [
     },
   },
   {
-    id: "nested-rows",
-    label: "Region → Product",
+    id: "multi-rows",
+    label: "Region × Product",
     description: "Drill into products within each region",
     pivot: {
       rows: ["region", "product"],
@@ -241,7 +241,7 @@ export const analyticsPresets: AnalyticsPreset[] = [
   },
 ];
 
-export const analyticsConfig: PivotConfig | null = analyticsPresets[0].pivot;
+export const analyticsConfig: PivotConfig<AnalyticsFactRow> | null = analyticsPresets[0].pivot;
 
 export const analyticsDemoConfig = {
   headers: analyticsHeaders,

@@ -11,7 +11,7 @@ import { COMPARISON_FOOTER_LINKS } from "@/constants/comparisons";
 import { EXAMPLE_NAV_ITEMS } from "@/constants/examplesNav";
 import PageWrapper from "./PageWrapper";
 import { getExampleUrl } from "@/utils/getExampleUrl";
-import { trackCtaClick } from "@/lib/analytics";
+import { trackBookACall } from "@/lib/analytics";
 
 export default function Footer() {
   const pathname = usePathname();
@@ -31,22 +31,22 @@ export default function Footer() {
               <ul className="space-y-2">
                 <li>
                   <Link
-                    href="/docs/installation"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/docs/installation") ? "text-white font-medium" : ""
-                    }`}
-                  >
-                    Installation
-                  </Link>
-                </li>
-                <li>
-                  <Link
                     href="/docs/quick-start"
                     className={`text-gray-400 hover:text-white transition-colors ${
                       isActive("/docs/quick-start") ? "text-white font-medium" : ""
                     }`}
                   >
                     Quick Start
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/docs/installation"
+                    className={`text-gray-400 hover:text-white transition-colors ${
+                      isActive("/docs/installation") ? "text-white font-medium" : ""
+                    }`}
+                  >
+                    Installation
                   </Link>
                 </li>
                 <li>
@@ -133,7 +133,7 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     className="text-gray-400 hover:text-white transition-colors flex items-center"
                     onClick={() =>
-                      trackCtaClick({
+                      trackBookACall({
                         cta_id: "footer_book_a_call",
                         cta_text: "Book a free call",
                         destination: TECHNICAL_STRINGS.links.calendly,

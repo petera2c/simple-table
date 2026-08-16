@@ -332,6 +332,16 @@ export default function SmartGridVsSimpleTablePage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
+                      <strong>ENTERPRISE:</strong> Contact us for custom features and direct
+                      developer access
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <FontAwesomeIcon
+                      icon={faCheckCircle}
+                      className="text-green-500 mt-1 shrink-0"
+                    />
+                    <span>
                       <strong>Initial cost:</strong> {SIMPLE_TABLE_ANNUAL_COST_RANGE} (vs $1,499 for
                       Smart Grid Team License)
                     </span>

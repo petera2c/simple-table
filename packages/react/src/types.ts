@@ -63,9 +63,10 @@ export type ColumnEditorRowRendererProps = Omit<
 /** Column editor custom-renderer slots as React nodes (core uses `HTMLElement`). */
 export type ColumnEditorCustomRendererProps = Omit<
   VanillaColumnEditorCustomRendererProps,
-  "searchSection" | "listSection" | "resetSection"
+  "searchSection" | "pivotSection" | "listSection" | "resetSection"
 > & {
   searchSection?: React.ReactNode;
+  pivotSection?: React.ReactNode;
   listSection?: React.ReactNode;
   resetSection?: React.ReactNode;
 };

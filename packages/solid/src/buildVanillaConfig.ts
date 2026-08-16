@@ -11,6 +11,7 @@ import type { MountRegistry } from "./MountRegistry";
 import {
   wrapSolidRenderer,
   wrapCachedSolidRenderer,
+  wrapSolidColumnEditorRowRenderer,
   wrapSolidNode,
   solidNodeToHtmlString,
   isSolidComponent,
@@ -38,7 +39,9 @@ function transformColumnEditorConfig(
   const { rowRenderer, customRenderer, ...rest } = config;
   return {
     ...rest,
-    ...(rowRenderer ? { rowRenderer: wrapSolidRenderer(registry, rowRenderer) as any } : {}),
+    ...(rowRenderer
+      ? { rowRenderer: wrapSolidColumnEditorRowRenderer(registry, rowRenderer) as any }
+      : {}),
     ...(customRenderer
       ? { customRenderer: wrapSolidRenderer(registry, customRenderer) as any }
       : {}),

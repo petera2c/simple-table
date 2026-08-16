@@ -1,65 +1,70 @@
 import { SimpleTableVanilla } from "simple-table-core";
+import type { PivotConfig, Theme } from "simple-table-core";
+import { pivotDemoConfig } from "./pivot.demo-data";
 import type { PivotFact } from "./pivot.demo-data";
-import type { Theme, GetRowIdParams } from "simple-table-core";
-import { pivotDemoConfig, pivotPresets } from "./pivot.demo-data";
 import "simple-table-core/styles.css";
 
+const INITIAL_PIVOT: PivotConfig<PivotFact> = {
+  rows: ["region", "product"],
+  columns: ["quarter"],
+  values: [{ accessor: "sales", aggregation: { type: "sum" } }],
+};
 
-const getRowId = ({ row }: GetRowIdParams<PivotFact>) => row.id;
 export function renderPivotDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
 ): SimpleTableVanilla<PivotFact> {
-  let activeId = pivotPresets[0].id;
+  let pivotEnabled = true;
+  let pivot: PivotConfig<PivotFact> | null = INITIAL_PIVOT;
   let table: SimpleTableVanilla<PivotFact> | null = null;
 
   const root = document.createElement("div");
-  root.style.cssText = "display:flex;flex-direction:column;gap:12px;width:100%";
 
-  const buttons = document.createElement("div");
-  buttons.style.cssText = "display:flex;flex-wrap:wrap;gap:8px";
+  const label = document.createElement("label");
+  label.style.cssText =
+    "display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:14px;color:#374151";
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = true;
+  checkbox.setAttribute("aria-label", "Pivot mode");
+  checkbox.addEventListener("change", () => {
+    pivotEnabled = checkbox.checked;
+    if (pivotEnabled && pivot === null) {
+      pivot = INITIAL_PIVOT;
+    }
+    table?.updateConfig({
+      pivot: pivotEnabled ? pivot : null,
+      enablePivotPanel: pivotEnabled,
+    });
+  });
+
+  const text = document.createElement("span");
+  text.textContent = "Pivot mode";
+  label.append(checkbox, text);
 
   const tableHost = document.createElement("div");
-  tableHost.style.cssText = "width:100%";
-
-  const paintButtons = () => {
-    buttons.replaceChildren();
-    for (const preset of pivotPresets) {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.textContent = preset.label;
-      const selected = preset.id === activeId;
-      btn.style.cssText = `padding:6px 12px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:500;background:${
-        selected ? "#2563eb" : "#e5e7eb"
-      };color:${selected ? "#fff" : "#374151"}`;
-      btn.addEventListener("click", () => {
-        activeId = preset.id;
-        paintButtons();
-        const active = pivotPresets.find((p) => p.id === activeId) ?? pivotPresets[0];
-        table?.updateConfig({
-          pivot: active.pivot,
-          expandAll: active.pivot.rows.length > 1,
-        });
-      });
-      buttons.appendChild(btn);
-    }
-  };
-
-  paintButtons();
-  root.append(buttons, tableHost);
+  tableHost.style.width = "100%";
+  root.append(label, tableHost);
   container.replaceChildren(root);
 
-  const active = pivotPresets.find((p) => p.id === activeId) ?? pivotPresets[0];
   table = new SimpleTableVanilla(tableHost, {
-    getRowId,
     columns: pivotDemoConfig.headers,
     rows: pivotDemoConfig.rows,
-    pivot: active.pivot,
+    pivot,
+    autoExpandColumns: true,
     columnResizing: true,
-    expandAll: active.pivot.rows.length > 1,
-    height: options?.height ?? "400px",
+    enableColumnEditor: true,
+    enableColumnEditorInitOpen: true,
+    enablePivotPanel: true,
+    height: options?.height ?? "500px",
     selectableCells: true,
     theme: options?.theme,
+    getRowId: ({ row }) => (row?.id == null ? undefined : String(row.id)),
+    onPivotChange: (next) => {
+      pivot = next;
+    },
   });
+
   return table;
 }

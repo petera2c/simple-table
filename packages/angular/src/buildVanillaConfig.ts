@@ -9,7 +9,11 @@ import type {
   AngularIconsConfig,
 } from "./types";
 import type { MountRegistry } from "./MountRegistry";
-import { wrapAngularRenderer, wrapCachedAngularRenderer } from "./utils/wrapAngularRenderer";
+import {
+  wrapAngularRenderer,
+  wrapCachedAngularRenderer,
+  wrapAngularColumnEditorRowRenderer,
+} from "./utils/wrapAngularRenderer";
 
 /** Resolve column definitions. */
 export function resolveAngularColumns<
@@ -82,7 +86,16 @@ export function buildVanillaConfig<TData extends AngularDefaultRowData = Angular
     const { rowRenderer, customRenderer, ...cfgRest } = cfg;
     return {
       ...cfgRest,
-      ...(rowRenderer ? { rowRenderer: wrap(rowRenderer) as any } : {}),
+      ...(rowRenderer
+        ? {
+            rowRenderer: wrapAngularColumnEditorRowRenderer(
+              rowRenderer as any,
+              appRef,
+              injector,
+              registry,
+            ) as any,
+          }
+        : {}),
       ...(customRenderer ? { customRenderer: wrap(customRenderer) as any } : {}),
     };
   }

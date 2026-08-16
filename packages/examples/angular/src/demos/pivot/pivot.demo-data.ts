@@ -109,7 +109,7 @@ export const pivotRows: PivotFact[] = generatePivotRows();
 export type PivotPreset = {
   id: string;
   label: string;
-  pivot: PivotConfig;
+  pivot: PivotConfig<PivotFact>;
 };
 
 export const pivotPresets: PivotPreset[] = [
@@ -123,8 +123,8 @@ export const pivotPresets: PivotPreset[] = [
     },
   },
   {
-    id: "nested-rows",
-    label: "Region → Product",
+    id: "multi-rows",
+    label: "Region × Product",
     pivot: {
       rows: ["region", "product"],
       columns: ["quarter"],
@@ -176,7 +176,7 @@ export const pivotPresets: PivotPreset[] = [
   },
 ];
 
-export const pivotConfig: PivotConfig = pivotPresets[0].pivot;
+export const pivotConfig: PivotConfig<PivotFact> = pivotPresets[0].pivot;
 
 export const pivotDemoConfig = {
   headers: pivotHeaders,

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Modal, Input, Button, App, Select, Checkbox } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faUser, faBuilding, faComment, faFileInvoice } from "@fortawesome/free-solid-svg-icons";
-import { trackContactSubmit } from "@/lib/analytics";
+import { trackContactSubmit, trackLicenseQuoteSubmit } from "@/lib/analytics";
 
 const { TextArea } = Input;
 
@@ -84,7 +84,14 @@ const ContactModal = ({
       const data = await response.json();
 
       if (response.ok) {
-        trackContactSubmit(isQuote ? "license_quote" : "contact_modal");
+        if (isQuote) {
+          trackLicenseQuoteSubmit({
+            plan_interest: formData.planInterest,
+            replacing_ag_grid: formData.replacingAgGrid,
+          });
+        } else {
+          trackContactSubmit("contact_modal");
+        }
         message.success({
           content: isQuote
             ? "Quote request sent! We'll reply within 24 hours with pricing and next steps."
@@ -140,8 +147,8 @@ const ContactModal = ({
       <div className="space-y-4 py-4">
         {isQuote ? (
           <p className="text-sm text-gray-600 dark:text-gray-400 -mt-1 mb-2">
-            Tell us about your product and we&apos;ll send Pro/Enterprise pricing, AG Grid cost
-            comparison, and next steps, usually within a day.
+            Tell us about your product and we&apos;ll send Pro pricing or an Enterprise quote, AG
+            Grid cost comparison, and next steps, usually within a day.
           </p>
         ) : null}
 

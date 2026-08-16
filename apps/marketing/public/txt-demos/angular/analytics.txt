@@ -110,7 +110,6 @@ import "@simple-table/angular/styles.css";
             [rows]="rows"
             [columns]="headers"
             [enableColumnEditor]="true"
-            [expandAll]="nestedRows"
             [getRowId]="getRowId"
             height="100%"
             [initialSortColumn]="isPivoted ? undefined : 'sales'"
@@ -138,7 +137,6 @@ export class AnalyticsDemoComponent {
 
   activeId = analyticsPresets[0].id;
   pivot: PivotConfig | null = analyticsPresets[0].pivot;
-  nestedRows = (analyticsPresets[0].pivot?.rows.length ?? 0) > 1;
   isPivoted = analyticsPresets[0].pivot != null;
   activeDescription = analyticsPresets[0].description;
   searchText = "";
@@ -192,7 +190,6 @@ export class AnalyticsDemoComponent {
   selectPreset(preset: AnalyticsPreset): void {
     this.activeId = preset.id;
     this.pivot = preset.pivot;
-    this.nestedRows = (preset.pivot?.rows.length ?? 0) > 1;
     this.isPivoted = preset.pivot != null;
     this.activeDescription = preset.description;
   }
@@ -201,7 +198,6 @@ export class AnalyticsDemoComponent {
     this.tableRef.getAPI()?.exportToCSV();
   }
 }
-
 
 // analytics.demo-data.ts
 import type { PivotConfig, AngularColumnDef, Row } from "@simple-table/angular";
@@ -390,8 +386,8 @@ export const analyticsPresets: AnalyticsPreset[] = [
     },
   },
   {
-    id: "nested-rows",
-    label: "Region → Product",
+    id: "multi-rows",
+    label: "Region × Product",
     description: "Drill into products within each region",
     pivot: {
       rows: ["region", "product"],

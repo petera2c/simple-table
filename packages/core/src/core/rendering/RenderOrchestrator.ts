@@ -1,6 +1,7 @@
 import { SimpleTableConfig } from "../../types/SimpleTableConfig";
 import { CustomTheme } from "../../types/CustomTheme";
 import ColumnDef, { Accessor } from "../../types/ColumnDef";
+import type { PivotConfig } from "../../types/PivotTypes";
 import Row from "../../types/Row";
 import RowState from "../../types/RowState";
 import { DimensionManager, type DimensionManagerState } from "../../managers/DimensionManager";
@@ -66,6 +67,8 @@ export interface RenderContext {
   getHeaders: () => ColumnDef[];
   /** Pristine snapshot of the configured column definitions — the reset target for the column editor's reset button. */
   getPristineDefaultHeaders: () => ColumnDef[];
+  getPivot: () => PivotConfig | null;
+  setPivot: (pivot: PivotConfig | null) => void;
   getRowStateMap: () => Map<string | number, RowState>;
   headerRegistry: Map<string, any>;
   headers: ColumnDef[];
@@ -923,6 +926,8 @@ export class RenderOrchestrator {
       getExpandedRows: context.getExpandedRows,
       getHeaders: context.getHeaders,
       getPristineDefaultHeaders: context.getPristineDefaultHeaders,
+      getPivot: context.getPivot,
+      setPivot: context.setPivot,
       getRowStateMap: context.getRowStateMap,
       positionOnlyBody: context.positionOnlyBody,
       essentialAccessors: context.essentialAccessors,

@@ -125,6 +125,12 @@ const softwareSchema = {
       },
       description: "For revenue-generating businesses with priority support",
     },
+    {
+      "@type": "Offer",
+      name: "Enterprise Plan",
+      description: "Contact us for custom features and direct developer access",
+      url: "https://www.simple-table.com/pricing",
+    },
   ],
   description: `Simple Table is a lightweight JavaScript data grid with first-class npm packages: @simple-table/react, @simple-table/vue, @simple-table/angular, @simple-table/svelte, @simple-table/solid, and simple-table-core for vanilla JavaScript or TypeScript. Only ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} in size, production-ready with 30+ features including cell editing, column management, sorting, filtering, and full TypeScript support.`,
   url: "https://www.simple-table.com",

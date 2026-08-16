@@ -30,6 +30,23 @@
     NonNullable<$$Props["columns"]>[number]
   > | undefined = undefined;
   let syncedRows: $$Props["rows"] | undefined = undefined;
+  let wasLoading = false;
+  let didInitialAutoSize = false;
+
+  function maybeRefitAutoSizeColumns(leftLoading: boolean) {
+    if (!instance) return;
+    if (leftLoading) {
+      instance.refitAutoSizeColumns?.();
+      return;
+    }
+    // Svelte mounts are synchronous for template DOM, so custom renderer hosts
+    // are already present after the first paint that registered mounts (mirrors
+    // Vue/React first-portals refit).
+    if (!didInitialAutoSize && registry.size > 0) {
+      didInitialAutoSize = true;
+      instance.refitAutoSizeColumns?.();
+    }
+  }
 
   onMount(() => {
     const props = { rows, columns, ...$$restProps } as SimpleTableSvelteProps<TData>;
@@ -40,6 +57,8 @@
     instance.mount();
     syncedColumns = resolveSvelteColumns(props);
     syncedRows = rows;
+    wasLoading = Boolean(props.isLoading);
+    maybeRefitAutoSizeColumns(false);
   });
 
   onDestroy(() => {
@@ -73,7 +92,12 @@
       delete patch.rows;
     }
 
+    const isLoading = Boolean(props.isLoading);
+    const leftLoading = wasLoading && !isLoading;
+    wasLoading = isLoading;
+
     instance.update(patch);
+    maybeRefitAutoSizeColumns(leftLoading);
   }
 
   /** Expose the TableAPI for consumers using bind:this. */

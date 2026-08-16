@@ -23,7 +23,6 @@ export default function AnalyticsDemo(props: {
     () => analyticsPresets.find((p) => p.id === activeId()) ?? analyticsPresets[0]
   );
   const isPivoted = createMemo(() => active().pivot != null);
-  const nestedRows = createMemo(() => (active().pivot?.rows.length ?? 0) > 1);
   const isDark = () => props.theme === "dark" || props.theme === "modern-dark";
   const chromeBg = () => (isDark() ? "#0f172a" : "#f8fafc");
   const chromeBorder = () => (isDark() ? "#1e293b" : "#e2e8f0");
@@ -157,8 +156,6 @@ export default function AnalyticsDemo(props: {
               copyHeadersToClipboard
               columns={analyticsDemoConfig.headers}
               enableColumnEditor
-              enableStickyParents={nestedRows()}
-              expandAll={nestedRows()}
               getRowId={({ row }) => {
                 const id = row.id;
                 return id == null ? undefined : String(id);

@@ -6,7 +6,7 @@
 import { h, ref } from "vue";
 import { describe, it, expect } from "vitest";
 import { SimpleTable } from "../index";
-import type { SimpleTableExposed, VueColumnDef } from "../index";
+import type { GetRowIdParams, SimpleTableExposed, VueColumnDef } from "../index";
 
 interface AnalyticsFactRow {
   id: number;
@@ -33,14 +33,17 @@ false &&
     },
   });
 
+// Probe via an annotated callback — `h(SimpleTable, …)` attrs typing is too
+// loose for @ts-expect-error on an inline getRowId.
+const badGetRowId = ({ row }: GetRowIdParams<AnalyticsFactRow>) => {
+  // @ts-expect-error — AnalyticsFactRow has no `missing`
+  return row.missing;
+};
 false &&
   h(SimpleTable, {
     columns,
     rows,
-    getRowId: ({ row }) => {
-      // @ts-expect-error — AnalyticsFactRow has no `missing`
-      return row.missing;
-    },
+    getRowId: badGetRowId,
   });
 
 false &&

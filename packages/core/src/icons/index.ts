@@ -9,6 +9,7 @@ export { createAngleRightIcon } from "./AngleRightIcon";
 export { createAngleUpIcon } from "./AngleUpIcon";
 export { createAscIcon } from "./AscIcon";
 export { createCheckIcon } from "./CheckIcon";
+export { createCloseIcon } from "./CloseIcon";
 export { createDescIcon } from "./DescIcon";
 export { createMinusIcon } from "./MinusIcon";
 

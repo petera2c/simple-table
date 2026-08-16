@@ -53,6 +53,21 @@ function camelizeAttrs(attrs: Record<string, unknown>): Record<string, unknown> 
   return out;
 }
 
+/** Top-level referential equality; mirrors React's shallowTablePropsChanged. */
+function shallowTablePropsChanged(
+  prev: SimpleTableVueProps,
+  next: SimpleTableVueProps,
+): boolean {
+  const keys = new Set([
+    ...Object.keys(prev as object),
+    ...Object.keys(next as object),
+  ]) as Set<keyof SimpleTableVueProps>;
+  for (const key of keys) {
+    if (prev[key] !== next[key]) return true;
+  }
+  return false;
+}
+
 const SimpleTableInner = defineComponent({
   name: "SimpleTable",
 
@@ -72,10 +87,36 @@ const SimpleTableInner = defineComponent({
       NonNullable<SimpleTableVueProps["columns"]>[number]
     > | undefined;
     let syncedRows: SimpleTableVueProps["rows"] | undefined;
+    let lastSyncedProps: SimpleTableVueProps | null = null;
+    let wasLoading = false;
+    let didInitialAutoSize = false;
+
+    function maybeRefitAutoSizeColumns(leftLoading: boolean) {
+      if (!instance) return;
+      if (leftLoading) {
+        instance.refitAutoSizeColumns?.();
+        return;
+      }
+      // Vue mounts are synchronous, so custom renderer DOM is already present
+      // after the first paint that registered mounts (mirrors React's
+      // first-portals refit).
+      if (!didInitialAutoSize && registry.size > 0) {
+        didInitialAutoSize = true;
+        instance.refitAutoSizeColumns?.();
+      }
+    }
 
     function syncFromAttrs() {
       if (!instance) return;
       const props = camelizeAttrs(attrs) as unknown as SimpleTableVueProps;
+
+      // Same guard as React: skip when parent re-rendered with identical
+      // top-level bindings (new attrs object, same values).
+      if (lastSyncedProps !== null && !shallowTablePropsChanged(lastSyncedProps, props)) {
+        return;
+      }
+      lastSyncedProps = props;
+
       const fullConfig = buildVanillaConfig(props, registry);
       const patch: Partial<SimpleTableConfig> = { ...fullConfig };
       const resolvedColumns = resolveVueColumns(props);
@@ -99,7 +140,12 @@ const SimpleTableInner = defineComponent({
         delete patch.rows;
       }
 
+      const isLoading = Boolean(props.isLoading);
+      const leftLoading = wasLoading && !isLoading;
+      wasLoading = isLoading;
+
       instance.update(patch);
+      maybeRefitAutoSizeColumns(leftLoading);
     }
 
     onMounted(() => {
@@ -111,18 +157,27 @@ const SimpleTableInner = defineComponent({
         buildVanillaConfig(props, registry),
       ) as unknown as TableInstance;
       instance.mount();
+      // Seed sync refs so the first attrs watch run is a no-op (React does the
+      // same after mount-once).
+      lastSyncedProps = props;
       syncedDefaultHeaders = resolveVueColumns(props);
       syncedRows = props.rows;
+      wasLoading = Boolean(props.isLoading);
+      maybeRefitAutoSizeColumns(false);
     });
 
-    // Watch attrs (not onUpdated) so we only sync when bindings actually change.
-    watch(attrs, syncFromAttrs, { deep: true });
+    // setup() attrs is a Proxy over a plain object — NOT a reactive watch
+    // source — so `watch(attrs, …)` never fires (issue #128). Spreading in a
+    // getter tracks attrs' "" key; Vue triggers that key whenever fallthrough
+    // attrs change.
+    watch(() => ({ ...attrs }), syncFromAttrs);
 
     onUnmounted(() => {
       instance?.destroy();
       instance = null;
       syncedDefaultHeaders = undefined;
       syncedRows = undefined;
+      lastSyncedProps = null;
       registry.clear();
     });
 

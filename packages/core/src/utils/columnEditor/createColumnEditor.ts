@@ -1,5 +1,6 @@
 import ColumnDef from "../../types/ColumnDef";
 import { ColumnEditorSearchFunction, ColumnEditorConfig } from "../../types/ColumnEditorConfig";
+import type { PivotConfig } from "../../types/PivotTypes";
 import { createColumnEditorPopout } from "./createColumnEditorPopout";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
 import { IconsConfig } from "../../types/IconsConfig";
@@ -8,7 +9,12 @@ import { COLUMN_EDIT_WIDTH } from "../../consts/general-consts";
 export interface CreateColumnEditorOptions {
   columnEditorText: string;
   enableColumnEditor: boolean;
+  enablePivotPanel?: boolean;
   headers: ColumnDef[];
+  /** Source field catalog for the pivot panel (pristine columns). */
+  pivotFields?: ColumnDef[];
+  pivot?: PivotConfig | null;
+  setPivot?: (pivot: PivotConfig | null) => void;
   open: boolean;
   searchEnabled: boolean;
   searchPlaceholder: string;
@@ -27,7 +33,11 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
   let {
     columnEditorText,
     enableColumnEditor,
+    enablePivotPanel = false,
     headers,
+    pivotFields,
+    pivot = null,
+    setPivot,
     open,
     searchEnabled,
     searchPlaceholder,
@@ -75,6 +85,10 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
   const popout = createColumnEditorPopout({
     headers,
     open,
+    enablePivotPanel,
+    pivotFields,
+    pivot,
+    setPivot,
     searchEnabled,
     searchPlaceholder,
     searchFunction,
@@ -117,9 +131,20 @@ export const createColumnEditor = (options: CreateColumnEditorOptions) => {
       if (newOptions.resetColumns !== undefined) {
         resetColumns = newOptions.resetColumns;
       }
+      if (newOptions.enablePivotPanel !== undefined) {
+        enablePivotPanel = newOptions.enablePivotPanel;
+      }
+      if (newOptions.pivotFields !== undefined) pivotFields = newOptions.pivotFields;
+      if (newOptions.pivot !== undefined) pivot = newOptions.pivot;
+      if (newOptions.setPivot !== undefined) setPivot = newOptions.setPivot;
       popout.update({
         headers: newOptions.headers,
         open: newOptions.open,
+        enablePivotPanel:
+          newOptions.enablePivotPanel !== undefined ? enablePivotPanel : undefined,
+        pivotFields: newOptions.pivotFields,
+        pivot: newOptions.pivot,
+        setPivot: newOptions.setPivot,
         searchEnabled: newOptions.searchEnabled,
         searchPlaceholder: newOptions.searchPlaceholder,
         searchFunction: newOptions.searchFunction,

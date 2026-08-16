@@ -1,5 +1,5 @@
 // Self-contained demo table setup for this example.
-import type { VueCellRenderer, VueColumnDef } from "@simple-table/vue";
+import type { CellRendererProps, VueColumnDef } from "@simple-table/vue";
 
 export interface CollapsibleSalesRep {
   id: number;
@@ -47,7 +47,9 @@ export const collapsibleColumnsData: CollapsibleSalesRep[] = [
   { id: 12, name: "Christopher Lee", region: "Europe", q1Sales: 167000, q2Sales: 189000, q3Sales: 212000, q4Sales: 234000, totalSales: 802000, avgQuarterly: 200500, jan: 52000, feb: 55000, mar: 60000, apr: 61000, may: 63000, jun: 65000, jul: 68000, aug: 71000, sep: 73000, oct: 76000, nov: 78000, dec: 80000, avgMonthly: 66833, bestMonth: 80000, softwareSales: 320000, hardwareSales: 241000, servicesSales: 241000, topCategory: "Software", categoryCount: 3 },
 ];
 
-const fmtCurrency: VueCellRenderer<CollapsibleSalesRep, number> = ({ value }) =>
+const fmtCurrency = ({
+  value,
+}: CellRendererProps<CollapsibleSalesRep, number>): string =>
   `$${(value ?? 0).toLocaleString()}`;
 
 type MonthKey =

@@ -1,5 +1,4 @@
 import { Component, Input } from "@angular/core";
-import type {  } from "@simple-table/angular";
 import type { CRMLead } from "./crm.demo-data";
 import { crmCellPalette } from "./crm-demo-context";
 

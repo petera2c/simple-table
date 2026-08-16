@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Switch } from "antd";
 import { SimpleTable } from "@simple-table/react";
 import type { PivotConfig, ReactColumnDef, Row, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
@@ -95,126 +96,54 @@ function generatePivotRows(): Row[] {
 
 const rows: Row[] = generatePivotRows();
 
-type Preset = {
-  id: string;
-  label: string;
-  pivot: PivotConfig;
+const INITIAL_PIVOT: PivotConfig = {
+  rows: ["region", "product"],
+  columns: ["quarter"],
+  values: [{ accessor: "sales", aggregation: { type: "sum" } }],
 };
 
-const PRESETS: Preset[] = [
-  {
-    id: "region-quarter",
-    label: "Region × Quarter",
-    pivot: {
-      rows: ["region"],
-      columns: ["quarter"],
-      values: [{ accessor: "sales", aggregation: { type: "sum" } }],
-    },
-  },
-  {
-    id: "nested-rows",
-    label: "Region → Product",
-    pivot: {
-      rows: ["region", "product"],
-      columns: ["quarter"],
-      values: [{ accessor: "sales", aggregation: { type: "sum" } }],
-    },
-  },
-  {
-    id: "category-year-quarter",
-    label: "Category × Year → Quarter",
-    pivot: {
-      rows: ["category"],
-      columns: ["year", "quarter"],
-      values: [{ accessor: "sales", aggregation: { type: "sum" } }],
-    },
-  },
-  {
-    id: "channel-quarter",
-    label: "Channel × Quarter",
-    pivot: {
-      rows: ["channel"],
-      columns: ["quarter"],
-      values: [
-        { accessor: "sales", aggregation: { type: "sum" }, label: "Sales" },
-        { accessor: "units", aggregation: { type: "sum" }, label: "Units" },
-      ],
-    },
-  },
-  {
-    id: "country-category",
-    label: "Country × Category",
-    pivot: {
-      rows: ["country"],
-      columns: ["category"],
-      values: [{ accessor: "sales", aggregation: { type: "average" } }],
-      showColumnTotals: false,
-    },
-  },
-  {
-    id: "values-only",
-    label: "Values only",
-    pivot: {
-      rows: ["region", "category"],
-      columns: [],
-      values: [
-        { accessor: "sales", aggregation: { type: "sum" } },
-        { accessor: "cost", aggregation: { type: "sum" } },
-      ],
-    },
-  },
-];
-
 const PivotDemo = ({
-  height = "auto",
+  height = "500px",
   theme,
 }: {
   height?: string | number;
   theme?: Theme;
 }) => {
-  const [activeId, setActiveId] = useState(PRESETS[0].id);
-  const active = PRESETS.find((p) => p.id === activeId) ?? PRESETS[0];
-  const nestedRows = active.pivot.rows.length > 1;
+  const [pivotEnabled, setPivotEnabled] = useState(true);
+  const [pivot, setPivot] = useState<PivotConfig | null>(INITIAL_PIVOT);
+
+  const handlePivotEnabledChange = (enabled: boolean) => {
+    setPivotEnabled(enabled);
+    if (enabled && pivot === null) {
+      setPivot(INITIAL_PIVOT);
+    }
+  };
 
   return (
-    <div className="flex flex-col gap-3 w-full">
-      <div className="flex flex-wrap gap-2">
-        {PRESETS.map((preset) => {
-          const selected = preset.id === activeId;
-          return (
-            <button
-              key={preset.id}
-              type="button"
-              onClick={() => setActiveId(preset.id)}
-              className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
-                selected
-                  ? "bg-blue-600 text-white hover:bg-blue-700 hover:text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300 hover:text-gray-900 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-              }`}
-            >
-              {preset.label}
-            </button>
-          );
-        })}
-      </div>
-      <p className="text-sm text-gray-600 dark:text-gray-400 m-0">
-        {rows.length} fact rows · Active:{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-          rows: [{active.pivot.rows.map((r: string) => `"${r}"`).join(", ")}]
-        </code>{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-          columns: [{active.pivot.columns.map((c: string) => `"${c}"`).join(", ")}]
-        </code>
-      </p>
+    <div>
+      <label className="mb-3 flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+        <Switch
+          checked={pivotEnabled}
+          onChange={handlePivotEnabledChange}
+          size="small"
+          aria-label="Pivot mode"
+        />
+        Pivot mode
+      </label>
       <SimpleTable
         columns={headers}
         rows={rows}
+        autoExpandColumns
         columnResizing
-        expandAll={nestedRows}
+        enableColumnEditor
+        enableColumnEditorInitOpen
+        enablePivotPanel={pivotEnabled}
         height={height}
-        pivot={active.pivot}
+        pivot={pivotEnabled ? pivot : null}
+        onPivotChange={setPivot}
         selectableCells
         theme={theme}
+        getRowId={({ row }) => (row?.id == null ? undefined : String(row.id))}
       />
     </div>
   );

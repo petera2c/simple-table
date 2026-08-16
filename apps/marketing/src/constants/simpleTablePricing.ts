@@ -8,10 +8,8 @@ export const SIMPLE_TABLE_PRICING = {
   proMonthly: "$85",
   proAnnual: "$850",
   proAnnualStrikethrough: "$1,020",
-  enterpriseMonthly: "$350",
-  enterpriseAnnual: "$3,500",
-  enterpriseAnnualStrikethrough: "$4,200",
+  enterpriseDisplay: "Contact us",
 } as const;
 
-/** Annual billing: lowest (free tier) through highest paid tier on the pricing page. */
-export const SIMPLE_TABLE_ANNUAL_COST_RANGE = `$0–${SIMPLE_TABLE_PRICING.enterpriseAnnual}/year`;
+/** Published annual range (free through Pro). Enterprise is custom — contact us. */
+export const SIMPLE_TABLE_ANNUAL_COST_RANGE = `$0–${SIMPLE_TABLE_PRICING.proAnnual}/year`;

@@ -8,5 +8,5 @@
     "rootDir": "src",
     "moduleResolution": "bundler"
   },
-  "exclude": ["node_modules", "dist", "src/**/__tests__/**"]
+  "exclude": ["node_modules", "dist", "src/**/__tests__/**", "vitest.setup.ts"]
 }

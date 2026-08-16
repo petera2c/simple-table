@@ -1,4 +1,8 @@
 import { render, h, type Component, type VNode } from "vue";
+import type {
+  ColumnEditorRowRendererProps as VanillaColumnEditorRowRendererProps,
+  HeaderRendererProps as VanillaHeaderRendererProps,
+} from "simple-table-core";
 import type { MountRegistry } from "../MountRegistry";
 
 /**
@@ -23,8 +27,35 @@ export function wrapVueRenderer<P extends object>(
 }
 
 /**
+ * Header renderer wrapper that reuses one host element so sort/filter icon
+ * refreshes update props in place (via `render` patch) instead of remounting
+ * the Vue subtree and wiping local state. Mirrors React's
+ * {@link wrapReactHeaderRenderer}.
+ */
+export function wrapVueHeaderRenderer(
+  registry: MountRegistry,
+  component: Component,
+): (props: VanillaHeaderRendererProps) => HTMLElement {
+  let host: HTMLElement | null = null;
+  return (props: VanillaHeaderRendererProps): HTMLElement => {
+    const vnode = h(component, props as any);
+    if (host && registry.isRegistered(host)) {
+      render(vnode, host);
+      return host;
+    }
+    host = document.createElement("div");
+    render(vnode, host);
+    registry.register(host, () => render(null, host!));
+    return host;
+  };
+}
+
+/**
  * Like {@link wrapVueRenderer}, but reuses one wrapper per accessor so
  * unstable column rebuilds keep a stable function identity on ColumnDef.
+ *
+ * For `kind: "header"`, also reuses a single mount host (React
+ * {@link wrapCachedHeaderRenderer}) so sort/filter refreshes preserve state.
  */
 export function wrapCachedVueRenderer<P extends object>(
   registry: MountRegistry,
@@ -43,6 +74,25 @@ export function wrapCachedVueRenderer<P extends object>(
     component,
     wrapped: null as unknown as (props: P) => HTMLElement,
   };
+
+  if (kind === "header") {
+    let host: HTMLElement | null = null;
+    const wrapped = (props: P): HTMLElement => {
+      const vnode = h(slot.component, props as any);
+      if (host && registry.isRegistered(host)) {
+        render(vnode, host);
+        return host;
+      }
+      host = document.createElement("div");
+      render(vnode, host);
+      registry.register(host, () => render(null, host!));
+      return host;
+    };
+    slot.wrapped = wrapped;
+    cache.set(accessor, slot);
+    return wrapped;
+  }
+
   const wrapped = (props: P): HTMLElement => {
     const el = document.createElement("div");
     render(h(slot.component, props as any), el);
@@ -52,6 +102,31 @@ export function wrapCachedVueRenderer<P extends object>(
   slot.wrapped = wrapped;
   cache.set(accessor, slot);
   return wrapped;
+}
+
+/**
+ * Column-editor row renderer: one host per `accessor` so popout list rebuilds
+ * update in place instead of remounting Vue state (mirrors React).
+ */
+export function wrapVueColumnEditorRowRenderer(
+  registry: MountRegistry,
+  component: Component,
+): (props: VanillaColumnEditorRowRendererProps) => HTMLElement {
+  const hosts = new Map<string, HTMLElement>();
+  return (props: VanillaColumnEditorRowRendererProps): HTMLElement => {
+    const key = String(props.accessor);
+    const existing = hosts.get(key);
+    const vnode = h(component, props as any);
+    if (existing && registry.isRegistered(existing)) {
+      render(vnode, existing);
+      return existing;
+    }
+    const host = document.createElement("div");
+    render(vnode, host);
+    registry.register(host, () => render(null, host));
+    hosts.set(key, host);
+    return host;
+  };
 }
 
 /**

@@ -2,6 +2,7 @@ import ColumnDef from "../../types/ColumnDef";
 import { ColumnEditorSearchFunction, ColumnEditorConfig } from "../../types/ColumnEditorConfig";
 import { ColumnEditorCustomRenderer } from "../../types/ColumnEditorCustomRendererProps";
 import { FlattenedHeader } from "../../types/FlattenedHeader";
+import type { PivotConfig } from "../../types/PivotTypes";
 import { createColumnEditorRow } from "./createColumnEditorRow";
 import {
   getColumnEditorCheckboxState,
@@ -11,10 +12,16 @@ import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
 import { IconsConfig } from "../../types/IconsConfig";
 import { partitionRootHeadersByPin, PanelSection } from "../../utils/pinnedColumnUtils";
 import { updateCheckboxElement } from "./createCheckbox";
+import { createPivotPanel, type PivotPanelInstance } from "./createPivotPanel";
 
 export interface CreateColumnEditorPopoutOptions {
   headers: ColumnDef[];
   open: boolean;
+  /** When true, show the Pivot section (Rows / Columns / Values) above the column list. */
+  enablePivotPanel?: boolean;
+  pivotFields?: ColumnDef[];
+  pivot?: PivotConfig | null;
+  setPivot?: (pivot: PivotConfig | null) => void;
   searchEnabled: boolean;
   searchPlaceholder: string;
   searchFunction?: ColumnEditorSearchFunction;
@@ -106,9 +113,15 @@ function buildResetSection(onReset: () => void): HTMLElement {
 function assembleDefaultLayout(
   content: HTMLElement,
   searchWrapper: HTMLElement | null,
+  pivotSection: HTMLElement | null,
   listsContainer: HTMLElement,
   resetFooter: HTMLElement | null,
 ): void {
+  if (pivotSection) {
+    content.appendChild(pivotSection);
+    return;
+  }
+  // Search belongs with column visibility — hidden in pivot mode.
   if (searchWrapper) content.appendChild(searchWrapper);
   content.appendChild(listsContainer);
   if (resetFooter) content.appendChild(resetFooter);
@@ -119,6 +132,7 @@ function assembleCustomLayout(
   customRenderer: ColumnEditorCustomRenderer,
   headers: ColumnDef[],
   searchWrapper: HTMLElement | null,
+  pivotSection: HTMLElement | null,
   listsContainer: HTMLElement,
   resetFooter: HTMLElement | null,
   resetColumns?: () => void,
@@ -126,6 +140,7 @@ function assembleCustomLayout(
   const rendered = customRenderer({
     headers,
     searchSection: searchWrapper,
+    pivotSection,
     listSection: listsContainer,
     resetSection: resetFooter,
     resetColumns,
@@ -145,6 +160,10 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
   let {
     headers,
     open,
+    enablePivotPanel = false,
+    pivotFields,
+    pivot = null,
+    setPivot,
     searchEnabled,
     searchPlaceholder,
     searchFunction,
@@ -202,15 +221,33 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     resetFooter = buildResetSection(resetColumns);
   }
 
+  let pivotPanelInstance: PivotPanelInstance | null = null;
+  let pivotSection: HTMLElement | null = null;
+  // Field catalog must be pristine source columns — never live/pivoted `headers`.
+  if (enablePivotPanel && setPivot && pivotFields) {
+    pivotPanelInstance = createPivotPanel({
+      fields: pivotFields,
+      pivot,
+      setPivot,
+    });
+    pivotSection = pivotPanelInstance.element;
+  }
+
   let activeCustomRenderer = columnEditorConfig.customRenderer;
 
   if (activeCustomRenderer) {
     assembleCustomLayout(
-      content, activeCustomRenderer, headers,
-      searchWrapper, listsContainer, resetFooter, resetColumns,
+      content,
+      activeCustomRenderer,
+      headers,
+      searchWrapper,
+      pivotSection,
+      listsContainer,
+      resetFooter,
+      resetColumns,
     );
   } else {
-    assembleDefaultLayout(content, searchWrapper, listsContainer, resetFooter);
+    assembleDefaultLayout(content, searchWrapper, pivotSection, listsContainer, resetFooter);
   }
 
   container.appendChild(content);
@@ -439,6 +476,12 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
       if (items[i].dataset.accessor !== String(expected[i].header.accessor)) {
         return false;
       }
+      // Pin/unpin can preserve flattened accessor order while changing section
+      // membership — reject so section DOM is rebuilt.
+      const listEl = items[i].closest(".st-column-editor-list") as HTMLElement | null;
+      if ((listEl?.dataset.panelSection ?? null) !== (expected[i].panelSection ?? null)) {
+        return false;
+      }
     }
 
     for (let i = 0; i < expected.length; i++) {
@@ -455,17 +498,65 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
 
     if (activeCustomRenderer) {
       assembleCustomLayout(
-        content, activeCustomRenderer, headers,
-        searchWrapper, listsContainer, resetFooter, resetColumns,
+        content,
+        activeCustomRenderer,
+        headers,
+        searchWrapper,
+        pivotSection,
+        listsContainer,
+        resetFooter,
+        resetColumns,
       );
     } else {
-      assembleDefaultLayout(content, searchWrapper, listsContainer, resetFooter);
+      assembleDefaultLayout(content, searchWrapper, pivotSection, listsContainer, resetFooter);
     }
   };
 
   const update = (newOptions: Partial<CreateColumnEditorPopoutOptions>) => {
     let structureDirty = false;
     let headersUpdated = false;
+    let needsLayoutRebuild = false;
+
+    if (newOptions.pivotFields !== undefined) pivotFields = newOptions.pivotFields;
+    if (newOptions.pivot !== undefined) pivot = newOptions.pivot;
+    if (newOptions.setPivot !== undefined) setPivot = newOptions.setPivot;
+
+    if (
+      newOptions.enablePivotPanel !== undefined &&
+      newOptions.enablePivotPanel !== enablePivotPanel
+    ) {
+      enablePivotPanel = newOptions.enablePivotPanel;
+      pivotPanelInstance?.destroy();
+      pivotPanelInstance = null;
+      pivotSection = null;
+      if (enablePivotPanel && setPivot && pivotFields) {
+        pivotPanelInstance = createPivotPanel({
+          fields: pivotFields,
+          pivot,
+          setPivot,
+        });
+        pivotSection = pivotPanelInstance.element;
+      }
+      structureDirty = true;
+      needsLayoutRebuild = true;
+    } else if (enablePivotPanel && !pivotPanelInstance && setPivot && pivotFields) {
+      // Late catalog/setPivot arrival (first paint before pristine headers were ready).
+      pivotPanelInstance = createPivotPanel({
+        fields: pivotFields,
+        pivot,
+        setPivot,
+      });
+      pivotSection = pivotPanelInstance.element;
+      structureDirty = true;
+      needsLayoutRebuild = true;
+    } else if (pivotPanelInstance) {
+      // Config wins after setPivot — sync from stored pristine fields + getPivot().
+      pivotPanelInstance.update({
+        fields: pivotFields,
+        pivot,
+        setPivot,
+      });
+    }
 
     if (newOptions.searchEnabled !== undefined && newOptions.searchEnabled !== searchEnabled) {
       searchEnabled = newOptions.searchEnabled;
@@ -485,8 +576,6 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     if (newOptions.onColumnOrderChange !== undefined)
       onColumnOrderChange = newOptions.onColumnOrderChange;
     if (newOptions.resetColumns !== undefined) resetColumns = newOptions.resetColumns;
-
-    let needsLayoutRebuild = false;
 
     if (newOptions.columnEditorConfig !== undefined) {
       const newCustomRenderer = newOptions.columnEditorConfig.customRenderer;
@@ -530,6 +619,8 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
   };
 
   const destroy = () => {
+    pivotPanelInstance?.destroy();
+    pivotPanelInstance = null;
     if (searchInput) {
       searchInput.removeEventListener("input", () => {});
       searchInput.removeEventListener("click", () => {});

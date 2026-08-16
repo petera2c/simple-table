@@ -790,18 +790,21 @@ export const NestedTableWithFiltering = {
     const user = userEvent.setup();
     await user.click(filterIcon!);
     const doc = canvasElement.ownerDocument;
+    // Operator custom-select also portals a `.st-dropdown-content` (closed). Target the
+    // filter shell specifically — first `.st-dropdown-content` is the operator menu.
+    const filterPanelSelector = ".st-dropdown-content:has(.st-filter-input)";
     // Dropdown mounts with visibility:hidden while positioned in rAF — wait until
     // the panel is visible or userEvent.clear/type cannot focus the input.
     await waitUntil(() => {
       const panel =
-        (nested.querySelector(".st-dropdown-content") as HTMLElement | null) ||
-        (doc.querySelector(".st-dropdown-content") as HTMLElement | null);
-      if (!panel?.querySelector(".st-filter-input")) return false;
+        (nested.querySelector(filterPanelSelector) as HTMLElement | null) ||
+        (doc.querySelector(filterPanelSelector) as HTMLElement | null);
+      if (!panel) return false;
       return getComputedStyle(panel).visibility !== "hidden";
     }, { timeoutMs: 4000 });
     const dropdown =
-      (nested.querySelector(".st-dropdown-content") ||
-        doc.querySelector(".st-dropdown-content")) as HTMLElement | null;
+      (nested.querySelector(filterPanelSelector) ||
+        doc.querySelector(filterPanelSelector)) as HTMLElement | null;
     expect(dropdown).toBeTruthy();
     const input = dropdown?.querySelector(".st-filter-input") as HTMLInputElement | null;
     expect(input).toBeTruthy();

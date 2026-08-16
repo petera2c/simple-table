@@ -5,6 +5,7 @@
 import { describe, it, expect } from "vitest";
 import type {
   TableAPI,
+  CellRenderer,
   SvelteColumnDef,
   NestedSvelteColumnDef,
   CellChangeProps,
@@ -71,18 +72,20 @@ interface NestDivision {
   divisionName: string;
 }
 
+const divisionCellRenderer: CellRenderer<NestDivision> = ({ row }) => {
+  const name: string = row.divisionName;
+  // @ts-expect-error NestDivision has no company-only fields
+  const missing: string = row.companyName;
+  void missing;
+  return name;
+};
+
 const divisionColumns: SvelteColumnDef<NestDivision>[] = [
   {
     accessor: "divisionName",
     label: "Division",
     width: 120,
-    cellRenderer: ({ row }) => {
-      const name: string = row.divisionName;
-      // @ts-expect-error NestDivision has no company-only fields
-      const missing: string = row.companyName;
-      void missing;
-      return name;
-    },
+    cellRenderer: divisionCellRenderer,
   },
 ];
 

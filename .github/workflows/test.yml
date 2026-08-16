@@ -28,7 +28,33 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # The React adapter Vitest suite aliases `simple-table-core` to the core
-      # *source*, so no build step is required.
+      # Adapter Vitest suites alias `simple-table-core` to the core *source*,
+      # so no build step is required for these unit suites.
       - name: Run React adapter tests
         run: pnpm --filter @simple-table/react run test
+
+      - name: Run Vue adapter tests
+        run: pnpm --filter @simple-table/vue run test
+
+      - name: Run Solid adapter tests
+        run: pnpm --filter @simple-table/solid run test
+
+      - name: Run Angular adapter unit tests
+        run: pnpm --filter @simple-table/angular run test
+
+      - name: Run Svelte adapter unit tests
+        run: pnpm --filter @simple-table/svelte run test
+
+      # Consumer compile test imports the built package (not source). Requires
+      # Angular Package Format Ivy metadata in dist .d.ts files.
+      - name: Build Angular adapter
+        run: pnpm run build:angular
+
+      - name: Run Angular consumer standalone-import test
+        run: pnpm --filter @simple-table/angular run test:consumer
+
+      - name: Build Svelte adapter
+        run: pnpm run build:svelte
+
+      - name: Run Svelte consumer types test
+        run: pnpm --filter @simple-table/svelte run test:consumer

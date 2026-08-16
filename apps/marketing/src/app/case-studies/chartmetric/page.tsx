@@ -114,14 +114,14 @@ export default function ChartMetricCaseStudyPage() {
               </div>
             </div>
             <div className="bg-linear-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 rounded-lg p-6">
-              <div className="text-2xl font-bold text-blue-700 dark:text-blue-200 mb-2">100%</div>
+              <div className="text-2xl font-bold text-blue-700 dark:text-blue-200 mb-2">~95%</div>
               <div className="text-sm text-blue-600 dark:text-blue-300">
-                Customization needs met
+                Their cost cut vs AG Grid
               </div>
             </div>
             <div className="bg-linear-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 rounded-lg p-6">
               <div className="text-2xl font-bold text-purple-700 dark:text-purple-200 mb-2">
-                Highly Responsive
+                &lt;24h
               </div>
               <div className="text-sm text-purple-600 dark:text-purple-300">
                 Support & bug fixes
@@ -246,7 +246,7 @@ export default function ChartMetricCaseStudyPage() {
                   <strong className="text-green-600 dark:text-green-400">$850 per year</strong> for
                   the whole team. That's a{" "}
                   <strong className="text-green-600 dark:text-green-400">
-                    first-year savings of over $19K
+                    first-year savings of over $19K — about 95% lower cost
                   </strong>
                   , and the savings grow as the team expands.
                 </p>

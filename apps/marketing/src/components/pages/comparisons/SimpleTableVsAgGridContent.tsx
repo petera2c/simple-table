@@ -148,7 +148,7 @@ const SimpleVsAgGrid = () => {
           href="/case-studies/chartmetric"
           className="text-blue-600 dark:text-blue-400 hover:underline"
         >
-          ChartMetric case study
+          ChartMetric case study ($19K+ / ~95% for their team)
         </NextLink>
         {" • "}
         <NextLink

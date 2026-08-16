@@ -23,7 +23,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const useThemeImplementation = () => {
   const [theme, setTheme] = useState<Theme>("dark");
 
-  // Initialize theme from localStorage on component mount
+  // Sync React state with the theme class applied by the blocking layout script.
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as Theme;
     const prefersLight = window.matchMedia?.("(prefers-color-scheme: light)").matches;

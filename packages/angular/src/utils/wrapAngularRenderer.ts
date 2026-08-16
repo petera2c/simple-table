@@ -2,9 +2,73 @@ import {
   ApplicationRef,
   createComponent,
   EnvironmentInjector,
+  reflectComponentType,
+  type ComponentRef,
   type Type,
 } from "@angular/core";
+import type {
+  ColumnEditorRowRendererProps as VanillaColumnEditorRowRendererProps,
+  HeaderRendererProps as VanillaHeaderRendererProps,
+} from "simple-table-core";
 import type { MountRegistry } from "../MountRegistry";
+
+/** Declared `@Input` / `input()` names for a component type (template + prop). */
+function declaredInputNames(component: Type<unknown>): Set<string> {
+  const mirror = reflectComponentType(component);
+  const names = new Set<string>();
+  if (!mirror) return names;
+  for (const input of mirror.inputs) {
+    names.add(input.propName);
+    names.add(input.templateName);
+  }
+  return names;
+}
+
+/** Apply props to a dynamic ComponentRef and flush change detection. */
+function applyComponentProps<P extends object>(
+  componentRef: ComponentRef<P>,
+  props: Partial<P>,
+): void {
+  const ref = componentRef as ComponentRef<P> & {
+    setInput?: (name: string, value: unknown) => void;
+  };
+  const inputs = declaredInputNames(componentRef.componentType as Type<unknown>);
+  if (typeof ref.setInput === "function" && inputs.size > 0) {
+    for (const [key, value] of Object.entries(props)) {
+      if (inputs.has(key)) {
+        ref.setInput(key, value);
+      } else {
+        // Core may pass undeclared keys; keep prior Object.assign behavior.
+        (componentRef.instance as Record<string, unknown>)[key] = value;
+      }
+    }
+  } else {
+    Object.assign(componentRef.instance as object, props);
+  }
+  componentRef.changeDetectorRef.detectChanges();
+}
+
+function mountAngularComponent<P extends object>(
+  component: Type<P>,
+  props: Partial<P>,
+  appRef: ApplicationRef,
+  injector: EnvironmentInjector,
+  registry: MountRegistry | undefined,
+  host?: HTMLElement,
+): { host: HTMLElement; componentRef: ComponentRef<P> } {
+  const el = host ?? document.createElement("div");
+  const componentRef = createComponent(component, {
+    environmentInjector: injector,
+    hostElement: el,
+  });
+  applyComponentProps(componentRef, props);
+  appRef.attachView(componentRef.hostView);
+  registry?.register(el, () => {
+    appRef.detachView(componentRef.hostView);
+    componentRef.destroy();
+  });
+  return { host: el, componentRef };
+}
 
 /**
  * Wraps an Angular standalone component into a function that returns an
@@ -31,35 +95,48 @@ export function wrapAngularRenderer<P extends object>(
   registry?: MountRegistry,
 ): (props: Partial<P>) => HTMLElement {
   return (props: Partial<P>): HTMLElement => {
-    const el = document.createElement("div");
+    return mountAngularComponent(component, props, appRef, injector, registry).host;
+  };
+}
 
-    const componentRef = createComponent(component, {
-      environmentInjector: injector,
-      hostElement: el,
-    });
-
-    // Assign input props to the component instance.
-    Object.assign(componentRef.instance as object, props);
-
-    // Attach to the application's view tree so Angular tracks it.
-    appRef.attachView(componentRef.hostView);
-
-    // Synchronous change detection flush — ensures the rendered output is
-    // in the DOM before we return the element to the vanilla pipeline.
-    componentRef.changeDetectorRef.detectChanges();
-
-    registry?.register(el, () => {
-      appRef.detachView(componentRef.hostView);
-      componentRef.destroy();
-    });
-
-    return el;
+/**
+ * Header renderer wrapper that reuses one host element so sort/filter icon
+ * refreshes update props in place instead of remounting the Angular subtree
+ * and wiping local state. Mirrors Vue's {@link wrapVueHeaderRenderer} /
+ * React's wrapReactHeaderRenderer.
+ */
+export function wrapAngularHeaderRenderer(
+  component: Type<object>,
+  appRef: ApplicationRef,
+  injector: EnvironmentInjector,
+  registry: MountRegistry,
+): (props: VanillaHeaderRendererProps) => HTMLElement {
+  let host: HTMLElement | null = null;
+  let componentRef: ComponentRef<object> | null = null;
+  return (props: VanillaHeaderRendererProps): HTMLElement => {
+    if (host && componentRef && registry.isRegistered(host)) {
+      applyComponentProps(componentRef, props as object);
+      return host;
+    }
+    const mounted = mountAngularComponent(
+      component,
+      props as object,
+      appRef,
+      injector,
+      registry,
+    );
+    host = mounted.host;
+    componentRef = mounted.componentRef;
+    return host;
   };
 }
 
 /**
  * Like {@link wrapAngularRenderer}, but reuses one wrapper per accessor so
  * unstable column rebuilds keep a stable function identity on ColumnDef.
+ *
+ * For `kind: "header"`, also reuses a single mount host so sort/filter
+ * refreshes preserve Angular component state.
  */
 export function wrapCachedAngularRenderer<P extends object>(
   component: Type<P>,
@@ -80,22 +157,68 @@ export function wrapCachedAngularRenderer<P extends object>(
     component,
     wrapped: null as unknown as (props: Partial<P>) => HTMLElement,
   };
+
+  if (kind === "header") {
+    let host: HTMLElement | null = null;
+    let componentRef: ComponentRef<P> | null = null;
+    const wrapped = (props: Partial<P>): HTMLElement => {
+      if (host && componentRef && registry.isRegistered(host)) {
+        applyComponentProps(componentRef, props);
+        return host;
+      }
+      const mounted = mountAngularComponent(
+        slot.component,
+        props,
+        appRef,
+        injector,
+        registry,
+      );
+      host = mounted.host;
+      componentRef = mounted.componentRef;
+      return host;
+    };
+    slot.wrapped = wrapped;
+    cache.set(accessor, slot);
+    return wrapped;
+  }
+
   const wrapped = (props: Partial<P>): HTMLElement => {
-    const el = document.createElement("div");
-    const componentRef = createComponent(slot.component, {
-      environmentInjector: injector,
-      hostElement: el,
-    });
-    Object.assign(componentRef.instance as object, props);
-    appRef.attachView(componentRef.hostView);
-    componentRef.changeDetectorRef.detectChanges();
-    registry.register(el, () => {
-      appRef.detachView(componentRef.hostView);
-      componentRef.destroy();
-    });
-    return el;
+    return mountAngularComponent(slot.component, props, appRef, injector, registry).host;
   };
   slot.wrapped = wrapped;
   cache.set(accessor, slot);
   return wrapped;
+}
+
+/**
+ * Column-editor row renderer: one host per `accessor` so popout list rebuilds
+ * update in place instead of remounting Angular state (mirrors Vue/React).
+ */
+export function wrapAngularColumnEditorRowRenderer(
+  component: Type<object>,
+  appRef: ApplicationRef,
+  injector: EnvironmentInjector,
+  registry: MountRegistry,
+): (props: VanillaColumnEditorRowRendererProps) => HTMLElement {
+  const mounts = new Map<
+    string,
+    { host: HTMLElement; componentRef: ComponentRef<object> }
+  >();
+  return (props: VanillaColumnEditorRowRendererProps): HTMLElement => {
+    const key = String(props.accessor);
+    const existing = mounts.get(key);
+    if (existing && registry.isRegistered(existing.host)) {
+      applyComponentProps(existing.componentRef, props as object);
+      return existing.host;
+    }
+    const mounted = mountAngularComponent(
+      component,
+      props as object,
+      appRef,
+      injector,
+      registry,
+    );
+    mounts.set(key, mounted);
+    return mounted.host;
+  };
 }

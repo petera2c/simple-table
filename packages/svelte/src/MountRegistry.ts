@@ -29,6 +29,13 @@ export class MountRegistry {
     this.entries.set(id, dispose);
   }
 
+  /** True when `container` is a live registered mount host (not yet disposed). */
+  isRegistered(container: HTMLElement): boolean {
+    const id = container.getAttribute(MOUNT_ID_ATTR);
+    if (id === null) return false;
+    return this.entries.has(id);
+  }
+
   /**
    * Tear down mounts owned by a host element core is permanently discarding.
    * Collects `host` itself plus every descendant tagged with {@link MOUNT_ID_ATTR}.

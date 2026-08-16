@@ -13,6 +13,7 @@ import {
   handsontableAlternativesPost,
   agGridAlternativesPost,
   agGridPricing2026Post,
+  bestReactTableLibraries2026Post,
   tanstackVsSimpleTablePost,
   bundleSizeComparisonPost,
   materialReactTableVsSimpleTablePost,
@@ -142,14 +143,15 @@ export const SEO_STRINGS = {
       ],
     },
     bestReactTableLibraries2026: {
-      title: "Best React Table Libraries 2026: Ranked & Compared",
-      description:
-        "Compare the best React table libraries in 2026 — Simple Table, TanStack Table, AG Grid, MUI, and more. Features, bundle size, pricing, and which one to pick.",
+      title: bestReactTableLibraries2026Post.title,
+      description: bestReactTableLibraries2026Post.description,
       keywords: [
+        "best react table library",
         "best react table libraries",
         "best react table",
         "react table",
         "react table library",
+        "react table libraries",
         "react table comparison 2026",
         "tanstack table vs simple table",
         "ag grid vs simple table",
@@ -157,6 +159,7 @@ export const SEO_STRINGS = {
         "react data grid libraries",
         "table library comparison",
         "react table 2026",
+        "best react table library 2026",
         "data grid comparison",
         "react table pros cons",
         "best react table library 2026",
@@ -461,7 +464,7 @@ export const SEO_STRINGS = {
     reactPivotTable: {
       title: "React Pivot Table Tutorial: Matrix Aggregation Without AG Grid Enterprise (2026)",
       description:
-        "Build a React pivot table with row/column dimensions, aggregations, and totals—without AG Grid Enterprise. Code examples, pivot vs row grouping, and Pivot Panel roadmap.",
+        "Build a React pivot table with row/column dimensions, aggregations, totals, and an in-table Pivot Panel—without AG Grid Enterprise. Code examples and pivot vs row grouping.",
       keywords: [
         "react pivot table",
         "react pivot table tutorial",
@@ -1164,9 +1167,9 @@ export const SEO_STRINGS = {
   pivot: {
     title: "Pivot Tables in Simple Table: Matrix Aggregation Data Grid",
     description:
-      "Build matrix pivot tables with Simple Table. Declarative rows, columns, values, aggregations, and totals for React, Vue, Angular, Svelte, Solid, or vanilla TypeScript—AG Grid Enterprise pivot alternative.",
+      "Build matrix pivot tables with Simple Table. Declarative rows, columns, values, aggregations, totals, and an in-table Pivot Panel (enablePivotPanel) for React, Vue, Angular, Svelte, Solid, or vanilla TypeScript—AG Grid Enterprise pivot alternative.",
     keywords:
-      "simple-table, data-grid, datagrid, pivot table, react pivot table, matrix pivot, pivot mode, pivot aggregation, typescript table, javascript data grid, ag grid pivot alternative, declarative pivot, cross tab table, vue pivot table, angular pivot table",
+      "simple-table, data-grid, datagrid, pivot table, react pivot table, matrix pivot, pivot mode, pivot aggregation, pivot panel, typescript table, javascript data grid, ag grid pivot alternative, declarative pivot, cross tab table, vue pivot table, angular pivot table",
   },
   rowGrouping: {
     title: "Row Grouping in Simple Table Data Grid",
@@ -1413,7 +1416,7 @@ export const SEO_STRINGS = {
   pricing: {
     title: "Simple Table Pricing 2026: Free, Pro & Enterprise | AG Grid Alternative",
     description:
-      "Simple Table pricing: FREE for zero-revenue use. Pro $85/mo or $850/yr. Enterprise $350/mo or $3,500/yr with premium support and direct developer access. No per-user fees. React, Vue, Angular, Svelte, Solid, and vanilla JavaScript or TypeScript.",
+      "Simple Table pricing: free until your company makes money. Pro $85/mo or $850/yr. Enterprise: contact us for custom features and direct developer access. No per-seat fees. React, Vue, Angular, Svelte, Solid, and vanilla JavaScript or TypeScript.",
     keywords:
       "simple-table pricing, free data grid, data grid pricing, data grid cost, simple table pro, free table library, data grid plans, ag grid pricing alternative, ag grid cost comparison, javascript data grid pricing, multi-framework data grid",
   },
@@ -1428,7 +1431,7 @@ export const SEO_STRINGS = {
     index: {
       title: "Case Studies - Simple Table",
       description:
-        "See how ChartMetric chose Simple Table over AG Grid, TanStack Table, and Material UI Data Grid — and saved over $19K in the first year.",
+        "See how ChartMetric chose Simple Table over AG Grid, TanStack Table, and Material UI Data Grid — and saved over $19K (~95%) in the first year.",
       keywords: [
         "simple table case studies",
         "ag grid alternative case study",
@@ -1440,7 +1443,7 @@ export const SEO_STRINGS = {
     chartmetric: {
       title: "ChartMetric Case Study - Simple Table",
       description:
-        "Learn how ChartMetric chose Simple Table over AG Grid, TanStack Table, and Material UI Data Grid. Discover how they saved over $19K in the first year while getting responsive support and a customizable, lightweight data grid solution.",
+        "Learn how ChartMetric chose Simple Table over AG Grid, TanStack Table, and Material UI Data Grid. Discover how they saved over $19K (~95% lower cost) in the first year while getting responsive support and a customizable, lightweight data grid solution.",
       keywords: [
         "chartmetric case study",
         "simple table case study",

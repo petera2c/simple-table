@@ -108,6 +108,11 @@ export type ColumnDef<TData extends RowData = Row, TValue = CellValue> = {
    * (`"header"`). `minWidth` / `maxWidth` clamp the computed width.
    */
   autoSizeMode?: AutoSizeMode;
+  /**
+   * CSS class name(s) applied to every body cell in this column.
+   * Space-separated class names are supported (e.g. `"font-mono text-right"`).
+   */
+  cellClass?: string;
   cellRenderer?: CellRenderer<TData, TValue>;
   chartOptions?: ChartOptions; // Options for chart rendering (lineAreaChart, barChart)
   /** Nested header groups may mix per-column TValue; use any for the child union. */

@@ -55,6 +55,17 @@ width: "1fr"      // Flexible`,
     example: `align: "center"`,
   },
   {
+    key: "cellClass",
+    name: "cellClass",
+    required: false,
+    description:
+      "CSS class name(s) applied to every body cell in this column. Space-separated names are supported. Style with `.st-cell.yourClass`.",
+    type: "string",
+    link: "/docs/themes",
+    example: `cellClass: "amount-col"
+/* CSS */ .amount-col { font-variant-numeric: tabular-nums; }`,
+  },
+  {
     key: "type",
     name: "type",
     required: false,

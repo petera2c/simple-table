@@ -11,6 +11,114 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_1_6: ChangelogEntry = {
+  version: "4.1.6",
+  date: "2026-08-08",
+  title: "Pivot panel in the column editor",
+  description:
+    "You can now build a pivot from the column editor side panel, and multiple row fields show as normal rows instead of nested expand groups.",
+  changes: [
+    {
+      type: "feature",
+      description:
+        "New enablePivotPanel option. Open the column editor to move fields into Rows, Columns, and Values, pick how numbers are totaled, and see the table update right away.",
+      link: "/docs/pivot",
+    },
+    {
+      type: "improvement",
+      description:
+        "If you put more than one field in Rows (for example Quarter and Product), the table shows a full row for each pair — not a collapsed group you have to expand.",
+      link: "/docs/pivot",
+    },
+    {
+      type: "improvement",
+      description:
+        "Pivot panel text, buttons, and dropdowns match the size and look of the rest of the column editor.",
+    },
+  ],
+};
+
+export const v4_1_5: ChangelogEntry = {
+  version: "4.1.5",
+  date: "2026-08-08",
+  title: "Framework wrapper updates and Vue data sync fix",
+  description:
+    "Fix Vue tables ignoring row and column changes after first render, and make custom header UI keep its state when sorting or filtering across Vue, Solid, Angular, and Svelte.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Vue: changing rows, columns, or callbacks after the table mounts now updates the table instead of sticking on the first data.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Vue, Solid, Angular, and Svelte: custom header UI no longer resets when you sort or filter (for example open menus and toggles stay as they were).",
+    },
+    {
+      type: "improvement",
+      description:
+        "Vue, Solid, Angular, and Svelte: auto-sized columns remeasure correctly after custom cell or header content loads, including when leaving a loading state.",
+    },
+  ],
+};
+
+export const v4_1_4: ChangelogEntry = {
+  version: "4.1.4",
+  date: "2026-08-06",
+  title: "Column cellClass",
+  description: "Add a cellClass option on ColumnDef to style every body cell in a column.",
+  changes: [
+    {
+      type: "feature",
+      description:
+        "New cellClass on ColumnDef applies a CSS class to each body cell in that column.",
+      link: "/docs/themes",
+    },
+  ],
+};
+
+export const v4_1_3: ChangelogEntry = {
+  version: "4.1.3",
+  date: "2026-08-05",
+  title: "Column editor pin section sync",
+  description:
+    "Fix the column editor leaving rows in the wrong pin section after pin or unpin when column order stays the same.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Pinning or unpinning a column in the column editor now moves the row into the correct section even when the overall column order does not change.",
+      link: "/docs/column-pinning",
+    },
+  ],
+};
+
+export const v4_1_2: ChangelogEntry = {
+  version: "4.1.2",
+  date: "2026-08-01",
+  title: "Angular Package Format and Svelte published types",
+  description:
+    "Ship @simple-table/angular with Ivy partial-compilation metadata so Angular 19+ standalone imports work, and fix @simple-table/svelte published TypeScript declarations plus the Svelte 5 peer range.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "@simple-table/angular now builds with ng-packagr (Angular Package Format / partial Ivy). Standalone apps can import SimpleTableComponent without TS-992012 (“Component imports must be standalone…”).",
+    },
+    {
+      type: "bugfix",
+      description:
+        "@simple-table/svelte ships SimpleTable.svelte.d.ts in the published package so TypeScript can resolve the SimpleTable export from dist types.",
+    },
+    {
+      type: "breaking",
+      description:
+        "@simple-table/svelte peer dependency is now svelte >=5.0.0 (the adapter already used Svelte 5 mount/unmount APIs).",
+    },
+  ],
+};
+
 export const v4_1_1: ChangelogEntry = {
   version: "4.1.1",
   date: "2026-07-29",
@@ -2502,6 +2610,11 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_1_6,
+  v4_1_5,
+  v4_1_4,
+  v4_1_3,
+  v4_1_2,
   v4_1_1,
   v4_1_0,
   v4_0_9,

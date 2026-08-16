@@ -21,18 +21,20 @@ export const initializeExpandedDepths = (
  */
 export class ExpandedDepthsManager {
   private expandedDepths: Set<number>;
+  private shouldExpandAll: boolean;
   private observers: Set<(depths: Set<number>) => void> = new Set();
   /** Coalesce sync collapseAll→expandDepth into a single observer notification. */
   private notifyMicrotaskScheduled = false;
 
   constructor(expandAll: boolean, rowGrouping?: Accessor[]) {
+    this.shouldExpandAll = expandAll;
     this.expandedDepths = initializeExpandedDepths(expandAll, rowGrouping);
   }
 
   /**
-   * Updates the expanded depths when rowGrouping changes
-   * Filters out depths that are now out of range
-   * @param rowGrouping - The current row grouping configuration
+   * Updates the expanded depths when rowGrouping changes.
+   * When `expandAll` is on (default), re-expand so grouping that appears after
+   * mount is not stuck collapsed. Otherwise keep in-range depths only.
    */
   updateRowGrouping(rowGrouping?: Accessor[]): void {
     if (!rowGrouping || rowGrouping.length === 0) {
@@ -40,8 +42,12 @@ export class ExpandedDepthsManager {
       return;
     }
 
+    if (this.shouldExpandAll) {
+      this.setExpandedDepths(initializeExpandedDepths(true, rowGrouping));
+      return;
+    }
+
     const maxDepth = rowGrouping.length;
-    // Filter out depths that are now out of range
     const filtered = Array.from(this.expandedDepths).filter((d) => d < maxDepth);
     this.setExpandedDepths(new Set(filtered));
   }

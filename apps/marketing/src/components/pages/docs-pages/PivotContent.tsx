@@ -64,12 +64,12 @@ const PIVOT_STEPS: DocsStep[] = [
 
 const PIVOT_PATTERNS: PivotPattern[] = [
   {
-    title: "Nested row dimensions",
+    title: "Multiple row dimensions",
     body: (
       <>
         Multiple{" "}
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">pivot.rows</code> fields
-        become an expandable tree (e.g. region → product).
+        produce one flat row per combination (e.g. region × product), not an expand/collapse tree.
       </>
     ),
     codeByFramework: forAllFrameworks(`{
@@ -77,6 +77,23 @@ const PIVOT_PATTERNS: PivotPattern[] = [
   columns: ["quarter"],
   values: [{ accessor: "sales", aggregation: { type: "sum" } }],
 }`),
+    language: "typescript",
+  },
+  {
+    title: "Pivot Panel (column editor)",
+    body: (
+      <>
+        Set{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">enablePivotPanel</code>{" "}
+        (with{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">enableColumnEditor</code>
+        ) to compose Available / Rows / Columns / Values in the side panel. The panel drives{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">setPivot</code> — pivot
+        is active when Values has at least one measure.
+      </>
+    ),
+    codeByFramework: forAllFrameworks(`enableColumnEditor: true,
+enablePivotPanel: true,`),
     language: "typescript",
   },
   {
@@ -169,7 +186,7 @@ const PIVOT_PROPS: PropInfo[] = [
     name: "pivot",
     required: false,
     description:
-      "Matrix pivot config. When set, flat rows are reshaped into dynamic columns. Pass null to disable.",
+      "Matrix pivot config. When set, flat rows are reshaped into dynamic columns (one row per row-dimension combination). Pass null to disable. Consumer rowGrouping is off while active.",
     type: "PivotConfig | null",
     example: `pivot={{ rows: ["region"], columns: ["quarter"], values: [{ accessor: "sales", aggregation: { type: "sum" } }] }}`,
   },
@@ -181,6 +198,15 @@ const PIVOT_PROPS: PropInfo[] = [
     type: "(pivot: PivotConfig | null) => void",
     example: `onPivotChange={(pivot) => { /* ... */ }}`,
   },
+  {
+    key: "enablePivotPanel",
+    name: "enablePivotPanel",
+    required: false,
+    description:
+      "Adds a Pivot Panel to the column editor for placing fields into Rows / Columns / Values. Requires enableColumnEditor. Pivot activates when Values has ≥ 1 measure.",
+    type: "boolean",
+    example: `enableColumnEditor={true} enablePivotPanel={true}`,
+  },
 ];
 
 const PIVOT_CONFIG_PROPS: PropInfo[] = [
@@ -188,7 +214,7 @@ const PIVOT_CONFIG_PROPS: PropInfo[] = [
     key: "rows",
     name: "PivotConfig.rows",
     required: true,
-    description: "Row dimension accessors. Multiple fields → expandable tree.",
+    description: "Row dimension accessors. Multiple fields → one flat row per combination.",
     type: "Accessor[]",
     example: `rows: ["region", "product"]`,
   },
@@ -260,7 +286,7 @@ const TABLE_API_PROPS: PropInfo[] = [
     key: "getPivotedRows",
     name: "getPivotedRows()",
     required: false,
-    description: "Post-pivot rows (before flatten/expand).",
+    description: "Post-pivot rows while pivot is active (flat combination rows plus optional totals).",
     type: "() => Row[]",
   },
 ];
@@ -342,7 +368,7 @@ const PivotContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.4 }}
       >
-        <LivePreview demoId="pivot" height="auto" demoHeight="auto" Preview={PivotDemo} />
+        <LivePreview demoId="pivot" height="auto" demoHeight="500px" Preview={PivotDemo} />
       </motion.div>
 
       <motion.h2

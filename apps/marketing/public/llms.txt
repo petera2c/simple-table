@@ -53,7 +53,8 @@ Simple Table is positioned as a feature-complete free alternative to AG Grid (En
 ## License
 
 - Source-available under the Simple Table Community License, free for pre-revenue and bootstrapped projects.
-- Pro / Enterprise tiers available for revenue-generating teams.
+- Pro: $85/month or $850/year for revenue-generating teams (one license per product, no per-seat fees).
+- Enterprise: contact us for direct access to core developers and custom features.
 - License: https://www.simple-table.com/legal/license
 - Pricing: https://www.simple-table.com/pricing
 

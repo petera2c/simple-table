@@ -174,7 +174,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                       Commercial ($899/year)
                     </td>
                     <td className="p-3 text-green-600 dark:text-green-400">
-                      {`Source-available free tier; paid ${SIMPLE_TABLE_PRICING.proAnnual}–${SIMPLE_TABLE_PRICING.enterpriseAnnual}/yr (annual)`}
+                      {`Source-available free tier; Pro ${SIMPLE_TABLE_PRICING.proAnnual}/yr; Enterprise ${SIMPLE_TABLE_PRICING.enterpriseDisplay}`}
                     </td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -339,6 +339,16 @@ export default function DevExtremeGridVsSimpleTablePage() {
                     />
                     <span>
                       <strong>PRO:</strong> $85/month or $850/year for revenue-generating companies
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <FontAwesomeIcon
+                      icon={faCheckCircle}
+                      className="text-green-500 mt-1 shrink-0"
+                    />
+                    <span>
+                      <strong>ENTERPRISE:</strong> Contact us for custom features and direct
+                      developer access
                     </span>
                   </li>
                   <li className="flex items-start gap-2">

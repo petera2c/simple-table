@@ -59,6 +59,8 @@ export interface SimpleTableConfig<TData extends RowData = Row> {
   enableColumnEditor?: boolean;
   /** Open the column editor when the table loads. */
   enableColumnEditorInitOpen?: boolean;
+  /** @see SimpleTableProps.enablePivotPanel */
+  enablePivotPanel?: boolean;
   emptyStateRenderer?: VanillaEmptyStateRenderer<TData>;
   enableHeaderEditing?: boolean;
   /** Enable client-side pagination. */
@@ -139,7 +141,7 @@ export interface SimpleTableConfig<TData extends RowData = Row> {
   /**
    * Property names that define the row grouping hierarchy.
    * `Accessor<TData>` keeps keyof autocomplete; the `string & {}` arm still
-   * allows dynamic / heterogeneous nesting keys and pivot-injected keys.
+   * allows dynamic / heterogeneous nesting keys.
    */
   rowGrouping?: Accessor<TData>[];
   getRowId?: GetRowId<TData>;

@@ -45,7 +45,7 @@ npm install @simple-table/react
 
 ### Column Features
 
-- **[Column Sorting](https://www.simple-table.com/docs/column-sorting)** - Sort data by any column with single or multi-column support
+- **[Column Sorting](https://www.simple-table.com/docs/column-sorting)** - Sort data by any column in ascending or descending order
 - **[Column Filtering](https://www.simple-table.com/docs/column-filtering)** - Filter data with built-in text, number, and date filters
 - **[Column Resizing](https://www.simple-table.com/docs/column-resizing)** - Drag column borders to resize on the fly
 - **[Column Pinning](https://www.simple-table.com/docs/column-pinning)** - Pin important columns to the left or right
@@ -53,7 +53,6 @@ npm install @simple-table/react
 - **[Column Visibility](https://www.simple-table.com/docs/column-visibility)** - Show or hide columns dynamically
 - **[Column Alignment](https://www.simple-table.com/docs/column-alignment)** - Align content left, center, or right
 - **[Column Selection](https://www.simple-table.com/docs/column-selection)** - Select entire columns for bulk operations
-- **[Column Editing](https://www.simple-table.com/docs/column-editing)** - Edit entire columns with custom editors
 - **[Nested Headers](https://www.simple-table.com/docs/nested-headers)** - Create multi-level header hierarchies
 - **[Collapsible Columns](https://www.simple-table.com/docs/collapsible-columns)** - Expand and collapse column groups
 
@@ -61,7 +60,9 @@ npm install @simple-table/react
 
 - **[Row Selection](https://www.simple-table.com/docs/row-selection)** - Select single or multiple rows with checkboxes
 - **[Row Grouping](https://www.simple-table.com/docs/row-grouping)** - Group and organize rows by any column
+- **[Nested Tables](https://www.simple-table.com/docs/nested-tables)** - Hierarchical data with independent columns per nesting level
 - **[Aggregate Functions](https://www.simple-table.com/docs/aggregate-functions)** - Calculate Sum, Average, Count, and more
+- **[Pivot Tables](https://www.simple-table.com/docs/pivot)** - Matrix pivots with row/column dimensions, aggregations, and totals
 - **[Row Height](https://www.simple-table.com/docs/row-height)** - Customize row height for optimal display
 
 ### Cell Features
@@ -69,14 +70,21 @@ npm install @simple-table/react
 - **[Cell Editing](https://www.simple-table.com/docs/cell-editing)** - Edit cells inline with custom editors
 - **[Cell Highlighting](https://www.simple-table.com/docs/cell-highlighting)** - Highlight cells based on conditions
 - **[Cell Renderer](https://www.simple-table.com/docs/cell-renderer)** - Custom cell rendering for any data type
+- **[Value Formatter](https://www.simple-table.com/docs/value-formatter)** - Format cell values for display without changing the underlying data
+- **[Chart Columns](https://www.simple-table.com/docs/chart-columns)** - Inline bar and line/area charts in cells
 - **[Cell Clicking](https://www.simple-table.com/docs/cell-clicking)** - Handle cell click events with ease
 
 ### Advanced Features
 
+- **[Quick Filter](https://www.simple-table.com/docs/quick-filter)** - Global search across all columns with simple or smart modes
 - **[Pagination](https://www.simple-table.com/docs/pagination)** - Server-side and client-side pagination support
-- **[Infinite Scroll](https://www.simple-table.com/docs/infinite-scroll)** - Fetch and display data as you scroll
+- **[Infinite Scroll](https://www.simple-table.com/docs/infinite-scroll)** - Fetch and display data as you scroll, with row and column virtualization
 - **[Live Updates](https://www.simple-table.com/docs/live-updates)** - Real-time data updates and websocket integration
+- **[CSV Export](https://www.simple-table.com/docs/csv-export)** - One-click CSV download of grid data
+- **[Animations](https://www.simple-table.com/docs/animations)** - Smooth FLIP animations for sort, reorder, and visibility changes
 - **[Header Renderer](https://www.simple-table.com/docs/header-renderer)** - Custom header rendering for advanced layouts
+- **[Footer Renderer](https://www.simple-table.com/docs/footer-renderer)** - Custom footer rendering for summaries and controls
+- **[Programmatic Control](https://www.simple-table.com/docs/programmatic-control)** - Control sorting, filtering, selection, and more via the TableAPI
 
 ### Customization
 
@@ -129,19 +137,19 @@ Simple, transparent pricing that never changes based on your revenue or team siz
 
 **$0/forever**
 
-For side projects and pre-revenue teams. Unlimited users per product license with full access to all core features, built-in themes, TypeScript support, and the Simple Table Community License for **zero-revenue** companies only. If your company generates revenue, use Pro or Enterprise.
+Free for side projects and companies that aren't making money yet. You get the full library — same features as Pro. Once your company earns revenue, switch to Pro or Enterprise.
 
 ### PRO - For Growing Businesses
 
 **$85/month** or **$850/year**
 
-For revenue-generating companies: priority email and Discord support, bug support for production issues, and the commercial EULA. Unlimited users per product license.
+For companies that make money. Priority email and Discord support, help with production bugs, and a commercial license. One license covers your whole product — no per-seat fees.
 
 ### ENTERPRISE - For teams that need hands-on support
 
-**$350/month** or **$3,500/year**
+**Contact us**
 
-Premium support with faster response times, direct access to core developers, feature request prioritization, and the commercial EULA. Unlimited users per product license.
+Direct access to core developers and custom features. Same commercial license as Pro — one license per product, no seat fees.
 
 **[View Detailed Pricing](https://www.simple-table.com/pricing)**
 

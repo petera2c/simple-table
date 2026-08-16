@@ -64,8 +64,8 @@ export const docSections: DocSection[] = [
     label: "Getting Started",
     icon: faRocket,
     subsections: [
-      { id: "installation", label: "Installation", path: "/docs/installation", icon: faDownload },
       { id: "quick-start", label: "Quick Start", path: "/docs/quick-start", icon: faRocket },
+      { id: "installation", label: "Installation", path: "/docs/installation", icon: faDownload },
       { id: "table-height", label: "Table Height", path: "/docs/table-height", icon: faUpDown },
       { id: "api-reference", label: "API Reference", path: "/docs/api-reference", icon: faBook },
     ],

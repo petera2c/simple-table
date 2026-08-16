@@ -1,41 +1,56 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, GetRowIdParams } from "@simple-table/svelte";
-  import { pivotDemoConfig, pivotPresets } from "./pivot.demo-data";
+  import type { Theme, GetRowIdParams, PivotConfig } from "@simple-table/svelte";
+  import { pivotDemoConfig } from "./pivot.demo-data";
   import type { PivotFact } from "./pivot.demo-data";
   import "@simple-table/svelte/styles.css";
 
-  let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
+  let { height = "500px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  let activeId = $state(pivotPresets[0].id);
-  const active = $derived(pivotPresets.find((p) => p.id === activeId) ?? pivotPresets[0]);
-  const nestedRows = $derived(active.pivot.rows.length > 1);
-  const getRowId = ({ row }: GetRowIdParams<PivotFact>) => row.id;
+  const INITIAL_PIVOT: PivotConfig<PivotFact> = {
+    rows: ["region", "product"],
+    columns: ["quarter"],
+    values: [{ accessor: "sales", aggregation: { type: "sum" } }],
+  };
+
+  let pivotEnabled = $state(true);
+  let pivot = $state<PivotConfig<PivotFact> | null>(INITIAL_PIVOT);
+
+  const handlePivotEnabledChange = (enabled: boolean) => {
+    pivotEnabled = enabled;
+    if (enabled && pivot === null) {
+      pivot = INITIAL_PIVOT;
+    }
+  };
+
+  const getRowId = ({ row }: GetRowIdParams<PivotFact>) =>
+    row?.id == null ? undefined : String(row.id);
 </script>
 
-<div style="display: flex; flex-direction: column; gap: 12px; width: 100%">
-  <div style="display: flex; flex-wrap: wrap; gap: 8px">
-    {#each pivotPresets as preset}
-      <button
-        type="button"
-        onclick={() => (activeId = preset.id)}
-        style="padding: 6px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; background: {preset.id ===
-        activeId
-          ? '#2563eb'
-          : '#e5e7eb'}; color: {preset.id === activeId ? '#fff' : '#374151'}"
-      >
-        {preset.label}
-      </button>
-    {/each}
-  </div>
+<div>
+  <label
+    style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 14px; color: #374151"
+  >
+    <input
+      type="checkbox"
+      checked={pivotEnabled}
+      aria-label="Pivot mode"
+      onchange={(e) => handlePivotEnabledChange(e.currentTarget.checked)}
+    />
+    Pivot mode
+  </label>
   <SimpleTable
     columns={pivotDemoConfig.headers}
     rows={pivotDemoConfig.rows}
-    pivot={active.pivot}
-    {getRowId}
+    pivot={pivotEnabled ? pivot : null}
+    onPivotChange={(next) => (pivot = next)}
+    autoExpandColumns={true}
     columnResizing={true}
-    expandAll={nestedRows}
+    enableColumnEditor={true}
+    enableColumnEditorInitOpen={true}
+    enablePivotPanel={pivotEnabled}
     selectableCells={true}
+    {getRowId}
     {height}
     {theme}
   />
