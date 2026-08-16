@@ -84,25 +84,18 @@ export const wireMountManagers = (host: MountManagersHost, refs: DOMRefs): Mount
     infiniteScrollThreshold: config.infiniteScrollThreshold ?? 200,
   });
 
-  const renderHeaderForScroll = (scrollLeft: number) => {
-    const header = refs.mainHeaderRef.current;
-    const sel = host.getSelectionManager();
-    const liveConfig = host.getConfig();
-    const liveSelection =
-      sel && (liveConfig.selectableCells || liveConfig.selectableColumns)
-        ? {
-            columnsWithSelectedCells: sel.getColumnsWithSelectedCells(),
-            selectedColumns: sel.getSelectedColumns(),
-          }
-        : undefined;
-    (header as any)?.__renderHeaderCells?.(scrollLeft, liveSelection);
-  };
-
   const sectionScrollController = new SectionScrollController({
     onMainSectionScrollLeft: (scrollLeft) => {
-      renderHeaderForScroll(scrollLeft);
-      const body = refs.mainBodyRef.current;
-      (body as any)?.__renderBodyCells?.(scrollLeft);
+      const sel = host.getSelectionManager();
+      const liveConfig = host.getConfig();
+      const liveSelection =
+        sel && (liveConfig.selectableCells || liveConfig.selectableColumns)
+          ? {
+              columnsWithSelectedCells: sel.getColumnsWithSelectedCells(),
+              selectedColumns: sel.getSelectedColumns(),
+            }
+          : undefined;
+      host.getRenderOrchestrator().virtualizeMainColumnsForScroll(scrollLeft, liveSelection);
     },
   });
 

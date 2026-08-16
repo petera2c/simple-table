@@ -5,6 +5,7 @@ import Row from "../../types/Row";
 import { DimensionManager, type DimensionManagerState } from "../../managers/DimensionManager";
 import type { CellPosition } from "../../managers/AnimationCoordinator";
 import { TableRenderer } from "./TableRenderer";
+import type { HeaderScrollLiveSelection } from "./SectionRenderer";
 import { MergedColumnEditorConfig } from "../initialization/TableInitializer";
 import { flattenRows, FlattenRowsResult } from "../../utils/rowFlattening";
 import {
@@ -85,6 +86,14 @@ export class RenderOrchestrator {
   /** See {@link TableRenderer.getCurrentBodyLayouts}. */
   getCurrentBodyLayouts(): Map<HTMLElement, Map<string, CellPosition>> {
     return this.tableRenderer.getCurrentBodyLayouts();
+  }
+
+  /** Re-virtualize main header and body cells for a new horizontal scroll position. */
+  virtualizeMainColumnsForScroll(
+    scrollLeft: number,
+    liveSelection?: HeaderScrollLiveSelection,
+  ): void {
+    this.tableRenderer.virtualizeMainColumnsForScroll(scrollLeft, liveSelection);
   }
 
   setOnRendererHostDiscard(cb: ((host: HTMLElement) => void) | undefined): void {

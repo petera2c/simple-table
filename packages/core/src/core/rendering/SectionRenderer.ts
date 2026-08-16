@@ -2,11 +2,13 @@ import {
   renderHeaderCells,
   HeaderRenderContext,
   cleanupHeaderCellRendering,
+  type AbsoluteCell,
 } from "../../utils/headerCellRenderer";
 import {
   renderBodyCells,
   CellRenderContext,
   cleanupBodyCellRendering,
+  type AbsoluteBodyCell,
 } from "../../utils/bodyCellRenderer";
 import TableRow from "../../types/TableRow";
 import ColumnDef, { Accessor } from "../../types/ColumnDef";
@@ -26,6 +28,25 @@ import {
   type NestedGridRowEntry,
   type StateRowEntry,
 } from "./sectionExtraRows";
+
+/** Live selection sets merged into the last header paint during horizontal scroll. */
+export interface HeaderScrollLiveSelection {
+  columnsWithSelectedCells: Set<number>;
+  selectedColumns: Set<number>;
+}
+
+interface MainHeaderScrollPaint {
+  section: HTMLElement;
+  absoluteCells: AbsoluteCell[];
+  cachedContext: HeaderRenderContext;
+}
+
+interface MainBodyScrollPaint {
+  section: HTMLElement;
+  absoluteCells: AbsoluteBodyCell[];
+  cachedContext: CellRenderContext;
+  rows: TableRow[];
+}
 
 export interface HeaderSectionParams {
   headers: ColumnDef[];
@@ -95,6 +116,11 @@ export class SectionRenderer {
   // stableRowKey) rather than path-based rowId, which includes indices that change
   // after sort — mismatches tore down the nested SimpleTable and killed slide animations.
   private nestedGridRowsMap: Map<string, Map<string, NestedGridRowEntry>> = new Map();
+
+  // Last main-section paints. Horizontal scroll re-virtualizes from these
+  // instead of running a full header/body render.
+  private mainHeaderScrollPaint: MainHeaderScrollPaint | null = null;
+  private mainBodyScrollPaint: MainBodyScrollPaint | null = null;
 
   renderHeaderSection(params: HeaderSectionParams): HTMLElement {
     const {
@@ -175,29 +201,11 @@ export class SectionRenderer {
       section.scrollLeft = currentScrollLeft;
     }
 
-    // For main section (not pinned), attach render function for scroll updates.
-    // cachedContext is from the last full header render; during vertical drag-scroll the header
-    // may not re-render while selection changes. Callers should pass live selection sets so
-    // calculateHeaderCellClasses does not overwrite st-header-* with stale data (flicker).
-    if (!pinned && section) {
-      (section as any).__renderHeaderCells = (
-        scrollLeft: number,
-        liveSelection?: {
-          columnsWithSelectedCells: Set<number>;
-          selectedColumns: Set<number>;
-        },
-      ) => {
-        if (!section) return;
-        const ctx =
-          liveSelection !== undefined
-            ? {
-                ...cachedContext,
-                columnsWithSelectedCells: liveSelection.columnsWithSelectedCells,
-                selectedColumns: liveSelection.selectedColumns,
-              }
-            : cachedContext;
-        renderHeaderCells(section, absoluteCells, ctx, scrollLeft);
-      };
+    // Keep the last main-header paint so horizontal scroll can re-virtualize
+    // columns without a full header render. Pass live selection sets when the
+    // header has not re-rendered since selection last changed.
+    if (!pinned) {
+      this.mainHeaderScrollPaint = { section, absoluteCells, cachedContext };
     }
 
     return section;
@@ -370,23 +378,53 @@ export class SectionRenderer {
       );
     }
 
-    // For main section (not pinned), attach render function for scroll updates (used by SectionScrollController.onMainSectionScrollLeft)
-    if (!pinned && section) {
-      (section as any).__renderBodyCells = (scrollLeft: number) => {
-        if (section) {
-          renderBodyCells(
-            section,
-            absoluteCells,
-            cachedContext,
-            scrollLeft,
-            rows,
-            true,
-          );
-        }
-      };
+    // Keep the last main-body paint so horizontal scroll can re-virtualize
+    // columns without a full body render.
+    if (!pinned) {
+      this.mainBodyScrollPaint = { section, absoluteCells, cachedContext, rows };
     }
 
     return section!;
+  }
+
+  /**
+   * Re-virtualize main header cells for a new horizontal scroll position.
+   * No-op until the main header has painted. When `liveSelection` is passed,
+   * header selected classes use those sets instead of the last painted context.
+   */
+  virtualizeMainHeaderForScroll(
+    scrollLeft: number,
+    liveSelection?: HeaderScrollLiveSelection,
+  ): void {
+    const paint = this.mainHeaderScrollPaint;
+    if (!paint) return;
+    const ctx =
+      liveSelection !== undefined
+        ? {
+            ...paint.cachedContext,
+            columnsWithSelectedCells: liveSelection.columnsWithSelectedCells,
+            selectedColumns: liveSelection.selectedColumns,
+          }
+        : paint.cachedContext;
+    renderHeaderCells(paint.section, paint.absoluteCells, ctx, scrollLeft);
+  }
+
+  /**
+   * Re-virtualize main body cells for a new horizontal scroll position.
+   * Updates cell positions only (no content/selection refresh). No-op until
+   * the main body has painted.
+   */
+  virtualizeMainBodyForScroll(scrollLeft: number): void {
+    const paint = this.mainBodyScrollPaint;
+    if (!paint) return;
+    renderBodyCells(
+      paint.section,
+      paint.absoluteCells,
+      paint.cachedContext,
+      scrollLeft,
+      paint.rows,
+      true,
+    );
   }
 
   setOnRendererHostDiscard(cb: ((host: HTMLElement) => void) | undefined): void {
@@ -514,6 +552,7 @@ export class SectionRenderer {
     this.bodySections.clear();
     this.caches.clearBody();
     this.bodySectionSnapshots.clear();
+    this.mainBodyScrollPaint = null;
     releaseExtraRowMaps(this.nestedGridRowsMap, this.stateRowsMap);
   }
 
@@ -523,5 +562,6 @@ export class SectionRenderer {
     this.caches.clearHeader();
     this.caches.clearContext();
     this.nextColIndexMap.clear();
+    this.mainHeaderScrollPaint = null;
   }
 }

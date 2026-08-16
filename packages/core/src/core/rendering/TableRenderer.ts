@@ -1,5 +1,5 @@
 import ColumnDef from "../../types/ColumnDef";
-import { SectionRenderer } from "./SectionRenderer";
+import { SectionRenderer, type HeaderScrollLiveSelection } from "./SectionRenderer";
 import { createTableFooter } from "../../utils/footer/createTableFooter";
 import { createColumnEditor } from "../../utils/columnEditor/createColumnEditor";
 import {
@@ -79,6 +79,15 @@ export class TableRenderer {
   /** See {@link SectionRenderer.getCurrentBodyLayouts}. */
   getCurrentBodyLayouts(): Map<HTMLElement, Map<string, CellPosition>> {
     return this.sectionRenderer.getCurrentBodyLayouts();
+  }
+
+  /** Re-virtualize main header and body cells for a new horizontal scroll position. */
+  virtualizeMainColumnsForScroll(
+    scrollLeft: number,
+    liveSelection?: HeaderScrollLiveSelection,
+  ): void {
+    this.sectionRenderer.virtualizeMainHeaderForScroll(scrollLeft, liveSelection);
+    this.sectionRenderer.virtualizeMainBodyForScroll(scrollLeft);
   }
 
   renderHeader(
