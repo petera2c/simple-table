@@ -38,6 +38,3 @@ export const displayCell = ({
   return true;
 };
 
-export const getCellKey = ({ rowId, accessor }: { rowId: RowId; accessor: Accessor }) => {
-  return `${rowId}-${accessor}`;
-};

@@ -2,7 +2,6 @@
 // Replaces TableRowSeparator.tsx React component
 
 import {
-  calculateRowTopPosition,
   calculateSeparatorTopPosition,
   HeightOffsets,
 } from "./infiniteScrollUtils";
@@ -133,27 +132,3 @@ export const createRowSeparator = (options: CreateRowSeparatorOptions): HTMLElem
   return separator;
 };
 
-// Create a spacer row element (for state indicators and nested tables in pinned sections)
-export const createSpacerRow = (
-  position: number,
-  rowHeight: number,
-  heightOffsets: HeightOffsets | undefined,
-  customTheme: CustomTheme,
-  className: string,
-  height?: number,
-): HTMLElement => {
-  const spacer = document.createElement("div");
-  spacer.className = `st-row ${className}`;
-  spacer.dataset.index = String(position);
-
-  spacer.style.width = "100%";
-  spacer.style.transform = `translate3d(0, ${calculateRowTopPosition({
-    position,
-    rowHeight,
-    heightOffsets,
-    customTheme,
-  })}px, 0)`;
-  spacer.style.height = `${height || rowHeight}px`;
-
-  return spacer;
-};

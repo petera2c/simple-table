@@ -4,13 +4,11 @@ import Row from "../types/Row";
 import { flattenAllHeaders } from "../utils/headerUtils";
 import { isRowArray, getNestedValue, setNestedValue } from "../utils/rowUtils";
 import { aggregateValues } from "../utils/aggregationUtils";
-import { RowManager } from "../managers/RowManager";
 
 interface CalculateAggregatedRowsProps {
   rows?: Row[];
   headers?: ColumnDef[];
   rowGrouping?: string[];
-  rowManager?: RowManager;
 }
 
 const getAllAggregationHeaders = (headers: ColumnDef[]): ColumnDef[] => {
@@ -47,11 +45,8 @@ const calculateAggregation = (
  * Pure function to calculate aggregated rows based on row grouping and aggregation configuration
  */
 export const calculateAggregatedRows = (props: CalculateAggregatedRowsProps): Row[] => {
-  const { rows = [], headers = [], rowGrouping, rowManager } = props;
+  const { rows = [], headers = [], rowGrouping } = props;
 
-  if (rowManager) {
-    return rowManager.getAggregatedRows();
-  }
   if (!rowGrouping || rowGrouping.length === 0) {
     return rows;
   }

@@ -19,15 +19,6 @@ export const shouldShowRowSelectionColumn = (config: {
 };
 
 /**
- * Get the set of selected row IDs from an array of table rows
- */
-export const getSelectedRowIds = (tableRows: TableRow[]): string[] => {
-  return tableRows
-    .filter((tableRow) => tableRow && tableRow.rowId)
-    .map((tableRow) => rowIdToString(tableRow.rowId));
-};
-
-/**
  * Check if a specific row is selected
  */
 export const isRowSelected = (rowId: string, selectedRows: Set<string>): boolean => {

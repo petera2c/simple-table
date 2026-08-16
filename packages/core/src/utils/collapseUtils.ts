@@ -52,19 +52,6 @@ export const shouldHideWhenParentCollapsed = (
 };
 
 /**
- * Get all child headers of a parent header (recursively)
- * Uses flattenAllHeaders for consistency and better performance
- */
-export const getAllChildHeaders = (header: ColumnDef): ColumnDef[] => {
-  if (!header.children || header.children.length === 0) {
-    return [];
-  }
-
-  // Use the existing flattenAllHeaders utility for consistency
-  return flattenAllHeaders(header.children);
-};
-
-/**
  * Check if a header has collapsible children
  */
 export const hasCollapsibleChildren = (header: ColumnDef): boolean => {
@@ -92,23 +79,4 @@ export const getHeaderColspan = (
     span += 1;
   }
   return span;
-};
-
-/**
- * Get all leaf (bottom-level) headers that should be visible when a parent is collapsed
- * Uses flattenHeaders for consistent leaf detection
- */
-export const getVisibleLeafHeadersWhenCollapsed = (header: ColumnDef): ColumnDef[] => {
-  if (!header.children || header.children.length === 0) {
-    return [];
-  }
-
-  // Get all leaf headers (bottom-level columns)
-  const leafHeaders = flattenHeaders(header.children);
-
-  // Return only those marked as visible when collapsed
-  return leafHeaders.filter((leafHeader) => {
-    const showWhen = leafHeader.showWhen || DEFAULT_SHOW_WHEN;
-    return showWhen === "parentCollapsed" || showWhen === "always";
-  });
 };

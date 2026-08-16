@@ -148,11 +148,6 @@ export const getCumulativeExtraHeight = (
   return extraHeight;
 };
 
-// Calculate total row count - now just the array length
-export const getTotalRowCount = (tableRows: TableRow[]): number => {
-  return tableRows.length;
-};
-
 /**
  * Calculate the total height of all rows including nested grids with extra heights
  * @param totalRowCount - Total number of rows
@@ -453,22 +448,6 @@ const isParentRow = (row: TableRow, allTableRows: TableRow[]): boolean => {
   // A row is a parent if the next row has this row in its parentIndices
   return nextRow?.parentIndices?.includes(rowIndex) ?? false;
 };
-
-// const copyObject = (obj: Record<string, any>) => {
-//   const newObj = {} as Record<string, any>;
-//   for (const key in obj) {
-//     if (key === "row") {
-//       newObj.row = {
-//         id: obj.row.id,
-//         organization: obj.row.organization,
-//         employees: obj.row.employees,
-//       };
-//     } else {
-//       newObj[key] = obj[key];
-//     }
-//   }
-//   return newObj;
-// };
 
 // Cache for sticky parents calculation
 interface StickyParentsCacheEntry {

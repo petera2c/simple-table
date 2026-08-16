@@ -19,14 +19,6 @@ export const createSelectionCheckbox = (
   return checkbox.element;
 };
 
-// Create row number display
-export const createRowNumber = (displayRowNumber: number): HTMLElement => {
-  const rowNumber = document.createElement("span");
-  rowNumber.className = "st-row-number";
-  rowNumber.textContent = String(displayRowNumber + 1);
-  return rowNumber;
-};
-
 // Create row buttons
 export const createRowButtons = (
   cell: AbsoluteBodyCell,
