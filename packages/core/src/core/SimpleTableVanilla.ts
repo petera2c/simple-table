@@ -1,6 +1,6 @@
 import { SimpleTableConfig } from "../types/SimpleTableConfig";
 import { TableAPI } from "../types/TableAPI";
-import ColumnDef, { Accessor, DEFAULT_SHOW_WHEN } from "../types/ColumnDef";
+import ColumnDef, { Accessor } from "../types/ColumnDef";
 import Row from "../types/Row";
 import type { RowData } from "../types/Row";
 import { CustomTheme, areCustomThemesEqual } from "../types/CustomTheme";
@@ -12,8 +12,16 @@ import {
 } from "../utils/normalizeConfig";
 
 import { AnimationCoordinator } from "../managers/AnimationCoordinator";
+import { AccordionController } from "../managers/AccordionController";
 import { AutoScaleManager } from "../managers/AutoScaleManager";
+import {
+  AutoSizeManager,
+  getAutoSizeMeasureRows,
+  getAutoSizeStyleRoot,
+} from "../managers/AutoSizeManager";
 import { DimensionManager } from "../managers/DimensionManager";
+import { ExternalScrollController } from "../managers/ExternalScrollController";
+import type { ExternalScrollMetrics } from "../utils/externalScroll";
 import { ScrollManager } from "../managers/ScrollManager";
 import { SectionScrollController } from "../managers/SectionScrollController";
 import { SortManager } from "../managers/SortManager";
@@ -33,20 +41,6 @@ import { calculateScrollbarWidth } from "../hooks/scrollbarWidth";
 import { generateRowId, rowIdToString } from "../utils/rowUtils";
 import { untrackCellByRow } from "../utils/bodyCell/styling";
 import { deepClone } from "../utils/generalUtils";
-import { isHeaderExcludedFromLayout } from "../utils/cellUtils";
-import {
-  calculateHeaderContentWidth,
-  getAllVisibleLeafHeaders,
-  getHeaderMinWidth,
-  isAutoWidth,
-} from "../utils/headerWidthUtils";
-import {
-  ACCORDION_ANIMATION_CLASS,
-  ACCORDION_CLEANUP_BUFFER_MS,
-  ACCORDION_DURATION_VAR,
-  ACCORDION_EASING_VAR,
-  type AccordionAxis,
-} from "../utils/accordionAnimation";
 
 import {
   TableInitializer,
@@ -55,13 +49,9 @@ import {
 } from "./initialization/TableInitializer";
 import { DOMManager } from "./dom/DOMManager";
 import { RenderOrchestrator, RenderContext, RenderState } from "./rendering/RenderOrchestrator";
-import { TableAPIImpl, TableAPIContext } from "./api/TableAPIImpl";
-import {
-  getExternalScrollMetrics,
-  getParentViewportHeight,
-  resolveScrollParent,
-  type ResolvedScrollParent,
-} from "../utils/externalScroll";
+import { buildRenderContext } from "./rendering/buildRenderContext";
+import { TableAPIImpl } from "./api/TableAPIImpl";
+import { buildTableAPIContext } from "./api/buildTableAPIContext";
 import { UNVIRTUALIZED_ROW_WARNING_THRESHOLD } from "../consts/general-consts";
 import { clearHoveredRowsForScope } from "../utils/bodyCell/styling";
 
@@ -106,22 +96,6 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
    */
   private pristineDefaultHeaders: ColumnDef[] = [];
   private essentialAccessors: Set<string> = new Set();
-  /** Accessors of leaf columns that should size to content (width:"auto" or autoSizeColumns). */
-  private autoSizeAccessors: Set<Accessor> = new Set();
-  /** Accessors awaiting a content-fit measurement on the next render. */
-  private pendingAutoSize: Set<Accessor> = new Set();
-  /**
-   * Natural (unexpanded) pixel width per leaf column, overriding the declared
-   * width: the measured content width for `width: "auto"` columns and the
-   * width the user explicitly set via drag-resize / double-click auto-fit.
-   * With autoExpandColumns these feed the shrink floors used during column
-   * resize — neighbors give up surplus (expanded) space but are never
-   * squeezed below their natural width; past that point the section
-   * overflows into horizontal scroll.
-   */
-  private naturalWidths: Map<string, number> = new Map();
-  /** Guard against re-entrancy while the auto-size pass re-renders. */
-  private isAutoSizing: boolean = false;
   private currentPage: number = 1;
   private scrollTop: number = 0;
   private scrollDirection: "up" | "down" | "none" = "none";
@@ -152,6 +126,9 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
   private rowIndexMap: Map<string | number, number> = new Map();
 
   private animationCoordinator: AnimationCoordinator;
+  private accordionController: AccordionController;
+  private autoSizeManager: AutoSizeManager;
+  private externalScrollController: ExternalScrollController;
   /**
    * When true, the sort subscriber skips `captureAnimationSnapshot` so
    * live-update-driven reorder/visibility changes don't FLIP-animate.
@@ -186,55 +163,8 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
   private hasWarnedUnvirtualizedRows: boolean = false;
   /** Pending deferred check for the unvirtualized-rows warning (lets external-scroll seeding settle first). */
   private unvirtualizedRowsCheckTimeoutId: number | null = null;
-
-  /** Currently resolved external scroll parent (HTMLElement or window). Null when external scroll mode is inactive. */
-  private resolvedScrollParent: ResolvedScrollParent = null;
-  /** Bound scroll handler attached to the external scroll parent. */
-  private externalScrollListener: ((e: Event) => void) | null = null;
-  /** Bound resize handler attached to window when scrollParent is "window". */
-  private externalWindowResizeListener: (() => void) | null = null;
-  /** ResizeObserver watching the external scroll parent element. */
-  private externalParentResizeObserver: ResizeObserver | null = null;
-  /** Cached visible viewport height of the table inside the external parent. Fed into virtualization. */
-  private externalViewportHeight: number = 0;
-  /**
-   * rAF handle for retrying resolution of a configured-but-not-yet-resolvable
-   * `scrollParent` (e.g. a getter pointing at a ref attached on a later commit
-   * than this table's mount). Null when no retry is pending.
-   */
-  private externalScrollRetryRaf: number | null = null;
-  /** Number of resolution retries attempted; bounded so we don't spin forever. */
-  private externalScrollRetryCount: number = 0;
-  private static readonly EXTERNAL_SCROLL_MAX_RETRIES = 60;
-  /** True iff the body-container scroll listener is currently attached. */
-  private bodyScrollListenerAttached: boolean = false;
   /** Bound mouseleave handler on the body container. */
   private bodyContainerMouseLeaveListener: (() => void) | null = null;
-  /** Bound scroll handler attached to the body container (internal scroll mode). */
-  private bodyContainerScrollListener: ((e: Event) => void) | null = null;
-  /**
-   * When external scroll mode is active we briefly take control of the scroll
-   * parent's `overscroll-behavior-y` to neutralize the browser's rubber-band /
-   * scroll-chaining at the boundaries. Without this, pulling past the top or
-   * bottom of the scroll parent visually translates the entire scroll content
-   * layer (including the CSS-sticky header), causing the header to "disappear"
-   * during overscroll bounces even though its layout position is unchanged.
-   * We record the previous inline value so {@link detachExternalScrollWiring}
-   * can restore it cleanly.
-   */
-  private overscrollBehaviorTarget: HTMLElement | null = null;
-  private overscrollBehaviorPrev: string = "";
-
-  /**
-   * Active accordion axis for the next render. Set by row/column collapse-
-   * expand mutators (see {@link beginAccordionAnimation}) and consumed by the
-   * cell renderers via the render context. Cleared in {@link render} after
-   * each render so subsequent non-accordion renders (sort, scroll, etc.)
-   * don't re-trigger the size transitions.
-   */
-  private pendingAccordionAxis: AccordionAxis = null;
-  /** Pending timeout id used to remove the accordion CSS class. */
-  private accordionCleanupTimerId: number | null = null;
 
   constructor(container: HTMLElement, config: SimpleTableConfigInput<TData>) {
     this.container = container;
@@ -272,14 +202,39 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       rowGrouping: this.getEffectiveRowGrouping(),
     });
 
-    this.autoSizeAccessors = this.computeAutoSizeAccessors();
-    this.pendingAutoSize = new Set(this.autoSizeAccessors);
-
     this.domManager = new DOMManager();
     this.renderOrchestrator = new RenderOrchestrator();
 
     this.animationCoordinator = new AnimationCoordinator();
     this.applyAnimationsConfig(config.animations);
+
+    this.autoSizeManager = new AutoSizeManager();
+    this.autoSizeManager.recomputeAccessors(this.headers, this.collapsedHeaders);
+
+    this.externalScrollController = new ExternalScrollController({
+      getScrollParent: () => this.config.scrollParent,
+      getHeight: () => this.config.height,
+      getMaxHeight: () => this.config.maxHeight,
+      getBodyContainer: () => this.domManager.getElements()?.bodyContainer ?? null,
+      getRootElement: () => this.domManager.getElements()?.rootElement ?? null,
+      getFallbackRoot: () => this.container,
+      isMounted: () => this.mounted,
+      getDimensionManager: () => this.dimensionManager,
+      onInternalScroll: (e) => this.handleScroll(e),
+      onExternalScroll: (metrics) => this.handleExternalScrollMetrics(metrics),
+      onExternalResize: () => this.render("external-scroll-resize"),
+    });
+
+    this.accordionController = new AccordionController({
+      animationCoordinator: this.animationCoordinator,
+      getRoot: () => this.getTableRoot(),
+      getAnimatableContainers: () => this.getAnimatableContainers(),
+      getHeaders: () => this.headers,
+      getCollapsedHeaders: () => this.collapsedHeaders,
+      getEffectiveRowGrouping: () => this.getEffectiveRowGrouping(),
+      getCurrentBodyLayouts: () => this.renderOrchestrator.getCurrentBodyLayouts(),
+      getExternalVerticalScroll: () => this.externalScrollController.getVerticalScrollMetrics(),
+    });
 
     // Authoritative portal/renderer teardown: core signals the host discard
     // callback at every permanent host-element removal site so framework
@@ -355,190 +310,17 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
   }
 
   /**
-   * Capture pre-change cell positions for the FLIP animation, including
-   * conceptual positions for cells outside the virtualization viewport so
-   * incoming cells can animate from off-screen on column reorder/sort. The
-   * `play` step that runs at the end of the next render consumes this
-   * snapshot to inverse-transform cells from their old visual positions and
-   * tween them to their new ones.
-   *
-   * Called on every layout-affecting state change — including the chain of
-   * mid-drag `setHeaders` calls that fire on each `dragover` swap — so that
-   * displaced columns slide smoothly out of the dragged column's way rather
-   * than snapping into place.
+   * Shared header write path for the render context and TableAPI. Accordion-
+   * horizontal when the visible or pinned set changed; otherwise snapshot for FLIP.
    */
-  /**
-   * Build a key summarizing the leaf columns that will paint (accessor +
-   * pinned section). Hidden leaves and excluded subtrees drop out; nested
-   * children are flattened so a parent collapse/expand counts as a
-   * visibility change at the leaf level too.
-   */
-  private buildVisibilityKey(headers: ColumnDef[]): string {
-    const parts: string[] = [];
-    const walk = (header: ColumnDef, pinnedAncestor: string | undefined): void => {
-      if (isHeaderExcludedFromLayout(header)) return;
-      const pinned = header.pinned ?? pinnedAncestor ?? "main";
-      if (header.children && header.children.length > 0) {
-        for (const child of header.children) walk(child, pinned);
-      } else {
-        parts.push(`${String(header.accessor)}:${pinned}`);
-      }
-    };
-    for (const header of headers) walk(header, undefined);
-    return parts.join("|");
-  }
-
-  /**
-   * True when the visible-leaf-set or pinned section of `nextHeaders` differs
-   * from the current `this.headers` tree.
-   */
-  private didColumnVisibilityChange(nextHeaders: ColumnDef[]): boolean {
-    return this.buildVisibilityKey(this.headers) !== this.buildVisibilityKey(nextHeaders);
-  }
-
-  private captureAnimationSnapshot(): void {
-    // Skip the (potentially large) full-section pre-layout build when
-    // animations are disabled — captureSnapshot would discard the result
-    // anyway, but the argument is evaluated eagerly before the bail-out.
-    const preLayouts = this.animationCoordinator.isEnabled()
-      ? this.renderOrchestrator.getCurrentBodyLayouts()
-      : undefined;
-    // In external/page-scroll mode the body container has no internal vertical
-    // overflow, so the FLIP scaler can't read the visible viewport from it.
-    // Feed the real visible viewport (the same metrics that drive
-    // virtualization) so sort slides stay bounded to the on-screen area.
-    this.updateAnimationVerticalScroll();
-    this.animationCoordinator.captureSnapshot({
-      containers: this.getAnimatableContainers(),
-      preLayouts,
-    });
-  }
-
-  /**
-   * Push the visible vertical viewport into the animation coordinator when
-   * external/page scroll is active (or clear it otherwise). Keeps the FLIP
-   * distance-scaling viewport-relative so cells don't slide the full
-   * conceptual distance when the table grows to its natural height.
-   */
-  private updateAnimationVerticalScroll(): void {
-    if (!this.resolvedScrollParent) {
-      this.animationCoordinator.setExternalVerticalScroll(null);
-      return;
+  private applyHeaders(headers: ColumnDef[]): void {
+    if (this.accordionController.didColumnVisibilityChange(headers)) {
+      this.accordionController.begin("horizontal");
+    } else {
+      this.accordionController.captureSnapshot();
     }
-    const tableRoot = this.domManager.getElements()?.rootElement ?? this.container;
-    const metrics = getExternalScrollMetrics(this.resolvedScrollParent, tableRoot);
-    if (!metrics || metrics.visibleViewportHeight <= 0 || metrics.tableTotalHeight <= 0) {
-      this.animationCoordinator.setExternalVerticalScroll(null);
-      return;
-    }
-    this.animationCoordinator.setExternalVerticalScroll({
-      clientHeight: metrics.visibleViewportHeight,
-      scrollHeight: metrics.tableTotalHeight,
-      scrollTop: metrics.relativeScrollTop,
-    });
-  }
-
-  /**
-   * Open the accordion animation window for the next render: capture a FLIP
-   * snapshot, mark the active axis so cell renderers initialize incoming
-   * cells at zero size, and add the CSS class that enables the size
-   * transitions on `.st-cell` / `.st-header-cell`.
-   *
-   * The CSS class is removed after `duration + ACCORDION_CLEANUP_BUFFER_MS`
-   * so non-accordion renders don't keep transitioning size on subsequent
-   * inline-style writes.
-   *
-   * No-op when animations are disabled (which already includes the
-   * prefers-reduced-motion check via {@link AnimationCoordinator.isEnabled}).
-   */
-  /**
-   * Walk the CURRENT (pre-change) header tree and collect every accessor that
-   * is renderable as a header cell given the current collapsed/hidden state —
-   * group headers plus the leaf columns visible under them (honoring
-   * `showWhen` and the collapsed set). Used by {@link beginAccordionAnimation}
-   * to seed the animation coordinator's re-entry guard.
-   */
-  private collectAccordionRenderableAccessors(): Set<string> {
-    const set = new Set<string>();
-    const visit = (header: ColumnDef): void => {
-      if (isHeaderExcludedFromLayout(header)) return;
-      set.add(String(header.accessor));
-      if (!header.children || header.children.length === 0) return;
-      const isCollapsed = this.collapsedHeaders.has(header.accessor);
-      for (const child of header.children) {
-        const showWhen = child.showWhen || DEFAULT_SHOW_WHEN;
-        const childVisible = isCollapsed
-          ? showWhen === "parentCollapsed" || showWhen === "always"
-          : showWhen === "parentExpanded" || showWhen === "always";
-        if (childVisible) visit(child);
-      }
-    };
-    for (const header of this.headers) visit(header);
-    return set;
-  }
-
-  private beginAccordionAnimation(axis: AccordionAxis): void {
-    if (!this.animationCoordinator.isEnabled()) return;
-    if (axis === null) return;
-    if (axis === "vertical" && (this.getEffectiveRowGrouping()?.length ?? 0) > 0) return;
-
-    // Apply to `.simple-table-root` (not the user-supplied outer container) so
-    // the CSS scope and the test/marketing surface match the documented root.
-    const root = this.domManager.getElements()?.rootElement ?? this.container;
-
-    // Rapid hide/show (column editor spam-clicks, especially pinned columns)
-    // used to restart accordion grow/shrink while prior ghosts were still
-    // in flight — dropping stale shrink-outs mid-transition looks broken.
-    // Interrupt: cancel in-flight accordion DOM and snap to the latest layout.
-    const interrupting =
-      axis === "horizontal" &&
-      (this.accordionCleanupTimerId !== null ||
-        root.classList.contains(ACCORDION_ANIMATION_CLASS));
-    if (interrupting) {
-      this.animationCoordinator.cancel();
-      if (this.accordionCleanupTimerId !== null) {
-        window.clearTimeout(this.accordionCleanupTimerId);
-        this.accordionCleanupTimerId = null;
-      }
-      root.classList.remove(ACCORDION_ANIMATION_CLASS);
-      root.style.removeProperty(ACCORDION_DURATION_VAR);
-      root.style.removeProperty(ACCORDION_EASING_VAR);
-      this.pendingAccordionAxis = null;
-      this.captureAnimationSnapshot();
-      // Keep the cleanup timer alive (without the CSS class) so further rapid
-      // toggles also snap instead of restarting grow/shrink every other click.
-      const duration = this.animationCoordinator.getDuration();
-      this.accordionCleanupTimerId = window.setTimeout(() => {
-        this.accordionCleanupTimerId = null;
-      }, duration + ACCORDION_CLEANUP_BUFFER_MS);
-      return;
-    }
-
-    this.captureAnimationSnapshot();
-    // Record which columns are renderable in the current (pre-change) layout so
-    // the grow-from-zero gate can tell a freshly-expanded column apart from one
-    // that merely re-enters the virtualization band after the collapse clamps
-    // scrollLeft. Only meaningful for the horizontal (column) accordion.
-    this.animationCoordinator.setAccordionPreVisibleAccessors(
-      axis === "horizontal" ? this.collectAccordionRenderableAccessors() : null,
-    );
-    this.pendingAccordionAxis = axis;
-
-    const duration = this.animationCoordinator.getDuration();
-    const easing = this.animationCoordinator.getEasing();
-    root.style.setProperty(ACCORDION_DURATION_VAR, `${duration}ms`);
-    root.style.setProperty(ACCORDION_EASING_VAR, easing);
-    root.classList.add(ACCORDION_ANIMATION_CLASS);
-
-    if (this.accordionCleanupTimerId !== null) {
-      window.clearTimeout(this.accordionCleanupTimerId);
-    }
-    this.accordionCleanupTimerId = window.setTimeout(() => {
-      root.classList.remove(ACCORDION_ANIMATION_CLASS);
-      root.style.removeProperty(ACCORDION_DURATION_VAR);
-      root.style.removeProperty(ACCORDION_EASING_VAR);
-      this.accordionCleanupTimerId = null;
-    }, duration + ACCORDION_CLEANUP_BUFFER_MS);
+    this.headers = deepClone(headers);
+    this.renderOrchestrator.invalidateCache("header");
   }
 
   private initializeManagers(): void {
@@ -553,7 +335,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       this.getEffectiveRowGrouping(),
     );
     this.expandedDepthsManager.subscribe((depths) => {
-      this.beginAccordionAnimation("vertical");
+      this.accordionController.begin("vertical");
       this.expandedDepths = depths;
       this.render("expandedDepthsManager");
     });
@@ -588,7 +370,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
         this.render("live-sort");
         return;
       }
-      this.captureAnimationSnapshot();
+      this.accordionController.captureSnapshot();
       this.render("sortManager");
     });
 
@@ -685,9 +467,12 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
         // laid-out height, re-measure to the precise visible intersection (e.g.
         // when the table is only partially in view). Deferred to the next frame
         // so the recompute's state update doesn't re-enter render() synchronously.
-        if (this.resolvedScrollParent && typeof requestAnimationFrame !== "undefined") {
+        if (
+          this.externalScrollController.getResolvedParent() &&
+          typeof requestAnimationFrame !== "undefined"
+        ) {
           requestAnimationFrame(() => {
-            if (this.mounted) this.recomputeExternalViewportHeight();
+            if (this.mounted) this.externalScrollController.recomputeViewportHeight();
           });
         }
         if (this.config.onTableReady) {
@@ -804,257 +589,15 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     };
     elements.bodyContainer.addEventListener("mouseleave", this.bodyContainerMouseLeaveListener);
 
-    this.syncExternalScrollWiring();
+    this.externalScrollController.sync();
   }
 
   /**
-   * Reconciles which element owns the vertical scroll listener based on the
-   * current `scrollParent` config. Called on mount and whenever `update()`
-   * could have changed the relevant inputs (`scrollParent` / `height` /
-   * `maxHeight`). Idempotent — safe to call repeatedly.
+   * Scroll-coalesce path for an external `scrollParent`. Wiring lives on
+   * ExternalScrollController; this keeps rAF / scroll-end / ScrollManager
+   * updates in one place with {@link handleScroll}.
    */
-  private syncExternalScrollWiring(): void {
-    const elements = this.domManager.getElements();
-    if (!elements?.bodyContainer) return;
-
-    // A consumer "wants" external scroll mode whenever they pass a `scrollParent`
-    // and don't constrain the table with `height`/`maxHeight`. This is computed
-    // independently of whether the parent resolves *right now*: a getter form
-    // (`() => ref.current?.parentElement`) intentionally resolves on a later
-    // commit than this table's mount, so resolution can legitimately be null on
-    // the first pass and become non-null on a subsequent frame.
-    const noHeight =
-      this.config.height === undefined || this.config.height === null || this.config.height === "";
-    const noMaxHeight =
-      this.config.maxHeight === undefined ||
-      this.config.maxHeight === null ||
-      this.config.maxHeight === "";
-    const wantsExternal = this.config.scrollParent != null && noHeight && noMaxHeight;
-
-    const nextParent: ResolvedScrollParent = wantsExternal
-      ? resolveScrollParent(this.config.scrollParent)
-      : null;
-
-    if (nextParent !== this.resolvedScrollParent) {
-      this.detachExternalScrollWiring();
-    }
-
-    if (nextParent) {
-      this.externalScrollRetryCount = 0;
-      this.attachExternalScrollWiring(nextParent);
-      this.ensureBodyScrollListenerDetached(elements.bodyContainer);
-      this.recomputeExternalViewportHeight();
-    } else if (wantsExternal) {
-      // External scroll requested but the parent isn't resolvable yet. Seed a
-      // provisional viewport (the window height) so virtualization stays ON in
-      // the meantime — otherwise `contentHeight` is undefined and EVERY row
-      // renders at once, which can freeze the page for large datasets. Then
-      // retry resolving the real parent on subsequent frames; once it resolves,
-      // `recomputeExternalViewportHeight` replaces this provisional value.
-      this.ensureBodyScrollListenerDetached(elements.bodyContainer);
-      const provisional = typeof window !== "undefined" ? window.innerHeight : 0;
-      if (provisional > 0 && this.externalViewportHeight !== provisional) {
-        this.externalViewportHeight = provisional;
-        this.dimensionManager?.updateConfig({ externalViewportHeight: provisional });
-      }
-      this.scheduleExternalScrollParentRetry();
-    } else {
-      this.externalScrollRetryCount = 0;
-      this.ensureBodyScrollListenerAttached(elements.bodyContainer);
-      this.externalViewportHeight = 0;
-      if (this.dimensionManager) {
-        this.dimensionManager.updateConfig({ externalViewportHeight: undefined });
-      }
-    }
-  }
-
-  /**
-   * Retry resolving a configured `scrollParent` on the next animation frame.
-   * Used when the parent (typically a getter pointing at a ref) was not yet
-   * resolvable when external wiring last ran. Bounded by
-   * {@link SimpleTableVanilla.EXTERNAL_SCROLL_MAX_RETRIES} so a permanently
-   * unresolvable parent doesn't spin forever.
-   */
-  private scheduleExternalScrollParentRetry(): void {
-    if (this.externalScrollRetryRaf !== null) return;
-    if (this.externalScrollRetryCount >= SimpleTableVanilla.EXTERNAL_SCROLL_MAX_RETRIES) return;
-    if (typeof requestAnimationFrame === "undefined") return;
-    this.externalScrollRetryRaf = requestAnimationFrame(() => {
-      this.externalScrollRetryRaf = null;
-      if (!this.mounted) return;
-      this.externalScrollRetryCount++;
-      this.syncExternalScrollWiring();
-    });
-  }
-
-  private ensureBodyScrollListenerAttached(bodyContainer: HTMLElement): void {
-    if (this.bodyScrollListenerAttached) return;
-    this.bodyContainerScrollListener = (e: Event) => this.handleScroll(e);
-    bodyContainer.addEventListener("scroll", this.bodyContainerScrollListener);
-    this.bodyScrollListenerAttached = true;
-  }
-
-  private ensureBodyScrollListenerDetached(bodyContainer: HTMLElement): void {
-    if (!this.bodyScrollListenerAttached) return;
-    if (this.bodyContainerScrollListener) {
-      bodyContainer.removeEventListener("scroll", this.bodyContainerScrollListener);
-      this.bodyContainerScrollListener = null;
-    }
-    this.bodyScrollListenerAttached = false;
-  }
-
-  private attachExternalScrollWiring(parent: ResolvedScrollParent): void {
-    if (!parent) return;
-    this.resolvedScrollParent = parent;
-
-    const handler = (e: Event) => this.handleExternalScroll(e);
-    this.externalScrollListener = handler;
-    parent.addEventListener("scroll", handler, { passive: true });
-
-    if (typeof Window !== "undefined" && parent instanceof Window) {
-      const resizeHandler = () => this.handleExternalResize();
-      this.externalWindowResizeListener = resizeHandler;
-      parent.addEventListener("resize", resizeHandler, { passive: true });
-    } else if (typeof ResizeObserver !== "undefined") {
-      const ro = new ResizeObserver(() => this.handleExternalResize());
-      ro.observe(parent as HTMLElement);
-      this.externalParentResizeObserver = ro;
-    }
-
-    this.recomputeExternalScrollPaddingTop();
-    this.applyOverscrollContainment(parent);
-  }
-
-  private detachExternalScrollWiring(): void {
-    const parent = this.resolvedScrollParent;
-    if (parent && this.externalScrollListener) {
-      parent.removeEventListener("scroll", this.externalScrollListener);
-    }
-    this.externalScrollListener = null;
-
-    if (
-      parent &&
-      this.externalWindowResizeListener &&
-      typeof Window !== "undefined" &&
-      parent instanceof Window
-    ) {
-      parent.removeEventListener("resize", this.externalWindowResizeListener);
-    }
-    this.externalWindowResizeListener = null;
-
-    if (this.externalParentResizeObserver) {
-      this.externalParentResizeObserver.disconnect();
-      this.externalParentResizeObserver = null;
-    }
-
-    this.resolvedScrollParent = null;
-
-    // Clear the padding-top CSS variable so a subsequent transition into
-    // bounded-height mode doesn't leave stale offset state on the root.
-    const elements = this.domManager.getElements();
-    if (elements) {
-      elements.rootElement.style.removeProperty("--st-external-scroll-padding-top");
-    }
-
-    this.restoreOverscrollBehavior();
-  }
-
-  /**
-   * Set `overscroll-behavior-y: none` on the resolved scroll parent (or
-   * `document.documentElement` for `scrollParent: "window"`). This neutralizes
-   * the browser's elastic rubber-band at the scroll boundaries, which would
-   * otherwise translate the entire scroll content layer (including our
-   * `position: sticky` header) during overscroll bounces — making the header
-   * visually disappear off the top of the parent. `contain` only stops scroll
-   * chaining; we need `none` to actually disable the elastic bounce on the
-   * scroll container itself. Previous inline value is captured so we can
-   * restore it on detach.
-   */
-  private applyOverscrollContainment(parent: ResolvedScrollParent): void {
-    const target: HTMLElement | null =
-      typeof Window !== "undefined" && parent instanceof Window
-        ? typeof document !== "undefined"
-          ? document.documentElement
-          : null
-        : (parent as HTMLElement | null);
-    if (!target) return;
-    this.overscrollBehaviorTarget = target;
-    this.overscrollBehaviorPrev = target.style.overscrollBehaviorY;
-    target.style.overscrollBehaviorY = "none";
-  }
-
-  private restoreOverscrollBehavior(): void {
-    if (!this.overscrollBehaviorTarget) return;
-    this.overscrollBehaviorTarget.style.overscrollBehaviorY = this.overscrollBehaviorPrev;
-    this.overscrollBehaviorTarget = null;
-    this.overscrollBehaviorPrev = "";
-  }
-
-  /**
-   * Read the resolved scroll parent's computed `padding-top` and publish it
-   * as `--st-external-scroll-padding-top` on the table root. The sticky
-   * header CSS uses `top: calc(-1 * var(...))` so the header pins flush to
-   * the parent's outer top edge instead of the padding edge, eliminating the
-   * visible gap that CSS sticky would otherwise produce when the consumer
-   * gives the scroll parent any top padding. Re-run on layout changes via
-   * ResizeObserver / window resize.
-   */
-  private recomputeExternalScrollPaddingTop(): void {
-    const elements = this.domManager.getElements();
-    if (!elements) return;
-    const parent = this.resolvedScrollParent;
-    let paddingTop = 0;
-    if (parent && typeof HTMLElement !== "undefined" && parent instanceof HTMLElement) {
-      const cs = getComputedStyle(parent);
-      paddingTop = parseFloat(cs.paddingTop) || 0;
-    }
-    elements.rootElement.style.setProperty("--st-external-scroll-padding-top", `${paddingTop}px`);
-  }
-
-  /**
-   * Recompute the visible portion of the table inside the external scroll
-   * parent and push it into the DimensionManager so virtualization math
-   * picks it up. Cheap; called on scroll, on parent/window resize, and on
-   * every re-render where the resolved parent may have moved.
-   */
-  private recomputeExternalViewportHeight(): void {
-    if (!this.resolvedScrollParent) return;
-    const elements = this.domManager.getElements();
-    const tableRoot = elements?.rootElement ?? this.container;
-    const metrics = getExternalScrollMetrics(this.resolvedScrollParent, tableRoot);
-    if (!metrics) return;
-    let next = metrics.visibleViewportHeight;
-    // Before the first render the table has no laid-out height, so the
-    // table∩viewport intersection is 0. Feeding 0 disables virtualization
-    // (contentHeight becomes undefined → every row renders at once, a long
-    // blocking paint that looks blank/unfilled on load until a scroll triggers
-    // virtualization). Seed with the parent's own viewport height so the first
-    // paint is already virtualized; the post-first-render / scroll recompute
-    // then refines this to the precise visible intersection.
-    if (next <= 0) {
-      next = getParentViewportHeight(this.resolvedScrollParent);
-    }
-    if (next <= 0 || next === this.externalViewportHeight) return;
-    this.externalViewportHeight = next;
-    if (this.dimensionManager) {
-      this.dimensionManager.updateConfig({ externalViewportHeight: next });
-    }
-  }
-
-  private handleExternalResize(): void {
-    this.recomputeExternalViewportHeight();
-    this.recomputeExternalScrollPaddingTop();
-    this.render("external-scroll-resize");
-  }
-
-  private handleExternalScroll(_e: Event): void {
-    const parent = this.resolvedScrollParent;
-    if (!parent) return;
-    const elements = this.domManager.getElements();
-    const tableRoot = elements?.rootElement ?? this.container;
-    const metrics = getExternalScrollMetrics(parent, tableRoot);
-    if (!metrics) return;
-
+  private handleExternalScrollMetrics(metrics: ExternalScrollMetrics): void {
     const newScrollTop = metrics.relativeScrollTop;
 
     this.isScrolling = true;
@@ -1086,23 +629,12 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       this.scrollDirection = direction;
       this.lastScrollTop = newScrollTop;
 
-      // Visible viewport height can change as the table enters / leaves the
-      // parent's viewport (partial intersection at top or bottom). Push the
-      // current value into the DimensionManager so contentHeight tracks it.
-      if (metrics.visibleViewportHeight !== this.externalViewportHeight) {
-        this.externalViewportHeight = metrics.visibleViewportHeight;
-        if (this.dimensionManager) {
-          this.dimensionManager.updateConfig({
-            externalViewportHeight: metrics.visibleViewportHeight,
-          });
-        }
+      if (metrics.visibleViewportHeight !== this.externalScrollController.getViewportHeight()) {
+        this.externalScrollController.setViewportHeight(metrics.visibleViewportHeight);
       }
 
       if (this.scrollManager) {
         if (this.config.onLoadMore) {
-          // Compare against the table's bottom (not the parent's), so onLoadMore
-          // fires when the user has scrolled close to the end of the table even
-          // when the parent has more content below it.
           const containerHeight = metrics.visibleViewportHeight;
           const contentHeight =
             metrics.relativeScrollTop +
@@ -1293,68 +825,61 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
         : this.config;
     const effectiveLocalRows =
       pivotState?.active ? pivotState.pivotedRows : this.localRows;
+    const viewportHeight = this.externalScrollController.getViewportHeight();
 
-    return {
-      accordionAxis: this.pendingAccordionAxis,
-      config: effectiveConfig,
-      customTheme: this.customTheme,
-      resolvedIcons: this.resolvedIcons,
-      effectiveHeaders: [],
-      essentialAccessors: this.essentialAccessors,
-      headers: this.headers,
-      localRows: effectiveLocalRows,
+    return buildRenderContext({
+      accordionAxis: this.accordionController.getPendingAxis(),
+      animationCoordinator: this.animationCoordinator,
+      cellRegistry: this.cellRegistry,
       collapsedHeaders: this.collapsedHeaders,
       collapsedRows: this.collapsedRows,
-      expandedRows: this.expandedRows,
+      config: effectiveConfig,
+      customTheme: this.customTheme,
+      dimensionManager: this.dimensionManager,
+      draggedHeaderRef: this.draggedHeaderRef,
+      essentialAccessors: this.essentialAccessors,
       expandedDepths: this.expandedDepths,
-      isResizing: this.isResizing,
+      expandedRows: this.expandedRows,
+      filterManager: this.filterManager,
+      headerRegistry: this.headerRegistry,
+      headers: this.headers,
+      hoverScopeId: this.hoverScopeId,
+      hoveredHeaderRef: this.hoveredHeaderRef,
       internalIsLoading: this.internalIsLoading,
-      // Inject the constructor for nested grid tables. Supplying it here (rather
-      // than letting nestedGridRowRenderer import this class) breaks the module
-      // cycle SimpleTableVanilla → RenderOrchestrator → TableRenderer →
-      // SectionRenderer → nestedGridRowRenderer → SimpleTableVanilla.
+      isResizing: this.isResizing,
+      localRows: effectiveLocalRows,
       createNestedTable: (container, nestedConfig) =>
         new SimpleTableVanilla<Row>(container, nestedConfig as SimpleTableConfigInput<Row>),
-      cellRegistry: this.cellRegistry,
-      hoverScopeId: this.hoverScopeId,
-      headerRegistry: this.headerRegistry,
-      draggedHeaderRef: this.draggedHeaderRef,
-      hoveredHeaderRef: this.hoveredHeaderRef,
       mainBodyRef: refs.mainBodyRef,
-      pinnedLeftRef: refs.pinnedLeftRef,
-      pinnedRightRef: refs.pinnedRightRef,
       mainHeaderRef: refs.mainHeaderRef,
       pinnedLeftHeaderRef: refs.pinnedLeftHeaderRef,
+      pinnedLeftRef: refs.pinnedLeftRef,
       pinnedRightHeaderRef: refs.pinnedRightHeaderRef,
-      dimensionManager: this.dimensionManager,
-      scrollManager: this.scrollManager,
-      sectionScrollController: this.sectionScrollController,
-      sortManager: this.sortManager,
-      filterManager: this.filterManager,
-      selectionManager: this.selectionManager,
+      pinnedRightRef: refs.pinnedRightRef,
+      positionOnlyBody: this._positionOnlyBody,
+      externalViewportHeight: viewportHeight > 0 ? viewportHeight : undefined,
+      resolvedIcons: this.resolvedIcons,
       rowSelectionManager: this.rowSelectionManager,
       rowStateMap: this.rowStateMap,
-      positionOnlyBody: this._positionOnlyBody,
-      // Drives the virtualization window (calculateContentHeight) in external
-      // scroll mode. Gate purely on a positive cached viewport — NOT on
-      // `resolvedScrollParent` — so the provisional viewport seeded before a
-      // late-resolving `scrollParent` getter attaches still enables
-      // virtualization. Without this, the first render before the parent
-      // resolves has no content height and renders every row at once.
-      // `externalViewportHeight` is reset to 0 whenever external mode is off,
-      // so `> 0` already excludes the internal-scroll case.
-      externalViewportHeight:
-        this.externalViewportHeight > 0 ? this.externalViewportHeight : undefined,
+      scrollManager: this.scrollManager,
+      sectionScrollController: this.sectionScrollController,
+      selectionManager: this.selectionManager,
+      sortManager: this.sortManager,
       onRender: () => this.render("resizeHandler-onRender"),
-      getShrinkFloors: () => this.getShrinkFloors(),
-      onAutoExpandNaturalWidths: (widths: Map<string, number>) => this.recordNaturalWidths(widths),
-      setIsResizing: (value: boolean) => {
+      getShrinkFloors: () =>
+        this.autoSizeManager.getShrinkFloors(
+          this.headers,
+          this.collapsedHeaders,
+          this.pristineDefaultHeaders,
+        ),
+      onAutoExpandNaturalWidths: (widths) => this.autoSizeManager.recordNaturalWidths(widths),
+      setIsResizing: (value) => {
         this.isResizing = value;
         if (this.autoScaleManager && value === false) {
-          const refs = this.domManager.getRefs();
+          const liveRefs = this.domManager.getRefs();
           const containerWidth =
-            refs.tableBodyContainerRef?.current?.clientWidth ??
-            refs.mainBodyRef?.current?.clientWidth ??
+            liveRefs.tableBodyContainerRef?.current?.clientWidth ??
+            liveRefs.mainBodyRef?.current?.clientWidth ??
             this.dimensionManager?.getState().containerWidth ??
             0;
           this.autoScaleManager.updateConfig({
@@ -1363,51 +888,25 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
           });
         }
       },
-      setHeaders: (headers: ColumnDef[]) => {
-        // When the visible or pinned set of columns changed, open the
-        // accordion-horizontal animation so incoming cells grow from width 0
-        // and outgoing cells shrink to width 0. Otherwise snapshot for FLIP.
-        const visibilityChanged = this.didColumnVisibilityChange(headers);
-        if (visibilityChanged) {
-          this.beginAccordionAnimation("horizontal");
-        } else {
-          this.captureAnimationSnapshot();
-        }
-        this.headers = deepClone(headers);
-        this.renderOrchestrator.invalidateCache("header");
-      },
-      animationCoordinator: this.animationCoordinator,
-      setCollapsedHeaders: (headers: Set<Accessor>) => {
-        this.beginAccordionAnimation("horizontal");
+      setHeaders: (headers) => this.applyHeaders(headers),
+      setCollapsedHeaders: (headers) => {
+        this.accordionController.begin("horizontal");
         this.collapsedHeaders = headers;
       },
-      setCollapsedRows: (
-        rowsOrUpdater: Map<string, number> | ((prev: Map<string, number>) => Map<string, number>),
-      ) => {
-        this.beginAccordionAnimation("vertical");
+      setCollapsedRows: (rowsOrUpdater) => {
+        this.accordionController.begin("vertical");
         this.collapsedRows =
           typeof rowsOrUpdater === "function" ? rowsOrUpdater(this.collapsedRows) : rowsOrUpdater;
         this.render("expansion");
       },
-      setExpandedRows: (
-        rowsOrUpdater: Map<string, number> | ((prev: Map<string, number>) => Map<string, number>),
-      ) => {
-        this.beginAccordionAnimation("vertical");
+      setExpandedRows: (rowsOrUpdater) => {
+        this.accordionController.begin("vertical");
         this.expandedRows =
           typeof rowsOrUpdater === "function" ? rowsOrUpdater(this.expandedRows) : rowsOrUpdater;
         this.render("expansion");
       },
-      setRowStateMap: (
-        mapOrUpdater:
-          | Map<string | number, any>
-          | ((prev: Map<string | number, any>) => Map<string | number, any>),
-      ) => {
-        // Capture a snapshot before mutating the row-state map so body cells
-        // around the appearing/disappearing state row FLIP into their new
-        // positions in sync with the state row's grow-in/out animation.
-        // Without this, the state row would expand smoothly but every other
-        // row would snap, producing a visual desync.
-        this.beginAccordionAnimation("vertical");
+      setRowStateMap: (mapOrUpdater) => {
+        this.accordionController.begin("vertical");
         this.rowStateMap =
           typeof mapOrUpdater === "function" ? mapOrUpdater(this.rowStateMap) : mapOrUpdater;
         this.render("rowStateMap");
@@ -1418,30 +917,31 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       getHeaders: () => this.headers,
       getPristineDefaultHeaders: () => this.pristineDefaultHeaders,
       getPivot: () => this.pivotManager?.getPivot() ?? this.config.pivot ?? null,
-      setPivot: (pivotConfig) => {
-        this.config = { ...this.config, pivot: pivotConfig };
-        this.syncPivotPipeline(this.filterManager?.getFilteredRows() ?? this.localRows);
-        this.config.onPivotChange?.(pivotConfig);
-        this.renderOrchestrator.invalidateCache("header");
-        this.renderOrchestrator.invalidateCache("body");
-        this.render("setPivot");
-      },
+      setPivot: (pivotConfig) => this.applyPivot(pivotConfig),
       getRowStateMap: () => this.rowStateMap,
-      setColumnEditorOpen: (open: boolean) => {
+      setColumnEditorOpen: (open) => {
         this.columnEditorOpen = open;
       },
-      setCurrentPage: (page: number) => {
+      setCurrentPage: (page) => {
         if (
           page !== this.currentPage &&
           this.config.enablePagination &&
           !this.config.serverSidePagination
         ) {
-          // Re-fit "auto" columns to the new page's rendered rows.
-          this.autoSizeAccessors.forEach((accessor) => this.pendingAutoSize.add(accessor));
+          this.autoSizeManager.queuePendingFromAccessors();
         }
         this.currentPage = page;
       },
-    };
+    });
+  }
+
+  private applyPivot(pivotConfig: PivotConfig | null): void {
+    this.config = { ...this.config, pivot: pivotConfig };
+    this.syncPivotPipeline(this.filterManager?.getFilteredRows() ?? this.localRows);
+    this.config.onPivotChange?.(pivotConfig);
+    this.renderOrchestrator.invalidateCache("header");
+    this.renderOrchestrator.invalidateCache("body");
+    this.render("setPivot");
   }
 
   private getRenderState(): RenderState {
@@ -1455,222 +955,44 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     };
   }
 
-  /** A leaf column that should size to content (declared with width:"auto"). */
-  private isAutoSizeLeaf(header: ColumnDef): boolean {
-    if (header.isSelectionColumn) return false;
-    return isAutoWidth(header);
-  }
-
-  private computeAutoSizeAccessors(): Set<Accessor> {
-    const set = new Set<Accessor>();
-    const leaves = getAllVisibleLeafHeaders(this.headers, this.collapsedHeaders);
-    for (const leaf of leaves) {
-      if (this.isAutoSizeLeaf(leaf)) set.add(leaf.accessor);
-    }
-    return set;
-  }
-
-  private getAutoSizeStyleRoot(): ParentNode | null {
-    // Prefer body, but empty tables clear body sections — fall back to the
-    // header so auto-size can still borrow font/padding metrics.
-    const refs = this.domManager.getRefs();
-    const anchor =
-      refs.mainBodyRef?.current ??
-      refs.mainHeaderRef?.current ??
-      refs.pinnedLeftHeaderRef?.current ??
-      refs.pinnedRightHeaderRef?.current;
-    if (!anchor) return null;
-    return anchor.closest(".simple-table-root") ?? anchor;
-  }
-
-  /**
-   * Rows that content-fit ("auto") measurement should sample. With client-side
-   * pagination only the current page is rendered, so fit columns to the page's
-   * rows rather than the entire dataset — otherwise off-page values inflate
-   * every auto column's width.
-   */
-  private getAutoSizeRows(): Row[] {
-    if (this.config.enablePagination && !this.config.serverSidePagination) {
-      const processed = this.renderOrchestrator.getLastProcessedResult();
-      if (processed) {
-        const pageRows = processed.currentTableRows
-          .filter((tr) => tr.row && !tr.stateIndicator && !tr.isLoadingSkeleton && !tr.nestedTable)
-          .map((tr) => tr.row);
-        if (pageRows.length > 0) return pageRows;
-      }
-    }
-    return this.localRows;
-  }
-
-  /**
-   * Shrink floors for auto-expand column resize, keyed by accessor. Each
-   * visible leaf's floor is its natural width — a user-set / content-measured
-   * override when present, else the pixel width declared in the column
-   * definitions — raised to at least its `minWidth` (or the global minimum).
-   * Flexible declarations (fr / % / unmeasured "auto") have no pixel natural,
-   * so they floor at `minWidth` alone.
-   */
-  private getShrinkFloors(): Map<string, number> {
-    const declared = new Map<string, number>();
-    const visitDeclared = (h: ColumnDef): void => {
-      if (h.children && h.children.length > 0) {
-        h.children.forEach(visitDeclared);
-      }
-      if (typeof h.width === "number") {
-        declared.set(String(h.accessor), h.width);
-      } else if (typeof h.width === "string" && h.width.trim().endsWith("px")) {
-        const px = parseFloat(h.width);
-        if (Number.isFinite(px)) declared.set(String(h.accessor), px);
-      }
-    };
-    this.pristineDefaultHeaders.forEach(visitDeclared);
-
-    const floors = new Map<string, number>();
-    const leaves = getAllVisibleLeafHeaders(this.headers, this.collapsedHeaders);
-    for (const leaf of leaves) {
-      const key = String(leaf.accessor);
-      const natural = this.naturalWidths.get(key) ?? declared.get(key);
-      floors.set(key, Math.max(natural ?? 0, getHeaderMinWidth(leaf)));
-    }
-    return floors;
-  }
-
-  /** Record user-set / measured widths as the columns' new natural widths. */
-  private recordNaturalWidths(widths: Map<string, number>): void {
-    widths.forEach((width, accessor) => this.naturalWidths.set(accessor, width));
-  }
-
-  /** Immutably write measured pixel widths into the leaf headers. */
-  private applyMeasuredWidths(widths: Map<Accessor, number>): void {
-    const apply = (h: ColumnDef): ColumnDef => {
-      const next = { ...h };
-      // Apply before recursing: `singleRowChildren` / collapsed parents are
-      // visible leaves that still carry children, and must receive their
-      // measured width (same set that `computeAutoSizeAccessors` collected).
-      if (widths.has(h.accessor)) {
-        next.width = widths.get(h.accessor) as number;
-      }
-      if (h.children && h.children.length > 0) {
-        next.children = h.children.map(apply);
-      }
-      return next;
-    };
-    this.headers = this.headers.map(apply);
-    // Measured content widths are the columns' natural widths (the shrink
-    // floors for auto-expand resize).
-    widths.forEach((width, accessor) => this.naturalWidths.set(String(accessor), width));
-  }
-
-  /**
-   * Measure and apply content-fit widths for any pending "auto" columns, then
-   * re-render once at the final widths. Called at the end of render(); the
-   * measurement reads the just-rendered (provisional-width) DOM and the
-   * corrective render happens in the same synchronous task, so there is no
-   * visible width snap.
-   *
-   * With autoExpandColumns, the measured width becomes the column's natural
-   * width: the expand-only auto-scale pass in the corrective render stretches
-   * columns to fill surplus container space, or leaves them at natural width
-   * (horizontal scroll) when they don't fit.
-   */
   private maybeAutoSizeColumns(): void {
-    if (this.isAutoSizing || this.pendingAutoSize.size === 0) return;
+    const nextHeaders = this.autoSizeManager.maybeMeasure({
+      headers: this.headers,
+      collapsedHeaders: this.collapsedHeaders,
+      styleRoot: getAutoSizeStyleRoot(this.domManager.getRefs()),
+      rows: getAutoSizeMeasureRows({
+        enablePagination: this.config.enablePagination,
+        serverSidePagination: this.config.serverSidePagination,
+        currentTableRows: this.renderOrchestrator.getLastProcessedResult()?.currentTableRows,
+        localRows: this.localRows,
+      }),
+      theme: this.config.theme,
+      icons: this.resolvedIcons,
+      onRendererHostDiscard: this.config.onRendererHostDiscard,
+    });
+    if (!nextHeaders) return;
 
-    // Need some rendered header DOM to borrow style metrics (padding/font)
-    // from. The measurement itself no longer requires each pending column's
-    // own header cell — columns virtualized out of the horizontal band are
-    // measured from their data so their width matches what they'd get when
-    // rendered (container-size independent).
-    const styleRoot = this.getAutoSizeStyleRoot();
-    const ready = Boolean(
-      styleRoot instanceof HTMLElement && styleRoot.querySelector(".st-header-cell"),
-    );
-    if (!ready) return;
+    this.headers = nextHeaders;
+    this.renderOrchestrator.invalidateCache("header");
 
-    this.isAutoSizing = true;
-    try {
-      const leaves = getAllVisibleLeafHeaders(this.headers, this.collapsedHeaders);
-      const leafByAccessor = new Map(leaves.map((leaf) => [leaf.accessor, leaf]));
-
-      const autoSizeRows = this.getAutoSizeRows();
-      const widths = new Map<Accessor, number>();
-      for (const accessor of this.pendingAutoSize) {
-        const leaf = leafByAccessor.get(accessor);
-        if (!leaf) continue;
-        // Sampling/outlier tuning uses internal defaults; per-column control is
-        // via the header's `maxWidth` / `minWidth` / `autoSizeMode`.
-        //
-        // `settled` is informational for callers that care; we still apply the
-        // best-effort width now. We do NOT keep unsettled accessors pending —
-        // retrying on every subsequent render is a common infinite-loop source
-        // when measurement is provisional (async portals / loading skeletons).
-        // Re-measure only via explicit re-queue: rows change, isLoading flip,
-        // or `refitAutoSizeColumns()`.
-        const { width } = calculateHeaderContentWidth(accessor, {
-          rows: autoSizeRows,
-          header: leaf,
-          styleRoot,
-          theme: this.config.theme,
-          autoSizeMode: leaf.autoSizeMode,
-          sortIcon: this.resolvedIcons.sortUp,
-          expandIcon: this.resolvedIcons.expand,
-          onRendererHostDiscard: this.config.onRendererHostDiscard,
-        });
-        widths.set(accessor, width);
-      }
-
-      // Always clear — one measure pass per pending set. Never leave accessors
-      // pending across renders.
-      this.pendingAutoSize.clear();
-      if (widths.size === 0) return;
-
-      // Avoid a corrective re-render when nothing changed.
-      let changed = false;
-      for (const [accessor, width] of widths) {
-        const leaf = leafByAccessor.get(accessor);
-        const current =
-          typeof leaf?.width === "number"
-            ? leaf.width
-            : this.naturalWidths.get(String(accessor));
-        if (current !== width) {
-          changed = true;
-          break;
-        }
-      }
-      if (!changed) return;
-
-      this.applyMeasuredWidths(widths);
-      this.renderOrchestrator.invalidateCache("header");
-
-      const elements = this.domManager.getElements();
-      const refs = this.domManager.getRefs();
-      if (elements) {
-        this.renderOrchestrator.render(
-          elements,
-          refs,
-          this.getRenderContext(),
-          this.getRenderState(),
-          this.mergedColumnEditorConfig,
-        );
-      }
-
-      if (this.config.onColumnWidthChange) {
-        this.config.onColumnWidthChange(this.headers);
-      }
-    } finally {
-      this.isAutoSizing = false;
+    const elements = this.domManager.getElements();
+    const refs = this.domManager.getRefs();
+    if (elements) {
+      this.renderOrchestrator.render(
+        elements,
+        refs,
+        this.getRenderContext(),
+        this.getRenderState(),
+        this.mergedColumnEditorConfig,
+      );
     }
+
+    this.config.onColumnWidthChange?.(this.headers);
   }
 
-  /**
-   * Re-run the content-fit measurement for all auto-size columns. Useful for
-   * host frameworks (e.g. React) whose custom renderers mount asynchronously:
-   * calling this from a layout effect (pre-paint) re-measures once the real
-   * renderer DOM is present, so the column fits accurately without flicker.
-   */
   public refitAutoSizeColumns(): void {
-    if (this.autoSizeAccessors.size === 0) return;
-    this.autoSizeAccessors.forEach((accessor) => this.pendingAutoSize.add(accessor));
+    if (this.autoSizeManager.getAccessors().size === 0) return;
+    this.autoSizeManager.queuePendingFromAccessors();
     this.render("auto-size-refit");
   }
 
@@ -1708,7 +1030,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     // the render that consumed it so subsequent renders (sort, scroll,
     // resize, etc.) don't apply zero-size initial styles to cells they
     // happen to create.
-    this.pendingAccordionAxis = null;
+    this.accordionController.clearPendingAxis();
 
     // FLIP play step. No-op when no snapshot is armed or when scroll-driven.
     // Position-only scroll renders deliberately skip play so out-going /
@@ -1719,7 +1041,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     // that fire on each `dragover` swap — runs play so columns being
     // displaced by the drag slide smoothly to their new slots.
     if (source !== "scroll-raf" && source !== "live-sort") {
-      this.animationCoordinator.play({ containers: this.getAnimatableContainers() });
+      this.accordionController.play();
     }
 
     this.maybeScheduleUnvirtualizedRowsWarning();
@@ -1813,7 +1135,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       // Skip until after the first render so initial mount doesn't try to
       // animate from an empty snapshot.
       if (this.firstRenderDone) {
-        this.captureAnimationSnapshot();
+        this.accordionController.captureSnapshot();
       }
       this.localRows = [...config.rows] as Row[];
       this.rebuildRowIndexMap();
@@ -1827,7 +1149,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       // SelectionManager will be updated with processed rows during render
 
       // Re-fit auto-size columns against the new data (content width may change).
-      this.autoSizeAccessors.forEach((accessor) => this.pendingAutoSize.add(accessor));
+      this.autoSizeManager.queuePendingFromAccessors();
     }
 
     if (config.pivot !== undefined && config.rows === undefined) {
@@ -1857,7 +1179,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       // Skip entirely while `isResizing`: mid-drag parent re-renders often push
       // a fresh columns tree with stale widths, which would replace
       // this.headers, clear naturalWidths, and fight the in-progress resize.
-      this.captureAnimationSnapshot();
+      this.accordionController.captureSnapshot();
       this.ingestColumnSnapshot(patch.columns as ColumnDef[]);
       // Field catalog drives filters; visible headers come from pivot when active.
       if (this.filterManager) {
@@ -1883,10 +1205,8 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
           this.dimensionManager.updateConfig({ effectiveHeaders });
         }
       }
-      this.autoSizeAccessors = this.computeAutoSizeAccessors();
-      this.pendingAutoSize = new Set(this.autoSizeAccessors);
-      // New column definitions supersede measured / user-set natural widths.
-      this.naturalWidths.clear();
+      this.autoSizeManager.recomputeAccessors(this.headers, this.collapsedHeaders);
+      this.autoSizeManager.clearNaturalWidths();
     }
 
     if (config.isLoading !== undefined) {
@@ -1895,8 +1215,8 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       // Leaving the loading state reveals real cellRenderer / headerRenderer
       // DOM (replacing skeletons). Re-queue auto columns so widths can settle
       // from painted content instead of staying on a provisional measure.
-      if (wasLoading && !config.isLoading && this.autoSizeAccessors.size > 0) {
-        this.autoSizeAccessors.forEach((accessor) => this.pendingAutoSize.add(accessor));
+      if (wasLoading && !config.isLoading && this.autoSizeManager.getAccessors().size > 0) {
+        this.autoSizeManager.queuePendingFromAccessors();
       }
     }
 
@@ -2017,7 +1337,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       config.height !== undefined ||
       config.maxHeight !== undefined
     ) {
-      this.syncExternalScrollWiring();
+      this.externalScrollController.sync();
     }
 
     if (
@@ -2085,19 +1405,13 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       clearTimeout(this.scrollEndTimeoutId);
       this.scrollEndTimeoutId = null;
     }
-    if (this.externalScrollRetryRaf !== null) {
-      cancelAnimationFrame(this.externalScrollRetryRaf);
-      this.externalScrollRetryRaf = null;
-    }
     if (this.unvirtualizedRowsCheckTimeoutId !== null) {
       clearTimeout(this.unvirtualizedRowsCheckTimeoutId);
       this.unvirtualizedRowsCheckTimeoutId = null;
     }
-
-    this.detachExternalScrollWiring();
+    this.externalScrollController.destroy();
     const elements = this.domManager.getElements();
     if (elements?.bodyContainer) {
-      this.ensureBodyScrollListenerDetached(elements.bodyContainer);
       if (this.bodyContainerMouseLeaveListener) {
         elements.bodyContainer.removeEventListener(
           "mouseleave",
@@ -2106,14 +1420,8 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
         this.bodyContainerMouseLeaveListener = null;
       }
     }
-    if (this.accordionCleanupTimerId !== null) {
-      window.clearTimeout(this.accordionCleanupTimerId);
-      this.accordionCleanupTimerId = null;
-    }
+    this.accordionController.destroy();
     const root = this.domManager.getElements()?.rootElement ?? this.container;
-    root.classList.remove(ACCORDION_ANIMATION_CLASS);
-    root.style.removeProperty(ACCORDION_DURATION_VAR);
-    root.style.removeProperty(ACCORDION_EASING_VAR);
 
     this.dimensionManager?.destroy();
     this.scrollManager?.destroy();
@@ -2154,142 +1462,78 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
   getAPI(): TableAPI<TData> {
     if (this.cachedAPI) return this.cachedAPI;
 
-    // Use `thiz` so that getter properties can read live instance state rather
-    // than a snapshot captured at getAPI() call time. The API is cached: live
-    // tickers commonly call getAPI() every interval, and each createAPI() used
-    // to allocate a fresh updateData coalescer — which defeated coalescing and
-    // thrashed full re-sorts on every tick.
-    const thiz = this;
-    const context: TableAPIContext = {
-      get config() {
-        return thiz.config;
-      },
-      get localRows() {
-        return thiz.localRows;
-      },
-      get effectiveHeaders() {
-        return thiz.renderOrchestrator.computeEffectiveHeaders(
-          thiz.headers,
-          thiz.config,
-          thiz.customTheme,
-        );
-      },
-      get headers() {
-        return thiz.headers;
-      },
-      getPristineDefaultHeaders: () => thiz.pristineDefaultHeaders,
-      get essentialAccessors() {
-        return thiz.essentialAccessors;
-      },
-      get customTheme() {
-        return thiz.customTheme;
-      },
-      get currentPage() {
-        return thiz.currentPage;
-      },
-      getCurrentPage: () => this.currentPage,
-      get expandedRows() {
-        return thiz.expandedRows;
-      },
-      get collapsedRows() {
-        return thiz.collapsedRows;
-      },
-      get expandedDepths() {
-        return thiz.expandedDepths;
-      },
-      clearExpandedRows: () => {
-        thiz.expandedRows = new Map();
-      },
-      clearCollapsedRows: () => {
-        thiz.collapsedRows = new Map();
-      },
-      get rowStateMap() {
-        return thiz.rowStateMap;
-      },
-      get headerRegistry() {
-        return thiz.headerRegistry;
-      },
-      get cellRegistry() {
-        return thiz.cellRegistry;
-      },
-      isCellAnimating: (cellId: string) => this.animationCoordinator.isInFlight(cellId),
-      hasAnimatingCells: () => this.animationCoordinator.hasInFlight(),
-      get columnEditorOpen() {
-        return thiz.columnEditorOpen;
-      },
-      getCachedFlattenResult: () => this.renderOrchestrator.getCachedFlattenResult(),
-      getCachedProcessedResult: () => this.renderOrchestrator.getLastProcessedResult(),
-      get expandedDepthsManager() {
-        return thiz.expandedDepthsManager;
-      },
-      get selectionManager() {
-        return thiz.selectionManager;
-      },
-      get rowSelectionManager() {
-        return thiz.rowSelectionManager;
-      },
-      get sortManager() {
-        return thiz.sortManager;
-      },
-      get filterManager() {
-        return thiz.filterManager;
-      },
-      getEffectiveRowGrouping: () => this.getEffectiveRowGrouping(),
-      setPivot: (pivotConfig: PivotConfig | null) => {
-        this.config = { ...this.config, pivot: pivotConfig };
-        this.syncPivotPipeline(this.filterManager?.getFilteredRows() ?? this.localRows);
-        this.config.onPivotChange?.(pivotConfig);
-        this.renderOrchestrator.invalidateCache("header");
-        this.renderOrchestrator.invalidateCache("body");
-        this.render("setPivot");
-      },
-      getPivot: () => this.pivotManager?.getPivot() ?? this.config.pivot ?? null,
-      getPivotHeaders: () => {
-        const state = this.pivotManager?.getState();
-        if (state?.active) return state.headers;
-        return this.headers;
-      },
-      getPivotedRows: () => {
-        const state = this.pivotManager?.getState();
-        if (state?.active) return state.pivotedRows;
-        return this.localRows;
-      },
-      onRender: () => this.render("columnEditor-onRender"),
-      invalidateRowsCache: () => {
-        this.renderOrchestrator.invalidateCache("body");
-      },
-      runWithoutAnimationSnapshot: (fn: () => void) => {
-        this.suppressNextAnimationSnapshot = true;
-        try {
-          fn();
-        } finally {
-          this.suppressNextAnimationSnapshot = false;
-        }
-      },
-      setHeaders: (headers: ColumnDef[]) => {
-        // Same trigger as the renderContext.setHeaders path: accordion-horizontal
-        // when the visible or pinned set changed; otherwise snapshot for FLIP.
-        const visibilityChanged = this.didColumnVisibilityChange(headers);
-        if (visibilityChanged) {
-          this.beginAccordionAnimation("horizontal");
-        } else {
-          this.captureAnimationSnapshot();
-        }
-        this.headers = deepClone(headers);
-        this.renderOrchestrator.invalidateCache("header");
-      },
-      setCurrentPage: (page: number) => {
-        this.currentPage = page;
-      },
-      setColumnEditorOpen: (open: boolean) => {
-        this.columnEditorOpen = open;
-
-        this.render("columnEditor-toggle");
-      },
-    };
-
-    // Runtime rows are Row-shaped; expose TableAPI<TData> at the public boundary.
-    this.cachedAPI = TableAPIImpl.createAPI(context) as unknown as TableAPI<TData>;
+    this.cachedAPI = TableAPIImpl.createAPI(
+      buildTableAPIContext({
+        getConfig: () => this.config,
+        getLocalRows: () => this.localRows,
+        getHeaders: () => this.headers,
+        applyHeaders: (headers) => this.applyHeaders(headers),
+        getPristineDefaultHeaders: () => this.pristineDefaultHeaders,
+        getEssentialAccessors: () => this.essentialAccessors,
+        getCustomTheme: () => this.customTheme,
+        getCurrentPage: () => this.currentPage,
+        setCurrentPage: (page) => {
+          this.currentPage = page;
+        },
+        getExpandedRows: () => this.expandedRows,
+        getCollapsedRows: () => this.collapsedRows,
+        getExpandedDepths: () => this.expandedDepths,
+        clearExpandedRows: () => {
+          this.expandedRows = new Map();
+        },
+        clearCollapsedRows: () => {
+          this.collapsedRows = new Map();
+        },
+        getRowStateMap: () => this.rowStateMap,
+        getHeaderRegistry: () => this.headerRegistry,
+        getCellRegistry: () => this.cellRegistry,
+        isCellAnimating: (cellId) => this.animationCoordinator.isInFlight(cellId),
+        hasAnimatingCells: () => this.animationCoordinator.hasInFlight(),
+        getColumnEditorOpen: () => this.columnEditorOpen,
+        setColumnEditorOpen: (open) => {
+          this.columnEditorOpen = open;
+          this.render("columnEditor-toggle");
+        },
+        getExpandedDepthsManager: () => this.expandedDepthsManager,
+        getSelectionManager: () => this.selectionManager,
+        getRowSelectionManager: () => this.rowSelectionManager,
+        getSortManager: () => this.sortManager,
+        getFilterManager: () => this.filterManager,
+        getCachedFlattenResult: () => this.renderOrchestrator.getCachedFlattenResult(),
+        getCachedProcessedResult: () => this.renderOrchestrator.getLastProcessedResult(),
+        getEffectiveRowGrouping: () => this.getEffectiveRowGrouping(),
+        setPivot: (pivotConfig) => this.applyPivot(pivotConfig),
+        getPivot: () => this.pivotManager?.getPivot() ?? this.config.pivot ?? null,
+        getPivotHeaders: () => {
+          const state = this.pivotManager?.getState();
+          if (state?.active) return state.headers;
+          return this.headers;
+        },
+        getPivotedRows: () => {
+          const state = this.pivotManager?.getState();
+          if (state?.active) return state.pivotedRows;
+          return this.localRows;
+        },
+        onRender: () => this.render("columnEditor-onRender"),
+        invalidateRowsCache: () => {
+          this.renderOrchestrator.invalidateCache("body");
+        },
+        runWithoutAnimationSnapshot: (fn) => {
+          this.suppressNextAnimationSnapshot = true;
+          try {
+            fn();
+          } finally {
+            this.suppressNextAnimationSnapshot = false;
+          }
+        },
+        computeEffectiveHeaders: () =>
+          this.renderOrchestrator.computeEffectiveHeaders(
+            this.headers,
+            this.config,
+            this.customTheme,
+          ),
+      }),
+    ) as unknown as TableAPI<TData>;
     return this.cachedAPI;
   }
 }

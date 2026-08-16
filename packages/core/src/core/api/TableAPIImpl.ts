@@ -5,11 +5,9 @@ import Row from "../../types/Row";
 import TableRow from "../../types/TableRow";
 import SortColumn, { SortDirection } from "../../types/SortColumn";
 import { FilterCondition, TableFilterState } from "../../types/FilterTypes";
-import { CustomTheme } from "../../types/CustomTheme";
 import UpdateDataProps from "../../types/UpdateCellProps";
 import type CellValue from "../../types/CellValue";
 import { SetHeaderRenameProps, ExportToCSVProps } from "../../types/TableAPI";
-import RowState from "../../types/RowState";
 import Cell from "../../types/Cell";
 import { SelectionManager } from "../../managers/SelectionManager";
 import { RowSelectionManager } from "../../managers/RowSelectionManager";
@@ -30,67 +28,9 @@ import { deepClone } from "../../utils/generalUtils";
 import type { PivotConfig } from "../../types/PivotTypes";
 import type { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
 import type { RowId } from "../../types/RowId";
+import type { TableAPIContext } from "./TableAPIContext";
 
-export interface TableAPIContext {
-  config: SimpleTableConfig;
-  localRows: Row[];
-  effectiveHeaders: ColumnDef[];
-  headers: ColumnDef[];
-  /** Last ingested column definitions (see SimpleTableVanilla.pristineDefaultHeaders). */
-  getPristineDefaultHeaders: () => ColumnDef[];
-  essentialAccessors: Set<string>;
-  customTheme: CustomTheme;
-  currentPage: number;
-  /** Returns current page from live state (use this in API getCurrentPage so it stays correct after setPage). */
-  getCurrentPage: () => number;
-  expandedRows: Map<string, number>;
-  collapsedRows: Map<string, number>;
-  expandedDepths: Set<number>;
-  clearExpandedRows: () => void;
-  clearCollapsedRows: () => void;
-  rowStateMap: Map<string | number, RowState>;
-  headerRegistry: Map<string, any>;
-  cellRegistry?: Map<string, { updateContent: (value: any) => void }>;
-  /**
-   * Whether a cell (by its `getCellId` key) is currently mid-FLIP-animation.
-   * Live `updateData` content writes are skipped for animating cells so a
-   * data tick doesn't re-render / mutate a cell that is sliding to a new
-   * position (which causes visible jank). The underlying row data is still
-   * updated; only the in-place DOM refresh is deferred to the next tick or
-   * re-render once the animation settles.
-   */
-  isCellAnimating?: (cellId: string) => boolean;
-  /** True while any FLIP cell transition is in flight (blocks live re-sort/re-filter). */
-  hasAnimatingCells?: () => boolean;
-  columnEditorOpen: boolean;
-  expandedDepthsManager: any;
-  selectionManager: SelectionManager | null;
-  rowSelectionManager: RowSelectionManager | null;
-  sortManager: SortManager | null;
-  filterManager: FilterManager | null;
-  getCachedFlattenResult?: () => FlattenRowsResult | null;
-  getCachedProcessedResult?: () => ProcessRowsResult | null;
-  onRender: () => void;
-  /**
-   * Bust the flatten / body row caches so the next render re-runs quick filter
-   * (and related processing) against in-place mutated row values.
-   */
-  invalidateRowsCache?: () => void;
-  /**
-   * Run `fn` without capturing a FLIP snapshot when sort/filter subscribers
-   * fire. Used for live-update-driven reorder/visibility changes so high-
-   * frequency ticks don't spam sort animations.
-   */
-  runWithoutAnimationSnapshot?: (fn: () => void) => void;
-  setHeaders: (headers: ColumnDef[]) => void;
-  setCurrentPage: (page: number) => void;
-  setColumnEditorOpen: (open: boolean) => void;
-  getEffectiveRowGrouping: () => Accessor[] | undefined;
-  setPivot: (config: PivotConfig | null) => void;
-  getPivot: () => PivotConfig | null;
-  getPivotHeaders: () => ColumnDef[];
-  getPivotedRows: () => Row[];
-}
+export type { TableAPIContext } from "./TableAPIContext";
 
 export class TableAPIImpl {
   static createAPI(context: TableAPIContext): TableAPI {

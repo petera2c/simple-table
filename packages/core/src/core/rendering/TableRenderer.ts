@@ -1,11 +1,5 @@
-import ColumnDef, { Accessor } from "../../types/ColumnDef";
-import type { PivotConfig } from "../../types/PivotTypes";
-import { SimpleTableConfig } from "../../types/SimpleTableConfig";
-import { CustomTheme } from "../../types/CustomTheme";
-import { FilterCondition } from "../../types/FilterTypes";
+import ColumnDef from "../../types/ColumnDef";
 import { SectionRenderer } from "./SectionRenderer";
-import { HeaderRenderContext } from "../../utils/headerCellRenderer";
-import { CellRenderContext } from "../../utils/bodyCellRenderer";
 import { createTableFooter } from "../../utils/footer/createTableFooter";
 import { createColumnEditor } from "../../utils/columnEditor/createColumnEditor";
 import {
@@ -13,98 +7,18 @@ import {
   cleanupHorizontalScrollbar,
   syncHorizontalScrollbarLayout,
 } from "../../utils/horizontalScrollbarRenderer";
-import {
-  createStickyParentsContainer,
-  cleanupStickyParentsContainer,
-} from "../../utils/stickyParentsRenderer";
-import { DimensionManager } from "../../managers/DimensionManager";
+import { cleanupStickyParentsContainer } from "../../utils/stickyParentsRenderer";
+import type { CellPosition } from "../../managers/AnimationCoordinator";
 import type { SectionScrollController } from "../../managers/SectionScrollController";
-import { SortManager } from "../../managers/SortManager";
-import { FilterManager } from "../../managers/FilterManager";
-import { SelectionManager } from "../../managers/SelectionManager";
-import { RowSelectionManager } from "../../managers/RowSelectionManager";
-import type { AnimationCoordinator, CellPosition } from "../../managers/AnimationCoordinator";
-import type { AccordionAxis } from "../../utils/accordionAnimation";
-import {
-  getMainSectionViewportWidth,
-  recalculateAllSectionWidths,
-} from "../../utils/resizeUtils/sectionWidths";
-import { canDisplaySection, deepClone } from "../../utils/generalUtils";
-import { flattenHeaders } from "../../utils/headerUtils";
+import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
+import { deepClone } from "../../utils/generalUtils";
 import { isColumnEditorStripVisible } from "../../consts/general-consts";
-import type TableRow from "../../types/TableRow";
-import type { NestedTableFactory } from "../../utils/nestedGridRowRenderer";
-import { rowIdToString } from "../../utils/rowUtils";
+import type { TableRendererDeps } from "./TableRendererDeps";
+import { buildHeaderCellContext, buildBodyCellContext } from "./cellRenderContexts";
+import { renderHeaderSections } from "./renderHeaderSections";
+import { renderBodySections } from "./renderBodySections";
 
-export interface TableRendererDeps {
-  /** Accordion animation axis for the in-flight collapse/expand. See {@link RenderContext.accordionAxis}. */
-  accordionAxis?: AccordionAxis;
-  animationCoordinator?: AnimationCoordinator;
-  /**
-   * True when the table is using an external `scrollParent` (no `height`/`maxHeight`).
-   * In this mode the main body container does not scroll — the parent does — so
-   * the sticky-parents container reads its scrollTop from `stickyParentsScrollTop`
-   * (sourced from the table's external-aware state) instead of `mainBodyRef.scrollTop`.
-   */
-  externalScrollActive?: boolean;
-  /** Externally-tracked scrollTop (already translated into table coordinates). */
-  stickyParentsScrollTop?: number;
-  cellRegistry: Map<string, any>;
-  collapsedHeaders: Set<Accessor>;
-  collapsedRows: Map<string, number>;
-  config: SimpleTableConfig;
-  customTheme: CustomTheme;
-  dimensionManager: DimensionManager | null;
-  draggedHeaderRef: { current: ColumnDef | null };
-  effectiveHeaders: ColumnDef[];
-  essentialAccessors: Set<string>;
-  expandedDepths: Set<number>;
-  expandedRows: Map<string, number>;
-  filterManager: FilterManager | null;
-  getCollapsedHeaders?: () => Set<Accessor>;
-  getCollapsedRows: () => Map<string, number>;
-  getExpandedRows: () => Map<string, number>;
-  getHeaders: () => ColumnDef[];
-  /** Last ingested column definitions — the reset target for the column editor's reset button. */
-  getPristineDefaultHeaders: () => ColumnDef[];
-  getPivot: () => PivotConfig | null;
-  setPivot: (pivot: PivotConfig | null) => void;
-  getRowStateMap: () => Map<string | number, any>;
-  headerRegistry: Map<string, any>;
-  headers: ColumnDef[];
-  /** Unique id for this table instance — scopes row-hover cell tracking. */
-  hoverScopeId: string;
-  hoveredHeaderRef: { current: ColumnDef | null };
-  internalIsLoading: boolean;
-  isResizing: boolean;
-  localRows: any[];
-  mainBodyRef: { current: HTMLDivElement | null };
-  mainHeaderRef: { current: HTMLDivElement | null };
-  onRender: () => void;
-  /** Natural-width shrink floors (accessor -> px) for auto-expand column resize. */
-  getShrinkFloors?: () => Map<string, number>;
-  /** Persist user-set widths (drag / double-click auto-fit) as natural widths. */
-  onAutoExpandNaturalWidths?: (widths: Map<string, number>) => void;
-  pinnedLeftHeaderRef: { current: HTMLDivElement | null };
-  pinnedLeftRef: { current: HTMLDivElement | null };
-  pinnedRightHeaderRef: { current: HTMLDivElement | null };
-  pinnedRightRef: { current: HTMLDivElement | null };
-  positionOnlyBody?: boolean; /** When true, scroll path updates cell geometry only (no full content/selection refresh); row separators still sync. */
-  resolvedIcons: any;
-  rowSelectionManager: RowSelectionManager | null;
-  rowStateMap: Map<string | number, any>;
-  sectionScrollController: SectionScrollController | null;
-  selectionManager: SelectionManager | null;
-  setCollapsedHeaders: (headers: Set<Accessor>) => void;
-  setCollapsedRows: (rows: Map<string, number>) => void;
-  setExpandedRows: (rows: Map<string, number>) => void;
-  setHeaders: (headers: ColumnDef[]) => void;
-  setIsResizing: (value: boolean) => void;
-  setRowStateMap: (map: Map<string | number, any>) => void;
-  sortManager: SortManager | null;
-  /** Injected factory for nested grid tables (breaks the SimpleTableVanilla import cycle). */
-  createNestedTable?: NestedTableFactory;
-}
+export type { TableRendererDeps } from "./TableRendererDeps";
 
 export class TableRenderer {
   private sectionRenderer: SectionRenderer;
@@ -175,708 +89,68 @@ export class TableRenderer {
   ): void {
     if (!container || deps.config.hideHeader) return;
 
-    container.style.height = `${calculatedHeaderHeight}px`;
-
-    // When no section has visible columns, apply minHeight so the header doesn't collapse
-    // and the column editor / reset button remain accessible.
-    const hasAnyVisibleSection =
-      canDisplaySection(deps.effectiveHeaders, "left") ||
-      canDisplaySection(deps.effectiveHeaders, undefined) ||
-      canDisplaySection(deps.effectiveHeaders, "right");
-    container.style.minHeight = hasAnyVisibleSection ? "" : `${calculatedHeaderHeight}px`;
-
-    // `aria-rowcount`/`aria-colcount` must live on the element with the grid
-    // role (`.st-content`, the header container's parent), not on the header
-    // container itself — those attributes are only valid on a grid/table/
-    // treegrid element. (`.st-header-container` has no role.)
-    const gridElement = container.parentElement;
-    if (gridElement) {
-      gridElement.setAttribute("aria-rowcount", String(1 + deps.localRows.length));
-      gridElement.setAttribute("aria-colcount", String(deps.effectiveHeaders.length));
-      // Row selection: advertise multi-select only in multiple mode so AT
-      // announces selection state from each row/cell's `aria-selected`.
-      if (deps.config.enableRowSelection) {
-        const multi = (deps.config.rowSelectionMode ?? "multiple") === "multiple";
-        gridElement.setAttribute("aria-multiselectable", multi ? "true" : "false");
-      } else {
-        gridElement.removeAttribute("aria-multiselectable");
-      }
-    }
-
     const dimensionState = deps.dimensionManager?.getState() ?? {
       containerWidth: 0,
       calculatedHeaderHeight: deps.customTheme.headerHeight,
       maxHeaderDepth: 1,
     };
-
     const { mainWidth, leftWidth, rightWidth } = recalculateAllSectionWidths({
       headers: deps.effectiveHeaders,
       containerWidth: dimensionState.containerWidth,
       collapsedHeaders: deps.collapsedHeaders,
     });
-
-    const sortState = deps.sortManager?.getState();
-    const filterState = deps.filterManager?.getState();
-
-    const headerSelectedRowCount = deps.rowSelectionManager?.getSelectedRowCount() ?? 0;
-    const headerContext: HeaderRenderContext = {
-      reverse: false,
-      collapsedHeaders: deps.collapsedHeaders,
-      getCollapsedHeaders: deps.getCollapsedHeaders,
-      columnBorders: deps.config.columnBorders ?? false,
-      columnReordering: deps.config.columnReordering ?? false,
-      columnResizing: deps.config.columnResizing ?? false,
+    const widths = {
+      mainWidth,
+      leftWidth,
+      rightWidth,
       containerWidth: dimensionState.containerWidth,
-      // Content width (sum of all main column widths) — drives section sizing.
-      mainSectionContainerWidth: mainWidth,
-      // Virtualization viewport = the main section's *visible* width (container
-      // minus pinned sections), NOT `mainWidth` (the full content width). Passing
-      // the content width to getVisibleCells made every column count as visible
-      // (no column virtualization).
-      mainSectionViewportWidth: getMainSectionViewportWidth({
-        containerWidth: dimensionState.containerWidth,
-        leftWidth,
-        rightWidth,
-      }),
-      enableVirtualization: deps.config.enableVirtualization !== false,
-      enableHeaderEditing: deps.config.enableHeaderEditing,
-      enableRowSelection: deps.config.enableRowSelection,
-      rowSelectionMode: deps.config.rowSelectionMode ?? "multiple",
-      selectedRowCount: headerSelectedRowCount,
-      filters: filterState?.filters ?? {},
-      icons: deps.resolvedIcons,
-      selectedColumns:
-        deps.config.selectableColumns && deps.selectionManager
-          ? deps.selectionManager.getSelectedColumns()
-          : new Set<number>(),
-      columnsWithSelectedCells:
-        deps.selectionManager && (deps.config.selectableCells || deps.config.selectableColumns)
-          ? deps.selectionManager.getColumnsWithSelectedCells()
-          : new Set<number>(),
-      sort: sortState?.sort ?? null,
-      autoExpandColumns: deps.config.autoExpandColumns ?? false,
-      getShrinkFloors: deps.getShrinkFloors,
-      onAutoExpandNaturalWidths: deps.onAutoExpandNaturalWidths,
-      essentialAccessors: deps.essentialAccessors,
-      selectableColumns: deps.config.selectableColumns,
-      headers: deps.effectiveHeaders,
-      rows: deps.localRows,
-      headerHeight: deps.customTheme.headerHeight,
-      lastHeaderIndex: deps.effectiveHeaders.length - 1,
-      onSort: (accessor: Accessor) => {
-        if (deps.sortManager) {
-          deps.sortManager.updateSort({ accessor });
-        }
-      },
-      handleApplyFilter: (filter: FilterCondition) => {
-        if (deps.filterManager) {
-          deps.filterManager.updateFilter(filter);
-        }
-      },
-      handleClearFilter: (accessor: Accessor) => {
-        if (deps.filterManager) {
-          deps.filterManager.clearFilter(accessor);
-        }
-      },
-      getHeaders: () => deps.getHeaders(),
-      handleSelectAll: (checked: boolean) => {
-        deps.rowSelectionManager?.handleSelectAll(checked);
-      },
-      setCollapsedHeaders: (value: any) => {
-        if (typeof value === "function") {
-          // Seed the functional update from the LIVE collapsed set, not the
-          // per-render `deps.collapsedHeaders` snapshot. The collapse toggle's
-          // click handler closes over the render context from when the header
-          // cell was first created (cells are reused, not recreated), so that
-          // snapshot is stale — using it as the base drops every other group's
-          // collapsed state, letting only one group be collapsed at a time.
-          const base = deps.getCollapsedHeaders ? deps.getCollapsedHeaders() : deps.collapsedHeaders;
-          deps.setCollapsedHeaders(value(base));
-        } else {
-          deps.setCollapsedHeaders(value);
-        }
-        deps.onRender();
-      },
-      setHeaders: (value: any) => {
-        if (typeof value === "function") {
-          deps.setHeaders(value(deps.getHeaders()));
-        } else {
-          deps.setHeaders(value);
-        }
-        deps.onRender();
-      },
-      setIsResizing: (value: any) => {
-        deps.setIsResizing(typeof value === "function" ? value(deps.isResizing) : value);
-      },
-      onColumnWidthChange: deps.config.onColumnWidthChange,
-      onColumnOrderChange: deps.config.onColumnOrderChange,
-      onTableHeaderDragEnd: (headers: ColumnDef[]) => {
-        deps.setHeaders(headers);
-        deps.onRender();
-      },
-      onHeaderEdit: deps.config.onHeaderEdit,
-      onColumnSelect: deps.config.onColumnSelect,
-      selectColumns:
-        deps.selectionManager && deps.config.selectableColumns
-          ? (columnIndices: number[], isShiftKey?: boolean) => {
-              deps.selectionManager!.selectColumns(columnIndices, isShiftKey);
-              deps.onRender();
-            }
-          : (columnIndices: number[]) => {},
-      setSelectedColumns:
-        deps.selectionManager && deps.config.selectableColumns
-          ? (value: Set<number> | ((prev: Set<number>) => Set<number>)) => {
-              const prev = deps.selectionManager!.getSelectedColumns();
-              const next = typeof value === "function" ? value(prev) : value;
-              deps.selectionManager!.setSelectedColumns(next);
-              deps.onRender();
-            }
-          : (value: any) => {},
-      setSelectedCells: deps.selectionManager
-        ? (value: Set<string> | ((prev: Set<string>) => Set<string>)) => {
-            const prev = deps.selectionManager!.getSelectedCells();
-            const next = typeof value === "function" ? value(prev) : value;
-            deps.selectionManager!.setSelectedCells(next instanceof Set ? next : new Set());
-            deps.onRender?.();
-          }
-        : (value: any) => {},
-      setInitialFocusedCell: deps.selectionManager
-        ? (cell: { rowIndex: number; colIndex: number; rowId: string } | null) => {
-            deps.selectionManager!.setInitialFocusedCell(cell ?? null);
-            deps.onRender?.();
-          }
-        : (cell: any) => {},
-      areAllRowsSelected: () => deps.rowSelectionManager?.areAllRowsSelected() ?? false,
-      draggedHeaderRef: deps.draggedHeaderRef,
-      hoveredHeaderRef: deps.hoveredHeaderRef,
-      headerRegistry: deps.headerRegistry,
-      forceUpdate: () => deps.onRender(),
-      mainBodyRef: deps.mainBodyRef,
-      pinnedLeftRef: deps.pinnedLeftRef,
-      pinnedRightRef: deps.pinnedRightRef,
-      accordionAxis: deps.accordionAxis,
-      animationCoordinator: deps.animationCoordinator,
-      onRendererHostDiscard: deps.config.onRendererHostDiscard,
     };
-
-    const pinnedLeftHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "left");
-    const mainHeaders = deps.effectiveHeaders.filter((h) => !h.pinned);
-    const pinnedRightHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "right");
-
-    // Calculate startColIndex for each section to ensure global uniqueness
-    let currentColIndex = 0;
-
-    // Track which sections should exist (like React's component list)
-    const sectionsToKeep: HTMLElement[] = [];
-
-    if (pinnedLeftHeaders.length > 0) {
-      const leftSection = this.sectionRenderer.renderHeaderSection({
-        headers: deps.effectiveHeaders,
-        collapsedHeaders: deps.collapsedHeaders,
-        pinned: "left",
-        maxHeaderDepth,
-        headerHeight: deps.customTheme.headerHeight,
-        context: headerContext,
-        sectionWidth: leftWidth,
-        startColIndex: currentColIndex,
-      });
-      deps.pinnedLeftHeaderRef.current = leftSection as HTMLDivElement;
-      sectionsToKeep.push(leftSection);
-      // Only insert if not already a child — appendChild on an already-mounted
-      // node detaches + reinserts it and cancels CSS transitions on descendants
-      // (e.g. header shrink-out when hiding a column from the column editor).
-      // Use insertBefore at position 0 so a newly created pinned-left section
-      // lands before an already-present main section ([left, main] order).
-      if (leftSection.parentElement !== container) {
-        container.insertBefore(leftSection as HTMLElement, container.firstChild);
-      }
-      // Update colIndex for next section
-      currentColIndex = this.sectionRenderer.getNextColIndex("left");
-    }
-
-    if (mainHeaders.length > 0) {
-      const mainSection = this.sectionRenderer.renderHeaderSection({
-        headers: deps.effectiveHeaders,
-        collapsedHeaders: deps.collapsedHeaders,
-        maxHeaderDepth,
-        headerHeight: deps.customTheme.headerHeight,
-        context: headerContext,
-        sectionWidth: mainWidth,
-        startColIndex: currentColIndex,
-      });
-      deps.mainHeaderRef.current = mainSection as HTMLDivElement;
-      sectionsToKeep.push(mainSection);
-      // Insert main before an already-present pinned-right section so
-      // [left, main, right] order is preserved when main goes from empty
-      // to populated. Skip moving existing children so in-flight header
-      // width transitions are not cancelled.
-      if (mainSection.parentElement !== container) {
-        const existingRight = deps.pinnedRightHeaderRef.current;
-        if (existingRight && existingRight.parentElement === container) {
-          container.insertBefore(mainSection as HTMLElement, existingRight);
-        } else {
-          container.appendChild(mainSection as HTMLElement);
-        }
-      }
-      // Update colIndex for next section
-      currentColIndex = this.sectionRenderer.getNextColIndex("main");
-    }
-
-    if (pinnedRightHeaders.length > 0) {
-      const rightSection = this.sectionRenderer.renderHeaderSection({
-        headers: deps.effectiveHeaders,
-        collapsedHeaders: deps.collapsedHeaders,
-        pinned: "right",
-        maxHeaderDepth,
-        headerHeight: deps.customTheme.headerHeight,
-        context: headerContext,
-        sectionWidth: rightWidth,
-        startColIndex: currentColIndex,
-      });
-      deps.pinnedRightHeaderRef.current = rightSection as HTMLDivElement;
-      sectionsToKeep.push(rightSection);
-      if (rightSection.parentElement !== container) {
-        container.appendChild(rightSection as HTMLElement);
-      }
-    }
-
-    // Remove any orphaned sections (like React unmounting components)
-    Array.from(container.children).forEach((child) => {
-      if (!sectionsToKeep.includes(child as HTMLElement)) {
-        child.remove();
-      }
+    const headerContext = buildHeaderCellContext(deps, widths);
+    renderHeaderSections({
+      container,
+      calculatedHeaderHeight,
+      maxHeaderDepth,
+      deps,
+      headerContext,
+      widths,
+      sectionRenderer: this.sectionRenderer,
     });
   }
 
   renderBody(container: HTMLElement, processedResult: any, deps: TableRendererDeps): void {
     if (!container) return;
 
-    // When no section has visible columns, apply minHeight so the table keeps its height
-    // and the column editor / reset button remain accessible.
-    const hasAnyVisibleBodySection =
-      canDisplaySection(deps.effectiveHeaders, "left") ||
-      canDisplaySection(deps.effectiveHeaders, undefined) ||
-      canDisplaySection(deps.effectiveHeaders, "right");
-    if (!hasAnyVisibleBodySection) {
-      const totalHeight = processedResult?.heightMap?.totalHeight ?? 0;
-      container.style.minHeight = `${totalHeight}px`;
-    } else {
-      container.style.minHeight = "";
-    }
-
-    const rowsToRender = processedResult.rowsToRender || processedResult.currentTableRows;
-    const shouldShowEmptyState =
-      !deps.internalIsLoading && processedResult.currentTableRows.length === 0;
-
-    // Update SelectionManager with processed table rows; use minimal update when scroll-only for performance
-    if (deps.selectionManager && processedResult.currentTableRows) {
-      deps.selectionManager.updateConfig(
-        {
-          tableRows: processedResult.currentTableRows,
-          headers: deps.effectiveHeaders,
-          collapsedHeaders: deps.collapsedHeaders,
-          selectableColumns: deps.config.selectableColumns ?? false,
-        },
-        { positionOnlyBody: deps.positionOnlyBody },
-      );
-    }
-
-    if (shouldShowEmptyState) {
-      // Drop SectionRenderer-owned body sections before replacing the body with
-      // a full-width empty message. Otherwise cell registries keep pointing at
-      // detached nodes and rows never remount when data returns (e.g. typing a
-      // smart-filter negation through a brief 0-row intermediate).
-      this.sectionRenderer.releaseBodySections();
-
-      container.innerHTML = "";
-      // No body scrollport in empty state — horizontal scrolling is via the
-      // header / scrollbar (visibility uses content width + header fallback).
-      deps.mainBodyRef.current = null;
-      deps.pinnedLeftRef.current = null;
-      deps.pinnedRightRef.current = null;
-
-      const emptyWrapper = document.createElement("div");
-      emptyWrapper.className = "st-empty-state-wrapper";
-
-      if (typeof deps.config.tableEmptyStateRenderer === "string") {
-        emptyWrapper.textContent = deps.config.tableEmptyStateRenderer;
-      } else if (deps.config.tableEmptyStateRenderer instanceof HTMLElement) {
-        emptyWrapper.appendChild(deps.config.tableEmptyStateRenderer.cloneNode(true));
-      } else {
-        emptyWrapper.innerHTML = "<div class='st-empty-state'>No rows to display</div>";
-      }
-
-      container.appendChild(emptyWrapper);
-      return;
-    }
-
     const dimensionState = deps.dimensionManager?.getState() ?? {
       containerWidth: 0,
       calculatedHeaderHeight: deps.customTheme.headerHeight,
       maxHeaderDepth: 1,
     };
-
     const { mainWidth, leftWidth, rightWidth } = recalculateAllSectionWidths({
       headers: deps.effectiveHeaders,
       containerWidth: dimensionState.containerWidth,
       collapsedHeaders: deps.collapsedHeaders,
     });
-
-    const selectedRowCount = deps.rowSelectionManager?.getSelectedRowCount() ?? 0;
-    const maxHeaderDepth = dimensionState.maxHeaderDepth ?? 1;
-
-    // The row's identity column (first non-selection leaf) carries
-    // role="rowheader"; computed once per render and read per cell.
-    const rowHeaderAccessor = flattenHeaders(deps.effectiveHeaders).find(
-      (h) => !h.isSelectionColumn,
-    )?.accessor;
-
-    const bodyContext: CellRenderContext = {
-      collapsedHeaders: deps.collapsedHeaders,
-      collapsedRows: deps.getCollapsedRows(),
-      expandedRows: deps.getExpandedRows(),
-      expandedDepths: Array.from(deps.expandedDepths),
-      selectedColumns: deps.selectionManager?.getSelectedColumns() ?? new Set(),
-      rowsWithSelectedCells: deps.selectionManager?.getRowsWithSelectedCells() ?? new Set(),
-      columnBorders: deps.config.columnBorders ?? false,
-      enableRowSelection: deps.config.enableRowSelection,
-      selectRowOnClick: deps.config.selectRowOnClick ?? false,
-      rowSelectionMode: deps.config.rowSelectionMode ?? "multiple",
-      selectedRowCount,
-      activeRowId: deps.rowSelectionManager?.getActiveRowId() ?? null,
-      cellUpdateFlash: deps.config.cellUpdateFlash,
-      oddColumnBackground: deps.config.oddColumnBackground,
-      // Defaults to true (documented default) so row hover works out of the box
-      // when consumers don't explicitly pass the flag. Explicit `false` is honored.
-      hoverRowBackground: deps.config.hoverRowBackground ?? true,
-      hoverScopeId: deps.hoverScopeId,
-      oddEvenRowBackground: deps.config.oddEvenRowBackground,
-      getRowClass: deps.config.getRowClass,
-      rowGrouping: deps.config.rowGrouping,
-      headers: deps.effectiveHeaders,
-      rowHeaderAccessor,
-      rowHeight: deps.customTheme.rowHeight,
-      maxHeaderDepth,
-      heightOffsets: processedResult.paginatedHeightOffsets,
-      customTheme: deps.customTheme,
+    const widths = {
+      mainWidth,
+      leftWidth,
+      rightWidth,
       containerWidth: dimensionState.containerWidth,
-      // Content width (sum of all main column widths) — drives the body section /
-      // row-separator width so the body is as wide as its content and scrolls
-      // horizontally.
-      mainSectionContainerWidth: mainWidth,
-      // Virtualization viewport = the main section's *visible* width (container
-      // minus pinned sections), NOT `mainWidth` (the full content width). Passing
-      // the content width to getVisibleBodyCells made every column count as
-      // visible (no column virtualization).
-      mainSectionViewportWidth: getMainSectionViewportWidth({
-        containerWidth: dimensionState.containerWidth,
-        leftWidth,
-        rightWidth,
-      }),
-      enableVirtualization: deps.config.enableVirtualization !== false,
-      onCellEdit: deps.config.onCellEdit,
-      onCellClick: deps.config.onCellClick,
-      onRowGroupExpand: deps.config.onRowGroupExpand,
-      handleRowSelect: (rowId: string, checked: boolean) => {
-        deps.rowSelectionManager?.handleRowSelect(rowId, checked);
-      },
-      handleToggleRow: (rowId: string) => {
-        deps.rowSelectionManager?.handleToggleRow(rowId);
-      },
-      cellRegistry: deps.cellRegistry,
-      getCollapsedRows: () => deps.getCollapsedRows(),
-      getExpandedRows: () => deps.getExpandedRows(),
-      setCollapsedRows: (value: any) => {
-        if (typeof value === "function") {
-          deps.setCollapsedRows(value(deps.getCollapsedRows()));
-        } else {
-          deps.setCollapsedRows(value);
-        }
-        // Batch multiple state updates together
-        this.scheduleRender(deps.onRender);
-      },
-      setExpandedRows: (value: any) => {
-        if (typeof value === "function") {
-          deps.setExpandedRows(value(deps.getExpandedRows()));
-        } else {
-          deps.setExpandedRows(value);
-        }
-        // Batch multiple state updates together
-        this.scheduleRender(deps.onRender);
-      },
-      setRowStateMap: (value: any) => {
-        if (typeof value === "function") {
-          deps.setRowStateMap(value(deps.getRowStateMap()));
-        } else {
-          deps.setRowStateMap(value);
-        }
-        // Batch multiple state updates together
-        this.scheduleRender(deps.onRender);
-      },
-      icons: deps.resolvedIcons,
-      theme: deps.config.theme ?? "modern-light",
-      rowButtons: deps.config.rowButtons,
-      loadingStateRenderer: deps.config.loadingStateRenderer,
-      errorStateRenderer: deps.config.errorStateRenderer,
-      emptyStateRenderer: deps.config.emptyStateRenderer,
-      createNestedTable: deps.createNestedTable,
-      getBorderClass: (cell) => deps.selectionManager?.getBorderClass(cell) || "",
-      isSelected: (cell) => deps.selectionManager?.isSelected(cell) || false,
-      isInitialFocusedCell: (cell) => deps.selectionManager?.isInitialFocusedCell(cell) || false,
-      isCopyFlashing: (cell) => deps.selectionManager?.isCopyFlashing(cell) || false,
-      isWarningFlashing: (cell) => deps.selectionManager?.isWarningFlashing(cell) || false,
-      handleMouseDown: (cell) => deps.selectionManager?.handleMouseDown(cell),
-      handleMouseOver: (cell, clientX: number, clientY: number) =>
-        deps.selectionManager?.handleMouseOver(cell, clientX, clientY),
-      onRendererHostDiscard: deps.config.onRendererHostDiscard,
-      isRowSelected: (rowId: string) => deps.rowSelectionManager?.isRowSelected(rowId) ?? false,
-      canExpandRowGroup: deps.config.canExpandRowGroup,
-      isLoading: deps.internalIsLoading,
-      accordionAxis: deps.accordionAxis,
     };
-
-    const pinnedLeftHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "left");
-    const mainHeaders = deps.effectiveHeaders.filter((h) => !h.pinned);
-    const pinnedRightHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "right");
-
-    // Calculate startColIndex for each section to ensure global uniqueness
-    let currentColIndex = 0;
-
-    // Track which sections should exist (like React's component list)
-    const sectionsToKeep: HTMLElement[] = [];
-
-    // Skip animation hookup during the position-only fast path on scroll —
-    // outgoing/incoming cells must not be animated when the user is scrolling.
-    const animationCoordinator = deps.positionOnlyBody ? undefined : deps.animationCoordinator;
-
-    if (pinnedLeftHeaders.length > 0) {
-      const leftSection = this.sectionRenderer.renderBodySection({
-        headers: deps.effectiveHeaders,
-        rows: rowsToRender,
-        collapsedHeaders: deps.collapsedHeaders,
-        pinned: "left",
-        context: bodyContext,
-        sectionWidth: leftWidth,
-        rowHeight: deps.customTheme.rowHeight,
-        heightOffsets: processedResult.paginatedHeightOffsets,
-        totalRowCount: processedResult.currentTableRows.length,
-        startColIndex: currentColIndex,
-        positionOnly: deps.positionOnlyBody,
-        fullTableRows: processedResult.currentTableRows,
-        renderedStartIndex: processedResult.renderedStartIndex,
-        renderedEndIndex: processedResult.renderedEndIndex,
-        allFlattenedRows: processedResult.allFlattenedRows,
-        pageStartIndex: processedResult.pageStartIndex,
-        animationCoordinator,
-      });
-      deps.pinnedLeftRef.current = leftSection as HTMLDivElement;
-      sectionsToKeep.push(leftSection);
-      // Only insert if not already a child — calling appendChild on a node
-      // already in the same parent triggers a detach + reinsert per the DOM
-      // spec, which cancels every CSS transition on its descendants and
-      // snaps their computed transforms to the inline value. With cell
-      // animations running for ~4s, that means a follow-up sort during the
-      // first sort's animation would visually teleport every animating cell
-      // to its destination instead of FLIP-tweening from the in-flight
-      // visual position.
-      //
-      // Use insertBefore at position 0 (rather than appendChild) so the new
-      // pinned-left body section lands at the start of the body container.
-      // The body container is a flex row; .st-body-main has flex-grow: 1
-      // and consumes all available width, so a leftSection appended after
-      // an already-present main section is visually pushed past the scroll
-      // viewport — the user sees the pinned header but the pinned cells
-      // appear missing. Existing children are intentionally not moved so
-      // in-flight cell transitions aren't cancelled.
-      if (leftSection.parentElement !== container) {
-        container.insertBefore(leftSection as HTMLElement, container.firstChild);
-      }
-      // Update colIndex for next section
-      currentColIndex = this.sectionRenderer.getNextColIndex("left");
-    }
-
-    if (mainHeaders.length > 0) {
-      const mainSection = this.sectionRenderer.renderBodySection({
-        headers: deps.effectiveHeaders,
-        rows: rowsToRender,
-        collapsedHeaders: deps.collapsedHeaders,
-        context: bodyContext,
-        sectionWidth: mainWidth,
-        rowHeight: deps.customTheme.rowHeight,
-        heightOffsets: processedResult.paginatedHeightOffsets,
-        totalRowCount: processedResult.currentTableRows.length,
-        startColIndex: currentColIndex,
-        positionOnly: deps.positionOnlyBody,
-        fullTableRows: processedResult.currentTableRows,
-        renderedStartIndex: processedResult.renderedStartIndex,
-        renderedEndIndex: processedResult.renderedEndIndex,
-        allFlattenedRows: processedResult.allFlattenedRows,
-        pageStartIndex: processedResult.pageStartIndex,
-        animationCoordinator,
-      });
-      deps.mainBodyRef.current = mainSection as HTMLDivElement;
-      sectionsToKeep.push(mainSection);
-      // Insert main BEFORE any already-present pinned-right body section so
-      // the [left, main, right] document order is preserved when main goes
-      // from empty (all columns pinned) to populated. Same flex-layout
-      // reasoning as the leftSection insertion above: appending main after
-      // an already-present pinned-right would push main behind right and
-      // confuse the visible layout. Existing children are intentionally
-      // not moved so in-flight cell transitions aren't cancelled.
-      if (mainSection.parentElement !== container) {
-        const existingRight = deps.pinnedRightRef.current;
-        if (existingRight && existingRight.parentElement === container) {
-          container.insertBefore(mainSection as HTMLElement, existingRight);
-        } else {
-          container.appendChild(mainSection as HTMLElement);
-        }
-      }
-      // Update colIndex for next section
-      currentColIndex = this.sectionRenderer.getNextColIndex("main");
-    }
-
-    if (pinnedRightHeaders.length > 0) {
-      const rightSection = this.sectionRenderer.renderBodySection({
-        headers: deps.effectiveHeaders,
-        rows: rowsToRender,
-        collapsedHeaders: deps.collapsedHeaders,
-        pinned: "right",
-        context: bodyContext,
-        sectionWidth: rightWidth,
-        rowHeight: deps.customTheme.rowHeight,
-        heightOffsets: processedResult.paginatedHeightOffsets,
-        totalRowCount: processedResult.currentTableRows.length,
-        startColIndex: currentColIndex,
-        positionOnly: deps.positionOnlyBody,
-        fullTableRows: processedResult.currentTableRows,
-        renderedStartIndex: processedResult.renderedStartIndex,
-        renderedEndIndex: processedResult.renderedEndIndex,
-        allFlattenedRows: processedResult.allFlattenedRows,
-        pageStartIndex: processedResult.pageStartIndex,
-        animationCoordinator,
-      });
-      deps.pinnedRightRef.current = rightSection as HTMLDivElement;
-      sectionsToKeep.push(rightSection);
-      if (rightSection.parentElement !== container) {
-        container.appendChild(rightSection as HTMLElement);
-      }
-    }
-
-    // Render sticky parents if enabled
-    if (
-      deps.config.enableStickyParents &&
-      processedResult.stickyParents &&
-      processedResult.stickyParents.length > 0
-    ) {
-      // Clean up old sticky parents container
-      if (this.stickyParentsContainer) {
-        cleanupStickyParentsContainer(
-          this.stickyParentsContainer,
-          deps.sectionScrollController ?? null,
-        );
-        this.stickyParentsContainer = null;
-      }
-
-      // Get scroll state — in external-scroll mode the body container does not
-      // scroll (the parent does), so prefer the externally-aware scrollTop
-      // threaded through deps. Falls back to the body's scrollTop otherwise.
-      const scrollTop = deps.externalScrollActive
-        ? (deps.stickyParentsScrollTop ?? 0)
-        : (deps.mainBodyRef.current?.scrollTop ?? 0);
-      // Vertical scrollbar gutter lives on `.st-body-container`, not `.st-body-main`
-      // (main hides scrollbars and does not reserve the gutter).
-      const scrollbarWidth = container.offsetWidth - container.clientWidth;
-
-      const stickySectionColStart = {
-        left: 0,
-        main: pinnedLeftHeaders.length > 0 ? this.sectionRenderer.getNextColIndex("left") : 0,
-        right:
-          mainHeaders.length > 0
-            ? this.sectionRenderer.getNextColIndex("main")
-            : pinnedLeftHeaders.length > 0
-              ? this.sectionRenderer.getNextColIndex("left")
-              : 0,
-      };
-
-      const rowsForBodyCellIndices = rowsToRender.filter(
-        (r: TableRow) => !r.nestedTable && !r.stateIndicator,
-      );
-      const stickyBodyRowIndexByRowKey = new Map<string, number>();
-      rowsForBodyCellIndices.forEach((tr: TableRow, rowIndex: number) => {
-        const key = tr.stableRowKey ?? rowIdToString(tr.rowId);
-        stickyBodyRowIndexByRowKey.set(key, rowIndex);
-      });
-
-      // Create sticky parents container. The overlay uses native CSS
-      // `position: sticky` in external scroll mode (rule scoped to
-      // `.simple-table-root.st-external-scroll .st-sticky-top` in base.css),
-      // so the renderer only needs to flag the mode — no inline `top`
-      // arithmetic required.
-      this.stickyParentsContainer = createStickyParentsContainer(
-        {
-          calculatedHeaderHeight: dimensionState.calculatedHeaderHeight,
-          heightMap: processedResult.heightMap,
-          partiallyVisibleRows: processedResult.partiallyVisibleRows || [],
-          pinnedLeftColumns: pinnedLeftHeaders,
-          pinnedLeftWidth: leftWidth,
-          pinnedRightColumns: pinnedRightHeaders,
-          pinnedRightWidth: rightWidth,
-          scrollTop,
-          scrollbarWidth,
-          stickyParents: processedResult.stickyParents,
-          stickySectionColStart,
-          stickyBodyRowIndexByRowKey,
-          externalScrollActive: deps.externalScrollActive,
-        },
-        {
-          collapsedHeaders: deps.collapsedHeaders,
-          customTheme: deps.customTheme,
-          enableColumnEditor: isColumnEditorStripVisible(
-            deps.config.enableColumnEditor,
-            deps.config.columnEditorConfig?.showToggle,
-          ),
-          headers: deps.effectiveHeaders,
-          rowHeight: deps.customTheme.rowHeight,
-          heightOffsets: processedResult.paginatedHeightOffsets,
-          cellRenderContext: bodyContext,
-          sectionScrollController: deps.sectionScrollController ?? null,
-        },
-      );
-
-      if (this.stickyParentsContainer) {
-        // Append the overlay as a sibling of `.st-body-container` inside
-        // `.st-content` (flex-direction: column). This is what lets us use
-        // native `position: sticky` in external scroll mode — the overlay's
-        // nearest scroll ancestor becomes the external scroll parent, so the
-        // browser composites it on the same paint as the scroll itself
-        // (no JS catch-up lag). In bounded mode the overlay remains
-        // `position: absolute` and the offset parent (`.st-content-wrapper`)
-        // does not scroll, so its visual position is unchanged.
-        // `sectionsToKeep` tracks `container`'s children only, so the overlay
-        // does not need to be in it once it lives outside the body container.
-        const contentEl = container.parentElement;
-        if (contentEl && this.stickyParentsContainer.parentElement !== contentEl) {
-          contentEl.insertBefore(this.stickyParentsContainer, container);
-        } else if (!contentEl) {
-          container.appendChild(this.stickyParentsContainer);
-        }
-      }
-    } else {
-      // Clean up sticky parents if disabled or no sticky parents
-      if (this.stickyParentsContainer) {
-        cleanupStickyParentsContainer(
-          this.stickyParentsContainer,
-          deps.sectionScrollController ?? null,
-        );
-        this.stickyParentsContainer = null;
-      }
-    }
-
-    // Remove any orphaned sections (like React unmounting components)
-    Array.from(container.children).forEach((child) => {
-      if (!sectionsToKeep.includes(child as HTMLElement)) {
-        child.remove();
-      }
+    const bodyContext = buildBodyCellContext(
+      deps,
+      widths,
+      processedResult,
+      (cb) => this.scheduleRender(cb),
+    );
+    this.stickyParentsContainer = renderBodySections({
+      container,
+      processedResult,
+      deps,
+      bodyContext,
+      widths,
+      calculatedHeaderHeight: dimensionState.calculatedHeaderHeight,
+      sectionRenderer: this.sectionRenderer,
+      stickyParentsContainer: this.stickyParentsContainer,
     });
   }
 
