@@ -63,6 +63,7 @@ import {
   type ResolvedScrollParent,
 } from "../utils/externalScroll";
 import { UNVIRTUALIZED_ROW_WARNING_THRESHOLD } from "../consts/general-consts";
+import { clearHoveredRowsForScope } from "../utils/bodyCell/styling";
 
 import "../styles/all-themes.css";
 
@@ -638,7 +639,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       enableRowSelection: shouldShowRowSelectionColumn(this.config),
       copyHeadersToClipboard: this.config.copyHeadersToClipboard,
       customTheme: this.customTheme,
-      tableRoot: this.container,
+      tableRoot: this.getTableRoot(),
       onSelectionDragEnd: () => {
         this.renderOrchestrator.invalidateCache("context");
         this.renderOrchestrator.invalidateCache("body");
@@ -655,6 +656,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
 
     this.domManager.createDOMStructure(this.container, this.config);
     this.mounted = true;
+    this.bindTableRoot();
     this.setupManagers();
   }
 
@@ -1203,10 +1205,18 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     });
   }
 
+  private getTableRoot(): HTMLElement {
+    return this.domManager.getElements()?.rootElement ?? this.container;
+  }
+
+  private bindTableRoot(): void {
+    const tableRoot = this.getTableRoot();
+    this.selectionManager?.updateConfig({ tableRoot });
+    this.rowSelectionManager?.updateConfig({ tableRoot });
+  }
+
   private clearHoveredRows(): void {
-    document.querySelectorAll(".st-row.hovered").forEach((el) => {
-      el.classList.remove("hovered");
-    });
+    clearHoveredRowsForScope(this.hoverScopeId);
   }
 
   private updateAriaLiveRegion(): void {
@@ -2069,7 +2079,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
         selectRowOnClick: this.config.selectRowOnClick ?? false,
         showRowSelectionColumn: this.config.showRowSelectionColumn !== false,
         selectableCells: this.config.selectableCells ?? false,
-        tableRoot: this.container,
+        tableRoot: this.getTableRoot(),
       };
 
       if (!this.rowSelectionManager) {

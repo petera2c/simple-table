@@ -5,7 +5,6 @@ import { setNestedValue } from "../../rowUtils";
 import { createDropdown } from "./dropdown";
 import { addTrackedEventListener } from "../eventTracking";
 import { parseDateString } from "../../dateUtils";
-import { getCellId } from "../../cellUtils";
 import { createAngleLeftIcon, createAngleRightIcon } from "../../../icons";
 import type { IconElement } from "../../../types/IconsConfig";
 
@@ -58,6 +57,7 @@ export const createDatePicker = (
   context: CellRenderContext,
   currentValue: any,
   onComplete: () => void,
+  triggerElement?: HTMLElement,
 ): HTMLElement => {
   const { header, row, rowIndex } = cell;
 
@@ -364,15 +364,7 @@ export const createDatePicker = (
   // Initial render
   renderCalendar();
 
-  // Get the cell element as trigger - use getCellId for consistency with body cell IDs
-  const cellId = getCellId({
-    accessor: header.accessor,
-    rowId: cell.stableRowKey ?? cell.rowId,
-  });
-  const cellElement = document.getElementById(cellId) as HTMLElement;
-
-  // Create and show dropdown
-  dropdown = createDropdown(cellElement || document.body, container, {
+  dropdown = createDropdown(triggerElement ?? document.body, container, {
     width: 280,
     overflow: "hidden",
     positioning: "fixed",

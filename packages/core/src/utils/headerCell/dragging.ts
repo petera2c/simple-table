@@ -1,5 +1,4 @@
 import ColumnDef from "../../types/ColumnDef";
-import { getCellId } from "../cellUtils";
 import { getHeaderLeafIndices, getColumnRange } from "../headerUtils";
 import {
   getHeaderIndexPath,
@@ -40,9 +39,9 @@ export const handleColumnHeaderClick = (
     );
 
     if (context.enableHeaderEditing && isHeaderAlreadySelected && !event.shiftKey) {
-      const cellElement = document.getElementById(
-        getCellId({ accessor: header.accessor, rowId: "header" }),
-      );
+      const cellElement = (event.currentTarget as HTMLElement).closest(
+        ".st-header-cell",
+      ) as HTMLElement | null;
 
       if (cellElement) {
         const labelElement = cellElement.querySelector(".st-header-label") as HTMLElement;

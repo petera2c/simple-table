@@ -113,21 +113,22 @@ export const createEditor = (
   cell: AbsoluteBodyCell,
   context: CellRenderContext,
   onComplete: () => void,
+  triggerElement?: HTMLElement,
 ): HTMLElement | null => {
   const { header, row } = cell;
   const currentValue = getNestedValue(row, header.accessor);
 
   // Use dropdown editors for boolean, enum, and date types
   if (header.type === "boolean") {
-    return createBooleanDropdown(cell, context, Boolean(currentValue), onComplete);
+    return createBooleanDropdown(cell, context, Boolean(currentValue), onComplete, triggerElement);
   }
 
   if (header.type === "enum") {
-    return createEnumDropdown(cell, context, String(currentValue || ""), onComplete);
+    return createEnumDropdown(cell, context, String(currentValue || ""), onComplete, triggerElement);
   }
 
   if (header.type === "date") {
-    return createDatePicker(cell, context, currentValue, onComplete);
+    return createDatePicker(cell, context, currentValue, onComplete, triggerElement);
   }
 
   // Use inline input for text and number types

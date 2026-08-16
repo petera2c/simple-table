@@ -1,6 +1,5 @@
 // Boolean dropdown editor (True/False selection)
 
-import { getCellId } from "../../cellUtils";
 import { AbsoluteBodyCell, CellRenderContext } from "../types";
 import { setNestedValue } from "../../rowUtils";
 import { createDropdown } from "./dropdown";
@@ -11,6 +10,7 @@ export const createBooleanDropdown = (
   context: CellRenderContext,
   currentValue: boolean,
   onComplete: () => void,
+  triggerElement?: HTMLElement,
 ): HTMLElement => {
   const { header, row, rowIndex } = cell;
 
@@ -86,15 +86,7 @@ export const createBooleanDropdown = (
   content.appendChild(trueOption);
   content.appendChild(falseOption);
 
-  // Get the cell element as trigger (use getCellId for consistency with body cell IDs)
-  const cellId = getCellId({
-    accessor: header.accessor,
-    rowId: cell.stableRowKey ?? cell.rowId,
-  });
-  const cellElement = document.getElementById(cellId) as HTMLElement;
-
-  // Create and show dropdown
-  dropdown = createDropdown(cellElement || document.body, content, {
+  dropdown = createDropdown(triggerElement ?? document.body, content, {
     width: 120,
     positioning: "fixed",
     onClose: onComplete,

@@ -4,6 +4,7 @@ import { DEFAULT_SHOW_WHEN } from "../../types/ColumnDef";
 import { findLeafHeaders, getHeaderWidthInPixels } from "../headerWidthUtils";
 import { findParentHeader } from "../collapseUtils";
 import { getCellId, isHeaderExcludedFromLayout } from "../cellUtils";
+import { getElementByIdInTable, queryAllInTable, queryInTable, resolveTableRoot, escapeTableAttrValue } from "../tableDomScope";
 import { syncHorizontalScrollbarLayout } from "../horizontalScrollbarRenderer";
 import { recalculateAllSectionWidths } from "./sectionWidths";
 
@@ -31,6 +32,7 @@ export const updateColumnWidthsInDOM = (
   headers: ColumnDef[],
   collapsedHeaders?: Set<string>,
   overrideWidths?: Map<string, number>,
+  tableRoot?: ParentNode | null,
 ): void => {
   // Group headers by pinned section
   const pinnedLeftHeaders: ColumnDef[] = [];
@@ -72,7 +74,7 @@ export const updateColumnWidthsInDOM = (
       // singleRowChildren: parent gets its own column, then each child (matches main columnUtils / RenderCells)
       if (header.singleRowChildren) {
         const parentWidth =
-          overrideWidths?.get(header.accessor as string) ?? getHeaderWidthInPixels(header);
+        overrideWidths?.get(header.accessor as string) ?? getHeaderWidthInPixels(header, tableRoot);
         positions.set(header.accessor, { left: startLeft, width: parentWidth });
         currentLeft = startLeft + parentWidth;
         visibleChildren.forEach((child) => {
@@ -92,7 +94,7 @@ export const updateColumnWidthsInDOM = (
       // Leaf: prefer override (e.g. just-set resize), else getHeaderWidthInPixels
       // (returns 0 for hide/excludeFromRender; handles numeric and string widths).
       const width =
-        overrideWidths?.get(header.accessor as string) ?? getHeaderWidthInPixels(header);
+        overrideWidths?.get(header.accessor as string) ?? getHeaderWidthInPixels(header, tableRoot);
       positions.set(header.accessor, { left: currentLeft, width });
       currentLeft += width;
     }
@@ -132,7 +134,7 @@ export const updateColumnWidthsInDOM = (
 
     // Update header cell
     const cellId = getCellId({ accessor, rowId: "header" });
-    const headerCell = document.getElementById(cellId);
+    const headerCell = getElementByIdInTable(tableRoot, cellId);
     const isPinnedLeft = pinnedLeftPositions.has(accessor);
     const isPinnedRight = pinnedRightPositions.has(accessor);
     if (headerCell) {
@@ -141,19 +143,20 @@ export const updateColumnWidthsInDOM = (
     }
 
     // Update all body cells in this column (only for leaf headers, not parents)
-    const bodyCells = document.querySelectorAll(`[id$="-${accessor}"]`);
+    const bodyCells = queryAllInTable(
+      tableRoot,
+      `.st-cell[data-accessor="${escapeTableAttrValue(String(accessor))}"]`,
+    );
     bodyCells.forEach((cell) => {
-      if (cell instanceof HTMLElement && !cell.id.endsWith("-header")) {
-        cell.style.left = `${left}px`;
-        cell.style.width = `${width}px`;
-      }
+      cell.style.left = `${left}px`;
+      cell.style.width = `${width}px`;
     });
   });
 
   // During resize drag, pinned section width is only set on full render. Reuse the same logic as
   // TableRenderer: recalculateAllSectionWidths then apply to section DOM (header + body).
   // Header sections do not use display:grid (see base.css), so we only need to update width.
-  const tableContainer = document.querySelector(".st-body-container") as HTMLDivElement | null;
+  const tableContainer = queryInTable<HTMLDivElement>(tableRoot, ".st-body-container");
   const containerWidth = tableContainer?.clientWidth ?? 0;
   const sectionWidths = recalculateAllSectionWidths({
     headers,
@@ -169,29 +172,25 @@ export const updateColumnWidthsInDOM = (
   } = sectionWidths;
 
   if (leftWidth > 0) {
-    const leftHeaderSection = document.querySelector(
-      ".st-header-pinned-left",
-    ) as HTMLElement | null;
-    const leftBodySection = document.querySelector(".st-body-pinned-left") as HTMLElement | null;
+    const leftHeaderSection = queryInTable(tableRoot, ".st-header-pinned-left");
+    const leftBodySection = queryInTable(tableRoot, ".st-body-pinned-left");
     if (leftHeaderSection) leftHeaderSection.style.width = `${leftWidth}px`;
     if (leftBodySection) leftBodySection.style.width = `${leftWidth}px`;
   }
   if (rightWidth > 0) {
-    const rightHeaderSection = document.querySelector(
-      ".st-header-pinned-right",
-    ) as HTMLElement | null;
-    const rightBodySection = document.querySelector(".st-body-pinned-right") as HTMLElement | null;
+    const rightHeaderSection = queryInTable(tableRoot, ".st-header-pinned-right");
+    const rightBodySection = queryInTable(tableRoot, ".st-body-pinned-right");
     if (rightHeaderSection) rightHeaderSection.style.width = `${rightWidth}px`;
     if (rightBodySection) rightBodySection.style.width = `${rightWidth}px`;
   }
 
-  const root = tableContainer?.closest(".simple-table-root");
-  const hScroll = root?.querySelector(
-    ".st-horizontal-scrollbar-container",
-  ) as HTMLElement | null;
-  const mainBody = root?.querySelector(".st-body-main") as HTMLDivElement | null;
+  const root =
+    (tableRoot instanceof Element ? resolveTableRoot(tableRoot) : null) ??
+    (tableContainer ? resolveTableRoot(tableContainer) : null);
+  const hScroll = queryInTable(root, ".st-horizontal-scrollbar-container");
+  const mainBody = queryInTable<HTMLDivElement>(root, ".st-body-main");
   const enableColumnEditor = Boolean(
-    root?.querySelector(".st-column-editor:not(.st-column-editor--no-toggle)"),
+    queryInTable(root, ".st-column-editor:not(.st-column-editor--no-toggle)"),
   );
   if (
     hScroll &&

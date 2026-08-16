@@ -112,6 +112,17 @@ const setRowHoverState = (rowId: string, hovered: boolean, scopeId: string): voi
   }
 };
 
+/** Clears row-hover classes and tracking for one table instance. */
+export const clearHoveredRowsForScope = (scopeId: string): void => {
+  const rowMap = rowCellsMaps.get(scopeId);
+  if (rowMap) {
+    rowMap.forEach((_cells, rowId) => {
+      setRowHoverState(rowId, false, scopeId);
+    });
+  }
+  currentHoveredRowIds.set(scopeId, null);
+};
+
 // Calculate cell class names based on current state
 const calculateBodyCellClasses = (cell: AbsoluteBodyCell, context: CellRenderContext): string => {
   const { header, rowIndex, colIndex, rowId, depth, isOdd } = cell;
@@ -306,7 +317,7 @@ export const createBodyCellElement = (
         renderCellContent();
         // Re-register cell in registry after editing
         registerCellInRegistry();
-      });
+      }, cellElement);
       if (editor) {
         // Wrap inline editor in st-cell-editing div
         const editingDiv = document.createElement("div");
@@ -321,7 +332,7 @@ export const createBodyCellElement = (
         // Re-render to show updated value
         renderCellContent();
         registerCellInRegistry();
-      });
+      }, cellElement);
       if (editor) {
         // Dropdown positions itself absolutely, no need to add to cell
       }

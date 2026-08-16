@@ -451,6 +451,7 @@ export class RenderOrchestrator {
                 ? context.customTheme.footerHeight
                 : undefined,
             externalViewportHeight: context.externalViewportHeight,
+            container: context.mainBodyRef.current,
           });
 
     const enablePagination = context.config.enablePagination ?? false;

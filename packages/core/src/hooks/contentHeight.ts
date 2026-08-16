@@ -13,6 +13,8 @@ export interface ContentHeightConfig {
    * virtualization driven by a window- or element-level scroller.
    */
   externalViewportHeight?: number;
+  /** Element used to resolve `%` and `calc()` heights against the parent box. */
+  container?: Element | null;
 }
 
 /**
@@ -164,7 +166,7 @@ const evaluateCalc = (expression: string, container: Element | null): number | n
  */
 export const convertHeightToPixels = (
   heightValue: string | number,
-  container: Element | null = document.querySelector(".simple-table-root"),
+  container: Element | null = null,
 ): number => {
   if (typeof heightValue === "string") {
     const trimmed = heightValue.trim();
@@ -216,10 +218,11 @@ export const calculateContentHeight = ({
   headerHeight,
   footerHeight,
   externalViewportHeight,
+  container,
 }: ContentHeightConfig): number | undefined => {
   // If maxHeight is provided, it takes precedence over height
   if (maxHeight) {
-    const maxHeightPx = convertHeightToPixels(maxHeight);
+    const maxHeightPx = convertHeightToPixels(maxHeight, container ?? null);
 
     // If conversion failed (e.g., invalid parent height for %), disable virtualization
     if (maxHeightPx === 0) {
@@ -253,7 +256,7 @@ export const calculateContentHeight = ({
   if (!height) return undefined;
 
   // Convert height to pixels
-  const totalHeightPx = convertHeightToPixels(height);
+  const totalHeightPx = convertHeightToPixels(height, container ?? null);
 
   // If conversion failed, disable virtualization
   if (totalHeightPx === 0) {

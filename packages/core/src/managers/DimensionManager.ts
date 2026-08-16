@@ -102,7 +102,7 @@ export class DimensionManager {
   }
 
   private convertHeightToPixels(heightValue: string | number): number {
-    const container = this.config.containerElement || document.querySelector(".simple-table-root");
+    const container = this.config.containerElement ?? null;
     return convertHeightToPixels(heightValue, container);
   }
 

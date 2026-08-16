@@ -3,6 +3,7 @@ import { getViewportCalculations } from "./infiniteScrollUtils";
 import TableRow from "../types/TableRow";
 import { CustomTheme } from "../types/CustomTheme";
 import { rowIdToString } from "./rowUtils";
+import { queryInTable, escapeTableAttrValue } from "./tableDomScope";
 
 /**
  * Fine-tunes the scroll position when a cell is already in the DOM
@@ -74,10 +75,11 @@ export const scrollCellIntoView = (
   cell: Cell,
   rowHeight: number,
   customTheme: CustomTheme,
-  tableRows?: TableRow[]
+  tableRows?: TableRow[],
+  tableRoot?: HTMLElement | null,
 ) => {
-  const tableContainer = document.querySelector(".st-body-container");
-  const mainBody = document.querySelector(".st-body-main");
+  const tableContainer = queryInTable(tableRoot ?? null, ".st-body-container");
+  const mainBody = queryInTable(tableRoot ?? null, ".st-body-main");
 
   if (!tableContainer) return;
 
@@ -93,9 +95,8 @@ export const scrollCellIntoView = (
   const rowHeightWithSeparator = rowHeight + customTheme.rowSeparatorWidth;
 
   // Find cell by rowId and colIndex only (DOM data-row-index is virtualized and changes after scroll)
-  const cellElement = tableContainer.querySelector(
-    `.st-cell[data-row-id="${cell.rowId}"][data-col-index="${cell.colIndex}"]`,
-  );
+  const cellSelector = `.st-cell[data-row-id="${escapeTableAttrValue(String(cell.rowId))}"][data-col-index="${cell.colIndex}"]`;
+  const cellElement = queryInTable(tableRoot ?? tableContainer, cellSelector);
 
   if (cellElement && tableRows) {
     const isFullyVisible = isRowFullyVisible(
@@ -119,9 +120,7 @@ export const scrollCellIntoView = (
     tableContainer.scrollTop = Math.max(0, targetScrollTop);
 
     setTimeout(() => {
-      const newCellElement = tableContainer.querySelector(
-        `.st-cell[data-row-id="${cell.rowId}"][data-col-index="${cell.colIndex}"]`,
-      );
+      const newCellElement = queryInTable(tableRoot ?? tableContainer, cellSelector);
 
       if (newCellElement) {
         fineTuneScroll(newCellElement, tableContainer, mainBody);

@@ -2,6 +2,7 @@ import type ColumnDef from "../../types/ColumnDef";
 import { findLeafHeaders, getHeaderWidthInPixels, getHeaderMinWidth } from "../headerWidthUtils";
 import { getMaxPinnedSectionPercent } from "../../consts/column-constraints";
 import { isHeaderExcludedFromLayout } from "../cellUtils";
+import { queryInTable } from "../tableDomScope";
 
 /**
  * Calculate the maximum allowable width for a header based on container constraints
@@ -10,15 +11,14 @@ export const calculateMaxHeaderWidth = ({
   header,
   headers,
   collapsedHeaders,
+  tableRoot,
 }: {
   header: ColumnDef;
   headers: ColumnDef[];
   collapsedHeaders?: Set<string>;
+  tableRoot?: ParentNode | null;
 }): number => {
-  // Get the table container element
-  const tableContainer = document.querySelector(
-    ".st-body-container",
-  ) as HTMLElement;
+  const tableContainer = queryInTable(tableRoot, ".st-body-container");
   if (!tableContainer || tableContainer.clientWidth === 0) {
     // If no container found or invalid width, return a reasonable default value
     return 1000;
@@ -59,7 +59,7 @@ export const calculateMaxHeaderWidth = ({
     return (
       sum +
       leafHeaders.reduce((leafSum, leafHeader) => {
-        return leafSum + getHeaderWidthInPixels(leafHeader);
+        return leafSum + getHeaderWidthInPixels(leafHeader, tableRoot);
       }, 0)
     );
   }, 0);
