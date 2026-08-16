@@ -147,8 +147,8 @@ const ContactModal = ({
       <div className="space-y-4 py-4">
         {isQuote ? (
           <p className="text-sm text-gray-600 dark:text-gray-400 -mt-1 mb-2">
-            Tell us about your product and we&apos;ll send Pro/Enterprise pricing, AG Grid cost
-            comparison, and next steps, usually within a day.
+            Tell us about your product and we&apos;ll send Pro pricing or an Enterprise quote, AG
+            Grid cost comparison, and next steps, usually within a day.
           </p>
         ) : null}
 

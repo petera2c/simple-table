@@ -160,9 +160,9 @@ For companies that make money. Priority email and Discord support, help with pro
 
 ### ENTERPRISE - For teams that need hands-on support
 
-**$350/month** or **$3,500/year**
+**Contact us**
 
-Direct access to core developers and priority on feature requests. Same commercial license as Pro — one license per product, no seat fees.
+Direct access to core developers and custom features. Same commercial license as Pro — one license per product, no seat fees.
 
 **[View Detailed Pricing](https://www.simple-table.com/pricing)**
 

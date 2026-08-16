@@ -31,7 +31,7 @@ interface Plan {
   subtitle: string;
   price: string;
   originalPrice?: string;
-  billingCycle: string;
+  billingCycle?: string;
   description: string;
   features: PlanFeature[];
   cta: string;
@@ -62,10 +62,14 @@ const PricingContent: React.FC = () => {
     window.open(calendlyUrl, "_blank", "noopener,noreferrer");
   };
 
-  const openLicenseQuote = (planInterest: PlanInterest = "unsure", ctaId?: string) => {
+  const openLicenseQuote = (
+    planInterest: PlanInterest = "unsure",
+    ctaId?: string,
+    ctaText = "Get a license quote",
+  ) => {
     trackCtaClick({
       cta_id: ctaId ?? `pricing_license_quote_${planInterest}`,
-      cta_text: "Get a license quote",
+      cta_text: ctaText,
       destination: "license_quote_modal",
       location: "pricing_page",
     });
@@ -110,18 +114,14 @@ const PricingContent: React.FC = () => {
       {
         name: "ENTERPRISE",
         subtitle: "Hands-on support",
-        price: isAnnual
-          ? SIMPLE_TABLE_PRICING.enterpriseAnnual
-          : SIMPLE_TABLE_PRICING.enterpriseMonthly,
-        originalPrice: isAnnual ? SIMPLE_TABLE_PRICING.enterpriseAnnualStrikethrough : undefined,
-        billingCycle: isAnnual ? "per year" : "per month",
+        price: SIMPLE_TABLE_PRICING.enterpriseDisplay,
         description: "Everything in Pro, plus direct access to core developers.",
         features: [
           { text: "Everything in Pro", included: true, highlight: true },
           { text: "Direct access to core developers", included: true, highlight: true },
-          { text: "Feature request prioritization", included: true, highlight: true },
+          { text: "Custom features", included: true, highlight: true },
         ],
-        cta: "Start Enterprise",
+        cta: "Contact us",
         ctaVariant: "default",
       },
     ],
@@ -139,15 +139,18 @@ const PricingContent: React.FC = () => {
       window.location.assign("/docs/installation");
       return;
     }
-    const product = planName === "ENTERPRISE" ? "enterprise" : "pro";
+    if (planName === "ENTERPRISE") {
+      openLicenseQuote("enterprise", "pricing_contact_enterprise", "Contact us");
+      return;
+    }
     trackCtaClick({
-      cta_id: `pricing_start_${product}`,
-      cta_text: planName === "ENTERPRISE" ? "Start Enterprise" : "Start Pro",
+      cta_id: "pricing_start_pro",
+      cta_text: "Start Pro",
       destination: "stripe_checkout",
       location: "pricing_page",
     });
     try {
-      openStripeCheckout(product, isAnnual);
+      openStripeCheckout("pro", isAnnual);
     } catch (error) {
       console.error("Error starting checkout:", error);
       alert("There was an error starting the checkout process. Please try again.");
@@ -262,7 +265,9 @@ const PricingContent: React.FC = () => {
                       {plan.originalPrice}
                     </span>
                   ) : null}
-                  <span className="text-gray-600 dark:text-gray-400">/{plan.billingCycle}</span>
+                  {plan.billingCycle ? (
+                    <span className="text-gray-600 dark:text-gray-400">/{plan.billingCycle}</span>
+                  ) : null}
                 </div>
                 <p className="mt-1 text-xs leading-snug text-gray-500 dark:text-gray-400">
                   {PLAN_CAPACITY_NOTE}
