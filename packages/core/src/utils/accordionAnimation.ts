@@ -22,15 +22,3 @@ export const ACCORDION_EASING_VAR = "--st-accordion-easing";
 /** Window after which the accordion CSS class is removed (ms past duration). */
 export const ACCORDION_CLEANUP_BUFFER_MS = 80;
 
-/**
- * Detect `prefers-reduced-motion: reduce`. Returns `false` outside the
- * browser (SSR) so the call site doesn't have to guard.
- */
-export const accordionPrefersReducedMotion = (): boolean => {
-  if (typeof window === "undefined" || !window.matchMedia) return false;
-  try {
-    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  } catch {
-    return false;
-  }
-};

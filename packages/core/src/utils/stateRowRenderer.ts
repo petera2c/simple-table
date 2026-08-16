@@ -103,9 +103,3 @@ export const createStateRow = (
   return rowElement;
 };
 
-export const cleanupStateRow = (rowElement: HTMLElement): void => {
-  const cellElement = rowElement.querySelector(".st-state-row-cell");
-  if (cellElement) {
-    cellElement.innerHTML = "";
-  }
-};

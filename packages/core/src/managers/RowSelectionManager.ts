@@ -3,6 +3,7 @@ import Row from "../types/Row";
 import RowSelectionChangeProps from "../types/RowSelectionChangeProps";
 import type { RowSelectionMode } from "../types/RowSelectionMode";
 import { rowIdToString } from "../utils/rowUtils";
+import { isOwnedByTable } from "../utils/tableDomScope";
 import {
   areAllRowsSelected,
   setRowSelected,
@@ -265,8 +266,8 @@ export class RowSelectionManager {
     const root = this.config.tableRoot;
     if (!root) return false;
     const target = event.target;
-    if (!(target instanceof Node)) return false;
-    return root.contains(target);
+    if (!(target instanceof Element)) return false;
+    return isOwnedByTable(root, target);
   }
 
   private isTypingInFormField(): boolean {

@@ -15,6 +15,7 @@ import { calculateMaxHeaderWidth } from "./maxWidth";
 import { handleParentHeaderResize } from "./parentHeaderResize";
 import { handleResizeWithAutoExpand } from "./autoExpandResize";
 import { isHeaderExcludedFromLayout } from "../cellUtils";
+import { resolveTableRoot } from "../tableDomScope";
 
 /**
  * Rescale the main section after a pinned boundary column resize changed the
@@ -109,6 +110,7 @@ export const handleResizeStart = ({
 
   if (!header || isHeaderExcludedFromLayout(header)) return;
 
+  const tableRoot = resolveTableRoot(mainBodyRef?.current);
   const effectiveContainerWidth = resolveContainerWidthForResize(
     containerWidth,
     mainBodyRef,
@@ -149,7 +151,7 @@ export const handleResizeStart = ({
       collapsedHeaders,
     );
     leafHeaders.forEach((h) => {
-      const width = getHeaderWidthInPixels(h);
+      const width = getHeaderWidthInPixels(h, tableRoot);
       initialWidthsMap.set(h.accessor as string, width);
     });
 
@@ -227,7 +229,7 @@ export const handleResizeStart = ({
         const mainHeaders = headers.filter((h) => !h.pinned);
         mainLeafHeaders = getAllVisibleLeafHeaders(mainHeaders, collapsedHeaders);
         mainLeafHeaders.forEach((h) => {
-          mainInitialWidths.set(h.accessor as string, getHeaderWidthInPixels(h));
+          mainInitialWidths.set(h.accessor as string, getHeaderWidthInPixels(h, tableRoot));
         });
       }
     }
@@ -291,6 +293,7 @@ export const handleResizeStart = ({
         header,
         headers,
         collapsedHeaders,
+        tableRoot,
       });
 
       // Simplified logic: always resize the leaf children (single source of truth)
@@ -314,7 +317,7 @@ export const handleResizeStart = ({
 
       // After a header is resized, update any headers that use fractional widths
       headers.forEach((h) => {
-        removeAllFractionalWidths(h);
+        removeAllFractionalWidths(h, tableRoot);
       });
     }
 
@@ -344,10 +347,10 @@ export const handleResizeStart = ({
             overrideWidths.set(h.accessor as string, h.width);
         });
       }
-      updateColumnWidthsInDOM(headers, collapsedHeaders, overrideWidths);
+      updateColumnWidthsInDOM(headers, collapsedHeaders, overrideWidths, tableRoot);
     } else {
       // During drag: update DOM only for better performance
-      updateColumnWidthsInDOM(headers, collapsedHeaders);
+      updateColumnWidthsInDOM(headers, collapsedHeaders, undefined, tableRoot);
     }
   };
 
@@ -464,6 +467,7 @@ export const applyColumnAutoFitWithAutoExpand = ({
 }: ApplyColumnAutoFitWithAutoExpandParams): void => {
   if (!header || isHeaderExcludedFromLayout(header)) return;
 
+  const tableRoot = resolveTableRoot(mainBodyRef?.current);
   const effectiveContainerWidth = resolveContainerWidthForResize(
     containerWidth,
     mainBodyRef,
@@ -490,7 +494,7 @@ export const applyColumnAutoFitWithAutoExpand = ({
     collapsedHeaders,
   );
   sectionLeafHeaders.forEach((h) => {
-    const width = getHeaderWidthInPixels(h);
+    const width = getHeaderWidthInPixels(h, tableRoot);
     initialWidthsMap.set(h.accessor as string, width);
   });
 
@@ -561,7 +565,7 @@ export const applyColumnAutoFitWithAutoExpand = ({
         const mainHeaders = headers.filter((h) => !h.pinned);
         mainLeafHeaders = getAllVisibleLeafHeaders(mainHeaders, collapsedHeaders);
         mainLeafHeaders.forEach((h) => {
-          mainInitialWidths.set(h.accessor as string, getHeaderWidthInPixels(h));
+          mainInitialWidths.set(h.accessor as string, getHeaderWidthInPixels(h, tableRoot));
         });
       }
     }
@@ -574,7 +578,7 @@ export const applyColumnAutoFitWithAutoExpand = ({
 
   const startWidth =
     headerCellElement?.offsetWidth ??
-    childrenToResize.reduce((sum, h) => sum + getHeaderWidthInPixels(h), 0);
+    childrenToResize.reduce((sum, h) => sum + getHeaderWidthInPixels(h, tableRoot), 0);
 
   const headerToResize =
     childrenToResize.length > 0
@@ -637,5 +641,5 @@ export const applyColumnAutoFitWithAutoExpand = ({
         overrideWidths.set(h.accessor as string, h.width);
     });
   }
-  updateColumnWidthsInDOM(headers, collapsedHeaders, overrideWidths);
+  updateColumnWidthsInDOM(headers, collapsedHeaders, overrideWidths, tableRoot);
 };

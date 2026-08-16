@@ -1,6 +1,5 @@
 // Enum dropdown editor (custom options selection)
 
-import { getCellId } from "../../cellUtils";
 import { AbsoluteBodyCell, CellRenderContext } from "../types";
 import { setNestedValue } from "../../rowUtils";
 import { createDropdown } from "./dropdown";
@@ -12,6 +11,7 @@ export const createEnumDropdown = (
   context: CellRenderContext,
   currentValue: string,
   onComplete: () => void,
+  triggerElement?: HTMLElement,
 ): HTMLElement => {
   const { header, row, rowIndex } = cell;
   const options = header.enumOptions || [];
@@ -88,15 +88,7 @@ export const createEnumDropdown = (
   wrapper.className = "st-enum-dropdown-content";
   optionElements.forEach((el) => wrapper.appendChild(el));
 
-  // Get the cell element as trigger (use getCellId for consistency with body cell IDs)
-  const cellId = getCellId({
-    accessor: header.accessor,
-    rowId: cell.stableRowKey ?? cell.rowId,
-  });
-  const cellElement = document.getElementById(cellId) as HTMLElement;
-
-  // Create and show dropdown
-  dropdown = createDropdown(cellElement || document.body, wrapper, {
+  dropdown = createDropdown(triggerElement ?? document.body, wrapper, {
     width: 150,
     maxHeight: 300,
     positioning: "fixed",

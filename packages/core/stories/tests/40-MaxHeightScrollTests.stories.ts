@@ -2,8 +2,7 @@
  * MAX HEIGHT SCROLLING TESTS
  *
  * Regression test for v2.6.5 fix: when maxHeight is set and total content
- * height exceeds maxHeight, the table body must scroll even when row count
- * is below VIRTUALIZATION_THRESHOLD (20).
+ * height exceeds maxHeight, the table body must scroll even with few rows.
  */
 
 import { ColumnDef } from "../../src/index";

@@ -1,4 +1,5 @@
 import type Cell from "../../types/Cell";
+import { isOwnedByTable, queryAllInTable, queryInTable } from "../../utils/tableDomScope";
 
 /**
  * Calculate the nearest cell to a given mouse position.
@@ -8,17 +9,18 @@ import type Cell from "../../types/Cell";
 export function calculateNearestCell(
   clientX: number,
   clientY: number,
-  root: Document | HTMLElement = document,
+  root: HTMLElement | null,
 ): Cell | null {
-  const searchRoot: ParentNode = root;
-  const tableContainer = searchRoot.querySelector(".st-body-container");
+  if (!root) return null;
+  const tableContainer = queryInTable(root, ".st-body-container");
   if (!tableContainer) return null;
 
   const rect = tableContainer.getBoundingClientRect();
   const clampedX = Math.max(rect.left, Math.min(rect.right, clientX));
   const clampedY = Math.max(rect.top, Math.min(rect.bottom, clientY));
 
-  const cellElements = searchRoot.querySelectorAll<HTMLElement>(
+  const cellElements = queryAllInTable<HTMLElement>(
+    root,
     ".st-cell[data-row-index][data-col-index][data-row-id]:not(.st-selection-cell)",
   );
   if (cellElements.length === 0) return null;
@@ -114,17 +116,15 @@ export function calculateNearestCell(
 export function getCellFromMousePosition(
   clientX: number,
   clientY: number,
-  root: Document | HTMLElement = document,
+  root: HTMLElement | null,
 ): Cell | null {
+  if (!root) return null;
   const element = document.elementFromPoint(clientX, clientY);
   if (!element) return null;
 
   const cellElement = element.closest(".st-cell");
 
-  if (cellElement instanceof HTMLElement) {
-    if (!root.contains(cellElement)) {
-      return calculateNearestCell(clientX, clientY, root);
-    }
+  if (cellElement instanceof HTMLElement && isOwnedByTable(root, cellElement)) {
     const rowIndex = parseInt(
       cellElement.getAttribute("data-row-index") || "-1",
       10,
@@ -150,9 +150,10 @@ export function getCellFromMousePosition(
 export function handleAutoScroll(
   clientX: number,
   clientY: number,
-  root: Document | HTMLElement = document,
+  root: HTMLElement | null,
 ): void {
-  const tableContainer = root.querySelector(".st-body-container");
+  if (!root) return;
+  const tableContainer = queryInTable(root, ".st-body-container");
   if (!tableContainer) return;
 
   const rect = tableContainer.getBoundingClientRect();
@@ -180,7 +181,7 @@ export function handleAutoScroll(
     );
   }
 
-  const mainBody = root.querySelector(".st-body-main");
+  const mainBody = queryInTable(root, ".st-body-main");
   if (mainBody) {
     const maxScrollLeft = Math.max(
       0,

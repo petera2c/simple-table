@@ -7,6 +7,8 @@
  *   trigger rect vs `position: relative` parent (React CustomSelect pattern).
  */
 
+import { resolveTableRoot } from "../tableDomScope";
+
 export interface CreateDropdownOptions {
   children: HTMLElement;
   containerRef?: HTMLElement;
@@ -28,9 +30,6 @@ export interface CreateDropdownOptions {
    */
   allowDescendantOverflow?: boolean;
 }
-
-const resolveTableRoot = (el?: HTMLElement | null): HTMLElement | null =>
-  el?.closest(".simple-table-root") ?? null;
 
 export const createDropdown = (options: CreateDropdownOptions) => {
   let {
@@ -79,14 +78,21 @@ export const createDropdown = (options: CreateDropdownOptions) => {
 
   let anchorElement: HTMLElement | undefined = anchorOption;
 
-  if (positioning === "fixed") {
-    const root =
-      resolveTableRoot(anchorElement) ??
-      resolveTableRoot(mainBodyRef ?? null) ??
-      resolveTableRoot(containerRef ?? null) ??
-      (document.querySelector(".simple-table-root") as HTMLElement | null);
-    (root ?? document.body).appendChild(dropdownElement);
-  }
+  /** Table root when the trigger is in the document; otherwise `document.body`. */
+  const portalRoot = (): HTMLElement =>
+    resolveTableRoot(anchorElement) ??
+    resolveTableRoot(mainBodyRef ?? null) ??
+    resolveTableRoot(containerRef ?? null) ??
+    document.body;
+
+  /** Put a fixed menu on this table's root (resolved at open, when the trigger is connected). */
+  const mountFixedPortal = () => {
+    if (positioning !== "fixed") return;
+    const root = portalRoot();
+    if (dropdownElement.parentElement !== root) {
+      root.appendChild(dropdownElement);
+    }
+  };
 
   const effectiveAnchor = (): HTMLElement | null => {
     if (anchorElement) return anchorElement;
@@ -235,6 +241,7 @@ export const createDropdown = (options: CreateDropdownOptions) => {
   const setOpen = (newOpen: boolean) => {
     open = newOpen;
     if (open) {
+      mountFixedPortal();
       dropdownElement.style.display = "flex";
       calculatePosition();
       window.addEventListener("scroll", handleScroll, true);

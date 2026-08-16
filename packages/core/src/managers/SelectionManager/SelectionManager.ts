@@ -16,6 +16,7 @@ import {
   getCellFromMousePosition as getCellFromMousePositionUtil,
   handleAutoScroll as handleAutoScrollUtil,
 } from "./mouseUtils";
+import { queryAllInTable } from "../../utils/tableDomScope";
 import { getHeaderLeafIndices, flattenAllHeaders } from "../../utils/headerUtils";
 
 export type { SelectionManagerConfig } from "./types";
@@ -815,7 +816,8 @@ export class SelectionManager {
   private updateCellFlashClasses(): void {
     // Use requestAnimationFrame to ensure DOM is ready
     requestAnimationFrame(() => {
-      const allCells = document.querySelectorAll(
+      const allCells = queryAllInTable(
+        this.config.tableRoot,
         ".st-cell[data-row-index][data-col-index][data-row-id]",
       );
 
@@ -879,8 +881,9 @@ export class SelectionManager {
   private syncHeaderSelectionClasses(): void {
     if (!this.config.selectableColumns && !this.config.selectableCells) return;
 
-    const root = this.config.tableRoot ?? document;
-    const headerCells = root.querySelectorAll(".st-header-cell");
+    const root = this.config.tableRoot;
+    if (!root) return;
+    const headerCells = queryAllInTable(root, ".st-header-cell");
 
     const byAccessor = new Map<string, ColumnDef>();
     for (const h of flattenAllHeaders(this.config.headers)) {
@@ -936,8 +939,9 @@ export class SelectionManager {
 
   private clearHeaderSelectionHighlightClasses(): void {
     if (!this.config.selectableColumns && !this.config.selectableCells) return;
-    const root = this.config.tableRoot ?? document;
-    const headerCells = root.querySelectorAll(".st-header-cell");
+    const root = this.config.tableRoot;
+    if (!root) return;
+    const headerCells = queryAllInTable(root, ".st-header-cell");
     for (let i = 0; i < headerCells.length; i++) {
       const el = headerCells[i];
       if (!(el instanceof HTMLElement)) continue;
@@ -954,8 +958,12 @@ export class SelectionManager {
    * Fast path when there is no selection: one pass to clear all selection classes.
    */
   private syncAllCellClasses(): void {
-    const root = this.config.tableRoot ?? document;
-    const allCells = root.querySelectorAll(".st-cell[data-row-index][data-col-index][data-row-id]");
+    const root = this.config.tableRoot;
+    if (!root) return;
+    const allCells = queryAllInTable(
+      root,
+      ".st-cell[data-row-index][data-col-index][data-row-id]",
+    );
     const noSelection =
       !this.fullTableSelected && this.selectedCells.size === 0 && this.selectedColumns.size === 0;
 
@@ -1249,6 +1257,7 @@ export class SelectionManager {
             this.config.rowHeight,
             this.config.customTheme,
             this.config.tableRows,
+            this.config.tableRoot,
           ),
         0,
       );
@@ -1285,6 +1294,7 @@ export class SelectionManager {
           this.config.rowHeight,
           this.config.customTheme,
           this.config.tableRows,
+          this.config.tableRoot,
         ),
       0,
     );
@@ -1336,14 +1346,14 @@ export class SelectionManager {
    * Get cell from mouse position
    */
   private getCellFromMousePosition(clientX: number, clientY: number): Cell | null {
-    return getCellFromMousePositionUtil(clientX, clientY, this.config.tableRoot ?? document);
+    return getCellFromMousePositionUtil(clientX, clientY, this.config.tableRoot ?? null);
   }
 
   /**
    * Handle auto-scrolling when dragging near edges
    */
   private handleAutoScroll(clientX: number, clientY: number): void {
-    handleAutoScrollUtil(clientX, clientY, this.config.tableRoot ?? document);
+    handleAutoScrollUtil(clientX, clientY, this.config.tableRoot ?? null);
   }
 
   /**

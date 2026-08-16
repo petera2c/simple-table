@@ -62,21 +62,6 @@ export const resolveScrollParent = (value: ScrollParentValue): ResolvedScrollPar
   return null;
 };
 
-/**
- * Returns true if external scroll mode should be active for the given props.
- * External mode is only enabled when no explicit height constraint is set;
- * `height` / `maxHeight` always win.
- */
-export const isExternalScrollActive = (
-  scrollParent: ScrollParentValue,
-  height: string | number | undefined,
-  maxHeight: string | number | undefined,
-): boolean => {
-  if (height !== undefined && height !== null && height !== "") return false;
-  if (maxHeight !== undefined && maxHeight !== null && maxHeight !== "") return false;
-  return resolveScrollParent(scrollParent) !== null;
-};
-
 interface ViewportRect {
   top: number;
   bottom: number;
@@ -118,14 +103,6 @@ const getWindowViewportHeight = (): number =>
   typeof window !== "undefined" && window.innerHeight > 0
     ? window.innerHeight
     : Number.POSITIVE_INFINITY;
-
-const getScrollTopFromParent = (parent: ResolvedScrollParent): number => {
-  if (!parent) return 0;
-  if (typeof Window !== "undefined" && parent instanceof Window) {
-    return parent.scrollY || parent.pageYOffset || 0;
-  }
-  return (parent as HTMLElement).scrollTop;
-};
 
 /**
  * Compute scroll metrics translated into the table's coordinate space.
@@ -187,12 +164,6 @@ export const getExternalScrollMetrics = (
     viewportWidth: viewport.width,
   };
 };
-
-/**
- * Returns the raw scroll-top of the parent (used for direction tracking only).
- */
-export const getParentScrollTop = (parent: ResolvedScrollParent): number =>
-  getScrollTopFromParent(parent);
 
 /**
  * Height of the parent's own viewport (window.innerHeight, or the element's

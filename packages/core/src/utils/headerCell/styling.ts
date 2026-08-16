@@ -25,12 +25,10 @@ export const calculateHeaderCellClasses = (
   const {
     collapsedHeaders,
     columnBorders,
-    columnReordering,
     enableHeaderEditing,
     selectedColumns,
     columnsWithSelectedCells,
     draggedHeaderRef,
-    hoveredHeaderRef,
   } = context;
 
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
@@ -80,10 +78,8 @@ export const calculateHeaderCellClasses = (
 
   return [
     "st-header-cell",
-    header.accessor === hoveredHeaderRef.current?.accessor ? "st-hovered" : "",
     draggedHeaderRef.current?.accessor === header.accessor ? "st-dragging" : "",
     clickable ? "clickable" : "",
-    columnReordering && !clickable ? "columnReordering" : "",
     shouldApplyParentClass ? "parent" : "",
     isSubHeader ? "st-sub-header" : "",
     isLastColumnInSection ? "st-last-column" : "",
@@ -380,31 +376,4 @@ export const refreshHeaderCellIcons = (
       }
     }
   }
-};
-
-// Update an existing header cell element with current state
-export const updateHeaderCellElement = (
-  cellElement: HTMLElement,
-  cell: AbsoluteCell,
-  context: HeaderRenderContext,
-): void => {
-  const { header, colIndex } = cell;
-
-  cellElement.className = calculateHeaderCellClasses(cell, context);
-
-  setAbsoluteCellPosition(cellElement, cell.left, cell.top);
-  cellElement.setAttribute("aria-colindex", String(colIndex + 1));
-  // Honor the in-flight accordion grow marker (see body-cell counterpart in
-  // ./styling/updateBodyCellElement). Without this, a same-tick re-render
-  // after a column collapse/expand toggle would overwrite the inline 0 size
-  // before the CSS transition picks it up.
-  const accordionGrowAxis = cellElement.dataset.stAccordionGrow;
-  if (accordionGrowAxis !== "horizontal") {
-    cellElement.style.width = `${cell.width}px`;
-  }
-  if (accordionGrowAxis !== "vertical") {
-    cellElement.style.height = `${cell.height}px`;
-  }
-
-  refreshHeaderCellIcons(cellElement, header, context, colIndex);
 };

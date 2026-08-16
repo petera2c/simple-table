@@ -12,6 +12,10 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    include: [
+      "src/__tests__/**/*.{test,spec}.{ts,tsx}",
+      "../core/src/__tests__/columnOwnership.test.ts",
+    ],
     // The vanilla core imports a CSS bundle on load. We assert on DOM classes,
     // not computed colors, so CSS processing is unnecessary here.
     css: false,

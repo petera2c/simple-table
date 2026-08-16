@@ -93,6 +93,8 @@ describe("updateColumnWidthsInDOM — excludeFromRender columns", () => {
     const scoreId = getCellId({ accessor: "ranks.score_100", rowId: "header" });
     const emailId = getCellId({ accessor: "email", rowId: "header" });
 
+    const root = document.createElement("div");
+    root.className = "simple-table-root";
     const container = document.createElement("div");
     container.className = "st-body-container";
     Object.assign(container.style, { width: "900px", position: "relative" });
@@ -111,7 +113,8 @@ describe("updateColumnWidthsInDOM — excludeFromRender columns", () => {
       });
       container.appendChild(cell);
     }
-    document.body.appendChild(container);
+    root.appendChild(container);
+    document.body.appendChild(root);
 
     const headers: ColumnDef[] = [
       { accessor: "name", label: "Name", width: 200, pinned: "left" },
@@ -120,7 +123,7 @@ describe("updateColumnWidthsInDOM — excludeFromRender columns", () => {
       { accessor: "email", label: "Email", width: 250 },
     ];
 
-    updateColumnWidthsInDOM(headers);
+    updateColumnWidthsInDOM(headers, undefined, undefined, root);
 
     const score = document.getElementById(scoreId)!;
     const email = document.getElementById(emailId)!;

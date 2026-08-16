@@ -86,7 +86,7 @@
   font-family: inherit;
 }
 
-input {
+.simple-table-root input {
   color: black;
 }
 
@@ -206,7 +206,7 @@ input {
   display: block;
   /* `*` does not target ::after; border-box keeps the bottom border inside the flex line. */
   box-sizing: border-box;
-  width: var(--st-after-width, default-width);
+  width: var(--st-after-width, 11.01px);
   flex-shrink: 0;
   background-color: var(--st-header-background-color);
   border-bottom: var(--st-border-width) solid var(--st-border-color);
@@ -216,11 +216,6 @@ input {
 .st-header-main,
 .st-header-pinned-right {
   border-bottom: var(--st-border-width) solid var(--st-border-color);
-}
-
-.st-header-grid {
-  position: relative;
-  min-width: 100%;
 }
 
 .st-horizontal-scrollbar-middle,
@@ -373,12 +368,6 @@ input {
   background-color: var(--st-selected-row-background-color);
 }
 
-.st-sticky-top
-  .st-row.hovered:not(.st-cell-editing):not(.st-cell-column-selected):not(
-    .st-cell-column-selected-last
-  ):not(.st-cell-column-selected-first) {
-  background-color: var(--st-hover-row-background-color);
-}
 .st-row.hovered .st-cell-editing,
 .st-row.hovered
   .st-cell:not(.st-cell-selected):not(.st-cell-selected-first):not(.st-cell-column-selected):not(
@@ -496,9 +485,6 @@ input {
 }
 .st-header-cell.st-header-editable {
   cursor: pointer;
-}
-.st-header-cell.draggable {
-  cursor: grab;
 }
 .st-header-cell.st-header-selected {
   background-color: var(--st-header-selected-background-color);
@@ -725,10 +711,6 @@ input {
 .st-icon-container:focus-visible {
   outline: 1px solid var(--st-focus-ring-color);
   outline-offset: 2px;
-}
-
-.st-collapse-icon-container {
-  cursor: pointer;
 }
 
 .st-expand-icon {
@@ -1200,10 +1182,6 @@ input {
   padding: var(--st-spacing-medium);
 }
 
-/* Column Editor Search Styles */
-.st-column-editor-search {
-}
-
 /* Column Editor List */
 .st-column-editor-list {
   display: flex;
@@ -1380,12 +1358,6 @@ input {
   background: color-mix(in srgb, var(--st-column-editor-text-color) 12%, transparent);
 }
 
-.st-column-pin-pinned-mark {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 /* Pinned left/right: same surface as .st-column-pin-btn:hover */
 .st-column-pin-pinned-active {
   background: color-mix(in srgb, var(--st-column-editor-text-color) 12%, transparent);
@@ -1529,11 +1501,6 @@ input {
   align-items: center;
 }
 
-.st-nested-headers {
-  display: flex;
-  flex-direction: column;
-}
-
 .st-column-editor-popout.open {
   min-width: 240px;
   width: auto;
@@ -1598,77 +1565,6 @@ input {
 .st-checkbox-checkmark,
 .st-checkbox-minus {
   color: var(--st-button-active-text-color);
-}
-
-@keyframes slide-in-left {
-  from {
-    transform: translateX(-100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-@keyframes slide-in-right {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-/* Group Header Styles */
-.st-group-header {
-  background-color: var(--st-header-background-color);
-  cursor: pointer;
-  user-select: none;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  border-bottom: var(--st-border-width) solid var(--st-border-color);
-  color: var(--st-cell-color);
-  font-weight: 500;
-  transition: background-color var(--st-transition-duration) var(--st-transition-ease);
-}
-
-.st-group-header:hover {
-  background-color: var(--st-button-hover-background-color);
-}
-
-.st-group-header-content {
-  display: flex;
-  align-items: center;
-  gap: var(--st-spacing-medium);
-}
-
-.st-group-toggle-icon {
-  font-size: 0.8em;
-  width: 16px;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.st-group-name {
-  font-weight: 600;
-}
-
-.st-group-count {
-  color: var(--st-cell-odd-row-color);
-  font-size: 0.9em;
-}
-
-/* Animation for expand/collapse */
-.st-group-header.expanded .st-group-toggle-icon {
-  transform: rotate(0deg);
-  transition: transform var(--st-transition-duration) var(--st-transition-ease);
-}
-
-.st-group-header.collapsed .st-group-toggle-icon {
-  transform: rotate(-90deg);
-  transition: transform var(--st-transition-duration) var(--st-transition-ease);
 }
 
 /* Row expand icon animation */
@@ -1854,12 +1750,6 @@ input {
 .st-dropdown-item.selected {
   background-color: var(--st-selected-cell-background-color);
   color: var(--st-selected-cell-color);
-}
-
-.st-dropdown-divider {
-  height: 1px;
-  margin: 4px 0;
-  background-color: var(--st-border-color);
 }
 
 /* Datepicker css */
@@ -2069,25 +1959,6 @@ input {
 /* Range input specific styling */
 .st-filter-input-range-from {
   margin-bottom: var(--st-spacing-medium);
-}
-
-/* Filter Select - Dropdown selectors */
-.st-filter-select {
-  width: 100%;
-  padding: var(--st-control-padding-y) var(--st-control-padding-x);
-  border: var(--st-border-width) solid var(--st-border-color);
-  border-radius: var(--st-border-radius);
-  font-size: var(--st-overlay-font-size);
-  background-color: var(--st-odd-row-background-color);
-  color: var(--st-cell-color);
-  font-family: inherit;
-  cursor: pointer;
-  outline: none;
-  transition: border-color var(--st-transition-duration) var(--st-transition-ease);
-}
-
-.st-filter-select:focus {
-  border-color: var(--st-editable-cell-focus-border-color);
 }
 
 /* Filter Actions - Button container and buttons */
@@ -2316,14 +2187,6 @@ input {
   font-style: italic;
 }
 
-/* Row number styling */
-.st-row-number {
-  font-size: 0.8em;
-  opacity: 0.6;
-  user-select: none;
-  font-weight: 500;
-}
-
 /* Selection cell with row buttons layout */
 .st-selection-cell-content {
   display: flex;
@@ -2423,14 +2286,6 @@ input {
   display: grid;
   position: absolute;
   width: 100%;
-}
-
-/* Empty spacer for pinned sections when state row is shown */
-.st-row.st-state-row-spacer {
-  display: block;
-  position: absolute;
-  width: 100%;
-  background-color: transparent;
 }
 
 /* The cell within state row that spans full width */

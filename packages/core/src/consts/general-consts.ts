@@ -1,15 +1,6 @@
 export const DRAG_THROTTLE_LIMIT = 50;
 export const ROW_SEPARATOR_WIDTH = 1;
 
-export const PAGE_SIZE = 20;
-
-// CSS variable names
-export const CSS_VAR_BORDER_WIDTH = "--st-border-width";
-export const DEFAULT_BORDER_WIDTH = 1;
-
-// Virtualization threshold - below this row count, virtualization is disabled
-export const VIRTUALIZATION_THRESHOLD = 20;
-
 // Dev-only safeguard: when the table would render at least this many rows with
 // no virtualization active (no `height` / `maxHeight` and no bounded
 // `scrollParent`), emit a one-time console warning. Rendering this many DOM rows

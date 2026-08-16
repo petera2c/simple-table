@@ -1,6 +1,7 @@
 import { TABLE_HEADER_CELL_WIDTH_DEFAULT } from "../../consts/general-consts";
 import ColumnDef, { Accessor } from "../../types/ColumnDef";
 import { getCellId } from "../cellUtils";
+import { getElementByIdInTable, resolveTableRoot } from "../tableDomScope";
 import {
   calculateHeaderContentWidth,
   getAllVisibleLeafHeaders,
@@ -16,10 +17,10 @@ import { updateColumnWidthsInDOM } from "../resizeUtils/domUpdates";
 import { HeaderRenderContext } from "./types";
 import { addTrackedEventListener, throttle } from "./eventTracking";
 
-const getStyleRoot = (context: HeaderRenderContext): ParentNode | null => {
+const getStyleRoot = (context: HeaderRenderContext): HTMLElement | null => {
   const main = context.mainBodyRef?.current;
   if (!main) return null;
-  return main.closest(".simple-table-root") ?? main;
+  return resolveTableRoot(main) ?? main;
 };
 
 const findHeaderInTree = (roots: ColumnDef[], accessor: Accessor): ColumnDef | undefined => {
@@ -37,10 +38,12 @@ const findHeaderInTree = (roots: ColumnDef[], accessor: Accessor): ColumnDef | u
 const syncVisibleLeafWidthsFromDom = (
   roots: ColumnDef[],
   collapsedHeaders: Set<Accessor> | undefined,
+  searchRoot: ParentNode | null,
 ): void => {
   const leaves = getAllVisibleLeafHeaders(roots, collapsedHeaders);
   for (const leaf of leaves) {
-    const cell = document.getElementById(
+    const cell = getElementByIdInTable(
+      searchRoot,
       getCellId({ accessor: leaf.accessor, rowId: "header" }),
     );
     const w = cell?.offsetWidth;
@@ -92,13 +95,14 @@ export const createResizeHandle = (
   } => {
     const collapsedHeaders = context.getCollapsedHeaders?.() ?? context.collapsedHeaders;
     const storage = context.getHeaders();
-    syncVisibleLeafWidthsFromDom(storage, collapsedHeaders);
+    syncVisibleLeafWidthsFromDom(storage, collapsedHeaders, getStyleRoot(context));
     const storageHeader = findHeaderInTree(storage, header.accessor) ?? header;
     return { headers: storage, header: storageHeader, collapsedHeaders };
   };
 
   const performAutoFit = () => {
-    const headerCell = document.getElementById(
+    const headerCell = getElementByIdInTable(
+      getStyleRoot(context),
       getCellId({ accessor: header.accessor, rowId: "header" }),
     );
 
@@ -145,7 +149,7 @@ export const createResizeHandle = (
 
     const updatedHeaders = setSiblingArray(resizeHeaders, path, updatedSiblings);
 
-    updatedHeaders.forEach((h) => removeAllFractionalWidths(h));
+    updatedHeaders.forEach((h) => removeAllFractionalWidths(h, getStyleRoot(context)));
 
     const pathLeaf = updatedSiblings[headerIndex];
     const override = new Map<string, number>();
@@ -153,7 +157,12 @@ export const createResizeHandle = (
       override.set(String(pathLeaf.accessor), pathLeaf.width);
     }
 
-    updateColumnWidthsInDOM(updatedHeaders, collapsedHeaders as Set<string>, override);
+    updateColumnWidthsInDOM(
+      updatedHeaders,
+      collapsedHeaders as Set<string>,
+      override,
+      getStyleRoot(context),
+    );
 
     context.setHeaders(updatedHeaders);
 
@@ -176,7 +185,8 @@ export const createResizeHandle = (
       runAutoFitDebounced();
       return;
     }
-    const startWidth = document.getElementById(
+    const startWidth = getElementByIdInTable(
+      getStyleRoot(context),
       getCellId({ accessor: header.accessor, rowId: "header" }),
     )?.offsetWidth;
 
@@ -209,7 +219,8 @@ export const createResizeHandle = (
 
   const handleTouchStart = (event: Event) => {
     const touchEvent = event as globalThis.TouchEvent;
-    const startWidth = document.getElementById(
+    const startWidth = getElementByIdInTable(
+      getStyleRoot(context),
       getCellId({ accessor: header.accessor, rowId: "header" }),
     )?.offsetWidth;
 

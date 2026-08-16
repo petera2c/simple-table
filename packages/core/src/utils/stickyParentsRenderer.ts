@@ -5,7 +5,6 @@ import TableRow from "../types/TableRow";
 import ColumnDef, { Accessor } from "../types/ColumnDef";
 import { COLUMN_EDIT_WIDTH, ROW_SEPARATOR_WIDTH } from "../consts/general-consts";
 import { createRowSeparator } from "./rowSeparatorRenderer";
-// import { calculateColumnIndices } from "./columnIndicesUtils";
 import { CumulativeHeightMap, HeightOffsets } from "./infiniteScrollUtils";
 import type { SectionId, SectionScrollController } from "../managers/SectionScrollController";
 import { CustomTheme } from "../types/CustomTheme";
@@ -385,14 +384,6 @@ export const createStickyParentsContainer = (
     context.customTheme,
     props.scrollTop,
   );
-
-  // Calculate column indices
-  // const columnIndices = calculateColumnIndices({
-  //   headers: context.headers,
-  //   pinnedLeftColumns: props.pinnedLeftColumns,
-  //   pinnedRightColumns: props.pinnedRightColumns,
-  //   collapsedHeaders: context.collapsedHeaders,
-  // });
 
   // Calculate total height
   const stickyHeight =

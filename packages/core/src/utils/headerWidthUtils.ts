@@ -14,6 +14,7 @@ import {
 import { MIN_COLUMN_WIDTH } from "../consts/column-constraints";
 import ColumnDef, { Accessor, DEFAULT_SHOW_WHEN } from "../types/ColumnDef";
 import { getCellId, isHeaderExcludedFromLayout } from "./cellUtils";
+import { getElementByIdInTable, queryAllInTable, queryInTable, escapeTableAttrValue } from "./tableDomScope";
 import { getNestedValue } from "./rowUtils";
 import { hasCollapsibleChildren } from "./collapseUtils";
 
@@ -357,7 +358,10 @@ export function normalizeHeaderWidths(
 /**
  * Get actual width of a header in pixels
  */
-export const getHeaderWidthInPixels = (header: ColumnDef): number => {
+export const getHeaderWidthInPixels = (
+  header: ColumnDef,
+  searchRoot?: ParentNode | null,
+): number => {
   // Headers excluded from the rendered table take up no rendered width; see
   // findLeafHeaders for why this matters for row width.
   if (isHeaderExcludedFromLayout(header)) {
@@ -374,7 +378,8 @@ export const getHeaderWidthInPixels = (header: ColumnDef): number => {
   }
   // For fr, %, or any other format, get the actual DOM element width
   else {
-    const cellElement = document.getElementById(
+    const cellElement = getElementByIdInTable(
+      searchRoot,
       getCellId({ accessor: header.accessor, rowId: "header" }),
     );
     return cellElement?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
@@ -384,16 +389,21 @@ export const getHeaderWidthInPixels = (header: ColumnDef): number => {
 /**
  * Convert fractional widths to pixel values
  */
-export const removeAllFractionalWidths = (header: ColumnDef): void => {
+export const removeAllFractionalWidths = (
+  header: ColumnDef,
+  searchRoot?: ParentNode | null,
+): void => {
   const headerWidth = header.width;
   if (typeof headerWidth === "string" && headerWidth.includes("fr")) {
     header.width =
-      document.getElementById(getCellId({ accessor: header.accessor, rowId: "header" }))
-        ?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
+      getElementByIdInTable(
+        searchRoot,
+        getCellId({ accessor: header.accessor, rowId: "header" }),
+      )?.offsetWidth || TABLE_HEADER_CELL_WIDTH_DEFAULT;
   }
   if (header.children && header.children.length > 0) {
     header.children.forEach((child) => {
-      removeAllFractionalWidths(child);
+      removeAllFractionalWidths(child, searchRoot);
     });
   }
 };
@@ -424,12 +434,6 @@ export const getAllVisibleLeafHeaders = (
 /** Resolve the hidden-measurement host element for a table's style root. */
 const getMeasurementHost = (domQueryRoot: ParentNode): HTMLElement =>
   domQueryRoot instanceof HTMLElement ? domQueryRoot : document.body;
-
-/**
- * Escape a value for use inside a double-quoted CSS attribute selector.
- * (`CSS.escape` is not available in jsdom, so quoted-string escaping is used.)
- */
-const escapeAttrValue = (value: string): string => value.replace(/["\\]/g, "\\$&");
 
 /**
  * Split text into display lines for width measurement. Explicit newlines
@@ -681,16 +685,8 @@ export const calculateHeaderContentWidth = (
   const stridedSize =
     stridedSampleSize ?? (sampleSize != null ? 0 : AUTO_SIZE_STRIDED_SAMPLE_SIZE);
   const domQueryRoot: ParentNode = styleRoot ?? document;
-  // Get the header cell element from the DOM. Scope the lookup to the table's
-  // style root when available so multiple tables with the same accessors on
-  // one page never measure each other's cells.
   const cellId = getCellId({ accessor, rowId: "header" });
-  const headerCellElement =
-    domQueryRoot instanceof HTMLElement
-      ? (domQueryRoot.querySelector(
-          `[id="${escapeAttrValue(cellId)}"]`,
-        ) as HTMLElement | null)
-      : document.getElementById(cellId);
+  const headerCellElement = getElementByIdInTable(domQueryRoot, cellId);
 
   // When this column's header cell is not rendered (virtualized out of the
   // horizontal band), borrow style metrics (padding/gap/font) from any
@@ -698,8 +694,7 @@ export const calculateHeaderContentWidth = (
   // computed width must depend on the column's CONTENT, not on whether the
   // column happens to be inside the current viewport.
   const styleProxyCell =
-    headerCellElement ??
-    (domQueryRoot.querySelector(".st-header-cell") as HTMLElement | null);
+    headerCellElement ?? queryInTable(domQueryRoot, ".st-header-cell");
 
   if (!styleProxyCell) {
     return { width: TABLE_HEADER_CELL_WIDTH_DEFAULT, settled: true };
@@ -750,8 +745,7 @@ export const calculateHeaderContentWidth = (
         headerRendererSettled = false;
       } else if (header?.label) {
         const fontSource =
-          (domQueryRoot.querySelector(".st-header-label-text") as HTMLElement | null) ??
-          headerLabelElement;
+          queryInTable(domQueryRoot, ".st-header-label-text") ?? headerLabelElement;
         totalWidth += measureTextWithFont(String(header.label), fontSource);
       }
     } else {
@@ -763,8 +757,7 @@ export const calculateHeaderContentWidth = (
     // Even with headerRenderer, off-band columns can only use the label until
     // the cell scrolls into view — treat that as settled for viewport stability.
     const fontSource =
-      (domQueryRoot.querySelector(".st-header-label-text") as HTMLElement | null) ??
-      styleProxyCell;
+      queryInTable(domQueryRoot, ".st-header-label-text") ?? styleProxyCell;
     totalWidth += measureTextWithFont(String(header.label), fontSource);
     headerRendererSettled = true;
   }
@@ -870,9 +863,7 @@ export const calculateHeaderContentWidth = (
     // text matches the real cell font.
     let cellPaddingLeft = 0;
     let cellPaddingRight = 0;
-    const sampleCellContent = domQueryRoot.querySelector(
-      ".st-cell-content",
-    ) as HTMLElement | null;
+    const sampleCellContent = queryInTable(domQueryRoot, ".st-cell-content");
     if (sampleCellContent) {
       const cellStyle = window.getComputedStyle(sampleCellContent);
       tempDiv.style.font = cellStyle.font;
@@ -1016,8 +1007,9 @@ export const calculateHeaderContentWidth = (
     // would make the width vary with which rows happen to be rendered
     // (i.e. with the container size).
     if (header?.cellRenderer) {
-      const renderedCells = domQueryRoot.querySelectorAll(
-        `.st-cell[data-accessor="${escapeAttrValue(String(accessor))}"] .st-cell-content`,
+      const renderedCells = queryAllInTable(
+        domQueryRoot,
+        `.st-cell[data-accessor="${escapeTableAttrValue(String(accessor))}"] .st-cell-content`,
       );
       renderedCells.forEach((node) => {
         const el = node as HTMLElement;
