@@ -16,7 +16,7 @@ export const v4_1_7: ChangelogEntry = {
   date: "2026-08-16",
   title: "Smoother column dragging",
   description:
-    "When you drag a column to a new place, the other columns slide over instead of jumping.",
+    "When you drag a column to a new place, the other columns slide over instead of jumping. Hide, pin, and multiple tables on one page also stay independent of each other.",
   changes: [
     {
       type: "improvement",
@@ -27,7 +27,33 @@ export const v4_1_7: ChangelogEntry = {
     {
       type: "improvement",
       description:
+        "Dragging a column now drops it into the new spot and shifts the columns in between, instead of swapping with only the column you drop on.",
+      link: "/docs/column-reordering",
+    },
+    {
+      type: "improvement",
+      description:
         "The column you are dragging stays highlighted. Neighboring headers stay see-through so labels don't cover each other as they pass.",
+    },
+    {
+      type: "bugfix",
+      description: "Header tooltips no longer appear while you drag a column.",
+      link: "/docs/tooltips",
+    },
+    {
+      type: "bugfix",
+      description:
+        "If you put more than one table on a page, including a nested table, each one keeps its own selection, filter menus, editors, and column widths.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Hiding or pinning a column no longer changes the column objects you passed in. Two tables can share the same columns list without one affecting the other.",
+      link: "/docs/column-visibility",
+    },
+    {
+      type: "bugfix",
+      description: "Table styles no longer change the text color of inputs outside the table.",
     },
   ],
 };

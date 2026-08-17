@@ -1,12 +1,7 @@
 import { getRenderedCells as getBodyRenderedCells } from "../utils/bodyCell/eventTracking";
 import { getRenderedCells as getHeaderRenderedCells } from "../utils/headerCell/eventTracking";
-import {
-  parseCssTranslate,
-  readLiveTranslate,
-  setFlipCompensationEnabled,
-} from "../utils/setAbsoluteCellPosition";
-import { CELL_SLIDE_ANIM_ID, CellSlideAnimator } from "./CellSlideAnimator";
-import { isNearViewport, parkAndStagger, type ParkBand } from "../utils/parkAndStagger";
+import { setFlipCompensationEnabled } from "../utils/setAbsoluteCellPosition";
+import { CellSlideAnimator } from "./CellSlideAnimator";
 
 const DEFAULT_DURATION = 400;
 /**
@@ -30,8 +25,6 @@ const MIN_DELTA = 0.5;
 const SAFETY_TIMEOUT_SLACK = 80;
 const RETAINED_CLASS = "st-cell-animating-out";
 const RETAINED_ATTR = "data-animating-out";
-/** Marks a cell mid-FLIP so CSS can drop opaque fills (headers pass through). */
-const FLIP_ACTIVE_CLASS = "st-flip-active";
 /**
  * Marker on retained ghost cells whose only animation is a CSS-driven
  * width/height shrink (no FLIP transform). The `play()` per-cell loop must
@@ -40,6 +33,18 @@ const FLIP_ACTIVE_CLASS = "st-flip-active";
  * accordion CSS transition can play.
  */
 const SHRINKING_OUT_ATTR = "data-shrinking-out";
+
+/**
+ * Curve-shape factor for the off-screen portion of the FLIP journey. Larger
+ * values squeeze cells in the medium-distance regime more aggressively
+ * while still letting truly-extreme cells fan out near the asymptote;
+ * smaller values flatten the curve so most off-screen cells pile up near
+ * the asymptote (loses the "this row is going further than that one"
+ * signal). Does NOT change the asymptote — that's controlled by
+ * `maxOvershoot` inside `scaleFlipDistance` (currently `clientSize`,
+ * giving an asymptote of ~2× viewport).
+ */
+const OFFSCREEN_COMPRESSION_FACTOR = 10;
 
 /**
  * The renderer keeps two independent per-container WeakMaps of rendered cells —
@@ -125,9 +130,20 @@ interface CellSnapshot {
    * True only when `top`/`left` was read from `getBoundingClientRect` of a
    * cell that was already mid-flight at capture time. In that case the
    * snapshot is the cell's *real visual* position — already bounded by the
-   * viewport — so parking it would move the cell away from where it currently
-   * looks. Far conceptual positions (preLayout / logical style.top) are parked
-   * just outside the visible band instead.
+   * viewport (the rect of an off-screen translated cell never reports a
+   * value outside the parent's overflow region the user can see) — so
+   * compressing it via {@link scaleFlipDistance} would re-position the cell
+   * away from where the user is currently seeing it, producing a
+   * 100–700 px positional snap on every interruption sort.
+   *
+   * False for everything else: preLayout entries (conceptual positions for
+   * off-screen rows that are tens of thousands of pixels off-screen) AND
+   * non-in-flight DOM cells (whose `style.top`/`left` is the *logical*
+   * destination position, not a viewport-bounded visual one — a column at
+   * index 29 in a wide table can legitimately have `style.left = 6480` even
+   * though it is way off-screen). Both cases need scaling so an unscaled
+   * FLIP doesn't leave the cell invisible until the last few percent of
+   * the animation.
    */
   fromDom: boolean;
 }
@@ -194,7 +210,7 @@ export class AnimationCoordinator {
   /**
    * Per-render cache of scroller layout metrics. Reading
    * `scrollHeight`/`clientHeight`/etc. after a style mutation forces a sync
-   * layout flush; without this cache, park-and-stagger reads force a fresh
+   * layout flush; without this cache, scaleFlipDistance() forces a fresh
    * flush for every cell in the retain/play loops, turning a single sort
    * into hundreds of layout passes (observed: 513ms in `msRemove` for ~287
    * cells, growing across consecutive sorts as DOM size grows). The cache
@@ -209,17 +225,14 @@ export class AnimationCoordinator {
    * table has no internal vertical overflow (it grows to its natural height and
    * a parent element / the window scrolls), the body container's own
    * clientHeight/scrollHeight no longer describe the visible viewport, so
-   * {@link parkAndStagger} can't park the slide and sort cells travel the
-   * full conceptual distance. The vanilla table pushes the real visible
+   * {@link scaleFlipDistance} can't bound the FLIP journey and sort cells slide
+   * the full conceptual distance. The vanilla table pushes the real visible
    * viewport here (from the same `getExternalScrollMetrics` the virtualizer
-   * uses) so the y-axis park matches the on-screen viewport. `null`
+   * uses) so the y-axis FLIP scaling matches the on-screen viewport. `null`
    * when external scroll is inactive — internal scroller metrics are used as-is.
    */
-  private externalVerticalScroll: {
-    clientHeight: number;
-    scrollHeight: number;
-    scrollTop: number;
-  } | null = null;
+  private externalVerticalScroll: { clientHeight: number; scrollHeight: number; scrollTop: number } | null =
+    null;
 
   /**
    * The currently-scheduled (not-yet-started) FLIP frame. play() defers the
@@ -233,21 +246,11 @@ export class AnimationCoordinator {
    *     the pending frame lets a new play() cancel the prior cycle and reset the
    * transforms it left behind, so only the latest sort animates.
    */
-  private scheduledFlip: {
-    rafId: number;
-    pending: Array<{ cellId: string; element: HTMLElement; isRetained: boolean }>;
-    /** Monotonic id so a cancelled double-rAF callback can detect it is stale. */
-    generation: number;
-  } | null = null;
-  private flipGeneration = 0;
+  private scheduledFlip: { rafId: number; pending: Array<{ element: HTMLElement }> } | null = null;
 
-  /**
-   * True while the user is mid column-header drag-reorder. Motion is owned
-   * by {@link CellSlideAnimator} (not CSS-transition invert).
-   */
+  /** True while the user is dragging a column header to reorder. */
   private columnReordering = false;
-
-  /** Shared slide helper for column-drag and sort/play position moves. */
+  /** Holds and slides cells during column drag. Sort uses CSS transitions in play(). */
   private readonly cellSlideAnimator = new CellSlideAnimator();
 
   /**
@@ -301,9 +304,8 @@ export class AnimationCoordinator {
   }
 
   /**
-   * Enter/leave column-header drag-reorder mode. Motion is owned by
-   * {@link CellSlideAnimator}. Flip compensation is OFF so left writes
-   * stay plain; the animator applies hold+tween after those writes.
+   * Enter or leave column-header drag. Motion is owned by CellSlideAnimator.
+   * Left/top writes stay plain; the animator holds and slides after those writes.
    */
   setColumnReordering(active: boolean): void {
     if (this.columnReordering === active) return;
@@ -316,19 +318,13 @@ export class AnimationCoordinator {
     return this.columnReordering;
   }
 
-  /**
-   * Snapshot header visuals before mid-drag style.left rewrites.
-   * Call instead of {@link captureSnapshot} while column-dragging.
-   */
+  /** Snapshot header visuals before mid-drag left writes. */
   beginColumnReorder(root: ParentNode): void {
     if (!this.isEnabled() || !this.columnReordering) return;
     this.cellSlideAnimator.beginOrderChange(root);
   }
 
-  /**
-   * Retarget WAAPI after style.left rewrites (same task, before paint).
-   * Call instead of {@link play} while column-dragging.
-   */
+  /** Slide after left writes, same task, before paint. */
   commitColumnReorder(root: ParentNode): void {
     if (!this.isEnabled() || !this.columnReordering) return;
     this.cellSlideAnimator.commitOrderChange(root);
@@ -338,7 +334,7 @@ export class AnimationCoordinator {
     return this.inFlight.has(cellId);
   }
 
-  /** True while any FLIP / retained-cell / column-reorder transition is running. */
+  /** True while any sort slide, retained cell, or column-reorder slide is running. */
   hasInFlight(): boolean {
     return this.inFlight.size > 0 || this.cellSlideAnimator.hasInFlight();
   }
@@ -409,7 +405,7 @@ export class AnimationCoordinator {
       // vertical overflow, so its clientHeight/scrollHeight describe the full
       // table rather than the visible viewport. Substitute the real visible
       // viewport (vertical axis only — the body section is still the
-      // horizontal scroller) so park-and-stagger can bound the slide.
+      // horizontal scroller) so scaleFlipDistance can bound the slide.
       metrics = this.externalVerticalScroll
         ? {
             ...base,
@@ -425,9 +421,9 @@ export class AnimationCoordinator {
 
   /**
    * Supply (or clear) the vertical scroller metrics override used by
-   * park-and-stagger in external/page-scroll mode. Must be set before
-   * `captureSnapshot`/`retainCell`/`play` so slides park against the real
-   * visible viewport. Pass `null` to fall back to the body
+   * {@link scaleFlipDistance} in external/page-scroll mode. Must be set before
+   * `captureSnapshot`/`retainCell`/`play` so the whole FLIP cycle scales
+   * against the real visible viewport. Pass `null` to fall back to the body
    * container's own metrics (internal scroll).
    */
   setExternalVerticalScroll(
@@ -515,9 +511,9 @@ export class AnimationCoordinator {
             // logical position itself — that way the "skip cells whose
             // logical destination didn't change" check works for cells that
             // come INTO the DOM via this codepath without misclassifying them.
-            // fromDom=false signals that this position is conceptual
-            // (potentially far off-screen) and should be parked just outside
-            // the visible band.
+            // fromDom=false signals to play() that this position is conceptual
+            // (potentially tens of thousands of pixels off-screen) and should
+            // be compressed via scaleFlipDistance.
             //
             // sourceContainer is null and the container origins are 0:
             // play() interprets this as "no container-shift correction".
@@ -675,9 +671,21 @@ export class AnimationCoordinator {
     // between the two is NOT required — a row can enter the band at the
     // same absolute `top` after a sort (stable/equal keys) and still needs
     // its DOM cell; skipping mount left the first visible slot empty.
-    const wasVisibleY = isRowTopInVerticalViewport(entry.styleTop, args.cellHeight, metrics);
-    const willBeVisibleY = isRowTopInVerticalViewport(args.afterTop, args.cellHeight, metrics);
-    const wasVisibleX = isColumnLeftInHorizontalViewport(entry.styleLeft, args.cellWidth, metrics);
+    const wasVisibleY = isRowTopInVerticalViewport(
+      entry.styleTop,
+      args.cellHeight,
+      metrics,
+    );
+    const willBeVisibleY = isRowTopInVerticalViewport(
+      args.afterTop,
+      args.cellHeight,
+      metrics,
+    );
+    const wasVisibleX = isColumnLeftInHorizontalViewport(
+      entry.styleLeft,
+      args.cellWidth,
+      metrics,
+    );
     const willBeVisibleX = isColumnLeftInHorizontalViewport(
       args.afterLeft,
       args.cellWidth,
@@ -730,7 +738,8 @@ export class AnimationCoordinator {
     const metrics = this.getScrollerMetrics(container);
     if (metrics.scrollHeight <= metrics.clientHeight) return false;
 
-    const atBottom = metrics.scrollTop + metrics.clientHeight >= metrics.scrollHeight - 1;
+    const atBottom =
+      metrics.scrollTop + metrics.clientHeight >= metrics.scrollHeight - 1;
     const atTop = metrics.scrollTop <= 1;
     if (!atBottom && !atTop) return false;
 
@@ -757,6 +766,29 @@ export class AnimationCoordinator {
     newPosition: CellPosition;
   }): void {
     const { cellId, element, container, newPosition } = args;
+    const oldTop = parsePx(element.style.top);
+    const oldLeft = parsePx(element.style.left);
+
+    // Scale the visual destination on each axis so the slide journey is
+    // bounded but proportional to the true conceptual journey. Without
+    // scaling, a row sorted from position 0 to position 499 of a virtualized
+    // 500-row table would try to slide ~16k pixels vertically in the
+    // animation window — under ease-out it crosses the 500px viewport in the
+    // first ~30ms and the cell appears to teleport. The same problem exists
+    // horizontally: a column moved across a virtualized 30-column table can
+    // need to slide ~6k pixels and would look identically broken. The
+    // scaling also gives cells with very different conceptual destinations
+    // visibly different slide distances, so they fan out instead of marching
+    // off-screen in lockstep.
+    const metrics = this.getScrollerMetrics(container);
+    const clippedTop = scaleFlipDistance(newPosition.top, oldTop, newPosition.height, metrics, "y");
+    const clippedLeft = scaleFlipDistance(
+      newPosition.left,
+      oldLeft,
+      newPosition.width,
+      metrics,
+      "x",
+    );
 
     let map = this.retainedCells.get(container);
     if (!map) {
@@ -780,8 +812,8 @@ export class AnimationCoordinator {
     element.classList.add(RETAINED_CLASS);
     element.setAttribute(RETAINED_ATTR, "true");
 
-    element.style.left = `${newPosition.left}px`;
-    element.style.top = `${newPosition.top}px`;
+    element.style.left = `${clippedLeft}px`;
+    element.style.top = `${clippedTop}px`;
     element.style.width = `${newPosition.width}px`;
     element.style.height = `${newPosition.height}px`;
     // Disable pointer events on departing cells so they don't intercept clicks.
@@ -935,7 +967,7 @@ export class AnimationCoordinator {
    * retained cell). Clears the snapshot.
    */
   play(args: { containers: Array<HTMLElement | null | undefined> }): void {
-    // Column-drag uses {@link commitColumnReorder} — never the general FLIP path.
+    // Column drag uses commitColumnReorder, not this path.
     if (this.columnReordering) {
       this.snapshot = null;
       return;
@@ -973,32 +1005,13 @@ export class AnimationCoordinator {
       return;
     }
 
-    type Candidate = {
-      cellId: string;
-      element: HTMLElement;
-      isRetained: boolean;
-      container: HTMLElement;
-      beforeLeft: number;
-      beforeTop: number;
-      currentLeft: number;
-      currentTop: number;
-      cellWidth: number;
-      cellHeight: number;
-      destUnchanged: boolean;
-      sourceContainer: HTMLElement | null;
-      sourceContainerLeft: number;
-    };
     type Pending = {
       cellId: string;
       element: HTMLElement;
-      fromX: number;
-      fromY: number;
-      toX: number;
-      toY: number;
+      dx: number;
+      dy: number;
       isRetained: boolean;
-      destUnchanged: boolean;
     };
-    const candidates: Candidate[] = [];
     const pending: Pending[] = [];
     const seen = new Set<string>();
     // Per-play page-coord origin cache for each container we touch. Reading
@@ -1055,32 +1068,6 @@ export class AnimationCoordinator {
           };
         }
       }
-      // Skip cells with an open inline editor (animating breaks input focus).
-      if (element.querySelector(".st-cell-editing")) return;
-
-      const currentLeft = parsePx(element.style.left);
-      const currentTop = parsePx(element.style.top);
-      const cellHeight = parsePx(element.style.height) || element.offsetHeight || 0;
-      const cellWidth = parsePx(element.style.width) || element.offsetWidth || 0;
-
-      if (!before && !isRetained) {
-        const metrics = this.getScrollerMetrics(container);
-        const midY = metrics.scrollTop + metrics.clientHeight / 2;
-        const fromAfter = currentTop <= midY;
-        const originTop = fromAfter
-          ? metrics.scrollTop + metrics.clientHeight + cellHeight
-          : metrics.scrollTop - cellHeight;
-        before = {
-          sourceContainer: null,
-          sourceContainerLeft: 0,
-          sourceContainerTop: 0,
-          left: currentLeft,
-          top: originTop,
-          styleTop: originTop,
-          styleLeft: currentLeft,
-          fromDom: false,
-        };
-      }
       if (!before) {
         return;
       }
@@ -1096,47 +1083,195 @@ export class AnimationCoordinator {
         seen.add(cellId);
         return;
       }
+      // Skip cells with an open inline editor (animating breaks input focus).
+      if (element.querySelector(".st-cell-editing")) return;
+
+      const currentLeft = parsePx(element.style.left);
+      const currentTop = parsePx(element.style.top);
 
       // If this cell is already animating toward the same logical destination
       // (style.top/left unchanged across the captureSnapshot → render boundary),
       // leave the in-flight transition running. Restarting it would freeze the
       // cell for 2 rAFs, reset the easing curve back to its fast start, and
       // produce a visible velocity discontinuity — exactly the "jump" users see
-      // when triggering a sort while another sort is mid-animation.
+      // when triggering a sort while another sort is mid-animation. The new
+      // FLIP transform would be identical to the live computed transform
+      // anyway, so the cancel + restart adds nothing but a stutter.
       if (
         !isRetained &&
+        this.inFlight.has(cellId) &&
         Math.abs(before.styleTop - currentTop) < MIN_DELTA &&
-        Math.abs(before.styleLeft - currentLeft) < MIN_DELTA &&
-        (this.inFlight.has(cellId) || this.hasRunningCellSlide(element))
+        Math.abs(before.styleLeft - currentLeft) < MIN_DELTA
       ) {
         seen.add(cellId);
         return;
       }
-      const destUnchanged =
-        Math.abs(before.styleLeft - currentLeft) < MIN_DELTA &&
-        Math.abs(before.styleTop - currentTop) < MIN_DELTA;
 
-      candidates.push({
-        cellId,
-        element,
-        isRetained,
-        container,
-        beforeLeft: before.left,
-        beforeTop: before.top,
-        currentLeft,
-        currentTop,
-        cellWidth,
-        cellHeight,
-        destUnchanged,
-        sourceContainer: before.sourceContainer,
-        sourceContainerLeft: before.sourceContainerLeft,
-      });
+      // Scale the FLIP "before" position so cells sliding in from far
+      // off-screen take a bounded but proportional journey on each axis.
+      // Without scaling, a row whose pre-sort conceptual top was 14970
+      // sliding to currentTop=0 would start ~15k pixels below the viewport
+      // — with ease-out it stays off-screen for most of the animation,
+      // leaving the viewport empty until the last few percent. Same
+      // failure mode horizontally for far-column reorders.
+      //
+      // Two cases skip scaling:
+      //
+      // 1. Retained (outgoing) cells — `retainCell` already scaled their
+      //    `style.top/left` at hand-off time, so we'd be double-scaling.
+      //
+      // 2. `before.fromDom === true` snapshots, which `readPosition` only
+      //    sets for cells that were *already mid-flight* at capture. Their
+      //    `before.top/left` came from `getBoundingClientRect`, so it is
+      //    the cell's real visual position bounded to the viewport.
+      //    Compressing it would re-position the cell away from where the
+      //    user is currently seeing it, producing a 100–700 px positional
+      //    snap on every interruption sort.
+      //
+      // Non-in-flight DOM cells fall through to the scaling path: their
+      // `style.top/left` is the *logical* destination (potentially tens
+      // of thousands of pixels off-screen for far columns), same regime
+      // as preLayout entries. For these we need the cell's own size;
+      // prefer the inline style (no layout) over offsetHeight/offsetWidth
+      // (forces layout).
+      const skipScale = isRetained || before.fromDom;
+      const cellHeight = skipScale ? 0 : parsePx(element.style.height) || element.offsetHeight || 0;
+      const cellWidth = skipScale ? 0 : parsePx(element.style.width) || element.offsetWidth || 0;
+      const playMetrics = skipScale ? null : this.getScrollerMetrics(container);
+      const beforeTopClipped =
+        skipScale || !playMetrics
+          ? before.top
+          : scaleFlipDistance(before.top, currentTop, cellHeight, playMetrics, "y");
+      const beforeLeftClipped =
+        skipScale || !playMetrics
+          ? before.left
+          : scaleFlipDistance(before.left, currentLeft, cellWidth, playMetrics, "x");
+
+      // Incoming cells: clamp the FLIP start to just outside the viewport so
+      // scaleFlipDistance cannot park the inverted transform inside the
+      // visible band on frame 0 (which reads as a row that shouldn't exist
+      // yet, then slides away).
+      const vpMetricsForClamp = playMetrics ?? this.getScrollerMetrics(container);
+      const vpCellHeightForClamp =
+        parsePx(element.style.height) || element.offsetHeight || cellHeight || 0;
+      let beforeTopForFlip = beforeTopClipped;
+      const willBeVisibleYForClamp = vpMetricsForClamp
+        ? isRowTopInVerticalViewport(
+            currentTop,
+            vpCellHeightForClamp,
+            vpMetricsForClamp,
+          )
+        : false;
+      // PreLayout snapshot entries (sourceContainer === null) describe conceptual
+      // positions for rows that were NOT in the DOM — even when that position
+      // falls inside the viewport band. Treat them as incoming slide-ins.
+      const isPreLayoutIncoming =
+        !isRetained && before.sourceContainer === null && !before.fromDom;
+      if (!isRetained && vpMetricsForClamp && willBeVisibleYForClamp) {
+        const vpTop = vpMetricsForClamp.scrollTop;
+        const vpBottom = vpMetricsForClamp.scrollTop + vpMetricsForClamp.clientHeight;
+        if (
+          isPreLayoutIncoming &&
+          (Math.abs(beforeTopClipped - currentTop) < MIN_DELTA ||
+            isRowTopInVerticalViewport(
+              beforeTopClipped,
+              vpCellHeightForClamp,
+              vpMetricsForClamp,
+            ))
+        ) {
+          // Band entry without a real prior DOM position — slide from the
+          // nearest viewport edge so the first visible row animates like peers.
+          beforeTopForFlip =
+            currentTop >= beforeTopClipped ? vpTop - vpCellHeightForClamp : vpBottom;
+        } else if (
+          !isRowTopInVerticalViewport(
+            beforeTopClipped,
+            vpCellHeightForClamp,
+            vpMetricsForClamp,
+          )
+        ) {
+          beforeTopForFlip =
+            currentTop >= beforeTopClipped ? vpTop - vpCellHeightForClamp : vpBottom;
+        }
+      }
+
+      // Container-shift correction. The FLIP delta above is computed in
+      // container-local style coordinates, but the inverse transform is
+      // applied in page coordinates. When the container itself moved on
+      // the page between snapshot and play (e.g. main body shifts right
+      // because pinned-left just grew during a pin), the cell's visual
+      // page position post-render = newContainerLeft + currentLeft, but
+      // its visual pre-render position was oldContainerLeft + before.left.
+      // The needed visual delta is therefore:
+      //
+      //   dx_visual = (oldContainerLeft + before.left) - (newContainerLeft + currentLeft)
+      //             = (before.left - currentLeft) - (newContainerLeft - oldContainerLeft)
+      //             = dx_styleSpace - containerShift
+      //
+      // Without subtracting `containerShift`, siblings whose style.left
+      // shrunk to fill the gap left by a pinned-out column appear to
+      // animate roughly twice the actual visible reflow distance.
+      //
+      // Skipped for snapshots with no source container (preLayouts /
+      // synthetic incoming origins): those are conceptual positions that
+      // never had a real container anchor.
+      let containerShiftX = 0;
+      const containerShiftY = 0;
+      if (before.sourceContainer !== null) {
+        // Cross-container case is rejected above; here sourceContainer
+        // either equals `container` (siblings reflowing in their own
+        // section) or is the same container for a retained ghost.
+        //
+        // Only the HORIZONTAL shift is corrected: the section panes are laid
+        // out side by side (pinned-left | main | pinned-right), so the only
+        // legitimate between-snapshot-and-play origin change is horizontal
+        // (e.g. pin/unpin grows pinned-left and slides main sideways).
+        //
+        // The VERTICAL origin is intentionally NOT corrected. A section's
+        // page-Y can transiently differ between snapshot and play without any
+        // real cell movement — most notably with `footerPosition: "top"`,
+        // where the footer is rendered by a framework adapter that commits its
+        // content on a later microtask. At play() time the top footer is
+        // momentarily empty (0px tall), so the header/body containers below it
+        // measure ~footerHeight higher than their final resting spot. Feeding
+        // that transient delta into the FLIP injected a phantom `dy` (the
+        // header text teleporting down by the footer height and animating back
+        // up). The footer settles before the next paint, so no real movement
+        // needs animating here.
+        const playOrigin = getPlayContainerOrigin(container);
+        containerShiftX = playOrigin.left - before.sourceContainerLeft;
+      }
+
+      const dxRaw = beforeLeftClipped - currentLeft;
+      const dyRaw = beforeTopForFlip - currentTop;
+      let dx = dxRaw - containerShiftX;
+      let dy = dyRaw - containerShiftY;
+
+      if (Math.abs(dx) < MIN_DELTA && Math.abs(dy) < MIN_DELTA) {
+        // No visual movement — if this was a retained cell with no movement
+        // (a degenerate case), still drop it so we don't leak DOM. Mirror every
+        // other teardown site: cancel any in-flight transition AND remove the
+        // entry from `retainedCells`. Skipping the map delete left the now
+        // disposed+detached ghost reachable by a later claimRetainedForReuse,
+        // which promoted it back to a live cell whose portal was already torn
+        // down — surfacing as an empty custom-rendered cell after spam-sorting.
+        if (isRetained) {
+          this.cancelInFlight(cellId);
+          this.retainedCells.get(container)?.delete(cellId);
+          this.onHostDiscard?.(element);
+          element.remove();
+        }
+        return;
+      }
+
+      pending.push({ cellId, element, dx, dy, isRetained });
       seen.add(cellId);
     };
 
     for (const container of args.containers) {
       if (!container) continue;
 
+      // Retained (outgoing) cells animate first so we collect them.
       const retained = this.retainedCells.get(container);
       if (retained) {
         retained.forEach((element, cellId) => {
@@ -1144,254 +1279,66 @@ export class AnimationCoordinator {
         });
       }
 
+      // Active cells: incoming + persistent.
       const cells = collectRenderedCells(container);
       cells.forEach((element, cellId) => {
         consider(element, cellId, false, container);
       });
     }
 
-    const byContainer = new Map<HTMLElement, Candidate[]>();
-    for (const candidate of candidates) {
-      const list = byContainer.get(candidate.container);
-      if (list) list.push(candidate);
-      else byContainer.set(candidate.container, [candidate]);
-    }
-
-    for (const [container, group] of byContainer) {
-      const metrics = this.getScrollerMetrics(container);
-      const yBand: ParkBand = {
-        scrollOffset: metrics.scrollTop,
-        clientSize: metrics.clientHeight,
-      };
-      const xBand: ParkBand = {
-        scrollOffset: metrics.scrollLeft,
-        clientSize: metrics.clientWidth,
-      };
-      const yHoldBand: ParkBand = {
-        scrollOffset: yBand.scrollOffset - yBand.clientSize,
-        clientSize: yBand.clientSize * 3,
-      };
-      const xHoldBand: ParkBand = {
-        scrollOffset: xBand.scrollOffset - xBand.clientSize,
-        clientSize: xBand.clientSize * 3,
-      };
-      const originY = parkAndStagger(
-        group.map((c) => {
-          let forceSide: "before" | "after" | undefined;
-          if (c.sourceContainer === null && !c.isRetained) {
-            if (c.currentTop < c.beforeTop - MIN_DELTA) forceSide = "after";
-            else if (c.currentTop > c.beforeTop + MIN_DELTA) forceSide = "before";
-          }
-          return {
-            id: c.cellId,
-            truePos: c.beforeTop,
-            cellSize: c.cellHeight,
-            forceSide,
-            holdTruePos:
-              c.sourceContainer !== null &&
-              isNearViewport(c.beforeTop, c.cellHeight, yHoldBand),
-          };
-        }),
-        yBand,
-      );
-      const destY = parkAndStagger(
-        group.map((c) => ({ id: c.cellId, truePos: c.currentTop, cellSize: c.cellHeight })),
-        yBand,
-      );
-      const originX = parkAndStagger(
-        group.map((c) => {
-          let forceSide: "before" | "after" | undefined;
-          if (c.sourceContainer === null && !c.isRetained) {
-            if (c.currentLeft < c.beforeLeft - MIN_DELTA) forceSide = "after";
-            else if (c.currentLeft > c.beforeLeft + MIN_DELTA) forceSide = "before";
-          }
-          return {
-            id: c.cellId,
-            truePos: c.beforeLeft,
-            cellSize: c.cellWidth,
-            forceSide,
-            holdTruePos:
-              c.sourceContainer !== null &&
-              isNearViewport(c.beforeLeft, c.cellWidth, xHoldBand),
-          };
-        }),
-        xBand,
-      );
-      const destX = parkAndStagger(
-        group.map((c) => ({ id: c.cellId, truePos: c.currentLeft, cellSize: c.cellWidth })),
-        xBand,
-      );
-
-      for (const candidate of group) {
-        const parkedFromX = originX.get(candidate.cellId) ?? candidate.beforeLeft;
-        const parkedToX = destX.get(candidate.cellId) ?? candidate.currentLeft;
-        const parkedFromY = originY.get(candidate.cellId) ?? candidate.beforeTop;
-        const parkedToY = destY.get(candidate.cellId) ?? candidate.currentTop;
-
-        let containerShiftX = 0;
-        if (candidate.sourceContainer !== null) {
-          const playOrigin = getPlayContainerOrigin(container);
-          containerShiftX = playOrigin.left - candidate.sourceContainerLeft;
-        }
-
-        let fromX = parkedFromX - candidate.currentLeft - containerShiftX;
-        let fromY = parkedFromY - candidate.currentTop;
-        let toX = parkedToX - candidate.currentLeft;
-        let toY = parkedToY - candidate.currentTop;
-
-        const isIncoming = candidate.sourceContainer === null && !candidate.isRetained;
-        if (
-          isIncoming &&
-          Math.abs(fromX - toX) < MIN_DELTA &&
-          Math.abs(fromY - toY) < MIN_DELTA
-        ) {
-          const midY = yBand.scrollOffset + yBand.clientSize / 2;
-          const originY =
-            candidate.currentTop <= midY
-              ? yBand.scrollOffset + yBand.clientSize + candidate.cellHeight
-              : yBand.scrollOffset - candidate.cellHeight;
-          fromY = originY - candidate.currentTop;
-        }
-
-        const fromNearY = isNearViewport(candidate.beforeTop, candidate.cellHeight, yBand);
-        const fromNearX = isNearViewport(candidate.beforeLeft, candidate.cellWidth, xBand);
-        const toNearY = isNearViewport(candidate.currentTop, candidate.cellHeight, yBand);
-        const toNearX = isNearViewport(candidate.currentLeft, candidate.cellWidth, xBand);
-        if (
-          !isIncoming &&
-          fromNearX &&
-          fromNearY &&
-          toNearX &&
-          toNearY &&
-          Math.abs(candidate.beforeLeft - candidate.currentLeft) < MIN_DELTA &&
-          Math.abs(candidate.beforeTop - candidate.currentTop) < MIN_DELTA
-        ) {
-          if (candidate.isRetained) {
-            this.cancelInFlight(candidate.cellId);
-            this.retainedCells.get(container)?.delete(candidate.cellId);
-            this.onHostDiscard?.(candidate.element);
-            candidate.element.remove();
-          }
-          continue;
-        }
-
-        if (Math.abs(fromX - toX) < MIN_DELTA && Math.abs(fromY - toY) < MIN_DELTA) {
-          if (candidate.isRetained) {
-            this.cancelInFlight(candidate.cellId);
-            this.retainedCells.get(container)?.delete(candidate.cellId);
-            this.onHostDiscard?.(candidate.element);
-            candidate.element.remove();
-          }
-          continue;
-        }
-
-        pending.push({
-          cellId: candidate.cellId,
-          element: candidate.element,
-          fromX,
-          fromY,
-          toX,
-          toY,
-          isRetained: candidate.isRetained,
-          destUnchanged: candidate.destUnchanged,
-        });
-      }
-    }
-
-    if (this.scheduledFlip) {
-      cancelAnimationFrame(this.scheduledFlip.rafId);
-      const nextPendingIds = new Set(pending.map((p) => p.cellId));
-      for (const { cellId, element, isRetained } of this.scheduledFlip.pending) {
-        if (nextPendingIds.has(cellId) || seen.has(cellId)) {
-          continue;
-        }
-        this.bakeLiveTransform(element);
-        const live = parseCssTranslate(element.style.transform || "");
-        if (live && hasNonIdentityTranslate(element.style.transform || "")) {
-          pending.push({
-            cellId,
-            element,
-            fromX: live.x,
-            fromY: live.y,
-            toX: 0,
-            toY: 0,
-            isRetained,
-            destUnchanged: true,
-          });
-          seen.add(cellId);
-          nextPendingIds.add(cellId);
-        } else {
-          element.style.transition = "none";
-          element.style.transform = "";
-          element.style.willChange = "";
-          element.style.pointerEvents = "";
-          element.classList.remove(FLIP_ACTIVE_CLASS);
-        }
-      }
-      this.scheduledFlip = null;
-    }
-
-    if (pending.length === 0) {
-      return;
-    }
-
-    for (const item of pending) {
-      const { cellId, element } = item;
-      let { fromX, fromY } = item;
-      const wasInFlight = this.inFlight.has(cellId);
-      if (wasInFlight) {
-        element.style.transition = "none";
-        this.bakeLiveTransform(element);
-      } else {
-        element.style.transition = "none";
-      }
-      const priorTransform = element.style.transform || "";
-      const liveTranslate = parseCssTranslate(priorTransform);
-      if (liveTranslate && hasNonIdentityTranslate(priorTransform)) {
-        const matchesSnapshot =
-          Math.abs(liveTranslate.x - fromX) <= 1 && Math.abs(liveTranslate.y - fromY) <= 1;
-        if ((wasInFlight && item.destUnchanged) || (!wasInFlight && matchesSnapshot)) {
-          fromX = liveTranslate.x;
-          fromY = liveTranslate.y;
-        }
-      }
-      this.startCellSlide({
-        cellId,
-        element,
-        fromX,
-        fromY,
-        toX: item.toX,
-        toY: item.toY,
-        isRetained: item.isRetained,
-      });
-    }
-  }
-
-  /**
-   * Snap scheduled + in-flight FLIPs to their destinations without clearing
-   * an armed snapshot. Used between rapid column-drag swaps so each swap
-   * starts from settled style.left (grid-aligned) instead of compounding
-   * mid-flight visual dx.
-   */
-  private settleInFlight(): void {
+    // Coalesce overlapping FLIP cycles. If a previous play() scheduled a
+    // transition start that hasn't run yet (spam-clicking sort fires a new
+    // render + play within the two-frame defer window), cancel it and reset
+    // the inverted transforms it left on its cells. The invert loop below
+    // re-applies the transform for any cell still being animated this cycle;
+    // cells that were only in the stale cycle snap to their current
+    // (already-updated) position instead of being clobbered or stranded with
+    // a leftover transform.
     if (this.scheduledFlip) {
       cancelAnimationFrame(this.scheduledFlip.rafId);
       for (const { element } of this.scheduledFlip.pending) {
         element.style.transition = "none";
         element.style.transform = "";
         element.style.willChange = "";
-        element.style.pointerEvents = "";
-        element.classList.remove(FLIP_ACTIVE_CLASS);
       }
       this.scheduledFlip = null;
     }
-    const entries = Array.from(this.inFlight.entries());
-    this.inFlight.clear();
-    for (const [cellId, entry] of entries) {
-      window.clearTimeout(entry.cleanupTimeout);
-      entry.element.removeEventListener("transitionend", entry.transitionEndHandler);
-      this.finishElement(cellId, entry.element, entry.isRetained);
+
+    // FLIP "First" frame: apply inverse transforms synchronously so cells
+    // appear at their old positions. We then need the browser to actually
+    // PAINT this inverted state before we trigger the transition — otherwise
+    // both the inverted write and the identity write happen before the same
+    // paint, the browser only ever paints the identity state, and the
+    // transition fires from identity → identity (no visual movement).
+    for (const { cellId, element, dx, dy } of pending) {
+      this.cancelInFlight(cellId);
+      element.style.transition = "none";
+      element.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+      element.style.willChange = "transform";
     }
+
+    if (pending.length === 0) return;
+
+    // Double RAF: rAF #1 callback runs BEFORE the next paint, so the browser
+    // hasn't yet committed the inverted transform to a painted frame. rAF #2
+    // is scheduled from inside #1 and fires AFTER #1's frame has painted —
+    // so by the time `startTransition` runs, the browser's last painted
+    // computed transform is `translate3d(dx, dy, 0)` and the new write to
+    // `translate3d(0, 0, 0)` triggers a real interpolation.
+    const rafOuter = requestAnimationFrame(() => {
+      const rafInner = requestAnimationFrame(() => {
+        this.scheduledFlip = null;
+        for (const { cellId, element, isRetained } of pending) {
+          if (!element.isConnected) continue;
+          this.startTransition(cellId, element, isRetained);
+        }
+      });
+      // The outer frame has run; the pending transition start is now the
+      // inner frame. Point the coalesce handle at it so a play() that lands
+      // between the two frames cancels the correct callback.
+      if (this.scheduledFlip) this.scheduledFlip.rafId = rafInner;
+    });
+    this.scheduledFlip = { rafId: rafOuter, pending };
   }
 
   /**
@@ -1404,7 +1351,17 @@ export class AnimationCoordinator {
     this.incomingOrigins = null;
     this.accordionPreVisibleAccessors = null;
     this.clearScrollerMetricsCache();
-    this.settleInFlight();
+    if (this.scheduledFlip) {
+      cancelAnimationFrame(this.scheduledFlip.rafId);
+      this.scheduledFlip = null;
+    }
+    const entries = Array.from(this.inFlight.entries());
+    this.inFlight.clear();
+    for (const [cellId, entry] of entries) {
+      window.clearTimeout(entry.cleanupTimeout);
+      entry.element.removeEventListener("transitionend", entry.transitionEndHandler);
+      this.finishElement(cellId, entry.element, entry.isRetained);
+    }
     // Clean up any retained cells that weren't in flight (e.g. cell was
     // retained but never reached the play step).
     this.retainedCells.forEach((map) => {
@@ -1423,41 +1380,6 @@ export class AnimationCoordinator {
     this.cancel();
   }
 
-  private readVisualPosition(
-    element: HTMLElement,
-    sourceContainer: HTMLElement,
-    sourceContainerLeft: number,
-    sourceContainerTop: number,
-    styleTop: number,
-    styleLeft: number,
-  ): CellSnapshot {
-    const rect = element.getBoundingClientRect();
-    const parent = element.offsetParent as HTMLElement | null;
-    if (parent) {
-      const parentRect = parent.getBoundingClientRect();
-      return {
-        sourceContainer,
-        sourceContainerLeft,
-        sourceContainerTop,
-        left: rect.left - parentRect.left + parent.scrollLeft,
-        top: rect.top - parentRect.top + parent.scrollTop,
-        styleTop,
-        styleLeft,
-        fromDom: true,
-      };
-    }
-    return {
-      sourceContainer,
-      sourceContainerLeft,
-      sourceContainerTop,
-      left: rect.left,
-      top: rect.top,
-      styleTop,
-      styleLeft,
-      fromDom: true,
-    };
-  }
-
   private readPosition(
     cellId: string,
     element: HTMLElement,
@@ -1467,43 +1389,39 @@ export class AnimationCoordinator {
   ): CellSnapshot {
     const styleTop = parsePx(element.style.top);
     const styleLeft = parsePx(element.style.left);
-    // WAAPI keeps `style.transform` at the invert start keyframe while the
-    // computed matrix is the painted remain. Prefer the computed translate so
-    // a mid-flight sort snapshots where the cell looks, not where the slide
-    // began. Capturing the start keyframe is what makes spam-click sorts
-    // teleport (hold jumps back to the previous invert).
-    const markedFlipping = element.classList.contains(FLIP_ACTIVE_CLASS);
-    const styleTransform = element.style.transform || "";
-    const hasStyleTranslate = hasNonIdentityTranslate(styleTransform);
-    const isSliding =
-      this.inFlight.has(cellId) ||
-      markedFlipping ||
-      hasStyleTranslate ||
-      this.hasRunningCellSlide(element);
-
-    if (isSliding) {
-      const live = readLiveTranslate(element);
-      if (live) {
+    const inFlight = this.inFlight.get(cellId);
+    if (inFlight) {
+      const rect = element.getBoundingClientRect();
+      const parent = element.offsetParent as HTMLElement | null;
+      if (parent) {
+        const parentRect = parent.getBoundingClientRect();
         return {
           sourceContainer,
           sourceContainerLeft,
           sourceContainerTop,
-          left: styleLeft + live.x,
-          top: styleTop + live.y,
+          left: rect.left - parentRect.left + parent.scrollLeft,
+          top: rect.top - parentRect.top + parent.scrollTop,
           styleTop,
           styleLeft,
           fromDom: true,
         };
       }
-      return this.readVisualPosition(
-        element,
+      return {
         sourceContainer,
         sourceContainerLeft,
         sourceContainerTop,
+        left: rect.left,
+        top: rect.top,
         styleTop,
         styleLeft,
-      );
+        fromDom: true,
+      };
     }
+    // Non-in-flight branch: style.top/left is the cell's *logical*
+    // destination, not a viewport-bounded visual position. For columns far
+    // off-screen this can be tens of thousands of pixels away from the
+    // current viewport — same regime as a preLayout entry — so we leave
+    // fromDom=false and let play() compress the FLIP via scaleFlipDistance.
     return {
       sourceContainer,
       sourceContainerLeft,
@@ -1516,214 +1434,53 @@ export class AnimationCoordinator {
     };
   }
 
-  /**
-   * Hold the cell at (fromX, fromY) relative to its layout box, then slide to (toX, toY).
-   */
-  private startCellSlide(args: {
-    cellId: string;
-    element: HTMLElement;
-    fromX: number;
-    fromY: number;
-    toX: number;
-    toY: number;
-    isRetained: boolean;
-  }): void {
-    const { cellId, element, fromX, fromY, toX, toY, isRetained } = args;
-    if (!element.isConnected) return;
-
-    const prior = this.inFlight.get(cellId);
-    if (prior) {
-      window.clearTimeout(prior.cleanupTimeout);
-      prior.element.removeEventListener("transitionend", prior.transitionEndHandler);
-      this.inFlight.delete(cellId);
-    }
-
+  private startTransition(cellId: string, element: HTMLElement, isRetained: boolean): void {
+    // Outgoing (retained) cells use an ease-in curve so the visible portion
+    // of their slide (cell at its old visible position → viewport edge) is
+    // back-loaded in time. Incoming + persistent cells stay on the
+    // configured easing (defaults to a punchy ease-out that decelerates them
+    // smoothly into their final visible position).
     const easing = isRetained ? OUTGOING_EASING : this.easing;
-    const duration = this.duration;
-
+    element.style.transition = `transform ${this.duration}ms ${easing}`;
+    element.style.transform = "translate3d(0, 0, 0)";
+    // Suppress hit-testing on cells that are mid-slide. Without this, an
+    // animating header sliding under a dragging cursor will keep firing
+    // dragover events on whichever animating cell the cursor is currently
+    // intersecting, causing rapid back-and-forth swaps (visible flicker
+    // during drag-and-drop reorder). Restored in finishElement once the
+    // transition resolves. Retained (outgoing) cells already had pointer
+    // events suppressed in retainCell.
     if (!isRetained) {
-      const isHeaderCell =
-        cellId.startsWith("header-") || cellId.includes(":header") || cellId.endsWith("-header");
-      if (!isHeaderCell) {
-        element.style.pointerEvents = "none";
-      }
+      element.style.pointerEvents = "none";
     }
 
-    const started = this.cellSlideAnimator.animate({
-      element,
-      id: cellId,
-      fromX,
-      fromY,
-      toX,
-      toY,
-      duration,
-      easing,
-      onFinish: () => {
-        this.finalizeCell(cellId, element, "slide");
-      },
-    });
-    if (!started) {
-      return;
-    }
+    const transitionEndHandler = (event: TransitionEvent) => {
+      if (event.propertyName !== "transform") return;
+      this.finalizeCell(cellId, element);
+    };
+    element.addEventListener("transitionend", transitionEndHandler);
 
     const cleanupTimeout = window.setTimeout(() => {
-      const tryFinalize = () => {
-        if (this.isFlipStillInProgress(element)) {
-          const entry = this.inFlight.get(cellId);
-          if (entry) {
-            entry.cleanupTimeout = window.setTimeout(tryFinalize, SAFETY_TIMEOUT_SLACK);
-          }
-          return;
-        }
-        this.finalizeCell(cellId, element, "timeout");
-      };
-      tryFinalize();
-    }, duration + SAFETY_TIMEOUT_SLACK);
+      this.finalizeCell(cellId, element);
+    }, this.duration + SAFETY_TIMEOUT_SLACK);
 
     this.inFlight.set(cellId, {
       element,
       cleanupTimeout,
-      transitionEndHandler: () => {},
+      transitionEndHandler,
       isRetained,
     });
   }
 
-  private hasRunningCellSlide(element: HTMLElement): boolean {
-    if (typeof element.getAnimations !== "function") return false;
-    return element.getAnimations().some((anim) => {
-      const id = (anim as Animation & { id?: string }).id;
-      return (
-        (id === CELL_SLIDE_ANIM_ID || id === "st-column-reorder") &&
-        (anim.playState === "running" || anim.playState === "paused")
-      );
-    });
-  }
-
-  /**
-   * True when a cell still has a running or paused transform animation.
-   */
-  private isFlipStillInProgress(element: HTMLElement): boolean {
-    if (typeof element.getAnimations === "function") {
-      for (const anim of element.getAnimations()) {
-        if (anim.playState === "paused") return true;
-        if (anim.playState !== "running") continue;
-        const timing = anim.effect?.getComputedTiming?.();
-        const duration = timing?.duration;
-        const current = anim.currentTime;
-        if (
-          typeof duration === "number" &&
-          Number.isFinite(duration) &&
-          typeof current === "number" &&
-          Number.isFinite(current) &&
-          current < duration - 0.5
-        ) {
-          return true;
-        }
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Write the painted translate into `style.transform` (transition:none) so
-   * the visual position survives animation cancel/pause and left/top writes.
-   *
-   * Prefer the computed matrix over getBoundingClientRect/offsetParent math:
-   * the matrix is already in style.left/top space (what FLIP compensation
-   * expects). Rect−offsetParent often disagrees by ~1–2px (borders, scroll,
-   * subpixels) and that error shows up as a hitch on every interrupt reorder.
-   *
-   * Does NOT force layout (`offsetWidth`). Callers that need a flush after a
-   * batch of bakes should use {@link flushLayoutOnce} once.
-   */
-  private bakeLiveTransform(element: HTMLElement): void {
-    const parsed = readLiveTranslate(element);
-    if (parsed && (Math.abs(parsed.x) > MIN_DELTA || Math.abs(parsed.y) > MIN_DELTA)) {
-      element.style.transition = "none";
-      element.style.transform = `translate3d(${parsed.x}px, ${parsed.y}px, 0)`;
-      element.style.willChange = "transform";
-      element.classList.add(FLIP_ACTIVE_CLASS);
-      return;
-    }
-
-    const parent = element.offsetParent as HTMLElement | null;
-    if (!parent || typeof element.getBoundingClientRect !== "function") return;
-
-    const rect = element.getBoundingClientRect();
-    const parentRect = parent.getBoundingClientRect();
-    const visualLeft = rect.left - parentRect.left + parent.scrollLeft;
-    const visualTop = rect.top - parentRect.top + parent.scrollTop;
-    const dx = visualLeft - parsePx(element.style.left);
-    const dy = visualTop - parsePx(element.style.top);
-    if (Math.abs(dx) < MIN_DELTA && Math.abs(dy) < MIN_DELTA) return;
-    element.style.transition = "none";
-    element.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
-    element.style.willChange = "transform";
-    element.classList.add(FLIP_ACTIVE_CLASS);
-  }
-
-  /** One forced layout after a batch of transform writes (never per-cell). */
-  private flushLayoutOnce(): void {
-    if (typeof document === "undefined") return;
-    void document.documentElement.offsetHeight;
-  }
-
-
-  private cancelInFlight(cellId: string, options?: { skipBake?: boolean }): void {
+  private cancelInFlight(cellId: string): void {
     const entry = this.inFlight.get(cellId);
     if (!entry) return;
     window.clearTimeout(entry.cleanupTimeout);
     entry.element.removeEventListener("transitionend", entry.transitionEndHandler);
-    // Skip re-bake when capture/play already froze a non-identity translate
-    // into style (transition:none). A second bake via rect/offsetParent was
-    // introducing a ~1–2px hitch on every interrupt reorder.
-    const styleTransform = entry.element.style.transform || "";
-    const alreadyFrozen =
-      (entry.element.style.transition === "none" ||
-        entry.element.style.transition === "") &&
-      hasNonIdentityTranslate(styleTransform);
-    if (!options?.skipBake && !alreadyFrozen) {
-      this.bakeLiveTransform(entry.element);
-    }
-    const el = entry.element;
-    if (typeof el.getAnimations === "function") {
-      for (const anim of el.getAnimations()) {
-        try {
-          anim.cancel();
-        } catch {
-          // ignore
-        }
-      }
-    }
     this.inFlight.delete(cellId);
   }
 
-  private finalizeCell(cellId: string, element: HTMLElement, reason = "unknown"): void {
-    if (!element.isConnected) {
-      const stale = this.inFlight.get(cellId);
-      if (stale) {
-        window.clearTimeout(stale.cleanupTimeout);
-        stale.element.removeEventListener("transitionend", stale.transitionEndHandler);
-        this.inFlight.delete(cellId);
-      }
-      this.retainedCells.forEach((map) => {
-        if (map.get(cellId) === element) map.delete(cellId);
-      });
-      return;
-    }
-    if (reason === "timeout" && this.isFlipStillInProgress(element)) {
-      const entry = this.inFlight.get(cellId);
-      if (entry) {
-        window.clearTimeout(entry.cleanupTimeout);
-        entry.cleanupTimeout = window.setTimeout(
-          () => this.finalizeCell(cellId, element, "timeout"),
-          SAFETY_TIMEOUT_SLACK,
-        );
-      }
-      return;
-    }
-
+  private finalizeCell(cellId: string, element: HTMLElement): void {
     const entry = this.inFlight.get(cellId);
     const isRetained = entry?.isRetained ?? this.isCellRetained(element);
     if (entry) {
@@ -1746,47 +1503,9 @@ export class AnimationCoordinator {
     element.style.transition = "";
     element.style.transform = "";
     element.style.willChange = "";
-    element.classList.remove(FLIP_ACTIVE_CLASS);
-    // Re-enable hit-testing now that the cell has settled.
+    // Re-enable hit-testing now that the cell has settled. See
+    // startTransition for the rationale.
     element.style.pointerEvents = "";
-    if (
-      element.classList.contains("st-header-cell") ||
-      element.classList.contains("st-header-cell-container")
-    ) {
-      // Clear matching body cells even after dragend (residual FLIPs).
-      this.syncColumnBodyTransform(element, "", "");
-    }
-  }
-
-  /**
-   * Clear residual transforms on body cells for a finished header column
-   * (e.g. after a programmatic horizontal FLIP). Column-drag bodies are
-   * owned by {@link CellSlideAnimator} and clear themselves.
-   */
-  private syncColumnBodyTransform(
-    headerEl: HTMLElement,
-    transform: string,
-    transition: string,
-  ): void {
-    const accessor = headerEl.getAttribute("data-accessor");
-    if (!accessor) return;
-    const root = headerEl.closest(".simple-table-root") ?? headerEl.ownerDocument;
-    if (!root) return;
-    const nodes = root.querySelectorAll<HTMLElement>(".st-cell[data-accessor]");
-    for (let i = 0; i < nodes.length; i++) {
-      const el = nodes[i];
-      if (el.getAttribute("data-accessor") !== accessor) continue;
-      if (el.classList.contains("st-header-cell")) continue;
-      el.style.transition = transition;
-      el.style.transform = transform;
-      if (transform) {
-        el.style.willChange = "transform";
-        el.classList.add(FLIP_ACTIVE_CLASS);
-      } else {
-        el.style.willChange = "";
-        el.classList.remove(FLIP_ACTIVE_CLASS);
-      }
-    }
   }
 
   private isCellRetained(element: HTMLElement): boolean {
@@ -1794,6 +1513,52 @@ export class AnimationCoordinator {
   }
 }
 
+const parsePx = (value: string): number => {
+  if (!value) return 0;
+  const parsed = parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
+type FlipAxis = "x" | "y";
+
+/**
+ * Scale a FLIP journey along a given axis so the visible slide is bounded
+ * but its length is proportional to the cell's true conceptual journey,
+ * preserving the sign and a clear sense of "this cell is going further than
+ * that one".
+ *
+ * Returns the new coordinate to assign to the FLIP endpoint (the outgoing
+ * ghost's `style.top` / `style.left`, or the snapshot `before.top` /
+ * `before.left` for an incoming cell).
+ *
+ * The journey is split into two regimes:
+ *
+ *   1. **In-viewport range** (|delta| ≤ viewportSize + cellSize):
+ *      The cell is sliding to/from a position inside or just past the visible
+ *      band, so we use the true delta untouched. Small reorders, partial-move
+ *      sorts and persistent in-viewport cells are unaffected.
+ *
+ *   2. **Off-screen overshoot** (|delta| > visibleRange):
+ *      The cell is sliding to/from a far conceptual position that's invisible
+ *      anyway. We let the slide overshoot the visible edge by an amount that
+ *      grows with the true delta but smoothly asymptotes at `maxOvershoot`,
+ *      so cells with vastly different true journeys still slide *different*
+ *      distances (no piling-up), and cells with truly extreme conceptual
+ *      positions (e.g. a million pixels) stay bounded.
+ *
+ * The asymptotic formula is `maxOvershoot * extra / (extra + visibleRange * k)`
+ * which is 0 when `extra = 0`, approaches `maxOvershoot` as `extra → ∞`, and
+ * has no discontinuity at the boundary.
+ *
+ * No-op when there's no scrolling along the requested axis (small datasets,
+ * pinned panes, or header sections in the vertical case).
+ *
+ * Vertical and horizontal use different scrollers because the table's layout
+ * splits scrolling responsibilities: the body section element (`.st-body-main`
+ * and pinned variants) is the *horizontal* scroller, while its parent
+ * (`.st-body-container`) is the *vertical* scroller. Header sections only
+ * scroll horizontally.
+ */
 type ScrollerMetrics = {
   clientHeight: number;
   scrollHeight: number;
@@ -1815,7 +1580,7 @@ const readScrollerMetrics = (container: HTMLElement): ScrollerMetrics => {
   };
 };
 
-/** True when the row's top edge falls inside the visible viewport. */
+/** True when the row/column's leading edge (top/left) falls inside the visible viewport. */
 const isRowTopInVerticalViewport = (
   top: number,
   _cellHeight: number,
@@ -1826,10 +1591,14 @@ const isRowTopInVerticalViewport = (
   if (clientSize <= 0 || scrollSize <= clientSize) return true;
   const vpTop = metrics.scrollTop;
   const vpBottom = metrics.scrollTop + clientSize;
+  // Require the row's top edge to sit within the viewport. Rows in the
+  // virtualization padding whose bottom peeks into view (top < scrollTop but
+  // top + height > scrollTop) must not count as visible — that was letting
+  // ~30 padding-band rows animate during a mid-scroll sort.
   return top >= vpTop && top < vpBottom;
 };
 
-/** True when the column's left edge falls inside the visible viewport. */
+/** True when the column's leading edge falls inside the visible viewport. */
 const isColumnLeftInHorizontalViewport = (
   left: number,
   _cellWidth: number,
@@ -1843,23 +1612,52 @@ const isColumnLeftInHorizontalViewport = (
   return left >= vpLeft && left < vpRight;
 };
 
-const parsePx = (value: string): number => {
-  if (!value) return 0;
-  const parsed = parseFloat(value);
-  return Number.isFinite(parsed) ? parsed : 0;
-};
+const scaleFlipDistance = (
+  distantPos: number,
+  anchorPos: number,
+  cellSize: number,
+  metrics: ScrollerMetrics,
+  axis: FlipAxis,
+): number => {
+  const clientSize = axis === "y" ? metrics.clientHeight : metrics.clientWidth;
+  const scrollSize = axis === "y" ? metrics.scrollHeight : metrics.scrollWidth;
+  if (clientSize <= 0 || scrollSize <= clientSize) return distantPos;
 
-/** True when an inline transform is a non-zero translate (active FLIP invert / mid-slide). */
-const hasNonIdentityTranslate = (transform: string): boolean => {
-  if (!transform || transform === "none") return false;
-  if (transform.includes("translate3d(0px, 0px, 0px)")) return false;
-  if (transform.includes("translate3d(0, 0, 0)")) return false;
-  if (/translate3d?\(/i.test(transform)) return true;
-  // Freeze path writes getComputedStyle's matrix(...) form.
-  const parsed = parseCssTranslate(transform);
-  return Boolean(parsed && (Math.abs(parsed.x) > MIN_DELTA || Math.abs(parsed.y) > MIN_DELTA));
-};
+  const delta = distantPos - anchorPos;
+  const absDelta = Math.abs(delta);
+  if (absDelta === 0) return distantPos;
 
+  const cellBuffer = cellSize > 0 ? cellSize : 0;
+
+  // If `distantPos` is itself inside the visible viewport, it's a real visible
+  // position (a surviving cell's actual previous spot, or a real new spot we
+  // want a retained ghost to slide into) — not a far-off conceptual one.
+  // Compressing it would pull the cell AWAY from the viewport edge and hide
+  // the only on-screen portion of the journey. Pass it through unchanged.
+  // (Without this guard, a cell sliding from a visible position to an
+  // off-screen position "disappears" mid-animation: |delta| exceeds
+  // visibleRange, so the compression below pulls the visible end-point past
+  // the section's overflow clip and the cell is never painted.)
+  const scrollOffset = axis === "y" ? metrics.scrollTop : metrics.scrollLeft;
+  if (distantPos >= scrollOffset - cellBuffer && distantPos <= scrollOffset + clientSize) {
+    return distantPos;
+  }
+
+  // Threshold below which we pass the journey through unchanged. Cells whose
+  // true delta fits within the visible band + one cell of overshoot are
+  // already on-screen and don't need scaling.
+  const visibleRange = clientSize + cellBuffer;
+  if (absDelta <= visibleRange) return distantPos;
+
+  // Off-screen extra distance, smoothly compressed and asymptotic to
+  // `maxOvershoot`. With maxOvershoot = clientSize, the longest possible
+  // visible slide is ~2× viewport size (visibleRange + maxOvershoot).
+  const maxOvershoot = clientSize;
+  const extra = absDelta - visibleRange;
+  const compressed = (maxOvershoot * extra) / (extra + visibleRange * OFFSCREEN_COMPRESSION_FACTOR);
+  const scaledMagnitude = visibleRange + compressed;
+  return anchorPos + Math.sign(delta) * scaledMagnitude;
+};
 
 const readPrefersReducedMotion = (): boolean => {
   if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
