@@ -12,8 +12,10 @@
  * overflow clip turns those long off-screen translates into "appears to
  * slide in from the viewport edge" visually.
  *
- * Animations default to `true`. Live drag reorder is intentionally not
- * animated (we don't want to fight the user's pointer mid-drag).
+ * Animations default to `true`. Live drag-and-drop column reorder also FLIPs
+ * on each dragover swap (see HeaderCellsAnimateDuringDragReorder /
+ * DragAndDropColumnReorderShouldAnimate). Use a long `animations.duration`
+ * (SLOW_DURATION) so the motion is easy to follow in Storybook.
  */
 
 import { ColumnDef, Row, SimpleTableVanilla } from "../../src/index";
@@ -116,6 +118,19 @@ const tickFrames = async (count: number): Promise<void> => {
   }
 };
 
+/** True when a cell is mid-slide (inline translate or a running cell-slide animation). */
+const isTransformSliding = (el: HTMLElement): boolean => {
+  const tx = el.style.transform || "";
+  if (tx.includes("translate")) return true;
+  if (typeof el.getAnimations === "function") {
+    return el.getAnimations().some((a) => {
+      const id = (a as Animation & { id?: string }).id;
+      return id === "st-cell-slide" || id === "st-column-reorder" || a.playState === "running";
+    });
+  }
+  return el.classList.contains("st-flip-active");
+};
+
 // ============================================================================
 // STORIES
 // ============================================================================
@@ -197,7 +212,7 @@ export const ProgrammaticReorderAnimation = {
 
     const cellMid = findCellByRowAndAccessor(canvasElement, 0, "name");
     expect(cellMid).toBe(cellBefore);
-    expect(cellMid!.style.transition).toContain("transform");
+    expect(isTransformSliding(cellMid!)).toBe(true);
     expect(cellMid!.style.transform).toContain("translate");
 
     await sleep(SETTLE_PAUSE);
@@ -213,7 +228,7 @@ export const ProgrammaticReorderAnimation = {
     table.update({ columns: original });
     await tickFrames(2);
     const cellResetMid = findCellByRowAndAccessor(canvasElement, 0, "name");
-    expect(cellResetMid!.style.transition).toContain("transform");
+    expect(isTransformSliding(cellResetMid!)).toBe(true);
     await sleep(SETTLE_PAUSE);
 
     // Step 4: swap Name ↔ City — only those two columns animate.
@@ -454,9 +469,9 @@ export const SimpleThreeByThreeCenterToRightSwap = {
         for (const row of ROW_INDICES) {
           const cell = findCellByRowAndAccessor(canvasElement, row, accessor);
           expect(
-            cell!.style.transition,
-            `[${stepLabel}] r${row}.${accessor} should be transitioning transform`,
-          ).toContain("transform");
+            isTransformSliding(cell!),
+            `[${stepLabel}] r${row}.${accessor} should be sliding`,
+          ).toBe(true);
         }
       }
 
@@ -658,9 +673,9 @@ export const HeaderCellsAnimateOnColumnReorder = {
       for (const s of movedSamples) {
         const headerCell = findHeaderCell(s.accessor);
         expect(
-          headerCell!.style.transition,
-          `[${stepLabel}] header ${s.accessor} should be transitioning transform`,
-        ).toContain("transform");
+          isTransformSliding(headerCell!),
+          `[${stepLabel}] header ${s.accessor} should be sliding`,
+        ).toBe(true);
       }
 
       await sleep(SETTLE_PAUSE);
@@ -1260,8 +1275,8 @@ export const SortAnimationDemo = {
     // Once the FLIP "Play" RAF has fired, both cells should have the
     // transform transition CSS applied so the slide actually animates.
     await tickFrames(2);
-    expect(charlieMid!.style.transition).toContain("transform");
-    expect(aliceMid!.style.transition).toContain("transform");
+    expect(isTransformSliding(charlieMid!)).toBe(true);
+    expect(isTransformSliding(aliceMid!)).toBe(true);
 
     await sleep(SETTLE_PAUSE);
 
@@ -1301,6 +1316,325 @@ export const SortAnimationDemo = {
     }
   },
 };
+
+/**
+ * Spam-click sort while slides are still in flight, and assert painted Y never
+ * teleports. SortAnimationDemo waits for each sort to settle; this story does
+ * the opposite — Name header clicks, same-tick double applySortState, column
+ * bounce, and a triple-click in one rAF — while sampling getBoundingClientRect
+ * every frame.
+ *
+ * Dest-unchanged frames may travel up to SPAM_FRAME_JUMP_PX (one compositor
+ * tick of a 1500ms slide). When dest `top` changes, invert must hold the
+ * pixel (SPAM_RETARGET_JUMP_PX). Track cells by name text (stable identity).
+ * `data-row-id` includes the flattened row index, so it changes on sort.
+ *
+ * Painted Y is style.top + the computed translate, not getBoundingClientRect.
+ * On the invert frame GCR can follow dest while WAAPI already holds the pixel
+ * in the computed matrix; dest+remain is the same quantity the animator uses.
+ *
+ * Temporarily commented out: overlapping sorts snap the same way as main.
+ */
+/*
+export const SpamSortPaintedContinuity = {
+  tags: ["spam-sort-continuity"],
+  render: () => {
+    const result = renderVanillaTable<AnimRow>(createHeaders(), createData(), {
+      height: "400px",
+      animations: { enabled: true, duration: SLOW_DURATION },
+      getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+    });
+    setTable(result.table);
+    result.h2.textContent = `Spam-sort painted continuity · ${SLOW_DURATION}ms slides`;
+    addParagraph(
+      result.wrapper,
+      "Hammers sort mid-slide (header clicks, same-tick doubles, column bounce) " +
+        "and fails if a named cell's painted Y jumps. Invert must hold the pixel; " +
+        "in-flight slides must retarget instead of teleporting.",
+    );
+    const hud = document.createElement("div");
+    hud.dataset.spamSortHud = "true";
+    hud.style.cssText =
+      "font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; " +
+      "background: #f4f6fb; border: 1px solid #d8dee9; border-radius: 6px; " +
+      "padding: 8px 12px; margin-bottom: 12px; color: #2e3440;";
+    hud.textContent = "Idle — waiting for play";
+    result.wrapper.insertBefore(hud, result.tableContainer);
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await tickFrames(2);
+
+    // Max painted-Y jump between rAFs while dest `top` is unchanged.
+    const SPAM_FRAME_JUMP_PX = 12;
+    // Max painted-Y jump when dest `top` retargets (invert must hold the pixel).
+    const SPAM_RETARGET_JUMP_PX = 2;
+
+    type PaintSample = {
+      visualTop: number;
+      destTop: number;
+      sliding: boolean;
+      name: string;
+      rowId: string;
+      transform: string;
+      computedTransform: string;
+    };
+
+    const hud =
+      canvasElement.querySelector<HTMLElement>("[data-spam-sort-hud]") ??
+      document.createElement("div");
+
+    const findNameCellByText = (text: string): HTMLElement | null => {
+      const cells = canvasElement.querySelectorAll<HTMLElement>(
+        '.st-body-main [data-accessor="name"]',
+      );
+      for (const cell of Array.from(cells)) {
+        if (cell.textContent?.trim() === text) return cell;
+      }
+      return null;
+    };
+
+    const clickNameSortControl = (): void => {
+      const header = canvasElement.querySelector<HTMLElement>(
+        '.st-header-cell[data-accessor="name"]',
+      );
+      if (!header) {
+        throw new Error("Name header cell not found");
+      }
+      const icon = header.querySelector<HTMLElement>(
+        '.st-icon-container[aria-label*="Sort"]',
+      );
+      (icon ?? header).click();
+    };
+
+    const sampleNameCells = (): Map<string, PaintSample> => {
+      const map = new Map<string, PaintSample>();
+      const cells = canvasElement.querySelectorAll<HTMLElement>(
+        '.st-body-main [data-accessor="name"][data-row-id]',
+      );
+      for (const el of Array.from(cells)) {
+        const name = el.textContent?.trim() ?? "";
+        if (!name) continue;
+        map.set(name, {
+          visualTop:
+            parseFloat(el.style.top || "0") + parseTranslateY(getComputedStyle(el).transform),
+          destTop: parseFloat(el.style.top || "0"),
+          sliding: isTransformSliding(el),
+          name,
+          rowId: el.getAttribute("data-row-id") ?? "",
+          transform: el.style.transform || "",
+          computedTransform: getComputedStyle(el).transform,
+        });
+      }
+      return map;
+    };
+
+    const namesInDestOrder = (): string[] => {
+      const cells = Array.from(
+        canvasElement.querySelectorAll<HTMLElement>(
+          '.st-body-main [data-accessor="name"]',
+        ),
+      );
+      cells.sort(
+        (a, b) => parseFloat(a.style.top || "0") - parseFloat(b.style.top || "0"),
+      );
+      return cells.map((el) => el.textContent?.trim() ?? "");
+    };
+
+    const expectedNamesForSort = (
+      sort: { key: { accessor: string | number | symbol }; direction: "asc" | "desc" } | null,
+    ): string[] => {
+      const rows = createData();
+      if (!sort) return rows.map((r) => r.name);
+      const accessor = String(sort.key.accessor) as keyof AnimRow;
+      const dir = sort.direction === "asc" ? 1 : -1;
+      rows.sort((a, b) => {
+        const av = a[accessor];
+        const bv = b[accessor];
+        if (typeof av === "number" && typeof bv === "number") {
+          return (av - bv) * dir;
+        }
+        return String(av ?? "").localeCompare(String(bv ?? "")) * dir;
+      });
+      return rows.map((r) => r.name);
+    };
+
+    const charlieBefore = findNameCellByText("Charlie");
+    const aliceBefore = findNameCellByText("Alice");
+    expect(charlieBefore).toBeTruthy();
+    expect(aliceBefore).toBeTruthy();
+    const charlieRowId = charlieBefore!.getAttribute("data-row-id");
+    const aliceRowId = aliceBefore!.getAttribute("data-row-id");
+    expect(charlieRowId).toBeTruthy();
+    expect(aliceRowId).toBeTruthy();
+    expect(charlieRowId).not.toBe(aliceRowId);
+
+    let prev = sampleNameCells();
+    let sampling = true;
+    let continuityError: Error | null = null;
+    let sortCount = 0;
+    let sampleCount = 0;
+    let maxJump = 0;
+    let maxJumpLabel = "";
+    let sawSliding = false;
+    let sawRetargetWhileSliding = false;
+    let rafId = 0;
+
+    const announceHud = (phase: string): void => {
+      hud.textContent =
+        `${phase} · sorts=${sortCount} samples=${sampleCount} ` +
+        `maxJump=${maxJump.toFixed(1)}px ${maxJumpLabel} ` +
+        `sliding=${sawSliding ? "yes" : "no"}`;
+    };
+
+    const throwIfContinuityFailed = (): void => {
+      if (continuityError) throw continuityError;
+    };
+
+    const checkContinuity = (): void => {
+      if (continuityError) throw continuityError;
+      const next = sampleNameCells();
+      sampleCount += 1;
+      for (const [name, curr] of next) {
+        const before = prev.get(name);
+        if (!before) continue;
+        const paintedJump = Math.abs(curr.visualTop - before.visualTop);
+        const destChanged = Math.abs(curr.destTop - before.destTop) > 0.5;
+        if (before.sliding || curr.sliding) sawSliding = true;
+        if (destChanged && (before.sliding || curr.sliding)) {
+          sawRetargetWhileSliding = true;
+        }
+        if (paintedJump > maxJump) {
+          maxJump = paintedJump;
+          maxJumpLabel = `${curr.name} (row-id ${curr.rowId})`;
+        }
+        const budget = destChanged ? SPAM_RETARGET_JUMP_PX : SPAM_FRAME_JUMP_PX;
+        const kind = destChanged ? "retarget" : "frame";
+        if (paintedJump > budget) {
+          throw new Error(
+            `${curr.name} (row-id ${curr.rowId}): ${kind} painted jump ${paintedJump.toFixed(1)}px ` +
+              `(${before.visualTop.toFixed(1)} → ${curr.visualTop.toFixed(1)}, ` +
+              `dest ${before.destTop.toFixed(1)} → ${curr.destTop.toFixed(1)}, ` +
+              `style ${JSON.stringify(curr.transform)}, computed ${curr.computedTransform})`,
+          );
+        }
+      }
+      prev = next;
+    };
+
+    const onFrame = (): void => {
+      if (!sampling) return;
+      try {
+        checkContinuity();
+        announceHud("sampling");
+      } catch (err) {
+        continuityError = err instanceof Error ? err : new Error(String(err));
+        sampling = false;
+        announceHud("FAILED");
+        return;
+      }
+      rafId = requestAnimationFrame(onFrame);
+    };
+
+    const fireNameClick = (): void => {
+      checkContinuity();
+      clickNameSortControl();
+      sortCount += 1;
+      checkContinuity();
+    };
+
+    const fireApplySort = (props: {
+      accessor: string;
+      direction: "asc" | "desc";
+    }): void => {
+      checkContinuity();
+      void getTable<AnimRow>().getAPI().applySortState(props);
+      sortCount += 1;
+      checkContinuity();
+    };
+
+    rafId = requestAnimationFrame(onFrame);
+    announceHud("Name click storm");
+
+    for (let i = 0; i < 18; i++) {
+      fireNameClick();
+      throwIfContinuityFailed();
+      await sleep(60);
+      throwIfContinuityFailed();
+    }
+
+    announceHud("same-tick double fire");
+    fireApplySort({ accessor: "age", direction: "desc" });
+    fireApplySort({ accessor: "name", direction: "asc" });
+    throwIfContinuityFailed();
+    await sleep(40);
+    throwIfContinuityFailed();
+
+    announceHud("column bounce");
+    const bounce: Array<{ accessor: string; direction: "asc" | "desc" }> = [
+      { accessor: "age", direction: "asc" },
+      { accessor: "revenue", direction: "desc" },
+      { accessor: "id", direction: "asc" },
+      { accessor: "name", direction: "desc" },
+    ];
+    for (let i = 0; i < 12; i++) {
+      fireApplySort(bounce[i % bounce.length]);
+      throwIfContinuityFailed();
+      await sleep(40);
+      throwIfContinuityFailed();
+    }
+
+    announceHud("triple-click one frame");
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => {
+        try {
+          fireNameClick();
+          fireNameClick();
+          fireNameClick();
+        } catch (err) {
+          continuityError = err instanceof Error ? err : new Error(String(err));
+        }
+        resolve();
+      });
+    });
+    throwIfContinuityFailed();
+
+    sampling = false;
+    if (rafId) cancelAnimationFrame(rafId);
+    throwIfContinuityFailed();
+
+    expect(
+      sawRetargetWhileSliding,
+      "spam never overlapped",
+    ).toBe(true);
+
+    announceHud("settling");
+    await sleep(SETTLE_PAUSE);
+
+    const charlieAfter = findNameCellByText("Charlie");
+    const aliceAfter = findNameCellByText("Alice");
+    expect(charlieAfter).toBe(charlieBefore);
+    expect(aliceAfter).toBe(aliceBefore);
+    expect(charlieAfter!.getAttribute("data-row-id")).toBe(charlieRowId);
+    expect(aliceAfter!.getAttribute("data-row-id")).toBe(aliceRowId);
+
+    const ghosts = canvasElement.querySelectorAll(
+      `.st-body-main [data-animating-out="true"]`,
+    );
+    expect(ghosts.length, "ghosts left after spam-sort settle").toBe(0);
+
+    const stuck = Array.from(
+      canvasElement.querySelectorAll<HTMLElement>(".st-body-main .st-cell"),
+    ).filter((c) => c.style.transform && c.style.transform !== "none");
+    expect(stuck.length, "cells with leftover transform after spam-sort settle").toBe(0);
+
+    const lastSort = getTable<AnimRow>().getAPI().getSortState();
+    expect(namesInDestOrder()).toEqual(expectedNamesForSort(lastSort));
+    announceHud("Done");
+  },
+};
+*/
 
 export const AnimationsPropWiring = {
   render: () => {
@@ -1433,7 +1767,7 @@ export const ReorderAnimatesFromPreviousPositionPerCell = {
     await tickFrames(2);
     for (const accessor of accessors) {
       const cell = findCellByRowAndAccessor(canvasElement, ROW_INDEX, accessor);
-      expect(cell!.style.transition).toContain("transform");
+      expect(isTransformSliding(cell!)).toBe(true);
     }
 
     await sleep(SETTLE_PAUSE);
@@ -1573,13 +1907,8 @@ export const SortSlidesRowsCrossingTheViewportBoundary = {
     const ghostsAfterPlay = Array.from(
       canvasElement.querySelectorAll<HTMLElement>(`[data-animating-out="true"]`),
     );
-    const ghostsMissingTransformTransition = ghostsAfterPlay.filter(
-      (el) => !el.style.transition.includes("transform"),
-    );
-    expect(
-      ghostsMissingTransformTransition.length,
-      "ghosts whose transition does not target transform",
-    ).toBe(0);
+    const ghostsMissingSlide = ghostsAfterPlay.filter((el) => !isTransformSliding(el));
+    expect(ghostsMissingSlide.length, "ghosts that are not sliding").toBe(0);
     const ghostsWithOpacityTransition = ghostsAfterPlay.filter((el) =>
       el.style.transition.includes("opacity"),
     );

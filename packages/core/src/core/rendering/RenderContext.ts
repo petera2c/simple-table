@@ -88,6 +88,11 @@ export interface RenderContext {
   /** When true, body cells that stay visible get only position updates (no content/selection recalc). Used during vertical scroll for performance. */
   positionOnlyBody?: boolean;
   /**
+   * Mid column-header drag. Row model is unchanged — reuse last flatten/process
+   * results and only repaint header/body lefts.
+   */
+  columnDragging?: boolean;
+  /**
    * Visible portion of the table inside an external scroll parent (in pixels).
    * Set per render when `config.scrollParent` is active and no explicit
    * `height`/`maxHeight` is set. Drives virtualization the same way an

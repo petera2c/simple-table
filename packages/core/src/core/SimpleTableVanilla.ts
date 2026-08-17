@@ -9,7 +9,6 @@ import {
   normalizeConfig,
   type SimpleTableConfigInput,
 } from "../utils/normalizeConfig";
-
 import { AnimationCoordinator } from "../managers/AnimationCoordinator";
 import { AccordionController } from "../managers/AccordionController";
 import type { AutoScaleManager } from "../managers/AutoScaleManager";
@@ -291,11 +290,18 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
 
   /**
    * Shared header write path for the render context and TableAPI. Accordion-
-   * horizontal when the visible or pinned set changed; otherwise snapshot for FLIP.
+   * horizontal when the visible or pinned set changed; column-drag uses the
+   * dedicated reorder animator; otherwise snapshot for FLIP.
    */
   private applyHeaders(headers: ColumnDef[]): void {
     if (this.accordionController.didColumnVisibilityChange(headers)) {
       this.accordionController.begin("horizontal");
+    } else if (
+      this.draggedHeaderRef.current ||
+      this.animationCoordinator.isColumnReordering()
+    ) {
+      const root = this.domManager.getElements()?.rootElement ?? this.container;
+      this.animationCoordinator.beginColumnReorder(root);
     } else {
       this.accordionController.captureSnapshot();
     }
@@ -590,8 +596,11 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       return;
     }
 
-    // During scroll use position-only body updates; full update on scroll-end or other triggers
-    this._positionOnlyBody = source === "scroll-raf" && this.scrollCoalescer.isScrolling === true;
+    // During scroll use position-only body updates; full update on scroll-end or other triggers.
+    // Mid column-drag uses the same fast path — only left/top change.
+    const columnDragging = Boolean(this.draggedHeaderRef.current);
+    this._positionOnlyBody =
+      (source === "scroll-raf" && this.scrollCoalescer.isScrolling === true) || columnDragging;
 
     const elements = this.domManager.getElements();
     const refs = this.domManager.getRefs();
@@ -616,17 +625,21 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     // resize, etc.) don't apply zero-size initial styles to cells they
     // happen to create.
     this.accordionController.clearPendingAxis();
+    this.accordionController.rememberRenderedHeaders(this.headers);
 
     // FLIP play step. No-op when no snapshot is armed or when scroll-driven.
     // Position-only scroll renders deliberately skip play so out-going /
     // in-coming cells aren't FLIP-tweened during vertical scrolls. Live-sort
     // reorders (from updateData) also skip play so they don't interrupt an
     // in-flight user sort or thrash retained-cell cleanup every tick.
-    // Every other render — including the chain of mid-drag `setHeaders` renders
-    // that fire on each `dragover` swap — runs play so columns being
-    // displaced by the drag slide smoothly to their new slots.
+    // Column-drag commits through CellSlideAnimator after left writes.
     if (source !== "scroll-raf" && source !== "live-sort") {
-      this.accordionController.play();
+      if (columnDragging || this.animationCoordinator.isColumnReordering()) {
+        const root = elements.rootElement ?? this.container;
+        this.animationCoordinator.commitColumnReorder(root);
+      } else {
+        this.accordionController.play();
+      }
     }
 
     this.unvirtualizedRowsWarning.schedule();

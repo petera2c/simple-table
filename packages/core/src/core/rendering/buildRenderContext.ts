@@ -47,6 +47,7 @@ export interface RenderContextSource {
   pinnedRightHeaderRef: { current: HTMLDivElement | null };
   pinnedRightRef: { current: HTMLDivElement | null };
   positionOnlyBody?: boolean;
+  columnDragging?: boolean;
   externalViewportHeight?: number;
   resolvedIcons: ResolvedIcons;
   rowSelectionManager: RowSelectionManager | null;
@@ -114,6 +115,7 @@ export const buildRenderContext = (source: RenderContextSource): RenderContext =
   pinnedRightHeaderRef: source.pinnedRightHeaderRef,
   pinnedRightRef: source.pinnedRightRef,
   positionOnlyBody: source.positionOnlyBody,
+  columnDragging: source.columnDragging,
   externalViewportHeight: source.externalViewportHeight,
   resolvedIcons: source.resolvedIcons,
   rowSelectionManager: source.rowSelectionManager,

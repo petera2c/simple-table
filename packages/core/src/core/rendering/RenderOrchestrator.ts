@@ -166,10 +166,17 @@ export class RenderOrchestrator {
     maxHeaderDepth: number;
     flattenResult: FlattenRowsResult;
     processedResult: ProcessRowsResult;
+    headersUnchangedForScrollBailout: boolean;
   } | null {
     if (this.lastHeadersRef !== context.headers) {
       this.invalidateCache("header");
-      this.invalidateCache("context");
+      // Mid column-drag only changes sibling order — wiping row-model caches
+      // forces flatten/processRows on every dragover (~50–90ms). Keep them.
+      if (!context.columnDragging) {
+        this.invalidateCache("context");
+      } else {
+        this.scrollRafHeadersMemo = null;
+      }
       this.lastHeadersRef = context.headers;
     }
 
@@ -185,11 +192,16 @@ export class RenderOrchestrator {
         : [...context.collapsedHeaders].map(String).sort().join("\0");
 
     let effectiveHeaders: ColumnDef[];
+    // Capture before memo refresh — column-drag reuses positionOnlyBody but
+    // must still paint (header order / cell lefts changed). The scroll
+    // unchanged-range bailout below is only safe when headers are identical.
+    const headersUnchangedForScrollBailout =
+      this.scrollRafHeadersMemo?.headersRef === context.headers;
     if (
       context.positionOnlyBody &&
       context.config.autoExpandColumns !== true &&
       this.scrollRafHeadersMemo &&
-      this.scrollRafHeadersMemo.headersRef === context.headers &&
+      headersUnchangedForScrollBailout &&
       this.scrollRafHeadersMemo.containerWidth === containerWidth &&
       this.scrollRafHeadersMemo.collapsedKey === collapsedKey
     ) {
@@ -392,7 +404,7 @@ export class RenderOrchestrator {
         : `${canUseCache ? 1 : 0}|${contentHeight}|${state.currentPage}|${rowsPerPage}|${enablePagination}|${serverSidePagination}|${context.customTheme.rowHeight}|${calculatedHeaderHeight}|${totalRowCountForHeight}|${enableStickyParents}|${rowGroupingKey}|${flattenResult.flattenedRows.length}|${heightOffsetsLen}|${heightOffsetsChecksum}`;
 
     const scrollReuseEligible =
-      Boolean(context.positionOnlyBody) &&
+      (Boolean(context.positionOnlyBody) || Boolean(context.columnDragging)) &&
       contentHeight !== undefined &&
       this.processRowsScrollReuseKey !== null &&
       this.processRowsScrollReuseBase !== null &&
@@ -451,6 +463,7 @@ export class RenderOrchestrator {
       maxHeaderDepth,
       flattenResult,
       processedResult,
+      headersUnchangedForScrollBailout,
     };
   }
 
@@ -486,6 +499,7 @@ export class RenderOrchestrator {
       maxHeaderDepth,
       flattenResult,
       processedResult,
+      headersUnchangedForScrollBailout,
     } = snapshot;
     this.lastProcessedResult = processedResult;
 
@@ -493,6 +507,8 @@ export class RenderOrchestrator {
 
     if (
       verticalScrollFastPath &&
+      !context.columnDragging &&
+      headersUnchangedForScrollBailout &&
       this.lastScrollRafPaintedRange !== null &&
       processedResult.renderedStartIndex === this.lastScrollRafPaintedRange.start &&
       processedResult.renderedEndIndex === this.lastScrollRafPaintedRange.end
@@ -565,6 +581,17 @@ export class RenderOrchestrator {
       elements.content.style.width =
         editorStripWidth > 0 ? `calc(100% - ${editorStripWidth}px)` : "100%";
 
+      this.renderHeader(
+        elements.headerContainer,
+        calculatedHeaderHeight,
+        maxHeaderDepth,
+        effectiveHeaders,
+        context,
+      );
+    } else if (context.columnDragging) {
+      // Column-drag reuses the body position-only fast path for perf, but must
+      // still repaint headers — otherwise setHeaders updates leaf order in state
+      // while header style.left stays put (no FLIP, continuity order never moves).
       this.renderHeader(
         elements.headerContainer,
         calculatedHeaderHeight,

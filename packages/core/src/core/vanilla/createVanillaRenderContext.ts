@@ -48,6 +48,7 @@ export const createVanillaRenderContext = (
     pinnedRightHeaderRef: refs.pinnedRightHeaderRef,
     pinnedRightRef: refs.pinnedRightRef,
     positionOnlyBody: host.getPositionOnlyBody(),
+    columnDragging: Boolean(host.getDraggedHeaderRef().current),
     externalViewportHeight: viewportHeight > 0 ? viewportHeight : undefined,
     resolvedIcons: host.getResolvedIcons(),
     rowSelectionManager: host.getRowSelectionManager(),

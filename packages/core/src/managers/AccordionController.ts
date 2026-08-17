@@ -32,6 +32,8 @@ export class AccordionController {
   private host: AccordionHost;
   private pendingAccordionAxis: AccordionAxis = null;
   private accordionCleanupTimerId: number | null = null;
+  /** Leaf accessor + pin key from the last committed paint. */
+  private lastRenderedVisibilityKey: string | null = null;
 
   constructor(host: AccordionHost) {
     this.host = host;
@@ -46,7 +48,13 @@ export class AccordionController {
   }
 
   didColumnVisibilityChange(nextHeaders: ColumnDef[]): boolean {
-    return buildVisibilityKey(this.host.getHeaders()) !== buildVisibilityKey(nextHeaders);
+    const nextKey = buildVisibilityKey(nextHeaders);
+    return this.lastRenderedVisibilityKey !== null && nextKey !== this.lastRenderedVisibilityKey;
+  }
+
+  /** Record the leaf/pin set that the last render actually painted. */
+  rememberRenderedHeaders(headers: ColumnDef[]): void {
+    this.lastRenderedVisibilityKey = buildVisibilityKey(headers);
   }
 
   captureSnapshot(): void {
@@ -150,6 +158,7 @@ const buildVisibilityKey = (headers: ColumnDef[]): string => {
     }
   };
   for (const header of headers) walk(header, undefined);
+  parts.sort();
   return parts.join("|");
 };
 

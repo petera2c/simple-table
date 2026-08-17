@@ -6,7 +6,7 @@
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
 import { ColumnDef } from "../../src/index";
-import { waitForTable } from "./testUtils";
+import { waitForTable, waitUntil } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
 const meta: Meta = {
@@ -95,5 +95,70 @@ export const MultipleHeadersWithTooltips = {
     expect(canvasElement.querySelector('[data-accessor="name"]')).toBeTruthy();
     expect(canvasElement.textContent).toContain("ID");
     expect(canvasElement.textContent).toContain("Name");
+  },
+};
+
+export const HeaderTooltipsHiddenDuringColumnDrag = {
+  render: () => {
+    const headers: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number", tooltip: "Unique identifier" },
+      {
+        accessor: "name",
+        label: "Name",
+        width: 150,
+        type: "string",
+        tooltip: "Full name of the person",
+      },
+      { accessor: "score", label: "Score", width: 100, type: "number", tooltip: "Test score" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createData(), {
+      columnReordering: true,
+      getRowId: (p) => String(p.row?.id),
+      height: "250px",
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const nameCell = canvasElement.querySelector('[data-accessor="name"]') as HTMLElement | null;
+    const nameLabelText = nameCell?.querySelector(".st-header-label-text") as HTMLElement | null;
+    const nameLabel = nameCell?.querySelector(".st-header-label") as HTMLElement | null;
+    const scoreLabelText = canvasElement.querySelector(
+      '[data-accessor="score"] .st-header-label-text',
+    ) as HTMLElement | null;
+    expect(nameLabelText).toBeTruthy();
+    expect(nameLabel).toBeTruthy();
+    expect(scoreLabelText).toBeTruthy();
+
+    nameLabelText!.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
+    await waitUntil(() => document.querySelectorAll(".st-tooltip").length > 0, {
+      timeoutMs: 2000,
+    });
+    expect(document.querySelectorAll(".st-tooltip").length).toBeGreaterThan(0);
+
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData("text/plain", "column-drag");
+    dataTransfer.effectAllowed = "move";
+    nameLabel!.dispatchEvent(
+      new DragEvent("dragstart", {
+        bubbles: true,
+        cancelable: true,
+        dataTransfer,
+      }),
+    );
+
+    expect(document.querySelectorAll(".st-tooltip").length).toBe(0);
+
+    scoreLabelText!.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
+    await new Promise((r) => setTimeout(r, 600));
+    expect(document.querySelectorAll(".st-tooltip").length).toBe(0);
+
+    nameLabel!.dispatchEvent(
+      new DragEvent("dragend", {
+        bubbles: true,
+        cancelable: true,
+        dataTransfer,
+      }),
+    );
   },
 };

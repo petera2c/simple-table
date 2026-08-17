@@ -1,5 +1,7 @@
 import { getRenderedCells as getBodyRenderedCells } from "../utils/bodyCell/eventTracking";
 import { getRenderedCells as getHeaderRenderedCells } from "../utils/headerCell/eventTracking";
+import { setFlipCompensationEnabled } from "../utils/setAbsoluteCellPosition";
+import { CellSlideAnimator } from "./CellSlideAnimator";
 
 const DEFAULT_DURATION = 400;
 /**
@@ -246,6 +248,11 @@ export class AnimationCoordinator {
    */
   private scheduledFlip: { rafId: number; pending: Array<{ element: HTMLElement }> } | null = null;
 
+  /** True while the user is dragging a column header to reorder. */
+  private columnReordering = false;
+  /** Holds and slides cells during column drag. Sort uses CSS transitions in play(). */
+  private readonly cellSlideAnimator = new CellSlideAnimator();
+
   /**
    * Invoked immediately BEFORE a retained/ghost element is permanently removed
    * from the DOM (FLIP/shrink/cancel/destroy teardown). Lets framework adapters
@@ -260,6 +267,7 @@ export class AnimationCoordinator {
     this.duration = opts.duration ?? DEFAULT_DURATION;
     this.easing = opts.easing ?? DEFAULT_EASING;
     this.prefersReducedMotion = readPrefersReducedMotion();
+    this.cellSlideAnimator.setDuration(this.duration);
   }
 
   /**
@@ -281,6 +289,7 @@ export class AnimationCoordinator {
   setDuration(duration: number): void {
     if (Number.isFinite(duration) && duration > 0) {
       this.duration = duration;
+      this.cellSlideAnimator.setDuration(duration);
     }
   }
 
@@ -294,13 +303,40 @@ export class AnimationCoordinator {
     return this.enabled && !this.prefersReducedMotion;
   }
 
+  /**
+   * Enter or leave column-header drag. Motion is owned by CellSlideAnimator.
+   * Left/top writes stay plain; the animator holds and slides after those writes.
+   */
+  setColumnReordering(active: boolean): void {
+    if (this.columnReordering === active) return;
+    this.columnReordering = active;
+    this.cellSlideAnimator.setActive(active);
+    setFlipCompensationEnabled(!active);
+  }
+
+  isColumnReordering(): boolean {
+    return this.columnReordering;
+  }
+
+  /** Snapshot header visuals before mid-drag left writes. */
+  beginColumnReorder(root: ParentNode): void {
+    if (!this.isEnabled() || !this.columnReordering) return;
+    this.cellSlideAnimator.beginOrderChange(root);
+  }
+
+  /** Slide after left writes, same task, before paint. */
+  commitColumnReorder(root: ParentNode): void {
+    if (!this.isEnabled() || !this.columnReordering) return;
+    this.cellSlideAnimator.commitOrderChange(root);
+  }
+
   isInFlight(cellId: string): boolean {
     return this.inFlight.has(cellId);
   }
 
-  /** True while any FLIP / retained-cell transition is still running. */
+  /** True while any sort slide, retained cell, or column-reorder slide is running. */
   hasInFlight(): boolean {
-    return this.inFlight.size > 0;
+    return this.inFlight.size > 0 || this.cellSlideAnimator.hasInFlight();
   }
 
   getDuration(): number {
@@ -931,6 +967,11 @@ export class AnimationCoordinator {
    * retained cell). Clears the snapshot.
    */
   play(args: { containers: Array<HTMLElement | null | undefined> }): void {
+    // Column drag uses commitColumnReorder, not this path.
+    if (this.columnReordering) {
+      this.snapshot = null;
+      return;
+    }
     const snapshot = this.snapshot;
     const incomingOrigins = this.incomingOrigins;
     this.snapshot = null;
@@ -1334,6 +1375,8 @@ export class AnimationCoordinator {
   }
 
   destroy(): void {
+    this.setColumnReordering(false);
+    this.cellSlideAnimator.destroy();
     this.cancel();
   }
 

@@ -91,9 +91,14 @@ export const addTrackedEventListener = (
   elementListenersMap.get(element)!.push({ event, handler, options });
 };
 
-/** Header tooltips are portaled under .simple-table-root; remove them when header DOM is torn down
- *  without pointer leave (e.g. sort/filter invalidates context cache and removes header cells). */
+/** Bumped when header tooltips are dismissed so pending show timers do not recreate them. */
+let headerTooltipEpoch = 0;
+
+export const getHeaderTooltipEpoch = () => headerTooltipEpoch;
+
+/** Removes `.st-tooltip` nodes under this table. Pending show timers from before this call do not create a new tooltip. */
 export const removeFloatingHeaderTooltips = (fromElement: HTMLElement) => {
+  headerTooltipEpoch += 1;
   const root = fromElement.closest(".simple-table-root");
   root?.querySelectorAll(".st-tooltip").forEach((el) => el.remove());
 };

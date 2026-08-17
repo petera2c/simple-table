@@ -80,44 +80,45 @@ export const updateHeaderPinnedProperty = (
   return updatedHeader;
 };
 
+/**
+ * Move the dragged sibling to the hovered index (remove + insert).
+ * Columns between those indices shift by one slot.
+ */
 export function swapHeaders(
   headers: ColumnDef[],
   draggedPath: number[],
   hoveredPath: number[],
 ): { newHeaders: ColumnDef[]; emergencyBreak: boolean } {
   const newHeaders = deepClone(headers);
-  let emergencyBreak = false;
 
-  function getHeaderAtPath(headers: ColumnDef[], path: number[]): ColumnDef {
-    let current = headers;
-    let header: ColumnDef | undefined;
-    for (let i = 0; i < path.length - 1; i++) {
-      current = current[path[i]].children!;
+  if (draggedPath.length !== hoveredPath.length) {
+    return { newHeaders, emergencyBreak: true };
+  }
+  for (let i = 0; i < draggedPath.length - 1; i++) {
+    if (draggedPath[i] !== hoveredPath[i]) {
+      return { newHeaders, emergencyBreak: true };
     }
-    header = current[path[path.length - 1]];
-    return header;
   }
 
-  function setHeaderAtPath(headers: ColumnDef[], path: number[], value: ColumnDef): void {
-    let current = headers;
-    for (let i = 0; i < path.length - 1; i++) {
-      if (current[path[i]].children) {
-        current = current[path[i]].children!;
-      } else {
-        emergencyBreak = true;
-        break;
-      }
-    }
-    current[path[path.length - 1]] = value;
+  const fromIndex = draggedPath[draggedPath.length - 1];
+  const toIndex = hoveredPath[hoveredPath.length - 1];
+  if (fromIndex === toIndex) {
+    return { newHeaders, emergencyBreak: false };
   }
 
-  const draggedHeader = getHeaderAtPath(newHeaders, draggedPath);
-  const hoveredHeader = getHeaderAtPath(newHeaders, hoveredPath);
+  const siblings = getSiblingArray(newHeaders, draggedPath);
+  if (
+    fromIndex < 0 ||
+    toIndex < 0 ||
+    fromIndex >= siblings.length ||
+    toIndex >= siblings.length
+  ) {
+    return { newHeaders, emergencyBreak: true };
+  }
 
-  setHeaderAtPath(newHeaders, draggedPath, hoveredHeader);
-  setHeaderAtPath(newHeaders, hoveredPath, draggedHeader);
-
-  return { newHeaders, emergencyBreak };
+  const [removed] = siblings.splice(fromIndex, 1);
+  siblings.splice(toIndex, 0, removed);
+  return { newHeaders: setSiblingArray(newHeaders, draggedPath, siblings), emergencyBreak: false };
 }
 
 export function insertHeaderAcrossSections({

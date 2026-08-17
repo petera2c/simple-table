@@ -14,6 +14,7 @@ import {
   attachDragHandlers,
 } from "./dragging";
 import { addTrackedEventListener, removeFloatingHeaderTooltips } from "./eventTracking";
+import { setAbsoluteCellPosition } from "../setAbsoluteCellPosition";
 
 // Calculate header cell class names based on current state
 export const calculateHeaderCellClasses = (
@@ -208,8 +209,7 @@ export const createHeaderCellElement = (
   }
 
   cellElement.style.position = "absolute";
-  cellElement.style.left = `${cell.left}px`;
-  cellElement.style.top = `${cell.top}px`;
+  setAbsoluteCellPosition(cellElement, cell.left, cell.top);
   cellElement.style.width = `${cell.width}px`;
   cellElement.style.height = `${cell.height}px`;
 
@@ -377,4 +377,3 @@ export const refreshHeaderCellIcons = (
     }
   }
 };
-

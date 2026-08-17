@@ -5,6 +5,7 @@ import { AbsoluteBodyCell, CellRenderContext } from "../../utils/bodyCellRendere
 import {
   calculateAbsoluteBodyCells,
   calculateAbsoluteHeaderCells,
+  getLeafHeaders,
 } from "./sectionLayout";
 
 /** Stable ids for callback refs so context cache invalidates when identity changes. */
@@ -25,6 +26,8 @@ interface BodyCellsCacheEntry {
   cells: AbsoluteBodyCell[];
   deps: {
     headersHash: string;
+    /** Order-independent leaf signature (accessor+width+pin+hide). */
+    headersStructureHash?: string;
     rowsRef: TableRow[];
     collapsedHeadersSize: number;
     rowHeight: number;
@@ -72,6 +75,21 @@ export class SectionCellCaches {
       return hash;
     };
     return headers.map(hashHeader).join("|");
+  }
+
+  /** Order-independent leaf signature so sibling reorders can remap `left` without a full rebuild. */
+  private createHeadersStructureHash(
+    headers: ColumnDef[],
+    collapsedHeaders: Set<Accessor> = new Set(),
+  ): string {
+    const leaves = getLeafHeaders(headers, collapsedHeaders);
+    return leaves
+      .map(
+        (h) =>
+          `${h.accessor}:${h.width}:${h.pinned || ""}:${h.hide || ""}:${h.excludeFromRender || ""}`,
+      )
+      .sort()
+      .join("|");
   }
 
   private createHeightOffsetsHash(
@@ -229,6 +247,7 @@ export class SectionCellCaches {
     renderedEndIndex?: number,
   ): AbsoluteBodyCell[] {
     const headersHash = this.createHeadersHash(headers);
+    const headersStructureHash = this.createHeadersStructureHash(headers, collapsedHeaders);
     const heightOffsetsHash = this.createHeightOffsetsHash(heightOffsets);
     const useRangeCache =
       fullTableRows != null &&
@@ -240,18 +259,21 @@ export class SectionCellCaches {
     const bandCoversViewport = (bandStart: number, bandEnd: number) =>
       bandStart <= renderedStartIndex! && bandEnd >= renderedEndIndex!;
 
+    const rowsMatch = useRangeCache
+      ? cached &&
+        cached.deps.fullTableRowsRef === fullTableRows &&
+        cached.deps.bandStart !== undefined &&
+        cached.deps.bandEnd !== undefined &&
+        bandCoversViewport(cached.deps.bandStart, cached.deps.bandEnd)
+      : cached && cached.deps.rowsRef === rows;
+
     const cacheHit =
       cached &&
       cached.deps.headersHash === headersHash &&
       cached.deps.collapsedHeadersSize === collapsedHeaders.size &&
       cached.deps.rowHeight === rowHeight &&
       cached.deps.heightOffsetsHash === heightOffsetsHash &&
-      (useRangeCache
-        ? cached.deps.fullTableRowsRef === fullTableRows &&
-          cached.deps.bandStart !== undefined &&
-          cached.deps.bandEnd !== undefined &&
-          bandCoversViewport(cached.deps.bandStart, cached.deps.bandEnd)
-        : cached.deps.rowsRef === rows);
+      rowsMatch;
 
     if (cacheHit && cached) {
       if (!useRangeCache) {
@@ -274,6 +296,63 @@ export class SectionCellCaches {
         }
       }
       return out;
+    }
+
+    // Same leaves/widths/rows, only sibling order changed — remap left/colIndex.
+    if (
+      cached &&
+      cached.deps.headersStructureHash === headersStructureHash &&
+      cached.deps.collapsedHeadersSize === collapsedHeaders.size &&
+      cached.deps.rowHeight === rowHeight &&
+      cached.deps.heightOffsetsHash === heightOffsetsHash &&
+      rowsMatch
+    ) {
+      const leafHeaders = getLeafHeaders(headers, collapsedHeaders);
+      const headerPositions = new Map<string, { left: number; width: number; leafIndex: number }>();
+      let currentLeft = 0;
+      leafHeaders.forEach((header, leafIndex) => {
+        const width = typeof header.width === "number" ? header.width : 150;
+        headerPositions.set(String(header.accessor), { left: currentLeft, width, leafIndex });
+        currentLeft += width;
+      });
+      const remapped: AbsoluteBodyCell[] = [];
+      for (const c of cached.cells) {
+        const pos = headerPositions.get(String(c.header.accessor));
+        if (!pos) continue;
+        remapped.push({
+          ...c,
+          header: leafHeaders[pos.leafIndex] ?? c.header,
+          left: pos.left,
+          width: pos.width,
+          colIndex: startColIndex + pos.leafIndex,
+        });
+      }
+      this.bodyCellsCache.set(sectionKey, {
+        cells: remapped,
+        deps: {
+          ...cached.deps,
+          headersHash,
+          headersStructureHash,
+        },
+      });
+      if (!useRangeCache) {
+        return remapped;
+      }
+      const remapIndex = new Map<number, number>();
+      rows.forEach((r, i) => {
+        remapIndex.set(r.position, i);
+      });
+      const remappedOut: AbsoluteBodyCell[] = [];
+      for (const c of remapped) {
+        const ri = remapIndex.get(c.tableRow.position);
+        if (ri === undefined) continue;
+        if (c.rowIndex !== ri) {
+          remappedOut.push({ ...c, rowIndex: ri });
+        } else {
+          remappedOut.push(c);
+        }
+      }
+      return remappedOut;
     }
 
     let bandSlice: TableRow[];
@@ -302,6 +381,7 @@ export class SectionCellCaches {
       cells,
       deps: {
         headersHash,
+        headersStructureHash,
         rowsRef: bandSlice,
         collapsedHeadersSize: collapsedHeaders.size,
         rowHeight,
