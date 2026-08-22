@@ -125,6 +125,7 @@ export {
   TDGP_CHILDREN_ACCESSOR,
   TDGP_GROUP_KEYS,
 } from "./tdgp";
+export { tableFilterConditions } from "./types/FilterTypes";
 export type {
   TdgpAggregation,
   TdgpAggregationFn,

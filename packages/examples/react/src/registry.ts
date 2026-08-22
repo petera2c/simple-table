@@ -31,6 +31,7 @@ export const registry: DemoRegistry = {
   // Phase 2
   "external-sort": () => import("./demos/external-sort/ExternalSortDemo"),
   "external-filter": () => import("./demos/external-filter/ExternalFilterDemo"),
+  tdgp: () => import("./demos/tdgp/TdgpDemo"),
   "loading-state": () => import("./demos/loading-state/LoadingStateDemo"),
   "infinite-scroll": () => import("./demos/infinite-scroll/InfiniteScrollDemo"),
   "window-infinite-scroll": () => import("./demos/window-infinite-scroll/WindowInfiniteScrollDemo"),

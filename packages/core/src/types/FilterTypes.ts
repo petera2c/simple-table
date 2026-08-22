@@ -56,10 +56,19 @@ export interface FilterCondition<TData extends RowData = Row> {
   values?: CellValue[]; // For operators like 'between', 'in', etc.
 }
 
-// Filter state for the entire table
-export type TableFilterState<TData extends RowData = Row> = {
-  [accessor: string]: FilterCondition<TData>;
-};
+/** Active column filters, keyed by filter id. */
+export type TableFilterState<TData extends RowData = Row> = Record<
+  string,
+  FilterCondition<TData>
+>;
+
+/** Column filters currently applied, as a list. */
+export function tableFilterConditions<TData extends RowData = Row>(
+  filters: TableFilterState<TData> | null | undefined,
+): FilterCondition<TData>[] {
+  if (!filters) return [];
+  return Object.values(filters) as FilterCondition<TData>[];
+}
 
 // Human-readable labels for filter operators
 export const FILTER_OPERATOR_LABELS: Record<FilterOperator, string> = {

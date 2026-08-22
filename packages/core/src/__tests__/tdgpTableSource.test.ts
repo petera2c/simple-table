@@ -214,4 +214,95 @@ describe("createTdgpTableSource", () => {
       { id: 11, firstName: "Ada", country: "France", salary: 150000 },
     ]);
   });
+
+  it("does not reload when client or columns are new objects with the same query", async () => {
+    const query = vi.fn(async () => ({
+      protocol: "tdgp/1",
+      data: [{ id: 1, country: "France", salary: 120000 }],
+      totalCount: 1,
+    }));
+
+    const source = createTdgpTableSource({
+      client: { query } as TdgpQueryClient,
+      dataset: "developers-10k",
+      columns,
+      pageSize: 50,
+    });
+    source.start();
+    await waitFor(source, () => !source.getSnapshot().isLoading);
+    expect(query).toHaveBeenCalledTimes(1);
+
+    source.applyOptions({
+      client: { query } as TdgpQueryClient,
+      dataset: "developers-10k",
+      columns: columns.map((column) => ({ ...column })),
+      pageSize: 50,
+    });
+
+    expect(query).toHaveBeenCalledTimes(1);
+  });
+
+  it("uses the latest client on the next request after applyOptions", async () => {
+    const firstQuery = vi.fn(async () => ({
+      protocol: "tdgp/1",
+      data: [{ id: 1, country: "France", salary: 120000 }],
+      totalCount: 100,
+    }));
+    const secondQuery = vi.fn(async () => ({
+      protocol: "tdgp/1",
+      data: [{ id: 2, country: "Spain", salary: 110000 }],
+      totalCount: 100,
+    }));
+
+    const source = createTdgpTableSource({
+      client: { query: firstQuery } as TdgpQueryClient,
+      dataset: "developers-10k",
+      columns,
+      pageSize: 50,
+    });
+    source.start();
+    await waitFor(source, () => !source.getSnapshot().isLoading);
+
+    source.applyOptions({
+      client: { query: secondQuery } as TdgpQueryClient,
+      dataset: "developers-10k",
+      columns,
+      pageSize: 50,
+    });
+    source.getSnapshot().tableProps.onPageChange(2);
+    await waitFor(source, () => secondQuery.mock.calls.length > 0);
+
+    expect(firstQuery).toHaveBeenCalledTimes(1);
+    expect(secondQuery).toHaveBeenCalledWith(
+      "developers-10k",
+      expect.objectContaining({ start: 50, limit: 50 }),
+    );
+  });
+
+  it("reloads when the dataset changes", async () => {
+    const query = vi.fn(async (dataset: string) => ({
+      protocol: "tdgp/1",
+      data: [{ id: 1, dataset }],
+      totalCount: 1,
+    }));
+
+    const source = createTdgpTableSource({
+      client: { query } as TdgpQueryClient,
+      dataset: "developers-10k",
+      columns,
+      pageSize: 50,
+    });
+    source.start();
+    await waitFor(source, () => !source.getSnapshot().isLoading);
+
+    source.applyOptions({
+      client: { query } as TdgpQueryClient,
+      dataset: "developers-50k",
+      columns,
+      pageSize: 50,
+    });
+    await waitFor(source, () => query.mock.calls.some((call) => call[0] === "developers-50k"));
+
+    expect(query).toHaveBeenCalledWith("developers-50k", expect.objectContaining({ start: 0 }));
+  });
 });

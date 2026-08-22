@@ -5,6 +5,7 @@ import type OnRowGroupExpandProps from "../types/OnRowGroupExpandProps";
 import type Row from "../types/Row";
 import type { RowData } from "../types/Row";
 import type SortColumn from "../types/SortColumn";
+import { headersStructurallyEqual } from "../utils/propSyncEqual";
 import { getTdgpGroupKeys, isTdgpGroupNode, tdgpGroupNodesToRows } from "./mapGroupResponse";
 import { setNestedChildren } from "./setNestedChildren";
 import { sortColumnToTdgpSort } from "./sortColumnToTdgpSort";
@@ -31,20 +32,23 @@ function withExpandableGroupColumn<TData extends RowData>(
   );
 }
 
+/** Dataset, page size, key field, groups, and aggregations — not client or columns identity. */
+function queryShapeKey<TData extends RowData>(options: TdgpTableSourceOptions<TData>): string {
+  const groupBy = options.groupBy?.join("\0") ?? "";
+  const aggregations =
+    options.aggregations?.map((item) => `${item.id}:${item.field}:${item.fn}`).join("|") ?? "";
+  return `${options.dataset}\n${options.pageSize ?? 50}\n${options.primaryKey ?? "id"}\n${groupBy}\n${aggregations}`;
+}
+
 /**
  * Loads pages, sorts, filters, and optional groups from a TDGP server
  * and exposes the Simple Table props that keep that data in sync.
  */
 export function createTdgpTableSource<TData extends RowData = Row>(
-  options: TdgpTableSourceOptions<TData>,
+  initialOptions: TdgpTableSourceOptions<TData>,
 ): TdgpTableSource<TData> {
-  const pageSize = options.pageSize ?? 50;
-  const primaryKey = options.primaryKey ?? "id";
-  const groupBy = options.groupBy;
-  const aggregations = options.aggregations;
+  let options = initialOptions;
   const childrenAccessor = TDGP_CHILDREN_ACCESSOR;
-  const groupingKeys = groupBy?.map(() => childrenAccessor);
-  const columns = withExpandableGroupColumn(options.columns, groupBy);
 
   let page = 1;
   let sort: SortColumn | null = null;
@@ -55,14 +59,31 @@ export function createTdgpTableSource<TData extends RowData = Row>(
   let error: string | null = null;
   let loadGeneration = 0;
   let stopped = false;
+  let started = false;
 
   const listeners = new Set<() => void>();
+
+  function pageSize(): number {
+    return options.pageSize ?? 50;
+  }
+
+  function primaryKey(): string {
+    return options.primaryKey ?? "id";
+  }
+
+  function groupingKeys(): string[] | undefined {
+    return options.groupBy?.map(() => childrenAccessor);
+  }
+
+  function resolvedColumns(): ColumnDef<TData, any>[] {
+    return withExpandableGroupColumn(options.columns, options.groupBy);
+  }
 
   const getRowId = (params: GetRowIdParams<TData>) => {
     const row = params.row as Record<string, unknown> | undefined;
     const groupKeys = getTdgpGroupKeys(row);
     if (groupKeys) return `group:${groupKeys.join("/")}`;
-    const value = row?.[primaryKey];
+    const value = row?.[primaryKey()];
     return value == null ? undefined : String(value);
   };
 
@@ -84,7 +105,9 @@ export function createTdgpTableSource<TData extends RowData = Row>(
   };
 
   const handleRowGroupExpand = async (props: OnRowGroupExpandProps<TData>) => {
-    if (!groupBy?.length || !groupingKeys) return;
+    const groupBy = options.groupBy;
+    const keys = groupingKeys();
+    if (!groupBy?.length || !keys) return;
     if (!props.isExpanded) return;
 
     const row = props.row as Record<string, unknown>;
@@ -99,19 +122,14 @@ export function createTdgpTableSource<TData extends RowData = Row>(
     try {
       const response = await options.client.query(
         options.dataset,
-        buildRequest({ groupKeys: parentKeys, start: 0, limit: Math.max(pageSize, 500) }),
+        buildRequest({ groupKeys: parentKeys, start: 0, limit: Math.max(pageSize(), 500) }),
       );
-      const childRows = mapResponseRows(response.data, parentKeys.length) as TData[];
+      const childRows = mapResponseRows(response.data, parentKeys.length);
       if (childRows.length === 0) {
         props.setEmpty(true, "No rows");
         return;
       }
-      rows = setNestedChildren(
-        rows as Row[],
-        props.rowIndexPath,
-        groupingKeys.map(String),
-        childRows as Row[],
-      ) as TData[];
+      rows = setNestedChildren(rows as Row[], props.rowIndexPath, keys, childRows as Row[]) as TData[];
       emit();
       props.setLoading(false);
     } catch (err) {
@@ -120,9 +138,12 @@ export function createTdgpTableSource<TData extends RowData = Row>(
   };
 
   function buildRequest(overrides: { groupKeys?: string[]; start?: number; limit?: number }): TdgpQueryRequest {
+    const size = pageSize();
+    const groupBy = options.groupBy;
+    const aggregations = options.aggregations;
     const request: TdgpQueryRequest = {
-      start: overrides.start ?? (page - 1) * pageSize,
-      limit: overrides.limit ?? pageSize,
+      start: overrides.start ?? (page - 1) * size,
+      limit: overrides.limit ?? size,
       sort: sortColumnToTdgpSort(sort),
       filter: tableFiltersToTdgpFilter(filters),
       process: { pagination: "server" },
@@ -142,21 +163,20 @@ export function createTdgpTableSource<TData extends RowData = Row>(
     return request;
   }
 
-  function mapResponseRows(data: unknown[], groupKeyCount: number): Record<string, unknown>[] {
+  function mapResponseRows(data: unknown[], groupKeyCount: number): TData[] {
+    const groupBy = options.groupBy;
     if (groupBy?.length && groupKeyCount < groupBy.length && data.some(isTdgpGroupNode)) {
-      return tdgpGroupNodesToRows(data.filter(isTdgpGroupNode), childrenAccessor);
+      return tdgpGroupNodesToRows(data, childrenAccessor) as TData[];
     }
-    return data.filter((row) => row && typeof row === "object" && !isTdgpGroupNode(row)) as Record<
-      string,
-      unknown
-    >[];
+    return data.filter((row) => row && typeof row === "object" && !isTdgpGroupNode(row)) as TData[];
   }
 
   function buildTableProps(): TdgpTableProps<TData> {
+    const keys = groupingKeys();
     return {
       enablePagination: true,
       serverSidePagination: true,
-      rowsPerPage: pageSize,
+      rowsPerPage: pageSize(),
       totalRowCount,
       isLoading,
       externalSortHandling: true,
@@ -165,15 +185,13 @@ export function createTdgpTableSource<TData extends RowData = Row>(
       onSortChange: handleSortChange,
       onFilterChange: handleFilterChange,
       getRowId,
-      ...(groupingKeys
-        ? { rowGrouping: groupingKeys, onRowGroupExpand: handleRowGroupExpand }
-        : {}),
+      ...(keys ? { rowGrouping: keys, onRowGroupExpand: handleRowGroupExpand } : {}),
     };
   }
 
   let snapshot: TdgpTableSnapshot<TData> = {
     rows,
-    columns,
+    columns: resolvedColumns(),
     isLoading,
     error,
     totalRowCount,
@@ -183,7 +201,7 @@ export function createTdgpTableSource<TData extends RowData = Row>(
   function emit() {
     snapshot = {
       rows,
-      columns,
+      columns: resolvedColumns(),
       isLoading,
       error,
       totalRowCount,
@@ -200,7 +218,7 @@ export function createTdgpTableSource<TData extends RowData = Row>(
     try {
       const response = await options.client.query(options.dataset, buildRequest({}));
       if (stopped || generation !== loadGeneration) return;
-      rows = mapResponseRows(response.data, 0) as TData[];
+      rows = mapResponseRows(response.data, 0);
       totalRowCount = response.totalCount;
       isLoading = false;
       emit();
@@ -222,6 +240,7 @@ export function createTdgpTableSource<TData extends RowData = Row>(
     getSnapshot: () => snapshot,
     start() {
       stopped = false;
+      started = true;
       void load();
     },
     stop() {
@@ -230,6 +249,21 @@ export function createTdgpTableSource<TData extends RowData = Row>(
     },
     reload() {
       void load();
+    },
+    applyOptions(next) {
+      const prev = options;
+      options = next;
+      if (!started || stopped) return;
+
+      if (queryShapeKey(prev) !== queryShapeKey(next)) {
+        page = 1;
+        void load();
+        return;
+      }
+
+      if (!headersStructurallyEqual(prev.columns, next.columns)) {
+        emit();
+      }
     },
   };
 }

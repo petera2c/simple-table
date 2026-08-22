@@ -113,7 +113,12 @@ export type {
   Theme,
   TdgpAggregation,
   TdgpAggregationFn,
+  TdgpFilterGroup,
   TdgpFilterModel,
+  TdgpFilterNot,
+  TdgpFilterOperator,
+  TdgpFilterPredicate,
+  TdgpGroupNode,
   TdgpQueryClient,
   TdgpQueryRequest,
   TdgpQueryResponse,
@@ -137,9 +142,16 @@ export {
   PIVOT_BLANK_LABEL,
   createTdgpTableSource,
   tableFiltersToTdgpFilter,
+  tableFilterConditions,
   sortColumnToTdgpSort,
+  isTdgpGroupNode,
+  tdgpGroupNodeToRow,
+  tdgpGroupNodesToRows,
+  getTdgpGroupKeys,
+  setNestedChildren,
   TDGP_CHILDREN_ACCESSOR,
   TDGP_GROUP_KEYS,
 } from "simple-table-core";
 
 export { useTdgpTable } from "./tdgp/useTdgpTable";
+export type { UseTdgpTableOptions } from "./tdgp/useTdgpTable";

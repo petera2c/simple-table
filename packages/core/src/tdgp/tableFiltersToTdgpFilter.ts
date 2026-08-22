@@ -1,4 +1,11 @@
-import type { FilterCondition, FilterOperator, TableFilterState } from "../types/FilterTypes";
+import {
+  tableFilterConditions,
+  type FilterCondition,
+  type FilterOperator,
+  type TableFilterState,
+} from "../types/FilterTypes";
+import type Row from "../types/Row";
+import type { RowData } from "../types/Row";
 import type { TdgpFilterModel, TdgpFilterOperator, TdgpFilterPredicate } from "./types";
 
 type OperatorMapEntry = {
@@ -40,7 +47,9 @@ function isListOperator(operator: FilterOperator): boolean {
   );
 }
 
-function predicateArgs(condition: FilterCondition): Array<string | number | boolean | null> | null {
+function predicateArgs<TData extends RowData>(
+  condition: FilterCondition<TData>,
+): Array<string | number | boolean | null> | null {
   if (isBlanklessOperator(condition.operator)) return [];
 
   if (isListOperator(condition.operator)) {
@@ -56,7 +65,9 @@ function predicateArgs(condition: FilterCondition): Array<string | number | bool
   return [condition.value as string | number | boolean];
 }
 
-function conditionToFilter(condition: FilterCondition): TdgpFilterModel | null {
+function conditionToFilter<TData extends RowData>(
+  condition: FilterCondition<TData>,
+): TdgpFilterModel | null {
   const mapped = OPERATOR_MAP[condition.operator];
   if (!mapped) return null;
 
@@ -77,12 +88,10 @@ function conditionToFilter(condition: FilterCondition): TdgpFilterModel | null {
 }
 
 /** Turn Simple Table column filters into a TDGP filter tree. */
-export function tableFiltersToTdgpFilter(
-  filters: TableFilterState | null | undefined,
+export function tableFiltersToTdgpFilter<TData extends RowData = Row>(
+  filters: TableFilterState<TData> | null | undefined,
 ): TdgpFilterModel | undefined {
-  if (!filters) return undefined;
-
-  const children = Object.values(filters)
+  const children = tableFilterConditions(filters)
     .map((condition) => conditionToFilter(condition))
     .filter((model): model is TdgpFilterModel => model != null);
 

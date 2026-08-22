@@ -1,11 +1,21 @@
 import { describe, expect, it } from "vitest";
 import { tableFiltersToTdgpFilter } from "../tdgp/tableFiltersToTdgpFilter";
-import type { TableFilterState } from "../types/FilterTypes";
+import { tableFilterConditions, type TableFilterState } from "../types/FilterTypes";
 
 describe("tableFiltersToTdgpFilter", () => {
   it("returns undefined when there are no filters", () => {
     expect(tableFiltersToTdgpFilter(undefined)).toBeUndefined();
     expect(tableFiltersToTdgpFilter({})).toBeUndefined();
+  });
+
+  it("lists each column filter as a FilterCondition", () => {
+    const filters: TableFilterState = {
+      age: { accessor: "age", operator: "greaterThan", value: 30 },
+    };
+    expect(tableFilterConditions(filters)).toEqual([
+      { accessor: "age", operator: "greaterThan", value: 30 },
+    ]);
+    expect(tableFilterConditions(undefined)).toEqual([]);
   });
 
   it("maps a number comparison to a single predicate", () => {

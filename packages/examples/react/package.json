@@ -10,9 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@simple-table/react": "workspace:*",
+    "@thedatagrid/client": "^1.0.1",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "@simple-table/react": "workspace:*"
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.0",

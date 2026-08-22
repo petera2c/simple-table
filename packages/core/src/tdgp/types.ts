@@ -77,22 +77,22 @@ export type TdgpQueryRequest = {
   };
 };
 
-export type TdgpGroupNode = {
+export type TdgpGroupNode<TData extends RowData = Row> = {
   keys: string[];
-  data: Record<string, unknown>;
+  data: TData;
   aggregations?: Record<string, number | null>;
 };
 
-export type TdgpQueryResponse = {
+export type TdgpQueryResponse<TData extends RowData = unknown> = {
   protocol?: string;
-  data: unknown[];
+  data: Array<TData | TdgpGroupNode<TData>>;
   totalCount: number;
   totalCountUnfiltered?: number;
 };
 
 /** Minimal client shape. `createTdgpClient()` from `@thedatagrid/client` matches this. */
 export interface TdgpQueryClient {
-  query(dataset: string, request?: TdgpQueryRequest): Promise<TdgpQueryResponse>;
+  query(dataset: string, request?: TdgpQueryRequest): Promise<TdgpQueryResponse<unknown>>;
 }
 
 export type TdgpTableProps<TData extends RowData = Row> = {
@@ -142,4 +142,9 @@ export type TdgpTableSource<TData extends RowData = Row> = {
   /** Ignore in-flight responses and stop later loads. */
   stop: () => void;
   reload: () => void;
+  /**
+   * Replace client, columns, and query options. Reloads when dataset, page
+   * size, primary key, group fields, or aggregations change.
+   */
+  applyOptions: (next: TdgpTableSourceOptions<TData>) => void;
 };
