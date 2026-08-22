@@ -1,4 +1,5 @@
 export { createTdgpTableSource } from "./createTdgpTableSource";
+export { mountTdgpTable } from "./mountTdgpTable";
 export { tableFiltersToTdgpFilter } from "./tableFiltersToTdgpFilter";
 export { sortColumnToTdgpSort } from "./sortColumnToTdgpSort";
 export {
@@ -27,3 +28,4 @@ export type {
   TdgpTableSource,
   TdgpTableSourceOptions,
 } from "./types";
+export type { MountTdgpTableOptions, MountedTdgpTable } from "./mountTdgpTable";

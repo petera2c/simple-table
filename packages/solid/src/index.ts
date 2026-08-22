@@ -123,4 +123,40 @@ export {
   PIVOT_IS_TOTAL_KEY,
   PIVOT_ACCESSOR_PREFIX,
   PIVOT_BLANK_LABEL,
+  createTdgpTableSource,
+  mountTdgpTable,
+  tableFiltersToTdgpFilter,
+  tableFilterConditions,
+  sortColumnToTdgpSort,
+  isTdgpGroupNode,
+  tdgpGroupNodeToRow,
+  tdgpGroupNodesToRows,
+  getTdgpGroupKeys,
+  setNestedChildren,
+  TDGP_CHILDREN_ACCESSOR,
+  TDGP_GROUP_KEYS,
 } from "simple-table-core";
+
+export type {
+  TdgpAggregation,
+  TdgpAggregationFn,
+  TdgpFilterGroup,
+  TdgpFilterModel,
+  TdgpFilterNot,
+  TdgpFilterOperator,
+  TdgpFilterPredicate,
+  TdgpGroupNode,
+  TdgpQueryClient,
+  TdgpQueryRequest,
+  TdgpQueryResponse,
+  TdgpSortModel,
+  TdgpTableProps,
+  TdgpTableSnapshot,
+  TdgpTableSource,
+  TdgpTableSourceOptions,
+  MountTdgpTableOptions,
+  MountedTdgpTable,
+} from "simple-table-core";
+
+export { useTdgpTable } from "./tdgp/useTdgpTable";
+export type { UseTdgpTableOptions } from "./tdgp/useTdgpTable";

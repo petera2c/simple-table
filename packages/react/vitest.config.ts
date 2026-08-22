@@ -18,6 +18,7 @@ export default defineConfig({
       "../core/src/__tests__/parkAndStagger.test.ts",
       "../core/src/__tests__/tdgpFilter.test.ts",
       "../core/src/__tests__/tdgpTableSource.test.ts",
+      "../core/src/__tests__/mountTdgpTable.test.ts",
     ],
     // The vanilla core imports a CSS bundle on load. We assert on DOM classes,
     // not computed colors, so CSS processing is unnecessary here.

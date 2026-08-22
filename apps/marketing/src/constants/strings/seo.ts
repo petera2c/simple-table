@@ -1295,7 +1295,7 @@ export const SEO_STRINGS = {
   tdgp: {
     title: "Connect Simple Table to a TDGP Server",
     description:
-      "Load pages, sorts, and filters from a THE DataGrid Protocol (TDGP) server. Use useTdgpTable in React or createTdgpTableSource in other frameworks — no custom backend required.",
+      "Load pages, sorts, and filters from a THE DataGrid Protocol (TDGP) server. Use useTdgpTable, createTdgpTable, or mountTdgpTable — no custom backend required.",
     keywords:
       "simple-table, data-grid, tdgp, the datagrid protocol, server-side pagination, server-side sorting, server-side filtering, @thedatagrid/client, javascript data grid",
   },

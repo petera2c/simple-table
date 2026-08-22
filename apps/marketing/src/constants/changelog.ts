@@ -11,6 +11,21 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_1_9: ChangelogEntry = {
+  version: "4.1.9",
+  date: "2026-08-22",
+  title: "Server data with TDGP",
+  description:
+    "Connect the table to a THE DataGrid Protocol server so pages, sorts, filters, and groups load from the server.",
+  changes: [
+    {
+      type: "feature",
+      description:
+        "Connect the table to a THE DataGrid Protocol (TDGP) server. Page changes, sorts, and filters load from the server — and you can group on the server too.",
+    },
+  ],
+};
+
 export const v4_1_8: ChangelogEntry = {
   version: "4.1.8",
   date: "2026-08-22",
@@ -40,12 +55,6 @@ export const v4_1_8: ChangelogEntry = {
       type: "bugfix",
       description:
         "Search boxes and other inputs inside the table now use the theme text color instead of staying black.",
-    },
-    {
-      type: "feature",
-      description:
-        "Connect the table to a THE DataGrid Protocol (TDGP) server. Page changes, sorts, and filters load from the server — and you can group on the server too.",
-      link: "/docs/tdgp",
     },
   ],
 };
@@ -2698,6 +2707,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_1_9,
   v4_1_8,
   v4_1_7,
   v4_1_6,

@@ -306,4 +306,203 @@ describe("createTdgpTableSource", () => {
 
     expect(query).toHaveBeenCalledWith("developers-50k", expect.objectContaining({ start: 0 }));
   });
+
+  it("replaces the current page and sets isLoading while the next page loads", async () => {
+    let resolvePageTwo: ((value: {
+      protocol: string;
+      data: Array<{ id: number; country: string }>;
+      totalCount: number;
+    }) => void) | undefined;
+
+    const query = vi.fn(async (_dataset: string, request?: { start?: number }) => {
+      if ((request?.start ?? 0) === 0) {
+        return {
+          protocol: "tdgp/1",
+          data: [{ id: 1, country: "France" }],
+          totalCount: 100,
+        };
+      }
+      return new Promise<typeof pageTwo>((resolve) => {
+        resolvePageTwo = resolve;
+      });
+    });
+
+    const pageTwo = {
+      protocol: "tdgp/1",
+      data: [{ id: 2, country: "Spain" }],
+      totalCount: 100,
+    };
+
+    const source = createTdgpTableSource({
+      client: { query } as TdgpQueryClient,
+      dataset: "developers-10k",
+      columns,
+      pageSize: 1,
+    });
+    source.start();
+    await waitFor(source, () => !source.getSnapshot().isLoading);
+    expect(source.getSnapshot().rows).toEqual([{ id: 1, country: "France" }]);
+
+    source.getSnapshot().tableProps.onPageChange(2);
+    await waitFor(source, () => source.getSnapshot().isLoading === true);
+    expect(source.getSnapshot().rows).toEqual([{ id: 1, country: "France" }]);
+
+    resolvePageTwo?.(pageTwo);
+    await waitFor(source, () => source.getSnapshot().isLoading === false);
+    expect(source.getSnapshot().rows).toEqual([{ id: 2, country: "Spain" }]);
+  });
+
+  it("pages grouped rows with start and limit, not the leaf row count", async () => {
+    const query = vi.fn(async (_dataset: string, request?: { start?: number; limit?: number }) => ({
+      protocol: "tdgp/1",
+      data: [
+        {
+          keys: [request?.start === 5 ? "Spain" : "France"],
+          data: { country: request?.start === 5 ? "Spain" : "France" },
+        },
+      ],
+      totalCount: 10,
+    }));
+
+    const source = createTdgpTableSource({
+      client: { query } as TdgpQueryClient,
+      dataset: "developers-10k",
+      columns,
+      pageSize: 5,
+      groupBy: ["country"],
+    });
+    source.start();
+    await waitFor(source, () => !source.getSnapshot().isLoading);
+
+    expect(source.getSnapshot().totalRowCount).toBe(10);
+    expect(source.getSnapshot().tableProps.rowsPerPage).toBe(5);
+    expect(source.getSnapshot().tableProps.expandAll).toBe(false);
+
+    source.getSnapshot().tableProps.onPageChange(2);
+    await waitFor(source, () => requestArgs(query).some((request) => request.start === 5));
+    expect(query).toHaveBeenCalledWith(
+      "developers-10k",
+      expect.objectContaining({ start: 5, limit: 5, groupBy: [{ field: "country" }] }),
+    );
+  });
+
+  it("does not fetch children when a group is collapsed", async () => {
+    const query = vi.fn(async () => ({
+      protocol: "tdgp/1",
+      data: [
+        {
+          keys: ["France"],
+          data: { country: "France" },
+        },
+      ],
+      totalCount: 1,
+    }));
+
+    const source = createTdgpTableSource({
+      client: { query } as TdgpQueryClient,
+      dataset: "developers-10k",
+      columns,
+      groupBy: ["country"],
+    });
+    source.start();
+    await waitFor(source, () => !source.getSnapshot().isLoading);
+    expect(query).toHaveBeenCalledTimes(1);
+
+    await source.getSnapshot().tableProps.onRowGroupExpand?.({
+      row: source.getSnapshot().rows[0],
+      depth: 0,
+      event: new MouseEvent("click"),
+      groupingKey: TDGP_CHILDREN_ACCESSOR,
+      isExpanded: false,
+      rowIndexPath: [0],
+      groupingKeys: [TDGP_CHILDREN_ACCESSOR],
+      setLoading: vi.fn(),
+      setError: vi.fn(),
+      setEmpty: vi.fn(),
+    });
+
+    expect(query).toHaveBeenCalledTimes(1);
+    expect(source.getSnapshot().rows[0][TDGP_CHILDREN_ACCESSOR]).toEqual([]);
+  });
+
+  it("loads stacks then people for a two-level group", async () => {
+    const query = vi.fn(async (_dataset: string, request?: { groupKeys?: string[] }) => {
+      const keys = request?.groupKeys ?? [];
+      if (keys.length === 0) {
+        return {
+          protocol: "tdgp/1",
+          data: [{ keys: ["France"], data: { country: "France" } }],
+          totalCount: 1,
+        };
+      }
+      if (keys.length === 1) {
+        return {
+          protocol: "tdgp/1",
+          data: [{ keys: ["France", "backend"], data: { country: "France", stack: "backend" } }],
+          totalCount: 1,
+        };
+      }
+      return {
+        protocol: "tdgp/1",
+        data: [{ id: 11, firstName: "Ada", country: "France", stack: "backend" }],
+        totalCount: 1,
+      };
+    });
+
+    const source = createTdgpTableSource({
+      client: { query } as TdgpQueryClient,
+      dataset: "developers-10k",
+      columns,
+      groupBy: ["country", "stack"],
+    });
+    source.start();
+    await waitFor(source, () => !source.getSnapshot().isLoading);
+
+    const country = source.getSnapshot().rows[0];
+    expect(country[TDGP_CHILDREN_ACCESSOR]).toEqual([]);
+
+    await source.getSnapshot().tableProps.onRowGroupExpand?.({
+      row: country,
+      depth: 0,
+      event: new MouseEvent("click"),
+      groupingKey: TDGP_CHILDREN_ACCESSOR,
+      isExpanded: true,
+      rowIndexPath: [0],
+      groupingKeys: [TDGP_CHILDREN_ACCESSOR, TDGP_CHILDREN_ACCESSOR],
+      setLoading: vi.fn(),
+      setError: vi.fn(),
+      setEmpty: vi.fn(),
+    });
+
+    const stacks = source.getSnapshot().rows[0][TDGP_CHILDREN_ACCESSOR] as Row[];
+    expect(stacks).toHaveLength(1);
+    expect(stacks[0]).toMatchObject({
+      stack: "backend",
+      [TDGP_GROUP_KEYS]: ["France", "backend"],
+    });
+
+    await source.getSnapshot().tableProps.onRowGroupExpand?.({
+      row: stacks[0],
+      depth: 1,
+      event: new MouseEvent("click"),
+      groupingKey: TDGP_CHILDREN_ACCESSOR,
+      isExpanded: true,
+      rowIndexPath: [0, 0],
+      groupingKeys: [TDGP_CHILDREN_ACCESSOR, TDGP_CHILDREN_ACCESSOR],
+      setLoading: vi.fn(),
+      setError: vi.fn(),
+      setEmpty: vi.fn(),
+    });
+
+    const people = (
+      source.getSnapshot().rows[0][TDGP_CHILDREN_ACCESSOR] as Row[]
+    )[0][TDGP_CHILDREN_ACCESSOR];
+    expect(people).toEqual([
+      { id: 11, firstName: "Ada", country: "France", stack: "backend" },
+    ]);
+    expect(query).toHaveBeenCalledWith(
+      "developers-10k",
+      expect.objectContaining({ groupKeys: ["France", "backend"] }),
+    );
+  });
 });

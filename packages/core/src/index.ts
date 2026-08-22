@@ -115,6 +115,7 @@ export {
 };
 export {
   createTdgpTableSource,
+  mountTdgpTable,
   tableFiltersToTdgpFilter,
   sortColumnToTdgpSort,
   isTdgpGroupNode,
@@ -143,6 +144,8 @@ export type {
   TdgpTableSnapshot,
   TdgpTableSource,
   TdgpTableSourceOptions,
+  MountTdgpTableOptions,
+  MountedTdgpTable,
 } from "./tdgp";
 export {
   headersStructurallyEqual,

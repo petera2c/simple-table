@@ -3,10 +3,12 @@ import { SEO_STRINGS } from "@/constants/strings/seo";
 import TdgpContent from "@/components/pages/docs-pages/TdgpContent";
 import DocsDemoCode from "@/components/DocsDemoCode";
 
+// Unreleased: reachable by URL, but not in nav, search, or the sitemap.
 export const metadata: Metadata = {
   title: SEO_STRINGS.tdgp.title,
   description: SEO_STRINGS.tdgp.description,
   keywords: SEO_STRINGS.tdgp.keywords,
+  robots: { index: false, follow: false },
   openGraph: {
     title: SEO_STRINGS.tdgp.title,
     description: SEO_STRINGS.tdgp.description,

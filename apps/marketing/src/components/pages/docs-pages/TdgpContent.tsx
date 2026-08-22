@@ -24,16 +24,16 @@ const TDGP_PATTERNS: TdgpPattern[] = [
       <>
         Install{" "}
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">@thedatagrid/client</code>{" "}
-        next to Simple Table. In React, call{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">useTdgpTable</code> and
-        spread{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">tableProps</code> onto
-        the table. Other frameworks use{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
-          createTdgpTableSource
-        </code>{" "}
-        from{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">simple-table-core</code>.
+        next to Simple Table. Call{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">useTdgpTable</code> in
+        React, Vue, Solid, or Angular,{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">createTdgpTable</code> in
+        Svelte, or{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">mountTdgpTable</code> in
+        vanilla JavaScript. Pass{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">tableProps</code> to the
+        table (Angular uses the{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">tableProps</code> input).
         Page changes, sorts, and column filters become server requests. Pair with{" "}
         <Link
           href="/docs/loading-state"
@@ -55,7 +55,7 @@ const TDGP_PROPS: PropInfo[] = [
     name: "client",
     required: true,
     description:
-      "A TDGP client with a query method. createTdgpClient() from @thedatagrid/client matches this.",
+      "A TDGP client with a query(dataset, request) method. createTdgpClient({ url }) from @thedatagrid/client matches this.",
     type: "TdgpQueryClient",
     example: `client={createTdgpClient({ url: "https://data.thedatagrid.com" })}`,
   },
@@ -63,7 +63,8 @@ const TDGP_PROPS: PropInfo[] = [
     key: "dataset",
     name: "dataset",
     required: true,
-    description: "Dataset name on the TDGP server (the route segment, not a URL).",
+    description:
+      "Dataset name on the TDGP server. This is the route segment (POST /{dataset}/query), not a URL. The public catalog lists developers-10k.",
     type: "string",
     example: `dataset="developers-10k"`,
   },
@@ -79,7 +80,8 @@ const TDGP_PROPS: PropInfo[] = [
     key: "pageSize",
     name: "pageSize",
     required: false,
-    description: "Rows per page sent to the server. Defaults to 50.",
+    description:
+      "Rows per page. Sent to the server as limit (start is (page - 1) × pageSize). Defaults to 50.",
     type: "number",
     example: `pageSize={50}`,
   },
@@ -87,7 +89,8 @@ const TDGP_PROPS: PropInfo[] = [
     key: "primaryKey",
     name: "primaryKey",
     required: false,
-    description: "Field used as the row id for leaf rows. Defaults to id.",
+    description:
+      "Field used as the row id for leaf rows. Read this from the dataset catalog (GET /datasets). The public developers-10k dataset uses id. If you omit it, the helper falls back to id.",
     type: "string",
     example: `primaryKey="id"`,
   },
@@ -96,7 +99,7 @@ const TDGP_PROPS: PropInfo[] = [
     name: "groupBy",
     required: false,
     description:
-      "Group on the server by these fields. Expanding a group loads the next level (or leaf rows at the last level).",
+      "Group on the server by these catalog field names. Expanding a group loads the next level, or the leaf rows when you have expanded every group field.",
     type: "string[]",
     example: `groupBy={["country", "stack"]}`,
   },
@@ -105,9 +108,9 @@ const TDGP_PROPS: PropInfo[] = [
     name: "aggregations",
     required: false,
     description:
-      "Server aggregations for grouped rows (sum, avg, min, max, count). Values are copied onto the group row using each aggregation id.",
+      "Server aggregations for grouped rows (sum, avg, min, max, count). Each id is copied onto the group row, so use a name that will not collide with a field (the protocol examples use avgSalary).",
     type: "TdgpAggregation[]",
-    example: `aggregations={[{ id: "salary", field: "salary", fn: "sum" }]}`,
+    example: `aggregations={[{ id: "avgSalary", field: "salary", fn: "avg" }]}`,
   },
 ];
 
@@ -140,13 +143,26 @@ const TdgpContent = () => {
         >
           server-side pagination
         </Link>
-        , sort, and filter hooks onto that contract. The same public server that powers AG Grid and
-        Infinite Table demos works here:{" "}
+        , sort, and filter hooks onto that contract. The protocol is documented at{" "}
+        <a
+          href="https://thedatagrid.com/protocol"
+          className="text-blue-600 dark:text-blue-400 hover:underline"
+        >
+          thedatagrid.com/protocol
+        </a>
+        . The public demo server is{" "}
+        <a
+          href="https://data.thedatagrid.com"
+          className="text-blue-600 dark:text-blue-400 hover:underline"
+        >
+          data.thedatagrid.com
+        </a>
+        , with a live API reference at{" "}
         <a
           href="https://data.thedatagrid.com/docs"
           className="text-blue-600 dark:text-blue-400 hover:underline"
         >
-          data.thedatagrid.com
+          /docs
         </a>
         .
       </motion.p>
@@ -177,9 +193,13 @@ const TdgpContent = () => {
         <h3 className="font-semibold text-gray-800 dark:text-white mb-1 text-sm">Grouping</h3>
         <p className="text-gray-700 dark:text-gray-300 text-sm">
           Pass{" "}
-          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">groupBy</code> to load
-          group rows first. Expanding a group fetches the next level from the server. Pivot stays
-          client-side — use{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">groupBy</code> (field
+          names from the catalog) to load group rows first. Use the{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">columns</code> from the
+          snapshot so the first group column can expand. Expanding a group fetches the next level
+          from the server.{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">totalCount</code> at a
+          group level is the number of groups, not leaf rows. Pivot stays client-side — use{" "}
           <Link href="/docs/pivot" className="text-blue-600 dark:text-blue-400 hover:underline">
             Pivot Tables
           </Link>{" "}
@@ -196,7 +216,7 @@ const TdgpContent = () => {
         Options
       </motion.h2>
 
-      <PropTable props={TDGP_PROPS} title="useTdgpTable / createTdgpTableSource" />
+      <PropTable props={TDGP_PROPS} title="useTdgpTable / createTdgpTable / mountTdgpTable" />
 
       <DocNavigationButtons />
     </PageWrapper>

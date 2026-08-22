@@ -3079,6 +3079,13 @@ new SimpleTableVanilla(container, {
   };
 }
 
+/** Public TDGP demo server + catalog fields for developers-10k (primaryKey is id). */
+const TDGP_SNIPPET_COLUMNS = `const columns = [
+  { accessor: "firstName", label: "First name", width: 140, type: "string", filterable: true },
+  { accessor: "country", label: "Country", width: 140, type: "string", filterable: true },
+  { accessor: "salary", label: "Salary", width: 120, type: "number", filterable: true },
+];`;
+
 export function tdgpSnippets(): Record<Framework, string> {
   return {
     react: `import { SimpleTable, useTdgpTable } from "@simple-table/react";
@@ -3087,104 +3094,142 @@ import "@simple-table/react/styles.css";
 
 const client = createTdgpClient({ url: "https://data.thedatagrid.com" });
 
-const columns = [
-  { accessor: "firstName", label: "First name", width: 140, type: "string", filterable: true },
-  { accessor: "country", label: "Country", width: 140, type: "string", filterable: true },
-  { accessor: "salary", label: "Salary", width: 120, type: "number", filterable: true },
-];
+${TDGP_SNIPPET_COLUMNS}
 
 function App() {
-  const { rows, tableProps } = useTdgpTable({
+  const { rows, columns: tableColumns, tableProps } = useTdgpTable({
     client,
     dataset: "developers-10k",
     columns,
     pageSize: 50,
+    primaryKey: "id",
   });
 
-  return <SimpleTable columns={columns} rows={rows} {...tableProps} height="480px" />;
+  return (
+    <SimpleTable
+      columns={tableColumns}
+      rows={rows}
+      {...tableProps}
+      height="480px"
+    />
+  );
 }`,
-    vue: `import { SimpleTable } from "@simple-table/vue";
-import { createTdgpTableSource } from "simple-table-core";
+    vue: `<script setup>
+import { SimpleTable, useTdgpTable } from "@simple-table/vue";
 import { createTdgpClient } from "@thedatagrid/client";
 import "@simple-table/vue/styles.css";
 
-const client = createTdgpClient({ url: "https://data.thedatagrid.com" });
-const source = createTdgpTableSource({
-  client,
+${TDGP_SNIPPET_COLUMNS}
+
+const { rows, columns: tableColumns, tableProps } = useTdgpTable({
+  client: createTdgpClient({ url: "https://data.thedatagrid.com" }),
   dataset: "developers-10k",
   columns,
   pageSize: 50,
+  primaryKey: "id",
 });
-source.start();
+</script>
 
-// Subscribe and pass source.getSnapshot().rows / tableProps into SimpleTable.`,
-    angular: `import { createTdgpTableSource } from "simple-table-core";
+<template>
+  <SimpleTable
+    :columns="tableColumns"
+    :rows="rows"
+    height="480px"
+    v-bind="tableProps"
+  />
+</template>`,
+    angular: `import { Component } from "@angular/core";
+import { SimpleTableComponent, useTdgpTable } from "@simple-table/angular";
 import { createTdgpClient } from "@thedatagrid/client";
+import "@simple-table/angular/styles.css";
 
-const client = createTdgpClient({ url: "https://data.thedatagrid.com" });
-const source = createTdgpTableSource({
-  client,
-  dataset: "developers-10k",
-  columns,
-  pageSize: 50,
-});
-source.start();
+@Component({
+  selector: "tdgp-demo",
+  standalone: true,
+  imports: [SimpleTableComponent],
+  template: \`
+    <simple-table
+      [columns]="tdgp.columns()"
+      [rows]="tdgp.rows()"
+      [tableProps]="tdgp.tableProps()"
+      height="480px"
+    ></simple-table>
+  \`,
+})
+export class TdgpDemoComponent {
+  readonly columns = [
+    { accessor: "firstName", label: "First name", width: 140, type: "string", filterable: true },
+    { accessor: "country", label: "Country", width: 140, type: "string", filterable: true },
+    { accessor: "salary", label: "Salary", width: 120, type: "number", filterable: true },
+  ];
 
-// Subscribe and pass source.getSnapshot().rows / tableProps into SimpleTable.`,
-    svelte: `import { SimpleTable } from "@simple-table/svelte";
-import { createTdgpTableSource } from "simple-table-core";
-import { createTdgpClient } from "@thedatagrid/client";
-import "@simple-table/svelte/styles.css";
+  readonly tdgp = useTdgpTable(() => ({
+    client: createTdgpClient({ url: "https://data.thedatagrid.com" }),
+    dataset: "developers-10k",
+    columns: this.columns,
+    pageSize: 50,
+    primaryKey: "id",
+  }));
+}`,
+    svelte: `<script>
+  import { SimpleTable, createTdgpTable } from "@simple-table/svelte";
+  import { createTdgpClient } from "@thedatagrid/client";
+  import "@simple-table/svelte/styles.css";
 
-const client = createTdgpClient({ url: "https://data.thedatagrid.com" });
-const source = createTdgpTableSource({
-  client,
-  dataset: "developers-10k",
-  columns,
-  pageSize: 50,
-});
-source.start();
+  ${TDGP_SNIPPET_COLUMNS}
 
-// Subscribe and pass source.getSnapshot().rows / tableProps into SimpleTable.`,
-    solid: `import { SimpleTable } from "@simple-table/solid";
-import { createTdgpTableSource } from "simple-table-core";
+  const table = createTdgpTable({
+    client: createTdgpClient({ url: "https://data.thedatagrid.com" }),
+    dataset: "developers-10k",
+    columns,
+    pageSize: 50,
+    primaryKey: "id",
+  });
+</script>
+
+<SimpleTable columns={$table.columns} rows={$table.rows} height="480px" {...$table.tableProps} />`,
+    solid: `import { SimpleTable, useTdgpTable } from "@simple-table/solid";
 import { createTdgpClient } from "@thedatagrid/client";
 import "@simple-table/solid/styles.css";
 
-const client = createTdgpClient({ url: "https://data.thedatagrid.com" });
-const source = createTdgpTableSource({
-  client,
-  dataset: "developers-10k",
-  columns,
-  pageSize: 50,
-});
-source.start();
+${TDGP_SNIPPET_COLUMNS}
 
-// Subscribe and pass source.getSnapshot().rows / tableProps into SimpleTable.`,
-    vanilla: `import { SimpleTableVanilla, createTdgpTableSource } from "simple-table-core";
+function App() {
+  const tdgp = useTdgpTable({
+    client: createTdgpClient({ url: "https://data.thedatagrid.com" }),
+    dataset: "developers-10k",
+    columns,
+    pageSize: 50,
+    primaryKey: "id",
+  });
+
+  return (
+    <SimpleTable
+      columns={tdgp.columns()}
+      rows={tdgp.rows()}
+      height="480px"
+      {...tdgp.tableProps()}
+    />
+  );
+}`,
+    vanilla: `import { mountTdgpTable } from "simple-table-core";
 import { createTdgpClient } from "@thedatagrid/client";
 import "simple-table-core/styles.css";
 
-const client = createTdgpClient({ url: "https://data.thedatagrid.com" });
-const source = createTdgpTableSource({
-  client,
+const container = document.getElementById("table");
+if (!container) {
+  throw new Error('Add a <div id="table"></div> to the page');
+}
+
+${TDGP_SNIPPET_COLUMNS}
+
+const { destroy } = mountTdgpTable(container, {
+  client: createTdgpClient({ url: "https://data.thedatagrid.com" }),
   dataset: "developers-10k",
   columns,
   pageSize: 50,
-});
-
-const table = new SimpleTableVanilla(container, {
-  columns,
-  rows: [],
-  height: "480px",
-  ...source.getSnapshot().tableProps,
-});
-table.mount();
-
-source.subscribe(() => {
-  const { rows, tableProps } = source.getSnapshot();
-  table.update({ rows, ...tableProps });
-});
-source.start();`,
+  primaryKey: "id",
+  tableConfig: { height: "480px" },
+});`,
   };
 }

@@ -139,7 +139,7 @@ export type TdgpTableSourceOptions<TData extends RowData = Row> = {
 export type TdgpTableSource<TData extends RowData = Row> = {
   subscribe: (listener: () => void) => () => void;
   getSnapshot: () => TdgpTableSnapshot<TData>;
-  /** Load the current page. Called once from the React hook on mount. */
+  /** Load the current page. Call once after subscribe. */
   start: () => void;
   /** Ignore in-flight responses and stop later loads. */
   stop: () => void;

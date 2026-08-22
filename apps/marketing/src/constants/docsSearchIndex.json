@@ -1342,37 +1342,6 @@
     ]
   },
   {
-    "id": "tdgp",
-    "path": "/docs/tdgp",
-    "title": "Connect Simple Table to a TDGP Server",
-    "description": "Load pages, sorts, and filters from a THE DataGrid Protocol (TDGP) server. Use useTdgpTable in React or createTdgpTableSource in other frameworks — no custom backend required.",
-    "keywords": [
-      "client",
-      "dataset",
-      "columns",
-      "pageSize",
-      "primaryKey",
-      "groupBy",
-      "aggregations",
-      "Server Data (TDGP)",
-      "Grouping",
-      "Connect to a TDGP server",
-      "Server",
-      "Data",
-      "(TDGP)",
-      "Connect",
-      "TDGP",
-      "server"
-    ],
-    "content": "THE DataGrid Protocol (TDGP) is a shared JSON contract for asking a server for a page of rows — filtered, sorted, and optionally grouped. Simple Table maps its existing server-side pagination , sort, and filter hooks onto that contract. The same public server that powers AG Grid and Infinite Table demos works here: data.thedatagrid.com . Pass groupBy to load group rows first. Expanding a group fetches the next level from the server. Pivot stays client-side — use Pivot Tables on rows you already have. @thedatagrid/client useTdgpTable tableProps createTdgpTableSource simple-table-core groupBy Install and spread onto the table. Other frameworks use . Page changes, sorts, and column filters become server requests. Pair with isLoading Server Data (TDGP) THE DataGrid Protocol (TDGP) is a shared JSON contract for asking a server for a page of rows — filtered, sorted, and optionally grouped. Simple Table maps its existing server-side pagination , sort, and filter hooks onto that contract. The same public server that powers AG Grid and Infinite Table demos works here: data.thedatagrid.com {TDGP_PATTERNS.map((pattern) => ( Grouping Pass to load group rows first. Expanding a group fetches the next level from the server. Pivot stays client-side — use Pivot Tables Options client dataset columns pageSize primaryKey aggregations A TDGP client with a query method. createTdgpClient() from @thedatagrid/client matches this. Dataset name on the TDGP server (the route segment, not a URL). Column definitions for the table. Keep this array stable across renders. Rows per page sent to the server. Defaults to 50. Field used as the row id for leaf rows. Defaults to id. Group on the server by these fields. Expanding a group loads the next level (or leaf rows at the last level). Server aggregations for grouped rows (sum, avg, min, max, count). Values are copied onto the group row using each aggregation id. client={createTdgpClient({ url: \"https://data.thedatagrid.com\" })} dataset=\"developers-10k\" columns={columns} pageSize={50} primaryKey=\"id\" groupBy={[\"country\", \"stack\"]} aggregations={[{ id: \"salary\", field: \"salary\", fn: \"sum\" }]}",
-    "section": "Advanced Features",
-    "headings": [
-      "Server Data (TDGP)",
-      "Grouping",
-      "Connect to a TDGP server"
-    ]
-  },
-  {
     "id": "themes",
     "path": "/docs/themes",
     "title": "Themes for Simple Table Data Grid",
