@@ -32,9 +32,10 @@ const TdgpDemo = ({
   return (
     <div>
       <p style={{ margin: "0 0 12px", fontSize: 14, lineHeight: 1.45 }}>
-        Live rows from {TDGP_SERVER_URL} ({TDGP_DATASET}). Next page, sort, and
-        column filters ask the server for a new slice. Expand a country to load
-        stacks, then people.
+        Live rows from {TDGP_SERVER_URL} ({TDGP_DATASET}). This query returns
+        countries (not the 10k people). Next page loads more countries. Click
+        the arrow in the Country column to load stacks, then people. Sort and
+        column filters ask the server for a new slice.
         {totalRowCount > 0 ? ` ${totalRowCount.toLocaleString()} rows on the server.` : ""}
       </p>
       {error ? (

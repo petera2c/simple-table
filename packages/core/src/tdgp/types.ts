@@ -109,6 +109,8 @@ export type TdgpTableProps<TData extends RowData = Row> = {
   getRowId: GetRowId<TData>;
   rowGrouping?: Accessor<TData>[];
   onRowGroupExpand?: (props: OnRowGroupExpandProps<TData>) => void | Promise<void>;
+  /** Groups start collapsed. Children load when the user expands a row. */
+  expandAll?: false;
 };
 
 export type TdgpTableSnapshot<TData extends RowData = Row> = {

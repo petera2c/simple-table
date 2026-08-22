@@ -18,7 +18,7 @@ export type TdgpDeveloper = {
 
 export const TDGP_DATASET = "developers-10k";
 export const TDGP_SERVER_URL = "https://data.thedatagrid.com";
-export const TDGP_PAGE_SIZE = 25;
+export const TDGP_PAGE_SIZE = 5;
 export const TDGP_GROUP_BY = ["country", "stack"];
 
 const currency = (value: number | string | null | undefined) =>

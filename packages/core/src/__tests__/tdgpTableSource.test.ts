@@ -187,6 +187,7 @@ describe("createTdgpTableSource", () => {
       [TDGP_GROUP_KEYS]: ["France"],
     });
     expect(top.tableProps.rowGrouping).toEqual([TDGP_CHILDREN_ACCESSOR]);
+    expect(top.tableProps.expandAll).toBe(false);
     expect(top.columns[0]?.expandable).toBe(true);
 
     const setLoading = vi.fn();

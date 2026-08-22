@@ -125,14 +125,15 @@ export function createTdgpTableSource<TData extends RowData = Row>(
         buildRequest({ groupKeys: parentKeys, start: 0, limit: Math.max(pageSize(), 500) }),
       );
       const childRows = mapResponseRows(response.data, parentKeys.length);
+      props.setLoading(false);
       if (childRows.length === 0) {
         props.setEmpty(true, "No rows");
         return;
       }
       rows = setNestedChildren(rows as Row[], props.rowIndexPath, keys, childRows as Row[]) as TData[];
       emit();
-      props.setLoading(false);
     } catch (err) {
+      props.setLoading(false);
       props.setError(err instanceof Error ? err.message : "Failed to load rows");
     }
   };
@@ -185,7 +186,13 @@ export function createTdgpTableSource<TData extends RowData = Row>(
       onSortChange: handleSortChange,
       onFilterChange: handleFilterChange,
       getRowId,
-      ...(keys ? { rowGrouping: keys, onRowGroupExpand: handleRowGroupExpand } : {}),
+      ...(keys
+        ? {
+            rowGrouping: keys,
+            onRowGroupExpand: handleRowGroupExpand,
+            expandAll: false,
+          }
+        : {}),
     };
   }
 
