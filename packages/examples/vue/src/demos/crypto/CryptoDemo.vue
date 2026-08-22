@@ -1,5 +1,6 @@
 <template>
   <SimpleTable
+    :auto-expand-columns="true"
     ref="tableRef"
     :columns="cryptoConfig.headers"
     :rows="cryptoConfig.rows"

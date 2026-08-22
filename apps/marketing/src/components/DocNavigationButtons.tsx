@@ -40,7 +40,7 @@ const DocNavigationButtons = () => {
 
   return (
     <motion.div
-      className="flex flex-col sm:flex-row justify-between mt-6 pt-6 border-t border-gray-200 gap-4"
+      className="flex flex-col sm:flex-row justify-between mt-6 pt-6 border-t border-line gap-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5, delay: 0.9 }}

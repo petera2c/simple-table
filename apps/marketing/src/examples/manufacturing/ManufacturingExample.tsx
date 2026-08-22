@@ -34,6 +34,7 @@ export default function ManufacturingExample({
 
   return (
     <SimpleTable
+      autoExpandColumns
       columnResizing
       columnReordering
       columns={HEADERS}

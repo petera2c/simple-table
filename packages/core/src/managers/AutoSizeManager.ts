@@ -124,6 +124,7 @@ export class AutoSizeManager {
           theme: ctx.theme,
           autoSizeMode: leaf.autoSizeMode,
           sortIcon: ctx.icons.sortUp,
+          filterIcon: ctx.icons.filter,
           expandIcon: ctx.icons.expand,
           onRendererHostDiscard: ctx.onRendererHostDiscard,
         });

@@ -366,11 +366,11 @@ const PopularityCell = ({ row, theme }: CellRendererProps<MusicArtist>): ReactNo
 const stat = (
   accessor: string,
   label: string,
-  options: StatOptions & { width?: number } = {},
+  options: StatOptions = {},
 ): ReactColumnDef<MusicArtist> => ({
   accessor,
   label,
-  width: options.width ?? 200,
+  width: "auto",
   sortable: true,
   editable: false,
   align: "right",
@@ -383,7 +383,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
     {
       accessor: "rank",
       label: "#",
-      width: 70,
+      width: "auto",
       sortable: true,
       editable: false,
       align: "center",
@@ -394,7 +394,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
     {
       accessor: "identity",
       label: "Identity",
-      width: 240,
+      width: "auto",
       sortable: false,
       editable: false,
       align: "left",
@@ -406,7 +406,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
     {
       accessor: "region",
       label: "Region",
-      width: 180,
+      width: "auto",
       sortable: false,
       editable: false,
       align: "left",
@@ -417,7 +417,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
     {
       accessor: "score",
       label: "Score",
-      width: 240,
+      width: "auto",
       sortable: true,
       editable: false,
       align: "left",
@@ -427,7 +427,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
     {
       accessor: "earliestAlbumReleaseDate",
       label: "Earliest Release",
-      width: 160,
+      width: "auto",
       sortable: false,
       editable: false,
       align: "right",
@@ -437,7 +437,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
     {
       accessor: "latestAlbumReleaseDate",
       label: "Latest Release",
-      width: 160,
+      width: "auto",
       sortable: false,
       editable: false,
       align: "right",
@@ -447,7 +447,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
     {
       accessor: "audienceAge",
       label: "Audience Age",
-      width: 240,
+      width: "auto",
       sortable: false,
       editable: false,
       align: "left",
@@ -457,7 +457,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
     {
       accessor: "audienceGender",
       label: "Audience Gender",
-      width: 200,
+      width: "auto",
       sortable: false,
       editable: false,
       align: "left",
@@ -466,37 +466,37 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
     },
 
     // Followers / fans
-    stat("spotifyFollowers", "Spotify Followers", { width: 220 }),
-    stat("youtubeSubscribers", "YouTube Subscribers", { width: 220 }),
-    stat("instagramFollowers", "Instagram Followers", { width: 220 }),
-    stat("tiktokFollowers", "TikTok Followers", { width: 200 }),
-    stat("deezerFans", "Deezer Fans", { width: 190 }),
-    stat("facebookFollowers", "Facebook Followers", { width: 220 }),
-    stat("twitterFollowers", "Twitter/X Followers", { width: 220 }),
-    stat("soundcloudFollowers", "SoundCloud Followers", { width: 220 }),
-    stat("songkickFans", "Songkick Fans", { width: 190 }),
-    stat("snapchatSubscribers", "Snapchat Subscribers", { width: 220 }),
-    stat("blueskyFollowers", "Bluesky Followers", { width: 200 }),
-    stat("twitchFollowers", "Twitch Followers", { width: 200 }),
-    stat("lineMusicArtistLikes", "LINE Music Likes", { width: 200 }),
-    stat("melonArtistFans", "Melon Fans", { width: 190 }),
+    stat("spotifyFollowers", "Spotify Followers"),
+    stat("youtubeSubscribers", "YouTube Subscribers"),
+    stat("instagramFollowers", "Instagram Followers"),
+    stat("tiktokFollowers", "TikTok Followers"),
+    stat("deezerFans", "Deezer Fans"),
+    stat("facebookFollowers", "Facebook Followers"),
+    stat("twitterFollowers", "Twitter/X Followers"),
+    stat("soundcloudFollowers", "SoundCloud Followers"),
+    stat("songkickFans", "Songkick Fans"),
+    stat("snapchatSubscribers", "Snapchat Subscribers"),
+    stat("blueskyFollowers", "Bluesky Followers"),
+    stat("twitchFollowers", "Twitch Followers"),
+    stat("lineMusicArtistLikes", "LINE Music Likes"),
+    stat("melonArtistFans", "Melon Fans"),
 
     // Spotify performance
     {
       accessor: "spotifyPopularity",
       label: "Spotify Popularity",
-      width: 200,
+      width: "auto",
       sortable: true,
       editable: false,
       align: "right",
       type: "number",
       cellRenderer: PopularityCell
     },
-    stat("spotifyMonthlyListeners", "Spotify Monthly Listeners", { width: 230 }),
+    stat("spotifyMonthlyListeners", "Spotify Monthly Listeners"),
     {
       accessor: "spotifyFollowersToListenersRatio",
       label: "Followers / Listeners",
-      width: 190,
+      width: "auto",
       sortable: true,
       editable: false,
       align: "right",
@@ -506,7 +506,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
     {
       accessor: "spotifyReachFollowersRatio",
       label: "Reach / Followers",
-      width: 180,
+      width: "auto",
       sortable: true,
       editable: false,
       align: "right",
@@ -515,31 +515,31 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
     },
 
     // YouTube performance
-    stat("youtubeChannelViews", "YouTube Views", { width: 220 }),
+    stat("youtubeChannelViews", "YouTube Views"),
     {
       accessor: "youtubeEngagementRate",
       label: "YouTube Engagement",
-      width: 190,
+      width: "auto",
       sortable: true,
       editable: false,
       align: "right",
       type: "number",
       cellRenderer: makeRateCell("youtubeEngagementRate")
     },
-    stat("youtubeDailyVideoViews", "YT Daily Video Views", { width: 220 }),
-    stat("youtubeMonthlyListeners", "YT Monthly Listeners", { width: 220 }),
+    stat("youtubeDailyVideoViews", "YT Daily Video Views"),
+    stat("youtubeMonthlyListeners", "YT Monthly Listeners"),
 
     // Engagement / plays
-    stat("tiktokLikes", "TikTok Likes", { width: 200 }),
-    stat("wikipediaViews", "Wikipedia Views", { width: 200 }),
-    stat("pandoraLifetimeStreams", "Pandora Streams", { width: 220 }),
-    stat("pandoraListeners28Day", "Pandora 28-Day", { width: 200 }),
-    stat("pandoraLifetimeStationsAdded", "Pandora Stations", { width: 220 }),
-    stat("facebookTalks", "Facebook Talks", { width: 200 }),
+    stat("tiktokLikes", "TikTok Likes"),
+    stat("wikipediaViews", "Wikipedia Views"),
+    stat("pandoraLifetimeStreams", "Pandora Streams"),
+    stat("pandoraListeners28Day", "Pandora 28-Day"),
+    stat("pandoraLifetimeStationsAdded", "Pandora Stations"),
+    stat("facebookTalks", "Facebook Talks"),
     {
       accessor: "instagramEngagementRate",
       label: "Instagram Engagement",
-      width: 200,
+      width: "auto",
       sortable: true,
       editable: false,
       align: "right",
@@ -549,7 +549,7 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
     {
       accessor: "tiktokEngagementRate",
       label: "TikTok Engagement",
-      width: 200,
+      width: "auto",
       sortable: true,
       editable: false,
       align: "right",
@@ -558,32 +558,32 @@ function getMusicHeaders(): ReactColumnDef<MusicArtist>[] {
         changeKey: "tiktokEngagementRateChange"
       })
     },
-    stat("lineMusicLikes", "LINE Music Likes (Songs)", { width: 220 }),
-    stat("lineMusicMvPlays", "LINE MV Plays", { width: 200 }),
-    stat("lineMusicPlays", "LINE Plays", { width: 200 }),
-    stat("melonVideoLikes", "Melon Video Likes", { width: 200 }),
-    stat("melonVideoViews", "Melon Video Views", { width: 200 }),
-    stat("tiktokTopVideoViews", "TikTok Top Video Views", { width: 230 }),
-    stat("soundcloudPlays", "SoundCloud Plays", { width: 210 }),
-    stat("boomplayFavorites", "Boomplay Favorites", { width: 210 }),
-    stat("boomplayPlays", "Boomplay Plays", { width: 200 }),
+    stat("lineMusicLikes", "LINE Music Likes (Songs)"),
+    stat("lineMusicMvPlays", "LINE MV Plays"),
+    stat("lineMusicPlays", "LINE Plays"),
+    stat("melonVideoLikes", "Melon Video Likes"),
+    stat("melonVideoViews", "Melon Video Views"),
+    stat("tiktokTopVideoViews", "TikTok Top Video Views"),
+    stat("soundcloudPlays", "SoundCloud Plays"),
+    stat("boomplayFavorites", "Boomplay Favorites"),
+    stat("boomplayPlays", "Boomplay Plays"),
 
     // Playlists
-    stat("spotifyPlaylistReach", "Spotify Playlist Reach", { width: 230 }),
-    stat("spotifyPlaylistCount", "Spotify Playlist Count", { width: 220 }),
-    stat("youtubePlaylistCount", "YouTube Playlist Count", { width: 220 }),
-    stat("deezerPlaylistCount", "Deezer Playlist Count", { width: 210 }),
-    stat("itunesPlaylistCount", "iTunes Playlist Count", { width: 210 }),
-    stat("amazonPlaylistCount", "Amazon Playlist Count", { width: 220 }),
-    stat("deezerPlaylistReach", "Deezer Playlist Reach", { width: 220 }),
+    stat("spotifyPlaylistReach", "Spotify Playlist Reach"),
+    stat("spotifyPlaylistCount", "Spotify Playlist Count"),
+    stat("youtubePlaylistCount", "YouTube Playlist Count"),
+    stat("deezerPlaylistCount", "Deezer Playlist Count"),
+    stat("itunesPlaylistCount", "iTunes Playlist Count"),
+    stat("amazonPlaylistCount", "Amazon Playlist Count"),
+    stat("deezerPlaylistReach", "Deezer Playlist Reach"),
 
     // Airwaves / discovery
-    stat("tiktokTrackPosts", "TikTok Track Posts", { width: 210 }),
-    stat("airplayStreams", "Airplay Streams", { width: 200 }),
-    stat("siriusxmStreams", "SiriusXM Streams", { width: 200 }),
-    stat("geniusPageviews", "Genius Pageviews", { width: 210 }),
-    stat("shazamCount", "Shazam Count", { width: 200 }),
-    stat("twitterTweetCount", "Tweet Count", { width: 180 }),
+    stat("tiktokTrackPosts", "TikTok Track Posts"),
+    stat("airplayStreams", "Airplay Streams"),
+    stat("siriusxmStreams", "SiriusXM Streams"),
+    stat("geniusPageviews", "Genius Pageviews"),
+    stat("shazamCount", "Shazam Count"),
+    stat("twitterTweetCount", "Tweet Count"),
   ];
 }
 
@@ -600,6 +600,7 @@ const MusicDemo = ({
   return (
     <div ref={wrapperRef} className="music-theme-container" style={{ fontFamily: "Inter" }}>
       <SimpleTable
+        autoExpandColumns
         columnReordering
         columnResizing
         customTheme={{ headerHeight: 40, rowHeight: 90 }}

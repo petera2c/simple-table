@@ -58,7 +58,7 @@ export const defaultVanillaArgs: UniversalVanillaArgs = {
 export const vanillaArgTypes = {
   theme: {
     control: { type: "select" as const },
-    options: ["modern-light", "modern-dark", "light", "dark", "neutral"],
+    options: ["modern-light", "modern-dark", "modern-black", "light", "dark", "neutral"],
     description: "Select the theme for the table",
   },
   oddColumnBackground: {

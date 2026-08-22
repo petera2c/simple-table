@@ -5,16 +5,13 @@
       flexDirection: 'column',
       width: '100%',
       height: formatHeight,
-      background: chromeBg,
-      border: `1px solid ${chromeBorder}`,
-      borderRadius: '8px',
       overflow: 'hidden',
     }"
   >
     <div
       :style="{
-        padding: '16px 20px 12px',
-        borderBottom: `1px solid ${chromeBorder}`,
+        padding: '0 0 12px',
+        borderBottom: `1px solid ${chrome.border}`,
         flexShrink: 0,
       }"
     >
@@ -24,68 +21,48 @@
             margin: 0,
             fontSize: '18px',
             fontWeight: 650,
-            color: titleColor,
+            color: chrome.title,
             letterSpacing: '-0.02em',
           }"
         >
           Revenue Analytics
         </h2>
-        <p :style="{ margin: '4px 0 0', fontSize: '13px', color: mutedColor }">
-          {{ active.description }} · {{ analyticsRows.length }} fact rows{{
-            isPivoted ? " → pivoted matrix" : ""
-          }}
-        </p>
       </div>
-      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px">
-        <button
-          v-for="preset in analyticsPresets"
-          :key="preset.id"
-          type="button"
-          @click="activeId = preset.id"
-          :style="{
-            padding: '7px 12px',
-            borderRadius: '6px',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: '13px',
-            fontWeight: 550,
-            background: preset.id === activeId ? '#2563eb' : chipIdleBg,
-            color: preset.id === activeId ? '#fff' : chipIdleColor,
-          }"
-        >
-          {{ preset.label }}
-        </button>
-      </div>
-      <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
-        <input
-          type="search"
-          v-model="searchText"
-          placeholder="Quick filter…"
-          aria-label="Quick filter"
-          :style="{
-            flex: '1 1 180px',
-            maxWidth: '280px',
-            padding: '7px 10px',
-            borderRadius: '6px',
-            border: `1px solid ${inputBorder}`,
-            background: inputBg,
-            color: inputColor,
-            fontSize: '13px',
-            outline: 'none',
-          }"
-        />
+      <div
+        style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; width: 100%"
+      >
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+          <button
+            v-for="preset in analyticsPresets"
+            :key="preset.id"
+            type="button"
+            @click="activeId = preset.id"
+            :style="{
+              padding: '7px 12px',
+              borderRadius: '6px',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 550,
+              background: preset.id === activeId ? chrome.chipActive : chrome.chipIdleBg,
+              color: preset.id === activeId ? '#fff' : chrome.chipIdleColor,
+            }"
+          >
+            {{ preset.label }}
+          </button>
+        </div>
         <button
           type="button"
           @click="exportCsv"
           :style="{
             padding: '7px 12px',
             borderRadius: '6px',
-            border: `1px solid ${inputBorder}`,
+            border: `1px solid ${chrome.border}`,
             cursor: 'pointer',
             fontSize: '13px',
             fontWeight: 550,
-            background: chipIdleBg,
-            color: chipIdleColor,
+            background: chrome.chipIdleBg,
+            color: chrome.chipIdleColor,
           }"
         >
           Export CSV
@@ -93,7 +70,7 @@
       </div>
     </div>
     <div
-      style="flex: 1; min-height: 0; padding: 12px 20px 20px; display: flex; flex-direction: column"
+      style="flex: 1; min-height: 0; display: flex; flex-direction: column"
     >
       <div style="flex: 1; min-height: 0; height: 100%">
         <SimpleTable
@@ -112,7 +89,6 @@
           :initial-sort-column="isPivoted ? undefined : 'sales'"
           :initial-sort-direction="isPivoted ? undefined : 'desc'"
           :pivot="active.pivot"
-          :quick-filter="{ text: searchText, mode: 'simple', caseSensitive: false }"
           :rows="analyticsDemoConfig.rows"
           :selectable-cells="true"
           :theme="theme"
@@ -127,12 +103,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { TableAPI, Theme } from "@simple-table/vue";
-import {
-  analyticsDemoConfig,
-  analyticsPresets,
-  analyticsRows,
-} from "./analytics.demo-data";
+import type { Theme, GetRowIdParams, SimpleTableExposed } from "@simple-table/vue";
+import { analyticsDemoConfig, analyticsPresets } from "./analytics.demo-data";
+import type { AnalyticsFactRow } from "./analytics.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number | null; theme?: Theme }>(), {
@@ -140,30 +113,46 @@ const props = withDefaults(defineProps<{ height?: string | number | null; theme?
 });
 
 const activeId = ref(analyticsPresets[0].id);
-const searchText = ref("");
-const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
+const tableRef = ref<SimpleTableExposed<AnalyticsFactRow> | null>(null);
 const active = computed(
   () => analyticsPresets.find((p) => p.id === activeId.value) ?? analyticsPresets[0]
 );
 const isPivoted = computed(() => active.value.pivot != null);
-const isDark = computed(() => props.theme === "dark" || props.theme === "modern-dark");
-const chromeBg = computed(() => (isDark.value ? "#0f172a" : "#f8fafc"));
-const chromeBorder = computed(() => (isDark.value ? "#1e293b" : "#e2e8f0"));
-const titleColor = computed(() => (isDark.value ? "#f1f5f9" : "#0f172a"));
-const mutedColor = computed(() => (isDark.value ? "#94a3b8" : "#64748b"));
-const chipIdleBg = computed(() => (isDark.value ? "#1e293b" : "#e2e8f0"));
-const chipIdleColor = computed(() => (isDark.value ? "#cbd5e1" : "#334155"));
-const inputBg = computed(() => (isDark.value ? "#1e293b" : "#fff"));
-const inputBorder = computed(() => (isDark.value ? "#334155" : "#cbd5e1"));
-const inputColor = computed(() => (isDark.value ? "#e2e8f0" : "#0f172a"));
+const chrome = computed(() => {
+  if (props.theme === "modern-black") {
+    return {
+      border: "#262626",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1c1c1c",
+      chipIdleColor: "#a3a3a3",
+      title: "#fafafa",
+    };
+  }
+  if (props.theme === "modern-dark" || props.theme === "dark") {
+    return {
+      border: "#374151",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1f2937",
+      chipIdleColor: "#d1d5db",
+      title: "#f9fafb",
+    };
+  }
+  return {
+    border: "#e5e5e5",
+    chipActive: "#2563eb",
+    chipIdleBg: "#f5f5f5",
+    chipIdleColor: "#525252",
+    title: "#171717",
+  };
+});
 const formatHeight = computed(() => {
   if (props.height == null) return "100%";
   if (typeof props.height === "number") return `${props.height}px`;
   return props.height;
 });
 
-function getRowId({ row }: { row: { id?: unknown } }) {
-  return String(row.id);
+function getRowId({ row }: GetRowIdParams<AnalyticsFactRow>) {
+  return row.id;
 }
 
 function exportCsv() {

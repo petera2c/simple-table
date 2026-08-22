@@ -48,6 +48,7 @@
 </script>
 
 <SimpleTable
+  autoExpandColumns={true}
   columnReordering={true}
   columnResizing={true}
   customTheme={{ rowHeight }}

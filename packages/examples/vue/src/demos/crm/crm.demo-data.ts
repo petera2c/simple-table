@@ -46,7 +46,7 @@ export const crmHeaders: VueColumnDef<CRMLead>[] = [
   {
     accessor: "name",
     label: "CONTACT",
-    width: "2fr",
+    width: "auto",
     minWidth: 290,
     sortable: true,
     editable: true,
@@ -55,7 +55,7 @@ export const crmHeaders: VueColumnDef<CRMLead>[] = [
   {
     accessor: "signal",
     label: "SIGNAL",
-    width: "3fr",
+    width: "auto",
     minWidth: 340,
     sortable: true,
     editable: true,
@@ -64,7 +64,7 @@ export const crmHeaders: VueColumnDef<CRMLead>[] = [
   {
     accessor: "aiScore",
     label: "AI SCORE",
-    width: "1fr",
+    width: "auto",
     minWidth: 100,
     sortable: true,
     align: "center",
@@ -73,7 +73,7 @@ export const crmHeaders: VueColumnDef<CRMLead>[] = [
   {
     accessor: "emailStatus",
     label: "EMAIL",
-    width: "1.5fr",
+    width: "auto",
     minWidth: 210,
     sortable: true,
     align: "center",
@@ -88,7 +88,7 @@ export const crmHeaders: VueColumnDef<CRMLead>[] = [
   {
     accessor: "timeAgo",
     label: "IMPORT",
-    width: "1fr",
+    width: "auto",
     minWidth: 100,
     sortable: true,
     align: "center",
@@ -97,7 +97,7 @@ export const crmHeaders: VueColumnDef<CRMLead>[] = [
   {
     accessor: "list",
     label: "LIST",
-    width: "1.2fr",
+    width: "auto",
     minWidth: 160,
     sortable: true,
     align: "center",
@@ -121,14 +121,14 @@ export const crmHeaders: VueColumnDef<CRMLead>[] = [
   {
     accessor: "_fit",
     label: "Fit",
-    width: "1fr",
+    width: "auto",
     align: "center",
     minWidth: 120,
   },
   {
     accessor: "_contactNow",
     label: "",
-    width: "1.2fr",
+    width: "auto",
     minWidth: 160,
   },
 ];

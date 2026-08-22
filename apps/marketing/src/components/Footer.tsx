@@ -22,9 +22,9 @@ export default function Footer() {
 
   return (
     <PageWrapper disableScrollRestoration>
-      <footer className="bg-gray-900 dark:bg-gray-950 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1.5fr_1fr_1fr_1fr] gap-8">
+      <footer className="bg-footer text-footer-ink overflow-visible">
+        <div className="site-shell py-12">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1.5fr_1fr_1fr_1fr] gap-8 items-start overflow-visible">
             {/* Documentation */}
             <div>
               <h3 className="text-lg font-semibold mb-4">Documentation</h3>
@@ -32,8 +32,8 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/docs/quick-start"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/docs/quick-start") ? "text-white font-medium" : ""
+                    className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                      isActive("/docs/quick-start") ? "text-footer-ink font-medium" : ""
                     }`}
                   >
                     Quick Start
@@ -42,8 +42,8 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/docs/installation"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/docs/installation") ? "text-white font-medium" : ""
+                    className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                      isActive("/docs/installation") ? "text-footer-ink font-medium" : ""
                     }`}
                   >
                     Installation
@@ -52,8 +52,8 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/frameworks"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/frameworks") ? "text-white font-medium" : ""
+                    className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                      isActive("/frameworks") ? "text-footer-ink font-medium" : ""
                     }`}
                   >
                     Framework setup (Vue, Angular, …)
@@ -65,13 +65,13 @@ export default function Footer() {
             {/* Examples */}
             <div>
               <h3 className="text-lg font-semibold mb-4">Examples</h3>
-              <ul className="space-y-2 max-h-72 overflow-y-auto pr-1">
+              <ul className="space-y-2">
                 {EXAMPLE_NAV_ITEMS.map((example) => (
                   <li key={example.id}>
                     <Link
                       href={getExampleUrl(example.path, theme)}
-                      className={`text-gray-400 hover:text-white transition-colors ${
-                        isActive(example.path) ? "text-white font-medium" : ""
+                      className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                        isActive(example.path) ? "text-footer-ink font-medium" : ""
                       }`}
                     >
                       {example.label}
@@ -84,13 +84,13 @@ export default function Footer() {
             {/* Comparisons */}
             <div>
               <h3 className="text-lg font-semibold mb-4">Comparisons</h3>
-              <ul className="space-y-2 max-h-72 overflow-y-auto pr-1">
+              <ul className="space-y-2">
                 {COMPARISON_FOOTER_LINKS.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className={`text-gray-400 hover:text-white transition-colors ${
-                        isActive(item.href) ? "text-white font-medium" : ""
+                      className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                        isActive(item.href) ? "text-footer-ink font-medium" : ""
                       }`}
                     >
                       {item.label}
@@ -109,7 +109,7 @@ export default function Footer() {
                     href={TECHNICAL_STRINGS.links.npm}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-white transition-colors flex items-center"
+                    className="text-footer-muted hover:text-footer-ink transition-colors flex items-center"
                   >
                     <FontAwesomeIcon icon={faNpm} className="mr-2" />
                     NPM Package
@@ -120,7 +120,7 @@ export default function Footer() {
                     href={TECHNICAL_STRINGS.links.discord}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-white transition-colors flex items-center"
+                    className="text-footer-muted hover:text-footer-ink transition-colors flex items-center"
                   >
                     <FontAwesomeIcon icon={faDiscord} className="mr-2" />
                     Discord Support
@@ -131,7 +131,7 @@ export default function Footer() {
                     href={TECHNICAL_STRINGS.links.calendly}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-white transition-colors flex items-center"
+                    className="text-footer-muted hover:text-footer-ink transition-colors flex items-center"
                     onClick={() =>
                       trackBookACall({
                         cta_id: "footer_book_a_call",
@@ -150,7 +150,7 @@ export default function Footer() {
                     href={TECHNICAL_STRINGS.links.githubIssues}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-white transition-colors flex items-center"
+                    className="text-footer-muted hover:text-footer-ink transition-colors flex items-center"
                   >
                     <FontAwesomeIcon icon={faGithub} className="mr-2" />
                     GitHub Issues
@@ -159,8 +159,8 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/blog"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/blog") ? "text-white font-medium" : ""
+                    className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                      isActive("/blog") ? "text-footer-ink font-medium" : ""
                     }`}
                   >
                     Blog
@@ -169,8 +169,8 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/case-studies"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/case-studies") ? "text-white font-medium" : ""
+                    className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                      isActive("/case-studies") ? "text-footer-ink font-medium" : ""
                     }`}
                   >
                     Case Studies
@@ -179,8 +179,8 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/benchmarks"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/benchmarks") ? "text-white font-medium" : ""
+                    className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                      isActive("/benchmarks") ? "text-footer-ink font-medium" : ""
                     }`}
                   >
                     Benchmarks
@@ -189,8 +189,8 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/changelog"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/changelog") ? "text-white font-medium" : ""
+                    className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                      isActive("/changelog") ? "text-footer-ink font-medium" : ""
                     }`}
                   >
                     Changelog
@@ -199,8 +199,8 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/sitemap.xml"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/sitemap.xml") ? "text-white font-medium" : ""
+                    className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                      isActive("/sitemap.xml") ? "text-footer-ink font-medium" : ""
                     }`}
                   >
                     Sitemap
@@ -216,8 +216,8 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/theme-builder"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/theme-builder") ? "text-white font-medium" : ""
+                    className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                      isActive("/theme-builder") ? "text-footer-ink font-medium" : ""
                     }`}
                   >
                     Theme Builder
@@ -226,8 +226,8 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/docs/themes"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/docs/themes") ? "text-white font-medium" : ""
+                    className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                      isActive("/docs/themes") ? "text-footer-ink font-medium" : ""
                     }`}
                   >
                     Theme Documentation
@@ -236,8 +236,8 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/docs/custom-theme"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/docs/custom-theme") ? "text-white font-medium" : ""
+                    className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                      isActive("/docs/custom-theme") ? "text-footer-ink font-medium" : ""
                     }`}
                   >
                     Custom Theme
@@ -253,8 +253,8 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/legal/eula"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/legal/eula") ? "text-white font-medium" : ""
+                    className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                      isActive("/legal/eula") ? "text-footer-ink font-medium" : ""
                     }`}
                   >
                     EULA
@@ -263,8 +263,8 @@ export default function Footer() {
                 <li>
                   <Link
                     href="/legal/license"
-                    className={`text-gray-400 hover:text-white transition-colors ${
-                      isActive("/legal/license") ? "text-white font-medium" : ""
+                    className={`text-footer-muted hover:text-footer-ink transition-colors ${
+                      isActive("/legal/license") ? "text-footer-ink font-medium" : ""
                     }`}
                   >
                     Community License
@@ -274,7 +274,7 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="mt-12 pt-8 border-t border-gray-800 dark:border-gray-700 text-center text-gray-400">
+          <div className="mt-12 pt-8 border-t border-footer-line text-center text-footer-muted">
             <p>© {new Date().getFullYear()} Simple Table. All rights reserved.</p>
           </div>
         </div>

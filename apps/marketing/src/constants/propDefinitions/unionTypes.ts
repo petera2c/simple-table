@@ -44,8 +44,8 @@ const users: CellValue = [                    // Record<string, any>[]
     name: "Theme",
     required: false,
     description: "Built-in theme options for styling the table.",
-    type: '"light" | "dark" | "neutral" | "modern-light" | "modern-dark" | "custom"',
-    example: `theme="modern-dark"
+    type: '"light" | "dark" | "neutral" | "modern-light" | "modern-dark" | "modern-black" | "custom"',
+    example: `theme="modern-black"
 theme="neutral"
 theme="custom"`,
   },

@@ -173,6 +173,7 @@ export default function HRDemo(props: { height?: string | number; theme?: Theme 
 
   return (
     <SimpleTable
+      autoExpandColumns
       columnReordering
       columnResizing
       columns={getHeaders()}

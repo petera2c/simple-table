@@ -11,6 +11,39 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_1_8: ChangelogEntry = {
+  version: "4.1.8",
+  date: "2026-08-22",
+  title: "Modern Black theme",
+  description:
+    "A new dark theme with near-black surfaces, thin borders, and the Simple Table blue.",
+  changes: [
+    {
+      type: "feature",
+      description:
+        "New modern-black theme. Near-black background, hairline borders, and the Simple Table blue for selection and charts",
+      link: "/docs/themes",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Auto-width columns now leave room for the sort arrow before you sort, so the header label doesn't get cut off on the first click.",
+      link: "/docs/column-width#content-fit-auto",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Auto-width columns that can be filtered now leave room for the filter icon even when that column is scrolled out of view.",
+      link: "/docs/column-width#content-fit-auto",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Search boxes and other inputs inside the table now use the theme text color instead of staying black.",
+    },
+  ],
+};
+
 export const v4_1_7: ChangelogEntry = {
   version: "4.1.7",
   date: "2026-08-16",
@@ -2659,6 +2692,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_1_8,
   v4_1_7,
   v4_1_6,
   v4_1_5,

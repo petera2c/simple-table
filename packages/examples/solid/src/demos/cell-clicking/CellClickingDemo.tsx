@@ -77,7 +77,7 @@ export default function CellClickingDemo(props: { height?: string | number; them
     return h;
   });
 
-  const isDark = createMemo(() => props.theme === "modern-dark" || props.theme === "dark");
+  const isDark = createMemo(() => props.theme === "modern-dark" || props.theme === "dark" || props.theme === "modern-black");
 
   const handleCellClick = ({ accessor, rowIndex, value, row }: CellClickProps<ProjectTask>) => {
     const task = row;

@@ -259,7 +259,7 @@ function getCRMHeaders(isDark: boolean): ColumnDef<CRMLead>[] {
     {
       accessor: "name",
       label: "CONTACT",
-      width: "2fr",
+      width: "auto",
       minWidth: 290,
       sortable: true,
       editable: true,
@@ -269,7 +269,7 @@ function getCRMHeaders(isDark: boolean): ColumnDef<CRMLead>[] {
     {
       accessor: "signal",
       label: "SIGNAL",
-      width: "3fr",
+      width: "auto",
       minWidth: 340,
       sortable: true,
       editable: true,
@@ -279,7 +279,7 @@ function getCRMHeaders(isDark: boolean): ColumnDef<CRMLead>[] {
     {
       accessor: "aiScore",
       label: "AI SCORE",
-      width: "1fr",
+      width: "auto",
       minWidth: 100,
       sortable: true,
       align: "center",
@@ -289,7 +289,7 @@ function getCRMHeaders(isDark: boolean): ColumnDef<CRMLead>[] {
     {
       accessor: "emailStatus",
       label: "EMAIL",
-      width: "1.5fr",
+      width: "auto",
       minWidth: 210,
       sortable: true,
       align: "center",
@@ -305,7 +305,7 @@ function getCRMHeaders(isDark: boolean): ColumnDef<CRMLead>[] {
     {
       accessor: "timeAgo",
       label: "IMPORT",
-      width: "1fr",
+      width: "auto",
       minWidth: 100,
       sortable: true,
       align: "center",
@@ -315,7 +315,7 @@ function getCRMHeaders(isDark: boolean): ColumnDef<CRMLead>[] {
     {
       accessor: "list",
       label: "LIST",
-      width: "1.2fr",
+      width: "auto",
       minWidth: 160,
       sortable: true,
       align: "center",
@@ -347,7 +347,7 @@ function getCRMHeaders(isDark: boolean): ColumnDef<CRMLead>[] {
     {
       accessor: "_fit",
       label: "Fit",
-      width: "1fr",
+      width: "auto",
       align: "center",
       minWidth: 120,
       cellRenderer: fitRenderer,
@@ -355,7 +355,7 @@ function getCRMHeaders(isDark: boolean): ColumnDef<CRMLead>[] {
     {
       accessor: "_contactNow",
       label: "",
-      width: "1.2fr",
+      width: "auto",
       minWidth: 160,
       cellRenderer: contactNowRenderer,
     },
@@ -477,7 +477,8 @@ export function renderCRMDemo(
   const isDark =
     options?.theme === "custom-dark" ||
     options?.theme === "dark" ||
-    options?.theme === "modern-dark";
+    options?.theme === "modern-dark" ||
+    options?.theme === "modern-black";
   const footerColors = isDark ? CRM_FOOTER_COLORS_DARK : CRM_FOOTER_COLORS_LIGHT;
 
   const themeContainer = el("div");
@@ -488,6 +489,7 @@ export function renderCRMDemo(
 
   const table = new SimpleTableVanilla(themeContainer, {
     getRowId,
+    autoExpandColumns: true,
     columnReordering: true,
     columnResizing: true,
     columns: getCRMHeaders(isDark),

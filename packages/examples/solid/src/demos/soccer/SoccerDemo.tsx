@@ -6,6 +6,7 @@ import "@simple-table/solid/styles.css";
 export default function SoccerDemo(props: { height?: string | number; theme?: Theme }) {
   return (
     <SimpleTable
+      autoExpandColumns
       columns={soccerConfig.headers}
       getRowId={({ row }) => row.id}
       rows={soccerConfig.rows}

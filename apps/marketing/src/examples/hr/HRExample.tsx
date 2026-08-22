@@ -59,6 +59,7 @@ export default function HRExample({
 
   return (
     <SimpleTable
+      autoExpandColumns
       columnReordering
       columnResizing
       columns={HEADERS}

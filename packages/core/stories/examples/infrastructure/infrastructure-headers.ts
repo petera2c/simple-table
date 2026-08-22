@@ -58,7 +58,7 @@ function getThresholdColors(
     },
   };
 
-  const palette = palettes[theme] ?? palettes.light;
+  const palette = palettes[theme === "modern-black" ? "modern-dark" : theme] ?? palettes.light;
   return palette[level];
 }
 
@@ -99,7 +99,7 @@ function getResponseTimeColors(value: number, theme: Theme): ColorStyles {
     },
   };
 
-  const palette = palettes[theme] ?? palettes.light;
+  const palette = palettes[theme === "modern-black" ? "modern-dark" : theme] ?? palettes.light;
   return palette[level];
 }
 
@@ -174,7 +174,7 @@ function getStatusColors(status: string, theme: Theme): ColorStyles {
     },
   };
 
-  const palette = palettes[theme] ?? palettes.light;
+  const palette = palettes[theme === "modern-black" ? "modern-dark" : theme] ?? palettes.light;
   return palette[type] ?? palette.unknown;
 }
 
@@ -212,7 +212,7 @@ export const INFRASTRUCTURE_HEADERS: ColumnDef<InfrastructureRow>[] = [
     minWidth: 180,
     pinned: "left",
     type: "string",
-    width: "1.2fr",
+    width: "auto",
     cellRenderer: ({ row }) => {
       const span = document.createElement("span");
       span.style.fontFamily = "monospace";
@@ -230,18 +230,18 @@ export const INFRASTRUCTURE_HEADERS: ColumnDef<InfrastructureRow>[] = [
     label: "Name",
     minWidth: 200,
     type: "string",
-    width: "1.5fr",
+    width: "auto",
   },
   {
     accessor: "performance",
     label: "Performance Metrics",
-    width: 690,
+    width: "auto",
     sortable: false,
     children: [
       {
         accessor: "cpuHistory",
         label: "CPU History",
-        width: 150,
+        width: "auto",
         sortable: false,
         filterable: false,
         editable: false,
@@ -252,7 +252,7 @@ export const INFRASTRUCTURE_HEADERS: ColumnDef<InfrastructureRow>[] = [
       {
         accessor: "cpuUsage",
         label: "CPU %",
-        width: 120,
+        width: "auto",
         sortable: true,
         filterable: true,
         editable: true,
@@ -271,7 +271,7 @@ export const INFRASTRUCTURE_HEADERS: ColumnDef<InfrastructureRow>[] = [
       {
         accessor: "memoryUsage",
         label: "Memory %",
-        width: 130,
+        width: "auto",
         sortable: true,
         filterable: true,
         editable: true,
@@ -290,7 +290,7 @@ export const INFRASTRUCTURE_HEADERS: ColumnDef<InfrastructureRow>[] = [
       {
         accessor: "diskUsage",
         label: "Disk %",
-        width: 120,
+        width: "auto",
         sortable: true,
         filterable: true,
         editable: true,
@@ -304,7 +304,7 @@ export const INFRASTRUCTURE_HEADERS: ColumnDef<InfrastructureRow>[] = [
       {
         accessor: "responseTime",
         label: "Response (ms)",
-        width: 120,
+        width: "auto",
         sortable: true,
         filterable: true,
         editable: true,
@@ -325,7 +325,7 @@ export const INFRASTRUCTURE_HEADERS: ColumnDef<InfrastructureRow>[] = [
   {
     accessor: "status",
     label: "Status",
-    width: 130,
+    width: "auto",
     sortable: true,
     filterable: true,
     editable: false,

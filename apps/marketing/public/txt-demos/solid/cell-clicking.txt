@@ -11,11 +11,11 @@ export default function CellClickingDemo(props: { height?: string | number; them
   const [selectedTask, setSelectedTask] = createSignal<ProjectTask | null>(null);
   const [rows, setRows] = createSignal<ProjectTask[]>([...cellClickingData]);
 
-  const headers: SolidColumnDef[] = cellClickingHeaders.map((h) => {
+  const headers: SolidColumnDef<ProjectTask>[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") {
       return {
         ...h,
-        cellRenderer: (cr: CellRendererProps) => {
+        cellRenderer: (cr: CellRendererProps<ProjectTask>) => {
           const p = String(cr.row.priority);
           const color = p === "High" ? "#ef4444" : p === "Medium" ? "#f59e0b" : "#10b981";
           return (
@@ -29,7 +29,7 @@ export default function CellClickingDemo(props: { height?: string | number; them
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: (cr: CellRendererProps) => {
+        cellRenderer: (cr: CellRendererProps<ProjectTask>) => {
           const s = String(cr.row.status);
           const bg = s === "Completed" ? "#dcfce7" : s === "In Progress" ? "#fef3c7" : "#fee2e2";
           const c = s === "Completed" ? "#166534" : s === "In Progress" ? "#92400e" : "#991b1b";
@@ -77,10 +77,10 @@ export default function CellClickingDemo(props: { height?: string | number; them
     return h;
   });
 
-  const isDark = createMemo(() => props.theme === "modern-dark" || props.theme === "dark");
+  const isDark = createMemo(() => props.theme === "modern-dark" || props.theme === "dark" || props.theme === "modern-black");
 
-  const handleCellClick = ({ accessor, rowIndex, value, row }: CellClickProps) => {
-    const task = row as ProjectTask;
+  const handleCellClick = ({ accessor, rowIndex, value, row }: CellClickProps<ProjectTask>) => {
+    const task = row;
     switch (accessor) {
       case "priority":
         setClickInfo(`Filtering by ${value} priority`);
@@ -187,6 +187,7 @@ export default function CellClickingDemo(props: { height?: string | number; them
       <SimpleTable
         columnResizing
         columns={headers}
+        getRowId={({ row }) => row.id}
         height={props.height ?? "320px"}
         onCellClick={handleCellClick}
         rows={rows()}

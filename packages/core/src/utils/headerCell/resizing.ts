@@ -83,6 +83,7 @@ export const createResizeHandle = (
     styleRoot: getStyleRoot(context),
     autoSizeMode: leafHeader.autoSizeMode,
     sortIcon: context.icons.sortUp,
+    filterIcon: context.icons.filter,
     expandIcon: context.icons.expand,
     onRendererHostDiscard: context.onRendererHostDiscard,
   });

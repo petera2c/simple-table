@@ -1,11 +1,7 @@
 import { createEffect, createMemo, createSignal, For, onCleanup, Show } from "solid-js";
 import { SimpleTable } from "@simple-table/solid";
 import type { TableAPI, Theme } from "@simple-table/solid";
-import {
-  analyticsDemoConfig,
-  analyticsPresets,
-  analyticsRows,
-} from "./analytics.demo-data";
+import { analyticsDemoConfig, analyticsPresets, type AnalyticsFactRow } from "./analytics.demo-data";
 import "@simple-table/solid/styles.css";
 
 function formatHeight(height?: string | number | null): string {
@@ -14,30 +10,48 @@ function formatHeight(height?: string | number | null): string {
   return height;
 }
 
+function getAnalyticsChrome(theme?: Theme) {
+  if (theme === "modern-black") {
+    return {
+      border: "#262626",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1c1c1c",
+      chipIdleColor: "#a3a3a3",
+      title: "#fafafa",
+    };
+  }
+  if (theme === "modern-dark" || theme === "dark") {
+    return {
+      border: "#374151",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1f2937",
+      chipIdleColor: "#d1d5db",
+      title: "#f9fafb",
+    };
+  }
+  return {
+    border: "#e5e5e5",
+    chipActive: "#2563eb",
+    chipIdleBg: "#f5f5f5",
+    chipIdleColor: "#525252",
+    title: "#171717",
+  };
+}
+
 export default function AnalyticsDemo(props: {
   height?: string | number | null;
   theme?: Theme;
 }) {
   const [activeId, setActiveId] = createSignal(analyticsPresets[0].id);
-  const [searchText, setSearchText] = createSignal("");
   const [tableHeightPx, setTableHeightPx] = createSignal<number | null>(null);
   let tableHost: HTMLDivElement | undefined;
-  let tableApi: TableAPI | undefined;
+  let tableApi: TableAPI<AnalyticsFactRow> | undefined;
 
   const active = createMemo(
     () => analyticsPresets.find((p) => p.id === activeId()) ?? analyticsPresets[0]
   );
   const isPivoted = createMemo(() => active().pivot != null);
-  const isDark = () => props.theme === "dark" || props.theme === "modern-dark";
-  const chromeBg = () => (isDark() ? "#0f172a" : "#f8fafc");
-  const chromeBorder = () => (isDark() ? "#1e293b" : "#e2e8f0");
-  const titleColor = () => (isDark() ? "#f1f5f9" : "#0f172a");
-  const mutedColor = () => (isDark() ? "#94a3b8" : "#64748b");
-  const chipIdleBg = () => (isDark() ? "#1e293b" : "#e2e8f0");
-  const chipIdleColor = () => (isDark() ? "#cbd5e1" : "#334155");
-  const inputBg = () => (isDark() ? "#1e293b" : "#fff");
-  const inputBorder = () => (isDark() ? "#334155" : "#cbd5e1");
-  const inputColor = () => (isDark() ? "#e2e8f0" : "#0f172a");
+  const chrome = () => getAnalyticsChrome(props.theme);
 
   createEffect(() => {
     const el = tableHost;
@@ -63,16 +77,13 @@ export default function AnalyticsDemo(props: {
         "flex-direction": "column",
         width: "100%",
         height: formatHeight(props.height ?? "480px"),
-        background: chromeBg(),
-        border: `1px solid ${chromeBorder()}`,
-        "border-radius": "8px",
         overflow: "hidden",
       }}
     >
       <div
         style={{
-          padding: "16px 20px 12px",
-          "border-bottom": `1px solid ${chromeBorder()}`,
+          padding: "0 0 12px",
+          "border-bottom": `1px solid ${chrome().border}`,
           "flex-shrink": 0,
         }}
       >
@@ -82,73 +93,60 @@ export default function AnalyticsDemo(props: {
               margin: 0,
               "font-size": "18px",
               "font-weight": 650,
-              color: titleColor(),
+              color: chrome().title,
               "letter-spacing": "-0.02em",
             }}
           >
             Revenue Analytics
           </h2>
-          <p style={{ margin: "4px 0 0", "font-size": "13px", color: mutedColor() }}>
-            {active().description} · {analyticsRows.length} fact rows
-            {isPivoted() ? " → pivoted matrix" : ""}
-          </p>
         </div>
-        <div style={{ display: "flex", "flex-wrap": "wrap", gap: "8px", "margin-bottom": "10px" }}>
-          <For each={analyticsPresets}>
-            {(preset) => {
-              const selected = () => preset.id === activeId();
-              return (
-                <button
-                  type="button"
-                  onClick={() => setActiveId(preset.id)}
-                  style={{
-                    padding: "7px 12px",
-                    "border-radius": "6px",
-                    border: "none",
-                    cursor: "pointer",
-                    "font-size": "13px",
-                    "font-weight": 550,
-                    background: selected() ? "#2563eb" : chipIdleBg(),
-                    color: selected() ? "#fff" : chipIdleColor(),
-                  }}
-                >
-                  {preset.label}
-                </button>
-              );
-            }}
-          </For>
-        </div>
-        <div style={{ display: "flex", "flex-wrap": "wrap", gap: "8px", "align-items": "center" }}>
-          <input
-            type="search"
-            value={searchText()}
-            onInput={(e) => setSearchText(e.currentTarget.value)}
-            placeholder="Quick filter…"
-            aria-label="Quick filter"
-            style={{
-              flex: "1 1 180px",
-              "max-width": "280px",
-              padding: "7px 10px",
-              "border-radius": "6px",
-              border: `1px solid ${inputBorder()}`,
-              background: inputBg(),
-              color: inputColor(),
-              "font-size": "13px",
-              outline: "none",
-            }}
-          />
+        <div
+          style={{
+            display: "flex",
+            "flex-wrap": "wrap",
+            gap: "8px",
+            "align-items": "center",
+            "justify-content": "space-between",
+            width: "100%",
+          }}
+        >
+          <div style={{ display: "flex", "flex-wrap": "wrap", gap: "8px", "align-items": "center" }}>
+            <For each={analyticsPresets}>
+              {(preset) => {
+                const selected = () => preset.id === activeId();
+                return (
+                  <button
+                    type="button"
+                    onClick={() => setActiveId(preset.id)}
+                    style={{
+                      padding: "7px 12px",
+                      "border-radius": "6px",
+                      border: "none",
+                      cursor: "pointer",
+                      "font-size": "13px",
+                      "font-weight": 550,
+                      background: selected() ? chrome().chipActive : chrome().chipIdleBg,
+                      color: selected() ? "#fff" : chrome().chipIdleColor,
+                    }}
+                  >
+                    {preset.label}
+                  </button>
+                );
+              }}
+            </For>
+          </div>
           <button
             type="button"
             onClick={() => tableApi?.exportToCSV()}
             style={{
               padding: "7px 12px",
               "border-radius": "6px",
-              border: `1px solid ${inputBorder()}`,
+              border: `1px solid ${chrome().border}`,
               cursor: "pointer",
               "font-size": "13px",
               "font-weight": 550,
-              background: chipIdleBg(),
-              color: chipIdleColor(),
+              background: chrome().chipIdleBg,
+              color: chrome().chipIdleColor,
             }}
           >
             Export CSV
@@ -159,7 +157,6 @@ export default function AnalyticsDemo(props: {
         style={{
           flex: 1,
           "min-height": 0,
-          padding: "12px 20px 20px",
           display: "flex",
           "flex-direction": "column",
         }}
@@ -177,17 +174,15 @@ export default function AnalyticsDemo(props: {
               copyHeadersToClipboard
               columns={analyticsDemoConfig.headers}
               enableColumnEditor
-              getRowId={({ row }) => String(row.id)}
+              getRowId={({ row }) => {
+                const id = row.id;
+                return id == null ? undefined : String(id);
+              }}
               height={tableHeightPx()!}
               includeHeadersInCSVExport
               initialSortColumn={isPivoted() ? undefined : "sales"}
               initialSortDirection={isPivoted() ? undefined : "desc"}
               pivot={active().pivot}
-              quickFilter={{
-                text: searchText(),
-                mode: "simple",
-                caseSensitive: false,
-              }}
               rows={analyticsDemoConfig.rows}
               selectableCells
               theme={props.theme}

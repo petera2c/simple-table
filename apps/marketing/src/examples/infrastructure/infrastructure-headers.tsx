@@ -13,7 +13,7 @@ export const HEADERS: ReactColumnDef<InfrastructureServer>[] = [
     pinned: "left",
     type: "string",
     tooltip: "Unique server identifier",
-    width: "1.2fr",
+    width: "auto",
     cellRenderer: ({ row }: CellRendererProps) => {
       return (
         <span style={{ fontFamily: "monospace", fontSize: "0.85rem" }}>
@@ -32,18 +32,18 @@ export const HEADERS: ReactColumnDef<InfrastructureServer>[] = [
     minWidth: 200,
     type: "string",
     tooltip: "Human-readable server name",
-    width: "1.5fr",
+    width: "auto",
   },
   {
     accessor: "performance",
     label: "Performance Metrics",
-    width: 690,
+    width: "auto",
     sortable: false,
     children: [
       {
         accessor: "cpuHistory",
         label: "CPU History",
-        width: 150,
+        width: "auto",
         sortable: false,
         filterable: false,
         editable: false,
@@ -54,7 +54,7 @@ export const HEADERS: ReactColumnDef<InfrastructureServer>[] = [
       {
         accessor: "cpuUsage",
         label: "CPU %",
-        width: 120,
+        width: "auto",
         sortable: true,
         filterable: true,
         editable: true,
@@ -75,6 +75,7 @@ export const HEADERS: ReactColumnDef<InfrastructureServer>[] = [
             const level = getLevel();
 
             switch (theme) {
+              case "modern-black":
               case "modern-dark":
                 return {
                   critical: { color: "#fca5a5", backgroundColor: "rgba(127, 29, 29, 0.4)" },
@@ -136,7 +137,7 @@ export const HEADERS: ReactColumnDef<InfrastructureServer>[] = [
       {
         accessor: "memoryUsage",
         label: "Memory %",
-        width: 130,
+        width: "auto",
         sortable: true,
         filterable: true,
         editable: true,
@@ -157,6 +158,7 @@ export const HEADERS: ReactColumnDef<InfrastructureServer>[] = [
             const level = getLevel();
 
             switch (theme) {
+              case "modern-black":
               case "modern-dark":
                 return {
                   critical: { color: "#fca5a5", backgroundColor: "rgba(127, 29, 29, 0.4)" },
@@ -218,7 +220,7 @@ export const HEADERS: ReactColumnDef<InfrastructureServer>[] = [
       {
         accessor: "diskUsage",
         label: "Disk %",
-        width: 120,
+        width: "auto",
         sortable: true,
         filterable: true,
         editable: true,
@@ -233,7 +235,7 @@ export const HEADERS: ReactColumnDef<InfrastructureServer>[] = [
       {
         accessor: "responseTime",
         label: "Response (ms)",
-        width: 120,
+        width: "auto",
         sortable: true,
         filterable: true,
         editable: true,
@@ -254,6 +256,7 @@ export const HEADERS: ReactColumnDef<InfrastructureServer>[] = [
             const level = getLevel();
 
             switch (theme) {
+              case "modern-black":
               case "modern-dark":
                 return {
                   critical: { color: "#fca5a5" },
@@ -304,7 +307,7 @@ export const HEADERS: ReactColumnDef<InfrastructureServer>[] = [
   {
     accessor: "status",
     label: "Status",
-    width: 130,
+    width: "auto",
     sortable: true,
     filterable: true,
     editable: false,
@@ -354,6 +357,7 @@ export const HEADERS: ReactColumnDef<InfrastructureServer>[] = [
         const type = getStatusType(status);
 
         switch (theme) {
+          case "modern-black":
           case "modern-dark":
             return {
               online: {

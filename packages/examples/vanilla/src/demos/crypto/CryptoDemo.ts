@@ -51,6 +51,7 @@ export function renderCryptoDemo(
 ): SimpleTableVanilla<CryptoCoin> {
   const table = new SimpleTableVanilla<CryptoCoin>(container, {
     columns: cryptoConfig.headers,
+    autoExpandColumns: true,
     rows: cryptoConfig.rows,
     getRowId,
     height: options?.height ?? "70dvh",

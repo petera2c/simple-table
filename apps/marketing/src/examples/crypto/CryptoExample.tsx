@@ -28,6 +28,7 @@ export default function CryptoExample({
   // Horizontal overflow is handled by the table's own internal section scroll.
   return (
     <SimpleTable
+      autoExpandColumns
       columnReordering
       columnResizing
       customTheme={{ headerHeight: 40, rowHeight: 64 }}

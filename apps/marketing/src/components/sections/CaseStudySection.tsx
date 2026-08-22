@@ -24,7 +24,7 @@ export default function CaseStudySection() {
       {/* Mobile/tablet only — desktop hero already has Trusted by + ChartMetric */}
       <div className="lg:hidden">
         <div className="text-center mb-4">
-          <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          <h3 className="text-sm font-semibold text-muted uppercase tracking-wider">
             Trusted by teams at
           </h3>
         </div>
@@ -53,7 +53,7 @@ export default function CaseStudySection() {
           href="https://github.com/brillout/awesome-react-components"
           target="_blank"
           rel="noopener noreferrer"
-          className="group inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          className="group inline-flex items-center gap-2 text-sm text-muted hover:text-accent transition-colors"
         >
           <FontAwesomeIcon icon={faGithub} />
           <span>
@@ -62,47 +62,47 @@ export default function CaseStudySection() {
         </a>
       </div>
 
-      <div className="bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-xl p-8 md:p-12 border border-blue-100 dark:border-blue-800 shadow-lg">
+      <div className="bg-surface rounded-lg p-8 md:p-12 border border-line">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-center mb-6">
-            <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
-              <FontAwesomeIcon icon={faQuoteLeft} className="text-white text-xl" />
+            <div className="w-12 h-12 border border-line rounded-full flex items-center justify-center">
+              <FontAwesomeIcon icon={faQuoteLeft} className="text-muted text-xl" />
             </div>
           </div>
 
           <blockquote className="text-center mb-8">
-            <p className="text-xl md:text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
+            <p className="text-xl md:text-2xl font-semibold text-ink mb-4">
               &ldquo;It&apos;s a great fit for table-heavy products like ours. It&apos;s affordable,
               lightweight, feature-rich, and easy to customize.&rdquo;
             </p>
-            <footer className="text-gray-600 dark:text-gray-300">
+            <footer className="text-muted">
               <div className="font-semibold">ChartMetric</div>
               <div className="text-sm">Music Analytics Platform</div>
             </footer>
           </blockquote>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-1">
+            <div className="bg-paper rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-ink mb-1">
                 {chartmetric?.highlightStat ?? "$19K+"}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-sm text-muted">
                 {chartmetric?.highlightLabel ?? "First-year savings vs AG Grid"}
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+            <div className="bg-paper rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-ink mb-1">
                 {chartmetric?.secondaryStat ?? "~95%"}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-sm text-muted">
                 {chartmetric?.secondaryLabel ?? "ChartMetric cost cut vs AG Grid"}
               </div>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+            <div className="bg-paper rounded-lg p-4 text-center">
+              <div className="text-2xl font-bold text-ink mb-1">
                 &lt;24h
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-sm text-muted">
                 Response time for support & bug fixes
               </div>
             </div>
@@ -113,7 +113,6 @@ export default function CaseStudySection() {
               type="primary"
               size="large"
               onClick={() => router.push("/case-studies/chartmetric")}
-              className="hover:scale-105 transition-transform"
             >
               Read the Full Case Study
               <FontAwesomeIcon icon={faArrowRight} className="ml-2" />

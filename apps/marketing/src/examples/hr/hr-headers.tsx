@@ -185,7 +185,7 @@ const getThemeColors = (theme?: string) => {
     },
   };
 
-  return themes[theme as keyof typeof themes] || themes["modern-light"];
+  return themes[(theme === "modern-black" ? "modern-dark" : theme) as keyof typeof themes] || themes["modern-light"];
 };
 
 // Deterministic HSL color from a string seed (gives each employee a distinct avatar).
@@ -343,7 +343,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "fullName",
     label: "Employee",
-    width: 220,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "left",
@@ -472,7 +472,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "hireDate",
     label: "Hire Date",
-    width: 120,
+    width: "auto",
     sortable: true,
     editable: true,
     align: "left",
@@ -498,7 +498,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "yearsOfService",
     label: "Service",
-    width: 100,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "center",
@@ -513,7 +513,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "salary",
     label: "Salary",
-    width: 130,
+    width: "auto",
     sortable: true,
     editable: true,
     align: "right",
@@ -534,7 +534,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "status",
     label: "Status",
-    width: 120,
+    width: "auto",
     sortable: true,
     editable: true,
     align: "center",

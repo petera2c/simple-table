@@ -19,12 +19,12 @@ type FrameworkFilter = HubFrameworkId | "all";
 
 function BlogCard({ post }: { post: BlogPostMetadata }) {
   return (
-    <div className="h-full hover:shadow-md transition-shadow duration-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 cursor-pointer">
+    <div className="h-full bg-surface border border-line rounded-lg p-6">
       <Link href={`/blog/${post.slug}`} className="block">
         <div className="space-y-3">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm">
+          <div className="flex items-center gap-2 text-muted text-sm">
             <CalendarOutlined />
-            <span className="text-gray-500 dark:text-gray-400">
+            <span>
               {(() => {
                 // Parse YYYY-MM-DD format correctly without timezone conversion
                 const [year, month, day] = post.createdAt.split("-").map(Number);
@@ -38,17 +38,17 @@ function BlogCard({ post }: { post: BlogPostMetadata }) {
             </span>
           </div>
 
-          <h3 className="mb-2 text-gray-900 dark:text-gray-100 text-xl font-semibold">
+          <h3 className="mb-2 text-ink text-xl font-semibold">
             {post.title}
           </h3>
 
-          <p className="text-gray-600 dark:text-gray-400 mb-3 line-clamp-3">{post.description}</p>
+          <p className="text-muted mb-3 line-clamp-3">{post.description}</p>
 
           <div className="flex flex-wrap gap-1">
             {post.tags.map((tag) => (
               <span
                 key={tag}
-                className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-2 py-1 rounded text-xs flex items-center gap-1"
+                className="border border-line text-muted px-2 py-1 rounded text-xs flex items-center gap-1"
               >
                 <TagOutlined className="w-3 h-3" />
                 {tag}
@@ -123,10 +123,10 @@ export default function BlogPageContent({
   return (
     <PageWrapper>
       <header className="text-center mb-12">
-        <h1 className="text-gray-900 dark:text-gray-100 mb-4 text-4xl font-bold">
+        <h1 className="text-ink mb-4 text-4xl font-bold">
           {heading ?? "Simple Table Blog"}
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto mb-8">
+        <p className="text-muted text-lg max-w-2xl mx-auto mb-8">
           {intro ??
             "Tutorials and comparisons for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript—with Simple Table across every stack."}
         </p>
@@ -138,9 +138,9 @@ export default function BlogPageContent({
               placeholder="Search blog posts..."
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full px-4 py-3 pl-12 text-gray-900 dark:!text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg placeholder:text-gray-500 dark:placeholder:text-gray-400 dark:caret-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 pl-12 text-ink bg-surface border border-line rounded-lg placeholder:text-muted focus:outline-none focus:border-accent"
             />
-            <SearchOutlined className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <SearchOutlined className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted" />
           </div>
         </div>
 
@@ -163,8 +163,8 @@ export default function BlogPageContent({
                   onClick={() => setFrameworkFilter(id)}
                   className={
                     active
-                      ? "px-3 py-1.5 rounded-full text-sm font-medium bg-blue-600 text-white"
-                      : "px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                      ? "px-3 py-1.5 rounded-full text-sm font-medium bg-accent text-white border border-accent"
+                      : "px-3 py-1.5 rounded-full text-sm font-medium bg-surface text-muted border border-line hover:text-ink"
                   }
                 >
                   {label}
@@ -177,7 +177,7 @@ export default function BlogPageContent({
 
       {(searchQuery || frameworkFilter !== "all") && (
         <div className="mb-8">
-          <span className="text-gray-600 dark:text-gray-400">
+          <span className="text-muted">
             {visiblePosts.length > 0
               ? `Showing ${visiblePosts.length} post${visiblePosts.length === 1 ? "" : "s"}${
                   searchQuery ? ` matching "${searchQuery}"` : ""
@@ -203,10 +203,10 @@ export default function BlogPageContent({
         </div>
       ) : (
         <div className="text-center py-12 mb-16">
-          <h3 className="text-gray-500 dark:text-gray-400 mb-4 text-2xl font-semibold">
+          <h3 className="text-muted mb-4 text-2xl font-semibold">
             No blog posts found
           </h3>
-          <p className="text-gray-400 dark:text-gray-500">
+          <p className="text-muted">
             Try adjusting your search terms or browse all available posts.
           </p>
         </div>

@@ -86,7 +86,7 @@ export const infrastructureHeaders: SvelteColumnDef<InfrastructureServer>[] = [
     minWidth: 180,
     pinned: "left",
     type: "string",
-    width: "1.2fr",
+    width: "auto",
   },
   {
     accessor: "serverName",
@@ -97,18 +97,18 @@ export const infrastructureHeaders: SvelteColumnDef<InfrastructureServer>[] = [
     label: "Name",
     minWidth: 200,
     type: "string",
-    width: "1.5fr",
+    width: "auto",
   },
   {
     accessor: "performance",
     label: "Performance Metrics",
-    width: 690,
+    width: "auto",
     sortable: false,
     children: [
       {
         accessor: "cpuHistory",
         label: "CPU History",
-        width: 150,
+        width: "auto",
         sortable: false,
         filterable: false,
         editable: false,
@@ -119,7 +119,7 @@ export const infrastructureHeaders: SvelteColumnDef<InfrastructureServer>[] = [
       {
         accessor: "cpuUsage",
         label: "CPU %",
-        width: 120,
+        width: "auto",
         sortable: true,
         filterable: true,
         editable: true,
@@ -129,7 +129,7 @@ export const infrastructureHeaders: SvelteColumnDef<InfrastructureServer>[] = [
       {
         accessor: "memoryUsage",
         label: "Memory %",
-        width: 130,
+        width: "auto",
         sortable: true,
         filterable: true,
         editable: true,
@@ -139,7 +139,7 @@ export const infrastructureHeaders: SvelteColumnDef<InfrastructureServer>[] = [
       {
         accessor: "diskUsage",
         label: "Disk %",
-        width: 120,
+        width: "auto",
         sortable: true,
         filterable: true,
         editable: true,
@@ -149,7 +149,7 @@ export const infrastructureHeaders: SvelteColumnDef<InfrastructureServer>[] = [
       {
         accessor: "responseTime",
         label: "Response (ms)",
-        width: 120,
+        width: "auto",
         sortable: true,
         filterable: true,
         editable: true,
@@ -161,7 +161,7 @@ export const infrastructureHeaders: SvelteColumnDef<InfrastructureServer>[] = [
   {
     accessor: "status",
     label: "Status",
-    width: 130,
+    width: "auto",
     sortable: true,
     filterable: true,
     editable: false,
@@ -206,7 +206,7 @@ export function getInfraMetricColorStyles(
   else if (metric === "response") level = getLevel(value, [400, 200, 100]);
   else level = statusValue || "good";
 
-  const isDark = theme === "dark" || theme === "modern-dark";
+  const isDark = theme === "dark" || theme === "modern-dark" || theme === "modern-black";
   const colorMap: Record<string, { color: string; backgroundColor?: string }> = isDark
     ? {
         critical: { color: "#fca5a5", backgroundColor: "rgba(127, 29, 29, 0.4)" },
@@ -225,7 +225,7 @@ export function getInfraMetricColorStyles(
 }
 
 export function getInfraStatusColors(status: string, theme: string) {
-  const isDark = theme === "dark" || theme === "modern-dark";
+  const isDark = theme === "dark" || theme === "modern-dark" || theme === "modern-black";
   const map: Record<string, { color: string; backgroundColor: string; fontWeight: string }> = isDark
     ? {
         online: { color: "#6ee7b7", backgroundColor: "rgba(6, 95, 70, 0.4)", fontWeight: "600" },

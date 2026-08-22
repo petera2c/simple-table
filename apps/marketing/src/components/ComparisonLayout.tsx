@@ -119,11 +119,7 @@ const ComparisonLayout: React.FC<ComparisonLayoutProps> = ({
 
   return (
     <PageWrapper>
-      <div
-        className={`max-w-7xl mx-auto ${
-          isMobile ? "px-2" : "px-4 sm:px-6 lg:px-8"
-        } pb-12 pt-[12dvh]`}
-      >
+      <div className="site-shell pb-12 pt-[12dvh]">
         {/* Title Card */}
         <div className="flex flex-col items-center justify-center mb-8">
           <Title

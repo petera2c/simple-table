@@ -17,8 +17,8 @@ const FrameworkSelector = ({ isMobile = false }: { isMobile?: boolean }) => {
             onClick={() => setFramework(fw)}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-sm transition-colors ${
               framework === fw
-                ? "bg-blue-600 text-white font-medium"
-                : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                ? "bg-accent text-white font-medium border border-accent"
+                : "bg-surface text-muted border border-line hover:text-ink"
             }`}
           >
             <FrameworkIcon framework={fw} size={14} />

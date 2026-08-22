@@ -210,7 +210,7 @@ export const getCRMHeaders = (isDark: boolean): ReactColumnDef[] => {
     {
       accessor: "name",
       label: "CONTACT",
-      width: "2fr",
+      width: "auto",
       minWidth: 290,
       sortable: true,
       editable: true,
@@ -286,7 +286,7 @@ export const getCRMHeaders = (isDark: boolean): ReactColumnDef[] => {
     {
       accessor: "signal",
       label: "SIGNAL",
-      width: "3fr",
+      width: "auto",
       minWidth: 340,
       sortable: true,
       editable: true,
@@ -315,7 +315,7 @@ export const getCRMHeaders = (isDark: boolean): ReactColumnDef[] => {
     {
       accessor: "aiScore",
       label: "AI SCORE",
-      width: "1fr",
+      width: "auto",
       minWidth: 100,
       sortable: true,
       align: "center",
@@ -330,7 +330,7 @@ export const getCRMHeaders = (isDark: boolean): ReactColumnDef[] => {
     {
       accessor: "emailStatus",
       label: "EMAIL",
-      width: "1.5fr",
+      width: "auto",
       minWidth: 210,
       sortable: true,
       align: "center",
@@ -348,7 +348,7 @@ export const getCRMHeaders = (isDark: boolean): ReactColumnDef[] => {
     {
       accessor: "timeAgo",
       label: "IMPORT",
-      width: "1fr",
+      width: "auto",
       minWidth: 100,
       sortable: true,
       align: "center",
@@ -364,7 +364,7 @@ export const getCRMHeaders = (isDark: boolean): ReactColumnDef[] => {
     {
       accessor: "list",
       label: "LIST",
-      width: "1.2fr",
+      width: "auto",
       minWidth: 160,
       sortable: true,
       align: "center",
@@ -435,7 +435,7 @@ export const getCRMHeaders = (isDark: boolean): ReactColumnDef[] => {
     {
       accessor: "_pipeline",
       label: "PIPELINE",
-      width: "1.2fr",
+      width: "auto",
       minWidth: 150,
       align: "center",
       cellRenderer: ({ row }: CellRendererProps) => {
@@ -471,7 +471,7 @@ export const getCRMHeaders = (isDark: boolean): ReactColumnDef[] => {
     {
       accessor: "_fit",
       label: "Fit",
-      width: "1fr",
+      width: "auto",
       align: "center",
       minWidth: 120,
       cellRenderer: () => {
@@ -481,7 +481,7 @@ export const getCRMHeaders = (isDark: boolean): ReactColumnDef[] => {
     {
       accessor: "_contactNow",
       label: "",
-      width: "1.2fr",
+      width: "auto",
       minWidth: 160,
       cellRenderer: () => {
         return (

@@ -15,16 +15,16 @@ import { motion } from "framer-motion";
 export default function ProductionSection() {
   return (
     <motion.section
-      className="mb-16 bg-gray-50 dark:bg-gray-800 rounded-xl p-4 sm:p-6 lg:p-8 border border-gray-200 dark:border-gray-700"
+      className="mb-16"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
       viewport={{ once: true }}
     >
-      <h2 className="text-3xl font-bold text-center mb-4 text-gray-800 dark:text-white">
+      <h2 className="text-3xl font-bold text-center mb-4 text-ink">
         Built for Production Use
       </h2>
-      <p className="text-center text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto">
+      <p className="text-center text-muted mb-10 max-w-2xl mx-auto">
         We're developers who needed a professional data grid solution. That's why we built Simple
         Table to be flexible, reliable, and actually enjoyable to work with.
       </p>
@@ -37,11 +37,11 @@ export default function ProductionSection() {
           transition={{ delay: 0.1 }}
           viewport={{ once: true }}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
-            <FontAwesomeIcon icon={faCode} className="text-blue-600 dark:text-blue-400 text-2xl" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full border border-line mb-4">
+            <FontAwesomeIcon icon={faCode} className="text-muted text-2xl" />
           </div>
-          <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">Flexible</h3>
-          <p className="text-gray-600 dark:text-gray-300">
+          <h3 className="text-xl font-bold mb-2 text-ink">Flexible</h3>
+          <p className="text-muted">
             Work with TypeScript or JavaScript. Drop it in existing projects or start fresh with
             easy configuration.
           </p>
@@ -54,14 +54,14 @@ export default function ProductionSection() {
           transition={{ delay: 0.2 }}
           viewport={{ once: true }}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full border border-line mb-4">
             <FontAwesomeIcon
               icon={faShieldAlt}
-              className="text-blue-600 dark:text-blue-400 text-2xl"
+              className="text-muted text-2xl"
             />
           </div>
-          <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">Production-Ready</h3>
-          <p className="text-gray-600 dark:text-gray-300">
+          <h3 className="text-xl font-bold mb-2 text-ink">Production-Ready</h3>
+          <p className="text-muted">
             Battle-tested with comprehensive examples for React, Vue, Angular, Svelte, Solid, and
             vanilla TypeScript so you can ship faster.
           </p>
@@ -74,16 +74,16 @@ export default function ProductionSection() {
           transition={{ delay: 0.3 }}
           viewport={{ once: true }}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full border border-line mb-4">
             <FontAwesomeIcon
               icon={faCodeBranch}
-              className="text-blue-600 dark:text-blue-400 text-2xl"
+              className="text-muted text-2xl"
             />
           </div>
-          <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">
+          <h3 className="text-xl font-bold mb-2 text-ink">
             Browser Compatible
           </h3>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-muted">
             Consistent performance across major browsers: Chrome, Firefox, Edge, Safari, and Opera.
           </p>
         </motion.div>
@@ -95,13 +95,13 @@ export default function ProductionSection() {
           transition={{ delay: 0.4 }}
           viewport={{ once: true }}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
-            <FontAwesomeIcon icon={faBook} className="text-blue-600 dark:text-blue-400 text-2xl" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full border border-line mb-4">
+            <FontAwesomeIcon icon={faBook} className="text-muted text-2xl" />
           </div>
-          <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">
+          <h3 className="text-xl font-bold mb-2 text-ink">
             Developer Friendly Docs
           </h3>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-muted">
             Clear structure, detailed usage guides and interactive examples for easy copy-paste
             code.
           </p>
@@ -114,16 +114,16 @@ export default function ProductionSection() {
           transition={{ delay: 0.5 }}
           viewport={{ once: true }}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full border border-line mb-4">
             <FontAwesomeIcon
               icon={faRocket}
-              className="text-blue-600 dark:text-blue-400 text-2xl"
+              className="text-muted text-2xl"
             />
           </div>
-          <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">
+          <h3 className="text-xl font-bold mb-2 text-ink">
             Continuous Updates
           </h3>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-muted">
             Regular updates with new features and enhancements to keep the library current and
             robust.
           </p>
@@ -136,16 +136,16 @@ export default function ProductionSection() {
           transition={{ delay: 0.6 }}
           viewport={{ once: true }}
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full border border-line mb-4">
             <FontAwesomeIcon
               icon={faHeadset}
-              className="text-blue-600 dark:text-blue-400 text-2xl"
+              className="text-muted text-2xl"
             />
           </div>
-          <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">
+          <h3 className="text-xl font-bold mb-2 text-ink">
             Dedicated Support
           </h3>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-muted">
             Real humans, fast replies. Ask a question and actually get an answer.
           </p>
         </motion.div>

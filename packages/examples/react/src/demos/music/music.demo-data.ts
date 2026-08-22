@@ -257,5 +257,5 @@ const THEME_COLORS: Record<string, { text: string; muted: string }> = {
 };
 
 export function getMusicThemeColors(theme?: string): { text: string; muted: string } {
-  return THEME_COLORS[theme ?? "light"] ?? THEME_COLORS.light;
+  return THEME_COLORS[theme === "modern-black" ? "modern-dark" : (theme ?? "light")] ?? THEME_COLORS.light;
 }

@@ -125,56 +125,56 @@ export function generateSoccerData(count = 200): SoccerPlayer[] {
 }
 
 export const soccerHeaders: VueColumnDef<SoccerPlayer>[] = [
-  { accessor: "rank", label: "#", width: 56, align: "center", type: "number", pinned: "left", sortable: true, editable: false },
+  { accessor: "rank", label: "#", width: "auto", align: "center", type: "number", pinned: "left", sortable: true, editable: false },
   {
-    accessor: "name", label: "Player", width: 220, align: "left", type: "string", pinned: "left", sortable: true, editable: false,
+    accessor: "name", label: "Player", width: "auto", align: "left", type: "string", pinned: "left", sortable: true, editable: false,
     valueFormatter: ({ value, row }) => `${row.nationFlag} ${value}`,
   },
-  { accessor: "clubShort", label: "Club", width: 80, type: "string", sortable: true, editable: false },
+  { accessor: "clubShort", label: "Club", width: "auto", type: "string", sortable: true, editable: false },
   {
-    accessor: "position", label: "Pos", width: 80, align: "center", type: "enum", sortable: true, editable: false, filterable: true,
+    accessor: "position", label: "Pos", width: "auto", align: "center", type: "enum", sortable: true, editable: false, filterable: true,
     enumOptions: [
       { label: "Goalkeeper", value: "GK" }, { label: "Defender", value: "DEF" },
       { label: "Midfielder", value: "MID" }, { label: "Forward", value: "FWD" },
     ],
   },
   {
-    accessor: "rating", label: "Rating", width: 90, align: "center", type: "number", sortable: true, editable: false,
+    accessor: "rating", label: "Rating", width: "auto", align: "center", type: "number", sortable: true, editable: false,
     valueFormatter: ({ value }) => typeof value === "number" ? value.toFixed(2) : "",
   },
   {
-    accessor: "formHistory", label: "Form", width: 140, align: "center", type: "lineAreaChart",
+    accessor: "formHistory", label: "Form", width: "auto", align: "center", type: "lineAreaChart",
     sortable: false, editable: false, filterable: false, tooltip: "Match ratings over the last 8 games",
     chartOptions: { height: 34, min: 4, max: 10, strokeWidth: 2, fillOpacity: 0.18 },
   },
-  { accessor: "appearances", label: "Apps", width: 70, align: "center", type: "number", sortable: true, editable: false },
+  { accessor: "appearances", label: "Apps", width: "auto", align: "center", type: "number", sortable: true, editable: false },
   {
-    accessor: "attack", label: "Attack", width: 360, sortable: false, collapsible: true,
+    accessor: "attack", label: "Attack", width: "auto", sortable: false, collapsible: true,
     children: [
-      { accessor: "goals", label: "Goals", width: 80, align: "center", type: "number", sortable: true, editable: false, showWhen: "always" },
-      { accessor: "assists", label: "Assists", width: 80, align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
-      { accessor: "xG", label: "xG", width: 70, align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
-      { accessor: "xA", label: "xA", width: 70, align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
-      { accessor: "shots", label: "Shots", width: 80, align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
+      { accessor: "goals", label: "Goals", width: "auto", align: "center", type: "number", sortable: true, editable: false, showWhen: "always" },
+      { accessor: "assists", label: "Assists", width: "auto", align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
+      { accessor: "xG", label: "xG", width: "auto", align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
+      { accessor: "xA", label: "xA", width: "auto", align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
+      { accessor: "shots", label: "Shots", width: "auto", align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
     ],
   },
   {
-    accessor: "passing", label: "Passing", width: 300, sortable: false, collapsible: true,
+    accessor: "passing", label: "Passing", width: "auto", sortable: false, collapsible: true,
     children: [
       {
-        accessor: "passAccuracy", label: "Pass %", width: 90, align: "right", type: "number", sortable: true, editable: false, showWhen: "always",
+        accessor: "passAccuracy", label: "Pass %", width: "auto", align: "right", type: "number", sortable: true, editable: false, showWhen: "always",
         valueFormatter: ({ value }) => typeof value === "number" ? `${value.toFixed(1)}%` : "",
       },
-      { accessor: "passes", label: "Passes", width: 90, align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
-      { accessor: "keyPasses", label: "Key Passes", width: 100, align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
+      { accessor: "passes", label: "Passes", width: "auto", align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
+      { accessor: "keyPasses", label: "Key Passes", width: "auto", align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
     ],
   },
   {
-    accessor: "defense", label: "Defense", width: 320, sortable: false, collapsible: true, collapseDefault: true,
+    accessor: "defense", label: "Defense", width: "auto", sortable: false, collapsible: true, collapseDefault: true,
     children: [
-      { accessor: "tackles", label: "Tackles", width: 90, align: "center", type: "number", sortable: true, editable: false, showWhen: "always" },
-      { accessor: "interceptions", label: "Interceptions", width: 120, align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
-      { accessor: "clearances", label: "Clearances", width: 110, align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
+      { accessor: "tackles", label: "Tackles", width: "auto", align: "center", type: "number", sortable: true, editable: false, showWhen: "always" },
+      { accessor: "interceptions", label: "Interceptions", width: "auto", align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
+      { accessor: "clearances", label: "Clearances", width: "auto", align: "center", type: "number", sortable: true, editable: false, showWhen: "parentExpanded" },
     ],
   },
 ];

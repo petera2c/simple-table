@@ -11,13 +11,31 @@
   let tableRef = $state<{ getAPI: () => TableAPI<AnalyticsFactRow> | null } | null>(null);
   const active = $derived(analyticsPresets.find((p) => p.id === activeId) ?? analyticsPresets[0]);
   const isPivoted = $derived(active.pivot != null);
-  const isDark = $derived(theme === "dark" || theme === "modern-dark");
-  const chromeBg = $derived(isDark ? "#0f172a" : "#f8fafc");
-  const chromeBorder = $derived(isDark ? "#1e293b" : "#e2e8f0");
-  const titleColor = $derived(isDark ? "#f1f5f9" : "#0f172a");
-  const chipIdleBg = $derived(isDark ? "#1e293b" : "#e2e8f0");
-  const chipIdleColor = $derived(isDark ? "#cbd5e1" : "#334155");
-  const inputBorder = $derived(isDark ? "#334155" : "#cbd5e1");
+  const chrome = $derived(
+    theme === "modern-black"
+      ? {
+          border: "#262626",
+          chipActive: "#3b82f6",
+          chipIdleBg: "#1c1c1c",
+          chipIdleColor: "#a3a3a3",
+          title: "#fafafa",
+        }
+      : theme === "modern-dark" || theme === "dark"
+        ? {
+            border: "#374151",
+            chipActive: "#3b82f6",
+            chipIdleBg: "#1f2937",
+            chipIdleColor: "#d1d5db",
+            title: "#f9fafb",
+          }
+        : {
+            border: "#e5e5e5",
+            chipActive: "#2563eb",
+            chipIdleBg: "#f5f5f5",
+            chipIdleColor: "#525252",
+            title: "#171717",
+          }
+  );
   const formatHeight = $derived(
     height == null ? "100%" : typeof height === "number" ? `${height}px` : height
   );
@@ -26,12 +44,12 @@
 </script>
 
 <div
-  style="display: flex; flex-direction: column; width: 100%; height: {formatHeight}; background: {chromeBg}; border: 1px solid {chromeBorder}; border-radius: 8px; overflow: hidden"
+  style="display: flex; flex-direction: column; width: 100%; height: {formatHeight}; overflow: hidden"
 >
-  <div style="padding: 16px 20px 12px; border-bottom: 1px solid {chromeBorder}; flex-shrink: 0">
+  <div style="padding: 0 0 12px; border-bottom: 1px solid {chrome.border}; flex-shrink: 0">
     <div style="margin-bottom: 10px">
       <h2
-        style="margin: 0; font-size: 18px; font-weight: 650; color: {titleColor}; letter-spacing: -0.02em"
+        style="margin: 0; font-size: 18px; font-weight: 650; color: {chrome.title}; letter-spacing: -0.02em"
       >
         Revenue Analytics
       </h2>
@@ -46,8 +64,8 @@
             onclick={() => (activeId = preset.id)}
             style="padding: 7px 12px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 550; background: {preset.id ===
             activeId
-              ? '#2563eb'
-              : chipIdleBg}; color: {preset.id === activeId ? '#fff' : chipIdleColor}"
+              ? chrome.chipActive
+              : chrome.chipIdleBg}; color: {preset.id === activeId ? '#fff' : chrome.chipIdleColor}"
           >
             {preset.label}
           </button>
@@ -56,14 +74,14 @@
       <button
         type="button"
         onclick={() => tableRef?.getAPI()?.exportToCSV()}
-        style="padding: 7px 12px; border-radius: 6px; border: 1px solid {inputBorder}; cursor: pointer; font-size: 13px; font-weight: 550; background: {chipIdleBg}; color: {chipIdleColor}"
+        style="padding: 7px 12px; border-radius: 6px; border: 1px solid {chrome.border}; cursor: pointer; font-size: 13px; font-weight: 550; background: {chrome.chipIdleBg}; color: {chrome.chipIdleColor}"
       >
         Export CSV
       </button>
     </div>
   </div>
   <div
-    style="flex: 1; min-height: 0; padding: 12px 20px 20px; display: flex; flex-direction: column"
+    style="flex: 1; min-height: 0; display: flex; flex-direction: column"
   >
     <div style="flex: 1; min-height: 0; height: 100%">
       {#key activeId}

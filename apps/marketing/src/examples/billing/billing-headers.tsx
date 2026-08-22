@@ -20,7 +20,7 @@ const generateMonthHeaders = () => {
     headers.push({
       accessor: `month_${months[monthIndex]}_${year}`,
       label: `${fullMonthName} ${year}`,
-      width: 200,
+      width: "auto",
       sortable: true,
       editable: false,
       align: "right",
@@ -30,7 +30,7 @@ const generateMonthHeaders = () => {
           disableReorder: true,
           label: "Balance",
           accessor: `balance_${months[monthIndex]}_${year}`,
-          width: 200,
+          width: "auto",
           sortable: true,
           editable: false,
           align: "right",
@@ -50,7 +50,7 @@ const generateMonthHeaders = () => {
           disableReorder: true,
           label: "Revenue",
           accessor: `revenue_${months[monthIndex]}_${year}`,
-          width: 200,
+          width: "auto",
           sortable: true,
           editable: false,
           align: "right",
@@ -78,7 +78,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "name",
     label: "Name",
-    width: 250,
+    width: "auto",
     expandable: true,
     sortable: true,
     editable: false,
@@ -94,7 +94,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "amount",
     label: "Total Amount",
-    width: 130,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -113,7 +113,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "deferredRevenue",
     label: "Deferred Revenue",
-    width: 180,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -132,7 +132,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "recognizedRevenue",
     label: "Recognized Revenue",
-    width: 180,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -151,7 +151,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "recognizedPercent",
     label: "Recognized %",
-    width: 190,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "left",

@@ -1,0 +1,139 @@
+/* Modern Black Theme — near-black surfaces, hairline borders, logo-blue accent.
+ *
+ * Matches the Simple Table marketing site dark tokens:
+ * paper #0A0A0A, surface #141414, ink #FAFAFA, muted #A3A3A3,
+ * line #262626, accent #3B82F6 / hover #60A5FA.
+ *
+ * Same spacing as modern-dark (12px cell padding, 4px radius). Selection
+ * uses a light blue wash instead of a solid fill so it sits on the flat
+ * surface instead of fighting it.
+ *
+ * All structural rules live in base.css and are driven by these tokens.
+ */
+.theme-modern-black {
+  /* Layout/Structure variables - same room as modern-dark */
+  --st-border-radius: 4px;
+  --st-cell-padding: 12px;
+
+  /* Spacing variables */
+  --st-spacing-small: 4px;
+  --st-spacing-medium: 8px;
+
+  /* Overlay / filter control sizing (tracks roomier modern cell padding) */
+  --st-overlay-font-size: 14px;
+  --st-overlay-padding: 12px;
+  --st-control-padding-y: 8px;
+  --st-control-padding-x: 12px;
+  --st-datepicker-day-size: 32px;
+
+  /* Scrollbar variables */
+  --st-scrollbar-bg-color: #0a0a0a;
+  --st-scrollbar-thumb-color: #3a3a3a;
+  --st-scrollbar-width: thin;
+
+  /* Base/Structural colors */
+  --st-border-color: #262626;
+  --st-footer-background-color: #141414;
+  --st-footer-text-color: #a3a3a3;
+  --st-last-group-row-separator-border-color: #262626;
+
+  /* Row colors - flat surface, hover instead of stripes */
+  --st-odd-row-background-color: #141414;
+  --st-even-row-background-color: #141414;
+  --st-hover-row-background-color: #1c1c1c;
+  --st-selected-row-background-color: #18213d;
+
+  /* Column colors - no alternating columns by default */
+  --st-odd-column-background-color: #141414;
+  --st-even-column-background-color: #141414;
+
+  /* Header colors */
+  --st-header-background-color: #141414;
+  --st-sub-header-background-color: #0a0a0a;
+  --st-header-label-color: #fafafa;
+  --st-header-icon-color: #a3a3a3;
+
+  /* Cell colors */
+  --st-cell-color: #fafafa;
+  --st-cell-odd-row-color: #a3a3a3;
+  --st-edit-cell-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --st-sub-cell-background-color: #0a0a0a;
+  --st-sub-cell-hover-background-color: #1c1c1c;
+
+  /* Selection colors - light blue wash, not a solid fill */
+  --st-selected-cell-background-color: #18213d;
+  --st-selected-first-cell-background-color: #19274f;
+  --st-selected-cell-color: #fafafa;
+  --st-selected-first-cell-color: #fafafa;
+  --st-selected-sub-cell-background-color: #18213d;
+  --st-selected-sub-cell-color: #fafafa;
+  --st-dragging-background-color: #1c1c1c;
+  --st-dragging-sub-header-background-color: #262626;
+
+  /* Interactive element colors */
+  --st-resize-handle-color: #262626;
+  --st-resize-handle-selected-color: #60a5fa;
+
+  /* Border colors */
+  --st-selected-border-color: #3b82f6;
+  --st-editable-cell-focus-border-color: #60a5fa;
+  --st-focus-ring-color: #60a5fa;
+
+  /* Button colors */
+  --st-button-hover-background-color: #1c1c1c;
+  --st-button-active-background-color: #3b82f6;
+  --st-button-active-text-color: var(--st-white);
+  --st-next-prev-btn-color: #a3a3a3;
+  --st-next-prev-btn-disabled-color: #525252;
+  --st-page-btn-color: #fafafa;
+  --st-page-btn-hover-background-color: #1c1c1c;
+
+  /* Checkbox colors */
+  --st-checkbox-background-color: #141414;
+  --st-checkbox-checked-background-color: #3b82f6;
+  --st-checkbox-checked-border-color: #3b82f6;
+  --st-checkbox-border-color: #262626;
+
+  /* Column editor colors */
+  --st-column-editor-background-color: #141414;
+  --st-column-editor-popout-background-color: #141414;
+  --st-column-editor-text-color: #a3a3a3;
+
+  /* Form element colors */
+  --st-datepicker-weekday-color: #a3a3a3;
+  --st-datepicker-other-month-color: #525252;
+  --st-filter-button-disabled-background-color: #1c1c1c;
+  --st-filter-button-disabled-text-color: #737373;
+  --st-muted-text-color: #a3a3a3;
+
+  /* Flash/Animation colors */
+  --st-cell-flash-color: #19274f;
+  --st-copy-flash-color: #60a5fa;
+  --st-warning-flash-color: #ef4444;
+
+  /* Tooltip variables */
+  --st-tooltip-background-color: #fafafa;
+  --st-tooltip-text-color: #171717;
+  --st-tooltip-border-radius: 6px;
+  --st-tooltip-padding: 6px 10px;
+  --st-tooltip-font-size: 12px;
+  --st-tooltip-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+
+  /* Header selection colors */
+  --st-header-selected-background-color: #3b82f6;
+  --st-header-selected-label-color: var(--st-white);
+  --st-header-selected-icon-color: var(--st-white);
+  --st-header-highlight-indicator-color: #1e3a8a;
+  --st-selection-highlight-indicator-color: #262626;
+
+  /* Utility colors */
+  --st-loading-skeleton-bg-color: #1c1c1c;
+  --st-chart-color: #3b82f6;
+  --st-chart-fill-color: #60a5fa;
+
+  /* Drag and drop colors */
+  --st-drag-separator-color: #3b82f6;
+
+  /* Body background for state rows */
+  --st-body-background-color: #141414;
+}

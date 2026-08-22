@@ -11,6 +11,7 @@ import type { CryptoCoin } from "./crypto.demo-data";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [autoExpandColumns]="true"
       #simpleTable
       [columns]="headers"
       [rows]="rows"

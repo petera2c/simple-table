@@ -39,8 +39,9 @@ const THEME_PATTERNS: ThemePattern[] = [
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">light</code>,{" "}
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">dark</code>,{" "}
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">neutral</code>,{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">modern-light</code>, or{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">modern-dark</code>. Use{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">modern-light</code>,{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">modern-dark</code>, or{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">modern-black</code>. Use{" "}
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">custom</code> with{" "}
         <Link
           href="/docs/custom-theme"
@@ -51,7 +52,7 @@ const THEME_PATTERNS: ThemePattern[] = [
         for your own tokens.
       </>
     ),
-    codeByFramework: themeSnippets("modern-dark"),
+    codeByFramework: themeSnippets("modern-black"),
   },
   {
     title: "Styling flags",
@@ -107,8 +108,8 @@ const THEME_PROPS: PropInfo[] = [
     description: "Built-in theme for the table.",
     type: "Theme",
     link: "/docs/api-reference#union-types",
-    enumValues: ["light", "dark", "neutral", "modern-light", "modern-dark", "custom"],
-    example: `theme="modern-dark"`,
+    enumValues: ["light", "dark", "neutral", "modern-light", "modern-dark", "modern-black", "custom"],
+    example: `theme="modern-black"`,
   },
   {
     key: "hoverRowBackground",

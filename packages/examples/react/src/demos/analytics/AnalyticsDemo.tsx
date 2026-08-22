@@ -14,6 +14,34 @@ function formatHeight(height?: string | number | null): string {
   return height;
 }
 
+function getAnalyticsChrome(theme?: Theme) {
+  if (theme === "modern-black") {
+    return {
+      border: "#262626",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1c1c1c",
+      chipIdleColor: "#a3a3a3",
+      title: "#fafafa",
+    };
+  }
+  if (theme === "modern-dark" || theme === "dark") {
+    return {
+      border: "#374151",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1f2937",
+      chipIdleColor: "#d1d5db",
+      title: "#f9fafb",
+    };
+  }
+  return {
+    border: "#e5e5e5",
+    chipActive: "#2563eb",
+    chipIdleBg: "#f5f5f5",
+    chipIdleColor: "#525252",
+    title: "#171717",
+  };
+}
+
 const AnalyticsDemo = ({
   height = "480px",
   theme,
@@ -24,7 +52,7 @@ const AnalyticsDemo = ({
   const [activeId, setActiveId] = useState(analyticsPresets[0].id);
   const active = analyticsPresets.find((p) => p.id === activeId) ?? analyticsPresets[0];
   const isPivoted = active.pivot != null;
-  const isDark = theme === "dark" || theme === "modern-dark";
+  const chrome = getAnalyticsChrome(theme);
   const tableHostRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<TableAPI<AnalyticsFactRow>>(null);
   const [tableHeightPx, setTableHeightPx] = useState<number | null>(null);
@@ -47,13 +75,6 @@ const AnalyticsDemo = ({
     return () => ro.disconnect();
   }, []);
 
-  const chromeBg = isDark ? "#0f172a" : "#f8fafc";
-  const chromeBorder = isDark ? "#1e293b" : "#e2e8f0";
-  const titleColor = isDark ? "#f1f5f9" : "#0f172a";
-  const chipIdleBg = isDark ? "#1e293b" : "#e2e8f0";
-  const chipIdleColor = isDark ? "#cbd5e1" : "#334155";
-  const inputBorder = isDark ? "#334155" : "#cbd5e1";
-
   return (
     <div
       style={{
@@ -61,16 +82,13 @@ const AnalyticsDemo = ({
         flexDirection: "column",
         width: "100%",
         height: formatHeight(height),
-        background: chromeBg,
-        border: `1px solid ${chromeBorder}`,
-        borderRadius: 8,
         overflow: "hidden",
       }}
     >
       <div
         style={{
-          padding: "16px 20px 12px",
-          borderBottom: `1px solid ${chromeBorder}`,
+          padding: "0 0 12px",
+          borderBottom: `1px solid ${chrome.border}`,
           flexShrink: 0,
         }}
       >
@@ -80,7 +98,7 @@ const AnalyticsDemo = ({
               margin: 0,
               fontSize: 18,
               fontWeight: 650,
-              color: titleColor,
+              color: chrome.title,
               letterSpacing: "-0.02em",
             }}
           >
@@ -112,8 +130,8 @@ const AnalyticsDemo = ({
                     cursor: "pointer",
                     fontSize: 13,
                     fontWeight: 550,
-                    background: selected ? "#2563eb" : chipIdleBg,
-                    color: selected ? "#fff" : chipIdleColor,
+                    background: selected ? chrome.chipActive : chrome.chipIdleBg,
+                    color: selected ? "#fff" : chrome.chipIdleColor,
                   }}
                 >
                   {preset.label}
@@ -127,12 +145,12 @@ const AnalyticsDemo = ({
             style={{
               padding: "7px 12px",
               borderRadius: 6,
-              border: `1px solid ${inputBorder}`,
+              border: `1px solid ${chrome.border}`,
               cursor: "pointer",
               fontSize: 13,
               fontWeight: 550,
-              background: chipIdleBg,
-              color: chipIdleColor,
+              background: chrome.chipIdleBg,
+              color: chrome.chipIdleColor,
             }}
           >
             Export CSV
@@ -143,7 +161,6 @@ const AnalyticsDemo = ({
         style={{
           flex: 1,
           minHeight: 0,
-          padding: "12px 20px 20px",
           display: "flex",
           flexDirection: "column",
         }}

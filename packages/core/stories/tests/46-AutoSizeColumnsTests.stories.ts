@@ -349,6 +349,37 @@ export const AutoSizeSortIconDoesNotTruncateLabel = {
   },
 };
 
+export const AutoSizeSortableReservesIconBeforeSort = {
+  parameters: { tags: ["auto-size-sort-icon-reserve-unsorted"] },
+  render: () => {
+    const headers: ColumnDef[] = [
+      { accessor: "plain", label: "Qty", width: "auto", type: "string" },
+      { accessor: "sortableQty", label: "Qty", width: "auto", type: "string", sortable: true },
+    ];
+    const data = makeRows(20, (i) => ({ id: i + 1, plain: "x", sortableQty: "x" }));
+    const { wrapper } = renderVanillaTable(headers, data, {
+      getRowId: (params: any) => String(params.row.id),
+      height: "300px",
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const qtyCells = Array.from(canvasElement.querySelectorAll(".st-header-cell")).filter(
+      (cell) => cell.querySelector(".st-header-label-text")?.textContent?.trim() === "Qty",
+    );
+    expect(qtyCells.length).toBe(2);
+
+    const plainWidth = qtyCells[0].getBoundingClientRect().width;
+    const sortableWidth = qtyCells[1].getBoundingClientRect().width;
+    // Sortable column is wider even though no sort is applied and the icon is
+    // not in the DOM yet — space is reserved so the first sort cannot clip
+    // the label.
+    expect(sortableWidth).toBeGreaterThan(plainWidth + 12);
+    expect(qtyCells[1].querySelector('[aria-label^="Sort"]')).toBeNull();
+  },
+};
+
 export const AutoSizeMeasuresFormattedValue = {
   parameters: { tags: ["auto-size-formatter"] },
   render: () => {

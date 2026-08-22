@@ -11,6 +11,7 @@ import type { SoccerPlayer } from "./soccer.demo-data";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [autoExpandColumns]="true"
       [getRowId]="getRowId"
       [columns]="headers"
       [rows]="rows"

@@ -58,6 +58,7 @@ function applyMusicCellRenderers(hdrs: readonly AngularColumnDef<MusicArtist>[])
   template: `
     <div class="music-theme-container" style="font-family: Inter">
       <simple-table
+      [autoExpandColumns]="true"
       [getRowId]="getRowId"
         [columns]="headers"
         [rows]="rows"

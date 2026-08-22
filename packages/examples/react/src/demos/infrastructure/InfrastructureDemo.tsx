@@ -149,7 +149,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
       minWidth: 180,
       pinned: "left",
       type: "string",
-      width: "1.2fr",
+      width: "auto",
       cellRenderer: ({ row }) => (
         <span style={{ fontFamily: "monospace", fontSize: "0.85rem" }}>{row.serverId}</span>
       ),
@@ -163,18 +163,18 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
       label: "Name",
       minWidth: 200,
       type: "string",
-      width: "1.5fr",
+      width: "auto",
     },
     {
       accessor: "performance",
       label: "Performance Metrics",
-      width: 690,
+      width: "auto",
       sortable: false,
       children: [
         {
           accessor: "cpuHistory",
           label: "CPU History",
-          width: 150,
+          width: "auto",
           sortable: false,
           filterable: false,
           editable: false,
@@ -185,7 +185,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
         {
           accessor: "cpuUsage",
           label: "CPU %",
-          width: 120,
+          width: "auto",
           sortable: true,
           filterable: true,
           editable: true,
@@ -213,7 +213,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
         {
           accessor: "memoryUsage",
           label: "Memory %",
-          width: 130,
+          width: "auto",
           sortable: true,
           filterable: true,
           editable: true,
@@ -241,7 +241,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
         {
           accessor: "diskUsage",
           label: "Disk %",
-          width: 120,
+          width: "auto",
           sortable: true,
           filterable: true,
           editable: true,
@@ -252,7 +252,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
         {
           accessor: "responseTime",
           label: "Response (ms)",
-          width: 120,
+          width: "auto",
           sortable: true,
           filterable: true,
           editable: true,
@@ -268,7 +268,7 @@ function getHeaders(currentTheme?: Theme): ReactColumnDef<InfrastructureServer>[
     {
       accessor: "status",
       label: "Status",
-      width: 130,
+      width: "auto",
       sortable: true,
       filterable: true,
       editable: false,

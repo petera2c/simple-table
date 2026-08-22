@@ -1,5 +1,6 @@
 <template>
   <SimpleTable
+    :auto-expand-columns="true"
     :columns="headers"
     :get-row-id="getRowId"
     :rows="billingConfig.rows"

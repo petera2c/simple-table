@@ -39,6 +39,7 @@ export default function MusicExample({
   return (
     <div className="music-theme-container" style={{ fontFamily: "Inter" }}>
       <SimpleTable
+        autoExpandColumns
         columnReordering
         columnResizing
         customTheme={{

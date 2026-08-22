@@ -218,6 +218,7 @@ const headers = getHeaders();
 
 <template>
   <SimpleTable
+    :auto-expand-columns="true"
     :columns="headers"
     :rows="manufacturingConfig.rows"
     :get-row-id="getRowId"

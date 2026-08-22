@@ -12,6 +12,7 @@ import type { BillingRow } from "./billing.demo-data";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [autoExpandColumns]="true"
       [getRowId]="getRowId"
       [columnReordering]="true"
       [columnResizing]="true"

@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 export default function CaseStudiesIndexPage() {
   return (
     <PageWrapper>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="site-shell py-12">
         <section className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             Case Studies

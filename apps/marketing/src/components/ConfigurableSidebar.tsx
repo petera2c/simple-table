@@ -27,14 +27,13 @@ const ConfigurableSidebar: React.FC<ConfigurableSidebarProps> = ({ config, class
 
   return (
     <div
-      className={`shrink-0 sticky top-2 sm:top-3 md:top-4 mb-4 self-start h-[calc(100dvh-64px-32px)] 
-        bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm flex flex-col rounded-xl 
-        shadow-[4px_0_16px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_16px_rgba(0,0,0,0.3)] 
-        p-1 overflow-visible z-1 ${width ? "" : "w-64"} ${className}`}
+      className={`shrink-0 sticky top-2 sm:top-3 md:top-4 mb-4 self-start h-[calc(100dvh-var(--header-height)-32px)] 
+        text-ink flex flex-col border-r border-line pr-3
+        overflow-visible z-1 ${width ? "" : "w-64"} ${className}`}
       style={width ? { width } : undefined}
     >
-      <h2 className="text-xl font-bold mb-2 text-blue-600 dark:text-blue-400 flex items-center gap-2 pt-3 px-3">
-        {icon && <FontAwesomeIcon icon={icon} className="text-blue-600 dark:text-blue-400" />}
+      <h2 className="text-xl font-bold mb-2 text-ink flex items-center gap-2 pt-3 px-3">
+        {icon && <FontAwesomeIcon icon={icon} className="text-muted" />}
         {title}
       </h2>
 
@@ -43,7 +42,7 @@ const ConfigurableSidebar: React.FC<ConfigurableSidebarProps> = ({ config, class
       <div className="overflow-y-auto overflow-x-visible grow px-2 pb-2">{sidebarContent}</div>
 
       {footerContent && (
-        <div className="px-3 py-3 border-t border-gray-100 dark:border-gray-800 mt-auto">
+        <div className="px-3 py-3 border-t border-line mt-auto">
           {footerContent}
         </div>
       )}

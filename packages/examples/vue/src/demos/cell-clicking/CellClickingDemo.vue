@@ -84,7 +84,7 @@ const headers: VueColumnDef<ProjectTask>[] = cellClickingHeaders.map((col) => {
   return { ...col };
 });
 
-const isDark = computed(() => props.theme === "modern-dark" || props.theme === "dark");
+const isDark = computed(() => props.theme === "modern-dark" || props.theme === "dark" || props.theme === "modern-black");
 
 const getRowId = ({ row }: GetRowIdParams<ProjectTask>) => row.id;
 

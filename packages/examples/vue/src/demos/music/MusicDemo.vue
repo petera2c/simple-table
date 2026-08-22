@@ -216,6 +216,7 @@ const headers = computed((): VueColumnDef<MusicArtist>[] => {
 <template>
   <div class="music-theme-container" style="font-family: Inter">
     <SimpleTable
+      :auto-expand-columns="true"
       :columns="headers"
       :get-row-id="getRowId"
       :rows="[...musicConfig.rows]"

@@ -17,6 +17,7 @@ import { getCellId, isHeaderExcludedFromLayout } from "./cellUtils";
 import { getElementByIdInTable, queryAllInTable, queryInTable, escapeTableAttrValue } from "./tableDomScope";
 import { getNestedValue } from "./rowUtils";
 import { hasCollapsibleChildren } from "./collapseUtils";
+import { createAscIcon, createFilterIcon } from "../icons";
 
 /**
  * Build the set of row indices to sample for auto-size measurement.
@@ -608,6 +609,11 @@ const measureHeaderIconWidth = (
   return width + AUTO_SIZE_HEADER_ICON_PADDING;
 };
 
+const headerContainsAriaLabelPrefix = (
+  headerCell: HTMLElement | null,
+  prefix: string,
+): boolean => Boolean(headerCell?.querySelector(`[aria-label^="${prefix}"]`));
+
 /**
  * Calculate the optimal width for a column by measuring both header and cell content
  * This is used for auto-sizing columns to fit their content (like Excel/Google Sheets)
@@ -652,6 +658,11 @@ export const calculateHeaderContentWidth = (
      */
     sortIcon?: string | HTMLElement | SVGSVGElement;
     /**
+     * The table's resolved filter icon. Used to reserve space on filterable
+     * columns when the header cell is virtualized out of the horizontal band.
+     */
+    filterIcon?: string | HTMLElement | SVGSVGElement;
+    /**
      * The table's resolved expand/collapse icon. Used to reserve space on
      * collapsible headers when the header cell is virtualized out of the
      * horizontal band (so the icon is not in the DOM to measure directly).
@@ -678,6 +689,7 @@ export const calculateHeaderContentWidth = (
     theme,
     styleRoot,
     sortIcon,
+    filterIcon,
     expandIcon,
     onRendererHostDiscard,
   } = options || {};
@@ -716,10 +728,11 @@ export const calculateHeaderContentWidth = (
   const headerLabelElement = headerCellElement?.querySelector(
     ".st-header-label",
   ) as HTMLElement | null;
-  // Whether a sort / collapse icon is already part of the measured header
-  // (either inside a custom label or as a direct icon child); used for the
-  // reservations below.
+  // Whether a sort / filter / collapse icon is already part of the measured
+  // header (inside a custom label or as a sibling); used for the reservations
+  // below.
   let sortIconMeasured = false;
+  let filterIconMeasured = false;
   let collapseIconMeasured = false;
   if (headerLabelElement) {
     const textSpan = headerLabelElement.querySelector(".st-header-label-text") as HTMLElement;
@@ -732,9 +745,8 @@ export const calculateHeaderContentWidth = (
       if (customLabelWidth >= 1) {
         totalWidth += customLabelWidth;
         headerRendererSettled = true;
-        sortIconMeasured = Boolean(
-          headerLabelElement.querySelector('.st-icon-container[aria-label^="Sort"]'),
-        );
+        sortIconMeasured = headerContainsAriaLabelPrefix(headerLabelElement, "Sort");
+        filterIconMeasured = headerContainsAriaLabelPrefix(headerLabelElement, "Filter");
         collapseIconMeasured = Boolean(
           headerLabelElement.querySelector(".st-collapsible-header-icon"),
         );
@@ -805,17 +817,40 @@ export const calculateHeaderContentWidth = (
     if (child.getAttribute("aria-label")?.startsWith("Sort")) {
       sortIconMeasured = true;
     }
+    if (child.getAttribute("aria-label")?.startsWith("Filter")) {
+      filterIconMeasured = true;
+    }
     if (child.classList.contains("st-collapsible-header-icon")) {
       collapseIconMeasured = true;
     }
+  }
+
+  if (headerContainsAriaLabelPrefix(headerCellElement, "Sort")) {
+    sortIconMeasured = true;
+  }
+  if (headerContainsAriaLabelPrefix(headerCellElement, "Filter")) {
+    filterIconMeasured = true;
   }
 
   // Reserve space for the sort icon on sortable columns that are not currently
   // sorted. The icon only exists on the actively sorted column and sorting does
   // not re-fit auto columns (widths must stay stable across sorts), so without
   // this reservation the label would be pushed into ellipsis on first sort.
-  if (header?.sortable && !sortIconMeasured && sortIcon) {
-    totalWidth += measureHeaderIconWidth(sortIcon, domQueryRoot);
+  if (header?.sortable && !sortIconMeasured) {
+    totalWidth += measureHeaderIconWidth(
+      sortIcon ?? createAscIcon("st-header-icon"),
+      domQueryRoot,
+    );
+    visibleItemCount++;
+  }
+
+  // Filter icons are always in the DOM for on-screen filterable columns, but
+  // virtualized-out headers have nothing to measure — reserve the same way.
+  if (header?.filterable && !filterIconMeasured) {
+    totalWidth += measureHeaderIconWidth(
+      filterIcon ?? createFilterIcon("st-header-icon"),
+      domQueryRoot,
+    );
     visibleItemCount++;
   }
 

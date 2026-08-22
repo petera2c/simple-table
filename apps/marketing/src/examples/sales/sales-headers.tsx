@@ -101,7 +101,7 @@ const getThemeColors = (theme?: string) => {
     },
   };
 
-  return themes[theme as keyof typeof themes] || themes["modern-light"];
+  return themes[(theme === "modern-black" ? "modern-dark" : theme) as keyof typeof themes] || themes["modern-light"];
 };
 
 // Custom Tag component
@@ -228,7 +228,7 @@ export const SALES_HEADERS: ReactColumnDef[] = [
   {
     accessor: "repName",
     label: "Sales Representative",
-    width: "2fr",
+    width: "auto",
     minWidth: 200,
     sortable: true,
     editable: true,
@@ -238,7 +238,7 @@ export const SALES_HEADERS: ReactColumnDef[] = [
   {
     accessor: "trend",
     label: "Quota Trend",
-    width: 160,
+    width: "auto",
     minWidth: 140,
     sortable: false,
     editable: false,
@@ -255,13 +255,13 @@ export const SALES_HEADERS: ReactColumnDef[] = [
   {
     accessor: "salesMetrics",
     label: "Sales Metrics",
-    width: 600,
+    width: "auto",
     sortable: false,
     children: [
       {
         accessor: "dealSize",
         label: "Deal Size",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -281,7 +281,7 @@ export const SALES_HEADERS: ReactColumnDef[] = [
       {
         accessor: "dealValue",
         label: "Deal Value",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -313,7 +313,7 @@ export const SALES_HEADERS: ReactColumnDef[] = [
       {
         accessor: "isWon",
         label: "Status",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -333,7 +333,7 @@ export const SALES_HEADERS: ReactColumnDef[] = [
       {
         accessor: "closeDate",
         label: "Close Date",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -358,14 +358,14 @@ export const SALES_HEADERS: ReactColumnDef[] = [
   {
     accessor: "financialMetrics",
     label: "Financial Metrics",
-    width: "1fr",
+    width: "auto",
     minWidth: 140,
     sortable: false,
     children: [
       {
         accessor: "commission",
         label: "Commission",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -388,7 +388,7 @@ export const SALES_HEADERS: ReactColumnDef[] = [
       {
         accessor: "profitMargin",
         label: "Profit Margin",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -443,7 +443,7 @@ export const SALES_HEADERS: ReactColumnDef[] = [
       {
         accessor: "dealProfit",
         label: "Deal Profit",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -477,7 +477,7 @@ export const SALES_HEADERS: ReactColumnDef[] = [
       {
         accessor: "category",
         label: "Category",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,

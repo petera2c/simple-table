@@ -20,7 +20,7 @@ const CRM_HEADERS: AngularColumnDef<CRMLead>[] = [
   {
     accessor: "name",
     label: "CONTACT",
-    width: "2fr",
+    width: "auto",
     minWidth: 290,
     sortable: true,
     editable: true,
@@ -30,7 +30,7 @@ const CRM_HEADERS: AngularColumnDef<CRMLead>[] = [
   {
     accessor: "signal",
     label: "SIGNAL",
-    width: "3fr",
+    width: "auto",
     minWidth: 340,
     sortable: true,
     editable: true,
@@ -40,7 +40,7 @@ const CRM_HEADERS: AngularColumnDef<CRMLead>[] = [
   {
     accessor: "aiScore",
     label: "AI SCORE",
-    width: "1fr",
+    width: "auto",
     minWidth: 100,
     sortable: true,
     align: "center",
@@ -50,7 +50,7 @@ const CRM_HEADERS: AngularColumnDef<CRMLead>[] = [
   {
     accessor: "emailStatus",
     label: "EMAIL",
-    width: "1.5fr",
+    width: "auto",
     minWidth: 210,
     sortable: true,
     align: "center",
@@ -66,7 +66,7 @@ const CRM_HEADERS: AngularColumnDef<CRMLead>[] = [
   {
     accessor: "timeAgo",
     label: "IMPORT",
-    width: "1fr",
+    width: "auto",
     minWidth: 100,
     sortable: true,
     align: "center",
@@ -76,7 +76,7 @@ const CRM_HEADERS: AngularColumnDef<CRMLead>[] = [
   {
     accessor: "list",
     label: "LIST",
-    width: "1.2fr",
+    width: "auto",
     minWidth: 160,
     sortable: true,
     align: "center",
@@ -107,7 +107,7 @@ const CRM_HEADERS: AngularColumnDef<CRMLead>[] = [
   {
     accessor: "_fit",
     label: "Fit",
-    width: "1fr",
+    width: "auto",
     align: "center",
     minWidth: 120,
     cellRenderer: CrmFitCellComponent,
@@ -115,7 +115,7 @@ const CRM_HEADERS: AngularColumnDef<CRMLead>[] = [
   {
     accessor: "_contactNow",
     label: "",
-    width: "1.2fr",
+    width: "auto",
     minWidth: 160,
     cellRenderer: CrmContactNowCellComponent,
   },
@@ -128,6 +128,7 @@ const CRM_HEADERS: AngularColumnDef<CRMLead>[] = [
   template: `
     <div [class]="'custom-theme-container theme-' + (isDark ? 'custom-dark' : 'custom-light')">
       <simple-table
+      [autoExpandColumns]="true"
       [getRowId]="getRowId"
         #simpleTable
         [columnReordering]="true"
@@ -168,7 +169,7 @@ export class CRMDemoComponent implements OnInit, OnChanges {
 
   private applyShellTheme(): void {
     this.isDark =
-      this.theme === "custom-dark" || this.theme === "dark" || this.theme === "modern-dark";
+      this.theme === "custom-dark" || this.theme === "dark" || this.theme === "modern-dark" || this.theme === "modern-black";
     syncCrmDemoPalette(this.isDark);
   }
 

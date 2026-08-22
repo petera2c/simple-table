@@ -19,6 +19,7 @@ export default function SoccerExample({
 
   return (
     <SimpleTable
+      autoExpandColumns
       columnReordering
       columnResizing
       customTheme={{ headerHeight: 40, rowHeight: 60 }}

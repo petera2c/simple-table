@@ -111,7 +111,7 @@ function generateMonthHeaders(): ColumnDef<BillingRow>[] {
     headers.push({
       accessor: `month_${mo}_${year}`,
       label: `${fullMonthName} ${year}`,
-      width: 200,
+      width: "auto",
       sortable: true,
       editable: false,
       align: "right",
@@ -121,7 +121,7 @@ function generateMonthHeaders(): ColumnDef<BillingRow>[] {
           disableReorder: true,
           label: "Balance",
           accessor: `balance_${mo}_${year}`,
-          width: 200,
+          width: "auto",
           sortable: true,
           editable: false,
           align: "right",
@@ -136,7 +136,7 @@ function generateMonthHeaders(): ColumnDef<BillingRow>[] {
           disableReorder: true,
           label: "Revenue",
           accessor: `revenue_${mo}_${year}`,
-          width: 200,
+          width: "auto",
           sortable: true,
           editable: false,
           align: "right",
@@ -157,7 +157,7 @@ export const billingHeaders: ColumnDef<BillingRow>[] = [
   {
     accessor: "name",
     label: "Name",
-    width: 250,
+    width: "auto",
     expandable: true,
     sortable: true,
     editable: false,
@@ -168,7 +168,7 @@ export const billingHeaders: ColumnDef<BillingRow>[] = [
   {
     accessor: "amount",
     label: "Total Amount",
-    width: 130,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -182,7 +182,7 @@ export const billingHeaders: ColumnDef<BillingRow>[] = [
   {
     accessor: "deferredRevenue",
     label: "Deferred Revenue",
-    width: 180,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -196,7 +196,7 @@ export const billingHeaders: ColumnDef<BillingRow>[] = [
   {
     accessor: "recognizedRevenue",
     label: "Recognized Revenue",
-    width: 180,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",

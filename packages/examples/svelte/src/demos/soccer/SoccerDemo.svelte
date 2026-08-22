@@ -11,6 +11,7 @@
 </script>
 
 <SimpleTable
+  autoExpandColumns={true}
   columns={soccerConfig.headers}
   rows={soccerConfig.rows}
   getRowId={getRowId}

@@ -85,7 +85,7 @@ export function getThemeColors(theme?: string): ThemePalette {
       progressColors: { high: "#10B981", medium: "#3B82F6", low: "#D97706" },
     },
   };
-  return themes[theme ?? ""] ?? themes["modern-light"];
+  return themes[theme === "modern-black" ? "modern-dark" : (theme ?? "")] ?? themes["modern-light"];
 }
 
 export interface SalesInboundRow {
@@ -147,7 +147,7 @@ export const salesHeadersCore: SolidColumnDef<SalesRow>[] = [
   {
     accessor: "repName",
     label: "Sales Representative",
-    width: "2fr",
+    width: "auto",
     minWidth: 200,
     sortable: true,
     editable: true,
@@ -157,13 +157,13 @@ export const salesHeadersCore: SolidColumnDef<SalesRow>[] = [
   {
     accessor: "salesMetrics",
     label: "Sales Metrics",
-    width: 600,
+    width: "auto",
     sortable: false,
     children: [
       {
         accessor: "dealSize",
         label: "Deal Size",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -183,7 +183,7 @@ export const salesHeadersCore: SolidColumnDef<SalesRow>[] = [
       {
         accessor: "dealValue",
         label: "Deal Value",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -194,7 +194,7 @@ export const salesHeadersCore: SolidColumnDef<SalesRow>[] = [
       {
         accessor: "isWon",
         label: "Status",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -205,7 +205,7 @@ export const salesHeadersCore: SolidColumnDef<SalesRow>[] = [
       {
         accessor: "closeDate",
         label: "Close Date",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -228,14 +228,14 @@ export const salesHeadersCore: SolidColumnDef<SalesRow>[] = [
   {
     accessor: "financialMetrics",
     label: "Financial Metrics",
-    width: "1fr",
+    width: "auto",
     minWidth: 140,
     sortable: false,
     children: [
       {
         accessor: "commission",
         label: "Commission",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -246,7 +246,7 @@ export const salesHeadersCore: SolidColumnDef<SalesRow>[] = [
       {
         accessor: "profitMargin",
         label: "Profit Margin",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -266,7 +266,7 @@ export const salesHeadersCore: SolidColumnDef<SalesRow>[] = [
       {
         accessor: "dealProfit",
         label: "Deal Profit",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -277,7 +277,7 @@ export const salesHeadersCore: SolidColumnDef<SalesRow>[] = [
       {
         accessor: "category",
         label: "Category",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,

@@ -7,7 +7,7 @@ import Link from "next/link";
 export default function MobileUnsupportedPage() {
   return (
     <>
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full site-shell py-8">
         <div className="flex flex-col items-center justify-center p-8 min-h-[60vh] text-center">
           <div className="flex items-center justify-center mb-6 text-4xl text-gray-400">
             <FontAwesomeIcon icon={faMobileAlt} className="mr-4" />

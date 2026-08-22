@@ -48,7 +48,7 @@ export const MANUFACTURING_HEADERS: ColumnDef<ManufacturingRow>[] = [
   {
     accessor: "productLine",
     label: "Production Line",
-    width: 180,
+    width: "auto",
     expandable: true,
     sortable: true,
     editable: false,
@@ -60,7 +60,7 @@ export const MANUFACTURING_HEADERS: ColumnDef<ManufacturingRow>[] = [
   {
     accessor: "station",
     label: "Workstation",
-    width: 150,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "left",
@@ -74,7 +74,7 @@ export const MANUFACTURING_HEADERS: ColumnDef<ManufacturingRow>[] = [
   {
     accessor: "machineType",
     label: "Machine Type",
-    width: 150,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "left",
@@ -83,7 +83,7 @@ export const MANUFACTURING_HEADERS: ColumnDef<ManufacturingRow>[] = [
   {
     accessor: "status",
     label: "Status",
-    width: 180,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "center",
@@ -97,7 +97,7 @@ export const MANUFACTURING_HEADERS: ColumnDef<ManufacturingRow>[] = [
   {
     accessor: "outputRate",
     label: "Output (units/shift)",
-    width: 200,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -109,7 +109,7 @@ export const MANUFACTURING_HEADERS: ColumnDef<ManufacturingRow>[] = [
   {
     accessor: "cycletime",
     label: "Cycle Time (s)",
-    width: 140,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -124,7 +124,7 @@ export const MANUFACTURING_HEADERS: ColumnDef<ManufacturingRow>[] = [
   {
     accessor: "efficiency",
     label: "Efficiency",
-    width: 150,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "center",
@@ -136,7 +136,7 @@ export const MANUFACTURING_HEADERS: ColumnDef<ManufacturingRow>[] = [
   {
     accessor: "defectRate",
     label: "Defect Rate",
-    width: 120,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -152,7 +152,7 @@ export const MANUFACTURING_HEADERS: ColumnDef<ManufacturingRow>[] = [
   {
     accessor: "defectCount",
     label: "Defects",
-    width: 120,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -164,7 +164,7 @@ export const MANUFACTURING_HEADERS: ColumnDef<ManufacturingRow>[] = [
   {
     accessor: "downtime",
     label: "Downtime (h)",
-    width: 130,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -179,7 +179,7 @@ export const MANUFACTURING_HEADERS: ColumnDef<ManufacturingRow>[] = [
   {
     accessor: "utilization",
     label: "Utilization",
-    width: 130,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -191,7 +191,7 @@ export const MANUFACTURING_HEADERS: ColumnDef<ManufacturingRow>[] = [
   {
     accessor: "energy",
     label: "Energy (kWh)",
-    width: 130,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -203,7 +203,7 @@ export const MANUFACTURING_HEADERS: ColumnDef<ManufacturingRow>[] = [
   {
     accessor: "maintenanceDate",
     label: "Next Maintenance",
-    width: 150,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "center",

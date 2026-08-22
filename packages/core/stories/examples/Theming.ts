@@ -17,7 +17,14 @@ export const themingExampleDefaults = {
   height: "400px",
 };
 
-const THEME_OPTIONS = ["neutral", "light", "dark", "modern-light", "modern-dark"] as const;
+const THEME_OPTIONS = [
+  "neutral",
+  "light",
+  "dark",
+  "modern-light",
+  "modern-dark",
+  "modern-black",
+] as const;
 
 export function renderThemingExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
   const data = generateSpaceData();

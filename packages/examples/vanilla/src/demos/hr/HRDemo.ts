@@ -114,6 +114,7 @@ export function renderHRDemo(
 
   const table = new SimpleTableVanilla(container, {
     getRowId,
+    autoExpandColumns: true,
     columns: buildHRHeaders(),
     rows,
     height: options?.height ?? "400px",

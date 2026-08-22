@@ -60,6 +60,7 @@ export const DOCS_SEARCH_CASES: DocsSearchCase[] = [
   { query: "custom theme", expectTop: "custom-theme" },
   { query: "theme-custom", expectTop: "custom-theme" },
   { query: "modern-dark", expectTop: "themes" },
+  { query: "modern-black", expectTop: "themes" },
 
   // Common feature phrases
   { query: "quick filter", expectTop: "quick-filter" },

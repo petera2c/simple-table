@@ -137,7 +137,7 @@ const getThemeColors = (theme?: string) => {
     },
   };
 
-  return themes[theme as keyof typeof themes] || themes["modern-light"];
+  return themes[(theme === "modern-black" ? "modern-dark" : theme) as keyof typeof themes] || themes["modern-light"];
 };
 
 // Custom Tag component with theme support
@@ -231,7 +231,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "rank",
     label: "#",
-    width: 60,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "center",
@@ -241,7 +241,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "artistName",
     label: "Artist",
-    width: 330,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "left",
@@ -305,7 +305,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "artistType",
     label: "Identity",
-    width: 280,
+    width: "auto",
     sortable: false,
     editable: false,
     align: "left",
@@ -331,13 +331,13 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "followersGroup",
     label: "Followers",
-    width: 700,
+    width: "auto",
     collapsible: true,
     children: [
       {
         accessor: "followers",
         label: "Total Followers",
-        width: 180,
+        width: "auto",
         showWhen: "always",
         sortable: true,
         editable: false,
@@ -368,7 +368,7 @@ export const HEADERS: ReactColumnDef[] = [
       {
         accessor: "followers7DayGrowth",
         label: "7-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -390,7 +390,7 @@ export const HEADERS: ReactColumnDef[] = [
       {
         accessor: "followers28DayGrowth",
         label: "28-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -412,7 +412,7 @@ export const HEADERS: ReactColumnDef[] = [
       {
         accessor: "followers60DayGrowth",
         label: "60-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -436,7 +436,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "popularity",
     label: "Popularity",
-    width: 180,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "center",
@@ -462,13 +462,13 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "playlistReachGroup",
     label: "Playlist Reach",
-    width: 700,
+    width: "auto",
     collapsible: true,
     children: [
       {
         accessor: "playlistReach",
         label: "Total Reach",
-        width: 180,
+        width: "auto",
         showWhen: "always",
         sortable: true,
         editable: false,
@@ -495,7 +495,7 @@ export const HEADERS: ReactColumnDef[] = [
       {
         accessor: "playlistReach7DayGrowth",
         label: "7-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -519,7 +519,7 @@ export const HEADERS: ReactColumnDef[] = [
       {
         accessor: "playlistReach28DayGrowth",
         label: "28-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -543,7 +543,7 @@ export const HEADERS: ReactColumnDef[] = [
       {
         accessor: "playlistReach60DayGrowth",
         label: "60-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -569,13 +569,13 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "playlistCountGroup",
     label: "Playlist Count",
-    width: 700,
+    width: "auto",
     collapsible: true,
     children: [
       {
         accessor: "playlistCount",
         label: "Total Count",
-        width: 180,
+        width: "auto",
         showWhen: "always",
         sortable: true,
         editable: false,
@@ -606,7 +606,7 @@ export const HEADERS: ReactColumnDef[] = [
       {
         accessor: "playlistCount7DayGrowth",
         label: "7-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -628,7 +628,7 @@ export const HEADERS: ReactColumnDef[] = [
       {
         accessor: "playlistCount28DayGrowth",
         label: "28-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -650,7 +650,7 @@ export const HEADERS: ReactColumnDef[] = [
       {
         accessor: "playlistCount60DayGrowth",
         label: "60-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -674,13 +674,13 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "monthlyListenersGroup",
     label: "Monthly Listeners",
-    width: 700,
+    width: "auto",
     collapsible: true,
     children: [
       {
         accessor: "monthlyListeners",
         label: "Total Listeners",
-        width: 180,
+        width: "auto",
         showWhen: "always",
         sortable: true,
         editable: false,
@@ -707,7 +707,7 @@ export const HEADERS: ReactColumnDef[] = [
       {
         accessor: "monthlyListeners7DayGrowth",
         label: "7-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -731,7 +731,7 @@ export const HEADERS: ReactColumnDef[] = [
       {
         accessor: "monthlyListeners28DayGrowth",
         label: "28-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -755,7 +755,7 @@ export const HEADERS: ReactColumnDef[] = [
       {
         accessor: "monthlyListeners60DayGrowth",
         label: "60-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -781,7 +781,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "conversionRate",
     label: "Conversion Rate",
-    width: 150,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -795,7 +795,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "reachFollowersRatio",
     label: "Reach/Followers Ratio",
-    width: 220,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",

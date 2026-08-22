@@ -153,6 +153,6 @@ function getHeaders(): SolidColumnDef<ManufacturingRow>[] {
 
 export default function ManufacturingDemo(props: { height?: string | number; theme?: Theme }) {
   return (
-    <SimpleTable columnResizing columnReordering columns={getHeaders()} getRowId={({ row }) => row.id} height={props.height ?? "400px"} rowGrouping={["stations"]} rows={manufacturingConfig.rows} selectableCells theme={props.theme} />
+    <SimpleTable autoExpandColumns columnResizing columnReordering columns={getHeaders()} getRowId={({ row }) => row.id} height={props.height ?? "400px"} rowGrouping={["stations"]} rows={manufacturingConfig.rows} selectableCells theme={props.theme} />
   );
 }

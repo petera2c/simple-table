@@ -22,6 +22,7 @@
     <SimpleTable
       :columns="themesConfig.headers"
       :rows="themesConfig.rows"
+      :get-row-id="getRowId"
       :height="height"
       :theme="selectedTheme"
     />
@@ -30,13 +31,17 @@
 
 <script setup lang="ts">
 import { ref } from "vue";
-import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, GetRowIdParams } from "@simple-table/vue";
 import { themesConfig, AVAILABLE_THEMES } from "./themes.demo-data";
+import type { ThemeDemoStaff } from "./themes.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
+
+const getRowId = ({ row }: GetRowIdParams<ThemeDemoStaff>) => row.id;
 
 const selectedTheme = ref<Theme>(props.theme ?? "light");
 </script>

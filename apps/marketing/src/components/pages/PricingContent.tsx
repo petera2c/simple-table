@@ -172,26 +172,24 @@ const PricingContent: React.FC = () => {
 
   return (
     <PageWrapper>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="site-shell py-12">
         <motion.section
           className="text-center mb-10"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-white mb-3">
+          <h1 className="text-4xl md:text-5xl font-bold text-ink mb-3">
             Simple Pricing
           </h1>
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-4">
+          <p className="text-lg md:text-xl text-muted max-w-2xl mx-auto mb-4">
             Free until you earn revenue
           </p>
 
           <div className="relative inline-flex items-center gap-4 mb-8">
             <span
               className={`text-base ${
-                !isAnnual
-                  ? "font-semibold text-blue-600 dark:text-blue-400"
-                  : "text-gray-600 dark:text-gray-400"
+                !isAnnual ? "font-semibold text-ink" : "text-muted"
               }`}
             >
               Monthly
@@ -199,7 +197,7 @@ const PricingContent: React.FC = () => {
             <button
               type="button"
               className={`relative w-16 h-8 rounded-full transition-colors duration-200 ${
-                isAnnual ? "bg-blue-600" : "bg-gray-300 dark:bg-gray-600"
+                isAnnual ? "bg-accent" : "bg-line"
               }`}
               onClick={() => setIsAnnual(!isAnnual)}
               aria-label={isAnnual ? "Switch to monthly billing" : "Switch to annual billing"}
@@ -212,14 +210,12 @@ const PricingContent: React.FC = () => {
             </button>
             <span
               className={`text-base ${
-                isAnnual
-                  ? "font-semibold text-blue-600 dark:text-blue-400"
-                  : "text-gray-600 dark:text-gray-400"
+                isAnnual ? "font-semibold text-ink" : "text-muted"
               }`}
             >
               Annual
             </span>
-            <span className="bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-1">
+            <span className="border border-line text-muted px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-1">
               <FontAwesomeIcon icon={faGift} />
               Save 17% yearly
             </span>
@@ -227,7 +223,7 @@ const PricingContent: React.FC = () => {
         </motion.section>
 
         <motion.section
-          className="mx-auto grid max-w-6xl gap-6 md:grid-cols-2 lg:grid-cols-3"
+          className="mx-auto grid gap-6 md:grid-cols-2 lg:grid-cols-3"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -235,46 +231,46 @@ const PricingContent: React.FC = () => {
           {plans.map((plan) => (
             <motion.div
               key={plan.name}
-              className={`relative flex h-full flex-col rounded-xl p-6 border ${
+              className={`relative flex h-full flex-col rounded-lg p-6 border ${
                 plan.recommended
-                  ? "border-blue-600 dark:border-blue-400 bg-white dark:bg-gray-800 shadow-md lg:-mt-1 lg:mb-1 ring-1 ring-blue-600/15 dark:ring-blue-400/20"
-                  : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/70 shadow-sm"
+                  ? "border-accent bg-surface"
+                  : "border-line bg-surface"
               }`}
               variants={itemVariants}
             >
               {plan.recommended ? (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold text-white">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-accent px-3 py-1 text-xs font-semibold text-white">
                   Recommended
                 </div>
               ) : null}
 
-              <h3 className="mb-1 shrink-0 text-xl font-bold text-gray-800 dark:text-white">
+              <h3 className="mb-1 shrink-0 text-xl font-bold text-ink">
                 {plan.name}
               </h3>
-              <p className="mb-3 shrink-0 text-sm text-gray-600 dark:text-gray-400">
+              <p className="mb-3 shrink-0 text-sm text-muted">
                 {plan.subtitle}
               </p>
 
               <div className="mb-3 shrink-0">
                 <div className="flex min-h-13 flex-wrap items-baseline gap-x-2 gap-y-1">
-                  <span className="text-4xl font-bold text-gray-800 dark:text-white">
+                  <span className="text-4xl font-bold text-ink">
                     {plan.price}
                   </span>
                   {plan.originalPrice ? (
-                    <span className="text-lg text-gray-500 line-through dark:text-gray-400">
+                    <span className="text-lg text-muted line-through">
                       {plan.originalPrice}
                     </span>
                   ) : null}
                   {plan.billingCycle ? (
-                    <span className="text-gray-600 dark:text-gray-400">/{plan.billingCycle}</span>
+                    <span className="text-muted">/{plan.billingCycle}</span>
                   ) : null}
                 </div>
-                <p className="mt-1 text-xs leading-snug text-gray-500 dark:text-gray-400">
+                <p className="mt-1 text-xs leading-snug text-muted">
                   {PLAN_CAPACITY_NOTE}
                 </p>
               </div>
 
-              <p className="mb-4 shrink-0 text-sm text-gray-600 dark:text-gray-300">
+              <p className="mb-4 shrink-0 text-sm text-muted">
                 {plan.description}
               </p>
 
@@ -284,14 +280,14 @@ const PricingContent: React.FC = () => {
                     <FontAwesomeIcon
                       icon={faCheck}
                       className={`mt-0.5 text-sm ${
-                        feature.included ? "text-green-500" : "text-gray-300 dark:text-gray-600"
+                        feature.included ? "text-ink" : "text-line"
                       }`}
                     />
                     <span
                       className={`text-sm ${
                         feature.highlight
-                          ? "font-medium text-gray-800 dark:text-white"
-                          : "text-gray-700 dark:text-gray-300"
+                          ? "font-medium text-ink"
+                          : "text-muted"
                       }`}
                     >
                       {feature.text}
@@ -309,12 +305,12 @@ const PricingContent: React.FC = () => {
                 {plan.cta}
               </Button>
 
-              <div className="mt-auto shrink-0 border-t border-gray-200 pt-4 dark:border-gray-700">
+              <div className="mt-auto shrink-0 border-t border-line pt-4">
                 <a
                   href={plan.name === "FREE" ? "/legal/license" : "/legal/eula"}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                  className="text-sm text-accent hover:underline"
                 >
                   {plan.name === "FREE" ? "Community License" : "Commercial license"}
                 </a>
@@ -330,11 +326,11 @@ const PricingContent: React.FC = () => {
           transition={{ duration: 0.4 }}
           viewport={{ once: true }}
         >
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-muted">
             ChartMetric chose Simple Table over AG Grid:{" "}
             <Link
               href="/case-studies/chartmetric"
-              className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
+              className="text-accent font-medium hover:underline"
             >
               $19K+ first-year savings (~95% for their team)
             </Link>
@@ -343,14 +339,14 @@ const PricingContent: React.FC = () => {
         </motion.div>
 
         <motion.section
-          className="mt-14 text-center max-w-2xl mx-auto border-t border-gray-200 dark:border-gray-700 pt-12"
+          className="mt-14 text-center max-w-2xl mx-auto border-t border-line pt-12"
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
         >
-          <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">Not sure?</h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm max-w-lg mx-auto">
+          <h3 className="text-xl font-bold text-ink mb-2">Not sure?</h3>
+          <p className="text-muted mb-6 text-sm max-w-lg mx-auto">
             Prefer a quote without checkout, or want to talk through your setup? We&apos;ll help for
             free, even if Simple Table isn&apos;t the fit.
           </p>
@@ -376,7 +372,7 @@ const PricingContent: React.FC = () => {
           <button
             type="button"
             onClick={() => window.open(STRIPE_CUSTOMER_PORTAL_URL, "_blank")}
-            className="text-sm text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors inline-flex items-center gap-2"
+            className="text-sm text-muted hover:text-accent transition-colors inline-flex items-center gap-2"
           >
             <FontAwesomeIcon icon={faCreditCard} />
             Already subscribed? Manage billing

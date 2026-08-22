@@ -1,13 +1,16 @@
 // ThemesDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
+import type { ThemeDemoStaff } from "./themes.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import { themesConfig, AVAILABLE_THEMES } from "./themes.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<ThemeDemoStaff>) => row.id;
 export function renderThemesDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<ThemeDemoStaff> {
   let selectedTheme: Theme = options?.theme ?? "light";
 
   const wrapper = document.createElement("div");
@@ -21,6 +24,7 @@ export function renderThemesDemo(
   container.appendChild(wrapper);
 
   const table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: themesConfig.headers,
     rows: themesConfig.rows,
     height: options?.height ?? "400px",
@@ -58,10 +62,19 @@ export const AVAILABLE_THEMES: { value: Theme; label: string }[] = [
   { value: "dark", label: "Dark" },
   { value: "modern-light", label: "Modern Light" },
   { value: "modern-dark", label: "Modern Dark" },
+  { value: "modern-black", label: "Modern Black" },
   { value: "neutral", label: "Neutral" },
 ];
 
-export const themesHeaders: ColumnDef[] = [
+export interface ThemeDemoStaff {
+  id: number;
+  name: string;
+  email: string;
+  department: string;
+  status: string;
+}
+
+export const themesHeaders: ColumnDef<ThemeDemoStaff>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 100, width: "1fr", type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },
@@ -69,7 +82,7 @@ export const themesHeaders: ColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, type: "string" },
 ];
 
-export const themesData = [
+export const themesData: ThemeDemoStaff[] = [
   { id: 1, name: "Dr. Sarah Mitchell", email: "s.mitchell@cityhospital.org", department: "Cardiology", status: "Active" },
   { id: 2, name: "Nurse Emily Chen", email: "e.chen@cityhospital.org", department: "Emergency", status: "Active" },
   { id: 3, name: "Dr. Marcus Williams", email: "m.williams@cityhospital.org", department: "Neurology", status: "Active" },
@@ -87,4 +100,4 @@ export const themesData = [
 export const themesConfig = {
   headers: themesHeaders,
   rows: themesData,
-} as const;
+};

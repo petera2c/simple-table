@@ -124,29 +124,8 @@ export default function HomeContent() {
     <PageWrapper>
       <AIVisibilityEnhancer pageType="home" />
 
-      {/* Full-page atmosphere on desktop; mobile stays flat */}
-      <div className="relative isolate">
-        <div
-          className="pointer-events-none absolute inset-0 -z-10 overflow-hidden hidden lg:block"
-          aria-hidden
-        >
-          <div className="absolute inset-0 bg-linear-to-b from-slate-100 via-slate-50 to-white dark:from-slate-950 dark:via-gray-900 dark:to-gray-950" />
-          <div
-            className="absolute inset-0 bg-grid-pattern opacity-[0.55] dark:opacity-30
-              [mask-image:linear-gradient(to_bottom,black_0%,black_18%,rgba(0,0,0,0.28)_40%,rgba(0,0,0,0.14)_70%,rgba(0,0,0,0.08)_100%)]
-              [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_18%,rgba(0,0,0,0.28)_40%,rgba(0,0,0,0.14)_70%,rgba(0,0,0,0.08)_100%)]"
-          />
-          <div className="absolute -top-[10%] -left-[15%] h-[55vh] w-[55%] rounded-full bg-blue-400/20 blur-3xl dark:bg-blue-500/15" />
-          <div className="absolute top-0 -right-[12%] h-[50vh] w-[50%] rounded-full bg-sky-300/25 blur-3xl dark:bg-sky-500/10" />
-          <div className="absolute top-[28%] left-[28%] h-[35vh] w-[40%] rounded-full bg-indigo-200/15 blur-3xl dark:bg-indigo-400/8" />
-          <div className="absolute top-[45%] -right-[18%] h-[40vh] w-[45%] rounded-full bg-blue-300/12 blur-3xl dark:bg-blue-400/8" />
-          <div className="absolute top-[62%] -left-[20%] h-[35vh] w-[42%] rounded-full bg-sky-200/14 blur-3xl dark:bg-slate-500/10" />
-          <div className="absolute top-[78%] left-[20%] h-[32vh] w-[48%] rounded-full bg-indigo-200/10 blur-3xl dark:bg-indigo-500/6" />
-          <div className="absolute top-[92%] -right-[15%] h-[28vh] w-[40%] rounded-full bg-blue-200/10 blur-3xl dark:bg-blue-500/5" />
-        </div>
-
       {/* ========== Mobile / tablet (< lg): original homepage hero ========== */}
-      <div className="lg:hidden max-w-7xl mx-auto px-4 sm:px-6 pb-12 pt-[6dvh]">
+      <div className="lg:hidden site-shell pb-12 pt-[6dvh]">
         <section className="relative pb-12">
           <motion.div
             className="relative z-10 text-center"
@@ -169,13 +148,13 @@ export default function HomeContent() {
                 size="small"
               >
                 <span className="font-medium">Star us!</span>
-                <FontAwesomeIcon icon={faStar} className="text-yellow-400" />
+                <FontAwesomeIcon icon={faStar} />
                 <span className="text-sm font-semibold">{stars || ""}</span>
               </Button>
             </motion.div>
 
             <motion.h1
-              className="text-3xl md:text-5xl font-bold text-gray-800 dark:text-white mb-4"
+              className="text-3xl md:text-5xl font-bold text-ink mb-4"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.05 }}
@@ -184,7 +163,7 @@ export default function HomeContent() {
             </motion.h1>
 
             <motion.p
-              className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-4 max-w-3xl mx-auto"
+              className="text-lg md:text-xl text-muted mb-4 max-w-3xl mx-auto"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.1 }}
@@ -195,7 +174,7 @@ export default function HomeContent() {
             </motion.p>
 
             <motion.p
-              className="text-sm md:text-base text-gray-500 dark:text-gray-400 mb-8 max-w-3xl mx-auto"
+              className="text-sm md:text-base text-muted mb-8 max-w-3xl mx-auto"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.12 }}
@@ -203,14 +182,14 @@ export default function HomeContent() {
               Comparing options? See{" "}
               <Link
                 href="/blog/ag-grid-alternatives-free-react-data-grids"
-                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                className="text-accent hover:underline font-medium"
               >
                 free AG Grid alternatives
               </Link>
               {" · "}
               <Link
                 href="/blog/best-vanilla-js-data-grid-2026"
-                className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                className="text-accent hover:underline font-medium"
               >
                 best JavaScript table libraries
               </Link>
@@ -224,7 +203,6 @@ export default function HomeContent() {
               transition={{ duration: 0.4, delay: 0.15 }}
             >
               <Button
-                className="hover:scale-105 transition-transform"
                 icon={<FontAwesomeIcon icon={faBookOpen} />}
                 onClick={handleDocumentationClick}
                 size="large"
@@ -238,7 +216,6 @@ export default function HomeContent() {
                 size="large"
                 icon={<FontAwesomeIcon icon={promptCopied ? faCheck : faCopy} />}
                 onClick={handleCopyPromptClick}
-                className="hover:scale-105 transition-transform"
               >
                 {promptCopied ? "Copied!" : "Copy AI prompt"}
               </Button>
@@ -279,7 +256,7 @@ export default function HomeContent() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
             >
-              <span className="text-sm text-gray-600 dark:text-gray-300">Theme:</span>
+              <span className="text-sm text-muted">Theme:</span>
               <ThemeSelector currentTheme={selectedTheme} setCurrentTheme={setSelectedTheme} />
             </motion.div>
             <motion.div
@@ -288,14 +265,14 @@ export default function HomeContent() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: 0.25 }}
             >
-              <span className="text-sm text-gray-600 dark:text-gray-300">Icons:</span>
+              <span className="text-sm text-muted">Icons:</span>
               <IconLibrarySelector currentIconLibrary={iconLibrary} onChange={setIconLibrary} />
             </motion.div>
           </div>
         </div>
 
         <motion.section
-          className="mb-16 shadow-xl rounded-lg"
+          className="mb-16 rounded-lg border border-line overflow-hidden"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4, delay: 0.1 }}
@@ -326,10 +303,10 @@ export default function HomeContent() {
             <button
               key={fw}
               onClick={() => setFramework(fw)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 framework === fw
-                  ? "bg-blue-600 text-white shadow-md scale-105"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:scale-105"
+                  ? "bg-accent text-white border border-accent"
+                  : "bg-surface text-muted border border-line hover:text-ink"
               }`}
             >
               <FrameworkIcon framework={fw} size={16} />
@@ -341,7 +318,7 @@ export default function HomeContent() {
 
       {/* ========== Desktop (lg+): new split hero ========== */}
       <div className="hidden lg:block">
-        <div className="relative max-w-[100rem] mx-auto px-8 lg:px-12 pt-6">
+        <div className="relative site-shell pt-6">
           <section className="relative mb-16 min-h-[calc(100dvh-6.5rem)] flex flex-col pb-2">
             <div className="grid grid-cols-[minmax(20rem,2fr)_minmax(0,3fr)] gap-12 xl:gap-14 flex-1 items-center py-6">
               <motion.div
@@ -351,7 +328,7 @@ export default function HomeContent() {
                 transition={{ duration: 0.4 }}
               >
                 <motion.h1
-                  className="text-4xl 2xl:text-6xl font-bold text-gray-900 dark:text-white leading-[1.12] 2xl:leading-[1.1] tracking-tight mb-6 2xl:mb-10"
+                  className="text-4xl 2xl:text-6xl font-bold text-ink leading-[1.12] 2xl:leading-[1.1] tracking-tight mb-6 2xl:mb-10"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.05 }}
@@ -363,7 +340,7 @@ export default function HomeContent() {
 
                 <div className="flex flex-col gap-3 2xl:gap-4 mb-10 2xl:mb-14 max-w-md 2xl:max-w-lg">
                   <motion.p
-                    className="text-base 2xl:text-lg text-gray-600 dark:text-gray-300 leading-[1.65] 2xl:leading-[1.7]"
+                    className="text-base 2xl:text-lg text-muted leading-[1.65] 2xl:leading-[1.7]"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.4, delay: 0.1 }}
@@ -374,7 +351,7 @@ export default function HomeContent() {
                   </motion.p>
 
                   <motion.p
-                    className="text-sm 2xl:text-base text-gray-500 dark:text-gray-400 leading-relaxed"
+                    className="text-sm 2xl:text-base text-muted leading-relaxed"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.4, delay: 0.12 }}
@@ -382,14 +359,14 @@ export default function HomeContent() {
                     Comparing options? See{" "}
                     <Link
                       href="/blog/ag-grid-alternatives-free-react-data-grids"
-                      className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                      className="text-accent hover:underline font-medium"
                     >
                       free AG Grid alternatives
                     </Link>
                     {" · "}
                     <Link
                       href="/blog/best-vanilla-js-data-grid-2026"
-                      className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                      className="text-accent hover:underline font-medium"
                     >
                       best JavaScript table libraries
                     </Link>
@@ -404,7 +381,6 @@ export default function HomeContent() {
                   transition={{ duration: 0.4, delay: 0.15 }}
                 >
                   <Button
-                    className="hover:scale-105 transition-transform"
                     icon={<FontAwesomeIcon icon={faBookOpen} />}
                     onClick={handleDocumentationClick}
                     size="large"
@@ -418,7 +394,6 @@ export default function HomeContent() {
                     size="large"
                     icon={<FontAwesomeIcon icon={promptCopied ? faCheck : faCopy} />}
                     onClick={handleCopyPromptClick}
-                    className="hover:scale-105 transition-transform"
                   >
                     {promptCopied ? "Copied!" : "Copy AI prompt"}
                   </Button>
@@ -430,7 +405,7 @@ export default function HomeContent() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
               >
-                <div className="shadow-xl rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+                <div className="rounded-lg overflow-hidden border border-line bg-surface">
                   <Suspense fallback={<div className="h-full" aria-hidden />}>
                     <InfrastructureExample
                       theme={tableTheme}
@@ -444,7 +419,7 @@ export default function HomeContent() {
             </div>
 
             <motion.div
-              className="mt-auto pt-6 border-t border-gray-200 dark:border-gray-700 grid grid-cols-[minmax(20rem,2fr)_minmax(0,3fr)] gap-12 items-end"
+              className="mt-auto pt-6 border-t border-line grid grid-cols-[minmax(20rem,2fr)_minmax(0,3fr)] gap-12 items-end"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
@@ -453,10 +428,10 @@ export default function HomeContent() {
                 {HERO_METRICS.map((metric) => {
                   const content = (
                     <>
-                      <div className="text-3xl xl:text-4xl font-bold text-gray-900 dark:text-white tracking-tight whitespace-nowrap">
+                      <div className="text-3xl xl:text-4xl font-bold text-ink tracking-tight whitespace-nowrap">
                         {metric.value}
                       </div>
-                      <div className="mt-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
+                      <div className="mt-1.5 text-xs font-medium text-muted">
                         {metric.label}
                       </div>
                     </>
@@ -479,7 +454,7 @@ export default function HomeContent() {
               </div>
 
               <div className="justify-self-end">
-                <div className="text-[11px] font-medium text-gray-500 dark:text-gray-400 mb-3">
+                <div className="text-[11px] font-medium text-muted mb-3">
                   Trusted by
                 </div>
                 <Link
@@ -510,7 +485,7 @@ export default function HomeContent() {
       </div>
 
       {/* Shared below-hero content (single mount) */}
-      <div className="relative max-w-7xl lg:max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-12 pb-12">
+      <div className="relative site-shell pb-12">
         <CaseStudySection />
 
         <FeaturesSection />
@@ -522,14 +497,13 @@ export default function HomeContent() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">
+          <h3 className="text-2xl font-bold text-ink mb-4">
             Explore Every Feature
           </h3>
           <Button
             type="primary"
             size="large"
             onClick={handleDocumentationClick}
-            className="hover:scale-105 transition-transform"
           >
             View Full Documentation
           </Button>
@@ -540,7 +514,6 @@ export default function HomeContent() {
         <ComparisonsSection />
         <BookACallSection />
         <FAQSection />
-      </div>
       </div>
     </PageWrapper>
   );

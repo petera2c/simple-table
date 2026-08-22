@@ -63,6 +63,23 @@ const DARK: ThemeColors = {
   down: "#f87171",
 };
 
+const MODERN_BLACK: ThemeColors = {
+  text: "#fafafa",
+  muted: "#a3a3a3",
+  success: "#4ade80",
+  successBg: "rgba(21, 128, 61, 0.25)",
+  error: "#f87171",
+  errorBg: "rgba(127, 29, 29, 0.3)",
+  primary: "#60a5fa",
+  primaryBg: "color-mix(in oklab, #1e3a8a 20%, #141414)",
+  warning: "#fbbf24",
+  warningBg: "rgba(146, 64, 14, 0.3)",
+  border: "#262626",
+  track: "#262626",
+  up: "#4ade80",
+  down: "#f87171",
+};
+
 const THEME_COLORS: Record<string, ThemeColors> = {
   light: LIGHT,
   "modern-light": LIGHT,
@@ -70,6 +87,7 @@ const THEME_COLORS: Record<string, ThemeColors> = {
   custom: LIGHT,
   dark: DARK,
   "modern-dark": DARK,
+  "modern-black": MODERN_BLACK,
   "custom-dark": DARK,
   neutral: {
     ...LIGHT,

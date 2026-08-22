@@ -26,7 +26,7 @@ function getHeaders(theme?: Theme): AngularColumnDef<InfrastructureServer>[] {
       minWidth: 180,
       pinned: "left",
       type: "string",
-      width: "1.2fr",
+      width: "auto",
       cellRenderer: InfraServerIdCellComponent,
     },
     {
@@ -38,18 +38,18 @@ function getHeaders(theme?: Theme): AngularColumnDef<InfrastructureServer>[] {
       label: "Name",
       minWidth: 200,
       type: "string",
-      width: "1.5fr",
+      width: "auto",
     },
     {
       accessor: "performance",
       label: "Performance Metrics",
-      width: 690,
+      width: "auto",
       sortable: false,
       children: [
         {
           accessor: "cpuHistory",
           label: "CPU History",
-          width: 150,
+          width: "auto",
           sortable: false,
           filterable: false,
           editable: false,
@@ -60,7 +60,7 @@ function getHeaders(theme?: Theme): AngularColumnDef<InfrastructureServer>[] {
         {
           accessor: "cpuUsage",
           label: "CPU %",
-          width: 120,
+          width: "auto",
           sortable: true,
           filterable: true,
           editable: true,
@@ -71,7 +71,7 @@ function getHeaders(theme?: Theme): AngularColumnDef<InfrastructureServer>[] {
         {
           accessor: "memoryUsage",
           label: "Memory %",
-          width: 130,
+          width: "auto",
           sortable: true,
           filterable: true,
           editable: true,
@@ -82,7 +82,7 @@ function getHeaders(theme?: Theme): AngularColumnDef<InfrastructureServer>[] {
         {
           accessor: "diskUsage",
           label: "Disk %",
-          width: 120,
+          width: "auto",
           sortable: true,
           filterable: true,
           editable: true,
@@ -93,7 +93,7 @@ function getHeaders(theme?: Theme): AngularColumnDef<InfrastructureServer>[] {
         {
           accessor: "responseTime",
           label: "Response (ms)",
-          width: 120,
+          width: "auto",
           sortable: true,
           filterable: true,
           editable: true,
@@ -106,7 +106,7 @@ function getHeaders(theme?: Theme): AngularColumnDef<InfrastructureServer>[] {
     {
       accessor: "status",
       label: "Status",
-      width: 130,
+      width: "auto",
       sortable: true,
       filterable: true,
       editable: false,

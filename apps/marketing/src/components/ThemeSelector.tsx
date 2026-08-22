@@ -2,11 +2,19 @@ import { Select } from "antd";
 import type { Theme } from "@simple-table/react";
 import { useThemeContext } from "@/providers/ThemeProvider";
 
-const THEME_OPTIONS: Theme[] = ["modern-light", "modern-dark", "light", "dark", "neutral"];
+const THEME_OPTIONS: Theme[] = [
+  "modern-light",
+  "modern-dark",
+  "modern-black",
+  "light",
+  "dark",
+  "neutral",
+];
 
 const DEFAULT_THEME_LABELS: Record<string, string> = {
   "modern-light": "Modern Light",
   "modern-dark": "Modern Dark",
+  "modern-black": "Modern Black",
   light: "Light",
   dark: "Dark",
   neutral: "Neutral",
@@ -25,8 +33,8 @@ const ThemeSelector = ({
 }) => {
   const { theme: websiteTheme } = useThemeContext();
 
-  // Default to modern-dark if website theme is dark, otherwise modern-light
-  const defaultTheme = websiteTheme === "dark" ? "modern-dark" : "modern-light";
+  // Default to modern-black if website theme is dark, otherwise modern-light
+  const defaultTheme = websiteTheme === "dark" ? "modern-black" : "modern-light";
   const effectiveTheme = currentTheme || defaultTheme;
 
   const availableThemes = restrictedThemes || THEME_OPTIONS;

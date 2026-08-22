@@ -45,6 +45,7 @@ function getHeaders(): AngularColumnDef<ManufacturingRow>[] {
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [autoExpandColumns]="true"
       [getRowId]="getRowId"
       [columnResizing]="true"
       [columnReordering]="true"

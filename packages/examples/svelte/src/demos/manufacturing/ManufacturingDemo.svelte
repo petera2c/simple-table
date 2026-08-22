@@ -43,6 +43,7 @@
 </script>
 
 <SimpleTable
+  autoExpandColumns={true}
   columnResizing={true}
   columnReordering={true}
   columns={headers}

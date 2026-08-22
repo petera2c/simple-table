@@ -65,14 +65,14 @@ const LinkButton = ({
   const buttonClasses = isMobile
     ? `px-3 py-2 rounded-md text-base w-full text-left ${
         shouldHighlight
-          ? "bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium"
-          : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-blue-600 dark:hover:text-blue-400"
+          ? "bg-accent-soft text-accent font-medium"
+          : "text-muted hover:bg-paper hover:text-ink"
       } transition-colors flex items-center`
     : `${
         shouldHighlight
-          ? "text-blue-600 dark:text-blue-400 font-semibold"
-          : "text-gray-600 dark:text-gray-300"
-      } hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center focus:outline-none whitespace-nowrap`;
+          ? "text-accent font-semibold"
+          : "text-muted"
+      } hover:text-accent transition-colors flex items-center focus:outline-none whitespace-nowrap`;
 
   const buttonContent = (
     <button onClick={handleClick} className={buttonClasses}>
@@ -143,13 +143,13 @@ const GitHubLink = ({
       onClick={handleClick}
       aria-label="Star us on GitHub"
       title="Star us on GitHub"
-      className={`flex items-center gap-1.5 px-2.5 py-1 border border-gray-300 dark:border-gray-600 rounded-full bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors text-gray-700 dark:text-white text-sm tabular-nums ${
+      className={`flex items-center gap-1.5 px-2.5 py-1 border border-line rounded-full bg-transparent hover:bg-paper transition-colors text-ink text-sm tabular-nums ${
         shouldWobble ? "github-star-wobble" : ""
       } ${isMobile ? "justify-start w-fit" : ""}`}
     >
       <FontAwesomeIcon icon={faGithub} style={{ fontSize: "1.25rem" }} />
       <span className="font-medium">Star us!</span>
-      <FontAwesomeIcon icon={faStar} className="text-yellow-400 text-xs" />
+      <FontAwesomeIcon icon={faStar} className="text-xs" />
       <span className="min-w-[1.75rem] text-left">{isLoading ? "…" : stars}</span>
     </button>
   );
@@ -172,7 +172,7 @@ const DiscordLink = ({
   return (
     <button
       onClick={handleClick}
-      className={`flex items-center gap-1 px-2 py-1 min-w-[4.25rem] border border-gray-300 dark:border-gray-600 rounded-full bg-transparent hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors text-gray-700 dark:text-white text-sm tabular-nums ${
+      className={`flex items-center gap-1 px-2 py-1 min-w-[4.25rem] border border-line rounded-full bg-transparent hover:bg-paper transition-colors text-ink text-sm tabular-nums ${
         isMobile ? "justify-start w-fit" : ""
       }`}
     >
@@ -225,7 +225,7 @@ const SupportDropdown = ({
       <>
         {supportLinks.map((link) => {
           const linkClasses =
-            "px-3 py-2 rounded-md text-base text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/50 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center";
+            "px-3 py-2 rounded-md text-base text-muted hover:bg-paper hover:text-ink transition-colors flex items-center";
           const linkContent = (
             <>
               <FontAwesomeIcon icon={link.icon} className="mr-2" />
@@ -283,7 +283,7 @@ const SupportDropdown = ({
     label: link.onClick ? (
       <button
         onClick={link.onClick}
-        className="flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors w-full"
+        className="flex items-center text-muted hover:text-accent transition-colors w-full"
       >
         <FontAwesomeIcon icon={link.icon} className="mr-2 w-4" />
         {link.label}
@@ -294,7 +294,7 @@ const SupportDropdown = ({
         {...(link.href?.startsWith("mailto:")
           ? {}
           : { target: "_blank", rel: "noopener noreferrer" })}
-        className="flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+        className="flex items-center text-muted hover:text-accent transition-colors"
       >
         <FontAwesomeIcon icon={link.icon} className="mr-2 w-4" />
         {link.label}
@@ -302,7 +302,7 @@ const SupportDropdown = ({
     ) : (
       <Link
         href={link.href!}
-        className="flex items-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+        className="flex items-center text-muted hover:text-accent transition-colors"
       >
         <FontAwesomeIcon icon={link.icon} className="mr-2 w-4" />
         {link.label}
@@ -312,7 +312,7 @@ const SupportDropdown = ({
 
   return (
     <Dropdown menu={{ items: menuItems }} placement="bottomRight" trigger={["hover"]}>
-      <button className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center focus:outline-none whitespace-nowrap">
+      <button className="text-muted hover:text-accent transition-colors flex items-center focus:outline-none whitespace-nowrap">
         <FontAwesomeIcon icon={faQuestionCircle} className="mr-2" />
         Support
       </button>
@@ -377,14 +377,14 @@ const Header = () => {
     <PageWrapper disableScrollRestoration>
       <header
         ref={headerRef}
-        className="backdrop-blur-md bg-white/80 dark:bg-gray-900/90 shadow-sm sticky top-0 z-50"
+        className="bg-surface border-b border-line sticky top-0 z-50"
       >
-        <nav className="max-w-[100rem] mx-auto px-5 sm:px-8 lg:px-12 py-3 min-h-[60px]">
+        <nav className="site-shell py-3 min-h-[var(--header-height)]">
           <div className="flex items-center justify-between min-h-[36px]">
             <div className="flex items-center">
               <Link
                 href="/"
-                className="flex items-center text-xl font-bold !text-black dark:!text-white hover:!text-gray-700 dark:hover:!text-gray-200 transition-colors whitespace-nowrap"
+                className="flex items-center text-xl font-bold !text-ink hover:!text-muted transition-colors whitespace-nowrap"
               >
                 {/* CSS theme toggle avoids JS theme flash on reload */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -411,14 +411,14 @@ const Header = () => {
             <div className="md:hidden flex items-center gap-4">
               <button
                 onClick={toggleTheme}
-                className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"
+                className="text-muted hover:text-accent focus:outline-none transition-colors"
                 aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
               >
                 <FontAwesomeIcon icon={theme === "light" ? faMoon : faSun} className="text-xl" />
               </button>
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"
+                className="text-muted hover:text-accent focus:outline-none transition-colors"
                 aria-label="Toggle menu"
               >
                 <FontAwesomeIcon icon={isMenuOpen ? faXmark : faBars} className="text-2xl" />
@@ -446,7 +446,7 @@ const Header = () => {
 
                 <button
                   onClick={toggleTheme}
-                  className="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 focus:outline-none transition-colors"
+                  className="text-muted hover:text-accent focus:outline-none transition-colors"
                   aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
                 >
                   <FontAwesomeIcon icon={theme === "light" ? faMoon : faSun} className="text-xl" />
@@ -457,7 +457,7 @@ const Header = () => {
 
           {/* Mobile menu */}
           {isMobile && isMenuOpen && (
-            <div className="mt-4 pt-2 pb-4 border-t border-gray-200 dark:border-gray-700 overflow-auto">
+            <div className="mt-4 pt-2 pb-4 border-t border-line overflow-auto">
               <div className="flex flex-col space-y-3">
                 {navLinks.map((link) => (
                   <LinkButton
@@ -471,7 +471,7 @@ const Header = () => {
                 <Divider className="my-2" />
 
                 <div className="px-0 py-1">
-                  <span className="px-3 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Framework</span>
+                  <span className="px-3 text-xs font-semibold text-muted uppercase tracking-wider">Framework</span>
                   <FrameworkSelector isMobile={true} />
                 </div>
 

@@ -64,7 +64,7 @@ function getCRMHeaders(isDark: boolean): SolidColumnDef<CRMLead>[] {
   const colors = isDark ? CRM_THEME_COLORS_DARK : CRM_THEME_COLORS_LIGHT;
   return [
     {
-      accessor: "name", label: "CONTACT", width: "2fr", minWidth: 290, sortable: true, editable: true, type: "string",
+      accessor: "name", label: "CONTACT", width: "auto", minWidth: 290, sortable: true, editable: true, type: "string",
       cellRenderer: ({ row }: CellRendererProps<CRMLead>) => {
         const d = row;
         const initials = d.name.split(" ").map((n) => n[0]).join("").toUpperCase();
@@ -81,7 +81,7 @@ function getCRMHeaders(isDark: boolean): SolidColumnDef<CRMLead>[] {
       },
     },
     {
-      accessor: "signal", label: "SIGNAL", width: "3fr", minWidth: 340, sortable: true, editable: true, type: "string",
+      accessor: "signal", label: "SIGNAL", width: "auto", minWidth: 340, sortable: true, editable: true, type: "string",
       cellRenderer: ({ row }: CellRendererProps<CRMLead>) => (
         <div>
           <div style={{ color: colors.textSecondary, "margin-bottom": "4px", "font-size": "0.875rem" }}>🧠 Just engaged with a <a href="#" onClick={(e) => e.preventDefault()} style={{ color: "#0077b5", "text-decoration": "underline" }}>post</a></div>
@@ -90,31 +90,31 @@ function getCRMHeaders(isDark: boolean): SolidColumnDef<CRMLead>[] {
       ),
     },
     {
-      accessor: "aiScore", label: "AI SCORE", width: "1fr", minWidth: 100, sortable: true, align: "center", type: "number",
+      accessor: "aiScore", label: "AI SCORE", width: "auto", minWidth: 100, sortable: true, align: "center", type: "number",
       cellRenderer: ({ row }: CellRendererProps<CRMLead>) => <div style={{ "font-size": "0.875rem" }}>{"🔥".repeat(row.aiScore)}</div>,
     },
     {
-      accessor: "emailStatus", label: "EMAIL", width: "1.5fr", minWidth: 210, sortable: true, align: "center", type: "enum",
+      accessor: "emailStatus", label: "EMAIL", width: "auto", minWidth: 210, sortable: true, align: "center", type: "enum",
       enumOptions: [{ label: "Enrich", value: "Enrich" }, { label: "Verified", value: "Verified" }, { label: "Pending", value: "Pending" }, { label: "Bounced", value: "Bounced" }],
       cellRenderer: () => <EmailEnrich colors={colors} />,
     },
     {
-      accessor: "timeAgo", label: "IMPORT", width: "1fr", minWidth: 100, sortable: true, align: "center", type: "string",
+      accessor: "timeAgo", label: "IMPORT", width: "auto", minWidth: 100, sortable: true, align: "center", type: "string",
       cellRenderer: ({ row }: CellRendererProps<CRMLead>) => <div style={{ "font-size": "13px", color: colors.textSecondary }}>{row.timeAgo}</div>,
     },
     {
-      accessor: "list", label: "LIST", width: "1.2fr", minWidth: 160, sortable: true, align: "center", type: "enum",
+      accessor: "list", label: "LIST", width: "auto", minWidth: 160, sortable: true, align: "center", type: "enum",
       enumOptions: [{ label: "Leads", value: "Leads" }, { label: "Hot Leads", value: "Hot Leads" }, { label: "Warm Leads", value: "Warm Leads" }, { label: "Cold Leads", value: "Cold Leads" }, { label: "Enterprise", value: "Enterprise" }, { label: "SMB", value: "SMB" }, { label: "Nurture", value: "Nurture" }],
       valueGetter: ({ row }) => { const list = String(row.list); const m: Record<string, number> = { "Hot Leads": 1, "Warm Leads": 2, Enterprise: 3, Leads: 4, SMB: 5, "Cold Leads": 6, Nurture: 7 }; return m[list] || 999; },
       cellRenderer: ({ row }: CellRendererProps<CRMLead>) => <a href="#" onClick={(e) => e.preventDefault()} style={{ cursor: "pointer", "font-size": "0.875rem", color: colors.link, "text-decoration": "none", "font-weight": "600" }}>{row.list}</a>,
     },
-    { accessor: "_fit", label: "Fit", width: "1fr", align: "center", minWidth: 120, cellRenderer: () => <FitButtons colors={colors} /> },
-    { accessor: "_contactNow", label: "", width: "1.2fr", minWidth: 160, cellRenderer: () => <a href="#" onClick={(e) => e.preventDefault()} style={{ cursor: "pointer", "font-size": "0.875rem", color: colors.link, "text-decoration": "none", "font-weight": "600" }}>Contact Now</a> },
+    { accessor: "_fit", label: "Fit", width: "auto", align: "center", minWidth: 120, cellRenderer: () => <FitButtons colors={colors} /> },
+    { accessor: "_contactNow", label: "", width: "auto", minWidth: 160, cellRenderer: () => <a href="#" onClick={(e) => e.preventDefault()} style={{ cursor: "pointer", "font-size": "0.875rem", color: colors.link, "text-decoration": "none", "font-weight": "600" }}>Contact Now</a> },
   ];
 }
 
 export default function CRMDemo(props: { height?: string | number; theme?: CrmShellTheme }) {
-  const isDark = () => props.theme === "custom-dark" || props.theme === "dark" || props.theme === "modern-dark";
+  const isDark = () => props.theme === "custom-dark" || props.theme === "dark" || props.theme === "modern-dark" || props.theme === "modern-black";
   const [data, setData] = createSignal([...crmData]);
   const [rowsPerPage, setRowsPerPage] = createSignal(100);
   const footerColors = () => isDark() ? CRM_FOOTER_COLORS_DARK : CRM_FOOTER_COLORS_LIGHT;
@@ -126,6 +126,7 @@ export default function CRMDemo(props: { height?: string | number; theme?: CrmSh
   return (
     <div class={`custom-theme-container theme-${isDark() ? "custom-dark" : "custom-light"}`}>
       <SimpleTable
+        autoExpandColumns
         columnReordering
         columnResizing
         columns={getCRMHeaders(isDark())}

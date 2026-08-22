@@ -23,7 +23,7 @@
 
   const getRowId = ({ row }: GetRowIdParams<ProjectTask>) => row.id;
 
-  let isDark = $derived(theme === "modern-dark" || theme === "dark");
+  let isDark = $derived(theme === "modern-dark" || theme === "dark" || theme === "modern-black");
 
   function handleCellClick({ accessor, rowIndex, value, row }: CellClickProps<ProjectTask>) {
     switch (accessor) {

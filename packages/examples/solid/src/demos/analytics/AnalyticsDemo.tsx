@@ -10,6 +10,34 @@ function formatHeight(height?: string | number | null): string {
   return height;
 }
 
+function getAnalyticsChrome(theme?: Theme) {
+  if (theme === "modern-black") {
+    return {
+      border: "#262626",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1c1c1c",
+      chipIdleColor: "#a3a3a3",
+      title: "#fafafa",
+    };
+  }
+  if (theme === "modern-dark" || theme === "dark") {
+    return {
+      border: "#374151",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1f2937",
+      chipIdleColor: "#d1d5db",
+      title: "#f9fafb",
+    };
+  }
+  return {
+    border: "#e5e5e5",
+    chipActive: "#2563eb",
+    chipIdleBg: "#f5f5f5",
+    chipIdleColor: "#525252",
+    title: "#171717",
+  };
+}
+
 export default function AnalyticsDemo(props: {
   height?: string | number | null;
   theme?: Theme;
@@ -23,13 +51,7 @@ export default function AnalyticsDemo(props: {
     () => analyticsPresets.find((p) => p.id === activeId()) ?? analyticsPresets[0]
   );
   const isPivoted = createMemo(() => active().pivot != null);
-  const isDark = () => props.theme === "dark" || props.theme === "modern-dark";
-  const chromeBg = () => (isDark() ? "#0f172a" : "#f8fafc");
-  const chromeBorder = () => (isDark() ? "#1e293b" : "#e2e8f0");
-  const titleColor = () => (isDark() ? "#f1f5f9" : "#0f172a");
-  const chipIdleBg = () => (isDark() ? "#1e293b" : "#e2e8f0");
-  const chipIdleColor = () => (isDark() ? "#cbd5e1" : "#334155");
-  const inputBorder = () => (isDark() ? "#334155" : "#cbd5e1");
+  const chrome = () => getAnalyticsChrome(props.theme);
 
   createEffect(() => {
     const el = tableHost;
@@ -55,16 +77,13 @@ export default function AnalyticsDemo(props: {
         "flex-direction": "column",
         width: "100%",
         height: formatHeight(props.height ?? "480px"),
-        background: chromeBg(),
-        border: `1px solid ${chromeBorder()}`,
-        "border-radius": "8px",
         overflow: "hidden",
       }}
     >
       <div
         style={{
-          padding: "16px 20px 12px",
-          "border-bottom": `1px solid ${chromeBorder()}`,
+          padding: "0 0 12px",
+          "border-bottom": `1px solid ${chrome().border}`,
           "flex-shrink": 0,
         }}
       >
@@ -74,7 +93,7 @@ export default function AnalyticsDemo(props: {
               margin: 0,
               "font-size": "18px",
               "font-weight": 650,
-              color: titleColor(),
+              color: chrome().title,
               "letter-spacing": "-0.02em",
             }}
           >
@@ -106,8 +125,8 @@ export default function AnalyticsDemo(props: {
                       cursor: "pointer",
                       "font-size": "13px",
                       "font-weight": 550,
-                      background: selected() ? "#2563eb" : chipIdleBg(),
-                      color: selected() ? "#fff" : chipIdleColor(),
+                      background: selected() ? chrome().chipActive : chrome().chipIdleBg,
+                      color: selected() ? "#fff" : chrome().chipIdleColor,
                     }}
                   >
                     {preset.label}
@@ -122,12 +141,12 @@ export default function AnalyticsDemo(props: {
             style={{
               padding: "7px 12px",
               "border-radius": "6px",
-              border: `1px solid ${inputBorder()}`,
+              border: `1px solid ${chrome().border}`,
               cursor: "pointer",
               "font-size": "13px",
               "font-weight": 550,
-              background: chipIdleBg(),
-              color: chipIdleColor(),
+              background: chrome().chipIdleBg,
+              color: chrome().chipIdleColor,
             }}
           >
             Export CSV
@@ -138,7 +157,6 @@ export default function AnalyticsDemo(props: {
         style={{
           flex: 1,
           "min-height": 0,
-          padding: "12px 20px 20px",
           display: "flex",
           "flex-direction": "column",
         }}

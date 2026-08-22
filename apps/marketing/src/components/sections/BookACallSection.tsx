@@ -27,11 +27,11 @@ export default function BookACallSection() {
       transition={{ duration: 0.6 }}
       viewport={{ once: true }}
     >
-      <div className="max-w-3xl mx-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 px-6 py-10 text-center">
-        <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-3">
+      <div className="max-w-3xl mx-auto rounded-lg border border-line bg-surface px-6 py-10 text-center">
+        <h2 className="text-2xl md:text-3xl font-bold text-ink mb-3">
           Not sure which table or grid you need?
         </h2>
-        <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-xl mx-auto">
+        <p className="text-muted mb-6 max-w-xl mx-auto">
           Book 30 minutes with us. We&apos;ll help you pick the right fit for free — even if
           Simple Table isn&apos;t the answer.
         </p>

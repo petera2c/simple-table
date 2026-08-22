@@ -53,7 +53,7 @@ export class CellClickingDemoComponent {
   rows: ProjectTask[] = [...cellClickingData];
 
   get isDark() {
-    return this.theme === "modern-dark" || this.theme === "dark";
+    return this.theme === "modern-dark" || this.theme === "dark" || this.theme === "modern-black";
   }
 
   readonly headers: AngularColumnDef<ProjectTask>[] = cellClickingHeaders.map((h) => {

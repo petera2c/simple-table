@@ -14,7 +14,7 @@ export function renderCellClickingDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
 ): SimpleTableVanilla<ProjectTask> {
-  const isDark = options?.theme === "modern-dark" || options?.theme === "dark";
+  const isDark = options?.theme === "modern-dark" || options?.theme === "dark" || options?.theme === "modern-black";
 
   const wrapper = document.createElement("div");
   wrapper.style.cssText = "display:flex;flex-direction:column;gap:16px";

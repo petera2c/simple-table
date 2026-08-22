@@ -38,18 +38,18 @@ export default function FAQSection() {
       transition={{ duration: 0.8 }}
       viewport={{ once: true }}
     >
-      <h2 className="text-3xl font-bold text-center mb-4 text-gray-800 dark:text-white">
+      <h2 className="text-3xl font-bold text-center mb-4 text-ink">
         Frequently Asked Questions
       </h2>
-      <p className="text-center text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto">
+      <p className="text-center text-muted mb-10 max-w-2xl mx-auto">
         Everything you need to know about Simple Table
       </p>
 
       <div className="max-w-4xl mx-auto">
         {/* Getting Started Questions */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
-            <FontAwesomeIcon icon={faRocket} className="text-blue-600 dark:text-blue-400" />
+          <h3 className="text-lg font-semibold text-ink mb-4 flex items-center gap-2">
+            <FontAwesomeIcon icon={faRocket} className="text-muted" />
             Getting Started
           </h3>
           <div className="space-y-3">
@@ -69,7 +69,7 @@ export default function FAQSection() {
                     and you're ready to go. Our{" "}
                     <Link
                       href="/docs/quick-start"
-                      className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium"
+                      className="text-accent hover:underline cursor-pointer font-medium"
                       onClick={(e) => e.stopPropagation()}
                     >
                       Quick Start guide
@@ -93,26 +93,26 @@ export default function FAQSection() {
             ].map((faq, index) => (
               <motion.details
                 key={index}
-                className="group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+                className="group bg-surface rounded-lg border border-line overflow-hidden transition-colors"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 viewport={{ once: true }}
               >
-                <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-paper transition-colors">
                   <FontAwesomeIcon
                     icon={faq.icon}
-                    className="text-blue-600 dark:text-blue-400 mt-1 shrink-0"
+                    className="text-muted mt-1 shrink-0"
                   />
-                  <span className="flex-1 font-semibold text-gray-800 dark:text-white">
+                  <span className="flex-1 font-semibold text-ink">
                     {faq.question}
                   </span>
                   <FontAwesomeIcon
                     icon={faChevronDown}
-                    className="text-gray-400 transform group-open:rotate-180 transition-transform shrink-0"
+                    className="text-muted transform group-open:rotate-180 transition-transform shrink-0"
                   />
                 </summary>
-                <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-gray-600 dark:text-gray-300 leading-relaxed">
+                <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-muted leading-relaxed">
                   {faq.answer}
                 </div>
               </motion.details>
@@ -122,8 +122,8 @@ export default function FAQSection() {
 
         {/* Features & Capabilities */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
-            <FontAwesomeIcon icon={faPalette} className="text-blue-600 dark:text-blue-400" />
+          <h3 className="text-lg font-semibold text-ink mb-4 flex items-center gap-2">
+            <FontAwesomeIcon icon={faPalette} className="text-muted" />
             Features & Capabilities
           </h3>
           <div className="space-y-3">
@@ -140,7 +140,7 @@ export default function FAQSection() {
                     multiple built-in themes, and full customization via CSS variables. Check our{" "}
                     <Link
                       href="/docs/installation"
-                      className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium"
+                      className="text-accent hover:underline cursor-pointer font-medium"
                       onClick={(e) => e.stopPropagation()}
                     >
                       documentation
@@ -169,26 +169,26 @@ export default function FAQSection() {
             ].map((faq, index) => (
               <motion.details
                 key={index}
-                className="group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+                className="group bg-surface rounded-lg border border-line overflow-hidden transition-colors"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 viewport={{ once: true }}
               >
-                <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-paper transition-colors">
                   <FontAwesomeIcon
                     icon={faq.icon}
-                    className="text-blue-600 dark:text-blue-400 mt-1 shrink-0"
+                    className="text-muted mt-1 shrink-0"
                   />
-                  <span className="flex-1 font-semibold text-gray-800 dark:text-white">
+                  <span className="flex-1 font-semibold text-ink">
                     {faq.question}
                   </span>
                   <FontAwesomeIcon
                     icon={faChevronDown}
-                    className="text-gray-400 transform group-open:rotate-180 transition-transform shrink-0"
+                    className="text-muted transform group-open:rotate-180 transition-transform shrink-0"
                   />
                 </summary>
-                <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-gray-600 dark:text-gray-300 leading-relaxed">
+                <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-muted leading-relaxed">
                   {faq.answer}
                 </div>
               </motion.details>
@@ -198,8 +198,8 @@ export default function FAQSection() {
 
         {/* Comparisons & Alternatives */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
-            <FontAwesomeIcon icon={faCheck} className="text-blue-600 dark:text-blue-400" />
+          <h3 className="text-lg font-semibold text-ink mb-4 flex items-center gap-2">
+            <FontAwesomeIcon icon={faCheck} className="text-muted" />
             Comparisons & Migration
           </h3>
           <div className="space-y-3">
@@ -229,26 +229,26 @@ export default function FAQSection() {
             ].map((faq, index) => (
               <motion.details
                 key={index}
-                className="group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+                className="group bg-surface rounded-lg border border-line overflow-hidden transition-colors"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 viewport={{ once: true }}
               >
-                <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-paper transition-colors">
                   <FontAwesomeIcon
                     icon={faq.icon}
-                    className="text-blue-600 dark:text-blue-400 mt-1 shrink-0"
+                    className="text-muted mt-1 shrink-0"
                   />
-                  <span className="flex-1 font-semibold text-gray-800 dark:text-white">
+                  <span className="flex-1 font-semibold text-ink">
                     {faq.question}
                   </span>
                   <FontAwesomeIcon
                     icon={faChevronDown}
-                    className="text-gray-400 transform group-open:rotate-180 transition-transform shrink-0"
+                    className="text-muted transform group-open:rotate-180 transition-transform shrink-0"
                   />
                 </summary>
-                <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-gray-600 dark:text-gray-300 leading-relaxed">
+                <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-muted leading-relaxed">
                   {faq.answer}
                 </div>
               </motion.details>
@@ -258,8 +258,8 @@ export default function FAQSection() {
 
         {/* Pricing & Support */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2">
-            <FontAwesomeIcon icon={faHeadset} className="text-blue-600 dark:text-blue-400" />
+          <h3 className="text-lg font-semibold text-ink mb-4 flex items-center gap-2">
+            <FontAwesomeIcon icon={faHeadset} className="text-muted" />
             Pricing & Support
           </h3>
           <div className="space-y-3">
@@ -287,7 +287,7 @@ export default function FAQSection() {
                       href={TECHNICAL_STRINGS.links.calendly}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium"
+                      className="text-accent hover:underline cursor-pointer font-medium"
                       onClick={(e) => {
                         e.stopPropagation();
                         trackBookACall({
@@ -313,7 +313,7 @@ export default function FAQSection() {
                     Our{" "}
                     <Link
                       href="/docs/installation"
-                      className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium"
+                      className="text-accent hover:underline cursor-pointer font-medium"
                       onClick={(e) => e.stopPropagation()}
                     >
                       documentation
@@ -322,7 +322,7 @@ export default function FAQSection() {
                     in your browser, real-world{" "}
                     <ExampleLink
                       href={DEFAULT_EXAMPLE_PATH}
-                      className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium"
+                      className="text-accent hover:underline cursor-pointer font-medium"
                       onClick={(e) => e.stopPropagation()}
                     >
                       examples
@@ -331,7 +331,7 @@ export default function FAQSection() {
                     copy-paste, and a complete{" "}
                     <Link
                       href="/docs/api-reference"
-                      className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer font-medium"
+                      className="text-accent hover:underline cursor-pointer font-medium"
                       onClick={(e) => e.stopPropagation()}
                     >
                       API reference
@@ -343,26 +343,26 @@ export default function FAQSection() {
             ].map((faq, index) => (
               <motion.details
                 key={index}
-                className="group bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-blue-300 dark:hover:border-blue-700 transition-colors"
+                className="group bg-surface rounded-lg border border-line overflow-hidden transition-colors"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 viewport={{ once: true }}
               >
-                <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                <summary className="p-3 sm:p-4 lg:p-5 cursor-pointer list-none flex items-start gap-3 hover:bg-paper transition-colors">
                   <FontAwesomeIcon
                     icon={faq.icon}
-                    className="text-blue-600 dark:text-blue-400 mt-1 shrink-0"
+                    className="text-muted mt-1 shrink-0"
                   />
-                  <span className="flex-1 font-semibold text-gray-800 dark:text-white">
+                  <span className="flex-1 font-semibold text-ink">
                     {faq.question}
                   </span>
                   <FontAwesomeIcon
                     icon={faChevronDown}
-                    className="text-gray-400 transform group-open:rotate-180 transition-transform shrink-0"
+                    className="text-muted transform group-open:rotate-180 transition-transform shrink-0"
                   />
                 </summary>
-                <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-gray-600 dark:text-gray-300 leading-relaxed">
+                <div className="px-3 pb-3 pl-8 sm:px-4 sm:pb-4 sm:pl-10 lg:px-5 lg:pb-5 lg:pl-11 text-muted leading-relaxed">
                   {faq.answer}
                 </div>
               </motion.details>

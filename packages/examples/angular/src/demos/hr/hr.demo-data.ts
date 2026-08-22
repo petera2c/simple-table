@@ -56,15 +56,15 @@ export function generateHRData(count: number = 100): HREmployee[] {
 export const hrData = generateHRData(100);
 
 export const hrHeaders: AngularColumnDef<HREmployee>[] = [
-  { accessor: "fullName", label: "Employee", width: 220, sortable: true, editable: false, align: "left", pinned: "left", type: "string" },
+  { accessor: "fullName", label: "Employee", width: "auto", sortable: true, editable: false, align: "left", pinned: "left", type: "string" },
   {
-    accessor: "performanceScore", label: "Performance", width: 160, sortable: true, editable: true, align: "center", type: "number",
+    accessor: "performanceScore", label: "Performance", width: "auto", sortable: true, editable: true, align: "center", type: "number",
     valueFormatter: ({ value }: ValueFormatterProps<HREmployee>) => `${value}/100`,
     useFormattedValueForClipboard: true,
     exportValueGetter: ({ value }) => `${value}%`,
   },
   {
-    accessor: "department", label: "Department", width: 150, sortable: true, editable: true, align: "left", type: "enum",
+    accessor: "department", label: "Department", width: "auto", sortable: true, editable: true, align: "left", type: "enum",
     enumOptions: [
       { label: "Engineering", value: "Engineering" }, { label: "Marketing", value: "Marketing" },
       { label: "Sales", value: "Sales" }, { label: "Finance", value: "Finance" },
@@ -74,14 +74,14 @@ export const hrHeaders: AngularColumnDef<HREmployee>[] = [
   },
   { accessor: "email", label: "Email", width: "auto", minWidth: 180, sortable: true, editable: true, align: "left", type: "string" },
   {
-    accessor: "location", label: "Location", width: 130, sortable: true, editable: true, align: "left", type: "enum",
+    accessor: "location", label: "Location", width: "auto", sortable: true, editable: true, align: "left", type: "enum",
     enumOptions: LOCATIONS.map((l) => ({ label: l, value: l })),
   },
-  { accessor: "hireDate", label: "Hire Date", width: 120, sortable: true, editable: true, align: "left", type: "date" },
-  { accessor: "yearsOfService", label: "Service", width: 100, sortable: true, editable: false, align: "center", type: "number" },
-  { accessor: "salary", label: "Salary", width: 130, sortable: true, editable: true, align: "right", type: "number", valueFormatter: ({ value }: ValueFormatterProps<HREmployee>) => { if (typeof value !== "number") return ""; return `$${value.toLocaleString()}`; }, useFormattedValueForClipboard: true, useFormattedValueForCSV: true },
+  { accessor: "hireDate", label: "Hire Date", width: "auto", sortable: true, editable: true, align: "left", type: "date" },
+  { accessor: "yearsOfService", label: "Service", width: "auto", sortable: true, editable: false, align: "center", type: "number" },
+  { accessor: "salary", label: "Salary", width: "auto", sortable: true, editable: true, align: "right", type: "number", valueFormatter: ({ value }: ValueFormatterProps<HREmployee>) => { if (typeof value !== "number") return ""; return `$${value.toLocaleString()}`; }, useFormattedValueForClipboard: true, useFormattedValueForCSV: true },
   {
-    accessor: "status", label: "Status", width: 120, sortable: true, editable: true, align: "center", pinned: "right", type: "enum",
+    accessor: "status", label: "Status", width: "auto", sortable: true, editable: true, align: "center", pinned: "right", type: "enum",
     enumOptions: [
       { label: "Active", value: "Active" }, { label: "On Leave", value: "On Leave" },
       { label: "Probation", value: "Probation" }, { label: "Contract", value: "Contract" },
@@ -92,11 +92,11 @@ export const hrHeaders: AngularColumnDef<HREmployee>[] = [
       return priorityMap[String(row.status)] || 999;
     },
   },
-  { accessor: "isRemoteEligible", label: "Remote Eligible", width: 140, sortable: true, editable: true, align: "center", type: "boolean" },
+  { accessor: "isRemoteEligible", label: "Remote Eligible", width: "auto", sortable: true, editable: true, align: "center", type: "boolean" },
 ];
 
 export function getHRThemeColors(theme?: string) {
-  const isDark = theme === "dark" || theme === "modern-dark";
+  const isDark = theme === "dark" || theme === "modern-dark" || theme === "modern-black";
   const tagColors: Record<HRTagColorKey, { bg: string; text: string }> = isDark
     ? { green: { bg: "#065f46", text: "#86efac" }, orange: { bg: "#9a3412", text: "#fed7aa" }, blue: { bg: "#1e3a8a", text: "#93c5fd" }, purple: { bg: "#581c87", text: "#c4b5fd" }, red: { bg: "#991b1b", text: "#fca5a5" }, default: { bg: "#374151", text: "#e5e7eb" } }
     : { green: { bg: "#f6ffed", text: "#2a6a0d" }, orange: { bg: "#fff7e6", text: "#ad4e00" }, blue: { bg: "#e6f7ff", text: "#0050b3" }, purple: { bg: "#f9f0ff", text: "#391085" }, red: { bg: "#fff1f0", text: "#a8071a" }, default: { bg: "#f0f0f0", text: "rgba(0, 0, 0, 0.85)" } };

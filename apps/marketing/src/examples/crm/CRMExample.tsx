@@ -49,6 +49,7 @@ const CRMExampleComponent = ({
   return (
     <div className={`custom-theme-container theme-${theme}`}>
       <SimpleTable
+        autoExpandColumns
         columnReordering
         columnResizing
         columns={getCRMHeaders(isDark)}

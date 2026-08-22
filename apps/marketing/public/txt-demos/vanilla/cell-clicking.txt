@@ -1,6 +1,6 @@
 // CellClickingDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, ColumnDef, CellClickProps } from "simple-table-core";
+import type { Theme, ColumnDef, CellClickProps, CellRendererProps, GetRowIdParams } from "simple-table-core";
 import {
   cellClickingHeaders,
   cellClickingData,
@@ -9,11 +9,13 @@ import {
 import type { ProjectTask } from "./cell-clicking.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<ProjectTask>) => row.id;
 export function renderCellClickingDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
-): SimpleTableVanilla {
-  const isDark = options?.theme === "modern-dark" || options?.theme === "dark";
+): SimpleTableVanilla<ProjectTask> {
+  const isDark = options?.theme === "modern-dark" || options?.theme === "dark" || options?.theme === "modern-black";
 
   const wrapper = document.createElement("div");
   wrapper.style.cssText = "display:flex;flex-direction:column;gap:16px";
@@ -34,11 +36,11 @@ export function renderCellClickingDemo(
 
   let rows: ProjectTask[] = [...cellClickingData];
 
-  const headers: ColumnDef[] = cellClickingHeaders.map((h) => {
+  const headers: ColumnDef<ProjectTask>[] = cellClickingHeaders.map((h) => {
     if (h.accessor === "priority") {
       return {
         ...h,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+        cellRenderer: ({ row }: CellRendererProps<ProjectTask>) => {
           const p = String(row.priority);
           const color = p === "High" ? "#ef4444" : p === "Medium" ? "#f59e0b" : "#10b981";
           const el = document.createElement("span");
@@ -52,7 +54,7 @@ export function renderCellClickingDemo(
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+        cellRenderer: ({ row }: CellRendererProps<ProjectTask>) => {
           const s = String(row.status);
           const bg = s === "Completed" ? "#dcfce7" : s === "In Progress" ? "#fef3c7" : "#fee2e2";
           const c = s === "Completed" ? "#166534" : s === "In Progress" ? "#92400e" : "#991b1b";
@@ -123,13 +125,14 @@ export function renderCellClickingDemo(
   }
 
   const table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: headers,
     rows,
     height: options?.height ?? "320px",
     theme: options?.theme,
     columnResizing: true,
-    onCellClick: ({ accessor, rowIndex, value, row }: CellClickProps) => {
-      const task = row as ProjectTask;
+    onCellClick: ({ accessor, rowIndex, value, row }: CellClickProps<ProjectTask>) => {
+      const task = row;
       switch (accessor) {
         case "priority":
           updateBanner(`Filtering by ${value} priority`);
@@ -174,8 +177,7 @@ export function renderCellClickingDemo(
 
 // cell-clicking.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { ColumnDef, Row } from "simple-table-core";
-
+import type { ColumnDef } from "simple-table-core";
 
 export type ProjectTask = {
   id: number;
@@ -192,19 +194,106 @@ export type ProjectTask = {
 export const STATUSES = ["Not Started", "In Progress", "Completed"];
 
 export const cellClickingData: ProjectTask[] = [
-  { id: 1001, task: "Design login page mockups", assignee: "Sarah Chen", priority: "High", status: "In Progress", dueDate: "2024-02-15", estimatedHours: 8, completedHours: 5, details: "Create responsive login page designs with modern UI patterns" },
-  { id: 1002, task: "Implement user authentication API", assignee: "Marcus Rodriguez", priority: "High", status: "Not Started", dueDate: "2024-02-20", estimatedHours: 16, completedHours: 0, details: "Build secure JWT-based authentication system with OAuth integration" },
-  { id: 1003, task: "Write unit tests for payment module", assignee: "Luna Martinez", priority: "Medium", status: "Completed", dueDate: "2024-02-10", estimatedHours: 12, completedHours: 12, details: "Comprehensive test coverage for payment processing functionality" },
-  { id: 1004, task: "Update documentation for API endpoints", assignee: "Kai Thompson", priority: "Low", status: "In Progress", dueDate: "2024-02-25", estimatedHours: 6, completedHours: 3, details: "Update Swagger documentation and add usage examples" },
-  { id: 1005, task: "Performance optimization for dashboard", assignee: "Zara Kim", priority: "Medium", status: "Not Started", dueDate: "2024-03-01", estimatedHours: 20, completedHours: 0, details: "Optimize rendering performance and implement lazy loading" },
-  { id: 1006, task: "Mobile responsiveness testing", assignee: "Tyler Anderson", priority: "High", status: "In Progress", dueDate: "2024-02-18", estimatedHours: 10, completedHours: 7, details: "Test application across various mobile devices and screen sizes" },
-  { id: 1007, task: "Setup CI/CD pipeline", assignee: "Phoenix Lee", priority: "Medium", status: "Completed", dueDate: "2024-02-08", estimatedHours: 14, completedHours: 14, details: "Automated testing and deployment pipeline using GitHub Actions" },
-  { id: 1008, task: "Database migration scripts", assignee: "River Jackson", priority: "Low", status: "Not Started", dueDate: "2024-02-28", estimatedHours: 8, completedHours: 0, details: "Create migration scripts for database schema updates" },
+  {
+    id: 1001,
+    task: "Design login page mockups",
+    assignee: "Sarah Chen",
+    priority: "High",
+    status: "In Progress",
+    dueDate: "2024-02-15",
+    estimatedHours: 8,
+    completedHours: 5,
+    details: "Create responsive login page designs with modern UI patterns",
+  },
+  {
+    id: 1002,
+    task: "Implement user authentication API",
+    assignee: "Marcus Rodriguez",
+    priority: "High",
+    status: "Not Started",
+    dueDate: "2024-02-20",
+    estimatedHours: 16,
+    completedHours: 0,
+    details: "Build secure JWT-based authentication system with OAuth integration",
+  },
+  {
+    id: 1003,
+    task: "Write unit tests for payment module",
+    assignee: "Luna Martinez",
+    priority: "Medium",
+    status: "Completed",
+    dueDate: "2024-02-10",
+    estimatedHours: 12,
+    completedHours: 12,
+    details: "Comprehensive test coverage for payment processing functionality",
+  },
+  {
+    id: 1004,
+    task: "Update documentation for API endpoints",
+    assignee: "Kai Thompson",
+    priority: "Low",
+    status: "In Progress",
+    dueDate: "2024-02-25",
+    estimatedHours: 6,
+    completedHours: 3,
+    details: "Update Swagger documentation and add usage examples",
+  },
+  {
+    id: 1005,
+    task: "Performance optimization for dashboard",
+    assignee: "Zara Kim",
+    priority: "Medium",
+    status: "Not Started",
+    dueDate: "2024-03-01",
+    estimatedHours: 20,
+    completedHours: 0,
+    details: "Optimize rendering performance and implement lazy loading",
+  },
+  {
+    id: 1006,
+    task: "Mobile responsiveness testing",
+    assignee: "Tyler Anderson",
+    priority: "High",
+    status: "In Progress",
+    dueDate: "2024-02-18",
+    estimatedHours: 10,
+    completedHours: 7,
+    details: "Test application across various mobile devices and screen sizes",
+  },
+  {
+    id: 1007,
+    task: "Setup CI/CD pipeline",
+    assignee: "Phoenix Lee",
+    priority: "Medium",
+    status: "Completed",
+    dueDate: "2024-02-08",
+    estimatedHours: 14,
+    completedHours: 14,
+    details: "Automated testing and deployment pipeline using GitHub Actions",
+  },
+  {
+    id: 1008,
+    task: "Database migration scripts",
+    assignee: "River Jackson",
+    priority: "Low",
+    status: "Not Started",
+    dueDate: "2024-02-28",
+    estimatedHours: 8,
+    completedHours: 0,
+    details: "Create migration scripts for database schema updates",
+  },
 ];
 
-export const cellClickingHeaders: ColumnDef[] = [
+export const cellClickingHeaders: ColumnDef<ProjectTask>[] = [
   { accessor: "id", label: "Task ID", width: 80, sortable: true, type: "number" },
-  { accessor: "task", label: "Task Name", minWidth: 150, width: "1fr", sortable: true, type: "string" },
+  {
+    accessor: "task",
+    label: "Task Name",
+    minWidth: 150,
+    width: "1fr",
+    sortable: true,
+    type: "string",
+  },
   { accessor: "assignee", label: "Assignee", width: 120, sortable: true, type: "string" },
   { accessor: "priority", label: "Priority", width: 100, sortable: true, type: "string" },
   { accessor: "status", label: "Status", width: 120, sortable: true, type: "string" },
@@ -217,6 +306,6 @@ export const cellClickingHeaders: ColumnDef[] = [
 export const cellClickingConfig = {
   headers: cellClickingHeaders,
   rows: cellClickingData,
-} as const;
+};
 
 export { STATUSES as CELL_CLICKING_STATUSES };

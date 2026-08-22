@@ -7,6 +7,7 @@ export const AVAILABLE_THEMES: { value: Theme; label: string }[] = [
   { value: "dark", label: "Dark" },
   { value: "modern-light", label: "Modern Light" },
   { value: "modern-dark", label: "Modern Dark" },
+  { value: "modern-black", label: "Modern Black" },
   { value: "neutral", label: "Neutral" },
 ];
 

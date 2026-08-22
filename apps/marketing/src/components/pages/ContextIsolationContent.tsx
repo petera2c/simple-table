@@ -6,7 +6,7 @@ import PageWrapper from "@/components/PageWrapper";
 const ContextIsolationContent = () => {
   return (
     <PageWrapper>
-      <div className="max-w-6xl mx-auto px-4 py-10">
+      <div className="site-shell py-10">
         <span className="inline-block mb-3 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
           Internal repro · unlisted
         </span>

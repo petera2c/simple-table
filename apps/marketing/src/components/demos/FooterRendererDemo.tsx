@@ -384,12 +384,24 @@ const FooterRendererDemo = ({
   theme?: Theme;
 }) => {
   // Theme-aware color scheme
+  const isModernBlack = theme === "modern-black";
   const isModernDark = theme === "modern-dark";
-  const isDark = theme === "dark" || isModernDark;
+  const isDark = theme === "dark" || isModernDark || isModernBlack;
   const isModernLight = theme === "modern-light";
   const isLight = theme === "light" || isModernLight;
 
-  const footerColors = isModernDark
+  const footerColors = isModernBlack
+    ? {
+        background: "#141414",
+        border: "#262626",
+        text: "#a3a3a3",
+        buttonBg: "#1c1c1c",
+        buttonBorder: "#262626",
+        buttonActive: "#3b82f6",
+        buttonText: "#fafafa",
+        buttonDisabled: "#737373",
+      }
+    : isModernDark
     ? {
         background: "#1f2937",
         border: "#374151",

@@ -12,6 +12,7 @@ export function renderSoccerDemo(
 ): SimpleTableVanilla<SoccerPlayer> {
   return new SimpleTableVanilla(container, {
     getRowId,
+    autoExpandColumns: true,
     columns: soccerConfig.headers,
     rows: soccerConfig.rows,
     height: options?.height ?? "70dvh",

@@ -12,16 +12,16 @@ import { FrameworkProvider } from "../providers/FrameworkProvider";
 const ClientLayoutContent = ({ children }: { children: React.ReactNode }) => {
   return (
     <QueryProvider>
-      <div
-        className="h-screen flex flex-col transition-colors duration-200 bg-white dark:bg-gray-900"
-      >
+      <div className="h-screen flex flex-col transition-colors duration-200 bg-paper text-ink">
         <Header />
         <div
           id="main-scroll-container"
-          className="w-full grow z-10 text-gray-800 dark:text-white overflow-auto flex flex-col"
+          className="w-full grow z-10 text-ink overflow-auto flex flex-col"
         >
-          <main className="grow shrink-0">{children}</main>
-          <Footer />
+          <main className="min-h-[calc(100dvh-var(--header-height))] shrink-0">{children}</main>
+          <div className="shrink-0 overflow-visible">
+            <Footer />
+          </div>
         </div>
       </div>
     </QueryProvider>

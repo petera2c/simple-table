@@ -22,7 +22,7 @@ export const SALES_HEADERS: ColumnDef<SalesRow>[] = [
     pinned: "left",
     accessor: "repName",
     label: "Sales Representative",
-    width: "2fr",
+    width: "auto",
     minWidth: 200,
     sortable: true,
     editable: true,
@@ -59,13 +59,13 @@ export const SALES_HEADERS: ColumnDef<SalesRow>[] = [
     pinned: "left",
     accessor: "salesMetrics",
     label: "Sales Metrics",
-    width: 600,
+    width: "auto",
     sortable: false,
     children: [
       {
         accessor: "dealSize",
         label: "Deal Size",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -82,7 +82,7 @@ export const SALES_HEADERS: ColumnDef<SalesRow>[] = [
       {
         accessor: "dealValue",
         label: "Deal Value",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -99,7 +99,7 @@ export const SALES_HEADERS: ColumnDef<SalesRow>[] = [
       {
         accessor: "isWon",
         label: "Status",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -111,7 +111,7 @@ export const SALES_HEADERS: ColumnDef<SalesRow>[] = [
       {
         accessor: "closeDate",
         label: "Close Date",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -134,14 +134,14 @@ export const SALES_HEADERS: ColumnDef<SalesRow>[] = [
   {
     accessor: "financialMetrics",
     label: "Financial Metrics",
-    width: "1fr",
+    width: "auto",
     minWidth: 140,
     sortable: false,
     children: [
       {
         accessor: "commission",
         label: "Commission",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -158,7 +158,7 @@ export const SALES_HEADERS: ColumnDef<SalesRow>[] = [
       {
         accessor: "profitMargin",
         label: "Profit Margin",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -172,7 +172,7 @@ export const SALES_HEADERS: ColumnDef<SalesRow>[] = [
       {
         accessor: "dealProfit",
         label: "Deal Profit",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,
@@ -189,7 +189,7 @@ export const SALES_HEADERS: ColumnDef<SalesRow>[] = [
       {
         accessor: "category",
         label: "Category",
-        width: "1fr",
+        width: "auto",
         minWidth: 140,
         sortable: true,
         editable: true,

@@ -351,13 +351,13 @@ const CellClickingDemo = ({ theme }: { height?: string | number; theme?: Theme }
           marginTop: "16px",
           padding: "12px",
           backgroundColor:
-            theme === "modern-dark" || theme === "dark"
+            theme === "modern-dark" || theme === "dark" || theme === "modern-black"
               ? "#374151"
               : theme === "modern-light" || theme === "light"
                 ? "white"
                 : "#f3f4f6",
           borderRadius: "8px",
-          border: `1px solid ${theme === "modern-dark" || theme === "dark" ? "#4b5563" : theme === "modern-light" || theme === "light" ? "#e5e7eb" : "#d1d5db"}`,
+          border: `1px solid ${theme === "modern-dark" || theme === "dark" || theme === "modern-black" ? "#4b5563" : theme === "modern-light" || theme === "light" ? "#e5e7eb" : "#d1d5db"}`,
           minHeight: "48px",
           display: "flex",
           alignItems: "center",
@@ -366,7 +366,7 @@ const CellClickingDemo = ({ theme }: { height?: string | number; theme?: Theme }
         <strong
           style={{
             marginRight: "8px",
-            color: theme === "modern-dark" || theme === "dark" ? "#f9fafb" : "#1f2937",
+            color: theme === "modern-dark" || theme === "dark" || theme === "modern-black" ? "#f9fafb" : "#1f2937",
           }}
         >
           Last Click:
@@ -374,7 +374,7 @@ const CellClickingDemo = ({ theme }: { height?: string | number; theme?: Theme }
         <span
           style={{
             color:
-              theme === "modern-dark" || theme === "dark"
+              theme === "modern-dark" || theme === "dark" || theme === "modern-black"
                 ? "#d1d5db"
                 : theme === "modern-light" || theme === "light"
                   ? "#6b7280"
@@ -403,7 +403,7 @@ const CellClickingDemo = ({ theme }: { height?: string | number; theme?: Theme }
         >
           <div
             style={{
-              backgroundColor: theme === "modern-dark" || theme === "dark" ? "#1f2937" : "white",
+              backgroundColor: theme === "modern-dark" || theme === "dark" || theme === "modern-black" ? "#1f2937" : "white",
               padding: "24px",
               borderRadius: "8px",
               maxWidth: "500px",
@@ -415,7 +415,7 @@ const CellClickingDemo = ({ theme }: { height?: string | number; theme?: Theme }
             <h3
               style={{
                 margin: "0 0 16px 0",
-                color: theme === "modern-dark" || theme === "dark" ? "#f9fafb" : "#1f2937",
+                color: theme === "modern-dark" || theme === "dark" || theme === "modern-black" ? "#f9fafb" : "#1f2937",
                 fontSize: "18px",
                 fontWeight: "bold",
               }}
@@ -426,7 +426,7 @@ const CellClickingDemo = ({ theme }: { height?: string | number; theme?: Theme }
               style={{
                 margin: "8px 0",
                 color:
-                  theme === "modern-dark" || theme === "dark"
+                  theme === "modern-dark" || theme === "dark" || theme === "modern-black"
                     ? "#d1d5db"
                     : theme === "modern-light" || theme === "light"
                       ? "#6b7280"
@@ -439,7 +439,7 @@ const CellClickingDemo = ({ theme }: { height?: string | number; theme?: Theme }
               style={{
                 margin: "8px 0",
                 color:
-                  theme === "modern-dark" || theme === "dark"
+                  theme === "modern-dark" || theme === "dark" || theme === "modern-black"
                     ? "#d1d5db"
                     : theme === "modern-light" || theme === "light"
                       ? "#6b7280"
@@ -452,7 +452,7 @@ const CellClickingDemo = ({ theme }: { height?: string | number; theme?: Theme }
               style={{
                 margin: "8px 0",
                 color:
-                  theme === "modern-dark" || theme === "dark"
+                  theme === "modern-dark" || theme === "dark" || theme === "modern-black"
                     ? "#d1d5db"
                     : theme === "modern-light" || theme === "light"
                       ? "#6b7280"
@@ -465,7 +465,7 @@ const CellClickingDemo = ({ theme }: { height?: string | number; theme?: Theme }
               style={{
                 margin: "8px 0",
                 color:
-                  theme === "modern-dark" || theme === "dark"
+                  theme === "modern-dark" || theme === "dark" || theme === "modern-black"
                     ? "#d1d5db"
                     : theme === "modern-light" || theme === "light"
                       ? "#6b7280"
@@ -478,7 +478,7 @@ const CellClickingDemo = ({ theme }: { height?: string | number; theme?: Theme }
               style={{
                 margin: "8px 0",
                 color:
-                  theme === "modern-dark" || theme === "dark"
+                  theme === "modern-dark" || theme === "dark" || theme === "modern-black"
                     ? "#d1d5db"
                     : theme === "modern-light" || theme === "light"
                       ? "#6b7280"

@@ -135,7 +135,7 @@ const CellClickingDemo = ({ height, theme }: { height?: string | number; theme?:
     }
   };
 
-  const isDark = theme === "modern-dark" || theme === "dark";
+  const isDark = theme === "modern-dark" || theme === "dark" || theme === "modern-black";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>

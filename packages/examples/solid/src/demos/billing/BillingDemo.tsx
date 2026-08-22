@@ -19,6 +19,7 @@ export default function BillingDemo(props: { height?: string | number; theme?: T
 
   return (
     <SimpleTable
+      autoExpandColumns
       columnReordering
       columnResizing
       columns={headers}

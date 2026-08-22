@@ -119,7 +119,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "productLine",
     label: "Production Line",
-    width: 180,
+    width: "auto",
     expandable: true,
     sortable: true,
     editable: false,
@@ -137,7 +137,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "station",
     label: "Workstation",
-    width: 150,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "left",
@@ -160,7 +160,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "machineType",
     label: "Machine Type",
-    width: 150,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "left",
@@ -169,7 +169,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "status",
     label: "Status",
-    width: 180,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "center",
@@ -197,7 +197,7 @@ export const HEADERS: ReactColumnDef[] = [
 
       // Theme-aware color mapping with improved dark theme visibility
       const getStatusColors = (status: string, theme?: string) => {
-        const isModernDark = theme === "modern-dark";
+        const isModernDark = theme === "modern-dark" || theme === "modern-black";
         const isDark = theme === "dark" || isModernDark;
         const isModernLight = theme === "modern-light";
         const isLight = theme === "light" || isModernLight;
@@ -275,7 +275,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "oee",
     label: "OEE",
-    width: 140,
+    width: "auto",
     sortable: false,
     editable: false,
     filterable: false,
@@ -292,7 +292,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "outputRate",
     label: "Output (units/shift)",
-    width: 200,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -307,7 +307,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "cycletime",
     label: "Cycle Time (s)",
-    width: 140,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -325,7 +325,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "efficiency",
     label: "Efficiency",
-    width: 150,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "center",
@@ -393,7 +393,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "defectRate",
     label: "Defect Rate",
-    width: 120,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -414,7 +414,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "defectCount",
     label: "Defects",
-    width: 120,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -429,7 +429,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "downtime",
     label: "Downtime (h)",
-    width: 130,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -450,7 +450,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "utilization",
     label: "Utilization",
-    width: 130,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -468,7 +468,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "energy",
     label: "Energy (kWh)",
-    width: 130,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "right",
@@ -483,7 +483,7 @@ export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "maintenanceDate",
     label: "Next Maintenance",
-    width: 200,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "center",

@@ -1,6 +1,6 @@
 /**
  * THEMES TESTS
- * Tests for SimpleTable theme prop (light, dark, neutral, modern-light, modern-dark).
+ * Tests for SimpleTable theme prop (light, dark, neutral, modern-light, modern-dark, modern-black).
  */
 
 import type { Meta } from "@storybook/html";
@@ -124,6 +124,23 @@ export const ThemeModernDark = {
     const root = canvasElement.querySelector(".simple-table-root");
     expect(root).toBeTruthy();
     expect(root?.classList.contains("theme-modern-dark")).toBe(true);
+  },
+};
+
+export const ThemeModernBlack = {
+  render: () => {
+    const { wrapper } = renderVanillaTable(headers, data(), {
+      getRowId: (p) => String((p.row as { id?: number })?.id),
+      height: "250px",
+      theme: "modern-black",
+    });
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const root = canvasElement.querySelector(".simple-table-root");
+    expect(root).toBeTruthy();
+    expect(root?.classList.contains("theme-modern-black")).toBe(true);
   },
 };
 

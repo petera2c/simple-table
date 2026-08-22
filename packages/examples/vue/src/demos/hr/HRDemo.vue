@@ -153,6 +153,7 @@ const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps<HREmployee>
 
 <template>
   <SimpleTable
+    :auto-expand-columns="true"
     :columns="headers"
     :rows="data"
     :get-row-id="getRowId"

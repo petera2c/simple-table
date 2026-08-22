@@ -19,14 +19,11 @@ import type { AnalyticsFactRow } from "./analytics.demo-data";
       [style.flexDirection]="'column'"
       [style.width]="'100%'"
       [style.height]="formatHeight"
-      [style.background]="chromeBg"
-      [style.border]="'1px solid ' + chromeBorder"
-      [style.borderRadius]="'8px'"
       [style.overflow]="'hidden'"
     >
       <div
-        [style.padding]="'16px 20px 12px'"
-        [style.borderBottom]="'1px solid ' + chromeBorder"
+        [style.padding]="'0 0 12px'"
+        [style.borderBottom]="'1px solid ' + chrome.border"
         [style.flexShrink]="0"
       >
         <div style="margin-bottom: 10px">
@@ -34,7 +31,7 @@ import type { AnalyticsFactRow } from "./analytics.demo-data";
             [style.margin]="0"
             [style.fontSize]="'18px'"
             [style.fontWeight]="650"
-            [style.color]="titleColor"
+            [style.color]="chrome.title"
             [style.letterSpacing]="'-0.02em'"
           >
             Revenue Analytics
@@ -54,8 +51,8 @@ import type { AnalyticsFactRow } from "./analytics.demo-data";
                 [style.cursor]="'pointer'"
                 [style.fontSize]="'13px'"
                 [style.fontWeight]="550"
-                [style.background]="preset.id === activeId ? '#2563eb' : chipIdleBg"
-                [style.color]="preset.id === activeId ? '#fff' : chipIdleColor"
+                [style.background]="preset.id === activeId ? chrome.chipActive : chrome.chipIdleBg"
+                [style.color]="preset.id === activeId ? '#fff' : chrome.chipIdleColor"
               >
                 {{ preset.label }}
               </button>
@@ -66,19 +63,19 @@ import type { AnalyticsFactRow } from "./analytics.demo-data";
             (click)="exportCsv()"
             [style.padding]="'7px 12px'"
             [style.borderRadius]="'6px'"
-            [style.border]="'1px solid ' + inputBorder"
+            [style.border]="'1px solid ' + chrome.border"
             [style.cursor]="'pointer'"
             [style.fontSize]="'13px'"
             [style.fontWeight]="550"
-            [style.background]="chipIdleBg"
-            [style.color]="chipIdleColor"
+            [style.background]="chrome.chipIdleBg"
+            [style.color]="chrome.chipIdleColor"
           >
             Export CSV
           </button>
         </div>
       </div>
       <div
-        style="flex: 1; min-height: 0; padding: 12px 20px 20px; display: flex; flex-direction: column"
+        style="flex: 1; min-height: 0; display: flex; flex-direction: column"
       >
         <div style="flex: 1; min-height: 0; height: 100%">
           <simple-table
@@ -123,32 +120,32 @@ export class AnalyticsDemoComponent {
     return this.height;
   }
 
-  get isDark(): boolean {
-    return this.theme === "dark" || this.theme === "modern-dark";
-  }
-
-  get chromeBg(): string {
-    return this.isDark ? "#0f172a" : "#f8fafc";
-  }
-
-  get chromeBorder(): string {
-    return this.isDark ? "#1e293b" : "#e2e8f0";
-  }
-
-  get titleColor(): string {
-    return this.isDark ? "#f1f5f9" : "#0f172a";
-  }
-
-  get chipIdleBg(): string {
-    return this.isDark ? "#1e293b" : "#e2e8f0";
-  }
-
-  get chipIdleColor(): string {
-    return this.isDark ? "#cbd5e1" : "#334155";
-  }
-
-  get inputBorder(): string {
-    return this.isDark ? "#334155" : "#cbd5e1";
+  get chrome() {
+    if (this.theme === "modern-black") {
+      return {
+        border: "#262626",
+        chipActive: "#3b82f6",
+        chipIdleBg: "#1c1c1c",
+        chipIdleColor: "#a3a3a3",
+        title: "#fafafa",
+      };
+    }
+    if (this.theme === "modern-dark" || this.theme === "dark") {
+      return {
+        border: "#374151",
+        chipActive: "#3b82f6",
+        chipIdleBg: "#1f2937",
+        chipIdleColor: "#d1d5db",
+        title: "#f9fafb",
+      };
+    }
+    return {
+      border: "#e5e5e5",
+      chipActive: "#2563eb",
+      chipIdleBg: "#f5f5f5",
+      chipIdleColor: "#525252",
+      title: "#171717",
+    };
   }
 
   selectPreset(preset: AnalyticsPreset): void {

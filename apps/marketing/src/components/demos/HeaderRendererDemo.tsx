@@ -113,6 +113,12 @@ const HeaderRendererDemo = ({
   // Theme-based color configuration
   const getThemeColors = (theme?: Theme) => {
     switch (theme) {
+      case "modern-black":
+        return {
+          baseColor: "#a3a3a3",
+          hoverColor: "#fafafa",
+          sortActiveColor: "#60a5fa",
+        };
       case "modern-dark":
         return {
           baseColor: "#d1d5db",

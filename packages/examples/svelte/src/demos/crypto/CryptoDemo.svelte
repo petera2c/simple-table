@@ -60,6 +60,7 @@
 </script>
 
 <SimpleTable
+  autoExpandColumns={true}
   bind:this={tableRef}
   columns={cryptoConfig.headers}
   rows={cryptoConfig.rows}

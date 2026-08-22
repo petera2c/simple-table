@@ -87,7 +87,12 @@
 }
 
 .simple-table-root input {
-  color: black;
+  color: var(--st-cell-color);
+}
+
+.simple-table-root input::placeholder {
+  color: var(--st-muted-text-color);
+  opacity: 1;
 }
 
 /* Safari scrollbar styling */

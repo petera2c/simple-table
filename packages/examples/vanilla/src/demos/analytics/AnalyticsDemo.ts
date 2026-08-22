@@ -10,6 +10,34 @@ function formatHeight(height?: string | number | null): string {
   return height;
 }
 
+function getAnalyticsChrome(theme?: Theme) {
+  if (theme === "modern-black") {
+    return {
+      border: "#262626",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1c1c1c",
+      chipIdleColor: "#a3a3a3",
+      title: "#fafafa",
+    };
+  }
+  if (theme === "modern-dark" || theme === "dark") {
+    return {
+      border: "#374151",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1f2937",
+      chipIdleColor: "#d1d5db",
+      title: "#f9fafb",
+    };
+  }
+  return {
+    border: "#e5e5e5",
+    chipActive: "#2563eb",
+    chipIdleBg: "#f5f5f5",
+    chipIdleColor: "#525252",
+    title: "#171717",
+  };
+}
+
 export function renderAnalyticsDemo(
   container: HTMLElement,
   options?: { height?: string | number | null; theme?: Theme }
@@ -17,32 +45,26 @@ export function renderAnalyticsDemo(
   let activeId = analyticsPresets[0].id;
   let table: SimpleTableVanilla<AnalyticsFactRow> | null = null;
 
-  const isDark = options?.theme === "dark" || options?.theme === "modern-dark";
-  const chromeBg = isDark ? "#0f172a" : "#f8fafc";
-  const chromeBorder = isDark ? "#1e293b" : "#e2e8f0";
-  const titleColor = isDark ? "#f1f5f9" : "#0f172a";
-  const chipIdleBg = isDark ? "#1e293b" : "#e2e8f0";
-  const chipIdleColor = isDark ? "#cbd5e1" : "#334155";
-  const inputBorder = isDark ? "#334155" : "#cbd5e1";
+  const chrome = getAnalyticsChrome(options?.theme);
 
   const root = document.createElement("div");
-  root.style.cssText = `display:flex;flex-direction:column;width:100%;height:${formatHeight(
+  root.style.cssText = `display:flex;flex-direction:column;width: 100%;height:${formatHeight(
     options?.height ?? "480px"
-  )};background:${chromeBg};border:1px solid ${chromeBorder};border-radius:8px;overflow:hidden`;
+  )};overflow:hidden`;
 
-  const chrome = document.createElement("div");
-  chrome.style.cssText = `padding:16px 20px 12px;border-bottom:1px solid ${chromeBorder};flex-shrink:0`;
+  const toolbar = document.createElement("div");
+  toolbar.style.cssText = `padding:0 0 12px;border-bottom:1px solid ${chrome.border};flex-shrink:0`;
 
   const titleBlock = document.createElement("div");
   titleBlock.style.marginBottom = "10px";
 
   const title = document.createElement("h2");
   title.textContent = "Revenue Analytics";
-  title.style.cssText = `margin:0;font-size:18px;font-weight:650;color:${titleColor};letter-spacing:-0.02em`;
+  title.style.cssText = `margin:0;font-size:18px;font-weight:650;color:${chrome.title};letter-spacing:-0.02em`;
 
-  const toolbar = document.createElement("div");
-  toolbar.style.cssText =
-    "display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;width:100%";
+  const row = document.createElement("div");
+  row.style.cssText =
+    "display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;width: 100%";
 
   const buttons = document.createElement("div");
   buttons.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;align-items:center";
@@ -50,12 +72,11 @@ export function renderAnalyticsDemo(
   const exportBtn = document.createElement("button");
   exportBtn.type = "button";
   exportBtn.textContent = "Export CSV";
-  exportBtn.style.cssText = `padding:7px 12px;border-radius:6px;border:1px solid ${inputBorder};cursor:pointer;font-size:13px;font-weight:550;background:${chipIdleBg};color:${chipIdleColor}`;
+  exportBtn.style.cssText = `padding:7px 12px;border-radius:6px;border:1px solid ${chrome.border};cursor:pointer;font-size:13px;font-weight:550;background:${chrome.chipIdleBg};color:${chrome.chipIdleColor}`;
   exportBtn.addEventListener("click", () => table?.getAPI().exportToCSV());
 
   const tablePad = document.createElement("div");
-  tablePad.style.cssText =
-    "flex:1;min-height:0;padding:12px 20px 20px;display:flex;flex-direction:column";
+  tablePad.style.cssText = "flex:1;min-height:0;display:flex;flex-direction:column";
   const tableHost = document.createElement("div");
   tableHost.style.cssText = "flex:1;min-height:0;height:100%";
   tablePad.appendChild(tableHost);
@@ -97,8 +118,8 @@ export function renderAnalyticsDemo(
       btn.textContent = preset.label;
       const selected = preset.id === activeId;
       btn.style.cssText = `padding:7px 12px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:550;background:${
-        selected ? "#2563eb" : chipIdleBg
-      };color:${selected ? "#fff" : chipIdleColor}`;
+        selected ? chrome.chipActive : chrome.chipIdleBg
+      };color:${selected ? "#fff" : chrome.chipIdleColor}`;
       btn.addEventListener("click", () => {
         activeId = preset.id;
         paint();
@@ -110,9 +131,9 @@ export function renderAnalyticsDemo(
 
   paint();
   titleBlock.append(title);
-  toolbar.append(buttons, exportBtn);
-  chrome.append(titleBlock, toolbar);
-  root.append(chrome, tablePad);
+  row.append(buttons, exportBtn);
+  toolbar.append(titleBlock, row);
+  root.append(toolbar, tablePad);
   container.replaceChildren(root);
   remountTable();
   return table!;

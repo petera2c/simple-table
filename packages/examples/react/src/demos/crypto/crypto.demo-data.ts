@@ -177,48 +177,48 @@ const pct = ({ value }: { value: unknown }) =>
   typeof value === "number" ? formatSignedPercent(value) : "";
 
 export const cryptoHeaders: ReactColumnDef<CryptoCoin>[] = [
-  { accessor: "rank", label: "#", width: 56, align: "center", type: "number", pinned: "left", sortable: true, editable: false },
+  { accessor: "rank", label: "#", width: "auto", align: "center", type: "number", pinned: "left", sortable: true, editable: false },
   {
-    accessor: "name", label: "Asset", width: 200, align: "left", type: "string", pinned: "left", sortable: true, editable: false,
+    accessor: "name", label: "Asset", width: "auto", align: "left", type: "string", pinned: "left", sortable: true, editable: false,
     valueFormatter: ({ value, row }) => `${value} (${row.symbol})`,
   },
-  { accessor: "symbol", label: "Symbol", width: 90, type: "string", sortable: true, editable: false },
-  { accessor: "category", label: "Category", width: 140, type: "string", sortable: true, editable: false },
+  { accessor: "symbol", label: "Symbol", width: "auto", type: "string", sortable: true, editable: false },
+  { accessor: "category", label: "Category", width: "auto", type: "string", sortable: true, editable: false },
   {
-    accessor: "price", label: "Price", width: 130, align: "right", type: "number", sortable: true, editable: false,
+    accessor: "price", label: "Price", width: "auto", align: "right", type: "number", sortable: true, editable: false,
     valueFormatter: ({ value }) => typeof value === "number" ? formatPrice(value) : "",
   },
   {
-    accessor: "priceHistory", label: "Last 30d", width: 160, align: "center", type: "lineAreaChart",
+    accessor: "priceHistory", label: "Last 30d", width: "auto", align: "center", type: "lineAreaChart",
     sortable: false, editable: false, filterable: false,
     tooltip: "Price trend over the last 30 intervals",
     chartOptions: { height: 36, strokeWidth: 2, fillOpacity: 0.18 },
   },
   {
-    accessor: "performance", label: "Performance", width: 480, sortable: false, collapsible: true,
+    accessor: "performance", label: "Performance", width: "auto", sortable: false, collapsible: true,
     children: [
-      { accessor: "change24h", label: "24h %", width: 110, align: "right", type: "number", sortable: true, editable: false, showWhen: "always", valueFormatter: pct },
-      { accessor: "change1h", label: "1h %", width: 100, align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded", valueFormatter: pct },
-      { accessor: "change7d", label: "7d %", width: 100, align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded", valueFormatter: pct },
-      { accessor: "change30d", label: "30d %", width: 110, align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded", valueFormatter: pct },
+      { accessor: "change24h", label: "24h %", width: "auto", align: "right", type: "number", sortable: true, editable: false, showWhen: "always", valueFormatter: pct },
+      { accessor: "change1h", label: "1h %", width: "auto", align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded", valueFormatter: pct },
+      { accessor: "change7d", label: "7d %", width: "auto", align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded", valueFormatter: pct },
+      { accessor: "change30d", label: "30d %", width: "auto", align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded", valueFormatter: pct },
     ],
   },
   {
-    accessor: "market", label: "Market", width: 520, sortable: false, collapsible: true,
+    accessor: "market", label: "Market", width: "auto", sortable: false, collapsible: true,
     children: [
       {
-        accessor: "marketCap", label: "Market Cap", width: 140, align: "right", type: "number", sortable: true, editable: false, showWhen: "always",
+        accessor: "marketCap", label: "Market Cap", width: "auto", align: "right", type: "number", sortable: true, editable: false, showWhen: "always",
         valueFormatter: ({ value }) => typeof value === "number" ? formatCompactUsd(value) : "",
       },
       {
-        accessor: "volume24h", label: "Volume (24h)", width: 140, align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded",
+        accessor: "volume24h", label: "Volume (24h)", width: "auto", align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded",
         valueFormatter: ({ value }) => typeof value === "number" ? formatCompactUsd(value) : "",
       },
       {
-        accessor: "supplyPercent", label: "Circulating %", width: 130, align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded",
+        accessor: "supplyPercent", label: "Circulating %", width: "auto", align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded",
         valueFormatter: ({ value }) => typeof value === "number" ? `${value.toFixed(1)}%` : "",
       },
-      { accessor: "athChangePercent", label: "From ATH", width: 110, align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded", valueFormatter: pct },
+      { accessor: "athChangePercent", label: "From ATH", width: "auto", align: "right", type: "number", sortable: true, editable: false, showWhen: "parentExpanded", valueFormatter: pct },
     ],
   },
 ];

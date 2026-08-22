@@ -5,16 +5,13 @@
       flexDirection: 'column',
       width: '100%',
       height: formatHeight,
-      background: chromeBg,
-      border: `1px solid ${chromeBorder}`,
-      borderRadius: '8px',
       overflow: 'hidden',
     }"
   >
     <div
       :style="{
-        padding: '16px 20px 12px',
-        borderBottom: `1px solid ${chromeBorder}`,
+        padding: '0 0 12px',
+        borderBottom: `1px solid ${chrome.border}`,
         flexShrink: 0,
       }"
     >
@@ -24,7 +21,7 @@
             margin: 0,
             fontSize: '18px',
             fontWeight: 650,
-            color: titleColor,
+            color: chrome.title,
             letterSpacing: '-0.02em',
           }"
         >
@@ -47,8 +44,8 @@
               cursor: 'pointer',
               fontSize: '13px',
               fontWeight: 550,
-              background: preset.id === activeId ? '#2563eb' : chipIdleBg,
-              color: preset.id === activeId ? '#fff' : chipIdleColor,
+              background: preset.id === activeId ? chrome.chipActive : chrome.chipIdleBg,
+              color: preset.id === activeId ? '#fff' : chrome.chipIdleColor,
             }"
           >
             {{ preset.label }}
@@ -60,12 +57,12 @@
           :style="{
             padding: '7px 12px',
             borderRadius: '6px',
-            border: `1px solid ${inputBorder}`,
+            border: `1px solid ${chrome.border}`,
             cursor: 'pointer',
             fontSize: '13px',
             fontWeight: 550,
-            background: chipIdleBg,
-            color: chipIdleColor,
+            background: chrome.chipIdleBg,
+            color: chrome.chipIdleColor,
           }"
         >
           Export CSV
@@ -73,7 +70,7 @@
       </div>
     </div>
     <div
-      style="flex: 1; min-height: 0; padding: 12px 20px 20px; display: flex; flex-direction: column"
+      style="flex: 1; min-height: 0; display: flex; flex-direction: column"
     >
       <div style="flex: 1; min-height: 0; height: 100%">
         <SimpleTable
@@ -121,13 +118,33 @@ const active = computed(
   () => analyticsPresets.find((p) => p.id === activeId.value) ?? analyticsPresets[0]
 );
 const isPivoted = computed(() => active.value.pivot != null);
-const isDark = computed(() => props.theme === "dark" || props.theme === "modern-dark");
-const chromeBg = computed(() => (isDark.value ? "#0f172a" : "#f8fafc"));
-const chromeBorder = computed(() => (isDark.value ? "#1e293b" : "#e2e8f0"));
-const titleColor = computed(() => (isDark.value ? "#f1f5f9" : "#0f172a"));
-const chipIdleBg = computed(() => (isDark.value ? "#1e293b" : "#e2e8f0"));
-const chipIdleColor = computed(() => (isDark.value ? "#cbd5e1" : "#334155"));
-const inputBorder = computed(() => (isDark.value ? "#334155" : "#cbd5e1"));
+const chrome = computed(() => {
+  if (props.theme === "modern-black") {
+    return {
+      border: "#262626",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1c1c1c",
+      chipIdleColor: "#a3a3a3",
+      title: "#fafafa",
+    };
+  }
+  if (props.theme === "modern-dark" || props.theme === "dark") {
+    return {
+      border: "#374151",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1f2937",
+      chipIdleColor: "#d1d5db",
+      title: "#f9fafb",
+    };
+  }
+  return {
+    border: "#e5e5e5",
+    chipActive: "#2563eb",
+    chipIdleBg: "#f5f5f5",
+    chipIdleColor: "#525252",
+    title: "#171717",
+  };
+});
 const formatHeight = computed(() => {
   if (props.height == null) return "100%";
   if (typeof props.height === "number") return `${props.height}px`;

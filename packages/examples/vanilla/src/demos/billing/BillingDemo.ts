@@ -31,6 +31,7 @@ export function renderBillingDemo(
 
   const table = new SimpleTableVanilla(container, {
     getRowId,
+    autoExpandColumns: true,
     columnReordering: true,
     columnResizing: true,
     columns: headers,

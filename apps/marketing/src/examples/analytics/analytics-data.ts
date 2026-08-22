@@ -6,7 +6,7 @@ export const analyticsHeaders: ReactColumnDef[] = [
   {
     accessor: "region",
     label: "Region",
-    width: 110,
+    width: "auto",
     type: "string",
     sortable: true,
     filterable: true,
@@ -15,7 +15,7 @@ export const analyticsHeaders: ReactColumnDef[] = [
   {
     accessor: "country",
     label: "Country",
-    width: 100,
+    width: "auto",
     type: "string",
     sortable: true,
     filterable: true,
@@ -24,7 +24,7 @@ export const analyticsHeaders: ReactColumnDef[] = [
   {
     accessor: "category",
     label: "Category",
-    width: 110,
+    width: "auto",
     type: "string",
     sortable: true,
     filterable: true,
@@ -33,7 +33,7 @@ export const analyticsHeaders: ReactColumnDef[] = [
   {
     accessor: "product",
     label: "Product",
-    width: 120,
+    width: "auto",
     type: "string",
     sortable: true,
     filterable: true,
@@ -42,7 +42,7 @@ export const analyticsHeaders: ReactColumnDef[] = [
   {
     accessor: "channel",
     label: "Channel",
-    width: 100,
+    width: "auto",
     type: "string",
     sortable: true,
     filterable: true,
@@ -51,7 +51,7 @@ export const analyticsHeaders: ReactColumnDef[] = [
   {
     accessor: "year",
     label: "Year",
-    width: 80,
+    width: "auto",
     type: "number",
     sortable: true,
     filterable: true,
@@ -60,7 +60,7 @@ export const analyticsHeaders: ReactColumnDef[] = [
   {
     accessor: "quarter",
     label: "Quarter",
-    width: 80,
+    width: "auto",
     type: "string",
     sortable: true,
     filterable: true,
@@ -69,7 +69,7 @@ export const analyticsHeaders: ReactColumnDef[] = [
   {
     accessor: "sales",
     label: "Sales",
-    width: 100,
+    width: "auto",
     type: "number",
     align: "right",
     sortable: true,
@@ -81,7 +81,7 @@ export const analyticsHeaders: ReactColumnDef[] = [
   {
     accessor: "units",
     label: "Units",
-    width: 80,
+    width: "auto",
     type: "number",
     align: "right",
     sortable: true,
@@ -91,7 +91,7 @@ export const analyticsHeaders: ReactColumnDef[] = [
   {
     accessor: "cost",
     label: "Cost",
-    width: 100,
+    width: "auto",
     type: "number",
     align: "right",
     sortable: true,

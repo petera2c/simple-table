@@ -13,6 +13,16 @@ function formatTableHeight(height?: string | number | null): string {
 
 function getFooterColors(theme?: Theme) {
   switch (theme) {
+    case "modern-black":
+      return {
+        background: "#141414",
+        border: "#262626",
+        text: "#a3a3a3",
+        buttonBg: "#1c1c1c",
+        buttonBorder: "#262626",
+        buttonActive: "#3b82f6",
+        buttonDisabled: "#737373"
+      };
     case "modern-dark":
     case "dark":
       return {

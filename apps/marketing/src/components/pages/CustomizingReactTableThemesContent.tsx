@@ -27,7 +27,7 @@ import CodeBlock from "../CodeBlock";
 
 export default function CustomizingReactTableThemesContent() {
   const [selectedTheme, setSelectedTheme] = useState<
-    "light" | "dark" | "neutral" | "modern-light" | "modern-dark"
+    "light" | "dark" | "neutral" | "modern-light" | "modern-dark" | "modern-black"
   >("light");
   return (
     <PageWrapper>
@@ -124,7 +124,7 @@ export default function CustomizingReactTableThemesContent() {
             </h3>
 
             <p className="mb-6 text-gray-700 dark:text-gray-300">
-              Simple Table comes with 5 carefully crafted themes that you can apply instantly. Each
+              Simple Table comes with 6 carefully crafted themes that you can apply instantly. Each
               theme is designed to work well in different contexts and design systems. Click on any
               theme below to see it in action:
             </p>
@@ -191,6 +191,22 @@ export default function CustomizingReactTableThemesContent() {
                 <p className="text-gray-700 dark:text-gray-300 text-sm">
                   Clean dark surfaces with subtle borders, inspired by GitHub dark mode and VS
                   Code.
+                </p>
+              </div>
+              <div
+                className={`rounded-lg p-4 border cursor-pointer transition-all duration-200 hover:shadow-md ${
+                  selectedTheme === "modern-black"
+                    ? "bg-blue-50 dark:bg-blue-900/30 border-blue-300 dark:border-blue-700 ring-2 ring-blue-400"
+                    : "bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                }`}
+                onClick={() => setSelectedTheme("modern-black")}
+              >
+                <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                  Modern Black Theme
+                </h4>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">
+                  Near-black surfaces, hairline borders, and the Simple Table blue accent. The
+                  same look as this site in dark mode.
                 </p>
               </div>
               <div

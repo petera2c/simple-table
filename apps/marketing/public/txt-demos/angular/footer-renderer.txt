@@ -13,6 +13,17 @@ import { footerDemoThemeContext } from "./footer-demo-theme-context";
 
 function palette(theme?: Theme) {
   switch (theme) {
+    case "modern-black":
+      return {
+        background: "#141414",
+        border: "#262626",
+        text: "#a3a3a3",
+        buttonBg: "#1c1c1c",
+        buttonBorder: "#262626",
+        buttonActive: "#3b82f6",
+        buttonText: "#fafafa",
+        buttonDisabled: "#737373",
+      };
     case "modern-dark":
     case "dark":
       return {
@@ -171,11 +182,12 @@ export class FooterPaginationComponent {
 // footer-renderer-demo.component.ts
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { footerDemoThemeContext } from "./footer-demo-theme-context";
 import { FooterPaginationComponent } from "./footer-pagination.component";
 import { footerRendererConfig } from "./footer-renderer.demo-data";
 import "@simple-table/angular/styles.css";
+import type { CatalogProduct } from "./footer-renderer.demo-data";
 
 @Component({
   selector: "footer-renderer-demo",
@@ -183,6 +195,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [footerRenderer]="footerRenderer"
@@ -198,8 +211,8 @@ export class FooterRendererDemoComponent implements OnInit, OnChanges, OnDestroy
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = footerRendererConfig.rows;
-  readonly headers: AngularColumnDef[] = footerRendererConfig.headers;
+  readonly rows: CatalogProduct[] = footerRendererConfig.rows;
+  readonly headers: AngularColumnDef<CatalogProduct>[] = footerRendererConfig.headers;
   readonly footerRenderer = FooterPaginationComponent;
 
   ngOnInit(): void {
@@ -220,10 +233,18 @@ export class FooterRendererDemoComponent implements OnInit, OnChanges, OnDestroy
 
 // footer-renderer.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef, Row } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
+export interface CatalogProduct {
+  id: number;
+  product: string;
+  category: string;
+  price: number;
+  stock: number;
+  status: string;
+}
 
-export const footerRendererHeaders: AngularColumnDef[] = [
+export const footerRendererHeaders: AngularColumnDef<CatalogProduct>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "product", label: "Product Name", width: 220, type: "string" },
   { accessor: "category", label: "Category", width: 150, type: "string" },
@@ -232,7 +253,7 @@ export const footerRendererHeaders: AngularColumnDef[] = [
   { accessor: "status", label: "Status", width: "1fr", type: "string" },
 ];
 
-export const footerRendererData: Row[] = [
+export const footerRendererData: CatalogProduct[] = [
   { id: 1, product: "MacBook Pro 16-inch M3 Max", category: "Laptops", price: 3499, stock: 28, status: "In Stock" },
   { id: 2, product: "Dell XPS 15 OLED Touchscreen", category: "Laptops", price: 2299, stock: 42, status: "In Stock" },
   { id: 3, product: "ThinkPad X1 Carbon Gen 11", category: "Laptops", price: 1899, stock: 35, status: "In Stock" },
@@ -287,4 +308,4 @@ export const footerRendererConfig = {
     enablePagination: true,
     rowsPerPage: 10,
   },
-} as const;
+};

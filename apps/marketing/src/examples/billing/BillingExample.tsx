@@ -36,6 +36,7 @@ export default function BillingExample({
 
   return (
     <SimpleTable
+      autoExpandColumns
       columnReordering
       columnResizing
       columns={HEADERS}

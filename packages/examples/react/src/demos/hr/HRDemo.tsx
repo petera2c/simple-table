@@ -168,6 +168,7 @@ const HRDemo = ({ height = "400px", theme }: { height?: string | number; theme?:
 
   return (
     <SimpleTable
+      autoExpandColumns
       columnReordering
       columnResizing
       columns={headers}

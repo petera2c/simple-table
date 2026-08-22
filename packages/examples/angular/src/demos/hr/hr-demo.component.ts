@@ -33,6 +33,7 @@ function buildHRHeaders(): AngularColumnDef<HREmployee>[] {
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [autoExpandColumns]="true"
       [getRowId]="getRowId"
       [columns]="headers"
       [rows]="data"

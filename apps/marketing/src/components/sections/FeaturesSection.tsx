@@ -49,22 +49,22 @@ export default function FeaturesSection() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          <FontAwesomeIcon icon={faTable} className="text-blue-600 dark:text-blue-400 text-2xl" />
+          <FontAwesomeIcon icon={faTable} className="text-muted text-2xl" />
         </motion.div>
-        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-800 dark:text-white">
+        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-ink">
           Full-Featured Data Grid Component
         </h2>
-        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+        <p className="text-lg text-muted max-w-3xl mx-auto">
           30+ features in the box, so you can stop gluing libraries together.
         </p>
       </div>
 
       {/* Core Features */}
       <div className="mb-16">
-        <h3 className="text-2xl font-bold mb-6 text-gray-800 dark:text-white">
+        <h3 className="text-2xl font-bold mb-6 text-ink">
           Core Data Grid Features
         </h3>
-        <p className="text-gray-600 dark:text-gray-300 mb-6">
+        <p className="text-muted mb-6">
           Get started with essential data grid functions out of the box. Simple Table provides all
           the tools you need to render, navigate, and interact with data.
         </p>
@@ -87,7 +87,7 @@ export default function FeaturesSection() {
           ].map((item, index) => (
             <Link key={index} href={item.link}>
               <motion.div
-                className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 transition-colors cursor-pointer"
+                className="flex items-center gap-3 p-4 bg-surface rounded-lg border border-line transition-colors cursor-pointer"
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
@@ -95,9 +95,9 @@ export default function FeaturesSection() {
               >
                 <FontAwesomeIcon
                   icon={item.icon}
-                  className="text-blue-600 dark:text-blue-400 text-lg"
+                  className="text-muted text-lg"
                 />
-                <span className="text-gray-700 dark:text-gray-300">{item.text}</span>
+                <span className="text-ink">{item.text}</span>
               </motion.div>
             </Link>
           ))}
@@ -106,19 +106,19 @@ export default function FeaturesSection() {
 
       {/* Advanced Column Management */}
       <motion.div
-        className="mb-16 bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-blue-100 dark:border-blue-800"
+        className="mb-16"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
       >
         <div className="flex items-center gap-3 mb-4">
-          <FontAwesomeIcon icon={faColumns} className="text-blue-600 dark:text-blue-400 text-2xl" />
-          <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
+          <FontAwesomeIcon icon={faColumns} className="text-muted text-2xl" />
+          <h3 className="text-2xl font-bold text-ink">
             Advanced Column Management
           </h3>
         </div>
-        <p className="text-gray-700 dark:text-gray-300 mb-6">
+        <p className="text-muted mb-6">
           Complete control over your columns. Resize, reorder, pin, hide, and customize columns with
           intuitive drag-and-drop controls.
         </p>
@@ -163,7 +163,7 @@ export default function FeaturesSection() {
           ].map((item, index) => (
             <Link key={index} href={item.link}>
               <motion.div
-                className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow cursor-pointer"
+                className="p-4 bg-surface rounded-lg border border-line cursor-pointer"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ delay: index * 0.1 }}
@@ -172,13 +172,13 @@ export default function FeaturesSection() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={item.icon}
-                    className="text-blue-600 dark:text-blue-400 text-xl mt-1"
+                    className="text-muted text-xl mt-1"
                   />
                   <div>
-                    <h4 className="font-semibold text-gray-800 dark:text-white mb-1">
+                    <h4 className="font-semibold text-ink mb-1">
                       {item.title}
                     </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
+                    <p className="text-sm text-muted">{item.desc}</p>
                   </div>
                 </div>
               </motion.div>
@@ -189,19 +189,19 @@ export default function FeaturesSection() {
 
       {/* Customization & Theming */}
       <motion.div
-        className="mb-16 bg-gray-50 dark:bg-gray-800/50 p-4 sm:p-6 lg:p-8 rounded-xl border border-gray-200 dark:border-gray-700"
+        className="mb-16"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
       >
         <div className="flex items-center gap-3 mb-4">
-          <FontAwesomeIcon icon={faPalette} className="text-blue-600 dark:text-blue-400 text-2xl" />
-          <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
+          <FontAwesomeIcon icon={faPalette} className="text-muted text-2xl" />
+          <h3 className="text-2xl font-bold text-ink">
             Customizable Style & Theming
           </h3>
         </div>
-        <p className="text-gray-700 dark:text-gray-300 mb-6">
+        <p className="text-muted mb-6">
           Build the exact interface you need. Add custom components, adjust theming, or create
           entirely custom control panels that fit your workflow.
         </p>
@@ -252,7 +252,7 @@ export default function FeaturesSection() {
           ].map((item, index) => (
             <Link key={index} href={item.link}>
               <motion.div
-                className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow cursor-pointer"
+                className="p-4 bg-surface rounded-lg border border-line cursor-pointer"
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ delay: index * 0.1 }}
@@ -261,13 +261,13 @@ export default function FeaturesSection() {
                 <div className="flex items-start gap-3">
                   <FontAwesomeIcon
                     icon={item.icon}
-                    className="text-blue-600 dark:text-blue-400 text-xl mt-1"
+                    className="text-muted text-xl mt-1"
                   />
                   <div>
-                    <h4 className="font-semibold text-gray-800 dark:text-white mb-1">
+                    <h4 className="font-semibold text-ink mb-1">
                       {item.title}
                     </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
+                    <p className="text-sm text-muted">{item.desc}</p>
                   </div>
                 </div>
               </motion.div>
@@ -278,19 +278,19 @@ export default function FeaturesSection() {
 
       {/* Performance */}
       <motion.div
-        className="mb-16 bg-linear-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 p-4 sm:p-6 lg:p-8 rounded-xl border border-blue-100 dark:border-blue-800"
+        className="mb-16"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
         viewport={{ once: true }}
       >
         <div className="flex items-center gap-3 mb-4">
-          <FontAwesomeIcon icon={faBolt} className="text-blue-600 dark:text-blue-400 text-2xl" />
-          <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
+          <FontAwesomeIcon icon={faBolt} className="text-muted text-2xl" />
+          <h3 className="text-2xl font-bold text-ink">
             High Performance Data Grid
           </h3>
         </div>
-        <p className="text-gray-700 dark:text-gray-300 mb-6">
+        <p className="text-muted mb-6">
           Handle large datasets without the lag. Optimized rendering ensures smooth scrolling and
           fast loading, even with thousands of rows.
         </p>
@@ -310,18 +310,18 @@ export default function FeaturesSection() {
           ].map((item, index) => (
             <motion.div
               key={index}
-              className="p-4 sm:p-5 lg:p-6 bg-white dark:bg-gray-800 rounded-lg text-center"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              className="p-4 sm:p-5 lg:p-6 bg-surface rounded-lg border border-line text-center"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
               transition={{ delay: index * 0.1 }}
               viewport={{ once: true }}
             >
               <FontAwesomeIcon
                 icon={item.icon}
-                className="text-blue-600 dark:text-blue-400 text-3xl mb-3"
+                className="text-muted text-3xl mb-3"
               />
-              <h4 className="font-semibold text-gray-800 dark:text-white mb-2">{item.title}</h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
+              <h4 className="font-semibold text-ink mb-2">{item.title}</h4>
+              <p className="text-sm text-muted">{item.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -329,7 +329,6 @@ export default function FeaturesSection() {
 
       {/* Responsive & Mobile */}
       <motion.div
-        className="bg-gray-50 dark:bg-gray-800/50 p-4 sm:p-6 lg:p-8 rounded-xl border border-gray-200 dark:border-gray-700"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -338,13 +337,13 @@ export default function FeaturesSection() {
         <div className="flex items-center gap-3 mb-4">
           <FontAwesomeIcon
             icon={faMobileAlt}
-            className="text-blue-600 dark:text-blue-400 text-2xl"
+            className="text-muted text-2xl"
           />
-          <h3 className="text-2xl font-bold text-gray-800 dark:text-white">
+          <h3 className="text-2xl font-bold text-ink">
             Responsive & Mobile-Optimized
           </h3>
         </div>
-        <p className="text-gray-700 dark:text-gray-300 mb-6">
+        <p className="text-muted mb-6">
           Works seamlessly across all devices and screen sizes. Your data grids look professional
           whether users are on desktop, tablet, or mobile.
         </p>
@@ -355,13 +354,13 @@ export default function FeaturesSection() {
           ].map((item, index) => (
             <div
               key={index}
-              className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+              className="flex items-center gap-3 p-4 bg-surface rounded-lg border border-line"
             >
               <FontAwesomeIcon
                 icon={item.icon}
-                className="text-blue-600 dark:text-blue-400 text-lg"
+                className="text-muted text-lg"
               />
-              <span className="text-gray-700 dark:text-gray-300">{item.text}</span>
+              <span className="text-ink">{item.text}</span>
             </div>
           ))}
         </div>

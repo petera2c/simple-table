@@ -198,6 +198,7 @@ export function renderManufacturingDemo(
 ): SimpleTableVanilla<ManufacturingRow> {
   const table = new SimpleTableVanilla(container, {
     getRowId,
+    autoExpandColumns: true,
     columnResizing: true,
     columnReordering: true,
     columns: getHeaders(),

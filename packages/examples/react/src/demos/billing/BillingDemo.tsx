@@ -19,6 +19,7 @@ const BillingDemo = ({ height = "400px", theme }: { height?: string | number; th
 
   return (
     <SimpleTable
+      autoExpandColumns
       columnReordering
       columnResizing
       columns={headers}

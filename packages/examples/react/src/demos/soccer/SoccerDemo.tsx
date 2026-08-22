@@ -6,6 +6,7 @@ import "@simple-table/react/styles.css";
 const SoccerDemo = ({ height = "70dvh", theme }: { height?: string | number; theme?: Theme }) => {
   return (
     <SimpleTable
+      autoExpandColumns
       columns={soccerConfig.headers}
       rows={soccerConfig.rows}
       height={height}

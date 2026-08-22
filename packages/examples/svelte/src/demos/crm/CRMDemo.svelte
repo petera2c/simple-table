@@ -21,7 +21,7 @@
   let data = $state<CRMLead[]>([...crmData]);
 
   const isDark = $derived(
-    theme === "custom-dark" || theme === "dark" || theme === "modern-dark",
+    theme === "custom-dark" || theme === "dark" || theme === "modern-dark" || theme === "modern-black",
   );
 
   $effect.pre(() => {
@@ -35,7 +35,7 @@
       {
         accessor: "name",
         label: "CONTACT",
-        width: "2fr",
+        width: "auto",
         minWidth: 290,
         sortable: true,
         editable: true,
@@ -45,7 +45,7 @@
       {
         accessor: "signal",
         label: "SIGNAL",
-        width: "3fr",
+        width: "auto",
         minWidth: 340,
         sortable: true,
         editable: true,
@@ -55,7 +55,7 @@
       {
         accessor: "aiScore",
         label: "AI SCORE",
-        width: "1fr",
+        width: "auto",
         minWidth: 100,
         sortable: true,
         align: "center",
@@ -65,7 +65,7 @@
       {
         accessor: "emailStatus",
         label: "EMAIL",
-        width: "1.5fr",
+        width: "auto",
         minWidth: 210,
         sortable: true,
         align: "center",
@@ -81,7 +81,7 @@
       {
         accessor: "timeAgo",
         label: "IMPORT",
-        width: "1fr",
+        width: "auto",
         minWidth: 100,
         sortable: true,
         align: "center",
@@ -91,7 +91,7 @@
       {
         accessor: "list",
         label: "LIST",
-        width: "1.2fr",
+        width: "auto",
         minWidth: 160,
         sortable: true,
         align: "center",
@@ -123,7 +123,7 @@
       {
         accessor: "_fit",
         label: "Fit",
-        width: "1fr",
+        width: "auto",
         align: "center",
         minWidth: 120,
         cellRenderer: CrmFitCell,
@@ -131,7 +131,7 @@
       {
         accessor: "_contactNow",
         label: "",
-        width: "1.2fr",
+        width: "auto",
         minWidth: 160,
         cellRenderer: CrmContactNowCell,
       },
@@ -145,6 +145,7 @@
 
 <div class={`custom-theme-container theme-${isDark ? "custom-dark" : "custom-light"}`}>
   <SimpleTable
+    autoExpandColumns={true}
     columnReordering={true}
     columnResizing={true}
     customTheme={{ headerHeight: 48, rowHeight: 92 }}

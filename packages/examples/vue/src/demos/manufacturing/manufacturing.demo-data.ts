@@ -84,30 +84,30 @@ export function generateManufacturingData(count: number = 8): ManufacturingRow[]
 export const manufacturingData = generateManufacturingData(8);
 
 export const manufacturingHeaders: VueColumnDef<ManufacturingRow>[] = [
-  { accessor: "productLine", label: "Production Line", width: 180, expandable: true, sortable: true, editable: false, align: "left", type: "string" },
-  { accessor: "station", label: "Workstation", width: 150, sortable: true, editable: false, align: "left", type: "string" },
-  { accessor: "machineType", label: "Machine Type", width: 150, sortable: true, editable: false, align: "left", type: "string" },
+  { accessor: "productLine", label: "Production Line", width: "auto", expandable: true, sortable: true, editable: false, align: "left", type: "string" },
+  { accessor: "station", label: "Workstation", width: "auto", sortable: true, editable: false, align: "left", type: "string" },
+  { accessor: "machineType", label: "Machine Type", width: "auto", sortable: true, editable: false, align: "left", type: "string" },
   {
-    accessor: "status", label: "Status", width: 180, sortable: true, editable: false, align: "center", type: "string",
+    accessor: "status", label: "Status", width: "auto", sortable: true, editable: false, align: "center", type: "string",
     valueGetter: ({ row }) => {
       if (row.stations && Array.isArray(row.stations)) return 999;
       const priorityMap: Record<string, number> = { "Unplanned Downtime": 1, Idle: 2, Setup: 3, "Scheduled Maintenance": 4, Running: 5 };
       return priorityMap[String(row.status)] || 999;
     },
   },
-  { accessor: "outputRate", label: "Output (units/shift)", width: 200, sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "sum" } },
-  { accessor: "cycletime", label: "Cycle Time (s)", width: 140, sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "average" } },
-  { accessor: "efficiency", label: "Efficiency", width: 150, sortable: true, editable: false, align: "center", type: "number", aggregation: { type: "average" } },
-  { accessor: "defectRate", label: "Defect Rate", width: 120, sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "average" } },
-  { accessor: "defectCount", label: "Defects", width: 120, sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "sum" } },
-  { accessor: "downtime", label: "Downtime (h)", width: 130, sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "sum" } },
-  { accessor: "utilization", label: "Utilization", width: 130, sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "average" } },
-  { accessor: "energy", label: "Energy (kWh)", width: 130, sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "sum" } },
-  { accessor: "maintenanceDate", label: "Next Maintenance", width: 200, sortable: true, editable: false, align: "center", type: "date" },
+  { accessor: "outputRate", label: "Output (units/shift)", width: "auto", sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "sum" } },
+  { accessor: "cycletime", label: "Cycle Time (s)", width: "auto", sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "average" } },
+  { accessor: "efficiency", label: "Efficiency", width: "auto", sortable: true, editable: false, align: "center", type: "number", aggregation: { type: "average" } },
+  { accessor: "defectRate", label: "Defect Rate", width: "auto", sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "average" } },
+  { accessor: "defectCount", label: "Defects", width: "auto", sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "sum" } },
+  { accessor: "downtime", label: "Downtime (h)", width: "auto", sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "sum" } },
+  { accessor: "utilization", label: "Utilization", width: "auto", sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "average" } },
+  { accessor: "energy", label: "Energy (kWh)", width: "auto", sortable: true, editable: false, align: "right", type: "number", aggregation: { type: "sum" } },
+  { accessor: "maintenanceDate", label: "Next Maintenance", width: "auto", sortable: true, editable: false, align: "center", type: "date" },
 ];
 
 export function getManufacturingStatusColors(status: string, theme?: string) {
-  const isDark = theme === "dark" || theme === "modern-dark";
+  const isDark = theme === "dark" || theme === "modern-dark" || theme === "modern-black";
   const isLight = theme === "light" || theme === "modern-light";
   const colorMaps: Record<string, { bg: string; text: string }> = {
     Running: isDark ? { bg: "rgba(6, 95, 70, 0.4)", text: "#6ee7b7" } : isLight ? { bg: "#dcfce7", text: "#16a34a" } : { bg: "#f6ffed", text: "#2a6a0d" },

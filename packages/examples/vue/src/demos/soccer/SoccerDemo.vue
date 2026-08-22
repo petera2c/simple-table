@@ -1,5 +1,6 @@
 <template>
   <SimpleTable
+    :auto-expand-columns="true"
     :columns="soccerConfig.headers"
     :rows="soccerConfig.rows"
     :get-row-id="getRowId"

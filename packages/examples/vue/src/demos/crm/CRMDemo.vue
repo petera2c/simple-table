@@ -31,7 +31,8 @@ const isDark = computed(
   () =>
     props.theme === "custom-dark" ||
     props.theme === "dark" ||
-    props.theme === "modern-dark",
+    props.theme === "modern-dark" ||
+    props.theme === "modern-black",
 );
 const data = ref([...crmData]);
 const rowsPerPage = ref(100);
@@ -289,7 +290,7 @@ const headers = computed((): VueColumnDef<CRMLead>[] => {
     {
       accessor: "name",
       label: "CONTACT",
-      width: "2fr",
+      width: "auto",
       minWidth: 290,
       sortable: true,
       editable: true,
@@ -299,7 +300,7 @@ const headers = computed((): VueColumnDef<CRMLead>[] => {
     {
       accessor: "signal",
       label: "SIGNAL",
-      width: "3fr",
+      width: "auto",
       minWidth: 340,
       sortable: true,
       editable: true,
@@ -309,7 +310,7 @@ const headers = computed((): VueColumnDef<CRMLead>[] => {
     {
       accessor: "aiScore",
       label: "AI SCORE",
-      width: "1fr",
+      width: "auto",
       minWidth: 100,
       sortable: true,
       align: "center",
@@ -319,7 +320,7 @@ const headers = computed((): VueColumnDef<CRMLead>[] => {
     {
       accessor: "emailStatus",
       label: "EMAIL",
-      width: "1.5fr",
+      width: "auto",
       minWidth: 210,
       sortable: true,
       align: "center",
@@ -335,7 +336,7 @@ const headers = computed((): VueColumnDef<CRMLead>[] => {
     {
       accessor: "timeAgo",
       label: "IMPORT",
-      width: "1fr",
+      width: "auto",
       minWidth: 100,
       sortable: true,
       align: "center",
@@ -345,7 +346,7 @@ const headers = computed((): VueColumnDef<CRMLead>[] => {
     {
       accessor: "list",
       label: "LIST",
-      width: "1.2fr",
+      width: "auto",
       minWidth: 160,
       sortable: true,
       align: "center",
@@ -374,11 +375,11 @@ const headers = computed((): VueColumnDef<CRMLead>[] => {
       },
       cellRenderer: makeListCell(colors),
     },
-    { accessor: "_fit", label: "Fit", width: "1fr", align: "center", minWidth: 120, cellRenderer: makeFitCell(colors) },
+    { accessor: "_fit", label: "Fit", width: "auto", align: "center", minWidth: 120, cellRenderer: makeFitCell(colors) },
     {
       accessor: "_contactNow",
       label: "",
-      width: "1.2fr",
+      width: "auto",
       minWidth: 160,
       cellRenderer: makeContactNowCell(colors),
     },
@@ -395,6 +396,7 @@ const handleCellEdit = ({ accessor, newValue, row }: CellChangeProps<CRMLead>) =
 <template>
   <div :class="`custom-theme-container theme-${isDark ? 'custom-dark' : 'custom-light'}`">
     <SimpleTable
+      :auto-expand-columns="true"
       :columns="headers"
       :get-row-id="getRowId"
       :rows="data"

@@ -51,6 +51,7 @@ const CryptoDemo = ({ height = "70dvh", theme }: { height?: string | number; the
   }, []);
   return (
     <SimpleTable
+      autoExpandColumns
       columns={cryptoConfig.headers}
       rows={cryptoConfig.rows}
       ref={tableRef}

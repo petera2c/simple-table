@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Input, Empty, Tag } from "antd";
+import { Input, Empty } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { docsSearchIndex, type SearchableDoc } from "@/constants/docsSearchIndex";
 import { createDocsSearchFuse, getDocsSearchSnippet } from "@/utils/docsSearchFuse";
@@ -83,7 +83,7 @@ const highlightMatches = (
     parts.push(
       <mark
         key={`highlight-${idx}`}
-        className="bg-yellow-100 dark:bg-yellow-900/40 text-inherit font-semibold rounded px-0.5"
+        className="bg-accent-soft text-inherit font-semibold rounded px-0.5"
       >
         {text.substring(start, end + 1)}
       </mark>,
@@ -119,7 +119,7 @@ const highlightQueryInText = (text: string, query: string): React.ReactNode => {
         tokens.some((t) => part.toLowerCase() === t) ? (
           <mark
             key={`snippet-${idx}`}
-            className="bg-yellow-100 dark:bg-yellow-900/40 text-inherit font-semibold rounded px-0.5"
+            className="bg-accent-soft text-inherit font-semibold rounded px-0.5"
           >
             {part}
           </mark>
@@ -229,7 +229,7 @@ const DocsSearch: React.FC<DocsSearchProps> = ({
     <PageWrapper disableScrollRestoration>
       <div className="relative w-full" ref={searchContainerRef}>
         <Input
-          prefix={<SearchOutlined />}
+          prefix={<SearchOutlined className="text-muted" />}
           placeholder={placeholder}
           value={query}
           onChange={(e) => handleSearch(e.target.value)}
@@ -237,11 +237,12 @@ const DocsSearch: React.FC<DocsSearchProps> = ({
           autoFocus={autoFocus}
           allowClear
           onClear={handleClear}
+          className="!bg-surface !border-line !text-ink"
         />
 
         {/* Search Results Dropdown */}
         {isOpen && (
-          <div className="absolute top-full mt-2 w-full min-w-[400px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl max-h-96 overflow-y-auto z-9999">
+          <div className="absolute top-full mt-2 w-full min-w-[400px] bg-surface border border-line rounded-lg max-h-96 overflow-y-auto z-9999">
             {searchResults.length > 0 ? (
               searchResults.map((result, index) => (
                 <Link
@@ -249,19 +250,19 @@ const DocsSearch: React.FC<DocsSearchProps> = ({
                   href={result.doc.path}
                   onClick={(e) => navigateToDoc(result.doc, e)}
                   onMouseEnter={() => setSelectedIndex(index)}
-                  className={`block px-4 py-3 border-b border-gray-100 dark:border-gray-700 cursor-pointer transition-colors ${
+                  className={`block px-4 py-3 border-b border-line cursor-pointer transition-colors ${
                     index === selectedIndex
-                      ? "bg-blue-50 dark:bg-blue-900/30"
-                      : "hover:bg-gray-50 dark:hover:bg-gray-700"
+                      ? "bg-accent-soft"
+                      : "hover:bg-paper"
                   }`}
                 >
-                  <Tag color="blue" className="mb-1">
+                  <span className="inline-block mb-1 text-xs text-muted border border-line rounded px-1.5 py-0.5">
                     {result.doc.section}
-                  </Tag>
-                  <div className="font-semibold text-gray-900 dark:text-white mb-1">
+                  </span>
+                  <div className="font-semibold text-ink mb-1">
                     {highlightMatches(result.doc.title, result.matches, "title")}
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+                  <div className="text-sm text-muted line-clamp-2">
                     {highlightQueryInText(
                       getDocsSearchSnippet(result.doc, result.matches, query).text,
                       query,
@@ -274,7 +275,7 @@ const DocsSearch: React.FC<DocsSearchProps> = ({
                 <Empty
                   image={Empty.PRESENTED_IMAGE_SIMPLE}
                   description={
-                    <span className="text-gray-500 dark:text-gray-400">
+                    <span className="text-muted">
                       No results found for &quot;{query}&quot;
                     </span>
                   }

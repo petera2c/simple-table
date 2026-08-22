@@ -55,6 +55,7 @@ export default function CryptoDemo(props: { height?: string | number; theme?: Th
 
   return (
     <SimpleTable
+      autoExpandColumns
       ref={(api) => (tableRef = api)}
       columns={cryptoConfig.headers}
       rows={cryptoConfig.rows}

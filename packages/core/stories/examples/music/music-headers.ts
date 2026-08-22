@@ -29,7 +29,7 @@ export const MUSIC_HEADERS: ColumnDef<MusicRow>[] = [
   {
     accessor: "rank",
     label: "#",
-    width: 60,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "center",
@@ -39,7 +39,7 @@ export const MUSIC_HEADERS: ColumnDef<MusicRow>[] = [
   {
     accessor: "artistName",
     label: "Artist",
-    width: 320,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "left",
@@ -51,7 +51,7 @@ export const MUSIC_HEADERS: ColumnDef<MusicRow>[] = [
   {
     accessor: "artistType",
     label: "Identity",
-    width: 280,
+    width: "auto",
     sortable: false,
     editable: false,
     align: "left",
@@ -62,13 +62,13 @@ export const MUSIC_HEADERS: ColumnDef<MusicRow>[] = [
   {
     accessor: "followersGroup",
     label: "Followers",
-    width: 700,
+    width: "auto",
     collapsible: true,
     children: [
       {
         accessor: "followers",
         label: "Total Followers",
-        width: 180,
+        width: "auto",
         showWhen: "always",
         sortable: true,
         editable: false,
@@ -79,7 +79,7 @@ export const MUSIC_HEADERS: ColumnDef<MusicRow>[] = [
       {
         accessor: "followers7DayGrowth",
         label: "7-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -91,7 +91,7 @@ export const MUSIC_HEADERS: ColumnDef<MusicRow>[] = [
       {
         accessor: "followers28DayGrowth",
         label: "28-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -103,7 +103,7 @@ export const MUSIC_HEADERS: ColumnDef<MusicRow>[] = [
       {
         accessor: "followers60DayGrowth",
         label: "60-Day Growth",
-        width: 160,
+        width: "auto",
         sortable: true,
         editable: false,
         align: "right",
@@ -117,7 +117,7 @@ export const MUSIC_HEADERS: ColumnDef<MusicRow>[] = [
   {
     accessor: "popularity",
     label: "Popularity",
-    width: 180,
+    width: "auto",
     sortable: true,
     editable: false,
     align: "center",
@@ -128,13 +128,13 @@ export const MUSIC_HEADERS: ColumnDef<MusicRow>[] = [
   {
     accessor: "playlistReachGroup",
     label: "Playlist Reach",
-    width: 400,
+    width: "auto",
     collapsible: true,
     children: [
       {
         accessor: "playlistReach",
         label: "Reach",
-        width: 180,
+        width: "auto",
         sortable: true,
         type: "number",
         valueFormatter: ({ value }: { value?: unknown }) =>
@@ -145,13 +145,13 @@ export const MUSIC_HEADERS: ColumnDef<MusicRow>[] = [
   {
     accessor: "monthlyListenersGroup",
     label: "Monthly Listeners",
-    width: 400,
+    width: "auto",
     collapsible: true,
     children: [
       {
         accessor: "monthlyListeners",
         label: "Listeners",
-        width: 180,
+        width: "auto",
         sortable: true,
         type: "number",
         valueFormatter: ({ value }: { value?: unknown }) =>

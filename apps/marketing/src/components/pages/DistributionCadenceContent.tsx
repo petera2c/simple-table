@@ -12,7 +12,7 @@ import Link from "next/link";
 export default function DistributionCadenceContent() {
   return (
     <PageWrapper>
-      <div className="max-w-4xl mx-auto px-4 py-12">
+      <div className="site-shell py-12">
         <div className="mb-6 rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700 p-4 text-sm text-amber-900 dark:text-amber-100">
           Internal checklist (noindex). Do not buy backlinks — use earned distribution only.
         </div>

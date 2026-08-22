@@ -214,6 +214,7 @@ const ManufacturingDemo = ({
   theme?: Theme;
 }) => (
   <SimpleTable
+    autoExpandColumns
     columnResizing
     columnReordering
     columns={getHeaders()}

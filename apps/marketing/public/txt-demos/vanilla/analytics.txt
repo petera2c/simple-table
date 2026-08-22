@@ -1,11 +1,8 @@
 // AnalyticsDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
-import {
-  analyticsDemoConfig,
-  analyticsPresets,
-  analyticsRows,
-} from "./analytics.demo-data";
+import type { AnalyticsFactRow } from "./analytics.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
+import { analyticsDemoConfig, analyticsPresets } from "./analytics.demo-data";
 import "simple-table-core/styles.css";
 
 function formatHeight(height?: string | number | null): string {
@@ -14,72 +11,73 @@ function formatHeight(height?: string | number | null): string {
   return height;
 }
 
+function getAnalyticsChrome(theme?: Theme) {
+  if (theme === "modern-black") {
+    return {
+      border: "#262626",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1c1c1c",
+      chipIdleColor: "#a3a3a3",
+      title: "#fafafa",
+    };
+  }
+  if (theme === "modern-dark" || theme === "dark") {
+    return {
+      border: "#374151",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1f2937",
+      chipIdleColor: "#d1d5db",
+      title: "#f9fafb",
+    };
+  }
+  return {
+    border: "#e5e5e5",
+    chipActive: "#2563eb",
+    chipIdleBg: "#f5f5f5",
+    chipIdleColor: "#525252",
+    title: "#171717",
+  };
+}
+
 export function renderAnalyticsDemo(
   container: HTMLElement,
   options?: { height?: string | number | null; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<AnalyticsFactRow> {
   let activeId = analyticsPresets[0].id;
-  let searchText = "";
-  let table: SimpleTableVanilla | null = null;
+  let table: SimpleTableVanilla<AnalyticsFactRow> | null = null;
 
-  const isDark = options?.theme === "dark" || options?.theme === "modern-dark";
-  const chromeBg = isDark ? "#0f172a" : "#f8fafc";
-  const chromeBorder = isDark ? "#1e293b" : "#e2e8f0";
-  const titleColor = isDark ? "#f1f5f9" : "#0f172a";
-  const mutedColor = isDark ? "#94a3b8" : "#64748b";
-  const chipIdleBg = isDark ? "#1e293b" : "#e2e8f0";
-  const chipIdleColor = isDark ? "#cbd5e1" : "#334155";
-  const inputBg = isDark ? "#1e293b" : "#fff";
-  const inputBorder = isDark ? "#334155" : "#cbd5e1";
-  const inputColor = isDark ? "#e2e8f0" : "#0f172a";
+  const chrome = getAnalyticsChrome(options?.theme);
 
   const root = document.createElement("div");
-  root.style.cssText = `display:flex;flex-direction:column;width:100%;height:${formatHeight(
+  root.style.cssText = `display:flex;flex-direction:column;width: 100%;height:${formatHeight(
     options?.height ?? "480px"
-  )};background:${chromeBg};border:1px solid ${chromeBorder};border-radius:8px;overflow:hidden`;
+  )};overflow:hidden`;
 
-  const chrome = document.createElement("div");
-  chrome.style.cssText = `padding:16px 20px 12px;border-bottom:1px solid ${chromeBorder};flex-shrink:0`;
+  const toolbar = document.createElement("div");
+  toolbar.style.cssText = `padding:0 0 12px;border-bottom:1px solid ${chrome.border};flex-shrink:0`;
 
   const titleBlock = document.createElement("div");
   titleBlock.style.marginBottom = "10px";
 
   const title = document.createElement("h2");
   title.textContent = "Revenue Analytics";
-  title.style.cssText = `margin:0;font-size:18px;font-weight:650;color:${titleColor};letter-spacing:-0.02em`;
+  title.style.cssText = `margin:0;font-size:18px;font-weight:650;color:${chrome.title};letter-spacing:-0.02em`;
 
-  const subtitle = document.createElement("p");
-  subtitle.style.cssText = `margin:4px 0 0;font-size:13px;color:${mutedColor}`;
+  const row = document.createElement("div");
+  row.style.cssText =
+    "display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;width: 100%";
 
   const buttons = document.createElement("div");
-  buttons.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px";
-
-  const toolbar = document.createElement("div");
-  toolbar.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;align-items:center";
-
-  const search = document.createElement("input");
-  search.type = "search";
-  search.placeholder = "Quick filter…";
-  search.setAttribute("aria-label", "Quick filter");
-  search.style.cssText = `flex:1 1 180px;max-width:280px;padding:7px 10px;border-radius:6px;border:1px solid ${inputBorder};background:${inputBg};color:${inputColor};font-size:13px;outline:none`;
-  search.addEventListener("input", () => {
-    searchText = search.value;
-    table?.updateConfig({
-      quickFilter: { text: searchText, mode: "simple", caseSensitive: false },
-    });
-  });
+  buttons.style.cssText = "display:flex;flex-wrap:wrap;gap:8px;align-items:center";
 
   const exportBtn = document.createElement("button");
   exportBtn.type = "button";
   exportBtn.textContent = "Export CSV";
-  exportBtn.style.cssText = `padding:7px 12px;border-radius:6px;border:1px solid ${inputBorder};cursor:pointer;font-size:13px;font-weight:550;background:${chipIdleBg};color:${chipIdleColor}`;
+  exportBtn.style.cssText = `padding:7px 12px;border-radius:6px;border:1px solid ${chrome.border};cursor:pointer;font-size:13px;font-weight:550;background:${chrome.chipIdleBg};color:${chrome.chipIdleColor}`;
   exportBtn.addEventListener("click", () => table?.getAPI().exportToCSV());
 
-  toolbar.append(search, exportBtn);
-
   const tablePad = document.createElement("div");
-  tablePad.style.cssText =
-    "flex:1;min-height:0;padding:12px 20px 20px;display:flex;flex-direction:column";
+  tablePad.style.cssText = "flex:1;min-height:0;display:flex;flex-direction:column";
   const tableHost = document.createElement("div");
   tableHost.style.cssText = "flex:1;min-height:0;height:100%";
   tablePad.appendChild(tableHost);
@@ -96,13 +94,15 @@ export function renderAnalyticsDemo(
       copyHeadersToClipboard: true,
       columns: analyticsDemoConfig.headers,
       enableColumnEditor: true,
-      getRowId: ({ row }) => String(row.id),
+      getRowId: ({ row }) => {
+        const id = row.id;
+        return id == null ? undefined : String(id);
+      },
       height: "100%",
       includeHeadersInCSVExport: true,
       initialSortColumn: pivoted ? undefined : "sales",
       initialSortDirection: pivoted ? undefined : "desc",
       pivot: active.pivot,
-      quickFilter: { text: searchText, mode: "simple", caseSensitive: false },
       rows: analyticsDemoConfig.rows,
       selectableCells: true,
       theme: options?.theme,
@@ -112,11 +112,6 @@ export function renderAnalyticsDemo(
   };
 
   const paint = () => {
-    const active = analyticsPresets.find((p) => p.id === activeId) ?? analyticsPresets[0];
-    const pivoted = active.pivot != null;
-    subtitle.textContent = `${active.description} · ${analyticsRows.length} fact rows${
-      pivoted ? " → pivoted matrix" : ""
-    }`;
     buttons.replaceChildren();
     for (const preset of analyticsPresets) {
       const btn = document.createElement("button");
@@ -124,8 +119,8 @@ export function renderAnalyticsDemo(
       btn.textContent = preset.label;
       const selected = preset.id === activeId;
       btn.style.cssText = `padding:7px 12px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:550;background:${
-        selected ? "#2563eb" : chipIdleBg
-      };color:${selected ? "#fff" : chipIdleColor}`;
+        selected ? chrome.chipActive : chrome.chipIdleBg
+      };color:${selected ? "#fff" : chrome.chipIdleColor}`;
       btn.addEventListener("click", () => {
         activeId = preset.id;
         paint();
@@ -136,22 +131,38 @@ export function renderAnalyticsDemo(
   };
 
   paint();
-  titleBlock.append(title, subtitle);
-  chrome.append(titleBlock, buttons, toolbar);
-  root.append(chrome, tablePad);
+  titleBlock.append(title);
+  row.append(buttons, exportBtn);
+  toolbar.append(titleBlock, row);
+  root.append(toolbar, tablePad);
   container.replaceChildren(root);
   remountTable();
   return table!;
 }
 
-// analytics.demo-data.ts
-import type { ColumnDef, PivotConfig, Row } from "simple-table-core";
 
-export const analyticsHeaders: ColumnDef[] = [
+// analytics.demo-data.ts
+import type { PivotConfig, ColumnDef } from "simple-table-core";
+
+export interface AnalyticsFactRow {
+  id: string;
+  region: string;
+  country: string;
+  category: string;
+  product: string;
+  channel: string;
+  year: number;
+  quarter: string;
+  sales: number;
+  units: number;
+  cost: number;
+}
+
+export const analyticsHeaders: ColumnDef<AnalyticsFactRow>[] = [
   {
     accessor: "region",
     label: "Region",
-    width: 110,
+    width: "auto",
     type: "string",
     sortable: true,
     filterable: true,
@@ -160,7 +171,7 @@ export const analyticsHeaders: ColumnDef[] = [
   {
     accessor: "country",
     label: "Country",
-    width: 100,
+    width: "auto",
     type: "string",
     sortable: true,
     filterable: true,
@@ -169,7 +180,7 @@ export const analyticsHeaders: ColumnDef[] = [
   {
     accessor: "category",
     label: "Category",
-    width: 110,
+    width: "auto",
     type: "string",
     sortable: true,
     filterable: true,
@@ -178,7 +189,7 @@ export const analyticsHeaders: ColumnDef[] = [
   {
     accessor: "product",
     label: "Product",
-    width: 120,
+    width: "auto",
     type: "string",
     sortable: true,
     filterable: true,
@@ -187,7 +198,7 @@ export const analyticsHeaders: ColumnDef[] = [
   {
     accessor: "channel",
     label: "Channel",
-    width: 100,
+    width: "auto",
     type: "string",
     sortable: true,
     filterable: true,
@@ -196,7 +207,7 @@ export const analyticsHeaders: ColumnDef[] = [
   {
     accessor: "year",
     label: "Year",
-    width: 80,
+    width: "auto",
     type: "number",
     sortable: true,
     filterable: true,
@@ -205,7 +216,7 @@ export const analyticsHeaders: ColumnDef[] = [
   {
     accessor: "quarter",
     label: "Quarter",
-    width: 80,
+    width: "auto",
     type: "string",
     sortable: true,
     filterable: true,
@@ -214,7 +225,7 @@ export const analyticsHeaders: ColumnDef[] = [
   {
     accessor: "sales",
     label: "Sales",
-    width: 100,
+    width: "auto",
     type: "number",
     align: "right",
     sortable: true,
@@ -226,7 +237,7 @@ export const analyticsHeaders: ColumnDef[] = [
   {
     accessor: "units",
     label: "Units",
-    width: 80,
+    width: "auto",
     type: "number",
     align: "right",
     sortable: true,
@@ -236,7 +247,7 @@ export const analyticsHeaders: ColumnDef[] = [
   {
     accessor: "cost",
     label: "Cost",
-    width: 100,
+    width: "auto",
     type: "number",
     align: "right",
     sortable: true,
@@ -247,30 +258,28 @@ export const analyticsHeaders: ColumnDef[] = [
   },
 ];
 
-const REGIONS = ["West", "East", "North", "South"] as const;
-const COUNTRIES: Record<(typeof REGIONS)[number], string[]> = {
+const COUNTRIES = {
   West: ["USA", "Canada"],
   East: ["USA", "UK"],
   North: ["Canada", "Sweden"],
   South: ["Brazil", "Australia"],
 };
-const CATEGORIES = ["Hardware", "Software"] as const;
-const PRODUCTS: Record<(typeof CATEGORIES)[number], string[]> = {
+const PRODUCTS = {
   Hardware: ["Widget", "Gadget", "Sensor"],
   Software: ["License", "Subscription"],
 };
-const CHANNELS = ["Direct", "Partner", "Online"] as const;
-const YEARS = [2024, 2025] as const;
-const QUARTERS = ["Q1", "Q2", "Q3", "Q4"] as const;
+const CHANNELS = ["Direct", "Partner", "Online"];
+const YEARS = [2024, 2025];
+const QUARTERS = ["Q1", "Q2", "Q3", "Q4"];
 
 /** Sparse multi-dimension fact cube (~150–250 rows). */
-export function generateAnalyticsRows(): Row[] {
-  const rows: Row[] = [];
+export function generateAnalyticsRows(): AnalyticsFactRow[] {
+  const rows: AnalyticsFactRow[] = [];
   let id = 1;
-  for (const region of REGIONS) {
-    for (const country of COUNTRIES[region]) {
-      for (const category of CATEGORIES) {
-        for (const product of PRODUCTS[category]) {
+  for (const [region, countries] of Object.entries(COUNTRIES)) {
+    for (const country of countries) {
+      for (const [category, products] of Object.entries(PRODUCTS)) {
+        for (const product of products) {
           for (const channel of CHANNELS) {
             for (const year of YEARS) {
               for (const quarter of QUARTERS) {
@@ -303,14 +312,14 @@ export function generateAnalyticsRows(): Row[] {
   return rows;
 }
 
-export const analyticsRows: Row[] = generateAnalyticsRows();
+export const analyticsRows: AnalyticsFactRow[] = generateAnalyticsRows();
 
 export type AnalyticsPreset = {
   id: string;
   label: string;
   description: string;
   /** `null` shows the flat fact table before any pivot is applied. */
-  pivot: PivotConfig | null;
+  pivot: PivotConfig<AnalyticsFactRow> | null;
 };
 
 export const analyticsPresets: AnalyticsPreset[] = [
@@ -376,7 +385,7 @@ export const analyticsPresets: AnalyticsPreset[] = [
   },
 ];
 
-export const analyticsConfig: PivotConfig | null = analyticsPresets[0].pivot;
+export const analyticsConfig: PivotConfig<AnalyticsFactRow> | null = analyticsPresets[0].pivot;
 
 export const analyticsDemoConfig = {
   headers: analyticsHeaders,

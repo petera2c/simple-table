@@ -44,7 +44,7 @@ export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
   {
     accessor: "rank",
     label: "#",
-    width: 56,
+    width: "auto",
     align: "center",
     type: "number",
     pinned: "left",
@@ -58,7 +58,7 @@ export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
   {
     accessor: "asset",
     label: "Asset",
-    width: 240,
+    width: "auto",
     align: "left",
     type: "string",
     pinned: "left",
@@ -98,7 +98,7 @@ export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
   {
     accessor: "price",
     label: "Price",
-    width: 130,
+    width: "auto",
     align: "right",
     type: "number",
     sortable: true,
@@ -115,7 +115,7 @@ export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
   {
     accessor: "priceHistory",
     label: "Last 30d",
-    width: 160,
+    width: "auto",
     align: "center",
     type: "lineAreaChart",
     sortable: false,
@@ -131,14 +131,14 @@ export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
   {
     accessor: "performance",
     label: "Performance",
-    width: 480,
+    width: "auto",
     sortable: false,
     collapsible: true,
     children: [
       {
         accessor: "change24h",
         label: "24h %",
-        width: 120,
+        width: "auto",
         align: "right",
         type: "number",
         sortable: true,
@@ -149,7 +149,7 @@ export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
       {
         accessor: "change1h",
         label: "1h %",
-        width: 110,
+        width: "auto",
         align: "right",
         type: "number",
         sortable: true,
@@ -160,7 +160,7 @@ export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
       {
         accessor: "change7d",
         label: "7d %",
-        width: 110,
+        width: "auto",
         align: "right",
         type: "number",
         sortable: true,
@@ -171,7 +171,7 @@ export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
       {
         accessor: "change30d",
         label: "30d %",
-        width: 120,
+        width: "auto",
         align: "right",
         type: "number",
         sortable: true,
@@ -184,14 +184,14 @@ export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
   {
     accessor: "market",
     label: "Market",
-    width: 560,
+    width: "auto",
     sortable: false,
     collapsible: true,
     children: [
       {
         accessor: "marketCap",
         label: "Market Cap",
-        width: 150,
+        width: "auto",
         align: "right",
         type: "number",
         sortable: true,
@@ -209,7 +209,7 @@ export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
       {
         accessor: "volume24h",
         label: "Volume (24h)",
-        width: 150,
+        width: "auto",
         align: "right",
         type: "number",
         sortable: true,
@@ -227,7 +227,7 @@ export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
       {
         accessor: "supplyPercent",
         label: "Circulating Supply",
-        width: 220,
+        width: "auto",
         align: "left",
         type: "number",
         sortable: true,
@@ -261,7 +261,7 @@ export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
       {
         accessor: "athChangePercent",
         label: "From ATH",
-        width: 120,
+        width: "auto",
         align: "right",
         type: "number",
         sortable: true,

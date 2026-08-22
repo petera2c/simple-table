@@ -61,6 +61,7 @@
 
 <div class="music-theme-container" style="font-family: Inter">
   <SimpleTable
+    autoExpandColumns={true}
     columns={headers}
     rows={[...musicData]}
     {getRowId}

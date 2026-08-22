@@ -4,7 +4,7 @@ import type { TableAPI, Theme } from "@simple-table/react";
 import {
   analyticsDemoConfig,
   analyticsPresets,
-  analyticsRows,
+  type AnalyticsFactRow,
 } from "./analytics.demo-data";
 import "@simple-table/react/styles.css";
 
@@ -12,6 +12,34 @@ function formatHeight(height?: string | number | null): string {
   if (height == null) return "100%";
   if (typeof height === "number") return `${height}px`;
   return height;
+}
+
+function getAnalyticsChrome(theme?: Theme) {
+  if (theme === "modern-black") {
+    return {
+      border: "#262626",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1c1c1c",
+      chipIdleColor: "#a3a3a3",
+      title: "#fafafa",
+    };
+  }
+  if (theme === "modern-dark" || theme === "dark") {
+    return {
+      border: "#374151",
+      chipActive: "#3b82f6",
+      chipIdleBg: "#1f2937",
+      chipIdleColor: "#d1d5db",
+      title: "#f9fafb",
+    };
+  }
+  return {
+    border: "#e5e5e5",
+    chipActive: "#2563eb",
+    chipIdleBg: "#f5f5f5",
+    chipIdleColor: "#525252",
+    title: "#171717",
+  };
 }
 
 const AnalyticsDemo = ({
@@ -22,12 +50,11 @@ const AnalyticsDemo = ({
   theme?: Theme;
 }) => {
   const [activeId, setActiveId] = useState(analyticsPresets[0].id);
-  const [searchText, setSearchText] = useState("");
   const active = analyticsPresets.find((p) => p.id === activeId) ?? analyticsPresets[0];
   const isPivoted = active.pivot != null;
-  const isDark = theme === "dark" || theme === "modern-dark";
+  const chrome = getAnalyticsChrome(theme);
   const tableHostRef = useRef<HTMLDivElement>(null);
-  const tableRef = useRef<TableAPI>(null);
+  const tableRef = useRef<TableAPI<AnalyticsFactRow>>(null);
   const [tableHeightPx, setTableHeightPx] = useState<number | null>(null);
 
   useEffect(() => {
@@ -48,16 +75,6 @@ const AnalyticsDemo = ({
     return () => ro.disconnect();
   }, []);
 
-  const chromeBg = isDark ? "#0f172a" : "#f8fafc";
-  const chromeBorder = isDark ? "#1e293b" : "#e2e8f0";
-  const titleColor = isDark ? "#f1f5f9" : "#0f172a";
-  const mutedColor = isDark ? "#94a3b8" : "#64748b";
-  const chipIdleBg = isDark ? "#1e293b" : "#e2e8f0";
-  const chipIdleColor = isDark ? "#cbd5e1" : "#334155";
-  const inputBg = isDark ? "#1e293b" : "#fff";
-  const inputBorder = isDark ? "#334155" : "#cbd5e1";
-  const inputColor = isDark ? "#e2e8f0" : "#0f172a";
-
   return (
     <div
       style={{
@@ -65,16 +82,13 @@ const AnalyticsDemo = ({
         flexDirection: "column",
         width: "100%",
         height: formatHeight(height),
-        background: chromeBg,
-        border: `1px solid ${chromeBorder}`,
-        borderRadius: 8,
         overflow: "hidden",
       }}
     >
       <div
         style={{
-          padding: "16px 20px 12px",
-          borderBottom: `1px solid ${chromeBorder}`,
+          padding: "0 0 12px",
+          borderBottom: `1px solid ${chrome.border}`,
           flexShrink: 0,
         }}
       >
@@ -84,72 +98,59 @@ const AnalyticsDemo = ({
               margin: 0,
               fontSize: 18,
               fontWeight: 650,
-              color: titleColor,
+              color: chrome.title,
               letterSpacing: "-0.02em",
             }}
           >
             Revenue Analytics
           </h2>
-          <p style={{ margin: "4px 0 0", fontSize: 13, color: mutedColor }}>
-            {active.description} · {analyticsRows.length} fact rows
-            {isPivoted ? " → pivoted matrix" : ""}
-          </p>
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 10 }}>
-          {analyticsPresets.map((preset) => {
-            const selected = preset.id === activeId;
-            return (
-              <button
-                key={preset.id}
-                type="button"
-                onClick={() => setActiveId(preset.id)}
-                style={{
-                  padding: "7px 12px",
-                  borderRadius: 6,
-                  border: "none",
-                  cursor: "pointer",
-                  fontSize: 13,
-                  fontWeight: 550,
-                  background: selected ? "#2563eb" : chipIdleBg,
-                  color: selected ? "#fff" : chipIdleColor,
-                }}
-              >
-                {preset.label}
-              </button>
-            );
-          })}
-        </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
-          <input
-            type="search"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            placeholder="Quick filter…"
-            aria-label="Quick filter"
-            style={{
-              flex: "1 1 180px",
-              maxWidth: 280,
-              padding: "7px 10px",
-              borderRadius: 6,
-              border: `1px solid ${inputBorder}`,
-              background: inputBg,
-              color: inputColor,
-              fontSize: 13,
-              outline: "none",
-            }}
-          />
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 8,
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center" }}>
+            {analyticsPresets.map((preset) => {
+              const selected = preset.id === activeId;
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => setActiveId(preset.id)}
+                  style={{
+                    padding: "7px 12px",
+                    borderRadius: 6,
+                    border: "none",
+                    cursor: "pointer",
+                    fontSize: 13,
+                    fontWeight: 550,
+                    background: selected ? chrome.chipActive : chrome.chipIdleBg,
+                    color: selected ? "#fff" : chrome.chipIdleColor,
+                  }}
+                >
+                  {preset.label}
+                </button>
+              );
+            })}
+          </div>
           <button
             type="button"
             onClick={() => tableRef.current?.exportToCSV()}
             style={{
               padding: "7px 12px",
               borderRadius: 6,
-              border: `1px solid ${inputBorder}`,
+              border: `1px solid ${chrome.border}`,
               cursor: "pointer",
               fontSize: 13,
               fontWeight: 550,
-              background: chipIdleBg,
-              color: chipIdleColor,
+              background: chrome.chipIdleBg,
+              color: chrome.chipIdleColor,
             }}
           >
             Export CSV
@@ -160,7 +161,6 @@ const AnalyticsDemo = ({
         style={{
           flex: 1,
           minHeight: 0,
-          padding: "12px 20px 20px",
           display: "flex",
           flexDirection: "column",
         }}
@@ -177,17 +177,12 @@ const AnalyticsDemo = ({
               copyHeadersToClipboard
               columns={analyticsDemoConfig.headers}
               enableColumnEditor
-              getRowId={({ row }) => String(row.id)}
+              getRowId={({ row }) => row.id}
               height={tableHeightPx}
               includeHeadersInCSVExport
               initialSortColumn={isPivoted ? undefined : "sales"}
               initialSortDirection={isPivoted ? undefined : "desc"}
               pivot={active.pivot}
-              quickFilter={{
-                text: searchText,
-                mode: "simple",
-                caseSensitive: false,
-              }}
               rows={analyticsDemoConfig.rows}
               selectableCells
               theme={theme}

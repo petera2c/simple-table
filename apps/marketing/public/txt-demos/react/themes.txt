@@ -5,7 +5,7 @@ import "@simple-table/react/styles.css";
 
 const ThemesDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -27,7 +27,7 @@ const ThemesDemo = ({
               color: selectedTheme === t.value ? "#1d4ed8" : "#374151",
               fontWeight: selectedTheme === t.value ? 600 : 400,
               cursor: "pointer",
-              fontSize: 13,
+              fontSize: 13
             }}
           >
             {t.label}
@@ -39,6 +39,7 @@ const ThemesDemo = ({
         rows={themesConfig.rows}
         height={height}
         theme={selectedTheme}
+        getRowId={({ row }) => row.id}
       />
     </div>
   );
