@@ -29,10 +29,11 @@
  *      that fires before the first finishes, with all ghosts torn down once
  *      everything settles.
  *      → {@link OverlappingSortsRetainAndReaimGhosts}
- *   3b. Vertical / paced spam (400 rows, 5 columns) — temporarily commented
- *      out. Overlapping sorts snap the same way as main, and this story
- *      fails on that snap. Restore PacedSpamSortPaintedContinuity400 when
- *      we want to catch that again.
+ *   3b. Vertical / paced spam (400 rows, 5 columns): overlapping sorts must
+ *      keep each cell's painted box inside the scroller's visible box.
+ *      → {@link PacedSpamSortPaintedContinuity400}
+ *   3c. Same table as 3b: click Col 1, wait 500ms, click Col 0.
+ *      → {@link TwoClickSortPainted400}
  *   4. Horizontal / leftward (column reverse at right-most scrollLeft):
  *      visible right-side cells reorder to the left side of the table → if
  *      the new `left` is outside `getVisibleBodyCells`'s post-reorder band,
@@ -1501,10 +1502,7 @@ export const OverlappingSortsRetainAndReaimGhosts = {
  * then sorts col_0. Then clicks ID every ~400ms while slides are still in
  * flight. Outgoing cells must remain as ghosts and slide out; incoming cells
  * must slide in from outside the band.
- *
- * Temporarily commented out: overlapping sorts snap the same way as main.
  */
-/*
 export const PacedSpamSortPaintedContinuity400 = {
   tags: ["spam-sort-continuity", "spam-sort-paced"],
   render: () => {
@@ -1943,10 +1941,338 @@ export const PacedSpamSortPaintedContinuity400 = {
     expect(stuck.length, "cells with leftover transform after paced spam-sort settle").toBe(0);
 
     announceHud("Done");
-
   },
 };
-*/
+
+/**
+ * Same 400-row, 5-column table as {@link PacedSpamSortPaintedContinuity400}.
+ * Clicks Col 1, waits 500ms, then clicks Col 0.
+ */
+export const TwoClickSortPainted400 = {
+  tags: ["sort-two-click"],
+  render: () => {
+    const PACED_ROW_COUNT = 400;
+    const PACED_COLUMNS = 5;
+    const PACED_COL_WIDTH = 140;
+    const headers: ColumnDef[] = [{ accessor: "id", label: "ID", width: 100, sortable: true }];
+    for (let i = 0; i < PACED_COLUMNS - 1; i++) {
+      headers.push({
+        accessor: `col_${i}`,
+        label: `Col ${i}`,
+        width: PACED_COL_WIDTH,
+        sortable: true,
+        type: "number",
+      });
+    }
+    const rows: BigRow[] = [];
+    for (let r = 0; r < PACED_ROW_COUNT; r++) {
+      const row: BigRow = {
+        id: `row-${r}`,
+        col_0: r,
+        col_1: PACED_ROW_COUNT - 1 - r,
+        col_2: (r * 17 + 3) % PACED_ROW_COUNT,
+        col_3: (r * r) % PACED_ROW_COUNT,
+      };
+      rows.push(row);
+    }
+    const result = renderConstrainedTable(headers, rows, {
+      getRowId: (params: { row?: { id?: unknown } }) => String(params.row?.id),
+    });
+    setTable(result.table);
+    result.h2.textContent =
+      `Two-click sort · ${PACED_ROW_COUNT} rows × ${PACED_COLUMNS} cols · ${SLOW_DURATION}ms slides`;
+    addParagraph(
+      result.wrapper,
+      "Clicks Col 1, waits 500ms, then clicks Col 0.",
+      result.tableContainer,
+    );
+    return result.wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    await tickFrames(2);
+
+    const RETARGET_JUMP_PX = 2;
+    const FRAME_JUMP_PX = 16;
+    const OVERLAP_PX = 10;
+
+    type IdSample = {
+      rowId: string;
+      remainTop: number;
+      gcrRel: number;
+      destTop: number;
+      ty: number;
+      ghost: boolean;
+    };
+
+    const status =
+      canvasElement.querySelector<HTMLElement>("div[style*='background: #f4f6fb']") ??
+      document.createElement("div");
+
+    const clickSortControl = (accessor: string): void => {
+      const header = canvasElement.querySelector<HTMLElement>(
+        `.st-header-cell[data-accessor="${accessor}"]`,
+      );
+      if (!header) {
+        throw new Error(`${accessor} header cell not found`);
+      }
+      const icon = header.querySelector<HTMLElement>(
+        '.st-icon-container[aria-label*="Sort"]',
+      );
+      const label = header.querySelector<HTMLElement>(".st-header-label");
+      const target = icon ?? label;
+      if (!target) {
+        throw new Error(`${accessor} sort control not found`);
+      }
+      target.click();
+    };
+
+    const sampleIdCells = (): Map<string, IdSample> => {
+      const scroller = findScroller(canvasElement);
+      const sTop = scroller?.getBoundingClientRect().top ?? 0;
+      const map = new Map<string, IdSample>();
+      const cells = canvasElement.querySelectorAll<HTMLElement>(
+        `.st-body-main .st-cell[data-accessor="id"][data-row-id]`,
+      );
+      for (const el of Array.from(cells)) {
+        const rowId = el.textContent?.trim() || el.getAttribute("data-row-id") || "";
+        if (!rowId || map.has(rowId)) continue;
+        const { ty } = readComputedTranslate(el);
+        const destTop = parseFloat(el.style.top || "0");
+        const r = el.getBoundingClientRect();
+        map.set(rowId, {
+          rowId,
+          remainTop: destTop + ty,
+          gcrRel: r.top - sTop,
+          destTop,
+          ty,
+          ghost: el.getAttribute("data-animating-out") === "true",
+        });
+      }
+      return map;
+    };
+
+    const sampleRow0 = (): Array<Record<string, unknown>> => {
+      const scroller = findScroller(canvasElement);
+      const sTop = scroller?.getBoundingClientRect().top ?? 0;
+      const idCell = Array.from(
+        canvasElement.querySelectorAll<HTMLElement>(`.st-body-main .st-cell[data-accessor="id"]`),
+      ).find((el) => (el.textContent || "").trim() === "row-0");
+      const rowKey =
+        idCell?.getAttribute("data-row-id") ||
+        idCell?.id?.replace(/-id$/, "") ||
+        "row-0";
+      const byAttr = canvasElement.querySelectorAll<HTMLElement>(
+        `.st-body-main .st-cell[data-row-id="${rowKey}"]`,
+      );
+      const byId = canvasElement.querySelectorAll<HTMLElement>(
+        `[id^="row-0-"], [id^="${CSS.escape(rowKey)}-"]`,
+      );
+      const seen = new Set<HTMLElement>();
+      const cells: HTMLElement[] = [];
+      for (const el of [...Array.from(byAttr), ...Array.from(byId), ...(idCell ? [idCell] : [])]) {
+        if (seen.has(el)) continue;
+        seen.add(el);
+        cells.push(el);
+      }
+      return cells.map((el) => {
+        const { ty } = readComputedTranslate(el);
+        const destTop = parseFloat(el.style.top || "0");
+        const r = el.getBoundingClientRect();
+        return {
+          accessor: el.getAttribute("data-accessor"),
+          dataRowId: el.getAttribute("data-row-id"),
+          elId: el.id || null,
+          destTop: +destTop.toFixed(1),
+          ty: +ty.toFixed(1),
+          remain: +(destTop + ty).toFixed(1),
+          gcr: +(r.top - sTop).toFixed(1),
+          ghost: el.getAttribute("data-animating-out") === "true",
+        };
+      });
+    };
+
+    const logRow0 = (phase: string, extra?: Record<string, unknown>): void => {
+      const cells = sampleRow0();
+      // #region agent log
+      fetch("http://127.0.0.1:7408/ingest/99ba70f6-1b2c-4193-9432-86f9a32d06e3", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "2a2b49" },
+        body: JSON.stringify({
+          sessionId: "2a2b49",
+          hypothesisId: "row0",
+          location: "42-CellAnimationsVirtualizationTests.stories.ts:TwoClickSortPainted400",
+          message: "row-0 cells",
+          data: { phase, cells, ...extra },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
+    };
+
+    let prev = sampleIdCells();
+    let sortCount = 0;
+    let maxRemainJump = 0;
+    let maxGcrJump = 0;
+    let worst = "";
+    let fail: Error | null = null;
+    let sampling = true;
+    let rafId = 0;
+
+    const checkOverlaps = (phase: string, cells: Map<string, IdSample>): void => {
+      const scroller = findScroller(canvasElement);
+      const height = scroller?.clientHeight ?? VIEWPORT_HEIGHT;
+      const inView = Array.from(cells.values()).filter(
+        (c) => c.gcrRel > -1 && c.gcrRel < height - 1,
+      );
+      const hits: string[] = [];
+      for (let i = 0; i < inView.length; i++) {
+        for (let j = i + 1; j < inView.length; j++) {
+          if (Math.abs(inView[i].gcrRel - inView[j].gcrRel) < OVERLAP_PX) {
+            hits.push(
+              `${inView[i].rowId}@${inView[i].gcrRel.toFixed(0)}/${inView[j].rowId}@${inView[j].gcrRel.toFixed(0)}`,
+            );
+          }
+        }
+      }
+      if (hits.length === 0) return;
+      // #region agent log
+      fetch("http://127.0.0.1:7408/ingest/99ba70f6-1b2c-4193-9432-86f9a32d06e3", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "2a2b49" },
+        body: JSON.stringify({
+          sessionId: "2a2b49",
+          hypothesisId: "D",
+          location: "42-CellAnimationsVirtualizationTests.stories.ts:TwoClickSortPainted400",
+          message: "stacked id rows",
+          data: { phase, hits: hits.slice(0, 12) },
+          timestamp: Date.now(),
+        }),
+      }).catch(() => {});
+      // #endregion
+      worst = hits[0];
+      if (!fail) {
+        fail = new Error(`${phase} stacked rows: ${hits[0]}`);
+      }
+    };
+
+    const checkJumps = (phase: string, budget: number): void => {
+      const next = sampleIdCells();
+      const jumps: Array<Record<string, unknown>> = [];
+      for (const [id, curr] of next) {
+        const before = prev.get(id);
+        if (!before) continue;
+        const dRemain = Math.abs(curr.remainTop - before.remainTop);
+        const dGcr = Math.abs(curr.gcrRel - before.gcrRel);
+        const destChanged = Math.abs(curr.destTop - before.destTop) > 0.5;
+        if (dRemain > maxRemainJump) maxRemainJump = dRemain;
+        if (dGcr > maxGcrJump) maxGcrJump = dGcr;
+        const allowed = destChanged ? RETARGET_JUMP_PX : budget;
+        if (dRemain > allowed || dGcr > allowed) {
+          jumps.push({
+            id,
+            phase,
+            dRemain: +dRemain.toFixed(1),
+            dGcr: +dGcr.toFixed(1),
+            destChanged,
+            fromRemain: +before.remainTop.toFixed(1),
+            toRemain: +curr.remainTop.toFixed(1),
+            fromGcr: +before.gcrRel.toFixed(1),
+            toGcr: +curr.gcrRel.toFixed(1),
+            dest: `${before.destTop.toFixed(0)}→${curr.destTop.toFixed(0)}`,
+            ty: `${before.ty.toFixed(1)}→${curr.ty.toFixed(1)}`,
+            ghost: `${before.ghost}→${curr.ghost}`,
+          });
+          worst = `${id} dRemain=${dRemain.toFixed(1)} dGcr=${dGcr.toFixed(1)} ${phase}`;
+          if (!fail) {
+            fail = new Error(
+              `${id}: ${phase} jump remain=${dRemain.toFixed(1)}px gcr=${dGcr.toFixed(1)}px ` +
+                `(${before.remainTop.toFixed(1)} → ${curr.remainTop.toFixed(1)}) ` +
+                `dest ${before.destTop.toFixed(1)} → ${curr.destTop.toFixed(1)}`,
+            );
+          }
+        }
+      }
+      if (jumps.length > 0) {
+        // #region agent log
+        fetch("http://127.0.0.1:7408/ingest/99ba70f6-1b2c-4193-9432-86f9a32d06e3", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "2a2b49" },
+          body: JSON.stringify({
+            sessionId: "2a2b49",
+            hypothesisId: "A-C-E",
+            location: "42-CellAnimationsVirtualizationTests.stories.ts:TwoClickSortPainted400",
+            message: "id-cell jumps",
+            data: { phase, sortCount, jumps: jumps.slice(0, 12), maxRemainJump, maxGcrJump },
+            timestamp: Date.now(),
+          }),
+        }).catch(() => {});
+        // #endregion
+      }
+      prev = next;
+    };
+
+    const onFrame = (): void => {
+      if (!sampling) return;
+      checkJumps("frame", FRAME_JUMP_PX);
+      rafId = requestAnimationFrame(onFrame);
+    };
+
+    announce(status, "Col 1 sort");
+    clickSortControl("col_1");
+    sortCount = 1;
+    checkJumps("after-first", RETARGET_JUMP_PX);
+    rafId = requestAnimationFrame(onFrame);
+    await sleep(500);
+    checkJumps("pre-second", FRAME_JUMP_PX);
+    const row0Before = sampleRow0();
+    logRow0("pre-second", {});
+    checkOverlaps("pre-second", prev);
+    announce(status, "Col 0 sort");
+    clickSortControl("col_0");
+    sortCount = 2;
+    const row0After = sampleRow0();
+    const row0Jumps = row0Before.map((before) => {
+      const after = row0After.find((c) => c.accessor === before.accessor);
+      if (!after) return { accessor: before.accessor, missing: true, from: before };
+      return {
+        accessor: before.accessor,
+        dRemain: +(Math.abs(Number(after.remain) - Number(before.remain))).toFixed(1),
+        dGcr: +(Math.abs(Number(after.gcr) - Number(before.gcr))).toFixed(1),
+        from: before,
+        to: after,
+      };
+    });
+    logRow0("after-second", { row0Jumps });
+    checkJumps("after-second", RETARGET_JUMP_PX);
+    checkOverlaps("after-second", prev);
+    await tickFrames(2);
+    checkJumps("post-second-frames", FRAME_JUMP_PX);
+    sampling = false;
+    if (rafId) cancelAnimationFrame(rafId);
+    // #region agent log
+    fetch("http://127.0.0.1:7408/ingest/99ba70f6-1b2c-4193-9432-86f9a32d06e3", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "2a2b49" },
+      body: JSON.stringify({
+        sessionId: "2a2b49",
+        hypothesisId: "A-C-E",
+        location: "42-CellAnimationsVirtualizationTests.stories.ts:TwoClickSortPainted400",
+        message: "id-cell jump summary",
+        data: {
+          ok: !fail,
+          worst,
+          maxRemainJump,
+          maxGcrJump,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+    announce(status, fail ? `FAILED ${worst}` : "Done");
+    if (fail) throw fail;
+  },
+};
 
 /**
  * REGRESSION TEST FOR HORIZONTAL ANIMATE-OUT WHEN HORIZONTALLY SCROLLED.

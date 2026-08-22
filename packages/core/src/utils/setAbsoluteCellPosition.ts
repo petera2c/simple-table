@@ -13,8 +13,15 @@
 /** When false, left/top writes do not counter-shift FLIP translates. */
 let flipCompensationEnabled = true;
 
+/** When true, left/top writes keep the painted box by adjusting translate. */
+let keepPaintedOnDestWrite = false;
+
 export const setFlipCompensationEnabled = (enabled: boolean): void => {
   flipCompensationEnabled = enabled;
+};
+
+export const setKeepPaintedOnDestWrite = (enabled: boolean): void => {
+  keepPaintedOnDestWrite = enabled;
 };
 
 const parsePx = (value: string): number => {
@@ -126,6 +133,51 @@ const compensateFlipTransform = (
   return true;
 };
 
+const cancelOwnedSlides = (element: HTMLElement): void => {
+  if (typeof element.getAnimations !== "function") return;
+  for (const anim of element.getAnimations()) {
+    const id = (anim as Animation & { id?: string }).id;
+    if (id === "st-cell-slide" || id === "st-column-reorder") {
+      try {
+        anim.cancel();
+      } catch {
+        // ignore
+      }
+    }
+  }
+};
+
+/**
+ * Write left/top and set translate so the painted box stays where it is.
+ * Nodes that are not on the page yet only get the slot.
+ */
+const writeDestKeepingPaintedBox = (
+  element: HTMLElement,
+  nextLeft: number,
+  nextTop: number,
+): void => {
+  const prevLeft = parsePx(element.style.left);
+  const prevTop = parsePx(element.style.top);
+  if (prevLeft === nextLeft && prevTop === nextTop) return;
+  if (!element.isConnected) {
+    element.style.left = `${nextLeft}px`;
+    element.style.top = `${nextTop}px`;
+    return;
+  }
+
+  const live = readLiveTranslate(element) ?? { x: 0, y: 0 };
+  const paintedLeft = prevLeft + live.x;
+  const paintedTop = prevTop + live.y;
+  element.style.transition = "none";
+  element.style.willChange = "transform";
+  element.classList.add("st-flip-active");
+  element.style.transform = `translate3d(${live.x}px, ${live.y}px, 0)`;
+  cancelOwnedSlides(element);
+  element.style.left = `${nextLeft}px`;
+  element.style.top = `${nextTop}px`;
+  element.style.transform = `translate3d(${paintedLeft - nextLeft}px, ${paintedTop - nextTop}px, 0)`;
+};
+
 /**
  * Set absolute cell coordinates, compensating any active FLIP translate so the
  * visual position does not drift when the logical slot moves.
@@ -135,6 +187,11 @@ export const setAbsoluteCellPosition = (
   nextLeft: number,
   nextTop: number,
 ): void => {
+  if (keepPaintedOnDestWrite) {
+    writeDestKeepingPaintedBox(element, nextLeft, nextTop);
+    return;
+  }
+
   const prevLeft = parsePx(element.style.left);
   const prevTop = parsePx(element.style.top);
   const dLeft = nextLeft - prevLeft;

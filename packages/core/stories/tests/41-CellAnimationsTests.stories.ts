@@ -1332,10 +1332,7 @@ export const SortAnimationDemo = {
  * Painted Y is style.top + the computed translate, not getBoundingClientRect.
  * On the invert frame GCR can follow dest while WAAPI already holds the pixel
  * in the computed matrix; dest+remain is the same quantity the animator uses.
- *
- * Temporarily commented out: overlapping sorts snap the same way as main.
  */
-/*
 export const SpamSortPaintedContinuity = {
   tags: ["spam-sort-continuity"],
   render: () => {
@@ -1634,7 +1631,6 @@ export const SpamSortPaintedContinuity = {
     announceHud("Done");
   },
 };
-*/
 
 export const AnimationsPropWiring = {
   render: () => {

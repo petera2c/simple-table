@@ -1,6 +1,11 @@
 import { getRenderedCells as getBodyRenderedCells } from "../utils/bodyCell/eventTracking";
 import { getRenderedCells as getHeaderRenderedCells } from "../utils/headerCell/eventTracking";
-import { setFlipCompensationEnabled } from "../utils/setAbsoluteCellPosition";
+import {
+  readLiveTranslate,
+  setAbsoluteCellPosition,
+  setFlipCompensationEnabled,
+  setKeepPaintedOnDestWrite,
+} from "../utils/setAbsoluteCellPosition";
 import { CellSlideAnimator } from "./CellSlideAnimator";
 
 const DEFAULT_DURATION = 400;
@@ -162,6 +167,11 @@ interface InFlightCell {
  * change) and {@link play} (after the renderer has placed cells at their new
  * positions).
  *
+ * Sort starts from the painted box of cells that are actually on the page:
+ * keep a node if that box is still in the scroller, remove it if not, and
+ * slide new visible cells in from just outside the edge they enter. Accordion
+ * and column reverse still use the invert + two-frame FLIP path below.
+ *
  * Three classes of cells participate in an animation:
  *   - Persistent cells (visible before AND after): the same DOM node moves to
  *     a new `top`/`left`; FLIP slides it from the old visual spot.
@@ -250,8 +260,26 @@ export class AnimationCoordinator {
 
   /** True while the user is dragging a column header to reorder. */
   private columnReordering = false;
-  /** Holds and slides cells during column drag. Sort uses CSS transitions in play(). */
+  /** Holds and slides cells during column drag, and during painted-DOM sort. */
   private readonly cellSlideAnimator = new CellSlideAnimator();
+  /**
+   * True between a sort snapshot and the matching `play()`. Renderer keep /
+   * remove uses the painted box against the scroller for this window only.
+   */
+  private paintedDomSort = false;
+  /** True while painted-DOM sort slides are still running. */
+  private sortSlidesActive = false;
+  private sortExitWatchRaf: number | null = null;
+  private sortSliding: Map<
+    string,
+    { element: HTMLElement; container: HTMLElement; isRetained: boolean }
+  > = new Map();
+  /** Edge a sort cell last left the scroller from, used if it returns this turn. */
+  private recentSortExitEdge: Map<string, "above" | "below" | "left" | "right"> = new Map();
+  private finishingSort = new Set<string>();
+  /** True while {@link playPaintedDomSort} is still starting slides this turn. */
+  private sortPlayOpen = false;
+  private sortPlaySeq = 0;
 
   /**
    * Invoked immediately BEFORE a retained/ghost element is permanently removed
@@ -311,7 +339,12 @@ export class AnimationCoordinator {
     if (this.columnReordering === active) return;
     this.columnReordering = active;
     this.cellSlideAnimator.setActive(active);
-    setFlipCompensationEnabled(!active);
+    if (active) {
+      setFlipCompensationEnabled(false);
+      setKeepPaintedOnDestWrite(false);
+    } else if (!this.sortSlidesActive) {
+      setFlipCompensationEnabled(true);
+    }
   }
 
   isColumnReordering(): boolean {
@@ -331,12 +364,21 @@ export class AnimationCoordinator {
   }
 
   isInFlight(cellId: string): boolean {
-    return this.inFlight.has(cellId);
+    return this.inFlight.has(cellId) || this.cellSlideAnimator.isRunning(cellId);
   }
 
   /** True while any sort slide, retained cell, or column-reorder slide is running. */
   hasInFlight(): boolean {
     return this.inFlight.size > 0 || this.cellSlideAnimator.hasInFlight();
+  }
+
+  /** True between a sort snapshot and the matching play, while the renderer is painting. */
+  isPaintedDomSort(): boolean {
+    return this.paintedDomSort;
+  }
+
+  forgetSnapshotEntry(cellId: string): void {
+    this.snapshot?.delete(cellId);
   }
 
   getDuration(): number {
@@ -447,13 +489,36 @@ export class AnimationCoordinator {
    *   band) so cells that newly enter the band can FLIP in from their actual
    *   pre-change location and cells that leave the band can FLIP out to it.
    */
+  /**
+   * Capture pre-change positions for cells we may want to animate.
+   *
+   * @param args.containers Body containers; rendered cells are read from the DOM.
+   * @param args.preLayouts Optional per-container conceptual layout. Should
+   *   include positions for ALL rows in the dataset (not just the visible
+   *   band) so cells that newly enter the band can FLIP in from their actual
+   *   pre-change location and cells that leave the band can FLIP out to it.
+   *   Sort omits this and only snapshots nodes already on the page.
+   * @param args.paintedDomSort When true, skip off-screen row slots, read the
+   *   painted box, and play via {@link CellSlideAnimator} in the same turn.
+   */
   captureSnapshot(args: {
     containers: Array<HTMLElement | null | undefined>;
     preLayouts?: Map<HTMLElement, Map<string, CellPosition>>;
+    paintedDomSort?: boolean;
   }): void {
     if (!this.isEnabled()) {
       this.snapshot = null;
+      this.paintedDomSort = false;
+      setKeepPaintedOnDestWrite(false);
       return;
+    }
+
+    this.paintedDomSort = Boolean(args.paintedDomSort);
+    if (this.paintedDomSort) {
+      setFlipCompensationEnabled(false);
+      setKeepPaintedOnDestWrite(true);
+    } else {
+      setKeepPaintedOnDestWrite(false);
     }
 
     // New render cycle starting — drop any scroller-metric cache from the
@@ -500,9 +565,10 @@ export class AnimationCoordinator {
       }
 
       // 3. Conceptual layout for cells not currently in DOM (off-screen rows).
+      // Sort skips this: new visible cells enter from the scroller edge.
       // The supplied layout takes a back seat to live DOM reads so in-flight
       // cells use their real visual position rather than a stale absolute one.
-      const preLayout = args.preLayouts?.get(container);
+      const preLayout = this.paintedDomSort ? undefined : args.preLayouts?.get(container);
       if (preLayout) {
         preLayout.forEach((pos, cellId) => {
           if (!next.has(cellId)) {
@@ -769,26 +835,13 @@ export class AnimationCoordinator {
     const oldTop = parsePx(element.style.top);
     const oldLeft = parsePx(element.style.left);
 
-    // Scale the visual destination on each axis so the slide journey is
-    // bounded but proportional to the true conceptual journey. Without
-    // scaling, a row sorted from position 0 to position 499 of a virtualized
-    // 500-row table would try to slide ~16k pixels vertically in the
-    // animation window — under ease-out it crosses the 500px viewport in the
-    // first ~30ms and the cell appears to teleport. The same problem exists
-    // horizontally: a column moved across a virtualized 30-column table can
-    // need to slide ~6k pixels and would look identically broken. The
-    // scaling also gives cells with very different conceptual destinations
-    // visibly different slide distances, so they fan out instead of marching
-    // off-screen in lockstep.
     const metrics = this.getScrollerMetrics(container);
-    const clippedTop = scaleFlipDistance(newPosition.top, oldTop, newPosition.height, metrics, "y");
-    const clippedLeft = scaleFlipDistance(
-      newPosition.left,
-      oldLeft,
-      newPosition.width,
-      metrics,
-      "x",
-    );
+    const clippedTop = this.paintedDomSort
+      ? newPosition.top
+      : scaleFlipDistance(newPosition.top, oldTop, newPosition.height, metrics, "y");
+    const clippedLeft = this.paintedDomSort
+      ? newPosition.left
+      : scaleFlipDistance(newPosition.left, oldLeft, newPosition.width, metrics, "x");
 
     let map = this.retainedCells.get(container);
     if (!map) {
@@ -812,14 +865,45 @@ export class AnimationCoordinator {
     element.classList.add(RETAINED_CLASS);
     element.setAttribute(RETAINED_ATTR, "true");
 
-    element.style.left = `${clippedLeft}px`;
-    element.style.top = `${clippedTop}px`;
+    if (this.paintedDomSort) {
+      setAbsoluteCellPosition(element, clippedLeft, clippedTop);
+    } else {
+      element.style.left = `${clippedLeft}px`;
+      element.style.top = `${clippedTop}px`;
+    }
     element.style.width = `${newPosition.width}px`;
     element.style.height = `${newPosition.height}px`;
     // Disable pointer events on departing cells so they don't intercept clicks.
     element.style.pointerEvents = "none";
 
     map.set(cellId, element);
+  }
+
+  /**
+   * Re-aim ghosts still leaving the scroller, and drop any whose painted box
+   * is already outside. Rows that belong in the new visible set are left for
+   * {@link claimRetainedForReuse}.
+   */
+  syncRetainedCellsForPaintedSort(
+    container: HTMLElement,
+    newLayout: Map<string, CellPosition>,
+    visibleCellIds: Set<string>,
+  ): void {
+    const map = this.retainedCells.get(container);
+    if (!map) return;
+    for (const [cellId, element] of Array.from(map.entries())) {
+      if (visibleCellIds.has(cellId)) continue;
+      if (!element.isConnected || !this.isCellRenderedInScrollerViewport(element, container)) {
+        this.discardRetainedIfPresent(cellId, container);
+        continue;
+      }
+      const newPos = newLayout.get(cellId);
+      if (!newPos) {
+        this.discardRetainedIfPresent(cellId, container);
+        continue;
+      }
+      this.retainCell({ cellId, element, container, newPosition: newPos });
+    }
   }
 
   /**
@@ -859,6 +943,8 @@ export class AnimationCoordinator {
       return null;
     }
     this.cancelInFlight(cellId);
+    this.sortSliding.delete(cellId);
+    this.cellSlideAnimator.cancelElement(element);
     map.delete(cellId);
     element.classList.remove(RETAINED_CLASS);
     element.removeAttribute(RETAINED_ATTR);
@@ -970,6 +1056,12 @@ export class AnimationCoordinator {
     // Column drag uses commitColumnReorder, not this path.
     if (this.columnReordering) {
       this.snapshot = null;
+      this.paintedDomSort = false;
+      setKeepPaintedOnDestWrite(false);
+      return;
+    }
+    if (this.paintedDomSort) {
+      this.playPaintedDomSort(args);
       return;
     }
     const snapshot = this.snapshot;
@@ -1342,6 +1434,438 @@ export class AnimationCoordinator {
   }
 
   /**
+   * Sort play: each cell still on the page slides from its painted box toward
+   * the new slot in this same turn. Cells that were not on the page start just
+   * outside the edge they enter from. Leaving cells are removed once their
+   * painted box has left the scroller.
+   */
+  private playPaintedDomSort(args: {
+    containers: Array<HTMLElement | null | undefined>;
+  }): void {
+    const snapshot = this.snapshot;
+    this.snapshot = null;
+    this.incomingOrigins = null;
+    this.paintedDomSort = false;
+    setKeepPaintedOnDestWrite(false);
+
+    if (!this.isEnabled() || !snapshot) {
+      this.retainedCells.forEach((map) => {
+        map.forEach((element, cellId) => {
+          if (!this.inFlight.has(cellId) && !this.cellSlideAnimator.isRunning(cellId)) {
+            this.onHostDiscard?.(element);
+            element.remove();
+            map.delete(cellId);
+          }
+        });
+      });
+      return;
+    }
+
+    this.sortSlidesActive = true;
+    this.sortPlayOpen = true;
+    setFlipCompensationEnabled(false);
+    this.sortPlaySeq += 1;
+    const playSeq = this.sortPlaySeq;
+    const debugKnown: Array<Record<string, unknown>> = [];
+    const debugIncoming: Array<Record<string, unknown>> = [];
+    const debugLive: Array<Record<string, unknown>> = [];
+    const debugRow0: Array<Record<string, unknown>> = [];
+    const debugRow0Incoming: Array<Record<string, unknown>> = [];
+    let incomingInView = 0;
+    let incomingOffscreen = 0;
+
+    type Incoming = {
+      cellId: string;
+      element: HTMLElement;
+      container: HTMLElement;
+      destTop: number;
+      height: number;
+    };
+    type Slide = {
+      cellId: string;
+      element: HTMLElement;
+      container: HTMLElement;
+      fromX: number;
+      fromY: number;
+      toX: number;
+      toY: number;
+      isRetained: boolean;
+    };
+
+    const slides: Slide[] = [];
+    const incoming: Incoming[] = [];
+    const seen = new Set<string>();
+    let downVotes = 0;
+    let upVotes = 0;
+
+    const considerKnown = (
+      element: HTMLElement,
+      cellId: string,
+      isRetained: boolean,
+      container: HTMLElement,
+      before: CellSnapshot,
+    ) => {
+      if (seen.has(cellId)) return;
+      if (isRetained && element.hasAttribute(SHRINKING_OUT_ATTR)) {
+        seen.add(cellId);
+        return;
+      }
+      if (element.querySelector(".st-cell-editing")) return;
+
+      const destLeft = parsePx(element.style.left);
+      const destTop = parsePx(element.style.top);
+      const width = parsePx(element.style.width);
+      const height = parsePx(element.style.height);
+      const metrics = this.getScrollerMetrics(container);
+      const fromX = before.left - destLeft;
+      const fromY = before.top - destTop;
+      let toX = 0;
+      let toY = 0;
+
+      const destVisibleY = isRowTopInVerticalViewport(destTop, height, metrics);
+      const destVisibleX = isColumnLeftInHorizontalViewport(destLeft, width, metrics);
+      if (!destVisibleY && Math.abs(fromY) >= MIN_DELTA) {
+        toY = sortExitRemain(destTop, height, metrics, "y", before.top);
+        if (before.top < destTop) downVotes += 1;
+        else upVotes += 1;
+      }
+      if (!destVisibleX && Math.abs(fromX) >= MIN_DELTA) {
+        toX = sortExitRemain(destLeft, width, metrics, "x", before.left);
+      }
+
+      if (cellId.endsWith("-id") && debugKnown.length < 12) {
+        const live = readLiveTranslate(element);
+        debugKnown.push({
+          cellId,
+          isRetained,
+          beforeTop: Math.round(before.top * 10) / 10,
+          destTop: Math.round(destTop * 10) / 10,
+          fromY: Math.round(fromY * 10) / 10,
+          toY: Math.round(toY * 10) / 10,
+          liveY: Math.round((live?.y ?? 0) * 10) / 10,
+          paintedNow: Math.round((destTop + (live?.y ?? 0)) * 10) / 10,
+          destVisibleY,
+          jumpIfPaint: Math.round((destTop + (live?.y ?? 0) - before.top) * 10) / 10,
+        });
+      }
+      if (cellId.startsWith("row-0-") && debugRow0.length < 10) {
+        const live = readLiveTranslate(element);
+        const cellRect = element.getBoundingClientRect();
+        const clip = container.parentElement ?? container;
+        const clipRect = clip.getBoundingClientRect();
+        debugRow0.push({
+          cellId,
+          isRetained,
+          beforeTop: Math.round(before.top * 10) / 10,
+          destTop: Math.round(destTop * 10) / 10,
+          fromY: Math.round(fromY * 10) / 10,
+          toY: Math.round(toY * 10) / 10,
+          liveY: Math.round((live?.y ?? 0) * 10) / 10,
+          paintedNow: Math.round((destTop + (live?.y ?? 0)) * 10) / 10,
+          gcr: Math.round((cellRect.top - clipRect.top) * 10) / 10,
+          jumpIfPaint: Math.round((destTop + (live?.y ?? 0) - before.top) * 10) / 10,
+        });
+      }
+
+      if (Math.abs(fromX - toX) < MIN_DELTA && Math.abs(fromY - toY) < MIN_DELTA) {
+        if (isRetained) {
+          this.cancelInFlight(cellId);
+          this.sortSliding.delete(cellId);
+          this.retainedCells.get(container)?.delete(cellId);
+          this.onHostDiscard?.(element);
+          element.remove();
+          seen.add(cellId);
+          return;
+        }
+        // Live cell whose painted box already sits on the new slot: still
+        // run the slider so leftover remain is replaced this turn.
+      }
+
+      slides.push({ cellId, element, container, fromX, fromY, toX, toY, isRetained });
+      seen.add(cellId);
+    };
+
+    for (const container of args.containers) {
+      if (!container) continue;
+      const retained = this.retainedCells.get(container);
+      if (retained) {
+        retained.forEach((element, cellId) => {
+          const before = snapshot.get(cellId);
+          if (!before) return;
+          considerKnown(element, cellId, true, container, before);
+        });
+      }
+      const cells = collectRenderedCells(container);
+      cells.forEach((element, cellId) => {
+        if (seen.has(cellId)) return;
+        if (element.classList.contains("st-header-cell")) {
+          const before = snapshot.get(cellId);
+          if (before) considerKnown(element, cellId, false, container, before);
+          else seen.add(cellId);
+          return;
+        }
+        const before = snapshot.get(cellId);
+        if (!before) {
+          incoming.push({
+            cellId,
+            element,
+            container,
+            destTop: parsePx(element.style.top),
+            height: parsePx(element.style.height),
+          });
+          seen.add(cellId);
+          return;
+        }
+        considerKnown(element, cellId, false, container, before);
+      });
+    }
+
+    const defaultEdge: "above" | "below" = downVotes >= upVotes ? "below" : "above";
+    const incomingByContainer = new Map<HTMLElement, Incoming[]>();
+    for (const cell of incoming) {
+      let list = incomingByContainer.get(cell.container);
+      if (!list) {
+        list = [];
+        incomingByContainer.set(cell.container, list);
+      }
+      list.push(cell);
+    }
+    incomingByContainer.forEach((list, container) => {
+      const metrics = this.getScrollerMetrics(container);
+      const below: Incoming[] = [];
+      const above: Incoming[] = [];
+      for (const cell of list) {
+        const remembered = this.recentSortExitEdge.get(cell.cellId);
+        const edge =
+          remembered === "above" || remembered === "below" ? remembered : defaultEdge;
+        if (edge === "below") below.push(cell);
+        else above.push(cell);
+      }
+      const addIncoming = (group: Incoming[], edge: "above" | "below") => {
+        if (group.length === 0) return;
+        // New cells whose slot is outside the scroller stay there; no enter slide.
+        const visible = group.filter((c) =>
+          isRowTopInVerticalViewport(c.destTop, c.height, metrics),
+        );
+        incomingOffscreen += group.length - visible.length;
+        incomingInView += visible.length;
+        if (visible.length === 0) return;
+        const dests = visible.map((c) => c.destTop);
+        const minDest = Math.min(...dests);
+        const maxDest = Math.max(...dests);
+        for (const cell of visible) {
+          const startY =
+            edge === "below"
+              ? metrics.scrollTop + metrics.clientHeight + (cell.destTop - minDest)
+              : metrics.scrollTop - cell.height - (maxDest - cell.destTop);
+          const fromY = startY - cell.destTop;
+          if (Math.abs(fromY) < MIN_DELTA) continue;
+          if (cell.cellId.startsWith("row-0-")) {
+            debugRow0Incoming.push({
+              cellId: cell.cellId,
+              destTop: Math.round(cell.destTop * 10) / 10,
+              startY: Math.round(startY * 10) / 10,
+              fromY: Math.round(fromY * 10) / 10,
+              edge,
+            });
+          }
+          if (cell.cellId.endsWith("-id") && debugIncoming.length < 12) {
+            debugIncoming.push({
+              cellId: cell.cellId,
+              destTop: Math.round(cell.destTop * 10) / 10,
+              startY: Math.round(startY * 10) / 10,
+              fromY: Math.round(fromY * 10) / 10,
+              edge,
+            });
+          }
+          slides.push({
+            cellId: cell.cellId,
+            element: cell.element,
+            container: cell.container,
+            fromX: 0,
+            fromY,
+            toX: 0,
+            toY: 0,
+            isRetained: false,
+          });
+        }
+      };
+      addIncoming(below, "below");
+      addIncoming(above, "above");
+    });
+
+    for (const slide of slides) {
+      this.startSortSlide(slide);
+    }
+
+    // #region agent log
+    fetch("http://127.0.0.1:7408/ingest/99ba70f6-1b2c-4193-9432-86f9a32d06e3", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "2a2b49" },
+      body: JSON.stringify({
+        sessionId: "2a2b49",
+        hypothesisId: "A-B-D",
+        location: "AnimationCoordinator.ts:playPaintedDomSort",
+        message: "sort play slides",
+        data: {
+          playSeq,
+          known: slides.length,
+          incoming: incoming.length,
+          retained: debugKnown.filter((r) => r.isRetained).length,
+          idKnown: debugKnown,
+          idIncoming: debugIncoming,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+    // #region agent log
+    fetch("http://127.0.0.1:7408/ingest/99ba70f6-1b2c-4193-9432-86f9a32d06e3", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "2a2b49" },
+      body: JSON.stringify({
+        sessionId: "2a2b49",
+        hypothesisId: "F-H",
+        location: "AnimationCoordinator.ts:playPaintedDomSort",
+        message: "incoming dest vs view",
+        data: {
+          playSeq,
+          incomingInView,
+          incomingOffscreen,
+          incomingTotal: incoming.length,
+          idIncoming: debugIncoming,
+          idLive: debugLive,
+        },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+    // #region agent log
+    fetch("http://127.0.0.1:7408/ingest/99ba70f6-1b2c-4193-9432-86f9a32d06e3", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "2a2b49" },
+      body: JSON.stringify({
+        sessionId: "2a2b49",
+        hypothesisId: "row0",
+        location: "AnimationCoordinator.ts:playPaintedDomSort",
+        message: "row-0 slides",
+        data: { playSeq, known: debugRow0, incoming: debugRow0Incoming },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+
+    this.sortPlayOpen = false;
+    if (this.sortSliding.size > 0) {
+      this.startSortExitWatch();
+    } else {
+      this.maybeEndSortMotion();
+    }
+  }
+
+  private startSortSlide(slide: {
+    cellId: string;
+    element: HTMLElement;
+    container: HTMLElement;
+    fromX: number;
+    fromY: number;
+    toX: number;
+    toY: number;
+    isRetained: boolean;
+  }): void {
+    this.cancelInFlight(slide.cellId);
+    this.sortSliding.set(slide.cellId, {
+      element: slide.element,
+      container: slide.container,
+      isRetained: slide.isRetained,
+    });
+    const easing = slide.isRetained ? OUTGOING_EASING : this.easing;
+    const cleanupTimeout = window.setTimeout(() => {
+      this.finishSortCell(slide.cellId, slide.element, slide.isRetained);
+    }, this.duration + SAFETY_TIMEOUT_SLACK);
+    this.inFlight.set(slide.cellId, {
+      element: slide.element,
+      cleanupTimeout,
+      transitionEndHandler: () => {},
+      isRetained: slide.isRetained,
+    });
+    this.cellSlideAnimator.animate({
+      element: slide.element,
+      id: slide.cellId,
+      fromX: slide.fromX,
+      fromY: slide.fromY,
+      toX: slide.toX,
+      toY: slide.toY,
+      easing,
+      duration: this.duration,
+      onFinish: () => this.finishSortCell(slide.cellId, slide.element, slide.isRetained),
+    });
+  }
+
+  private startSortExitWatch(): void {
+    if (this.sortExitWatchRaf != null) return;
+    const tick = () => {
+      this.sortExitWatchRaf = null;
+      for (const [cellId, rec] of Array.from(this.sortSliding.entries())) {
+        if (!rec.isRetained) continue;
+        if (!rec.element.isConnected) {
+          this.finishSortCell(cellId, rec.element, true);
+          continue;
+        }
+        if (!this.isCellRenderedInScrollerViewport(rec.element, rec.container)) {
+          this.finishSortCell(cellId, rec.element, true);
+        }
+      }
+      if (this.sortSliding.size > 0) {
+        this.sortExitWatchRaf = requestAnimationFrame(tick);
+      } else {
+        this.maybeEndSortMotion();
+      }
+    };
+    this.sortExitWatchRaf = requestAnimationFrame(tick);
+  }
+
+  private finishSortCell(cellId: string, element: HTMLElement, isRetained: boolean): void {
+    if (this.finishingSort.has(cellId)) return;
+    if (!this.inFlight.has(cellId) && !this.sortSliding.has(cellId)) {
+      this.maybeEndSortMotion();
+      return;
+    }
+    this.finishingSort.add(cellId);
+    try {
+      const rec = this.sortSliding.get(cellId);
+      if (isRetained && rec) {
+        const destTop = parsePx(element.style.top);
+        const metrics = this.getScrollerMetrics(rec.container);
+        this.recentSortExitEdge.set(
+          cellId,
+          destTop >= metrics.scrollTop + metrics.clientHeight / 2 ? "below" : "above",
+        );
+      }
+      this.sortSliding.delete(cellId);
+      this.cancelInFlight(cellId);
+      this.cellSlideAnimator.cancelElement(element);
+      this.finishElement(cellId, element, isRetained);
+    } finally {
+      this.finishingSort.delete(cellId);
+      if (!this.sortPlayOpen) this.maybeEndSortMotion();
+    }
+  }
+
+  private maybeEndSortMotion(): void {
+    if (this.sortSliding.size > 0) return;
+    this.sortSlidesActive = false;
+    if (this.sortExitWatchRaf != null) {
+      cancelAnimationFrame(this.sortExitWatchRaf);
+      this.sortExitWatchRaf = null;
+    }
+    if (!this.columnReordering) {
+      setFlipCompensationEnabled(true);
+    }
+    setKeepPaintedOnDestWrite(false);
+  }
+
+  /**
    * Cancel every in-flight transition and clear any armed snapshot. Active
    * cells snap to their final positions; retained cells are removed from the
    * DOM so we don't leak nodes.
@@ -1350,7 +1874,18 @@ export class AnimationCoordinator {
     this.snapshot = null;
     this.incomingOrigins = null;
     this.accordionPreVisibleAccessors = null;
+    this.paintedDomSort = false;
+    setKeepPaintedOnDestWrite(false);
+    this.sortSlidesActive = false;
+    this.sortPlayOpen = false;
+    this.recentSortExitEdge.clear();
+    this.finishingSort.clear();
+    this.sortSliding.clear();
     this.clearScrollerMetricsCache();
+    if (this.sortExitWatchRaf != null) {
+      cancelAnimationFrame(this.sortExitWatchRaf);
+      this.sortExitWatchRaf = null;
+    }
     if (this.scheduledFlip) {
       cancelAnimationFrame(this.scheduledFlip.rafId);
       this.scheduledFlip = null;
@@ -1360,6 +1895,7 @@ export class AnimationCoordinator {
     for (const [cellId, entry] of entries) {
       window.clearTimeout(entry.cleanupTimeout);
       entry.element.removeEventListener("transitionend", entry.transitionEndHandler);
+      this.cellSlideAnimator.cancelElement(entry.element);
       this.finishElement(cellId, entry.element, entry.isRetained);
     }
     // Clean up any retained cells that weren't in flight (e.g. cell was
@@ -1372,6 +1908,9 @@ export class AnimationCoordinator {
       map.clear();
     });
     this.retainedCells.clear();
+    if (!this.columnReordering) {
+      setFlipCompensationEnabled(true);
+    }
   }
 
   destroy(): void {
@@ -1389,48 +1928,19 @@ export class AnimationCoordinator {
   ): CellSnapshot {
     const styleTop = parsePx(element.style.top);
     const styleLeft = parsePx(element.style.left);
-    const inFlight = this.inFlight.get(cellId);
-    if (inFlight) {
-      const rect = element.getBoundingClientRect();
-      const parent = element.offsetParent as HTMLElement | null;
-      if (parent) {
-        const parentRect = parent.getBoundingClientRect();
-        return {
-          sourceContainer,
-          sourceContainerLeft,
-          sourceContainerTop,
-          left: rect.left - parentRect.left + parent.scrollLeft,
-          top: rect.top - parentRect.top + parent.scrollTop,
-          styleTop,
-          styleLeft,
-          fromDom: true,
-        };
-      }
-      return {
-        sourceContainer,
-        sourceContainerLeft,
-        sourceContainerTop,
-        left: rect.left,
-        top: rect.top,
-        styleTop,
-        styleLeft,
-        fromDom: true,
-      };
-    }
-    // Non-in-flight branch: style.top/left is the cell's *logical*
-    // destination, not a viewport-bounded visual position. For columns far
-    // off-screen this can be tens of thousands of pixels away from the
-    // current viewport — same regime as a preLayout entry — so we leave
-    // fromDom=false and let play() compress the FLIP via scaleFlipDistance.
+    const live = readLiveTranslate(element);
+    const fromDom = Boolean(
+      live || this.inFlight.has(cellId) || this.cellSlideAnimator.isRunning(cellId),
+    );
     return {
       sourceContainer,
       sourceContainerLeft,
       sourceContainerTop,
-      left: styleLeft,
-      top: styleTop,
+      left: styleLeft + (live?.x ?? 0),
+      top: styleTop + (live?.y ?? 0),
       styleTop,
       styleLeft,
-      fromDom: false,
+      fromDom,
     };
   }
 
@@ -1610,6 +2120,21 @@ const isColumnLeftInHorizontalViewport = (
   const vpLeft = metrics.scrollLeft;
   const vpRight = metrics.scrollLeft + clientSize;
   return left >= vpLeft && left < vpRight;
+};
+
+/** Remain that places the cell just past the scroller edge in the travel direction. */
+const sortExitRemain = (
+  dest: number,
+  cellSize: number,
+  metrics: ScrollerMetrics,
+  axis: FlipAxis,
+  painted: number,
+): number => {
+  const scroll = axis === "y" ? metrics.scrollTop : metrics.scrollLeft;
+  const client = axis === "y" ? metrics.clientHeight : metrics.clientWidth;
+  const goingPositive = dest > painted;
+  const exitPos = goingPositive ? scroll + client : scroll - cellSize;
+  return exitPos - dest;
 };
 
 const scaleFlipDistance = (

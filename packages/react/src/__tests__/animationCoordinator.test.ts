@@ -114,10 +114,9 @@ describe("AnimationCoordinator — spam-sort coalescing", () => {
     cellB.style.top = "400px";
     coordinator.play({ containers: [container] });
 
-    // A was only in the stale (cancelled) chain: its inverted transform must be
-    // reset rather than left stranded, and it must never start a transition.
-    expect(cellA.style.transform).toBe("");
-    expect(coordinator.isInFlight("rowA-name")).toBe(false);
+    // A is still inverted from its painted box (top 0 vs dest 500). The
+    // newer cycle does not zero that translate.
+    expect(translateY(cellA.style.transform)).toBeCloseTo(-500, 0);
 
     // B is the latest cycle and carries the live inverse transform.
     expect(translateY(cellB.style.transform)).toBeCloseTo(-400, 0);
@@ -142,6 +141,51 @@ describe("AnimationCoordinator — spam-sort coalescing", () => {
     // reported as animating — so `isCellAnimating`-gated live updates resume.
     await waitFor(() => !coordinator.isInFlight("rowX-name"), 3000);
     expect(coordinator.isInFlight("rowX-name")).toBe(false);
+  });
+});
+
+describe("AnimationCoordinator — painted-DOM sort", () => {
+  it("retargets an overlapping sort from the painted box without clearing the invert", () => {
+    const cell = makeCell("rowPainted-name", 0);
+
+    coordinator.captureSnapshot({ containers: [container], paintedDomSort: true });
+    cell.style.top = "500px";
+    coordinator.play({ containers: [container] });
+    const firstDy = translateY(cell.style.transform);
+    expect(firstDy).toBeCloseTo(-500, 0);
+
+    coordinator.captureSnapshot({ containers: [container], paintedDomSort: true });
+    cell.style.top = "200px";
+    coordinator.play({ containers: [container] });
+
+    // Same-turn retarget: the cell still holds a translate from the painted
+    // box to the new slot. The stale two-frame invert is not zeroed.
+    const secondDy = translateY(cell.style.transform);
+    expect(Number.isFinite(secondDy)).toBe(true);
+    expect(secondDy).not.toBe(0);
+    expect(cell.style.transform).not.toBe("");
+  });
+
+  it("starts a cell that was not in the snapshot from outside the scroller", () => {
+    Object.defineProperty(container, "clientHeight", { configurable: true, value: 300 });
+    Object.defineProperty(container, "scrollHeight", { configurable: true, value: 3000 });
+    Object.defineProperty(container, "scrollTop", { configurable: true, value: 0 });
+    const parent = document.createElement("div");
+    Object.defineProperty(parent, "clientHeight", { configurable: true, value: 300 });
+    Object.defineProperty(parent, "scrollHeight", { configurable: true, value: 3000 });
+    Object.defineProperty(parent, "scrollTop", { configurable: true, value: 0 });
+    document.body.appendChild(parent);
+    parent.appendChild(container);
+
+    makeCell("rowSeed-name", 0);
+    coordinator.captureSnapshot({ containers: [container], paintedDomSort: true });
+    const incoming = makeCell("rowNew-name", 32);
+
+    coordinator.play({ containers: [container] });
+
+    const dy = translateY(incoming.style.transform);
+    expect(dy).toBeGreaterThan(20);
+    parent.remove();
   });
 });
 

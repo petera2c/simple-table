@@ -2001,10 +2001,10 @@ const runInterruptSwap = async (
  * desync — during dragover travel, post-swap ease, between-swap gaps, and
  * settle waits. Full Track List fixture + slow FLIP; play budget is 20 minutes.
  *
- * Temporarily commented out: GitHub Actions fails this play on a commit jump
- * that does not reproduce locally.
+ * Do not comment this story out. Keep it exported and runnable. If CI fails,
+ * fix the failure or skip it with Storybook test metadata — do not wrap the
+ * export in a block comment.
  */
-/*
 export const TrackListTenInterruptContinuity = {
   name: "Track List 10× interrupt continuity",
   parameters: {
@@ -2351,4 +2351,3 @@ export const TrackListTenInterruptContinuity = {
     }
   },
 };
-*/

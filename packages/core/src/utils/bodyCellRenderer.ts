@@ -386,8 +386,18 @@ export const renderBodyCells = (
     ? new Set(allRows.map((r) => r.position))
     : new Set(cellsToRender.map((cell) => cell.rowIndex));
 
+  if (animationCoordinator?.isPaintedDomSort() && newCellLayout) {
+    animationCoordinator.syncRetainedCellsForPaintedSort(
+      container,
+      newCellLayout,
+      visibleCellIds,
+    );
+  }
+
   // Remove cells that are no longer visible. When the coordinator wants to
   // animate a cell off-screen, we hand it off instead of removing.
+  const debugSortRemoved: string[] = [];
+  const debugSortKept: string[] = [];
   renderedCells.forEach((element, cellId) => {
     if (!visibleCellIds.has(cellId)) {
       // Untrack from row hover map (the live row no longer owns this DOM node)
@@ -398,23 +408,35 @@ export const renderBodyCells = (
 
       const newPos = newCellLayout?.get(cellId);
       if (animationCoordinator && animationCoordinator.shouldRetain(cellId) && newPos) {
+        const paintedDomSort = animationCoordinator.isPaintedDomSort();
+        const paintedOnScreen = animationCoordinator.isCellRenderedInScrollerViewport(
+          element,
+          container,
+        );
         const oldTop = parseFloat(element.style.top || "0");
         const oldLeft = parseFloat(element.style.left || "0");
         const cellHeight = newPos.height || parseFloat(element.style.height || "0");
         const cellWidth = newPos.width || parseFloat(element.style.width || "0");
-        const shouldAnimate =
-          animationCoordinator.shouldAnimateTransition({
-            beforeTop: oldTop,
-            afterTop: newPos.top,
-            beforeLeft: oldLeft,
-            afterLeft: newPos.left,
-            cellHeight,
-            cellWidth,
-            container,
-          }) ||
-          animationCoordinator.isCellRenderedInScrollerViewport(element, container) ||
-          animationCoordinator.shouldRetainDomCellAtScrollExtrema(cellId, container);
+        const shouldAnimate = paintedDomSort
+          ? paintedOnScreen ||
+            animationCoordinator.shouldRetainDomCellAtScrollExtrema(cellId, container)
+          : animationCoordinator.shouldAnimateTransition({
+              beforeTop: oldTop,
+              afterTop: newPos.top,
+              beforeLeft: oldLeft,
+              afterLeft: newPos.left,
+              cellHeight,
+              cellWidth,
+              container,
+            }) ||
+            paintedOnScreen ||
+            animationCoordinator.shouldRetainDomCellAtScrollExtrema(cellId, container);
         if (shouldAnimate) {
+          if (paintedDomSort && debugSortKept.length < 12) {
+            debugSortKept.push(
+              `${cellId}:on=${paintedOnScreen ? 1 : 0}:old=${oldTop}:new=${newPos.top}`,
+            );
+          }
           // Slide the cell to its new conceptual position (which may be
           // off-screen — the body's overflow clip handles the visual cutoff)
           // and remove it once the slide completes.
@@ -471,11 +493,32 @@ export const renderBodyCells = (
       unregisterCellFromRegistry(element, context.cellRegistry);
       // Permanent removal (no animation hand-off): tear down any renderer
       // subtree mounted into this cell before it leaves the DOM.
+      if (animationCoordinator?.isPaintedDomSort()) {
+        if (debugSortRemoved.length < 12) debugSortRemoved.push(cellId);
+        animationCoordinator.forgetSnapshotEntry(cellId);
+      }
       context.onRendererHostDiscard?.(element);
       element.remove();
       renderedCells.delete(cellId);
     }
   });
+
+  if (debugSortRemoved.length > 0 || debugSortKept.length > 0) {
+    // #region agent log
+    fetch("http://127.0.0.1:7408/ingest/99ba70f6-1b2c-4193-9432-86f9a32d06e3", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "2a2b49" },
+      body: JSON.stringify({
+        sessionId: "2a2b49",
+        hypothesisId: "C",
+        location: "bodyCellRenderer.ts:remove",
+        message: "painted sort keep vs remove",
+        data: { kept: debugSortKept, removed: debugSortRemoved },
+        timestamp: Date.now(),
+      }),
+    }).catch(() => {});
+    // #endregion
+  }
 
   // Remove separators that are no longer visible. Done unconditionally —
   // including on scroll-driven position-only renders — so the separator pass
@@ -667,9 +710,9 @@ export const renderBodyCells = (
     }
   });
 
-  // Second pass: batch create new cells. If the snapshot captured this cell's
-  // pre-change position (e.g. the row was off-screen pre-sort and is now in
-  // the band), play() will FLIP it from there — no extra hook needed here.
+  // Second pass: batch create new cells. Sort places cells that were not on
+  // the page just outside the edge they enter from, then slides them to the
+  // slot. Accordion and column reverse still FLIP from the snapshot.
   //
   // Accordion expand: when the active animation axis is set AND this cell has
   // no snapshot entry, it just appeared because its parent grouping

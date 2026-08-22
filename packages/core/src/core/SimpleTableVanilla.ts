@@ -335,7 +335,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
           this.render("live-sort");
           return;
         }
-        this.accordionController.captureSnapshot();
+        this.accordionController.captureSnapshot({ paintedDomSort: true });
         this.render("sortManager");
       },
       onFilterNotify: (filteredRows) => {

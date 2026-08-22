@@ -106,6 +106,20 @@ export class CellSlideAnimator {
     return this.running.size > 0;
   }
 
+  isRunning(id: string): boolean {
+    return this.running.has(id);
+  }
+
+  /** Stop this node's slide and freeze the painted translate in style. */
+  cancelElement(el: HTMLElement): void {
+    const live = readLiveTranslate(el);
+    if (live) {
+      el.style.transition = "none";
+      el.style.transform = `translate3d(${live.x}px, ${live.y}px, 0)`;
+    }
+    cancelCellSlideAnims(el);
+  }
+
   /**
    * Snapshot header visuals before mid-drag style.left rewrites.
    */

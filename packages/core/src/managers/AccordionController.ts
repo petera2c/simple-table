@@ -57,15 +57,22 @@ export class AccordionController {
     this.lastRenderedVisibilityKey = buildVisibilityKey(headers);
   }
 
-  captureSnapshot(): void {
+  /**
+   * Snapshot cells that are actually on the page. Sort does not include
+   * off-screen row slots. Accordion and column reverse still do.
+   */
+  captureSnapshot(args?: { paintedDomSort?: boolean }): void {
     const { animationCoordinator } = this.host;
-    const preLayouts = animationCoordinator.isEnabled()
-      ? this.host.getCurrentBodyLayouts()
-      : undefined;
+    const paintedDomSort = Boolean(args?.paintedDomSort);
+    const preLayouts =
+      !paintedDomSort && animationCoordinator.isEnabled()
+        ? this.host.getCurrentBodyLayouts()
+        : undefined;
     this.updateAnimationVerticalScroll();
     animationCoordinator.captureSnapshot({
       containers: this.host.getAnimatableContainers(),
       preLayouts,
+      paintedDomSort,
     });
   }
 
