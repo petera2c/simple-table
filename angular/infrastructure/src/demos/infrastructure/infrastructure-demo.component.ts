@@ -1,0 +1,169 @@
+import { AfterViewInit, Component, Input, OnDestroy, ViewChild } from "@angular/core";
+import { SimpleTableComponent } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme, ValueGetterProps } from "@simple-table/angular";
+import { infrastructureData } from "./infrastructure.demo-data";
+import {
+  InfraCpuCellComponent,
+  InfraDiskCellComponent,
+  InfraMemoryCellComponent,
+  InfraResponseCellComponent,
+  InfraServerIdCellComponent,
+  InfraStatusCellComponent,
+} from "./infrastructure-cell-components";
+import { startInfraDemoLiveUpdates } from "./infrastructure-live-updates";
+import "@simple-table/angular/styles.css";
+import type { InfrastructureServer } from "./infrastructure.demo-data";
+
+function getHeaders(theme?: Theme): AngularColumnDef<InfrastructureServer>[] {
+  return [
+    {
+      accessor: "serverId",
+      align: "left",
+      filterable: true,
+      editable: false,
+      sortable: true,
+      label: "Server ID",
+      minWidth: 180,
+      pinned: "left",
+      type: "string",
+      width: "auto",
+      cellRenderer: InfraServerIdCellComponent,
+    },
+    {
+      accessor: "serverName",
+      align: "left",
+      filterable: true,
+      editable: false,
+      sortable: true,
+      label: "Name",
+      minWidth: 200,
+      type: "string",
+      width: "auto",
+    },
+    {
+      accessor: "performance",
+      label: "Performance Metrics",
+      width: "auto",
+      sortable: false,
+      children: [
+        {
+          accessor: "cpuHistory",
+          label: "CPU History",
+          width: "auto",
+          sortable: false,
+          filterable: false,
+          editable: false,
+          align: "center",
+          type: "lineAreaChart",
+          tooltip: "CPU usage over the last 30 intervals",
+        },
+        {
+          accessor: "cpuUsage",
+          label: "CPU %",
+          width: "auto",
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: InfraCpuCellComponent,
+        },
+        {
+          accessor: "memoryUsage",
+          label: "Memory %",
+          width: "auto",
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: InfraMemoryCellComponent,
+        },
+        {
+          accessor: "diskUsage",
+          label: "Disk %",
+          width: "auto",
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: InfraDiskCellComponent,
+        },
+        {
+          accessor: "responseTime",
+          label: "Response (ms)",
+          width: "auto",
+          sortable: true,
+          filterable: true,
+          editable: true,
+          align: "right",
+          type: "number",
+          cellRenderer: InfraResponseCellComponent,
+        },
+      ],
+    },
+    {
+      accessor: "status",
+      label: "Status",
+      width: "auto",
+      sortable: true,
+      filterable: true,
+      editable: false,
+      align: "center",
+      type: "enum",
+      enumOptions: [
+        { label: "Online", value: "online" },
+        { label: "Warning", value: "warning" },
+        { label: "Critical", value: "critical" },
+        { label: "Maintenance", value: "maintenance" },
+        { label: "Offline", value: "offline" },
+      ],
+      valueGetter: ({ row }: ValueGetterProps<InfrastructureServer>) => {
+        const m: Record<string, number> = { critical: 1, offline: 2, warning: 3, maintenance: 4, online: 5 };
+        return m[String(row.status)] || 999;
+      },
+      cellRenderer: InfraStatusCellComponent,
+    },
+  ];
+}
+
+@Component({
+  selector: "infrastructure-demo",
+  standalone: true,
+  imports: [SimpleTableComponent],
+  template: `
+    <simple-table
+      #simpleTable
+      [autoExpandColumns]="true"
+      [columnReordering]="true"
+      [columnResizing]="true"
+      [columns]="headers"
+      [enableColumnEditor]="true"
+      [getRowId]="getRowId"
+      [height]="height"
+      [rows]="rows"
+      [selectableCells]="true"
+      [theme]="theme"
+    ></simple-table>
+  `,
+})
+export class InfrastructureDemoComponent implements AfterViewInit, OnDestroy {
+  @ViewChild("simpleTable") tableRef!: SimpleTableComponent<InfrastructureServer>;
+  @Input() height: string | number = "400px";
+  @Input() theme?: Theme;
+
+  readonly rows: InfrastructureServer[] = infrastructureData;
+  readonly headers: AngularColumnDef<InfrastructureServer>[] = getHeaders();
+  readonly getRowId = ({ row }: GetRowIdParams<InfrastructureServer>) => row.id;
+
+  private cleanupFn?: () => void;
+
+  ngAfterViewInit(): void {
+    this.cleanupFn = startInfraDemoLiveUpdates(() => this.tableRef?.getAPI() ?? null);
+  }
+
+  ngOnDestroy(): void {
+    this.cleanupFn?.();
+  }
+}
