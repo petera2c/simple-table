@@ -41,6 +41,12 @@ export const v4_1_8: ChangelogEntry = {
       description:
         "Search boxes and other inputs inside the table now use the theme text color instead of staying black.",
     },
+    {
+      type: "feature",
+      description:
+        "Connect the table to a THE DataGrid Protocol (TDGP) server. Page changes, sorts, and filters load from the server — and you can group on the server too.",
+      link: "/docs/tdgp",
+    },
   ],
 };
 

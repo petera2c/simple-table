@@ -1292,6 +1292,13 @@ export const SEO_STRINGS = {
         "simple-table, data-grid, datagrid, data table, sports analytics, player statistics, sports dashboard, league table, stats table, responsive table, javascript data grid",
     },
   },
+  tdgp: {
+    title: "Connect Simple Table to a TDGP Server",
+    description:
+      "Load pages, sorts, and filters from a THE DataGrid Protocol (TDGP) server. Use useTdgpTable in React or createTdgpTableSource in other frameworks — no custom backend required.",
+    keywords:
+      "simple-table, data-grid, tdgp, the datagrid protocol, server-side pagination, server-side sorting, server-side filtering, @thedatagrid/client, javascript data grid",
+  },
   liveUpdates: {
     title: "Live Updates in Simple Table Data Grid",
     description:

@@ -39,6 +39,7 @@ import {
   faUpDown,
   faGear,
   faWandMagicSparkles,
+  faPlug,
 } from "@fortawesome/free-solid-svg-icons";
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
@@ -235,6 +236,12 @@ export const docSections: DocSection[] = [
         icon: faCode,
       },
       { id: "pagination", label: "Pagination", path: "/docs/pagination", icon: faPager },
+      {
+        id: "tdgp",
+        label: "Server Data (TDGP)",
+        path: "/docs/tdgp",
+        icon: faPlug,
+      },
       { id: "loading-state", label: "Loading State", path: "/docs/loading-state", icon: faSpinner },
       { id: "empty-state", label: "Empty State", path: "/docs/empty-state", icon: faInbox },
       { id: "live-updates", label: "Live Updates", path: "/docs/live-updates", icon: faBolt },

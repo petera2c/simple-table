@@ -111,6 +111,16 @@ export type {
   TableFilterState,
   TableRow,
   Theme,
+  TdgpAggregation,
+  TdgpAggregationFn,
+  TdgpFilterModel,
+  TdgpQueryClient,
+  TdgpQueryRequest,
+  TdgpQueryResponse,
+  TdgpTableProps,
+  TdgpTableSnapshot,
+  TdgpTableSource,
+  TdgpTableSourceOptions,
   UpdateDataProps,
   ValueFormatter,
   ValueFormatterProps,
@@ -125,4 +135,11 @@ export {
   PIVOT_IS_TOTAL_KEY,
   PIVOT_ACCESSOR_PREFIX,
   PIVOT_BLANK_LABEL,
+  createTdgpTableSource,
+  tableFiltersToTdgpFilter,
+  sortColumnToTdgpSort,
+  TDGP_CHILDREN_ACCESSOR,
+  TDGP_GROUP_KEYS,
 } from "simple-table-core";
+
+export { useTdgpTable } from "./tdgp/useTdgpTable";
