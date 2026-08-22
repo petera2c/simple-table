@@ -235,6 +235,17 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
             },
             absoluteRowIndex: nestedGridPosition,
           });
+        } else if (nestedRows.length > 0) {
+          const nestedIdPath = [...rowPath, currentGroupingKey];
+          const nestedIndexPath = [...rowIndexPath];
+          processRows(
+            nestedRows,
+            currentDepth + 1,
+            nestedIdPath,
+            nestedIndexPath,
+            [...parentIndices, currentRowIndex],
+            stableRowKey
+          );
         } else if (rowState && (rowState.loading || rowState.error || rowState.isEmpty)) {
           const shouldShowState =
             (rowState.loading && hasLoadingRenderer) ||
@@ -281,17 +292,6 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
               parentIndices: [...parentIndices, currentRowIndex],
             });
           }
-        } else if (nestedRows.length > 0) {
-          const nestedIdPath = [...rowPath, currentGroupingKey];
-          const nestedIndexPath = [...rowIndexPath];
-          processRows(
-            nestedRows,
-            currentDepth + 1,
-            nestedIdPath,
-            nestedIndexPath,
-            [...parentIndices, currentRowIndex],
-            stableRowKey
-          );
         }
       }
 

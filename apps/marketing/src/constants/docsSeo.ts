@@ -43,6 +43,7 @@ export const DOC_SLUG_TO_SEO_KEY: Record<string, SeoStringKey> = {
   "row-height": "rowHeight",
   "row-selection": "rowSelection",
   "table-height": "tableHeight",
+  tdgp: "tdgp",
   themes: "themes",
   tooltips: "tooltips",
   "value-formatter": "valueFormatter",

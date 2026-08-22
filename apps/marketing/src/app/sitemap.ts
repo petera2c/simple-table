@@ -112,6 +112,7 @@ const NON_INDEXABLE_SEGMENTS = new Set([
   "/mobile-unsupported",
   // Temporarily hidden from sitemap; page route still exists but is unlinked.
   "/docs/column-editing",
+  "/docs/tdgp",
   // Internal reproduction page; reachable by direct URL only.
   "/sandbox/context-isolation",
   // Internal marketing ops checklist; noindex.

@@ -20,6 +20,7 @@ export const DEMO_LIST = [
   { id: "nested-headers", label: "Nested Headers" },
   { id: "external-sort", label: "External Sort" },
   { id: "external-filter", label: "External Filter" },
+  { id: "tdgp", label: "Server Data (TDGP)" },
   { id: "loading-state", label: "Loading State" },
   { id: "infinite-scroll", label: "Infinite Scroll" },
   { id: "window-infinite-scroll", label: "Window Infinite Scroll" },

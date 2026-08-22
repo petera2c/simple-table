@@ -33,6 +33,20 @@ import type { RenderContext, RenderState } from "./RenderContext";
 
 export type { RenderContext, RenderState } from "./RenderContext";
 
+/** Per-row loading, error, and empty flags used when flattening expanded groups. */
+function rowStateFlagsKey(
+  map: Map<string | number, { loading?: boolean; error?: string | null; isEmpty?: boolean }>,
+): string {
+  if (map.size === 0) return "";
+  const parts: string[] = [];
+  for (const [id, state] of map) {
+    parts.push(
+      `${String(id)}:${state.loading ? 1 : 0}:${state.error ? 1 : 0}:${state.isEmpty ? 1 : 0}`,
+    );
+  }
+  return parts.join("|");
+}
+
 interface FlattenedRowsCache {
   aggregatedRows: Row[];
   quickFilteredRows: Row[];
@@ -46,7 +60,7 @@ interface FlattenedRowsCache {
     expandedRowsSize: number;
     collapsedRowsSize: number;
     expandedDepthsSize: number;
-    rowStateMapSize: number;
+    rowStateKey: string;
     sortKey: string;
     filterKey: string;
   };
@@ -270,6 +284,7 @@ export class RenderOrchestrator {
 
     const q = context.config.quickFilter;
     const quickFilterKey = q ? `${q.text ?? ""}|${q.mode ?? "simple"}` : "";
+    const rowStateKey = rowStateFlagsKey(context.rowStateMap);
 
     const canUseCache =
       this.flattenedRowsCache &&
@@ -279,7 +294,7 @@ export class RenderOrchestrator {
       this.flattenedRowsCache.deps.expandedRowsSize === context.expandedRows.size &&
       this.flattenedRowsCache.deps.collapsedRowsSize === context.collapsedRows.size &&
       this.flattenedRowsCache.deps.expandedDepthsSize === context.expandedDepths.size &&
-      this.flattenedRowsCache.deps.rowStateMapSize === context.rowStateMap.size &&
+      this.flattenedRowsCache.deps.rowStateKey === rowStateKey &&
       this.flattenedRowsCache.deps.sortKey === sortKey &&
       this.flattenedRowsCache.deps.filterKey === filterKey;
 
@@ -306,8 +321,9 @@ export class RenderOrchestrator {
         quickFilter: context.config.quickFilter,
       });
 
-      // Append after aggregate/filter so placeholders keep WeakSet identity and
-      // are not dropped by quick filter. Empty → full skeleton page; else append.
+      // Skeleton rows are built after aggregate/filter so their identity survives
+      // those passes. No rows, or a server-side page fetch: show only skeletons.
+      // Otherwise append them under the current rows (load more / infinite scroll).
       let rowsToFlatten = quickFilteredRows;
       let hasLoadingPlaceholders = false;
       if (isLoading) {
@@ -316,8 +332,11 @@ export class RenderOrchestrator {
           rowsToShow += 1;
         }
         const placeholders = createLoadingPlaceholderRows(rowsToShow);
-        rowsToFlatten =
-          rowsToFlatten.length === 0 ? placeholders : [...rowsToFlatten, ...placeholders];
+        const replaceWithSkeletons =
+          rowsToFlatten.length === 0 || Boolean(context.config.serverSidePagination);
+        rowsToFlatten = replaceWithSkeletons
+          ? placeholders
+          : [...rowsToFlatten, ...placeholders];
         hasLoadingPlaceholders = true;
       }
 
@@ -351,7 +370,7 @@ export class RenderOrchestrator {
           expandedRowsSize: context.expandedRows.size,
           collapsedRowsSize: context.collapsedRows.size,
           expandedDepthsSize: context.expandedDepths.size,
-          rowStateMapSize: context.rowStateMap.size,
+          rowStateKey,
           sortKey,
           filterKey,
         },

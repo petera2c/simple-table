@@ -109,6 +109,11 @@ export class SimpleTableComponent<
   @Input() hoverRowBackground?: SimpleTableAngularProps<TData>["hoverRowBackground"];
   @Input() oddColumnBackground?: SimpleTableAngularProps<TData>["oddColumnBackground"];
   @Input() oddEvenRowBackground?: SimpleTableAngularProps<TData>["oddEvenRowBackground"];
+  /**
+   * Server-driven paging, sort, filter, and grouping props (from useTdgpTable).
+   * Explicit inputs on this component override matching keys on the bag.
+   */
+  @Input() tableProps?: Partial<SimpleTableAngularProps<TData>>;
 
   /** Emits the TableAPI once the table has mounted. */
   @Output() tableReady = new EventEmitter<TableAPI<TData>>();
@@ -207,6 +212,7 @@ export class SimpleTableComponent<
 
   private getProps(): SimpleTableAngularProps<TData> {
     const props: SimpleTableAngularProps<TData> = {
+      ...(this.tableProps ?? {}),
       rows: this.rows,
     };
 

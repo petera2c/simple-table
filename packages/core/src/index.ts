@@ -114,6 +114,40 @@ export {
   PIVOT_BLANK_LABEL,
 };
 export {
+  createTdgpTableSource,
+  mountTdgpTable,
+  tableFiltersToTdgpFilter,
+  sortColumnToTdgpSort,
+  isTdgpGroupNode,
+  tdgpGroupNodeToRow,
+  tdgpGroupNodesToRows,
+  getTdgpGroupKeys,
+  setNestedChildren,
+  TDGP_CHILDREN_ACCESSOR,
+  TDGP_GROUP_KEYS,
+} from "./tdgp";
+export { tableFilterConditions } from "./types/FilterTypes";
+export type {
+  TdgpAggregation,
+  TdgpAggregationFn,
+  TdgpFilterGroup,
+  TdgpFilterModel,
+  TdgpFilterNot,
+  TdgpFilterOperator,
+  TdgpFilterPredicate,
+  TdgpGroupNode,
+  TdgpQueryClient,
+  TdgpQueryRequest,
+  TdgpQueryResponse,
+  TdgpSortModel,
+  TdgpTableProps,
+  TdgpTableSnapshot,
+  TdgpTableSource,
+  TdgpTableSourceOptions,
+  MountTdgpTableOptions,
+  MountedTdgpTable,
+} from "./tdgp";
+export {
   headersStructurallyEqual,
   collectHeaderAccessors,
   rowsShallowUnchanged,

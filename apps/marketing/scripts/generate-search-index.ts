@@ -20,7 +20,7 @@ const docsContentPath = path.join(__dirname, "../src/components/pages/docs-pages
 const outputPath = path.join(__dirname, "../src/constants/docsSearchIndex.json");
 
 /** Temporarily hidden from nav/search. */
-const HIDDEN_DOC_IDS = new Set(["column-editing"]);
+const HIDDEN_DOC_IDS = new Set(["column-editing", "tdgp"]);
 
 /**
  * Slug → Content filename when PascalCase conversion does not match the file on disk.

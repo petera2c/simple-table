@@ -13,8 +13,11 @@ import type {
   SimpleTableProps,
   TableAPI,
   TableFilterState,
+  TdgpGroupNode,
+  TdgpQueryClient,
   UpdateDataProps,
 } from "../index";
+import { tableFilterConditions } from "../index";
 
 interface HREmployee {
   id: number;
@@ -72,6 +75,19 @@ const filterState: TableFilterState<HREmployee> = {
   fullName: filterOk,
 };
 void api.applyFilter(filterState.fullName);
+
+const listedFilters: FilterCondition<HREmployee>[] = tableFilterConditions(filterState);
+listedFilters.map((condition) => condition.operator);
+
+declare const tdgpClient: TdgpQueryClient;
+async function loadEmployees() {
+  const response = await tdgpClient.query("developers-10k");
+  const data: Array<HREmployee | TdgpGroupNode<HREmployee>> = response.data as Array<
+    HREmployee | TdgpGroupNode<HREmployee>
+  >;
+  void data;
+}
+void loadEmployees;
 
 const pivotOk: PivotConfig<HREmployee> = {
   rows: ["firstName"],
