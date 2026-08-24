@@ -158,6 +158,7 @@ export class SectionRenderer {
     });
 
     if (filteredHeaders.length === 0) {
+      cleanupHeaderCellRendering(section, this.onRendererHostDiscard);
       section.style.display = "none";
       return section;
     }
@@ -538,6 +539,23 @@ export class SectionRenderer {
   }
 
   /**
+   * Remove a header strip and discard the header cells inside it.
+   * No-op when the strip is not tracked; returns whether a strip was removed.
+   */
+  releaseHeaderSection(sectionKey: string): boolean {
+    const section = this.headerSections.get(sectionKey);
+    if (!section) return false;
+    cleanupHeaderCellRendering(section, this.onRendererHostDiscard);
+    section.remove();
+    this.headerSections.delete(sectionKey);
+    this.nextColIndexMap.delete(sectionKey);
+    if (sectionKey === "main") {
+      this.mainHeaderScrollPaint = null;
+    }
+    return true;
+  }
+
+  /**
    * Tear down all body sections and forget them so a subsequent
    * `renderBodySection` creates fresh nodes. Used when the empty-state path
    * takes over the body container: clearing `innerHTML` alone leaves
@@ -558,7 +576,9 @@ export class SectionRenderer {
 
   cleanup(): void {
     this.releaseBodySections();
-    this.headerSections.clear();
+    this.releaseHeaderSection("left");
+    this.releaseHeaderSection("main");
+    this.releaseHeaderSection("right");
     this.caches.clearHeader();
     this.caches.clearContext();
     this.nextColIndexMap.clear();

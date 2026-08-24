@@ -45,6 +45,17 @@ export const renderHeaderSections = (args: {
   let currentColIndex = 0;
   const sectionsToKeep: HTMLElement[] = [];
 
+  // Drop a leftover header strip that now has no columns.
+  if (pinnedLeftHeaders.length === 0 && sectionRenderer.releaseHeaderSection("left")) {
+    deps.pinnedLeftHeaderRef.current = null;
+  }
+  if (mainHeaders.length === 0 && sectionRenderer.releaseHeaderSection("main")) {
+    deps.mainHeaderRef.current = null;
+  }
+  if (pinnedRightHeaders.length === 0 && sectionRenderer.releaseHeaderSection("right")) {
+    deps.pinnedRightHeaderRef.current = null;
+  }
+
   if (pinnedLeftHeaders.length > 0) {
     const leftSection = sectionRenderer.renderHeaderSection({
       headers: deps.effectiveHeaders,

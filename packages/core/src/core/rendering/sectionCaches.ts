@@ -68,7 +68,7 @@ export class SectionCellCaches {
 
   private createHeadersHash(headers: ColumnDef[]): string {
     const hashHeader = (h: ColumnDef): string => {
-      let hash = `${h.accessor}:${h.width}:${h.pinned || ""}:${h.hide || ""}:${h.excludeFromRender || ""}`;
+      let hash = `${h.accessor}:${h.width}:${h.pinned || ""}:${h.hide || ""}:${h.excludeFromRender || ""}:${h.label ?? ""}`;
       if (h.children && h.children.length > 0) {
         hash += `:children[${h.children.map(hashHeader).join(",")}]`;
       }

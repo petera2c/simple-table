@@ -11,6 +11,27 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_1_9: ChangelogEntry = {
+  version: "4.1.9",
+  date: "2026-08-24",
+  title: "Headers stay in sync",
+  description:
+    "Column headers now pick up new names, and custom headers stay filled after you pin a column again.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Changing a column label, such as when you switch languages, now updates the header as well as the cells.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Unpinning a column and pinning it again no longer leaves a custom header blank.",
+      link: "/docs/header-renderer",
+    },
+  ],
+};
+
 export const v4_1_8: ChangelogEntry = {
   version: "4.1.8",
   date: "2026-08-22",
@@ -2692,6 +2713,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_1_9,
   v4_1_8,
   v4_1_7,
   v4_1_6,

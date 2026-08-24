@@ -298,6 +298,8 @@ export const createHeaderCellElement = (
     });
   }
 
+  cellElement.dataset.stHeaderLabel = String(header.label ?? "");
+
   return cellElement;
 };
 
@@ -376,4 +378,23 @@ export const refreshHeaderCellIcons = (
       }
     }
   }
+};
+
+/** Keep a reused header cell's visible name in sync with `header.label`. */
+export const syncHeaderCellLabel = (
+  cellElement: HTMLElement,
+  header: AbsoluteCell["header"],
+  context: HeaderRenderContext,
+  colIndex: number,
+): void => {
+  const nextLabel = String(header.label ?? "");
+  if (cellElement.dataset.stHeaderLabel === nextLabel) return;
+
+  if (!header.headerRenderer) {
+    const labelText = cellElement.querySelector(".st-header-label-text");
+    if (labelText) labelText.textContent = nextLabel;
+  }
+
+  refreshHeaderCellIcons(cellElement, header, context, colIndex);
+  cellElement.dataset.stHeaderLabel = nextLabel;
 };

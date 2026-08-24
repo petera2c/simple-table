@@ -13,6 +13,7 @@ import {
   calculateHeaderCellClasses,
   getLastHeaderIndex,
   refreshHeaderCellIcons,
+  syncHeaderCellLabel,
 } from "./headerCell/styling";
 import { updateHeaderSelectionCheckbox } from "./headerCell/selection";
 import { updateHeaderCollapseIconState } from "./headerCell/collapsing";
@@ -271,6 +272,8 @@ export const renderHeaderCells = (
         refreshHeaderCellIcons(cellElement, cell.header, context, cell.colIndex);
         cellElement.dataset.stIconState = iconStateKey;
       }
+
+      syncHeaderCellLabel(cellElement, cell.header, context, cell.colIndex);
     }
   });
 
