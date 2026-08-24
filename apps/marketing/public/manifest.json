@@ -1,7 +1,7 @@
 {
   "name": "Simple Table",
   "short_name": "Simple Table",
-  "description": "The Best React Table Component for Business Applications",
+  "description": "A multi-framework data grid for business applications",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

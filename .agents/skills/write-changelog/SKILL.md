@@ -63,7 +63,7 @@ From 4.1.6:
 
 > You can now build a pivot from the column editor side panel, and multiple row fields show as normal rows instead of nested expand groups.
 
-> If you put more than one field in Rows (for example Quarter and Product), the table shows a full row for each pair — not a collapsed group you have to expand.
+> If you put more than one field in Rows (for example Quarter and Product), the table shows a full row for each pair, not a collapsed group you have to expand.
 
 ## Bad
 

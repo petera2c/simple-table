@@ -50,6 +50,6 @@
   
   <!-- Subtitle -->
   <text x="600" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="400" fill="#94A3B8" text-anchor="middle">
-    Modern React Table Library
+    Multi-Framework Data Grid
   </text>
 </svg>

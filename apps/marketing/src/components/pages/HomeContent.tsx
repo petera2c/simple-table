@@ -169,8 +169,8 @@ export default function HomeContent() {
               transition={{ duration: 0.4, delay: 0.1 }}
             >
               A lightweight data grid packed with 30+ features, dropped into React, Vue, Angular,
-              Svelte, Solid, or vanilla TypeScript in minutes — backed by support that actually
-              replies.
+              Svelte, Solid, or vanilla TypeScript in minutes. Flat pricing (not per developer),
+              backed by real-person support.
             </motion.p>
 
             <motion.p
@@ -346,8 +346,8 @@ export default function HomeContent() {
                     transition={{ duration: 0.4, delay: 0.1 }}
                   >
                     A lightweight data grid packed with 30+ features, dropped into React, Vue,
-                    Angular, Svelte, Solid, or vanilla TypeScript in minutes — backed by support
-                    that actually replies.
+                    Angular, Svelte, Solid, or vanilla TypeScript in minutes. Flat pricing (not per
+                    developer), backed by real-person support.
                   </motion.p>
 
                   <motion.p

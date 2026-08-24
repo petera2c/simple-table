@@ -3,7 +3,7 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "End-User License Agreement (EULA) | Simple Table",
   description:
-    "Read the End-User License Agreement for Simple Table - Terms and conditions for using our React table component library.",
+    "Read the End-User License Agreement for Simple Table. Terms and conditions for using our multi-framework data grid.",
   openGraph: {
     title: "EULA | Simple Table",
     description: "End-User License Agreement for Simple Table",
