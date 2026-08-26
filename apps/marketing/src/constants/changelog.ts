@@ -11,6 +11,27 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_2_0: ChangelogEntry = {
+  version: "4.2.0",
+  date: "2026-08-26",
+  title: "Column changes stay in sync",
+  description:
+    "When you change a column after the table is on the page, such as when you switch languages, headers, cells, filters, and the column editor now follow the new settings.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Changing a column label now updates the names in the column editor, not only the table headers.",
+      link: "/docs/column-visibility",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Changing a column tooltip, formatter, custom cell, filter settings, sort, or alignment now updates the table that is already on the page.",
+    },
+  ],
+};
+
 export const v4_1_9: ChangelogEntry = {
   version: "4.1.9",
   date: "2026-08-24",
@@ -2713,6 +2734,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_2_0,
   v4_1_9,
   v4_1_8,
   v4_1_7,

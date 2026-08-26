@@ -2,6 +2,9 @@ import ColumnDef, { Accessor } from "../../types/ColumnDef";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
 import { FlattenedHeader } from "../../types/FlattenedHeader";
 import { PanelSection } from "../../types/PanelSection";
+import { findHeaderByAccessor } from "../headerUtils";
+
+export { findHeaderByAccessor };
 
 export type { FlattenedHeader };
 
@@ -90,21 +93,6 @@ export const buildColumnVisibilityState = (headers: ColumnDef[]): ColumnVisibili
 
   headers.forEach(processHeader);
   return visibilityState;
-};
-
-/** Find a header node by accessor anywhere in the tree. */
-export const findHeaderByAccessor = (
-  headers: ColumnDef[],
-  accessor: Accessor,
-): ColumnDef | null => {
-  for (const header of headers) {
-    if (header.accessor === accessor) return header;
-    if (header.children?.length) {
-      const nested = findHeaderByAccessor(header.children, accessor);
-      if (nested) return nested;
-    }
-  }
-  return null;
 };
 
 /**

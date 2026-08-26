@@ -3,9 +3,9 @@
  * Uses same SALES_HEADERS and sales-data as React, with autoExpandColumns and enableRowSelection.
  */
 import type { FooterRendererProps } from "../../../src/index";
-import { renderVanillaTable } from "../../utils";
+import { addControlPanel, renderVanillaTable } from "../../utils";
 import { defaultVanillaArgs, type UniversalVanillaArgs } from "../../vanillaStoryConfig";
-import { SALES_HEADERS } from "./sales-headers";
+import { applySalesColumnLabels, SALES_HEADERS, type SalesLocale } from "./sales-headers";
 import salesData from "./sales-data.json";
 
 export const salesExampleDefaults = {
@@ -77,11 +77,41 @@ function createSalesFooter(props: FooterRendererProps): HTMLElement {
 
 export function renderSalesExample(args?: Partial<UniversalVanillaArgs>): HTMLElement {
   const options = { ...defaultVanillaArgs, ...salesExampleDefaults, ...args };
-  const { wrapper, h2 } = renderVanillaTable(SALES_HEADERS, salesData, {
-    ...options,
-    footerRenderer: (props: FooterRendererProps) => createSalesFooter(props),
-    getRowId: ({ row }) => String(row?.id),
-  });
+  let locale: SalesLocale = "en";
+  const { wrapper, h2, table, tableContainer } = renderVanillaTable(
+    applySalesColumnLabels(SALES_HEADERS, locale),
+    salesData,
+    {
+      ...options,
+      footerRenderer: (props: FooterRendererProps) => createSalesFooter(props),
+      getRowId: ({ row }) => String(row?.id),
+    },
+  );
   h2.textContent = "Sales Example";
+
+  let languageButton: HTMLButtonElement | null = null;
+  const panel = addControlPanel(
+    wrapper,
+    [
+      {
+        heading: "Language",
+        buttons: [
+          {
+            label: "한국어",
+            onClick: () => {
+              locale = locale === "en" ? "ko" : "en";
+              table.update({ columns: applySalesColumnLabels(SALES_HEADERS, locale) });
+              if (languageButton) {
+                languageButton.textContent = locale === "en" ? "한국어" : "English";
+              }
+            },
+          },
+        ],
+      },
+    ],
+    tableContainer,
+  );
+  languageButton = panel.querySelector("button");
+
   return wrapper;
 }

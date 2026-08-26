@@ -40,6 +40,35 @@ describe("headersStructurallyEqual", () => {
     expect(headersStructurallyEqual(a, b)).toBe(true);
   });
 
+  it("returns false when a renderer is added", () => {
+    const a = base();
+    const b = base();
+    b[0] = { ...b[0], cellRenderer: () => null };
+    expect(headersStructurallyEqual(a, b)).toBe(false);
+  });
+
+  it("returns false when valueFormatter identity changes", () => {
+    const a = base();
+    const b = base();
+    a[0] = { ...a[0], valueFormatter: ({ value }) => String(value) };
+    b[0] = { ...b[0], valueFormatter: ({ value }) => `$${value}` };
+    expect(headersStructurallyEqual(a, b)).toBe(false);
+  });
+
+  it("returns false when enumOptions labels change", () => {
+    const a = base();
+    const b = base();
+    a[0] = {
+      ...a[0],
+      enumOptions: [{ label: "Jazz", value: "jazz" }],
+    };
+    b[0] = {
+      ...b[0],
+      enumOptions: [{ label: "재즈", value: "jazz" }],
+    };
+    expect(headersStructurallyEqual(a, b)).toBe(false);
+  });
+
   it("returns false when width changes", () => {
     const a = base();
     const b = base();

@@ -22,6 +22,15 @@ afterEach(() => {
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+async function waitFor(predicate: () => boolean, timeoutMs = 3000): Promise<void> {
+  const start = Date.now();
+  while (Date.now() - start < timeoutMs) {
+    if (predicate()) return;
+    await wait(20);
+  }
+  throw new Error("Timed out waiting for condition");
+}
+
 function mount(node: React.ReactElement): HTMLDivElement {
   const host = document.createElement("div");
   document.body.appendChild(host);
@@ -47,7 +56,7 @@ describe("ImperativeDomSlot component", () => {
     node.textContent = "live";
 
     const host = mount(createElement(ImperativeDomSlot, { node }));
-    await wait(0);
+    await waitFor(() => host.querySelector("#slot-node") !== null);
 
     const mounted = host.querySelector("#slot-node");
     expect(mounted).not.toBeNull();
@@ -90,7 +99,7 @@ describe("iconSlotToReactNode", () => {
     expect(isValidElement(result)).toBe(true);
 
     const host = mount(createElement("div", null, result));
-    await wait(0);
+    await waitFor(() => host.querySelector("svg.icon-markup") !== null);
     // The markup is parsed into a real <svg>, not rendered as escaped text.
     expect(host.querySelector("svg.icon-markup")).not.toBeNull();
     expect(host.textContent).not.toContain("<svg");
@@ -139,7 +148,7 @@ describe("mapFooterIconsForReact", () => {
     expect(isDomSlotFor(mapped.nextIcon, nextIcon)).toBe(true);
 
     const host = mount(createElement("div", null, mapped.prevIcon));
-    await wait(0);
+    await waitFor(() => host.querySelector("i.prev-markup") !== null);
     expect(host.querySelector("i.prev-markup")).not.toBeNull();
   });
 });

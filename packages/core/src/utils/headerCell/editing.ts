@@ -2,6 +2,7 @@ import ColumnDef from "../../types/ColumnDef";
 import { HeaderRenderContext } from "./types";
 import { createSelectionCheckbox } from "./selection";
 import { addTrackedEventListener, getHeaderTooltipEpoch } from "./eventTracking";
+import { columnAlignClass, findHeaderByAccessor } from "../headerUtils";
 
 export const createEditableInput = (
   header: ColumnDef,
@@ -74,13 +75,7 @@ export const createLabelContent = (
   const displayLabel = labelOverride !== undefined ? labelOverride : (header.label || "");
 
   const labelTextSpan = document.createElement("span");
-  labelTextSpan.className = `st-header-label-text ${
-    header.align === "right"
-      ? "right-aligned"
-      : header.align === "center"
-        ? "center-aligned"
-        : "left-aligned"
-  }`;
+  labelTextSpan.className = `st-header-label-text ${columnAlignClass(header.align)}`;
 
   if (isSelectionColumn) {
     // Single-select mode has no select-all control
@@ -92,19 +87,24 @@ export const createLabelContent = (
     labelTextSpan.textContent = displayLabel;
   }
   
-  if (header.tooltip && !isSelectionColumn) {
-    // Do not set native title - we show a custom .st-tooltip div instead.
-    // Setting both would show two tooltips (browser default + our styled one).
+  if (!isSelectionColumn) {
     let tooltipElement: HTMLElement | null = null;
     let tooltipTimeout: ReturnType<typeof setTimeout> | null = null;
-    
+
     const tableIsReorderingColumns = () =>
       Boolean(
         labelTextSpan.closest(".simple-table-root")?.classList.contains("st-column-reordering"),
       );
 
+    const liveTooltip = (): string => {
+      const live = findHeaderByAccessor(context.getHeaders(), header.accessor) ?? header;
+      return live.tooltip || "";
+    };
+
     const showTooltip = () => {
       if (tableIsReorderingColumns()) return;
+      const tooltipText = liveTooltip();
+      if (!tooltipText) return;
       // Rapid mouseenter schedules multiple timeouts; cancel the previous one
       // and drop any tooltip this closure still owns before scheduling again.
       if (tooltipTimeout) {
@@ -125,40 +125,45 @@ export const createLabelContent = (
           tooltipTimeout = null;
           return;
         }
+        const nextText = liveTooltip();
+        if (!nextText) {
+          tooltipTimeout = null;
+          return;
+        }
         const rect = labelTextSpan.getBoundingClientRect();
 
         if (rect.width > 0 && rect.height > 0) {
           tooltipElement = document.createElement("div");
           tooltipElement.className = "st-tooltip";
-          tooltipElement.textContent = header.tooltip || "";
+          tooltipElement.textContent = nextText;
           tooltipElement.style.position = "fixed";
           tooltipElement.style.zIndex = "10000";
-          
+
           const tooltipWidth = 200;
           const tooltipHeight = 40;
-          
+
           let left = rect.left + rect.width / 2 - tooltipWidth / 2;
           let top = rect.bottom + 8;
-          
+
           if (left < 8) left = 8;
           else if (left + tooltipWidth > window.innerWidth - 8) {
             left = window.innerWidth - tooltipWidth - 8;
           }
-          
+
           if (top + tooltipHeight > window.innerHeight - 8) {
             top = rect.top - tooltipHeight - 8;
           }
-          
+
           tooltipElement.style.top = `${top}px`;
           tooltipElement.style.left = `${left}px`;
-          
+
           const tableRoot = labelTextSpan.closest(".simple-table-root") as HTMLElement | null;
           (tableRoot || document.body).appendChild(tooltipElement);
         }
         tooltipTimeout = null;
       }, 500);
     };
-    
+
     const hideTooltip = () => {
       if (tooltipTimeout) {
         clearTimeout(tooltipTimeout);
@@ -169,10 +174,10 @@ export const createLabelContent = (
         tooltipElement = null;
       }
     };
-    
+
     addTrackedEventListener(labelTextSpan, "mouseenter", showTooltip as EventListener);
     addTrackedEventListener(labelTextSpan, "mouseleave", hideTooltip as EventListener);
   }
-  
+
   return labelTextSpan;
 };

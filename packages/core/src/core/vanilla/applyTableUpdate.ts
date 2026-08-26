@@ -84,6 +84,7 @@ export const applyTableUpdate = <TData extends RowData = Row>(
     }
     host.getAutoSizeManager().recomputeAccessors(host.getHeaders(), host.getCollapsedHeaders());
     host.getAutoSizeManager().clearNaturalWidths();
+    host.getRenderOrchestrator().invalidateCache("body");
   }
 
   if (config.isLoading !== undefined) {

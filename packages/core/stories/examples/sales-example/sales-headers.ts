@@ -207,3 +207,49 @@ export const SALES_HEADERS: ColumnDef<SalesRow>[] = [
     ],
   },
 ];
+
+export type SalesLocale = "en" | "ko";
+
+const SALES_COLUMN_LABELS: Record<SalesLocale, Record<string, string>> = {
+  en: {
+    repName: "Sales Representative",
+    salesMetrics: "Sales Metrics",
+    dealSize: "Deal Size",
+    dealValue: "Deal Value",
+    isWon: "Status",
+    closeDate: "Close Date",
+    financialMetrics: "Financial Metrics",
+    commission: "Commission",
+    profitMargin: "Profit Margin",
+    dealProfit: "Deal Profit",
+    category: "Category",
+  },
+  ko: {
+    repName: "영업 담당자",
+    salesMetrics: "영업 지표",
+    dealSize: "거래 규모",
+    dealValue: "거래 금액",
+    isWon: "상태",
+    closeDate: "마감일",
+    financialMetrics: "재무 지표",
+    commission: "수수료",
+    profitMargin: "이익률",
+    dealProfit: "거래 이익",
+    category: "카테고리",
+  },
+};
+
+/** Copy columns and set each label from the chosen language. */
+export function applySalesColumnLabels(
+  columns: readonly ColumnDef<SalesRow>[],
+  locale: SalesLocale,
+): ColumnDef<SalesRow>[] {
+  const labels = SALES_COLUMN_LABELS[locale];
+  return columns.map((column) => ({
+    ...column,
+    label: labels[String(column.accessor)] ?? column.label,
+    children: column.children
+      ? applySalesColumnLabels(column.children, locale)
+      : column.children,
+  }));
+}

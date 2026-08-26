@@ -5,6 +5,8 @@ import type {
 } from "simple-table-core";
 import type { MountRegistry } from "../MountRegistry";
 
+const ST_RENDERER_GENERATION = Symbol.for("simple-table.rendererGeneration");
+
 /**
  * Wraps a Vue 3 component into a function that returns an HTMLElement, matching
  * the vanilla renderer contract expected by simple-table-core.
@@ -66,7 +68,14 @@ export function wrapCachedVueRenderer<P extends object>(
   const cache = kind === "cell" ? registry.cellRendererCache : registry.headerRendererCache;
   const existing = cache.get(accessor);
   if (existing) {
-    existing.component = component;
+    if (kind === "cell" && existing.component !== component) {
+      existing.component = component;
+      const current = (existing.wrapped as any)[ST_RENDERER_GENERATION];
+      (existing.wrapped as any)[ST_RENDERER_GENERATION] =
+        (typeof current === "number" ? current : 0) + 1;
+    } else {
+      existing.component = component;
+    }
     return existing.wrapped as (props: P) => HTMLElement;
   }
 
@@ -100,6 +109,7 @@ export function wrapCachedVueRenderer<P extends object>(
     return el;
   };
   slot.wrapped = wrapped;
+  (wrapped as any)[ST_RENDERER_GENERATION] = 0;
   cache.set(accessor, slot);
   return wrapped;
 }

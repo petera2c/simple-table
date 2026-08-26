@@ -3,15 +3,11 @@ import { ColumnEditorSearchFunction, ColumnEditorConfig } from "../../types/Colu
 import { ColumnEditorCustomRenderer } from "../../types/ColumnEditorCustomRendererProps";
 import { FlattenedHeader } from "../../types/FlattenedHeader";
 import type { PivotConfig } from "../../types/PivotTypes";
-import { createColumnEditorRow } from "./createColumnEditorRow";
-import {
-  getColumnEditorCheckboxState,
-  HoveredSeparator,
-} from "./columnEditorUtils";
+import { createColumnEditorRow, syncColumnEditorRow } from "./createColumnEditorRow";
+import { HoveredSeparator } from "./columnEditorUtils";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
 import { IconsConfig } from "../../types/IconsConfig";
 import { partitionRootHeadersByPin, PanelSection } from "../../utils/pinnedColumnUtils";
-import { updateCheckboxElement } from "./createCheckbox";
 import { createPivotPanel, type PivotPanelInstance } from "./createPivotPanel";
 
 export interface CreateColumnEditorPopoutOptions {
@@ -440,11 +436,10 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
   };
 
   /**
-   * When the visible editor row structure is unchanged, sync checkbox visuals
-   * in place instead of wiping the list (avoids destroying the checkbox under
-   * the cursor during heavy setHeaders → onRender work).
+   * When the editor still has one row per column in the same pin groups, update
+   * those rows from the current columns instead of rebuilding the list.
    */
-  const syncVisibilityInPlace = (nextHeaders: ColumnDef[]): boolean => {
+  const syncRowsInPlace = (nextHeaders: ColumnDef[]): boolean => {
     const items = Array.from(
       listsContainer.querySelectorAll<HTMLElement>(".st-header-checkbox-item"),
     );
@@ -484,9 +479,16 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
       }
     }
 
+    if (columnEditorConfig.rowRenderer) {
+      for (let i = 0; i < expected.length; i++) {
+        if (items[i].dataset.stEditorLabel !== expected[i].header.label) {
+          return false;
+        }
+      }
+    }
+
     for (let i = 0; i < expected.length; i++) {
-      const { checked, indeterminate } = getColumnEditorCheckboxState(expected[i].header);
-      updateCheckboxElement(items[i], checked, indeterminate);
+      syncColumnEditorRow(items[i], expected[i].header, essentialAccessors ?? new Set());
     }
     return true;
   };
@@ -609,7 +611,7 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
       rebuildContentLayout();
     }
 
-    if (!structureDirty && headersUpdated && syncVisibilityInPlace(headers)) {
+    if (!structureDirty && headersUpdated && syncRowsInPlace(headers)) {
       return;
     }
 

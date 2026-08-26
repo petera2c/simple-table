@@ -39,6 +39,25 @@ export const getHeaderLeafIndices = (header: ColumnDef, colIndex: number): numbe
   return columnsToSelect;
 };
 
+/** Alignment class on header labels and body cell content. */
+export const columnAlignClass = (align?: string): string =>
+  align === "right" ? "right-aligned" : align === "center" ? "center-aligned" : "left-aligned";
+
+/** Find a header node by accessor anywhere in the tree. */
+export const findHeaderByAccessor = (
+  headers: ColumnDef[],
+  accessor: ColumnDef["accessor"],
+): ColumnDef | null => {
+  for (const header of headers) {
+    if (header.accessor === accessor) return header;
+    if (header.children?.length) {
+      const nested = findHeaderByAccessor(header.children, accessor);
+      if (nested) return nested;
+    }
+  }
+  return null;
+};
+
 /**
  * Flattens a nested header structure to get all leaf headers
  * @param headers The headers array to flatten

@@ -1,5 +1,5 @@
 import { getCellId } from "../cellUtils";
-import { getHeaderLeafIndices, getHeaderDescriptionId, getHeaderDescription } from "../headerUtils";
+import { getHeaderLeafIndices, getHeaderDescriptionId, getHeaderDescription, columnAlignClass, findHeaderByAccessor } from "../headerUtils";
 import { DEFAULT_SHOW_WHEN } from "../../types/ColumnDef";
 import { AbsoluteCell, HeaderRenderContext } from "./types";
 import { createSortIcon } from "./sorting";
@@ -251,7 +251,8 @@ export const createHeaderCellElement = (
 
   const handleClick = (event: MouseEvent) => {
     if (!isSelectionColumn) {
-      handleColumnHeaderClick(event, header, colIndex, context);
+      const live = findHeaderByAccessor(context.getHeaders(), header.accessor) ?? header;
+      handleColumnHeaderClick(event, live, colIndex, context);
     }
   };
 
@@ -259,7 +260,8 @@ export const createHeaderCellElement = (
 
   const handleDoubleClick = (event: MouseEvent) => {
     if (!isSelectionColumn) {
-      handleColumnHeaderDoubleClick(event, header, context);
+      const live = findHeaderByAccessor(context.getHeaders(), header.accessor) ?? header;
+      handleColumnHeaderDoubleClick(event, live, context);
     }
   };
 
@@ -299,6 +301,8 @@ export const createHeaderCellElement = (
   }
 
   cellElement.dataset.stHeaderLabel = String(header.label ?? "");
+  cellElement.dataset.stHeaderPaint = headerPaintKey(header);
+  cellElement.dataset.stHasHeaderRenderer = header.headerRenderer ? "1" : "0";
 
   return cellElement;
 };
@@ -380,21 +384,120 @@ export const refreshHeaderCellIcons = (
   }
 };
 
-/** Keep a reused header cell's visible name in sync with `header.label`. */
+/** Fields that reused header cells must paint from the current column. */
+const headerPaintKey = (header: AbsoluteCell["header"]): string => {
+  const enums = (header.enumOptions ?? []).map((o) => `${o.label}:${o.value}`).join(",");
+  const ops = (header.filterOperators ?? []).join(",");
+  return [
+    String(header.label ?? ""),
+    header.tooltip ?? "",
+    header.align ?? "",
+    header.filterable ? "1" : "0",
+    header.sortable ? "1" : "0",
+    header.type ?? "",
+    header.disableReorder ? "1" : "0",
+    header.headerRenderer ? "1" : "0",
+    enums,
+    ops,
+  ].join("\0");
+};
+
+const syncHeaderDescription = (
+  cellElement: HTMLElement,
+  header: AbsoluteCell["header"],
+): void => {
+  const descriptionId = getHeaderDescriptionId(header.accessor);
+  const nextText = getHeaderDescription(header, Boolean(header.filterable));
+  let desc = cellElement.querySelector<HTMLElement>(`#${descriptionId}`);
+
+  if (!nextText) {
+    desc?.remove();
+    cellElement.removeAttribute("aria-describedby");
+    return;
+  }
+
+  if (!desc) {
+    desc = document.createElement("span");
+    desc.id = descriptionId;
+    desc.className = "st-sr-only";
+    cellElement.appendChild(desc);
+  }
+  desc.textContent = nextText;
+  cellElement.setAttribute("aria-describedby", descriptionId);
+};
+
+const syncHeaderAriaSort = (
+  cellElement: HTMLElement,
+  header: AbsoluteCell["header"],
+  context: HeaderRenderContext,
+): void => {
+  if (header.sortable) {
+    if (context.sort?.key.accessor === header.accessor) {
+      cellElement.setAttribute(
+        "aria-sort",
+        context.sort.direction === "asc" ? "ascending" : "descending",
+      );
+    } else {
+      cellElement.setAttribute("aria-sort", "none");
+    }
+  } else {
+    cellElement.removeAttribute("aria-sort");
+  }
+};
+
+const syncHeaderDragAttribute = (
+  cellElement: HTMLElement,
+  header: AbsoluteCell["header"],
+  context: HeaderRenderContext,
+): void => {
+  const labelElement = cellElement.querySelector<HTMLElement>(".st-header-label");
+  if (!labelElement) return;
+  const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
+  if (!context.columnReordering || isSelectionColumn || header.disableReorder) {
+    labelElement.removeAttribute("draggable");
+  } else {
+    labelElement.setAttribute("draggable", "true");
+  }
+};
+
+/** Keep a reused header cell in sync with the current column definition. */
 export const syncHeaderCellLabel = (
   cellElement: HTMLElement,
   header: AbsoluteCell["header"],
   context: HeaderRenderContext,
   colIndex: number,
 ): void => {
-  const nextLabel = String(header.label ?? "");
-  if (cellElement.dataset.stHeaderLabel === nextLabel) return;
+  const live = findHeaderByAccessor(context.getHeaders(), header.accessor) ?? header;
+  const nextPaint = headerPaintKey(live);
+  if (cellElement.dataset.stHeaderPaint === nextPaint) return;
 
-  if (!header.headerRenderer) {
-    const labelText = cellElement.querySelector(".st-header-label-text");
-    if (labelText) labelText.textContent = nextLabel;
+  const hadRenderer = cellElement.dataset.stHasHeaderRenderer === "1";
+  const hasRenderer = Boolean(live.headerRenderer);
+  const labelElement = cellElement.querySelector<HTMLElement>(".st-header-label");
+
+  if (hasRenderer) {
+    refreshHeaderCellIcons(cellElement, live, context, colIndex);
+  } else {
+    if (hadRenderer && labelElement) {
+      context.onRendererHostDiscard?.(labelElement);
+      removeFloatingHeaderTooltips(labelElement);
+      labelElement.innerHTML = "";
+      labelElement.appendChild(createLabelContent(live, context));
+    } else {
+      const labelText = cellElement.querySelector<HTMLElement>(".st-header-label-text");
+      if (labelText && !live.isSelectionColumn) {
+        labelText.textContent = String(live.label ?? "");
+        labelText.className = `st-header-label-text ${columnAlignClass(live.align)}`;
+      }
+    }
+    refreshHeaderCellIcons(cellElement, live, context, colIndex);
   }
 
-  refreshHeaderCellIcons(cellElement, header, context, colIndex);
-  cellElement.dataset.stHeaderLabel = nextLabel;
+  syncHeaderAriaSort(cellElement, live, context);
+  syncHeaderDescription(cellElement, live);
+  syncHeaderDragAttribute(cellElement, live, context);
+
+  cellElement.dataset.stHeaderLabel = String(live.label ?? "");
+  cellElement.dataset.stHeaderPaint = nextPaint;
+  cellElement.dataset.stHasHeaderRenderer = hasRenderer ? "1" : "0";
 };

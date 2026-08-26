@@ -41,6 +41,8 @@ function unwrapStaticMarkupHost(container: HTMLDivElement): HTMLElement {
  * wrapper), which can freeze the page after autofit / width sync.
  */
 export const ST_WRAPPED_RENDERER = Symbol.for("simple-table.wrappedRenderer");
+/** Bumped on a cached cellRenderer wrapper when the React component identity changes. */
+export const ST_RENDERER_GENERATION = Symbol.for("simple-table.rendererGeneration");
 
 /** True when `fn` was produced by one of the wrap helpers in this module. */
 export function isWrappedRenderer(fn: unknown): boolean {
@@ -148,7 +150,12 @@ export function wrapCachedCellRenderer<P extends object>(
 
   const existing = bridge.cellRendererCache.get(accessor);
   if (existing) {
-    existing.component = Component;
+    if (existing.component !== Component) {
+      existing.component = Component;
+      const current = (existing.wrapped as any)[ST_RENDERER_GENERATION];
+      (existing.wrapped as any)[ST_RENDERER_GENERATION] =
+        (typeof current === "number" ? current : 0) + 1;
+    }
     return existing.wrapped as (props: P) => HTMLElement;
   }
 
@@ -164,6 +171,7 @@ export function wrapCachedCellRenderer<P extends object>(
     return container;
   });
   slot.wrapped = wrapped;
+  (wrapped as any)[ST_RENDERER_GENERATION] = 0;
   bridge.cellRendererCache.set(accessor, slot);
   return wrapped;
 }

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { Button } from "antd";
 import SalesExample from "./SalesExample";
 import type { Theme } from "@simple-table/react";
 import { useExampleHeight } from "@/hooks/useExampleHeight";
@@ -8,6 +10,7 @@ import ExamplesWrapper from "../ExamplesWrapper";
 import { getTableIcons } from "@/utils/getTableIcons";
 import { useExamplesContext } from "@/providers/ExamplesProvider";
 import ExampleControls from "@/components/ExampleControls";
+import type { SalesLocale } from "./sales-headers";
 
 const ROW_HEIGHT = 32;
 
@@ -25,6 +28,7 @@ export default function SalesExampleWrapper({
   const { currentTheme, currentIconLibrary } = useExamplesContext();
   const selectedTheme = (currentTheme as Theme) || theme;
   const tableIcons = getTableIcons(currentIconLibrary);
+  const [locale, setLocale] = useState<SalesLocale>("en");
 
   const containerHeight = useExampleHeight({
     isUsingPagination: enablePagination,
@@ -37,7 +41,17 @@ export default function SalesExampleWrapper({
       height={`${containerHeight}px`}
       selectedTheme={selectedTheme}
       titleRenderer={({ codeButton, sandboxButton }) => (
-        <ExampleControls codeButton={codeButton} sandboxButton={sandboxButton} />
+        <>
+          <ExampleControls codeButton={codeButton} sandboxButton={sandboxButton} />
+          <div className="mb-2">
+            <Button
+              type="default"
+              onClick={() => setLocale((current) => (current === "en" ? "ko" : "en"))}
+            >
+              {locale === "en" ? "한국어" : "English"}
+            </Button>
+          </div>
+        </>
       )}
       Preview={() => (
         <ExamplesWrapper>
@@ -45,6 +59,7 @@ export default function SalesExampleWrapper({
             key={currentIconLibrary}
             height={containerHeight}
             icons={tableIcons}
+            locale={locale}
             onTableReady={onTableReady}
             theme={selectedTheme}
           />

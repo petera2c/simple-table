@@ -1,5 +1,5 @@
 import ColumnDef from "../../types/ColumnDef";
-import { getHeaderLeafIndices, getColumnRange } from "../headerUtils";
+import { getHeaderLeafIndices, getColumnRange, findHeaderByAccessor } from "../headerUtils";
 import {
   getHeaderIndexPath,
   swapHeaders,
@@ -149,16 +149,26 @@ export const attachDragHandlers = (
   const { columnReordering, draggedHeaderRef, hoveredHeaderRef } = context;
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
 
-  if (!columnReordering || header.disableReorder || isSelectionColumn) return;
+  if (!columnReordering || isSelectionColumn) return;
 
-  labelElement.setAttribute("draggable", "true");
+  if (!header.disableReorder) {
+    labelElement.setAttribute("draggable", "true");
+  }
+
+  const resolveHeader = () =>
+    findHeaderByAccessor(context.getHeaders(), header.accessor) ?? header;
 
   const handleDragStart = (event: Event) => {
+    const live = resolveHeader();
+    if (live.disableReorder) {
+      event.preventDefault();
+      return;
+    }
     if (dragEndCommitTimeoutId !== null) {
       clearTimeout(dragEndCommitTimeoutId);
       dragEndCommitTimeoutId = null;
     }
-    draggedHeaderRef.current = header;
+    draggedHeaderRef.current = live;
     setPrevUpdateTime(Date.now());
     cellElement.classList.add("st-dragging");
     // Resolve root at event time — handlers attach before the cell is in the DOM,
@@ -233,11 +243,12 @@ export const attachDragHandlers = (
           Math.pow(screenY - prevDraggingPosition.screenY, 2),
       );
 
-      hoveredHeaderRef.current = header;
+      hoveredHeaderRef.current = resolveHeader();
 
       const draggedHeader = draggedHeaderRef.current;
       if (!draggedHeader) return;
-      if (header.accessor === draggedHeader.accessor) return;
+      const live = resolveHeader();
+      if (live.accessor === draggedHeader.accessor) return;
 
       // Hit-testing follows the transformed (visual) box. Mid-slide neighbors can
       // sit under the pointer and look like a new drop target — swapping with them
@@ -256,7 +267,7 @@ export const attachDragHandlers = (
       }
 
       const draggedSection = getHeaderSection(draggedHeader, liveHeaders);
-      const hoveredSection = getHeaderSection(header, liveHeaders);
+      const hoveredSection = getHeaderSection(live, liveHeaders);
       const isCrossSectionDrag = draggedSection !== hoveredSection;
 
       let newHeaders: ColumnDef[];
@@ -266,13 +277,13 @@ export const attachDragHandlers = (
         const result = insertHeaderAcrossSections({
           headers: liveHeaders,
           draggedHeader,
-          hoveredHeader: header,
+          hoveredHeader: live,
         });
         newHeaders = result.newHeaders;
         emergencyBreak = result.emergencyBreak;
       } else {
         const draggedHeaderIndexPath = getHeaderIndexPath(liveHeaders, draggedHeader.accessor);
-        const hoveredHeaderIndexPath = getHeaderIndexPath(liveHeaders, header.accessor);
+        const hoveredHeaderIndexPath = getHeaderIndexPath(liveHeaders, live.accessor);
 
         if (!draggedHeaderIndexPath || !hoveredHeaderIndexPath) {
           return;

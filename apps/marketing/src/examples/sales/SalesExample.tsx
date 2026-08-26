@@ -1,24 +1,27 @@
 import { SimpleTable } from "@simple-table/react";
 import type { CellChangeProps, Theme, ReactIconsConfig } from "@simple-table/react";
-import { SALES_HEADERS } from "./sales-headers";
-import { useState, useEffect } from "react";
+import { applySalesColumnLabels, SALES_HEADERS, type SalesLocale } from "./sales-headers";
+import { useState, useEffect, useMemo } from "react";
 import "@simple-table/react/styles.css";
 import { useSalesData } from "./useSalesData";
 
 export default function SalesExample({
   height,
   icons,
+  locale = "en",
   onTableReady,
   theme,
 }: {
   height?: string | number | null;
   icons?: ReactIconsConfig;
+  locale?: SalesLocale;
   onTableReady?: () => void;
   theme?: Theme;
 }) {
   const { data: fetchedData, isLoading } = useSalesData();
   const [data, setData] = useState(fetchedData);
   const [isMobile, setIsMobile] = useState(false);
+  const columns = useMemo(() => applySalesColumnLabels(SALES_HEADERS, locale), [locale]);
 
   // Update local data when fetched data changes
   useEffect(() => {
@@ -71,7 +74,7 @@ export default function SalesExample({
       autoExpandColumns={!isMobile}
       columnResizing
       columnReordering
-      columns={SALES_HEADERS}
+      columns={columns}
       enableColumnEditor
       height={height ? `${height}px` : "70dvh"}
       icons={icons}

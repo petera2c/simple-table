@@ -8,6 +8,7 @@ import { createEditor } from "./editing";
 import { createCellContent } from "./content";
 import { CellLiveRef, cellLiveRefMap } from "./cellLiveRef";
 import { setAbsoluteCellPosition } from "../setAbsoluteCellPosition";
+import { columnAlignClass } from "../headerUtils";
 
 // Re-exported for backwards compatibility with existing import sites.
 export { cellLiveRefMap };
@@ -37,8 +38,57 @@ interface CellContentKey {
   value: unknown;
   theme: unknown;
   skeleton: boolean;
+  type: unknown;
+  align: unknown;
+  cellClass: unknown;
+  valueFormatter: unknown;
+  cellRenderer: unknown;
+  rendererGeneration: number;
 }
 const contentKeyMap = new WeakMap<HTMLElement, CellContentKey>();
+
+const ST_RENDERER_GENERATION = Symbol.for("simple-table.rendererGeneration");
+
+const rendererGeneration = (fn: unknown): number => {
+  if (typeof fn !== "function") return 0;
+  const n = (fn as unknown as Record<symbol, unknown>)[ST_RENDERER_GENERATION];
+  return typeof n === "number" ? n : 0;
+};
+
+const cellContentKey = (
+  row: unknown,
+  value: unknown,
+  theme: unknown,
+  skeleton: boolean,
+  header: { type?: unknown; align?: unknown; cellClass?: unknown; valueFormatter?: unknown; cellRenderer?: unknown },
+): CellContentKey => ({
+  row,
+  value,
+  theme,
+  skeleton,
+  type: header.type,
+  align: header.align,
+  cellClass: header.cellClass,
+  valueFormatter: header.valueFormatter,
+  cellRenderer: header.cellRenderer,
+  rendererGeneration: rendererGeneration(header.cellRenderer),
+});
+
+const contentKeysEqual = (a: CellContentKey, b: CellContentKey): boolean =>
+  a.row === b.row &&
+  a.value === b.value &&
+  a.theme === b.theme &&
+  a.skeleton === b.skeleton &&
+  a.type === b.type &&
+  a.align === b.align &&
+  a.cellClass === b.cellClass &&
+  a.valueFormatter === b.valueFormatter &&
+  a.cellRenderer === b.cellRenderer &&
+  a.rendererGeneration === b.rendererGeneration;
+
+const applyContentAlign = (contentSpan: HTMLElement, align?: string): void => {
+  contentSpan.className = `st-cell-content ${columnAlignClass(align)}`;
+};
 
 /** Drop the content memo so the next `updateBodyCellElement` rebuilds. */
 export const invalidateBodyCellContentMemo = (cellElement: HTMLElement): void => {
@@ -341,13 +391,7 @@ export const createBodyCellElement = (
       liveContext.onRendererHostDiscard?.(cellElement);
       cellElement.innerHTML = "";
       const contentSpan = document.createElement("span");
-      contentSpan.className = `st-cell-content ${
-        header.align === "right"
-          ? "right-aligned"
-          : header.align === "center"
-            ? "center-aligned"
-            : "left-aligned"
-      }`;
+      applyContentAlign(contentSpan, header.align);
       createCellContent(cell, liveContext, contentSpan);
       cellElement.appendChild(contentSpan);
     }
@@ -358,12 +402,13 @@ export const createBodyCellElement = (
   // Seed the content memo key so the first updateBodyCellElement can skip the
   // rebuild when the cell's inputs haven't changed since creation.
   if (!cell.header.expandable) {
-    contentKeyMap.set(cellElement, {
-      row: cell.row,
-      value: getNestedValue(row, header.accessor),
-      theme: context.theme,
-      skeleton: Boolean(cell.tableRow.isLoadingSkeleton),
-    });
+    contentKeyMap.set(cellElement, cellContentKey(
+      cell.row,
+      getNestedValue(row, header.accessor),
+      context.theme,
+      Boolean(cell.tableRow.isLoadingSkeleton),
+      header,
+    ));
   }
 
   // Mutable row + tableRow ref so handlers (and the cell registry's
@@ -397,12 +442,13 @@ export const createBodyCellElement = (
             // treat this freshly-rendered value as stale and rebuild it again.
             if (!header.expandable) {
               const liveContext = cellLiveRefMap.get(cellElement)?.context ?? context;
-              contentKeyMap.set(cellElement, {
-                row: liveRef.row,
-                value: getNestedValue(liveRef.row, header.accessor),
-                theme: liveContext.theme,
-                skeleton: Boolean(liveRef.tableRow.isLoadingSkeleton),
-              });
+              contentKeyMap.set(cellElement, cellContentKey(
+                liveRef.row,
+                getNestedValue(liveRef.row, header.accessor),
+                liveContext.theme,
+                Boolean(liveRef.tableRow.isLoadingSkeleton),
+                header,
+              ));
             }
 
             // Add update flash animation
@@ -703,6 +749,13 @@ export const updateBodyCellElement = (
       const prevKey = contentKeyMap.get(cellElement);
       const newValue = getNestedValue(cell.row, cell.header.accessor);
       const isSkeleton = Boolean(cell.tableRow.isLoadingSkeleton);
+      const nextKey = cellContentKey(
+        cell.row,
+        newValue,
+        context.theme,
+        isSkeleton,
+        cell.header,
+      );
       // Also rebuild when content was emptied out-of-band:
       // - childNodes wiped (innerHTML = "") without going through this path
       // - React portal host still present but disposeHost already unmounted its
@@ -717,20 +770,11 @@ export const updateBodyCellElement = (
         portalHost.childNodes.length === 0;
       const contentMissing = contentSpan.childNodes.length === 0 || portalDisposedEmpty;
       const contentUnchanged =
-        !contentMissing &&
-        prevKey !== undefined &&
-        prevKey.row === cell.row &&
-        prevKey.value === newValue &&
-        prevKey.theme === context.theme &&
-        prevKey.skeleton === isSkeleton;
+        !contentMissing && prevKey !== undefined && contentKeysEqual(prevKey, nextKey);
 
       if (!contentUnchanged) {
-        contentKeyMap.set(cellElement, {
-          row: cell.row,
-          value: newValue,
-          theme: context.theme,
-          skeleton: isSkeleton,
-        });
+        contentKeyMap.set(cellElement, nextKey);
+        applyContentAlign(contentSpan, cell.header.align);
         // Discard the previous renderer subtree (React portal, etc.) before
         // replacing the content span's children.
         context.onRendererHostDiscard?.(contentSpan);

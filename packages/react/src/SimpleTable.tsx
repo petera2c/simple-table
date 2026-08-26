@@ -123,8 +123,8 @@ function SimpleTableInner<TData extends ReactDefaultRowData = ReactDefaultRowDat
   }, []);
 
   // Sync prop changes to the vanilla instance.
-  // - `columns`: push only when structure changes (ignore renderer
-  //   identity churn from inline column builders).
+  // - `columns`: push when structure, formatters, enum options, or renderer
+  //   presence change. Renderer function identity alone is ignored.
   // - `rows`: skip when ids + shallow field equality match the last sync
   //   (covers `rows.map(r => ({...r}))` anti-pattern).
   useLayoutEffect(() => {

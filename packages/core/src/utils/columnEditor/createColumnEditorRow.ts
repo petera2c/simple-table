@@ -17,7 +17,7 @@ import {
 } from "./columnEditorUtils";
 import { swapHeaders, getHeaderIndexPath } from "../../managers/DragHandlerManager";
 import { deepClone } from "../generalUtils";
-import { createCheckbox } from "./createCheckbox";
+import { createCheckbox, updateCheckboxElement } from "./createCheckbox";
 import { ColumnVisibilityState } from "../../types/ColumnVisibilityTypes";
 import {
   isHeaderEssential,
@@ -69,6 +69,44 @@ export interface CreateColumnEditorRowResult {
   /** Run after the row fragment is connected to the document (e.g. listEl.appendChild). */
   scheduleExpandIconAnimation?: () => void;
 }
+
+/** Write checkbox, name, expand label, and essential lock onto an existing editor row. */
+export const syncColumnEditorRow = (
+  row: HTMLElement,
+  header: ColumnDef,
+  essentialAccessors: ReadonlySet<string> = new Set(),
+): void => {
+  const { checked, indeterminate } = getColumnEditorCheckboxState(header);
+  updateCheckboxElement(row, checked, indeterminate);
+
+  const label = row.querySelector(".st-column-label-container");
+  if (label) {
+    label.textContent = header.label;
+  }
+
+  const expand = row.querySelector<HTMLElement>(".st-column-editor-expand-icon");
+  if (expand) {
+    const expanded = expand.getAttribute("aria-expanded") === "true";
+    expand.setAttribute(
+      "aria-label",
+      expanded ? `Collapse ${header.label} column` : `Expand ${header.label} column`,
+    );
+  }
+
+  const essential = isHeaderEssential(header, essentialAccessors);
+  const checkbox = row.querySelector<HTMLElement>(".st-checkbox-label");
+  if (checkbox) {
+    if (essential) {
+      checkbox.classList.add("st-checkbox-disabled");
+      checkbox.style.pointerEvents = "none";
+    } else {
+      checkbox.classList.remove("st-checkbox-disabled");
+      checkbox.style.pointerEvents = "";
+    }
+  }
+
+  row.dataset.stEditorLabel = header.label;
+};
 
 export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): CreateColumnEditorRowResult => {
   const {
@@ -133,6 +171,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
   const rowContainer = document.createElement("div");
   rowContainer.className = "st-header-checkbox-item";
   rowContainer.dataset.accessor = String(header.accessor);
+  rowContainer.dataset.stEditorLabel = header.label;
   rowContainer.style.paddingLeft = paddingLeft;
   rowContainer.draggable = true;
 
@@ -149,7 +188,8 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
   };
 
   const handleCheckboxChange = (checked: boolean) => {
-    if (!canToggleVisibility) return;
+    const live = findHeaderByAccessor(resolveHeaders(), header.accessor);
+    if (live && isHeaderEssential(live, essentialAccessors)) return;
 
     const next = deepClone(resolveHeaders());
     const target = findHeaderByAccessor(next, header.accessor);
@@ -533,6 +573,7 @@ export const createColumnEditorRow = (options: CreateColumnEditorRowOptions): Cr
     }
   }
 
+  syncColumnEditorRow(rowContainer, header, essentialAccessors);
   fragment.appendChild(rowContainer);
 
   const bottomSeparator = document.createElement("div");

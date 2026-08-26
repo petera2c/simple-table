@@ -7,7 +7,7 @@
 import type { GetRowIdParams } from "../types/GetRowId";
 import type Row from "../types/Row";
 
-/** Minimal header shape for structural comparison (renderers ignored). */
+/** Minimal header shape for structural comparison. Renderer identity is ignored; presence is not. */
 export type HeaderStructureLike = {
   accessor: string | number | symbol;
   width?: number | string;
@@ -32,6 +32,11 @@ export type HeaderStructureLike = {
   tooltip?: string;
   quickFilterable?: boolean;
   filterOperators?: ReadonlyArray<string>;
+  cellClass?: string;
+  valueFormatter?: unknown;
+  cellRenderer?: unknown;
+  headerRenderer?: unknown;
+  enumOptions?: ReadonlyArray<{ label?: string; value?: unknown }>;
   children?: ReadonlyArray<HeaderStructureLike>;
 };
 
@@ -60,9 +65,24 @@ function headerStructureEqual(a: HeaderStructureLike, b: HeaderStructureLike): b
     a.excludeFromRender !== b.excludeFromRender ||
     a.autoSizeMode !== b.autoSizeMode ||
     a.tooltip !== b.tooltip ||
-    a.quickFilterable !== b.quickFilterable
+    a.quickFilterable !== b.quickFilterable ||
+    a.cellClass !== b.cellClass ||
+    a.valueFormatter !== b.valueFormatter ||
+    Boolean(a.cellRenderer) !== Boolean(b.cellRenderer) ||
+    Boolean(a.headerRenderer) !== Boolean(b.headerRenderer)
   ) {
     return false;
+  }
+
+  const aEnums = a.enumOptions;
+  const bEnums = b.enumOptions;
+  if (aEnums !== bEnums) {
+    if (!aEnums || !bEnums || aEnums.length !== bEnums.length) return false;
+    for (let i = 0; i < aEnums.length; i++) {
+      if (aEnums[i].label !== bEnums[i].label || aEnums[i].value !== bEnums[i].value) {
+        return false;
+      }
+    }
   }
 
   const aOps = a.filterOperators;
@@ -88,7 +108,8 @@ function headerStructureEqual(a: HeaderStructureLike, b: HeaderStructureLike): b
 
 /**
  * True when two header trees describe the same columns (accessors, widths,
- * flags, nesting). Ignores renderer identity.
+ * flags, nesting, formatters, enum options). Ignores renderer identity; still
+ * treats adding or removing a renderer as a change.
  */
 export function headersStructurallyEqual(
   a: ReadonlyArray<HeaderStructureLike> | undefined,

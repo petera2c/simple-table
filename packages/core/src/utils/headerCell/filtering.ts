@@ -4,6 +4,7 @@ import { addTrackedEventListener } from "./eventTracking";
 import { createFilterDropdown } from "../filters/createFilterDropdown";
 import { createDropdown } from "../filters/createDropdown";
 import { FilterCondition } from "../../types/FilterTypes";
+import { findHeaderByAccessor } from "../headerUtils";
 
 export const createFilterIcon = (
   header: ColumnDef,
@@ -104,9 +105,13 @@ export const createFilterIcon = (
 
       const containerElement = context.mainBodyRef.current || undefined;
 
+      const liveHeader =
+        findHeaderByAccessor(context.getHeaders(), header.accessor) ?? header;
+      const liveFilter = filters[liveHeader.accessor];
+
       filterDropdownInstance = createFilterDropdown({
-        header,
-        currentFilter,
+        header: liveHeader,
+        currentFilter: liveFilter,
         onApplyFilter,
         onClearFilter,
         containerRef: containerElement,

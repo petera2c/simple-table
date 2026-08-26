@@ -68,7 +68,29 @@ export class SectionCellCaches {
 
   private createHeadersHash(headers: ColumnDef[]): string {
     const hashHeader = (h: ColumnDef): string => {
-      let hash = `${h.accessor}:${h.width}:${h.pinned || ""}:${h.hide || ""}:${h.excludeFromRender || ""}:${h.label ?? ""}`;
+      const enums = (h.enumOptions ?? []).map((o) => `${o.label}:${o.value}`).join(",");
+      const ops = (h.filterOperators ?? []).join(",");
+      let hash = [
+        h.accessor,
+        h.width,
+        h.pinned || "",
+        h.hide || "",
+        h.excludeFromRender || "",
+        h.label ?? "",
+        h.tooltip ?? "",
+        h.type ?? "",
+        h.align ?? "",
+        h.filterable ? "1" : "0",
+        h.sortable ? "1" : "0",
+        h.disableReorder ? "1" : "0",
+        h.essential ? "1" : "0",
+        h.cellClass ?? "",
+        callbackIdentityKey(h.valueFormatter),
+        callbackIdentityKey(h.cellRenderer),
+        callbackIdentityKey(h.headerRenderer),
+        enums,
+        ops,
+      ].join(":");
       if (h.children && h.children.length > 0) {
         hash += `:children[${h.children.map(hashHeader).join(",")}]`;
       }

@@ -16,6 +16,8 @@ export default defineConfig({
       "src/__tests__/**/*.{test,spec}.{ts,tsx}",
       "../core/src/__tests__/columnOwnership.test.ts",
       "../core/src/__tests__/headerCellReuse.test.ts",
+      "../core/src/__tests__/columnEditorLabelReuse.test.ts",
+      "../core/src/__tests__/columnPropReuse.test.ts",
       "../core/src/__tests__/parkAndStagger.test.ts",
     ],
     // The vanilla core imports a CSS bundle on load. We assert on DOM classes,
