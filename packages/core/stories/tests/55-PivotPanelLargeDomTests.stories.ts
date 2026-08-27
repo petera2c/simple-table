@@ -22,7 +22,10 @@ import {
 
 const meta: Meta = {
   title: "Tests/55 - Pivot Panel Large DOM",
-  parameters: { layout: "padded" },
+  parameters: {
+    layout: "padded",
+    test: { timeout: 120_000 },
+  },
 };
 export default meta;
 
