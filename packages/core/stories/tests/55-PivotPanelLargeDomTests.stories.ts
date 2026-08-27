@@ -7,6 +7,7 @@ import type { Meta, StoryObj } from "@storybook/html";
 import { expect, userEvent } from "@storybook/test";
 import { buildPivotAccessor, buildPivotRowTotalAccessor } from "../../src/index";
 import { waitForTable, waitUntil, getRowCount } from "./testUtils";
+import { renderVanillaTable } from "../utils";
 import {
   LARGE_CHANNELS,
   LARGE_PIVOT_ROWS,
@@ -147,6 +148,23 @@ const expectSourceFlatHeaders = (root: HTMLElement) => {
   ]) {
     expectHeaderPresent(root, label);
   }
+};
+
+// First story in this file. Test-runner runs it before the large-grid plays.
+export const PivotPanelLargeWarmUp: Story = {
+  parameters: { tags: ["warmup"] },
+  render: () =>
+    renderVanillaTable(
+      [{ accessor: "name", label: "Name", width: 160, type: "string" }],
+      [
+        { id: 1, name: "Ada" },
+        { id: 2, name: "Grace" },
+      ],
+      { getRowId: (p) => String((p.row as { id?: number })?.id), height: "160px" },
+    ).wrapper,
+  play: async () => {
+    await waitForTable();
+  },
 };
 
 export const LargeGridPanelClicksMatchRenderedHtml: Story = {
