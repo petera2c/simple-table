@@ -88,6 +88,29 @@ describe("header cells reuse — column label updates", () => {
     expect(bodyArtistTexts(container)).toContain("Miles");
   });
 
+  it("repaints a reused header when the accessor is not a valid CSS id", async () => {
+    const accessor = "__pivot:Q1\u00012024\u0001sales";
+    const labelOf = (root: HTMLElement) => {
+      const cell = Array.from(root.querySelectorAll<HTMLElement>(".st-header-cell[data-accessor]")).find(
+        (el) => el.getAttribute("data-accessor") === accessor,
+      );
+      return (cell?.querySelector(".st-header-label")?.textContent ?? "").trim();
+    };
+    const columns: ColumnDef[] = [
+      { accessor, label: "Q1 2024", width: 140, type: "number", sortable: true },
+    ];
+    const { table, container } = mountTable(columns);
+    mounted.push({ table, container });
+
+    await waitFor(() => labelOf(container) === "Q1 2024");
+
+    table.update({
+      columns: [{ accessor, label: "Sales", width: 140, type: "number", sortable: true }],
+    });
+
+    await waitFor(() => labelOf(container) === "Sales");
+  });
+
   it("repaints a pinned default header when the column label changes", async () => {
     const columns: ColumnDef[] = [
       { accessor: "artist", label: "Artist", width: 140, type: "string", pinned: "left" },

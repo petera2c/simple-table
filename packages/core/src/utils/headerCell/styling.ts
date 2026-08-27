@@ -408,7 +408,13 @@ const syncHeaderDescription = (
 ): void => {
   const descriptionId = getHeaderDescriptionId(header.accessor);
   const nextText = getHeaderDescription(header, Boolean(header.filterable));
-  let desc = cellElement.querySelector<HTMLElement>(`#${descriptionId}`);
+  let desc: HTMLElement | null = null;
+  for (const child of Array.from(cellElement.children)) {
+    if (child instanceof HTMLElement && child.classList.contains("st-sr-only")) {
+      desc = child;
+      break;
+    }
+  }
 
   if (!nextText) {
     desc?.remove();
