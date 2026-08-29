@@ -11,6 +11,45 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_2_1: ChangelogEntry = {
+  version: "4.2.1",
+  date: "2026-08-28",
+  title: "Settings update while the table is on the page",
+  description:
+    "Changing props after the table is already showing now updates what you see, including column editor text when you switch languages.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Switching languages now updates the column editor button, search placeholder, and Reset columns label, not only the headers and editor row names.",
+      link: "/docs/column-visibility",
+    },
+    {
+      type: "feature",
+      description:
+        "New resetText option on columnEditorConfig. Set the label on the Reset columns button, for example when you localize the editor.",
+      link: "/docs/column-visibility",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Changing className, columnBorders, hideHeader, or hideFooter now updates the table that is already on the page.",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Turning on header editing, column dragging, or column resizing after the table is on the page now adds those controls. Turning them off removes them.",
+      link: "/docs/column-reordering",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Turning pin controls on or off in the column editor, changing the editor row layout, or passing new icons now updates the table that is already on the page.",
+      link: "/docs/column-visibility",
+    },
+  ],
+};
+
 export const v4_2_0: ChangelogEntry = {
   version: "4.2.0",
   date: "2026-08-26",
@@ -2734,6 +2773,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_2_1,
   v4_2_0,
   v4_1_9,
   v4_1_8,

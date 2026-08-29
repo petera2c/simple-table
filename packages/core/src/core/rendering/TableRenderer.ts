@@ -31,6 +31,8 @@ export class TableRenderer {
   private lastCustomFooterRenderer: unknown = null;
   private lastCustomFooterKey: string | null = null;
   private columnEditorInstance: ReturnType<typeof createColumnEditor> | null = null;
+  private lastEditorShowToggle: boolean | null = null;
+  private lastEditorSearchEnabled: boolean | null = null;
   private horizontalScrollbarRef: { current: HTMLElement | null } = {
     current: null,
   };
@@ -96,7 +98,15 @@ export class TableRenderer {
     maxHeaderDepth: number,
     deps: TableRendererDeps,
   ): void {
-    if (!container || deps.config.hideHeader) return;
+    if (!container) return;
+
+    if (deps.config.hideHeader) {
+      container.style.display = "none";
+      container.style.height = "0px";
+      return;
+    }
+    container.style.display = "";
+    container.style.height = "";
 
     const dimensionState = deps.dimensionManager?.getState() ?? {
       containerWidth: 0,
@@ -181,6 +191,8 @@ export class TableRenderer {
     }
 
     if (!hasCustomFooter && !hasPaginationFooter) {
+      this.footerInstance?.destroy();
+      this.footerInstance = null;
       container.innerHTML = "";
       return;
     }
@@ -315,6 +327,8 @@ export class TableRenderer {
         this.columnEditorInstance.destroy();
         this.columnEditorInstance = null;
       }
+      this.lastEditorShowToggle = null;
+      this.lastEditorSearchEnabled = null;
       return;
     }
 
@@ -329,6 +343,20 @@ export class TableRenderer {
 
     // Always the source field catalog — never pivoted live headers.
     const pivotFields = deps.getPristineDefaultHeaders();
+
+    const showToggle = mergedColumnEditorConfig.showToggle !== false;
+    const searchEnabled = mergedColumnEditorConfig.searchEnabled !== false;
+    // Recreate when the toggle strip or search box is shown or hidden.
+    if (
+      this.columnEditorInstance &&
+      this.lastEditorShowToggle !== null &&
+      (this.lastEditorShowToggle !== showToggle || this.lastEditorSearchEnabled !== searchEnabled)
+    ) {
+      this.columnEditorInstance.destroy();
+      this.columnEditorInstance = null;
+    }
+    this.lastEditorShowToggle = showToggle;
+    this.lastEditorSearchEnabled = searchEnabled;
 
     if (this.columnEditorInstance) {
       this.columnEditorInstance.update({

@@ -14,13 +14,29 @@ import {
   getLastHeaderIndex,
   refreshHeaderCellIcons,
   syncHeaderCellLabel,
+  syncHeaderDragAttribute,
 } from "./headerCell/styling";
 import { updateHeaderSelectionCheckbox } from "./headerCell/selection";
 import { updateHeaderCollapseIconState } from "./headerCell/collapsing";
+import { attachDragHandlers } from "./headerCell/dragging";
+import { syncResizeHandle } from "./headerCell/resizing";
 import { hasCollapsibleChildren, getHeaderColspan } from "./collapseUtils";
 import { getOrCreateRowElement, reconcileRowElements } from "./ariaRowOwnership";
 import { setAbsoluteCellPosition } from "./setAbsoluteCellPosition";
 import type ColumnDef from "../types/ColumnDef";
+
+const iconBagIds = new WeakMap<object, number>();
+let nextIconBagId = 1;
+
+const iconBagKey = (icons: object | undefined): string => {
+  if (!icons) return "none";
+  let id = iconBagIds.get(icons);
+  if (id === undefined) {
+    id = nextIconBagId++;
+    iconBagIds.set(icons, id);
+  }
+  return String(id);
+};
 
 // Re-export types for backward compatibility
 export type { AbsoluteCell, HeaderRenderContext } from "./headerCell/types";
@@ -250,6 +266,13 @@ export const renderHeaderCells = (
         cellElement.className = newClassNames;
       }
 
+      const labelElement = cellElement.querySelector<HTMLElement>(".st-header-label");
+      if (labelElement) {
+        attachDragHandlers(labelElement, cellElement, cell.header, context);
+      }
+      syncHeaderDragAttribute(cellElement, cell.header, context);
+      syncResizeHandle(cellElement, cell.header, context);
+
       // Sync header collapse icon direction when collapsed state changes (same animation as body expand icon)
       if (hasCollapsibleChildren(cell.header)) {
         const isCollapsed = context.collapsedHeaders.has(cell.header.accessor);
@@ -267,7 +290,7 @@ export const renderHeaderCells = (
           : "none";
       const filterStateForCell =
         context.filters && context.filters[cell.header.accessor as any] ? "1" : "0";
-      const iconStateKey = `${sortStateForCell}|${filterStateForCell}`;
+      const iconStateKey = `${sortStateForCell}|${filterStateForCell}|${iconBagKey(context.icons)}`;
       if (cellElement.dataset.stIconState !== iconStateKey) {
         refreshHeaderCellIcons(cellElement, cell.header, context, cell.colIndex);
         cellElement.dataset.stIconState = iconStateKey;
@@ -299,7 +322,7 @@ export const renderHeaderCells = (
         : "none";
     const filterStateForCell =
       context.filters && context.filters[cell.header.accessor as any] ? "1" : "0";
-    cellElement.dataset.stIconState = `${sortStateForCell}|${filterStateForCell}`;
+    cellElement.dataset.stIconState = `${sortStateForCell}|${filterStateForCell}|${iconBagKey(context.icons)}`;
 
     if (
       accordionAxis &&

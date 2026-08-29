@@ -27,6 +27,8 @@ export interface ColumnEditorConfig {
   searchEnabled?: boolean;
   /** Placeholder text for the search input (default: "Search columns...") */
   searchPlaceholder?: string;
+  /** Label for the reset-columns button (default: "Reset columns") */
+  resetText?: string;
   /** Custom search function to override default search behavior. Receives header and searchTerm, returns true if header matches. */
   searchFunction?: ColumnEditorSearchFunction;
   /**
@@ -47,14 +49,15 @@ export const DEFAULT_COLUMN_EDITOR_CONFIG: Required<
   showToggle: true,
   searchEnabled: true,
   searchPlaceholder: "Search columns...",
+  resetText: "Reset columns",
   allowColumnPinning: true,
 };
 
-/** Column editor config with defaults applied (text, searchEnabled, searchPlaceholder are required) */
+/** Column editor config with defaults applied */
 export type MergedColumnEditorConfig = Required<
   Pick<
     ColumnEditorConfig,
-    "text" | "showToggle" | "searchEnabled" | "searchPlaceholder" | "allowColumnPinning"
+    "text" | "showToggle" | "searchEnabled" | "searchPlaceholder" | "resetText" | "allowColumnPinning"
   >
 > &
   Pick<ColumnEditorConfig, "searchFunction" | "rowRenderer" | "customRenderer">;

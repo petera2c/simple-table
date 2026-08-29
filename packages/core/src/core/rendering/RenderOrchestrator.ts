@@ -662,8 +662,6 @@ export class RenderOrchestrator {
     effectiveHeaders: ColumnDef[],
     context: RenderContext,
   ): void {
-    if (context.config.hideHeader) return;
-
     const deps = this.buildRendererDeps(effectiveHeaders, context);
     this.tableRenderer.renderHeader(headerContainer, calculatedHeaderHeight, maxHeaderDepth, deps);
   }

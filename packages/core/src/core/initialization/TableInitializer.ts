@@ -32,6 +32,7 @@ export interface MergedColumnEditorConfig {
   showToggle: boolean;
   searchEnabled: boolean;
   searchPlaceholder: string;
+  resetText: string;
   allowColumnPinning: boolean;
   searchFunction?: (header: ColumnDef, searchText: string) => boolean;
   rowRenderer?: ColumnEditorRowRenderer;
@@ -82,6 +83,7 @@ export class TableInitializer {
       searchPlaceholder:
         config.columnEditorConfig?.searchPlaceholder ??
         DEFAULT_COLUMN_EDITOR_CONFIG.searchPlaceholder,
+      resetText: config.columnEditorConfig?.resetText ?? DEFAULT_COLUMN_EDITOR_CONFIG.resetText,
       allowColumnPinning:
         config.columnEditorConfig?.allowColumnPinning ??
         DEFAULT_COLUMN_EDITOR_CONFIG.allowColumnPinning,

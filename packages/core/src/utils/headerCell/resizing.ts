@@ -256,3 +256,30 @@ export const createResizeHandle = (
 
   return resizeContainer;
 };
+
+/** Add or remove the resize handle to match `columnResizing`. */
+export const syncResizeHandle = (
+  cellElement: HTMLElement,
+  header: ColumnDef,
+  context: HeaderRenderContext,
+): void => {
+  const existing = cellElement.querySelector(".st-header-resize-handle-container");
+  const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
+  const shouldHave = Boolean(context.columnResizing) && !isSelectionColumn;
+
+  if (!shouldHave) {
+    existing?.remove();
+    return;
+  }
+  if (existing) return;
+
+  const handle = createResizeHandle(header, context);
+  if (!handle) return;
+
+  const placeAtStart = context.reverse !== (context.pinned === "right");
+  if (placeAtStart) {
+    cellElement.insertBefore(handle, cellElement.firstChild);
+  } else {
+    cellElement.appendChild(handle);
+  }
+};

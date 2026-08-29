@@ -146,11 +146,14 @@ export const attachDragHandlers = (
   header: ColumnDef,
   context: HeaderRenderContext,
 ) => {
-  const { columnReordering, draggedHeaderRef, hoveredHeaderRef } = context;
+  const { draggedHeaderRef, hoveredHeaderRef } = context;
   const isSelectionColumn = header.isSelectionColumn && context.enableRowSelection;
 
-  if (!columnReordering || isSelectionColumn) return;
+  if (isSelectionColumn) return;
+  if (labelElement.dataset.stDragBound === "1") return;
+  if (!context.columnReordering) return;
 
+  labelElement.dataset.stDragBound = "1";
   if (!header.disableReorder) {
     labelElement.setAttribute("draggable", "true");
   }
@@ -159,6 +162,10 @@ export const attachDragHandlers = (
     findHeaderByAccessor(context.getHeaders(), header.accessor) ?? header;
 
   const handleDragStart = (event: Event) => {
+    if (!context.columnReordering) {
+      event.preventDefault();
+      return;
+    }
     const live = resolveHeader();
     if (live.disableReorder) {
       event.preventDefault();
@@ -225,6 +232,7 @@ export const attachDragHandlers = (
   addTrackedEventListener(labelElement, "dragend", handleDragEnd);
 
   const handleDragOver = (event: Event) => {
+    if (!context.columnReordering) return;
     const dragEvent = event as DragEvent;
     dragEvent.preventDefault();
 
@@ -360,6 +368,7 @@ export const attachDragHandlers = (
 
   // Prevent drag ghost image
   const handleDragOverPrevention = (event: Event) => {
+    if (!context.columnReordering) return;
     event.preventDefault();
     const dragEvent = event as DragEvent;
     if (dragEvent.dataTransfer) {

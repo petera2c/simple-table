@@ -22,6 +22,12 @@ export const applyTableUpdate = <TData extends RowData = Row>(
   const patch = normalizeConfigPatch(config as unknown as Partial<SimpleTableConfigInput>);
   host.setConfig({ ...host.getConfig(), ...patch });
   const nextConfig = host.getConfig();
+  // Fill in column-editor text and search from the current config.
+  host.setMergedColumnEditorConfig(TableInitializer.mergeColumnEditorConfig(nextConfig));
+  if (config.icons !== undefined) {
+    host.setResolvedIcons(TableInitializer.resolveIcons(nextConfig));
+  }
+  host.getDomManager().syncShell(nextConfig);
 
   if (config.animations !== undefined) {
     host.applyAnimationsConfig(config.animations);
@@ -96,7 +102,6 @@ export const applyTableUpdate = <TData extends RowData = Row>(
   }
 
   if (config.theme !== undefined) {
-    host.getDomManager().updateTheme(config.theme);
     if (config.theme !== previousTheme) {
       host.getRenderOrchestrator().invalidateCache("all");
       host.getRenderOrchestrator().invalidateCustomFooterCache();
@@ -207,6 +212,43 @@ export const applyTableUpdate = <TData extends RowData = Row>(
     host.getScrollManager()!.updateConfig({
       onLoadMore: nextConfig.onLoadMore,
       infiniteScrollThreshold: nextConfig.infiniteScrollThreshold ?? 200,
+    });
+  }
+
+  if (
+    config.enablePagination !== undefined ||
+    config.hideFooter !== undefined ||
+    config.footerRenderer !== undefined
+  ) {
+    const customTheme = host.getCustomTheme();
+    host.getDimensionManager()?.updateConfig({
+      footerHeight:
+        (nextConfig.enablePagination || nextConfig.footerRenderer) && !nextConfig.hideFooter
+          ? customTheme.footerHeight
+          : undefined,
+    });
+  }
+
+  if (config.externalFilterHandling !== undefined) {
+    host.getFilterManager()?.updateConfig({
+      externalFilterHandling: Boolean(nextConfig.externalFilterHandling),
+    });
+  }
+
+  if (config.externalSortHandling !== undefined || config.rowGrouping !== undefined) {
+    host.getSortManager()?.updateConfig({
+      externalSortHandling: Boolean(nextConfig.externalSortHandling),
+      rowGrouping: host.getEffectiveRowGrouping(),
+    });
+  }
+
+  if (config.rowGrouping !== undefined) {
+    host.getExpandedDepthsManager()?.updateRowGrouping(nextConfig.rowGrouping);
+  }
+
+  if (config.copyHeadersToClipboard !== undefined) {
+    host.getSelectionManager()?.updateConfig({
+      copyHeadersToClipboard: nextConfig.copyHeadersToClipboard,
     });
   }
 };

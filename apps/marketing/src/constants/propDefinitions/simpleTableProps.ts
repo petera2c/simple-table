@@ -973,6 +973,7 @@ useEffect(() => {
   showToggle: true,                     // Hide strip with false; use toggleColumnEditor()
   searchEnabled: true,                  // Enable search (default: true)
   searchPlaceholder: "Search columns...", // Search placeholder
+  resetText: "Reset columns",            // Reset button label (default: "Reset columns")
   searchFunction: (header, searchTerm) => { // Optional: custom search logic
     return header.label.toLowerCase().includes(searchTerm.toLowerCase());
   }

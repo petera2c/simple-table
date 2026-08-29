@@ -14,9 +14,11 @@ export default defineConfig({
     globals: true,
     include: [
       "src/__tests__/**/*.{test,spec}.{ts,tsx}",
+      "../core/src/__tests__/autoExpandResizePinned.test.ts",
       "../core/src/__tests__/columnOwnership.test.ts",
       "../core/src/__tests__/headerCellReuse.test.ts",
       "../core/src/__tests__/columnEditorLabelReuse.test.ts",
+      "../core/src/__tests__/livePropDom.test.ts",
       "../core/src/__tests__/columnPropReuse.test.ts",
       "../core/src/__tests__/parkAndStagger.test.ts",
     ],

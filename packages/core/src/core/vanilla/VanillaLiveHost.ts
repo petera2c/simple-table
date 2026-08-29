@@ -20,7 +20,10 @@ import type { ScrollManager } from "../../managers/ScrollManager";
 import type { SectionScrollController } from "../../managers/SectionScrollController";
 import type { DOMManager } from "../dom/DOMManager";
 import type { RenderOrchestrator } from "../rendering/RenderOrchestrator";
-import type { ResolvedIcons } from "../initialization/TableInitializer";
+import type {
+  MergedColumnEditorConfig,
+  ResolvedIcons,
+} from "../initialization/TableInitializer";
 import type ExpandedDepthsManager from "../../hooks/expandedDepths";
 import type { AccordionAxis } from "../../utils/accordionAnimation";
 
@@ -34,6 +37,10 @@ export interface VanillaLiveHost {
   applyAnimationsConfig(animations: SimpleTableConfig["animations"]): void;
   getCustomTheme(): CustomTheme;
   setCustomTheme(theme: CustomTheme): void;
+  getMergedColumnEditorConfig(): MergedColumnEditorConfig;
+  setMergedColumnEditorConfig(config: MergedColumnEditorConfig): void;
+  getResolvedIcons(): ResolvedIcons;
+  setResolvedIcons(icons: ResolvedIcons): void;
   getInternalIsLoading(): boolean;
   setInternalIsLoading(value: boolean): void;
   getCurrentPage(): number;
@@ -71,7 +78,6 @@ export interface VanillaLiveHost {
   getHoverScopeId(): string;
   getDraggedHeaderRef(): { current: ColumnDef | null };
   getHoveredHeaderRef(): { current: ColumnDef | null };
-  getResolvedIcons(): ResolvedIcons;
   getPositionOnlyBody(): boolean;
 
   getAnimationCoordinator(): AnimationCoordinator;

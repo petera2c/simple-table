@@ -235,3 +235,106 @@ describe("column editor reuse — column label updates", () => {
     expect(editorLabelText(container, "artist")).toBe("Translated");
   });
 });
+
+const LOCALE_LABELS = {
+  en: {
+    name: "Artist",
+    followers: "Followers",
+    allColumns: "All columns",
+    search: "Search columns",
+    reset: "Reset columns",
+  },
+  ko: {
+    name: "아티스트",
+    followers: "팔로워",
+    allColumns: "전체 컬럼",
+    search: "컬럼 검색",
+    reset: "컬럼 초기화",
+  },
+} as const;
+
+function localeColumns(locale: keyof typeof LOCALE_LABELS): ColumnDef[] {
+  return [
+    { accessor: "artist", label: LOCALE_LABELS[locale].name, width: 140, type: "string" },
+    { accessor: "song", label: LOCALE_LABELS[locale].followers, width: 140, type: "string" },
+  ];
+}
+
+function localeEditorConfig(locale: keyof typeof LOCALE_LABELS): ColumnEditorConfig {
+  return {
+    text: LOCALE_LABELS[locale].allColumns,
+    searchPlaceholder: LOCALE_LABELS[locale].search,
+    resetText: LOCALE_LABELS[locale].reset,
+  };
+}
+
+function editorToggleText(root: HTMLElement): string {
+  return (root.querySelector(".st-column-editor-text")?.textContent ?? "").trim();
+}
+
+function editorSearchPlaceholder(root: HTMLElement): string {
+  return (
+    root.querySelector<HTMLInputElement>(".st-column-editor-popout input")?.placeholder ?? ""
+  );
+}
+
+function editorResetText(root: HTMLElement): string {
+  return (root.querySelector(".st-column-editor-reset-btn")?.textContent ?? "").trim();
+}
+
+describe("column editor reuse — locale chrome", () => {
+  it("updates headers, editor rows, toggle text, and search placeholder without remounting", async () => {
+    const { table, container } = mountTable(localeColumns("en"), {
+      columnEditorConfig: localeEditorConfig("en"),
+    });
+    mounted.push({ table, container });
+
+    await waitFor(() => headerLabelText(container, "artist") === "Artist");
+    await waitFor(() => editorLabelText(container, "artist") === "Artist");
+    expect(editorLabelText(container, "song")).toBe("Followers");
+    expect(editorToggleText(container)).toBe("All columns");
+    expect(editorSearchPlaceholder(container)).toBe("Search columns");
+    expect(editorResetText(container)).toBe("Reset columns");
+
+    const editorRoot = container.querySelector(".st-column-editor");
+    expect(editorRoot).toBeTruthy();
+
+    table.update({
+      columns: localeColumns("ko"),
+      columnEditorConfig: localeEditorConfig("ko"),
+    });
+
+    await waitFor(() => headerLabelText(container, "artist") === "아티스트");
+    expect(editorLabelText(container, "artist")).toBe("아티스트");
+    expect(editorLabelText(container, "song")).toBe("팔로워");
+    expect(editorToggleText(container)).toBe("전체 컬럼");
+    expect(editorSearchPlaceholder(container)).toBe("컬럼 검색");
+    expect(editorResetText(container)).toBe("컬럼 초기화");
+    expect(container.querySelector(".st-column-editor")).toBe(editorRoot);
+  });
+
+  it("rebuilds the editor when the toggle strip is shown or hidden", async () => {
+    const { table, container } = mountTable(localeColumns("en"), {
+      columnEditorConfig: { ...localeEditorConfig("en"), showToggle: true },
+    });
+    mounted.push({ table, container });
+
+    await waitFor(() => editorToggleText(container) === "All columns");
+    const firstEditor = container.querySelector(".st-column-editor");
+    expect(firstEditor).toBeTruthy();
+    expect(firstEditor?.classList.contains("st-column-editor--no-toggle")).toBe(false);
+
+    table.update({
+      columns: localeColumns("en"),
+      columnEditorConfig: { ...localeEditorConfig("en"), showToggle: false },
+    });
+
+    await waitFor(
+      () => container.querySelector(".st-column-editor") !== firstEditor,
+    );
+    const nextEditor = container.querySelector(".st-column-editor");
+    expect(nextEditor).toBeTruthy();
+    expect(nextEditor?.classList.contains("st-column-editor--no-toggle")).toBe(true);
+    expect(nextEditor?.querySelector(".st-column-editor-text")).toBeNull();
+  });
+});

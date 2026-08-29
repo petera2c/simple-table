@@ -22,6 +22,18 @@ const callbackIdentityKey = (fn: unknown): string => {
   return String(id);
 };
 
+const objectIdentityKey = (value: unknown): string => {
+  if (value === null || value === undefined) return "none";
+  if (typeof value !== "object" && typeof value !== "function") return "none";
+  const obj = value as object;
+  let id = callbackIdentityIds.get(obj);
+  if (id === undefined) {
+    id = nextCallbackIdentityId++;
+    callbackIdentityIds.set(obj, id);
+  }
+  return String(id);
+};
+
 interface BodyCellsCacheEntry {
   cells: AbsoluteBodyCell[];
   deps: {
@@ -150,8 +162,16 @@ export class SectionCellCaches {
       // Toggling enableVirtualization must invalidate cached body/header contexts
       // so column culling turns on/off without waiting for an unrelated resize.
       "enableVirtualization",
+      "enableHeaderEditing",
+      "columnReordering",
+      "columnResizing",
     ];
     let hash = keys.map((k) => `${k}:${context[k]}`).join("|");
+    hash += `|icons:${objectIdentityKey(context.icons)}`;
+    hash += `|rowButtons:${objectIdentityKey(context.rowButtons)}`;
+    hash += `|emptyStateRenderer:${callbackIdentityKey(context.emptyStateRenderer)}`;
+    hash += `|loadingStateRenderer:${callbackIdentityKey(context.loadingStateRenderer)}`;
+    hash += `|errorStateRenderer:${callbackIdentityKey(context.errorStateRenderer)}`;
 
     // Callback identity (not toString) so a new `getRowClass` closure — e.g.
     // React useCallback deps changing for a jump/highlight target — invalidates

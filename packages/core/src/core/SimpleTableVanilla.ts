@@ -737,6 +737,14 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       setCustomTheme: (theme) => {
         this.customTheme = theme;
       },
+      getMergedColumnEditorConfig: () => this.mergedColumnEditorConfig,
+      setMergedColumnEditorConfig: (config) => {
+        this.mergedColumnEditorConfig = config;
+      },
+      getResolvedIcons: () => this.resolvedIcons,
+      setResolvedIcons: (icons) => {
+        this.resolvedIcons = icons;
+      },
       getInternalIsLoading: () => this.internalIsLoading,
       setInternalIsLoading: (value) => {
         this.internalIsLoading = value;
@@ -798,7 +806,6 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       getHoverScopeId: () => this.hoverScopeId,
       getDraggedHeaderRef: () => this.draggedHeaderRef,
       getHoveredHeaderRef: () => this.hoveredHeaderRef,
-      getResolvedIcons: () => this.resolvedIcons,
       getPositionOnlyBody: () => this._positionOnlyBody,
       getAnimationCoordinator: () => this.animationCoordinator,
       getAccordionController: () => this.accordionController,

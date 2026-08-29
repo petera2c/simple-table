@@ -451,7 +451,8 @@ const syncHeaderAriaSort = (
   }
 };
 
-const syncHeaderDragAttribute = (
+/** Set or clear the label's draggable attribute from `columnReordering`. */
+export const syncHeaderDragAttribute = (
   cellElement: HTMLElement,
   header: AbsoluteCell["header"],
   context: HeaderRenderContext,

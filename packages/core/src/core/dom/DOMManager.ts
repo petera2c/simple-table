@@ -144,6 +144,36 @@ export class DOMManager {
     return this.elements;
   }
 
+  /** Theme, extra class names, column borders, footer side, and grid vs treegrid. */
+  syncShell(config: SimpleTableConfig): void {
+    if (!this.elements) return;
+
+    const { rootElement, content } = this.elements;
+    const theme = config.theme ?? "modern-light";
+    const className = config.className ?? "";
+    const columnBorders = config.columnBorders ?? false;
+    const footerAtTop = config.footerPosition === "top";
+    const hadExternalScroll = rootElement.classList.contains("st-external-scroll");
+
+    rootElement.className = [
+      "simple-table-root",
+      "st-wrapper",
+      `theme-${theme}`,
+      className,
+      columnBorders ? "st-column-borders" : "",
+      footerAtTop ? "st-footer-position-top" : "",
+    ]
+      .filter((part) => part.length > 0)
+      .join(" ");
+
+    if (hadExternalScroll) {
+      rootElement.classList.add("st-external-scroll");
+    }
+
+    const isTreeGrid = Array.isArray(config.rowGrouping) && config.rowGrouping.length > 0;
+    content.setAttribute("role", isTreeGrid ? "treegrid" : "grid");
+  }
+
   updateTheme(theme: string): void {
     if (!this.elements) return;
     const root = this.elements.rootElement;

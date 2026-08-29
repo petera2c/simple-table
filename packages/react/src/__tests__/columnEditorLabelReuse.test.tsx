@@ -56,6 +56,16 @@ function editorLabelText(host: HTMLElement, accessor: string): string {
   return (row?.querySelector(".st-column-label-container")?.textContent ?? "").trim();
 }
 
+function editorToggleText(host: HTMLElement): string {
+  return (host.querySelector(".st-column-editor-text")?.textContent ?? "").trim();
+}
+
+function editorSearchPlaceholder(host: HTMLElement): string {
+  return (
+    host.querySelector<HTMLInputElement>(".st-column-editor-popout input")?.placeholder ?? ""
+  );
+}
+
 describe("SimpleTable (React adapter) — column editor label reuse", () => {
   it("updates column editor labels when only the column label changes", async () => {
     function Harness() {
@@ -98,5 +108,76 @@ describe("SimpleTable (React adapter) — column editor label reuse", () => {
     await waitFor(() => headerLabelText(host, "artist") === "Translated");
     expect(editorLabelText(host, "artist")).toBe("Translated");
     expect(editorLabelText(host, "song")).toBe("Song");
+  });
+
+  it("updates editor chrome when locale labels and columnEditorConfig change", async () => {
+    const labels = {
+      en: {
+        name: "Artist",
+        followers: "Followers",
+        allColumns: "All columns",
+        search: "Search columns",
+      },
+      ko: {
+        name: "아티스트",
+        followers: "팔로워",
+        allColumns: "전체 컬럼",
+        search: "컬럼 검색",
+      },
+    } as const;
+
+    function Harness() {
+      const [locale, setLocale] = useState<"en" | "ko">("en");
+      const copy = labels[locale];
+      const columns: ReactColumnDef[] = [
+        { accessor: "artist", label: copy.name, width: 140, type: "string" },
+        { accessor: "song", label: copy.followers, width: 140, type: "string" },
+      ];
+      return createElement(
+        "div",
+        null,
+        createElement(
+          "button",
+          {
+            type: "button",
+            "data-st-translate": "true",
+            onClick: () => setLocale((current) => (current === "en" ? "ko" : "en")),
+          },
+          "translate",
+        ),
+        createElement(SimpleTable, {
+          columns,
+          rows,
+          getRowId: (p: { row: unknown }) => String((p.row as { id?: number })?.id),
+          height: "250px",
+          theme: "light",
+          animations: { enabled: false },
+          enableColumnEditor: true,
+          enableColumnEditorInitOpen: true,
+          columnEditorConfig: {
+            text: copy.allColumns,
+            searchPlaceholder: copy.search,
+          },
+        }),
+      );
+    }
+
+    const host = mount(createElement(Harness));
+    await waitFor(() => headerLabelText(host, "artist") === "Artist");
+    await waitFor(() => editorLabelText(host, "artist") === "Artist");
+    expect(editorToggleText(host)).toBe("All columns");
+    expect(editorSearchPlaceholder(host)).toBe("Search columns");
+
+    const editorRoot = host.querySelector(".st-column-editor");
+    expect(editorRoot).toBeTruthy();
+
+    host.querySelector<HTMLButtonElement>("[data-st-translate]")!.click();
+
+    await waitFor(() => headerLabelText(host, "artist") === "아티스트");
+    expect(editorLabelText(host, "artist")).toBe("아티스트");
+    expect(editorLabelText(host, "song")).toBe("팔로워");
+    expect(editorToggleText(host)).toBe("전체 컬럼");
+    expect(editorSearchPlaceholder(host)).toBe("컬럼 검색");
+    expect(host.querySelector(".st-column-editor")).toBe(editorRoot);
   });
 });

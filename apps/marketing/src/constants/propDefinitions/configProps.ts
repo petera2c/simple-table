@@ -380,6 +380,14 @@ export const COLUMN_EDITOR_CONFIG_PROPS: PropInfo[] = [
     example: `{ searchPlaceholder: "Search columns..." }`,
   },
   {
+    key: "resetText",
+    name: "resetText",
+    required: false,
+    description: "Label for the Reset columns button. Defaults to Reset columns.",
+    type: "string",
+    example: `{ resetText: "Reset columns" }`,
+  },
+  {
     key: "searchFunction",
     name: "searchFunction",
     required: false,

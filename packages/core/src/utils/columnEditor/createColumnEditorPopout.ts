@@ -89,14 +89,14 @@ function buildSearchSection(
   return { wrapper, input };
 }
 
-function buildResetSection(onReset: () => void): HTMLElement {
+function buildResetSection(onReset: () => void, resetText: string): HTMLElement {
   const footer = document.createElement("div");
   footer.className = "st-column-editor-footer";
 
   const resetBtn = document.createElement("button");
   resetBtn.type = "button";
   resetBtn.className = "st-column-editor-reset-btn";
-  resetBtn.textContent = "Reset columns";
+  resetBtn.textContent = resetText;
   resetBtn.addEventListener("click", (e) => {
     e.stopPropagation();
     onReset();
@@ -214,7 +214,10 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
 
   let resetFooter: HTMLElement | null = null;
   if (resetColumns) {
-    resetFooter = buildResetSection(resetColumns);
+    resetFooter = buildResetSection(
+      resetColumns,
+      columnEditorConfig.resetText ?? "Reset columns",
+    );
   }
 
   let pivotPanelInstance: PivotPanelInstance | null = null;
@@ -570,7 +573,10 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
       searchFunction = newOptions.searchFunction;
       structureDirty = true;
     }
-    if (newOptions.icons !== undefined) icons = newOptions.icons;
+    if (newOptions.icons !== undefined && newOptions.icons !== icons) {
+      icons = newOptions.icons;
+      structureDirty = true;
+    }
     if (newOptions.essentialAccessors !== undefined) essentialAccessors = newOptions.essentialAccessors;
     if (newOptions.setHeaders !== undefined) setHeaders = newOptions.setHeaders;
     if (newOptions.onColumnVisibilityChange !== undefined)
@@ -580,13 +586,28 @@ export const createColumnEditorPopout = (initialOptions: CreateColumnEditorPopou
     if (newOptions.resetColumns !== undefined) resetColumns = newOptions.resetColumns;
 
     if (newOptions.columnEditorConfig !== undefined) {
-      const newCustomRenderer = newOptions.columnEditorConfig.customRenderer;
+      const nextConfig = newOptions.columnEditorConfig;
+      const newCustomRenderer = nextConfig.customRenderer;
       if (newCustomRenderer !== activeCustomRenderer) {
         activeCustomRenderer = newCustomRenderer;
         needsLayoutRebuild = true;
         structureDirty = true;
       }
-      columnEditorConfig = newOptions.columnEditorConfig;
+      if (nextConfig.rowRenderer !== columnEditorConfig.rowRenderer) {
+        structureDirty = true;
+      }
+      if (
+        (nextConfig.allowColumnPinning !== false) !==
+        (columnEditorConfig.allowColumnPinning !== false)
+      ) {
+        structureDirty = true;
+      }
+      const nextResetText = nextConfig.resetText ?? "Reset columns";
+      const resetBtn = resetFooter?.querySelector<HTMLButtonElement>(".st-column-editor-reset-btn");
+      if (resetBtn && resetBtn.textContent !== nextResetText) {
+        resetBtn.textContent = nextResetText;
+      }
+      columnEditorConfig = nextConfig;
     }
 
     if (newOptions.open !== undefined) {
