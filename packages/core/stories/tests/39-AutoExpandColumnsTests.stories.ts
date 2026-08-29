@@ -2132,6 +2132,56 @@ export const AutoExpandResizePinnedBoundaryColumn = {
   },
 };
 
+/** Repro: with autoExpandColumns and two left-pinned columns, dragging the
+ *  first pinned column (ID) wider should grow it. Today only the last pinned
+ *  column (Name, next to the main grid) can be widened. */
+export const AutoExpandResizeNonLastPinnedColumn = {
+  parameters: { tags: ["auto-expand-resize-non-last-pinned-column"] },
+  render: () => {
+    const headers: ColumnDef[] = [
+      { accessor: "id", label: "ID", width: 70, pinned: "left", type: "number" },
+      { accessor: "name", label: "Name", width: 130, pinned: "left", type: "string" },
+      { accessor: "email", label: "Email", width: 170, type: "string" },
+      { accessor: "department", label: "Department", width: 130, type: "string" },
+      { accessor: "position", label: "Position", width: 130, type: "string" },
+      { accessor: "salary", label: "Salary", width: 100, type: "number" },
+      { accessor: "projects", label: "Projects", width: 90, type: "number" },
+    ];
+    const { wrapper } = renderVanillaTable(headers, createEmployeeData(), {
+      getRowId: (p: { row?: { id?: unknown } }) => String(p.row?.id),
+      height: "400px",
+      autoExpandColumns: true,
+      columnResizing: true,
+    });
+    wrapper.style.width = "100%";
+    wrapper.style.boxSizing = "border-box";
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const idHeader = findHeaderCellByLabel(canvasElement, "ID");
+    expect(idHeader).toBeTruthy();
+
+    const { initialWidth, finalWidth } = await resizeColumn(
+      idHeader!,
+      40,
+      () => findHeaderCellByLabel(canvasElement, "ID"),
+    );
+    expect(
+      finalWidth - initialWidth,
+      "the first left-pinned column should grow when dragged wider",
+    ).toBeGreaterThan(15);
+
+    const nameHeader = findHeaderCellByLabel(canvasElement, "Name");
+    expect(nameHeader).toBeTruthy();
+    const nameWidth = parsePixelWidth(getColumnWidth(nameHeader!));
+    expect(
+      nameWidth,
+      "the other pinned column should keep at least its natural width",
+    ).toBeGreaterThanOrEqual(130 - 3);
+  },
+};
+
 /** Resize a main-section column when both left and right pinned sections exist.
  *  Width redistribution should only affect the main section columns. */
 export const AutoExpandResizeMainWithBothPinned = {

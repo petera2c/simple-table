@@ -190,48 +190,26 @@ export const handleResizeStart = ({
     }
   }
 
-  // For boundary column resize (rightmost in left-pinned, leftmost in right-pinned)
-  // with autoExpandColumns, the main section must scale proportionally as the
-  // pinned section grows or shrinks.
-  let isBoundaryResize = false;
+  // When a pinned column resize changes the pinned strip's total width, the
+  // main section must scale with it. Use the net change across all pinned
+  // leaves so neighbor-only compensation (strip total unchanged) does not
+  // shrink the main grid.
   const mainInitialWidths = new Map<string, number>();
   let mainLeafHeaders: ColumnDef[] = [];
+  let pinnedSectionLeafs: ColumnDef[] = [];
 
   if (autoExpandColumns && rootPinned && effectiveContainerWidth > 0) {
-    const sectionLeafs = getAllVisibleLeafHeaders(
+    pinnedSectionLeafs = getAllVisibleLeafHeaders(
       headers.filter((h) => h.pinned === rootPinned),
       collapsedHeaders,
     );
 
-    if (sectionLeafs.length > 0) {
-      let atBoundary = false;
-
-      if (childrenToResize.length > 1) {
-        const firstIdx = sectionLeafs.findIndex(
-          (h) => h.accessor === childrenToResize[0].accessor,
-        );
-        const lastIdx = sectionLeafs.findIndex(
-          (h) => h.accessor === childrenToResize[childrenToResize.length - 1].accessor,
-        );
-        atBoundary =
-          (rootPinned === "left" && lastIdx === sectionLeafs.length - 1) ||
-          (rootPinned === "right" && firstIdx === 0);
-      } else {
-        const target = childrenToResize[0] || header;
-        const idx = sectionLeafs.findIndex((h) => h.accessor === target.accessor);
-        atBoundary =
-          (rootPinned === "left" && idx === sectionLeafs.length - 1) ||
-          (rootPinned === "right" && idx === 0);
-      }
-
-      if (atBoundary) {
-        isBoundaryResize = true;
-        const mainHeaders = headers.filter((h) => !h.pinned);
-        mainLeafHeaders = getAllVisibleLeafHeaders(mainHeaders, collapsedHeaders);
-        mainLeafHeaders.forEach((h) => {
-          mainInitialWidths.set(h.accessor as string, getHeaderWidthInPixels(h, tableRoot));
-        });
-      }
+    if (pinnedSectionLeafs.length > 0) {
+      const mainHeaders = headers.filter((h) => !h.pinned);
+      mainLeafHeaders = getAllVisibleLeafHeaders(mainHeaders, collapsedHeaders);
+      mainLeafHeaders.forEach((h) => {
+        mainInitialWidths.set(h.accessor as string, getHeaderWidthInPixels(h, tableRoot));
+      });
     }
   }
 
@@ -269,22 +247,24 @@ export const handleResizeStart = ({
         startWidth,
       });
 
-      // When a boundary column of a pinned section is resized, the main section
-      // must rescale so all sections together fill the container — but main
-      // columns are never squeezed below their natural shrink floors.
-      if (isBoundaryResize && mainLeafHeaders.length > 0) {
-        const childDelta = childrenToResize.reduce((sum, h) => {
+      // When the pinned strip's total width changed, rescale main so the
+      // sections still fill the container. Neighbor-only compensation nets
+      // to 0 and leaves main alone.
+      if (rootPinned && mainLeafHeaders.length > 0) {
+        const sectionNetDelta = pinnedSectionLeafs.reduce((sum, h) => {
           const initW = initialWidthsMap.get(h.accessor as string) || 0;
           const newW = typeof h.width === "number" ? h.width : initW;
           return sum + (newW - initW);
         }, 0);
 
-        rescaleMainSectionForBoundaryResize({
-          mainLeafHeaders,
-          mainInitialWidths,
-          newMainAvailable: Math.max(0, initialMainAvailable - childDelta),
-          shrinkFloors,
-        });
+        if (sectionNetDelta !== 0) {
+          rescaleMainSectionForBoundaryResize({
+            mainLeafHeaders,
+            mainInitialWidths,
+            newMainAvailable: Math.max(0, initialMainAvailable - sectionNetDelta),
+            shrinkFloors,
+          });
+        }
       }
     } else {
       // Normal resize mode
@@ -341,7 +321,7 @@ export const handleResizeStart = ({
         if (typeof h.width === "number")
           overrideWidths.set(h.accessor as string, h.width);
       });
-      if (isBoundaryResize) {
+      if (rootPinned) {
         mainLeafHeaders.forEach((h) => {
           if (typeof h.width === "number")
             overrideWidths.set(h.accessor as string, h.width);
@@ -527,48 +507,15 @@ export const applyColumnAutoFitWithAutoExpand = ({
         : computedMainAvailable;
   }
 
-  let isBoundaryResize = false;
   const mainInitialWidths = new Map<string, number>();
   let mainLeafHeaders: ColumnDef[] = [];
 
-  if (rootPinned && effectiveContainerWidth > 0) {
-    const sectionLeafs = getAllVisibleLeafHeaders(
-      headers.filter((h) => h.pinned === rootPinned),
-      collapsedHeaders,
-    );
-
-    if (sectionLeafs.length > 0) {
-      let atBoundary = false;
-
-      if (childrenToResize.length > 1) {
-        const firstIdx = sectionLeafs.findIndex(
-          (h) => h.accessor === childrenToResize[0].accessor,
-        );
-        const lastIdx = sectionLeafs.findIndex(
-          (h) =>
-            h.accessor ===
-            childrenToResize[childrenToResize.length - 1].accessor,
-        );
-        atBoundary =
-          (rootPinned === "left" && lastIdx === sectionLeafs.length - 1) ||
-          (rootPinned === "right" && firstIdx === 0);
-      } else {
-        const target = childrenToResize[0] || header;
-        const idx = sectionLeafs.findIndex((h) => h.accessor === target.accessor);
-        atBoundary =
-          (rootPinned === "left" && idx === sectionLeafs.length - 1) ||
-          (rootPinned === "right" && idx === 0);
-      }
-
-      if (atBoundary) {
-        isBoundaryResize = true;
-        const mainHeaders = headers.filter((h) => !h.pinned);
-        mainLeafHeaders = getAllVisibleLeafHeaders(mainHeaders, collapsedHeaders);
-        mainLeafHeaders.forEach((h) => {
-          mainInitialWidths.set(h.accessor as string, getHeaderWidthInPixels(h, tableRoot));
-        });
-      }
-    }
+  if (rootPinned && effectiveContainerWidth > 0 && sectionLeafHeaders.length > 0) {
+    const mainHeaders = headers.filter((h) => !h.pinned);
+    mainLeafHeaders = getAllVisibleLeafHeaders(mainHeaders, collapsedHeaders);
+    mainLeafHeaders.forEach((h) => {
+      mainInitialWidths.set(h.accessor as string, getHeaderWidthInPixels(h, tableRoot));
+    });
   }
 
   const targetTotal = childrenToResize.reduce(
@@ -605,19 +552,21 @@ export const applyColumnAutoFitWithAutoExpand = ({
     startWidth,
   });
 
-  if (isBoundaryResize && mainLeafHeaders.length > 0) {
-    const childDelta = childrenToResize.reduce((sum, h) => {
+  if (rootPinned && mainLeafHeaders.length > 0) {
+    const sectionNetDelta = sectionLeafHeaders.reduce((sum, h) => {
       const initW = initialWidthsMap.get(h.accessor as string) || 0;
       const newW = typeof h.width === "number" ? h.width : initW;
       return sum + (newW - initW);
     }, 0);
 
-    rescaleMainSectionForBoundaryResize({
-      mainLeafHeaders,
-      mainInitialWidths,
-      newMainAvailable: Math.max(0, initialMainAvailable - childDelta),
-      shrinkFloors,
-    });
+    if (sectionNetDelta !== 0) {
+      rescaleMainSectionForBoundaryResize({
+        mainLeafHeaders,
+        mainInitialWidths,
+        newMainAvailable: Math.max(0, initialMainAvailable - sectionNetDelta),
+        shrinkFloors,
+      });
+    }
   }
 
   // The auto-fitted widths are content-derived: record them as the columns'
@@ -635,7 +584,7 @@ export const applyColumnAutoFitWithAutoExpand = ({
     if (typeof h.width === "number")
       overrideWidths.set(h.accessor as string, h.width);
   });
-  if (isBoundaryResize) {
+  if (rootPinned) {
     mainLeafHeaders.forEach((h) => {
       if (typeof h.width === "number")
         overrideWidths.set(h.accessor as string, h.width);

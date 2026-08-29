@@ -47,6 +47,12 @@ export const v4_2_1: ChangelogEntry = {
         "Turning pin controls on or off in the column editor, changing the editor row layout, or passing new icons now updates the table that is already on the page.",
       link: "/docs/column-visibility",
     },
+    {
+      type: "bugfix",
+      description:
+        "With autoExpandColumns and more than one pinned column, dragging an earlier pinned column wider now grows that column. Before, only the last pinned column next to the main grid would widen.",
+      link: "/docs/column-width",
+    },
   ],
 };
 

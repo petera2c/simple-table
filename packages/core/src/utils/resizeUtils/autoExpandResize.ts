@@ -12,9 +12,9 @@ import { isHeaderExcludedFromLayout } from "../cellUtils";
  * natural width — declared, content-measured, or user-set). Once all
  * neighbors are at their floor, the main section keeps growing past the
  * container width and overflows into horizontal scroll instead of blocking
- * the drag. Pinned sections cannot scroll their own content, so their growth
- * stays capped by the neighbors' available surplus (plus the pinned-width
- * policy cap).
+ * the drag. A pinned column that still has leftover delta grows the pinned
+ * strip itself (policy-capped), not only when it is the column next to the
+ * main grid.
  */
 export const handleResizeWithAutoExpand = ({
   childrenToResize = [],
@@ -174,11 +174,11 @@ export const handleResizeWithAutoExpand = ({
         // Pinned boundary: grow the section itself, policy-clamped.
         actualDelta = clampPinnedPositiveDeltaIfNetSectionGrows(delta);
       } else {
-        // Pinned non-boundary: cannot overflow the pinned strip.
-        actualDelta = Math.min(
-          delta,
-          clampPinnedPositiveDeltaIfNetSectionGrows(roomToGrow) + compensation,
-        );
+        // Steal neighbor surplus first, then grow the pinned strip.
+        const netSectionGrowthWanted = Math.max(0, delta - compensation);
+        actualDelta =
+          clampPinnedPositiveDeltaIfNetSectionGrows(netSectionGrowthWanted) +
+          compensation;
       }
 
       // Resize all children proportionally
@@ -316,10 +316,13 @@ export const handleResizeWithAutoExpand = ({
       // blocking the drag.
       resizedHeader.width = startWidth + delta;
     } else {
-      // Pinned sections can't scroll their own content: growth is capped at
-      // free room + what neighbors can give up.
+      // Steal neighbor surplus first, then grow the pinned strip. Growth of
+      // the strip is still policy-capped; leftover is not blocked just
+      // because this is not the column next to the main grid.
+      const netSectionGrowthWanted = Math.max(0, delta - compensation);
       const actualGrowth =
-        clampPinnedPositiveDeltaIfNetSectionGrows(roomToGrow) + compensation;
+        clampPinnedPositiveDeltaIfNetSectionGrows(netSectionGrowthWanted) +
+        compensation;
       resizedHeader.width = startWidth + actualGrowth;
     }
 
