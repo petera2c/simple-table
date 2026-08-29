@@ -115,6 +115,8 @@ const Progress = ({
   );
 };
 
+export const MOBILE_VISIBLE_ACCESSORS = ["productLine", "status", "efficiency"] as const;
+
 export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "productLine",

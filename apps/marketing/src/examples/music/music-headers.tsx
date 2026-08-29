@@ -227,6 +227,8 @@ const GrowthMetric = ({
   );
 };
 
+export const MOBILE_VISIBLE_ACCESSORS = ["artistName", "popularity", "monthlyListeners"] as const;
+
 export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "rank",

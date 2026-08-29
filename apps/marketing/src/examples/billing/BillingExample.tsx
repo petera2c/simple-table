@@ -1,6 +1,7 @@
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactIconsConfig } from "@simple-table/react";
-import { HEADERS } from "./billing-headers";
+import { HEADERS, MOBILE_VISIBLE_ACCESSORS } from "./billing-headers";
+import { useMobileExampleColumns } from "../_shared/mobileColumns";
 import "@simple-table/react/styles.css";
 import { useBillingData } from "./useBillingData";
 
@@ -16,6 +17,7 @@ export default function BillingExample({
   theme?: Theme;
 }) {
   const { data, isLoading } = useBillingData();
+  const columns = useMobileExampleColumns(HEADERS, MOBILE_VISIBLE_ACCESSORS);
 
   if (isLoading) {
     return (
@@ -39,7 +41,7 @@ export default function BillingExample({
       autoExpandColumns
       columnReordering
       columnResizing
-      columns={HEADERS}
+      columns={columns}
       enableColumnEditor
       enableStickyParents
       getRowId={({ row }) => String(row.id)}

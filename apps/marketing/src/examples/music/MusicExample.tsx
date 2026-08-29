@@ -1,7 +1,8 @@
 import { useRef } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { TableAPI, Theme, ReactIconsConfig } from "@simple-table/react";
-import { HEADERS } from "./music-headers";
+import { HEADERS, MOBILE_VISIBLE_ACCESSORS } from "./music-headers";
+import { useMobileExampleColumns } from "../_shared/mobileColumns";
 
 import "@simple-table/react/styles.css";
 import "./MusicTheme.css";
@@ -18,6 +19,7 @@ export default function MusicExample({
 }) {
   const tableRef = useRef<TableAPI | null>(null);
   const { data, isLoading } = useMusicData();
+  const columns = useMobileExampleColumns(HEADERS, MOBILE_VISIBLE_ACCESSORS);
 
   if (isLoading) {
     return (
@@ -46,7 +48,7 @@ export default function MusicExample({
           headerHeight: 30,
           rowHeight: 85,
         }}
-        columns={HEADERS}
+        columns={columns}
         height={height ? height : "70dvh"}
         icons={icons}
         rows={data}

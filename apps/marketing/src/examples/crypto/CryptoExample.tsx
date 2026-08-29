@@ -2,9 +2,10 @@ import { useRef } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { TableAPI, Theme, ReactIconsConfig } from "@simple-table/react";
 import "@simple-table/react/styles.css";
-import { HEADERS } from "./crypto-headers";
+import { HEADERS, MOBILE_VISIBLE_ACCESSORS } from "./crypto-headers";
 import { useCryptoData, type CryptoCoin } from "./useCryptoData";
 import { useCryptoTicker } from "./useCryptoTicker";
+import { useMobileExampleColumns } from "../_shared/mobileColumns";
 
 export default function CryptoExample({
   icons,
@@ -16,6 +17,7 @@ export default function CryptoExample({
 }) {
   const tableRef = useRef<TableAPI<CryptoCoin> | null>(null);
   const { data } = useCryptoData();
+  const columns = useMobileExampleColumns(HEADERS, MOBILE_VISIBLE_ACCESSORS);
 
   // Live "market feed" - ticks visible rows so prices, 24h change, and the
   // sparkline update in place with the built-in cell-flash animation.
@@ -32,7 +34,7 @@ export default function CryptoExample({
       columnReordering
       columnResizing
       customTheme={{ headerHeight: 40, rowHeight: 64 }}
-      columns={HEADERS}
+      columns={columns}
       enableColumnEditor
       getRowId={({ row }) => row.id}
       icons={icons}

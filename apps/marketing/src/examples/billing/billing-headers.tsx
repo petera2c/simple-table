@@ -74,6 +74,8 @@ const generateMonthHeaders = () => {
 };
 
 // Main headers
+export const MOBILE_VISIBLE_ACCESSORS = ["name", "amount", "recognizedPercent"] as const;
+
 export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "name",

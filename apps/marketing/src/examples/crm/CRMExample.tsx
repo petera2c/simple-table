@@ -1,5 +1,5 @@
-import { getCRMHeaders } from "./crm-headers";
-import { useState, useEffect } from "react";
+import { getCRMHeaders, MOBILE_VISIBLE_ACCESSORS } from "./crm-headers";
+import { useState, useEffect, useMemo } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { CellChangeProps, FooterRendererProps, ReactIconsConfig } from "@simple-table/react";
 
@@ -7,6 +7,8 @@ import "@simple-table/react/styles.css";
 import "./CustomTheme.css";
 import CRMCustomFooter from "./CRMFooter";
 import { useCRMData } from "./useCRMData";
+import { useMobileExampleColumns } from "../_shared/mobileColumns";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 const CRMExampleComponent = ({
   height,
@@ -24,6 +26,9 @@ const CRMExampleComponent = ({
   const [rowsPerPage, setRowsPerPage] = useState(100);
 
   const isDark = theme === "custom-dark";
+  const isMobile = useIsMobile();
+  const headers = useMemo(() => getCRMHeaders(isDark), [isDark]);
+  const columns = useMobileExampleColumns(headers, MOBILE_VISIBLE_ACCESSORS);
 
   // Update local data when fetched data changes
   useEffect(() => {
@@ -52,8 +57,8 @@ const CRMExampleComponent = ({
         autoExpandColumns
         columnReordering
         columnResizing
-        columns={getCRMHeaders(isDark)}
-        enableRowSelection
+        columns={columns}
+        enableRowSelection={!isMobile}
         footerRenderer={(props: FooterRendererProps) => (
           <CRMCustomFooter {...props} isDark={isDark} setRowsPerPage={setRowsPerPage} />
         )}

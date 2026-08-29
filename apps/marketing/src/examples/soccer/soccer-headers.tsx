@@ -36,6 +36,8 @@ function ratingColor(rating: number, theme?: string) {
   return { bg: c.errorBg, text: c.error };
 }
 
+export const MOBILE_VISIBLE_ACCESSORS = ["player", "rating", "goals"] as const;
+
 export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "rank",

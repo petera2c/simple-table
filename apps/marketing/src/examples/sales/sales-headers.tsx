@@ -224,6 +224,8 @@ const Progress = ({
   );
 };
 
+export const MOBILE_VISIBLE_ACCESSORS = ["repName", "dealValue", "isWon"] as const;
+
 export const SALES_HEADERS: ReactColumnDef[] = [
   {
     accessor: "repName",

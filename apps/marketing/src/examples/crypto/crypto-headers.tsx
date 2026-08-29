@@ -40,6 +40,8 @@ const ChangeCell = (accessor: keyof CryptoCoin) => {
   return ChangeCellRenderer;
 };
 
+export const MOBILE_VISIBLE_ACCESSORS = ["asset", "price", "change24h"] as const;
+
 export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
   {
     accessor: "rank",

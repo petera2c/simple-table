@@ -1,9 +1,10 @@
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, CellChangeProps, ReactIconsConfig } from "@simple-table/react";
-import { HEADERS } from "./hr-headers";
+import { HEADERS, MOBILE_VISIBLE_ACCESSORS } from "./hr-headers";
 import { useState, useEffect } from "react";
 import "@simple-table/react/styles.css";
 import { useHRData } from "./useHRData";
+import { useMobileExampleColumns } from "../_shared/mobileColumns";
 
 export default function HRExample({
   height = 500,
@@ -18,6 +19,7 @@ export default function HRExample({
 }) {
   const { data: fetchedData, isLoading } = useHRData();
   const [data, setData] = useState(fetchedData);
+  const columns = useMobileExampleColumns(HEADERS, MOBILE_VISIBLE_ACCESSORS);
 
   // Update local data when fetched data changes
   useEffect(() => {
@@ -62,7 +64,7 @@ export default function HRExample({
       autoExpandColumns
       columnReordering
       columnResizing
-      columns={HEADERS}
+      columns={columns}
       getRowId={({ row }) => String(row.id)}
       icons={icons}
       onCellEdit={handleCellEdit}

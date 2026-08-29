@@ -2,6 +2,8 @@ import type { PivotConfig, ReactColumnDef, Row } from "@simple-table/react";
 
 export type { PivotConfig };
 
+export const MOBILE_VISIBLE_ACCESSORS = ["region", "product", "sales"] as const;
+
 export const analyticsHeaders: ReactColumnDef[] = [
   {
     accessor: "region",

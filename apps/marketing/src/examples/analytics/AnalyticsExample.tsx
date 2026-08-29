@@ -1,12 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { ReactIconsConfig, TableAPI, Theme } from "@simple-table/react";
 import {
   analyticsHeaders,
   analyticsPresets,
   analyticsRows,
+  MOBILE_VISIBLE_ACCESSORS,
 } from "./analytics-data";
 import "@simple-table/react/styles.css";
+import { columnsForMobile } from "../_shared/mobileColumns";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 function formatTableHeight(height?: string | number | null): string {
   if (height == null) return "70dvh";
@@ -53,6 +56,16 @@ export default function AnalyticsExample({
   const [activeId, setActiveId] = useState(analyticsPresets[0].id);
   const active = analyticsPresets.find((p) => p.id === activeId) ?? analyticsPresets[0];
   const isPivoted = active.pivot != null;
+  const isMobile = useIsMobile();
+  const columns = useMemo(
+    () =>
+      columnsForMobile(
+        analyticsHeaders,
+        isMobile && !isPivoted,
+        MOBILE_VISIBLE_ACCESSORS,
+      ),
+    [isMobile, isPivoted],
+  );
   const chrome = getAnalyticsChrome(theme);
   const tableHostRef = useRef<HTMLDivElement>(null);
   const tableRef = useRef<TableAPI>(null);
@@ -165,7 +178,7 @@ export default function AnalyticsExample({
               columnReordering
               columnResizing
               copyHeadersToClipboard
-              columns={analyticsHeaders}
+              columns={columns}
               enableColumnEditor
               getRowId={({ row }) => {
                 const id = row.id;

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import type { ReactColumnDef, CellRendererProps, ValueGetterProps } from "@simple-table/react";
 
+export const MOBILE_VISIBLE_ACCESSORS = ["name", "aiScore", "list"] as const;
+
 export const getCRMHeaders = (isDark: boolean): ReactColumnDef[] => {
   const colors = isDark
     ? {

@@ -589,3 +589,5 @@ export const HEADERS: ReactColumnDef[] = [
     type: "boolean",
   },
 ];
+
+export const MOBILE_VISIBLE_ACCESSORS = ["fullName", "performanceScore", "status"] as const;

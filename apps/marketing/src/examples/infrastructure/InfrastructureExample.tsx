@@ -1,11 +1,12 @@
-import { useRef, useState, useEffect } from "react";
+import { useMemo, useRef } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { ReactIconsConfig } from "@simple-table/react";
 import type { TableAPI, Theme } from "@simple-table/react";
 import "@simple-table/react/styles.css";
-import { HEADERS } from "./infrastructure-headers";
+import { HEADERS, MOBILE_VISIBLE_ACCESSORS } from "./infrastructure-headers";
 import { useServerMetricsUpdates } from "./useServerMetricsUpdates";
 import { useInfrastructureData, type InfrastructureServer } from "./useInfrastructureData";
+import { useMobileExampleColumns } from "../_shared/mobileColumns";
 
 export default function InfrastructureExample({
   height,
@@ -21,24 +22,15 @@ export default function InfrastructureExample({
 }) {
   const tableRef = useRef<TableAPI<InfrastructureServer> | null>(null);
   const { data, isLoading } = useInfrastructureData();
-  const [isMobile, setIsMobile] = useState(false);
 
   // Use the hook for live metrics updates
   useServerMetricsUpdates(tableRef, data);
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
-
-  const columns = hideNameColumn
-    ? HEADERS.filter((col) => col.accessor !== "serverName")
-    : HEADERS;
+  const baseColumns = useMemo(
+    () => (hideNameColumn ? HEADERS.filter((col) => col.accessor !== "serverName") : HEADERS),
+    [hideNameColumn],
+  );
+  const columns = useMobileExampleColumns(baseColumns, MOBILE_VISIBLE_ACCESSORS);
 
   if (isLoading) {
     return (
@@ -59,7 +51,7 @@ export default function InfrastructureExample({
 
   return (
     <SimpleTable
-      autoExpandColumns={!isMobile}
+      autoExpandColumns
       columnReordering
       columnResizing
       columns={columns}

@@ -1,6 +1,7 @@
 import { SimpleTable } from "@simple-table/react";
 import type { Theme, ReactIconsConfig } from "@simple-table/react";
-import { HEADERS } from "./manufacturing-headers";
+import { HEADERS, MOBILE_VISIBLE_ACCESSORS } from "./manufacturing-headers";
+import { useMobileExampleColumns } from "../_shared/mobileColumns";
 import "@simple-table/react/styles.css";
 import { useManufacturingData } from "./useManufacturingData";
 
@@ -14,6 +15,7 @@ export default function ManufacturingExample({
   theme?: Theme;
 }) {
   const { data, isLoading } = useManufacturingData();
+  const columns = useMobileExampleColumns(HEADERS, MOBILE_VISIBLE_ACCESSORS);
 
   if (isLoading) {
     return (
@@ -37,7 +39,7 @@ export default function ManufacturingExample({
       autoExpandColumns
       columnResizing
       columnReordering
-      columns={HEADERS}
+      columns={columns}
       getRowId={({ row }) => String(row.id)}
       height={height ? `${height}px` : "70dvh"}
       icons={icons}
