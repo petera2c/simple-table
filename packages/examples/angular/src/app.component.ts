@@ -7,6 +7,7 @@ import {
 } from "@angular/core";
 import { DEMO_LIST } from "./demo-list";
 import { QuickStartDemoComponent } from "./demos/quick-start/quick-start-demo.component";
+import { NativeTemplatesDemoComponent } from "./demos/native-templates/native-templates-demo.component";
 import { ColumnFilteringDemoComponent } from "./demos/column-filtering/column-filtering-demo.component";
 import { ColumnSortingDemoComponent } from "./demos/column-sorting/column-sorting-demo.component";
 import { ValueFormatterDemoComponent } from "./demos/value-formatter/value-formatter-demo.component";
@@ -64,6 +65,7 @@ import { AnalyticsDemoComponent } from "./demos/analytics/analytics-demo.compone
 
 const REGISTRY: Record<string, any> = {
   "quick-start": QuickStartDemoComponent,
+  "native-templates": NativeTemplatesDemoComponent,
   "column-filtering": ColumnFilteringDemoComponent,
   "column-sorting": ColumnSortingDemoComponent,
   "value-formatter": ValueFormatterDemoComponent,
@@ -125,6 +127,7 @@ const REGISTRY: Record<string, any> = {
   standalone: true,
   imports: [
     QuickStartDemoComponent,
+    NativeTemplatesDemoComponent,
     ColumnFilteringDemoComponent,
     ColumnSortingDemoComponent,
     ValueFormatterDemoComponent,

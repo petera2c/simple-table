@@ -153,7 +153,15 @@ export interface SimpleTableConfig<TData extends RowData = Row> {
   selectableCells?: boolean;
   selectableColumns?: boolean;
   serverSidePagination?: boolean;
-  tableEmptyStateRenderer?: HTMLElement | string | null;
+  /**
+   * Empty-table UI. A prebuilt element is cloned (vanilla snapshot). A function
+   * is called and its node is appended live (clicks and Angular views keep working).
+   */
+  tableEmptyStateRenderer?:
+    | HTMLElement
+    | string
+    | null
+    | (() => HTMLElement | string | null);
   theme?: Theme;
   totalRowCount?: number;
 }

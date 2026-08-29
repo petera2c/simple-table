@@ -6,7 +6,11 @@ import {
   InjectionToken,
   inject,
   provideZoneChangeDetection,
+  reflectComponentType,
   type ComponentRef,
+  type EnvironmentProviders,
+  type Provider,
+  type Type,
 } from "@angular/core";
 import { bootstrapApplication } from "@angular/platform-browser";
 import { SimpleTableComponent, provideSimpleTable } from "../index";
@@ -160,6 +164,50 @@ export async function mountAngularTable<TData extends AngularDefaultRowData>(
     setState: (patch) => {
       Object.assign(state, patch);
       hostRef.changeDetectorRef.detectChanges();
+      appRef.tick();
+    },
+  };
+}
+
+export type MountedConsumer<T> = {
+  el: HTMLElement;
+  instance: T;
+  appRef: ApplicationRef;
+  destroy: () => void;
+  detectChanges: () => void;
+};
+
+/**
+ * Bootstraps a real page component (`imports: [SimpleTableImports]`, template
+ * with `<simple-table>`). Does not go through `AngularTestHost`.
+ */
+export async function mountConsumer<T extends object>(
+  component: Type<T>,
+  options?: { providers?: Array<Provider | EnvironmentProviders> },
+): Promise<MountedConsumer<T>> {
+  const selector = reflectComponentType(component)?.selector;
+  if (!selector || selector.includes(",") || selector.includes("[")) {
+    throw new Error("mountConsumer requires a component with a single element selector");
+  }
+
+  const el = document.createElement(selector);
+  document.body.appendChild(el);
+
+  const appRef = await bootstrapApplication(component, {
+    providers: [provideZoneChangeDetection(), ...(options?.providers ?? [])],
+  });
+  const cmpRef = appRef.components[0] as ComponentRef<T>;
+
+  return {
+    el,
+    instance: cmpRef.instance,
+    appRef,
+    destroy: () => {
+      appRef.destroy();
+      el.remove();
+    },
+    detectChanges: () => {
+      cmpRef.changeDetectorRef.detectChanges();
       appRef.tick();
     },
   };

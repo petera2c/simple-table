@@ -98,6 +98,29 @@ export class AppComponent {
   );
 
   fs.writeFileSync(
+    path.join(srcDir, "people.component.ts"),
+    `import { Component } from "@angular/core";
+import { SimpleTableImports } from "@simple-table/angular";
+
+@Component({
+  selector: "app-people",
+  standalone: true,
+  imports: [SimpleTableImports],
+  template: \`
+    <simple-table [rows]="rows" [columns]="columns">
+      <ng-template stCell="name" let-row>{{ row.name }}</ng-template>
+      <ng-template stEmpty>No people yet.</ng-template>
+    </simple-table>
+  \`,
+})
+export class PeopleComponent {
+  rows = [{ id: 1, name: "Ada" }];
+  columns = [{ accessor: "name" as const, label: "Name", width: 120 }];
+}
+`,
+  );
+
+  fs.writeFileSync(
     path.join(root, "tsconfig.json"),
     JSON.stringify(
       {
@@ -113,7 +136,7 @@ export class AppComponent {
           outDir: "out",
           rootDir: "src",
         },
-        files: ["src/app.component.ts"],
+        files: ["src/app.component.ts", "src/people.component.ts"],
         angularCompilerOptions: {
           compilationMode: "full",
           strictTemplates: true,
@@ -138,6 +161,10 @@ describe("Angular consumer standalone import (built package)", () => {
     expect(
       /ɵcmp|ɵɵComponentDeclaration/.test(dts),
       "Published .d.ts lacks Ivy ɵcmp metadata; Angular AOT cannot treat SimpleTableComponent as standalone (TS-992012).",
+    ).toBe(true);
+    expect(
+      /ɵdir|ɵɵDirectiveDeclaration/.test(dts),
+      "Published .d.ts lacks Ivy ɵdir metadata for stCell / stEmpty and the other template directives.",
     ).toBe(true);
   });
 
@@ -167,6 +194,44 @@ describe("Angular consumer standalone import (built package)", () => {
 
       expect(
         standaloneImportErrors.map((diagnostic) => ({
+          code: diagnostic.code,
+          message: flattenDiagnostic(diagnostic),
+        })),
+      ).toEqual([]);
+    } finally {
+      fs.rmSync(consumerRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("allows SimpleTableImports with stCell / stEmpty in a standalone page", () => {
+    expect(
+      fs.existsSync(distTypesIndex),
+      "packages/angular/dist is missing — run `pnpm run build:angular` first",
+    ).toBe(true);
+
+    const consumerRoot = createConsumerProject();
+    try {
+      const config = readConfiguration(path.join(consumerRoot, "tsconfig.json"));
+      const result = performCompilation({
+        rootNames: config.rootNames,
+        options: config.options,
+      });
+
+      const diagnostics = [...(result.diagnostics ?? [])];
+      const peopleErrors = diagnostics.filter((diagnostic) => {
+        const file = diagnostic.file?.fileName ?? "";
+        if (!file.includes("people.component.ts")) return false;
+        const message = flattenDiagnostic(diagnostic);
+        return (
+          diagnostic.code === -992012 ||
+          diagnostic.code === 992012 ||
+          /must be standalone components, directives, pipes/.test(message) ||
+          /stCell|stEmpty|SimpleTableImports/.test(message)
+        );
+      });
+
+      expect(
+        peopleErrors.map((diagnostic) => ({
           code: diagnostic.code,
           message: flattenDiagnostic(diagnostic),
         })),

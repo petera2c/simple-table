@@ -63,6 +63,7 @@ export const renderBodySections = (args: {
 
   if (shouldShowEmptyState) {
     sectionRenderer.releaseBodySections();
+    deps.config.onRendererHostDiscard?.(container);
     container.innerHTML = "";
     deps.mainBodyRef.current = null;
     deps.pinnedLeftRef.current = null;
@@ -71,16 +72,30 @@ export const renderBodySections = (args: {
     const emptyWrapper = document.createElement("div");
     emptyWrapper.className = "st-empty-state-wrapper";
 
-    if (typeof deps.config.tableEmptyStateRenderer === "string") {
-      emptyWrapper.textContent = deps.config.tableEmptyStateRenderer;
-    } else if (deps.config.tableEmptyStateRenderer instanceof HTMLElement) {
-      emptyWrapper.appendChild(deps.config.tableEmptyStateRenderer.cloneNode(true));
+    const renderer = deps.config.tableEmptyStateRenderer;
+    if (typeof renderer === "function") {
+      const node = renderer();
+      if (typeof node === "string") {
+        emptyWrapper.textContent = node;
+      } else if (node instanceof Node) {
+        emptyWrapper.appendChild(node);
+      }
+    } else if (typeof renderer === "string") {
+      emptyWrapper.textContent = renderer;
+    } else if (renderer instanceof HTMLElement) {
+      emptyWrapper.appendChild(renderer.cloneNode(true));
     } else {
       emptyWrapper.innerHTML = "<div class='st-empty-state'>No rows to display</div>";
     }
 
     container.appendChild(emptyWrapper);
     return stickyParentsContainer;
+  }
+
+  const existingEmpty = container.querySelector(":scope > .st-empty-state-wrapper");
+  if (existingEmpty instanceof HTMLElement) {
+    deps.config.onRendererHostDiscard?.(existingEmpty);
+    existingEmpty.remove();
   }
 
   const pinnedLeftHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "left");

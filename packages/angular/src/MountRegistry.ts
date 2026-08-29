@@ -15,6 +15,8 @@ export class MountRegistry {
 
   readonly cellRendererCache = new Map<string, CachedRendererSlot>();
   readonly headerRendererCache = new Map<string, CachedRendererSlot>();
+  readonly cellTemplateCache = new Map<string, CachedRendererSlot>();
+  readonly headerTemplateCache = new Map<string, CachedRendererSlot>();
   /** One-shot `tableEmptyStateRenderer` component mount, reused across config rebuilds. */
   tableEmptyStateMount: { component: unknown; host: HTMLElement } | null = null;
 
@@ -52,6 +54,8 @@ export class MountRegistry {
   clear(): void {
     this.cellRendererCache.clear();
     this.headerRendererCache.clear();
+    this.cellTemplateCache.clear();
+    this.headerTemplateCache.clear();
     this.tableEmptyStateMount = null;
     for (const dispose of this.entries.values()) {
       dispose();
@@ -60,11 +64,15 @@ export class MountRegistry {
   }
 
   pruneRendererCaches(liveAccessors: ReadonlySet<string>): void {
-    for (const key of this.cellRendererCache.keys()) {
-      if (!liveAccessors.has(key)) this.cellRendererCache.delete(key);
-    }
-    for (const key of this.headerRendererCache.keys()) {
-      if (!liveAccessors.has(key)) this.headerRendererCache.delete(key);
+    for (const cache of [
+      this.cellRendererCache,
+      this.headerRendererCache,
+      this.cellTemplateCache,
+      this.headerTemplateCache,
+    ]) {
+      for (const key of cache.keys()) {
+        if (!liveAccessors.has(key)) cache.delete(key);
+      }
     }
   }
 

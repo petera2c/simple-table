@@ -1,4 +1,4 @@
-import type { ApplicationRef, EnvironmentInjector, Injector } from "@angular/core";
+import type { ApplicationRef, EnvironmentInjector, Injector, TemplateRef } from "@angular/core";
 import type { SimpleTableConfig, ColumnDef, ColumnEditorConfig } from "simple-table-core";
 import { asRows, collectHeaderAccessors } from "simple-table-core";
 import type {
@@ -15,6 +15,26 @@ import {
   wrapAngularColumnEditorRowRenderer,
   type AngularMountOptions,
 } from "./utils/wrapAngularRenderer";
+import {
+  wrapAngularTemplate,
+  wrapCachedAngularTemplate,
+  cellTemplateContext,
+  headerTemplateContext,
+  footerTemplateContext,
+  loadingTemplateContext,
+  errorTemplateContext,
+  emptyTemplateContext,
+} from "./utils/wrapAngularTemplate";
+
+/** Projected `ng-template` slots from the page that hosts `<simple-table>`. */
+export type AngularContentSlots = {
+  cellTemplates?: ReadonlyMap<string, TemplateRef<unknown>>;
+  headerTemplates?: ReadonlyMap<string, TemplateRef<unknown>>;
+  emptyTemplate?: TemplateRef<unknown>;
+  footerTemplate?: TemplateRef<unknown>;
+  loadingTemplate?: TemplateRef<unknown>;
+  errorTemplate?: TemplateRef<unknown>;
+};
 
 /** Resolve column definitions. */
 export function resolveAngularColumns<
@@ -33,7 +53,7 @@ function resolveTableEmptyState(
   value: NonNullable<SimpleTableAngularProps["tableEmptyStateRenderer"]> | null,
   wrap: <P extends object>(component: any) => (props: Partial<P>) => HTMLElement,
   registry: MountRegistry,
-): HTMLElement | string | null {
+): HTMLElement | string | null | (() => HTMLElement | string | null) {
   if (value === null) {
     if (registry.tableEmptyStateMount) {
       registry.disposeHost(registry.tableEmptyStateMount.host);
@@ -42,21 +62,23 @@ function resolveTableEmptyState(
     return null;
   }
   if ((value as { ɵcmp?: unknown }).ɵcmp) {
-    const existing = registry.tableEmptyStateMount;
-    if (
-      existing &&
-      existing.component === value &&
-      registry.isRegistered(existing.host)
-    ) {
-      return existing.host;
-    }
-    if (existing) {
-      registry.disposeHost(existing.host);
-      registry.tableEmptyStateMount = null;
-    }
-    const host = wrap(value as any)({});
-    registry.tableEmptyStateMount = { component: value, host };
-    return host;
+    return () => {
+      const existing = registry.tableEmptyStateMount;
+      if (
+        existing &&
+        existing.component === value &&
+        registry.isRegistered(existing.host)
+      ) {
+        return existing.host;
+      }
+      if (existing) {
+        registry.disposeHost(existing.host);
+        registry.tableEmptyStateMount = null;
+      }
+      const host = wrap(value as any)({});
+      registry.tableEmptyStateMount = { component: value, host };
+      return host;
+    };
   }
   if (registry.tableEmptyStateMount) {
     registry.disposeHost(registry.tableEmptyStateMount.host);
@@ -71,6 +93,7 @@ export function buildVanillaConfig<TData extends AngularDefaultRowData = Angular
   appRef: ApplicationRef,
   injector: EnvironmentInjector,
   elementInjector?: Injector,
+  slots?: AngularContentSlots,
 ): SimpleTableConfig {
   const {
     columns: _columns,
@@ -147,7 +170,16 @@ export function buildVanillaConfig<TData extends AngularDefaultRowData = Angular
     const accessor = String(header.accessor);
     const transformed: ColumnDef = { ...(headerRest as any) };
 
-    if (cellRenderer) {
+    const cellTemplate = slots?.cellTemplates?.get(accessor);
+    if (cellTemplate) {
+      transformed.cellRenderer = wrapCachedAngularTemplate(
+        cellTemplate,
+        mountOptions,
+        accessor,
+        "cell",
+        cellTemplateContext,
+      ) as any;
+    } else if (cellRenderer) {
       if ((cellRenderer as any).ɵcmp) {
         transformed.cellRenderer = wrapCachedAngularRenderer(
           cellRenderer as any,
@@ -159,7 +191,16 @@ export function buildVanillaConfig<TData extends AngularDefaultRowData = Angular
         transformed.cellRenderer = cellRenderer as any;
       }
     }
-    if (headerRenderer) {
+    const headerTemplate = slots?.headerTemplates?.get(accessor);
+    if (headerTemplate) {
+      transformed.headerRenderer = wrapCachedAngularTemplate(
+        headerTemplate,
+        mountOptions,
+        accessor,
+        "header",
+        headerTemplateContext,
+      ) as any;
+    } else if (headerRenderer) {
       if ((headerRenderer as any).ɵcmp) {
         transformed.headerRenderer = wrapCachedAngularRenderer(
           headerRenderer as any,
@@ -229,7 +270,13 @@ export function buildVanillaConfig<TData extends AngularDefaultRowData = Angular
       onColumnSelect(header as unknown as AngularColumnDef<TData, any>);
   }
 
-  if (footerRenderer !== undefined) {
+  if (slots?.footerTemplate) {
+    vanillaConfig.footerRenderer = wrapAngularTemplate(
+      slots.footerTemplate,
+      mountOptions,
+      footerTemplateContext,
+    ) as any;
+  } else if (footerRenderer !== undefined) {
     if ((footerRenderer as any).ɵcmp) {
       vanillaConfig.footerRenderer = wrap(footerRenderer) as any;
     } else {
@@ -245,7 +292,13 @@ export function buildVanillaConfig<TData extends AngularDefaultRowData = Angular
     }
   }
 
-  if (errorStateRenderer !== undefined) {
+  if (slots?.errorTemplate) {
+    vanillaConfig.errorStateRenderer = wrapAngularTemplate(
+      slots.errorTemplate,
+      mountOptions,
+      errorTemplateContext,
+    ) as any;
+  } else if (errorStateRenderer !== undefined) {
     if ((errorStateRenderer as any).ɵcmp) {
       vanillaConfig.errorStateRenderer = wrap(errorStateRenderer) as any;
     } else {
@@ -253,7 +306,13 @@ export function buildVanillaConfig<TData extends AngularDefaultRowData = Angular
     }
   }
 
-  if (loadingStateRenderer !== undefined) {
+  if (slots?.loadingTemplate) {
+    vanillaConfig.loadingStateRenderer = wrapAngularTemplate(
+      slots.loadingTemplate,
+      mountOptions,
+      loadingTemplateContext,
+    ) as any;
+  } else if (loadingStateRenderer !== undefined) {
     if ((loadingStateRenderer as any).ɵcmp) {
       vanillaConfig.loadingStateRenderer = wrap(loadingStateRenderer) as any;
     } else {
@@ -261,7 +320,14 @@ export function buildVanillaConfig<TData extends AngularDefaultRowData = Angular
     }
   }
 
-  if (tableEmptyStateRenderer !== undefined) {
+  if (slots?.emptyTemplate) {
+    const renderEmpty = wrapAngularTemplate(
+      slots.emptyTemplate,
+      mountOptions,
+      emptyTemplateContext,
+    );
+    vanillaConfig.tableEmptyStateRenderer = () => renderEmpty({});
+  } else if (tableEmptyStateRenderer !== undefined) {
     vanillaConfig.tableEmptyStateRenderer = resolveTableEmptyState(
       tableEmptyStateRenderer,
       wrap,

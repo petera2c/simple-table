@@ -1,5 +1,15 @@
 // Component
 export { SimpleTableComponent } from "./lib/SimpleTableComponent";
+export { SimpleTableImports } from "./lib/simpleTableImports";
+export {
+  StCellDirective,
+  StHeaderDirective,
+  StEmptyDirective,
+  StFooterDirective,
+  StLoadingDirective,
+  StErrorDirective,
+  StDomSlotDirective,
+} from "./lib/stDirectives";
 export { asRows } from "simple-table-core";
 
 // Provider helper

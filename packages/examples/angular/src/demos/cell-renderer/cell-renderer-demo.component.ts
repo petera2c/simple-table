@@ -1,10 +1,9 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import { SimpleTableImports } from "@simple-table/angular";
 import type { AngularCellRenderer, AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import { CrProgressCellComponent } from "./cr-progress-cell.component";
 import { CrRatingCellComponent } from "./cr-rating-cell.component";
-import { CrStatusCellComponent } from "./cr-status-cell.component";
 import { CrTagsCellComponent } from "./cr-tags-cell.component";
 import { CrTeamMembersCellComponent } from "./cr-team-members-cell.component";
 import { CrVerifiedCellComponent } from "./cr-verified-cell.component";
@@ -15,17 +14,22 @@ import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 const RENDERERS: Partial<Record<string, AngularCellRenderer<CellRendererEmployee>>> = {
   teamMembers: CrTeamMembersCellComponent,
   website: CrWebsiteCellComponent,
-  status: CrStatusCellComponent,
   progress: CrProgressCellComponent,
   rating: CrRatingCellComponent,
   verified: CrVerifiedCellComponent,
   tags: CrTagsCellComponent,
 };
 
+const STATUS_META: Record<string, { icon: string; color: string }> = {
+  active: { icon: "✓", color: "#10B981" },
+  inactive: { icon: "✕", color: "#EF4444" },
+  pending: { icon: "!", color: "#F59E0B" },
+};
+
 @Component({
   selector: "cell-renderer-demo",
   standalone: true,
-  imports: [SimpleTableComponent],
+  imports: [SimpleTableImports],
   template: `
     <simple-table
       [getRowId]="getRowId"
@@ -35,7 +39,14 @@ const RENDERERS: Partial<Record<string, AngularCellRenderer<CellRendererEmployee
       [theme]="theme"
       [selectableCells]="true"
       [customTheme]="{ rowHeight: 48 }"
-    ></simple-table>
+    >
+      <ng-template stCell="status" let-value="value">
+        <span
+          [style.color]="statusMeta(value).color"
+          style="font-weight:600;text-transform:capitalize;"
+        >{{ statusMeta(value).icon }} {{ value }}</span>
+      </ng-template>
+    </simple-table>
   `,
 })
 export class CellRendererDemoComponent {
@@ -49,4 +60,8 @@ export class CellRendererDemoComponent {
   });
 
   getRowId = ({ row }: GetRowIdParams<CellRendererEmployee>) => row.id;
+
+  statusMeta(value: unknown): { icon: string; color: string } {
+    return STATUS_META[String(value)] ?? { icon: "?", color: "#6b7280" };
+  }
 }

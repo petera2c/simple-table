@@ -160,7 +160,15 @@ export interface SimpleTableProps<TData extends RowData = Row> {
   selectableCells?: boolean; // Flag if can select cells
   selectableColumns?: boolean; // Flag for selectable column headers
   serverSidePagination?: boolean; // Flag to disable internal pagination slicing (for server-side pagination)
-  tableEmptyStateRenderer?: HTMLElement | string | null; // Custom empty state component when table has no rows
+  /**
+   * Custom empty UI when the table has no rows. A prebuilt element is cloned.
+   * Pass a function to append a live node (button clicks still fire).
+   */
+  tableEmptyStateRenderer?:
+    | HTMLElement
+    | string
+    | null
+    | (() => HTMLElement | string | null);
   theme?: Theme; // Theme
   totalRowCount?: number; // Total number of rows on server (for server-side pagination)
 }

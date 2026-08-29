@@ -19,6 +19,7 @@ export default defineConfig({
       "../core/src/__tests__/headerCellReuse.test.ts",
       "../core/src/__tests__/columnEditorLabelReuse.test.ts",
       "../core/src/__tests__/livePropDom.test.ts",
+      "../core/src/__tests__/tableEmptyStateRenderer.test.ts",
       "../core/src/__tests__/columnPropReuse.test.ts",
       "../core/src/__tests__/parkAndStagger.test.ts",
       "../core/src/__tests__/rowFlattenPatch.test.ts",

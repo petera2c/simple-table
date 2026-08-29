@@ -36,10 +36,40 @@ npm install @simple-table/angular
 
 ## Building with Angular
 
-- Standalone `SimpleTableComponent` with the `<simple-table>` selector — drop it into the `imports` array of any Angular 17+ standalone component
-- Use Angular components for cell renderers, header renderers, footer renderers, and more
-- Access the imperative `TableAPI` via `(tableReady)` output or `@ViewChild` for sorting, filtering, pagination, export, and more
-- Types and APIs are exported from this package; works with Ivy, signals, and TypeScript strict mode
+- Import `SimpleTableImports` on the page. That brings in `<simple-table>` plus `stCell`, `stEmpty`, `stHeader`, and the other template directives.
+- Keep columns in TypeScript. Put custom cells, empty UI, and headers in the page template (`stCell="status"`, `stEmpty`).
+- Bind events the Angular way: `(sortChange)`, `(rowSelectionChange)`, `(cellEdit)`. The older `[onSortChange]` inputs still work; if you bind both, both run.
+- `class` on `<simple-table>` styles the Angular host. `[className]` styles the inner grid (`.simple-table-root`). They are not merged.
+- `provideSimpleTable()` is optional. Angular already provides what the table needs.
+- Access the imperative `TableAPI` via `(tableReady)` or `@ViewChild`.
+- You can still pass Angular component classes as `cellRenderer` on a column. A matching `stCell` on the page wins.
+
+```html
+<simple-table
+  [rows]="employees"
+  [columns]="columns"
+  [getRowId]="getRowId"
+  (sortChange)="onSort($event)"
+>
+  <ng-template stCell="status" let-row let-value="value">
+    <span class="badge">{{ value }}</span>
+  </ng-template>
+
+  <ng-template stEmpty>
+    No people yet.
+    <button type="button" (click)="add()">Add</button>
+  </ng-template>
+</simple-table>
+```
+
+```ts
+@Component({
+  standalone: true,
+  imports: [SimpleTableImports],
+  templateUrl: "./people.component.html",
+})
+export class PeopleComponent { /* rows, columns, handlers */ }
+```
 
 ## Features
 

@@ -96,9 +96,8 @@ function mountAngularComponent<P extends object>(
  * host is discarded. The table adapter always supplies a registry; the public
  * helper used for one-shot static slots may omit it. Pass `elementInjector` so
  * dynamically created components see providers on ancestors of `<simple-table>`.
- *
- * These are injected automatically when the consumer uses
- * `provideSimpleTable()` in their application providers.
+ * `ApplicationRef` and `EnvironmentInjector` come from Angular's injector;
+ * `provideSimpleTable()` is optional.
  */
 export function wrapAngularRenderer<P extends object>(
   component: Type<P>,

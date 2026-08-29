@@ -1,11 +1,14 @@
 import {
+  AfterContentInit,
+  ChangeDetectionStrategy,
   Component,
+  ContentChildren,
+  EventEmitter,
   Input,
   OnChanges,
   OnDestroy,
-  OnInit,
   Output,
-  EventEmitter,
+  QueryList,
   ElementRef,
   ApplicationRef,
   EnvironmentInjector,
@@ -13,18 +16,42 @@ import {
   inject,
 } from "@angular/core";
 import { SimpleTableVanilla } from "simple-table-core";
-import type { SimpleTableConfig, TableAPI } from "simple-table-core";
+import type {
+  SimpleTableConfig,
+  TableAPI,
+  SortColumn,
+  CellClickProps,
+  CellChangeProps,
+  TableFilterState,
+  RowSelectionChangeProps,
+  OnRowGroupExpandProps,
+  ColumnVisibilityState,
+  PivotConfig,
+} from "simple-table-core";
 import {
   headersStructurallyEqual,
   rowsShallowUnchanged,
 } from "simple-table-core";
-import { buildVanillaConfig, resolveAngularColumns } from "../buildVanillaConfig";
+import {
+  buildVanillaConfig,
+  resolveAngularColumns,
+  type AngularContentSlots,
+} from "../buildVanillaConfig";
 import { MountRegistry } from "../MountRegistry";
 import type {
+  AngularColumnDef,
   AngularDefaultRowData,
   SimpleTableAngularProps,
   TableInstance,
 } from "../types";
+import {
+  StCellDirective,
+  StEmptyDirective,
+  StErrorDirective,
+  StFooterDirective,
+  StHeaderDirective,
+  StLoadingDirective,
+} from "./stDirectives";
 
 /**
  * SimpleTable — Angular adapter for simple-table-core.
@@ -35,16 +62,21 @@ import type {
  * Prefer typed `rows` / `columns` (`AngularColumnDef<MyRow>`). For a typed
  * imperative handle, use `@ViewChild(SimpleTableComponent) table!: SimpleTableComponent<MyRow>`
  * or listen to `(tableReady)`.
+ *
+ * Page templates (`stCell`, `stEmpty`, …) and `(sortChange)`-style outputs are
+ * the native Angular API. Import `SimpleTableImports` on the page. `class` on
+ * this host styles the wrapper; `[className]` styles the inner grid root.
  */
 @Component({
   selector: "simple-table",
   standalone: true,
-  template: `<div #host></div>`,
+  template: `<div #host></div><ng-content />`,
   styles: [":host { display: block; }"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SimpleTableComponent<
   TData extends AngularDefaultRowData = AngularDefaultRowData,
-> implements OnInit, OnChanges, OnDestroy {
+> implements AfterContentInit, OnChanges, OnDestroy {
   @Input({ required: true }) rows!: SimpleTableAngularProps<TData>["rows"];
   @Input() columns?: SimpleTableAngularProps<TData>["columns"];
 
@@ -127,6 +159,30 @@ export class SimpleTableComponent<
 
   /** Emits the TableAPI once the table has mounted. */
   @Output() tableReady = new EventEmitter<TableAPI<TData>>();
+  @Output() cellClick = new EventEmitter<CellClickProps<TData>>();
+  @Output() cellEdit = new EventEmitter<CellChangeProps<TData>>();
+  @Output() sortChange = new EventEmitter<SortColumn | null>();
+  @Output() filterChange = new EventEmitter<TableFilterState<TData>>();
+  @Output() rowSelectionChange = new EventEmitter<RowSelectionChangeProps<TData>>();
+  @Output() rowGroupExpand = new EventEmitter<OnRowGroupExpandProps<TData>>();
+  @Output() columnOrderChange = new EventEmitter<AngularColumnDef<TData, any>[]>();
+  @Output() columnVisibilityChange = new EventEmitter<ColumnVisibilityState>();
+  @Output() columnWidthChange = new EventEmitter<AngularColumnDef<TData, any>[]>();
+  @Output() pageChange = new EventEmitter<number>();
+  @Output() loadMore = new EventEmitter<void>();
+  @Output() headerEdit = new EventEmitter<{
+    header: AngularColumnDef<TData, any>;
+    newLabel: string;
+  }>();
+  @Output() columnSelect = new EventEmitter<AngularColumnDef<TData, any>>();
+  @Output() pivotChange = new EventEmitter<PivotConfig<TData> | null>();
+
+  @ContentChildren(StCellDirective) private cellSlots!: QueryList<StCellDirective>;
+  @ContentChildren(StHeaderDirective) private headerSlots!: QueryList<StHeaderDirective>;
+  @ContentChildren(StEmptyDirective) private emptySlots!: QueryList<StEmptyDirective>;
+  @ContentChildren(StFooterDirective) private footerSlots!: QueryList<StFooterDirective>;
+  @ContentChildren(StLoadingDirective) private loadingSlots!: QueryList<StLoadingDirective>;
+  @ContentChildren(StErrorDirective) private errorSlots!: QueryList<StErrorDirective>;
 
   private instance: TableInstance | null = null;
   private registry = new MountRegistry();
@@ -134,8 +190,10 @@ export class SimpleTableComponent<
     NonNullable<SimpleTableAngularProps<TData>["columns"]>[number]
   > | undefined;
   private syncedRows: SimpleTableAngularProps<TData>["rows"] | undefined;
+  private syncedSlotsKey = "";
   private wasLoading = false;
   private didInitialAutoSize = false;
+  private slotUnsub: Array<{ unsubscribe(): void }> = [];
   private hostEl = inject(ElementRef<HTMLElement>);
   private appRef = inject(ApplicationRef);
   private envInjector = inject(EnvironmentInjector);
@@ -155,41 +213,79 @@ export class SimpleTableComponent<
     }
   }
 
-  ngOnInit(): void {
-    const container = this.hostEl.nativeElement.querySelector("div") as HTMLElement;
-    if (!container) return;
+  private collectSlots(): AngularContentSlots {
+    const cellTemplates = new Map<string, StCellDirective["templateRef"]>();
+    for (const slot of this.cellSlots ?? []) {
+      cellTemplates.set(slot.stCell, slot.templateRef);
+    }
+    const headerTemplates = new Map<string, StHeaderDirective["templateRef"]>();
+    for (const slot of this.headerSlots ?? []) {
+      headerTemplates.set(slot.stHeader, slot.templateRef);
+    }
+    return {
+      cellTemplates,
+      headerTemplates,
+      emptyTemplate: this.emptySlots?.last?.templateRef,
+      footerTemplate: this.footerSlots?.last?.templateRef,
+      loadingTemplate: this.loadingSlots?.last?.templateRef,
+      errorTemplate: this.errorSlots?.last?.templateRef,
+    };
+  }
 
+  private slotsFingerprint(slots: AngularContentSlots): string {
+    const cells = [...(slots.cellTemplates?.keys() ?? [])].sort().join(",");
+    const headers = [...(slots.headerTemplates?.keys() ?? [])].sort().join(",");
+    return [
+      `c:${cells}`,
+      `h:${headers}`,
+      `e:${slots.emptyTemplate ? 1 : 0}`,
+      `f:${slots.footerTemplate ? 1 : 0}`,
+      `l:${slots.loadingTemplate ? 1 : 0}`,
+      `r:${slots.errorTemplate ? 1 : 0}`,
+    ].join("|");
+  }
+
+  private buildConfig() {
     const props = this.getProps();
-    this.instance = new SimpleTableVanilla(
-      container,
-      buildVanillaConfig(
+    const slots = this.collectSlots();
+    return {
+      props,
+      slots,
+      slotsKey: this.slotsFingerprint(slots),
+      fullConfig: buildVanillaConfig(
         props,
         this.registry,
         this.appRef,
         this.envInjector,
         this.elementInjector,
+        slots,
       ),
+    };
+  }
+
+  private mountTable(): void {
+    const container = this.hostEl.nativeElement.querySelector("div") as HTMLElement;
+    if (!container) return;
+
+    const { props, slotsKey, fullConfig } = this.buildConfig();
+    this.instance = new SimpleTableVanilla(
+      container,
+      fullConfig,
     ) as unknown as TableInstance;
     this.instance.mount();
     this.syncedDefaultHeaders = resolveAngularColumns(props);
     this.syncedRows = props.rows;
+    this.syncedSlotsKey = slotsKey;
     this.wasLoading = Boolean(props.isLoading);
     this.maybeRefitAutoSizeColumns(false);
 
     this.tableReady.emit(this.instance.getAPI() as unknown as TableAPI<TData>);
   }
 
-  ngOnChanges(): void {
+  private applyConfig(): void {
     if (!this.instance) return;
 
-    const props = this.getProps();
-    const fullConfig = buildVanillaConfig(
-      props,
-      this.registry,
-      this.appRef,
-      this.envInjector,
-      this.elementInjector,
-    );
+    const { props, slotsKey, fullConfig } = this.buildConfig();
     const patch: Partial<SimpleTableConfig> = { ...fullConfig };
     const resolvedColumns = resolveAngularColumns(props);
 
@@ -198,7 +294,9 @@ export class SimpleTableComponent<
       resolvedColumns,
     );
     this.syncedDefaultHeaders = resolvedColumns;
-    if (headersUnchanged) {
+    const slotsChanged = slotsKey !== this.syncedSlotsKey;
+    this.syncedSlotsKey = slotsKey;
+    if (headersUnchanged && !slotsChanged) {
       delete patch.columns;
     }
 
@@ -220,7 +318,28 @@ export class SimpleTableComponent<
     this.maybeRefitAutoSizeColumns(leftLoading);
   }
 
+  ngAfterContentInit(): void {
+    this.mountTable();
+    const lists = [
+      this.cellSlots,
+      this.headerSlots,
+      this.emptySlots,
+      this.footerSlots,
+      this.loadingSlots,
+      this.errorSlots,
+    ];
+    for (const list of lists) {
+      this.slotUnsub.push(list.changes.subscribe(() => this.applyConfig()));
+    }
+  }
+
+  ngOnChanges(): void {
+    this.applyConfig();
+  }
+
   ngOnDestroy(): void {
+    for (const sub of this.slotUnsub) sub.unsubscribe();
+    this.slotUnsub = [];
     this.instance?.destroy();
     this.instance = null;
     this.syncedDefaultHeaders = undefined;
@@ -248,29 +367,13 @@ export class SimpleTableComponent<
       props.tableEmptyStateRenderer = this.tableEmptyStateRenderer;
     if (this.headerDropdown !== undefined) props.headerDropdown = this.headerDropdown;
     if (this.columnEditorConfig !== undefined) props.columnEditorConfig = this.columnEditorConfig;
-    if (this.onCellClick !== undefined) props.onCellClick = this.onCellClick;
-    if (this.onCellEdit !== undefined) props.onCellEdit = this.onCellEdit;
-    if (this.onSortChange !== undefined) props.onSortChange = this.onSortChange;
-    if (this.onFilterChange !== undefined) props.onFilterChange = this.onFilterChange;
-    if (this.onRowSelectionChange !== undefined)
-      props.onRowSelectionChange = this.onRowSelectionChange;
-    if (this.onRowGroupExpand !== undefined) props.onRowGroupExpand = this.onRowGroupExpand;
-    if (this.onColumnOrderChange !== undefined)
-      props.onColumnOrderChange = this.onColumnOrderChange;
-    if (this.onColumnVisibilityChange !== undefined)
-      props.onColumnVisibilityChange = this.onColumnVisibilityChange;
-    if (this.onColumnWidthChange !== undefined)
-      props.onColumnWidthChange = this.onColumnWidthChange;
-    if (this.onPageChange !== undefined) props.onPageChange = this.onPageChange;
     if (this.onNextPage !== undefined) props.onNextPage = this.onNextPage;
-    if (this.onLoadMore !== undefined) props.onLoadMore = this.onLoadMore;
     if (this.onTableReady !== undefined) props.onTableReady = this.onTableReady;
     if (this.rowGrouping !== undefined) props.rowGrouping = this.rowGrouping;
     if (this.canExpandRowGroup !== undefined) props.canExpandRowGroup = this.canExpandRowGroup;
     if (this.enableStickyParents !== undefined)
       props.enableStickyParents = this.enableStickyParents;
     if (this.pivot !== undefined) props.pivot = this.pivot;
-    if (this.onPivotChange !== undefined) props.onPivotChange = this.onPivotChange;
     if (this.enableRowSelection !== undefined) props.enableRowSelection = this.enableRowSelection;
     if (this.rowSelectionMode !== undefined) props.rowSelectionMode = this.rowSelectionMode;
     if (this.selectRowOnClick !== undefined) props.selectRowOnClick = this.selectRowOnClick;
@@ -301,8 +404,6 @@ export class SimpleTableComponent<
     if (this.selectableColumns !== undefined) props.selectableColumns = this.selectableColumns;
     if (this.enableHeaderEditing !== undefined)
       props.enableHeaderEditing = this.enableHeaderEditing;
-    if (this.onHeaderEdit !== undefined) props.onHeaderEdit = this.onHeaderEdit;
-    if (this.onColumnSelect !== undefined) props.onColumnSelect = this.onColumnSelect;
     if (this.customTheme !== undefined) props.customTheme = this.customTheme;
     if (this.icons !== undefined) props.icons = this.icons;
     if (this.externalFilterHandling !== undefined)
@@ -330,16 +431,97 @@ export class SimpleTableComponent<
     if (this.enableVirtualization !== undefined)
       props.enableVirtualization = this.enableVirtualization;
     if (this.hoverRowBackground !== undefined) props.hoverRowBackground = this.hoverRowBackground;
-    if (this.hoverRowBackground !== undefined)
-      props.hoverRowBackground = this.hoverRowBackground;
-    if (this.oddColumnBackground !== undefined)
-      props.oddColumnBackground = this.oddColumnBackground;
     if (this.oddColumnBackground !== undefined)
       props.oddColumnBackground = this.oddColumnBackground;
     if (this.oddEvenRowBackground !== undefined)
       props.oddEvenRowBackground = this.oddEvenRowBackground;
-    if (this.oddEvenRowBackground !== undefined)
-      props.oddEvenRowBackground = this.oddEvenRowBackground;
+
+    if (this.onCellClick || this.cellClick.observed) {
+      props.onCellClick = (event) => {
+        this.onCellClick?.(event);
+        this.cellClick.emit(event);
+      };
+    }
+    if (this.onCellEdit || this.cellEdit.observed) {
+      props.onCellEdit = (event) => {
+        this.onCellEdit?.(event);
+        this.cellEdit.emit(event);
+      };
+    }
+    if (this.onSortChange || this.sortChange.observed) {
+      props.onSortChange = (sort) => {
+        this.onSortChange?.(sort);
+        this.sortChange.emit(sort);
+      };
+    }
+    if (this.onFilterChange || this.filterChange.observed) {
+      props.onFilterChange = (filters) => {
+        this.onFilterChange?.(filters);
+        this.filterChange.emit(filters);
+      };
+    }
+    if (this.onRowSelectionChange || this.rowSelectionChange.observed) {
+      props.onRowSelectionChange = (event) => {
+        this.onRowSelectionChange?.(event);
+        this.rowSelectionChange.emit(event);
+      };
+    }
+    if (this.onRowGroupExpand || this.rowGroupExpand.observed) {
+      props.onRowGroupExpand = (event) => {
+        const result = this.onRowGroupExpand?.(event);
+        this.rowGroupExpand.emit(event);
+        return result;
+      };
+    }
+    if (this.onColumnOrderChange || this.columnOrderChange.observed) {
+      props.onColumnOrderChange = (headers) => {
+        this.onColumnOrderChange?.(headers);
+        this.columnOrderChange.emit(headers);
+      };
+    }
+    if (this.onColumnVisibilityChange || this.columnVisibilityChange.observed) {
+      props.onColumnVisibilityChange = (state) => {
+        this.onColumnVisibilityChange?.(state);
+        this.columnVisibilityChange.emit(state);
+      };
+    }
+    if (this.onColumnWidthChange || this.columnWidthChange.observed) {
+      props.onColumnWidthChange = (headers) => {
+        this.onColumnWidthChange?.(headers);
+        this.columnWidthChange.emit(headers);
+      };
+    }
+    if (this.onPageChange || this.pageChange.observed) {
+      props.onPageChange = (page) => {
+        const result = this.onPageChange?.(page);
+        this.pageChange.emit(page);
+        return result;
+      };
+    }
+    if (this.onLoadMore || this.loadMore.observed) {
+      props.onLoadMore = () => {
+        this.onLoadMore?.();
+        this.loadMore.emit();
+      };
+    }
+    if (this.onHeaderEdit || this.headerEdit.observed) {
+      props.onHeaderEdit = (header, newLabel) => {
+        this.onHeaderEdit?.(header, newLabel);
+        this.headerEdit.emit({ header, newLabel });
+      };
+    }
+    if (this.onColumnSelect || this.columnSelect.observed) {
+      props.onColumnSelect = (header) => {
+        this.onColumnSelect?.(header);
+        this.columnSelect.emit(header);
+      };
+    }
+    if (this.onPivotChange || this.pivotChange.observed) {
+      props.onPivotChange = (pivot) => {
+        this.onPivotChange?.(pivot);
+        this.pivotChange.emit(pivot);
+      };
+    }
 
     return props;
   }
