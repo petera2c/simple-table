@@ -320,3 +320,141 @@ export function flattenRows(config: FlattenRowsConfig): FlattenRowsResult {
     parentEndPositions,
   };
 }
+
+/** Exactly one expand/collapse key changed; otherwise a full flatten is required. */
+export function findSingleExpansionToggle(
+  prevCollapsedKeys: string[],
+  prevExpandedKeys: string[],
+  nextCollapsed: Map<string, number>,
+  nextExpanded: Map<string, number>,
+): string | null {
+  const prevCollapsed = new Set(prevCollapsedKeys);
+  const prevExpanded = new Set(prevExpandedKeys);
+  const changed = new Set<string>();
+  for (const key of nextCollapsed.keys()) {
+    if (!prevCollapsed.has(key)) changed.add(key);
+  }
+  for (const key of prevCollapsedKeys) {
+    if (!nextCollapsed.has(key)) changed.add(key);
+  }
+  for (const key of nextExpanded.keys()) {
+    if (!prevExpanded.has(key)) changed.add(key);
+  }
+  for (const key of prevExpandedKeys) {
+    if (!nextExpanded.has(key)) changed.add(key);
+  }
+  if (changed.size !== 1) return null;
+  return changed.values().next().value ?? null;
+}
+
+const replacePathPrefix = (
+  path: (string | number)[] | undefined,
+  fromPrefix: (string | number)[],
+  toPrefix: (string | number)[],
+): (string | number)[] | undefined => {
+  if (!path || fromPrefix.length > path.length) return path;
+  for (let i = 0; i < fromPrefix.length; i++) {
+    if (path[i] !== fromPrefix[i]) return path;
+  }
+  return [...toPrefix, ...path.slice(fromPrefix.length)];
+};
+
+const relayoutFlattenedRows = (rows: TableRow[]): void => {
+  const indexAtDepth: number[] = [];
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    row.position = i;
+    row.absoluteRowIndex = i;
+    row.displayPosition = i;
+    row.isLastGroupRow = false;
+    indexAtDepth.length = row.depth;
+    row.parentIndices = indexAtDepth.length > 0 ? indexAtDepth.slice() : undefined;
+    indexAtDepth[row.depth] = i;
+  }
+};
+
+const rebuildGroupBookkeeping = (rows: TableRow[]): number[] => {
+  const parentEndPositions: number[] = [];
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i].depth !== 0) continue;
+    let end = i + 1;
+    while (end < rows.length && rows[end].depth > 0) end++;
+    parentEndPositions.push(end);
+    if (end - 1 >= 0) rows[end - 1].isLastGroupRow = true;
+  }
+  return parentEndPositions;
+};
+
+/**
+ * Splice one group's children in or out of a cached flatten result instead of
+ * walking every still-open child. Used when a single chevron toggle is the
+ * only expand-state change.
+ */
+export function patchFlattenRowsForSingleToggle(
+  previous: FlattenRowsResult,
+  toggleKey: string,
+  config: FlattenRowsConfig,
+): FlattenRowsResult | null {
+  if (previous.heightOffsets.length > 0) return null;
+
+  const rows = previous.flattenedRows.slice();
+  const parentIndex = rows.findIndex((row) => expandStateKey(row) === toggleKey);
+  if (parentIndex < 0) return null;
+
+  const parent = rows[parentIndex];
+  if (parent.nestedTable || parent.stateIndicator) return null;
+
+  const parentDepth = parent.depth;
+  let descendantCount = 0;
+  for (let i = parentIndex + 1; i < rows.length && rows[i].depth > parentDepth; i++) {
+    if (rows[i].nestedTable || rows[i].stateIndicator) return null;
+    descendantCount++;
+  }
+
+  const nowExpanded = isRowExpanded(
+    toggleKey,
+    parentDepth,
+    config.expandedDepths ?? new Set(),
+    config.expandedRows ?? new Map(),
+    config.collapsedRows ?? new Map(),
+  );
+
+  if (!nowExpanded) {
+    if (descendantCount > 0) {
+      rows.splice(parentIndex + 1, descendantCount);
+    }
+  } else {
+    if (descendantCount > 0) return null;
+    // Opening a nested group needs a full rebuild; this path only handles top-level groups.
+    if (parentDepth !== 0) return null;
+    const mini = flattenRows({ ...config, rows: [parent.row] });
+    if (mini.heightOffsets.length > 0) return null;
+    const descendants = mini.flattenedRows.slice(1);
+    if (descendants.length === 0) {
+      return previous;
+    }
+    const miniParent = mini.flattenedRows[0];
+    const fromIndexPath = miniParent.rowIndexPath ?? [];
+    const toIndexPath = parent.rowIndexPath ?? [];
+    const fromRowPath = miniParent.rowPath ?? [];
+    const toRowPath = parent.rowPath ?? [];
+    for (const child of descendants) {
+      const nextIndexPath = replacePathPrefix(child.rowIndexPath, fromIndexPath, toIndexPath);
+      child.rowIndexPath = nextIndexPath as number[] | undefined;
+      child.rowPath = replacePathPrefix(child.rowPath, fromRowPath, toRowPath);
+      child.rowId = replacePathPrefix(child.rowId, fromRowPath, toRowPath) ?? child.rowId;
+    }
+    rows.splice(parentIndex + 1, 0, ...descendants);
+  }
+
+  relayoutFlattenedRows(rows);
+  const parentEndPositions = rebuildGroupBookkeeping(rows);
+  const paginatableRows = rows.filter((row) => !row.nestedTable && !row.stateIndicator);
+
+  return {
+    flattenedRows: rows,
+    heightOffsets: previous.heightOffsets,
+    paginatableRows,
+    parentEndPositions,
+  };
+}

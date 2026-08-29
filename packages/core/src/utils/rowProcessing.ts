@@ -59,11 +59,9 @@ function applyPagination(
   serverSidePagination: boolean,
 ): TableRow[] {
   if (!enablePagination || serverSidePagination) {
-    return allRows.map((tableRow, index) => ({
-      ...tableRow,
-      position: index,
-      absoluteRowIndex: index,
-    }));
+    // flattenRows already assigned sequential position / absoluteRowIndex.
+    // Recreating ~100k row objects on every expand/collapse was wasted work.
+    return allRows;
   }
 
   const startParentIndex = (currentPage - 1) * rowsPerPage;

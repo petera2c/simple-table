@@ -1,6 +1,6 @@
 import type Row from "../../types/Row";
 import type TableRow from "../../types/TableRow";
-import { CellRenderContext } from "./types";
+import { AbsoluteBodyCell, CellRenderContext } from "./types";
 
 // WeakMap holding a mutable row + tableRow ref per cell element so click
 // handlers (cell click, chevron expand) always read the latest data even when
@@ -22,6 +22,10 @@ export interface CellLiveRef {
   // a post-mount theme switch is immediately reverted on the next live update
   // because the stale closure re-renders custom cell content with the old theme.
   context: CellRenderContext;
+  // Full current cell payload. Refreshed on reuse so inline edit and the
+  // post-blur content rebuild write to the row that is on screen, not the
+  // row this DOM node was first created for.
+  cell: AbsoluteBodyCell;
 }
 
 export const cellLiveRefMap = new WeakMap<HTMLElement, CellLiveRef>();

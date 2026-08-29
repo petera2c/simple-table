@@ -64,6 +64,38 @@ export const formatCellContent = (
 };
 
 // Create cell content (main display area)
+export type ExpandChromeKind = "icon" | "placeholder" | "none";
+
+/** Whether this cell should show a real caret, a spacer, or neither. */
+export const getExpandChromeKind = (
+  cell: AbsoluteBodyCell,
+  context: CellRenderContext,
+): ExpandChromeKind => {
+  const { header, row, depth } = cell;
+  if (!header.expandable) return "none";
+
+  const currentGroupingKey = context.rowGrouping && context.rowGrouping[depth];
+  const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
+  const canExpandFurther = Boolean(context.rowGrouping && depth < context.rowGrouping.length);
+  const isRowExpandable = context.canExpandRowGroup ? context.canExpandRowGroup(row) : true;
+  const hasNestedTableConfig = !!header.nestedTable;
+  const hasDynamicLoading = !!context.onRowGroupExpand;
+  const shouldShowExpandIcon =
+    (cellHasChildren && canExpandFurther && isRowExpandable) ||
+    hasNestedTableConfig ||
+    (hasDynamicLoading && canExpandFurther && isRowExpandable);
+
+  if (shouldShowExpandIcon) return "icon";
+  if (canExpandFurther) return "placeholder";
+  return "none";
+};
+
+export const readExpandChromeKind = (contentSpan: HTMLElement): ExpandChromeKind => {
+  const existing = contentSpan.querySelector(".st-expand-icon-container");
+  if (!existing) return "none";
+  return existing.classList.contains("placeholder") ? "placeholder" : "icon";
+};
+
 export const createCellContent = (
   cell: AbsoluteBodyCell,
   context: CellRenderContext,
@@ -108,28 +140,9 @@ export const createCellContent = (
     return;
   }
 
-  // Check if we need to render expand icon
-  const currentGroupingKey = context.rowGrouping && context.rowGrouping[depth];
-  const cellHasChildren = currentGroupingKey ? hasNestedRows(row, currentGroupingKey) : false;
-  const canExpandFurther = Boolean(context.rowGrouping && depth < context.rowGrouping.length);
-  const isRowExpandable = context.canExpandRowGroup ? context.canExpandRowGroup(row) : true;
-  const hasNestedTableConfig = !!header.nestedTable;
+  const expandChrome = getExpandChromeKind(cell, context);
 
-  // Support dynamic row loading: show expand icon if onRowGroupExpand is provided
-  // even when row has no children yet (they'll be loaded on expand)
-  const hasDynamicLoading = !!context.onRowGroupExpand;
-
-  const shouldShowExpandIcon =
-    header.expandable &&
-    ((cellHasChildren && canExpandFurther && isRowExpandable) ||
-      hasNestedTableConfig ||
-      (hasDynamicLoading && canExpandFurther && isRowExpandable));
-
-  // Reserve caret width for non-expandable siblings at an expandable depth so
-  // mixed nested / leaf rows stay text-aligned (v2 placeholder behavior).
-  const shouldReserveExpandSpace = Boolean(header.expandable && canExpandFurther);
-
-  if (shouldShowExpandIcon || shouldReserveExpandSpace) {
+  if (expandChrome !== "none") {
     const expandedDepthsSet = new Set(context.expandedDepths);
     const expandRowKey = expandStateKey(cell.tableRow);
     const isExpanded = getIsRowExpanded(
@@ -141,7 +154,7 @@ export const createCellContent = (
     );
 
     const expandIcon = createExpandIcon(cell, context, isExpanded, {
-      placeholder: !shouldShowExpandIcon,
+      placeholder: expandChrome === "placeholder",
     });
     contentSpan.appendChild(expandIcon);
   }

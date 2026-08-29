@@ -89,7 +89,10 @@ export const renderBodySections = (args: {
 
   let currentColIndex = 0;
   const sectionsToKeep: HTMLElement[] = [];
-  const animationCoordinator = deps.positionOnlyBody ? undefined : deps.animationCoordinator;
+  const animationCoordinator =
+    deps.positionOnlyBody || deps.animationCoordinator?.isEnabled() === false
+      ? undefined
+      : deps.animationCoordinator;
 
   const bodySectionParams = {
     headers: deps.effectiveHeaders,

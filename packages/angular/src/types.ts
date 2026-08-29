@@ -151,7 +151,8 @@ export interface SimpleTableAngularProps<
   loadingStateRenderer?: AngularLoadingStateRenderer;
   errorStateRenderer?: AngularErrorStateRenderer;
   emptyStateRenderer?: AngularEmptyStateRenderer;
-  tableEmptyStateRenderer?: HTMLElement | string | null;
+  /** Component class, prebuilt element, string, or null. */
+  tableEmptyStateRenderer?: Type<unknown> | HTMLElement | string | null;
   headerDropdown?: AngularHeaderDropdown;
   columnEditorConfig?: AngularColumnEditorConfig;
   icons?: AngularIconsConfig;

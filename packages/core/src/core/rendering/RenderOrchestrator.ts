@@ -7,7 +7,12 @@ import type { CellPosition } from "../../managers/AnimationCoordinator";
 import { TableRenderer } from "./TableRenderer";
 import type { HeaderScrollLiveSelection } from "./SectionRenderer";
 import { MergedColumnEditorConfig } from "../initialization/TableInitializer";
-import { flattenRows, FlattenRowsResult } from "../../utils/rowFlattening";
+import {
+  flattenRows,
+  FlattenRowsResult,
+  findSingleExpansionToggle,
+  patchFlattenRowsForSingleToggle,
+} from "../../utils/rowFlattening";
 import {
   processRows,
   ProcessRowsResult,
@@ -49,6 +54,8 @@ interface FlattenedRowsCache {
     rowStateMapSize: number;
     sortKey: string;
     filterKey: string;
+    collapsedKeys: string[];
+    expandedKeys: string[];
   };
 }
 
@@ -321,7 +328,7 @@ export class RenderOrchestrator {
         hasLoadingPlaceholders = true;
       }
 
-      flattenResult = flattenRows({
+      const flattenConfig = {
         rows: rowsToFlatten,
         rowGrouping: context.config.rowGrouping,
         getRowId: hasLoadingPlaceholders
@@ -338,7 +345,32 @@ export class RenderOrchestrator {
         rowHeight: context.customTheme.rowHeight,
         headerHeight: context.customTheme.headerHeight,
         customTheme: context.customTheme,
-      });
+      };
+
+      const prevCache = this.flattenedRowsCache;
+      const toggleKey =
+        !hasLoadingPlaceholders &&
+        prevCache &&
+        prevCache.deps.rowsRef === effectiveRows &&
+        prevCache.deps.isLoading === isLoading &&
+        prevCache.deps.quickFilterKey === quickFilterKey &&
+        prevCache.deps.expandedDepthsSize === context.expandedDepths.size &&
+        prevCache.deps.rowStateMapSize === context.rowStateMap.size &&
+        prevCache.deps.sortKey === sortKey &&
+        prevCache.deps.filterKey === filterKey
+          ? findSingleExpansionToggle(
+              prevCache.deps.collapsedKeys ?? [],
+              prevCache.deps.expandedKeys ?? [],
+              context.collapsedRows,
+              context.expandedRows,
+            )
+          : null;
+
+      const patched =
+        toggleKey && prevCache
+          ? patchFlattenRowsForSingleToggle(prevCache.flattenResult, toggleKey, flattenConfig)
+          : null;
+      flattenResult = patched ?? flattenRows(flattenConfig);
 
       this.flattenedRowsCache = {
         aggregatedRows,
@@ -354,6 +386,8 @@ export class RenderOrchestrator {
           rowStateMapSize: context.rowStateMap.size,
           sortKey,
           filterKey,
+          collapsedKeys: Array.from(context.collapsedRows.keys()),
+          expandedKeys: Array.from(context.expandedRows.keys()),
         },
       };
     }

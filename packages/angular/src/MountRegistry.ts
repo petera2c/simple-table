@@ -15,6 +15,8 @@ export class MountRegistry {
 
   readonly cellRendererCache = new Map<string, CachedRendererSlot>();
   readonly headerRendererCache = new Map<string, CachedRendererSlot>();
+  /** One-shot `tableEmptyStateRenderer` component mount, reused across config rebuilds. */
+  tableEmptyStateMount: { component: unknown; host: HTMLElement } | null = null;
 
   register(container: HTMLElement, dispose: () => void): void {
     const id = `st-mount-${this.nextId++}`;
@@ -50,6 +52,7 @@ export class MountRegistry {
   clear(): void {
     this.cellRendererCache.clear();
     this.headerRendererCache.clear();
+    this.tableEmptyStateMount = null;
     for (const dispose of this.entries.values()) {
       dispose();
     }

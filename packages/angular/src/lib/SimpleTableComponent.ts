@@ -9,6 +9,7 @@ import {
   ElementRef,
   ApplicationRef,
   EnvironmentInjector,
+  Injector,
   inject,
 } from "@angular/core";
 import { SimpleTableVanilla } from "simple-table-core";
@@ -65,16 +66,23 @@ export class SimpleTableComponent<
   @Input() onColumnVisibilityChange?: SimpleTableAngularProps<TData>["onColumnVisibilityChange"];
   @Input() onColumnWidthChange?: SimpleTableAngularProps<TData>["onColumnWidthChange"];
   @Input() onPageChange?: SimpleTableAngularProps<TData>["onPageChange"];
+  @Input() onNextPage?: SimpleTableAngularProps<TData>["onNextPage"];
   @Input() onLoadMore?: SimpleTableAngularProps<TData>["onLoadMore"];
   @Input() onTableReady?: SimpleTableAngularProps<TData>["onTableReady"];
   @Input() rowGrouping?: SimpleTableAngularProps<TData>["rowGrouping"];
+  @Input() canExpandRowGroup?: SimpleTableAngularProps<TData>["canExpandRowGroup"];
+  @Input() enableStickyParents?: SimpleTableAngularProps<TData>["enableStickyParents"];
   @Input() pivot?: SimpleTableAngularProps<TData>["pivot"];
   @Input() onPivotChange?: SimpleTableAngularProps<TData>["onPivotChange"];
   @Input() enableRowSelection?: SimpleTableAngularProps<TData>["enableRowSelection"];
+  @Input() rowSelectionMode?: SimpleTableAngularProps<TData>["rowSelectionMode"];
+  @Input() selectRowOnClick?: SimpleTableAngularProps<TData>["selectRowOnClick"];
+  @Input() showRowSelectionColumn?: SimpleTableAngularProps<TData>["showRowSelectionColumn"];
   @Input() theme?: SimpleTableAngularProps<TData>["theme"];
   @Input() quickFilter?: SimpleTableAngularProps<TData>["quickFilter"];
   @Input() isLoading?: SimpleTableAngularProps<TData>["isLoading"];
   @Input() getRowId?: SimpleTableAngularProps<TData>["getRowId"];
+  @Input() getRowClass?: SimpleTableAngularProps<TData>["getRowClass"];
   @Input() enablePagination?: SimpleTableAngularProps<TData>["enablePagination"];
   @Input() rowsPerPage?: SimpleTableAngularProps<TData>["rowsPerPage"];
   @Input() serverSidePagination?: SimpleTableAngularProps<TData>["serverSidePagination"];
@@ -92,6 +100,7 @@ export class SimpleTableComponent<
   @Input() selectableColumns?: SimpleTableAngularProps<TData>["selectableColumns"];
   @Input() enableHeaderEditing?: SimpleTableAngularProps<TData>["enableHeaderEditing"];
   @Input() onHeaderEdit?: SimpleTableAngularProps<TData>["onHeaderEdit"];
+  @Input() onColumnSelect?: SimpleTableAngularProps<TData>["onColumnSelect"];
   @Input() customTheme?: SimpleTableAngularProps<TData>["customTheme"];
   @Input() icons?: SimpleTableAngularProps<TData>["icons"];
   @Input() externalFilterHandling?: SimpleTableAngularProps<TData>["externalFilterHandling"];
@@ -99,12 +108,18 @@ export class SimpleTableComponent<
   @Input() columnBorders?: SimpleTableAngularProps<TData>["columnBorders"];
   @Input() rowButtons?: SimpleTableAngularProps<TData>["rowButtons"];
   @Input() hideFooter?: SimpleTableAngularProps<TData>["hideFooter"];
+  @Input() hideHeader?: SimpleTableAngularProps<TData>["hideHeader"];
+  @Input() footerRenderKey?: SimpleTableAngularProps<TData>["footerRenderKey"];
   @Input() footerPosition?: SimpleTableAngularProps<TData>["footerPosition"];
+  @Input() className?: SimpleTableAngularProps<TData>["className"];
+  @Input() copyHeadersToClipboard?: SimpleTableAngularProps<TData>["copyHeadersToClipboard"];
+  @Input() includeHeadersInCSVExport?: SimpleTableAngularProps<TData>["includeHeadersInCSVExport"];
   @Input() initialSortColumn?: SimpleTableAngularProps<TData>["initialSortColumn"];
   @Input() initialSortDirection?: SimpleTableAngularProps<TData>["initialSortDirection"];
   @Input() expandAll?: SimpleTableAngularProps<TData>["expandAll"];
   @Input() autoExpandColumns?: SimpleTableAngularProps<TData>["autoExpandColumns"];
   @Input() animations?: SimpleTableAngularProps<TData>["animations"];
+  @Input() cellUpdateFlash?: SimpleTableAngularProps<TData>["cellUpdateFlash"];
   @Input() enableVirtualization?: SimpleTableAngularProps<TData>["enableVirtualization"];
   @Input() hoverRowBackground?: SimpleTableAngularProps<TData>["hoverRowBackground"];
   @Input() oddColumnBackground?: SimpleTableAngularProps<TData>["oddColumnBackground"];
@@ -124,6 +139,7 @@ export class SimpleTableComponent<
   private hostEl = inject(ElementRef<HTMLElement>);
   private appRef = inject(ApplicationRef);
   private envInjector = inject(EnvironmentInjector);
+  private elementInjector = inject(Injector);
 
   private maybeRefitAutoSizeColumns(leftLoading: boolean): void {
     if (!this.instance) return;
@@ -146,7 +162,13 @@ export class SimpleTableComponent<
     const props = this.getProps();
     this.instance = new SimpleTableVanilla(
       container,
-      buildVanillaConfig(props, this.registry, this.appRef, this.envInjector),
+      buildVanillaConfig(
+        props,
+        this.registry,
+        this.appRef,
+        this.envInjector,
+        this.elementInjector,
+      ),
     ) as unknown as TableInstance;
     this.instance.mount();
     this.syncedDefaultHeaders = resolveAngularColumns(props);
@@ -161,7 +183,13 @@ export class SimpleTableComponent<
     if (!this.instance) return;
 
     const props = this.getProps();
-    const fullConfig = buildVanillaConfig(props, this.registry, this.appRef, this.envInjector);
+    const fullConfig = buildVanillaConfig(
+      props,
+      this.registry,
+      this.appRef,
+      this.envInjector,
+      this.elementInjector,
+    );
     const patch: Partial<SimpleTableConfig> = { ...fullConfig };
     const resolvedColumns = resolveAngularColumns(props);
 
@@ -234,16 +262,25 @@ export class SimpleTableComponent<
     if (this.onColumnWidthChange !== undefined)
       props.onColumnWidthChange = this.onColumnWidthChange;
     if (this.onPageChange !== undefined) props.onPageChange = this.onPageChange;
+    if (this.onNextPage !== undefined) props.onNextPage = this.onNextPage;
     if (this.onLoadMore !== undefined) props.onLoadMore = this.onLoadMore;
     if (this.onTableReady !== undefined) props.onTableReady = this.onTableReady;
     if (this.rowGrouping !== undefined) props.rowGrouping = this.rowGrouping;
+    if (this.canExpandRowGroup !== undefined) props.canExpandRowGroup = this.canExpandRowGroup;
+    if (this.enableStickyParents !== undefined)
+      props.enableStickyParents = this.enableStickyParents;
     if (this.pivot !== undefined) props.pivot = this.pivot;
     if (this.onPivotChange !== undefined) props.onPivotChange = this.onPivotChange;
     if (this.enableRowSelection !== undefined) props.enableRowSelection = this.enableRowSelection;
+    if (this.rowSelectionMode !== undefined) props.rowSelectionMode = this.rowSelectionMode;
+    if (this.selectRowOnClick !== undefined) props.selectRowOnClick = this.selectRowOnClick;
+    if (this.showRowSelectionColumn !== undefined)
+      props.showRowSelectionColumn = this.showRowSelectionColumn;
     if (this.theme !== undefined) props.theme = this.theme;
     if (this.quickFilter !== undefined) props.quickFilter = this.quickFilter;
     if (this.isLoading !== undefined) props.isLoading = this.isLoading;
     if (this.getRowId !== undefined) props.getRowId = this.getRowId;
+    if (this.getRowClass !== undefined) props.getRowClass = this.getRowClass;
     if (this.enablePagination !== undefined) props.enablePagination = this.enablePagination;
     if (this.rowsPerPage !== undefined) props.rowsPerPage = this.rowsPerPage;
     if (this.serverSidePagination !== undefined)
@@ -265,6 +302,7 @@ export class SimpleTableComponent<
     if (this.enableHeaderEditing !== undefined)
       props.enableHeaderEditing = this.enableHeaderEditing;
     if (this.onHeaderEdit !== undefined) props.onHeaderEdit = this.onHeaderEdit;
+    if (this.onColumnSelect !== undefined) props.onColumnSelect = this.onColumnSelect;
     if (this.customTheme !== undefined) props.customTheme = this.customTheme;
     if (this.icons !== undefined) props.icons = this.icons;
     if (this.externalFilterHandling !== undefined)
@@ -274,13 +312,21 @@ export class SimpleTableComponent<
     if (this.columnBorders !== undefined) props.columnBorders = this.columnBorders;
     if (this.rowButtons !== undefined) props.rowButtons = this.rowButtons;
     if (this.hideFooter !== undefined) props.hideFooter = this.hideFooter;
+    if (this.hideHeader !== undefined) props.hideHeader = this.hideHeader;
+    if (this.footerRenderKey !== undefined) props.footerRenderKey = this.footerRenderKey;
     if (this.footerPosition !== undefined) props.footerPosition = this.footerPosition;
+    if (this.className !== undefined) props.className = this.className;
+    if (this.copyHeadersToClipboard !== undefined)
+      props.copyHeadersToClipboard = this.copyHeadersToClipboard;
+    if (this.includeHeadersInCSVExport !== undefined)
+      props.includeHeadersInCSVExport = this.includeHeadersInCSVExport;
     if (this.initialSortColumn !== undefined) props.initialSortColumn = this.initialSortColumn;
     if (this.initialSortDirection !== undefined)
       props.initialSortDirection = this.initialSortDirection;
     if (this.expandAll !== undefined) props.expandAll = this.expandAll;
     if (this.autoExpandColumns !== undefined) props.autoExpandColumns = this.autoExpandColumns;
     if (this.animations !== undefined) props.animations = this.animations;
+    if (this.cellUpdateFlash !== undefined) props.cellUpdateFlash = this.cellUpdateFlash;
     if (this.enableVirtualization !== undefined)
       props.enableVirtualization = this.enableVirtualization;
     if (this.hoverRowBackground !== undefined) props.hoverRowBackground = this.hoverRowBackground;

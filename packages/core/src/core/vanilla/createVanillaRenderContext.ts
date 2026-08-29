@@ -88,20 +88,20 @@ export const createVanillaRenderContext = (
       host.beginAccordion("horizontal");
       host.setCollapsedHeaders(headers);
     },
+    // Do not render here. A chevron click writes collapsed + expanded + row
+    // state back-to-back; CellRenderContext already coalesces those into one
+    // scheduleRender. A sync onRender here rebuilt the full row list 3–4 times.
     setCollapsedRows: (rowsOrUpdater) => {
       host.beginAccordion("vertical");
       host.setCollapsedRows(applyMapUpdate(host.getCollapsedRows(), rowsOrUpdater));
-      host.onRender("expansion");
     },
     setExpandedRows: (rowsOrUpdater) => {
       host.beginAccordion("vertical");
       host.setExpandedRows(applyMapUpdate(host.getExpandedRows(), rowsOrUpdater));
-      host.onRender("expansion");
     },
     setRowStateMap: (mapOrUpdater) => {
       host.beginAccordion("vertical");
       host.setRowStateMap(applyMapUpdate(host.getRowStateMap(), mapOrUpdater));
-      host.onRender("rowStateMap");
     },
     getCollapsedRows: () => host.getCollapsedRows(),
     getCollapsedHeaders: () => host.getCollapsedHeaders(),

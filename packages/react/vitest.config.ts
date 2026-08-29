@@ -21,6 +21,10 @@ export default defineConfig({
       "../core/src/__tests__/livePropDom.test.ts",
       "../core/src/__tests__/columnPropReuse.test.ts",
       "../core/src/__tests__/parkAndStagger.test.ts",
+      "../core/src/__tests__/rowFlattenPatch.test.ts",
+      "../core/src/__tests__/rowGroupToggleReuse.test.ts",
+      "../core/src/__tests__/rowGroupCustomCellReuse.test.ts",
+      "../core/src/__tests__/rowGroupEditSelectScroll.test.ts",
     ],
     // The vanilla core imports a CSS bundle on load. We assert on DOM classes,
     // not computed colors, so CSS processing is unnecessary here.

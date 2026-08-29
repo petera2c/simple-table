@@ -144,6 +144,10 @@ import { renderServerSidePaginationExample } from "../examples/ServerSidePaginat
 import { renderThemingExample, themingExampleDefaults } from "../examples/Theming";
 import { renderTooltipExample, tooltipExampleDefaults } from "../examples/TooltipExample";
 import {
+  renderUsersTableExample,
+  usersTableExampleDefaults,
+} from "../examples/users-table/UsersTableExample";
+import {
   renderWindowInfiniteScrollExample,
   windowInfiniteScrollExampleDefaults,
 } from "../examples/WindowInfiniteScroll";
@@ -569,6 +573,20 @@ export const Tooltip: StoryObj = {
   ...storyArgs(tooltipExampleDefaults),
   render: (args) => renderTooltipExample(args),
   parameters: { docs: { description: { story: "Cell tooltips on hover or focus." } } },
+};
+
+export const UsersTable: StoryObj = {
+  ...storyArgs(usersTableExampleDefaults),
+  render: (args) => renderUsersTableExample(args),
+  parameters: {
+    chromatic: { disableSnapshot: true },
+    docs: {
+      description: {
+        story:
+          "100,000 users under 20 departments. Name is pinned left and expandable, all groups start open, columns can be resized, and row motion is off.",
+      },
+    },
+  },
 };
 
 export const WindowInfiniteScroll: StoryObj = {

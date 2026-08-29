@@ -5,7 +5,7 @@ import { getNestedValue, setNestedValue } from "../rowUtils";
 import { AbsoluteBodyCell, CellData, CellRegistryEntry, CellRenderContext } from "./types";
 import { addTrackedEventListener } from "./eventTracking";
 import { createEditor } from "./editing";
-import { createCellContent } from "./content";
+import { createCellContent, formatCellContent, getExpandChromeKind, readExpandChromeKind } from "./content";
 import { CellLiveRef, cellLiveRefMap } from "./cellLiveRef";
 import { setAbsoluteCellPosition } from "../setAbsoluteCellPosition";
 import { columnAlignClass } from "../headerUtils";
@@ -147,6 +147,24 @@ export const unregisterCellFromRegistry = (
     cellRegistry?.delete(key);
     cellRegistryKeyMap.delete(cellElement);
   }
+};
+
+/** Move a recycled cell's live-update registry entry onto its new row identity. */
+export const rekeyBodyCellIdentity = (
+  cellElement: HTMLElement,
+  nextCellId: string,
+  cellRegistry?: Map<string, CellRegistryEntry>,
+): void => {
+  const prevKey = cellRegistryKeyMap.get(cellElement);
+  if (cellRegistry && prevKey && prevKey !== nextCellId) {
+    const entry = cellRegistry.get(prevKey);
+    if (entry) {
+      cellRegistry.delete(prevKey);
+      cellRegistry.set(nextCellId, entry);
+    }
+  }
+  cellRegistryKeyMap.set(cellElement, nextCellId);
+  cellElement.id = nextCellId;
 };
 
 // Helper to set hover state for entire row within one table instance
@@ -350,7 +368,9 @@ export const createBodyCellElement = (
     // Always read the latest context from the live ref so re-renders triggered
     // by `updateData` (cell registry `updateContent`) use the current theme and
     // handlers rather than the context captured when this DOM cell was created.
-    const liveContext = cellLiveRefMap.get(cellElement)?.context ?? context;
+    const live = cellLiveRefMap.get(cellElement);
+    const liveContext = live?.context ?? context;
+    const liveCell = live?.cell ?? cell;
     // For dropdown editors, keep the normal cell content visible
     // For inline editors, replace the cell content
     if (isEditing && !isEditInDropdown) {
@@ -360,7 +380,7 @@ export const createBodyCellElement = (
       cellElement.innerHTML = "";
       // Remove tabindex from cell when editing to prevent focus conflicts
       cellElement.setAttribute("tabindex", "-1");
-      const editor = createEditor(cell, liveContext, () => {
+      const editor = createEditor(liveCell, liveContext, () => {
         isEditing = false;
         // Restore tabindex when done editing
         cellElement.setAttribute("tabindex", isInitialFocused ? "0" : "-1");
@@ -377,7 +397,7 @@ export const createBodyCellElement = (
       }
     } else if (isEditing && isEditInDropdown) {
       // For dropdown editing, create the dropdown but keep normal cell content
-      const editor = createEditor(cell, liveContext, () => {
+      const editor = createEditor(liveCell, liveContext, () => {
         isEditing = false;
         // Re-render to show updated value
         renderCellContent();
@@ -392,24 +412,21 @@ export const createBodyCellElement = (
       cellElement.innerHTML = "";
       const contentSpan = document.createElement("span");
       applyContentAlign(contentSpan, header.align);
-      createCellContent(cell, liveContext, contentSpan);
+      createCellContent(liveCell, liveContext, contentSpan);
       cellElement.appendChild(contentSpan);
     }
   };
 
   renderCellContent();
 
-  // Seed the content memo key so the first updateBodyCellElement can skip the
-  // rebuild when the cell's inputs haven't changed since creation.
-  if (!cell.header.expandable) {
-    contentKeyMap.set(cellElement, cellContentKey(
-      cell.row,
-      getNestedValue(row, header.accessor),
-      context.theme,
-      Boolean(cell.tableRow.isLoadingSkeleton),
-      header,
-    ));
-  }
+  // Seed so the first update can skip a rebuild when nothing changed.
+  contentKeyMap.set(cellElement, cellContentKey(
+    cell.row,
+    getNestedValue(row, header.accessor),
+    context.theme,
+    Boolean(cell.tableRow.isLoadingSkeleton),
+    header,
+  ));
 
   // Mutable row + tableRow ref so handlers (and the cell registry's
   // `updateContent`) always read the latest data even when this DOM cell is
@@ -417,7 +434,7 @@ export const createBodyCellElement = (
   // registry uses it. The chevron's click handler reads tableRow from this
   // ref via the cell DOM element so it sees the current rowId/rowIndexPath
   // after a sort instead of the stale closure values captured at create time.
-  const liveRef: CellLiveRef = { row: row as Row, tableRow: cell.tableRow, context };
+  const liveRef: CellLiveRef = { row: row as Row, tableRow: cell.tableRow, context, cell };
   cellLiveRefMap.set(cellElement, liveRef);
 
   // Register cell in registry for direct updates. Keyed by the row's STABLE
@@ -427,7 +444,11 @@ export const createBodyCellElement = (
   // for a given DOM cell, so no re-keying is needed when rows are reordered.
   const registerCellInRegistry = () => {
     if (context.cellRegistry && !isSelectionColumn) {
-      const key = getCellId({ accessor: header.accessor, rowId: cell.stableRowKey ?? rowId });
+      const liveCell = liveRef.cell;
+      const key = getCellId({
+        accessor: header.accessor,
+        rowId: liveCell.stableRowKey ?? liveCell.rowId,
+      });
       cellRegistryKeyMap.set(cellElement, key);
       context.cellRegistry.set(key, {
         updateContent: (newValue: CellValue) => {
@@ -696,8 +717,9 @@ export const updateBodyCellElement = (
     existingRef.row = cell.row as Row;
     existingRef.tableRow = cell.tableRow;
     existingRef.context = context;
+    existingRef.cell = cell;
   } else {
-    cellLiveRefMap.set(cellElement, { row: cell.row as Row, tableRow: cell.tableRow, context });
+    cellLiveRefMap.set(cellElement, { row: cell.row as Row, tableRow: cell.tableRow, context, cell });
   }
 
   // No registry re-keying needed: the cell registry is keyed by the row's
@@ -716,17 +738,35 @@ export const updateBodyCellElement = (
   // Skip full content replace for expandable cells so the expand icon DOM node is preserved;
   // then updateExpandIconState can toggle its class and the CSS transition will run.
   if (cell.header.expandable) {
-    // Expandable cells normally keep their content DOM untouched, but the
-    // loading skeleton is rendered inside the content span, so a change in
-    // skeleton state still requires a rebuild: entering the loading state
-    // swaps the expand icon + value for a skeleton, and leaving it restores
-    // them. Without this, flipping `isLoading` leaves the expandable column
-    // stuck (stale content while loading, or permanent skeleton after load).
     const contentSpan = cellElement.querySelector(".st-cell-content") as HTMLElement;
     if (contentSpan) {
       const isSkeleton = Boolean(cell.tableRow.isLoadingSkeleton);
       const hasSkeleton = contentSpan.querySelector(".st-loading-skeleton") !== null;
-      if (isSkeleton !== hasSkeleton) {
+      const desiredChrome = getExpandChromeKind(cell, context);
+      const existingChrome = readExpandChromeKind(contentSpan);
+      const newValue = getNestedValue(cell.row, cell.header.accessor);
+      const nextKey = cellContentKey(
+        cell.row,
+        newValue,
+        context.theme,
+        isSkeleton,
+        cell.header,
+      );
+      const prevKey = contentKeyMap.get(cellElement);
+      const portalHost = contentSpan.querySelector("[data-st-portal-id]") as HTMLElement | null;
+      const portalDisposedEmpty =
+        portalHost !== null &&
+        (portalHost.textContent ?? "").trim() === "" &&
+        portalHost.childNodes.length === 0;
+      const contentMissing = contentSpan.childNodes.length === 0 || portalDisposedEmpty;
+      const contentUnchanged =
+        !contentMissing && prevKey !== undefined && contentKeysEqual(prevKey, nextKey);
+
+      // Rebuild when the row, value, renderer, skeleton, or caret kind changed.
+      // Leave the caret in place when only expand/collapse state changed.
+      if (isSkeleton !== hasSkeleton || desiredChrome !== existingChrome || !contentUnchanged) {
+        contentKeyMap.set(cellElement, nextKey);
+        applyContentAlign(contentSpan, cell.header.align);
         context.onRendererHostDiscard?.(contentSpan);
         contentSpan.innerHTML = "";
         createCellContent(cell, context, contentSpan);
@@ -775,11 +815,32 @@ export const updateBodyCellElement = (
       if (!contentUnchanged) {
         contentKeyMap.set(cellElement, nextKey);
         applyContentAlign(contentSpan, cell.header.align);
-        // Discard the previous renderer subtree (React portal, etc.) before
-        // replacing the content span's children.
-        context.onRendererHostDiscard?.(contentSpan);
-        contentSpan.innerHTML = "";
-        createCellContent(cell, context, contentSpan);
+        const canPatchText =
+          !cell.header.cellRenderer &&
+          cell.header.type !== "lineAreaChart" &&
+          cell.header.type !== "barChart" &&
+          !cell.header.isSelectionColumn &&
+          !isSkeleton &&
+          contentSpan.childNodes.length === 1 &&
+          contentSpan.firstChild?.nodeType === Node.TEXT_NODE;
+        if (canPatchText) {
+          const formatted = formatCellContent(
+            newValue,
+            cell.header,
+            cell.colIndex,
+            cell.row,
+            cell.rowIndex,
+          );
+          if (formatted !== null && contentSpan.firstChild) {
+            contentSpan.firstChild.textContent = formatted;
+          }
+        } else {
+          // Discard the previous renderer subtree (React portal, etc.) before
+          // replacing the content span's children.
+          context.onRendererHostDiscard?.(contentSpan);
+          contentSpan.innerHTML = "";
+          createCellContent(cell, context, contentSpan);
+        }
       }
     }
   }

@@ -5,7 +5,7 @@ export { asRows } from "simple-table-core";
 // Provider helper
 export { provideSimpleTable } from "./lib/provideSimpleTable";
 
-/** Wrap a standalone component as an HTMLElement (e.g. for `tableEmptyStateRenderer`). */
+/** Wrap a standalone component as an HTMLElement (e.g. for one-shot slots). */
 export { wrapAngularRenderer } from "./utils/wrapAngularRenderer";
 
 // Angular-specific props and type overrides

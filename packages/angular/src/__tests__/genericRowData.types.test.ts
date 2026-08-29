@@ -53,6 +53,10 @@ const props: SimpleTableAngularProps<HREmployee> = {
 };
 void props;
 
+type EmptyRenderer = SimpleTableAngularProps["tableEmptyStateRenderer"];
+const emptyAsComponent: EmptyRenderer = {} as import("@angular/core").Type<unknown>;
+void emptyAsComponent;
+
 const loose: SimpleTableAngularProps = {
   columns: [{ accessor: "x", label: "X", width: 40 }],
   rows: [{ x: 1 }],

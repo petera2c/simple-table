@@ -15,6 +15,8 @@ export const registry: DemoRegistry = {
   "value-formatter": () => import("./demos/value-formatter/ValueFormatterDemo"),
   pagination: () => import("./demos/pagination/PaginationDemo"),
   "column-pinning": () => import("./demos/column-pinning/ColumnPinningDemo"),
+  "pinned-auto-expand-resize": () =>
+    import("./demos/pinned-auto-expand-resize/PinnedAutoExpandResizeDemo"),
   "column-alignment": () => import("./demos/column-alignment/ColumnAlignmentDemo"),
   "column-width": () => import("./demos/column-width/ColumnWidthDemo"),
   "column-resizing": () => import("./demos/column-resizing/ColumnResizingDemo"),

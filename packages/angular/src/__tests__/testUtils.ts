@@ -65,9 +65,16 @@ export type TestTableState<TData extends AngularDefaultRowData = AngularDefaultR
   columns: ReadonlyArray<AngularColumnDef<TData>>;
   isLoading?: boolean;
   onSortChange?: (...args: unknown[]) => void;
+  onColumnSelect?: (...args: unknown[]) => void;
   getRowId?: SimpleTableAngularProps<TData>["getRowId"];
   height?: string;
   theme?: SimpleTableAngularProps<TData>["theme"];
+  hideHeader?: boolean;
+  className?: string;
+  selectableColumns?: boolean;
+  enableRowSelection?: boolean;
+  selectRowOnClick?: boolean;
+  tableEmptyStateRenderer?: SimpleTableAngularProps<TData>["tableEmptyStateRenderer"];
 };
 
 const TEST_TABLE_STATE = new InjectionToken<TestTableState>("st-angular-test-table-state");
@@ -85,6 +92,13 @@ const TEST_TABLE_STATE = new InjectionToken<TestTableState>("st-angular-test-tab
       [theme]="state.theme"
       [isLoading]="state.isLoading"
       [onSortChange]="state.onSortChange"
+      [onColumnSelect]="state.onColumnSelect"
+      [hideHeader]="state.hideHeader"
+      [className]="state.className"
+      [selectableColumns]="state.selectableColumns"
+      [enableRowSelection]="state.enableRowSelection"
+      [selectRowOnClick]="state.selectRowOnClick"
+      [tableEmptyStateRenderer]="state.tableEmptyStateRenderer"
       (tableReady)="onTableReady($event)"
     />
   `,

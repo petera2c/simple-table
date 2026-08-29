@@ -1,4 +1,4 @@
-import type { ApplicationRef, EnvironmentInjector } from "@angular/core";
+import type { ApplicationRef, EnvironmentInjector, Injector } from "@angular/core";
 import type { SimpleTableConfig, ColumnDef, ColumnEditorConfig } from "simple-table-core";
 import { asRows, collectHeaderAccessors } from "simple-table-core";
 import type {
@@ -13,6 +13,7 @@ import {
   wrapAngularRenderer,
   wrapCachedAngularRenderer,
   wrapAngularColumnEditorRowRenderer,
+  type AngularMountOptions,
 } from "./utils/wrapAngularRenderer";
 
 /** Resolve column definitions. */
@@ -28,11 +29,48 @@ export function resolveAngularColumns<
   return headers;
 }
 
+function resolveTableEmptyState(
+  value: NonNullable<SimpleTableAngularProps["tableEmptyStateRenderer"]> | null,
+  wrap: <P extends object>(component: any) => (props: Partial<P>) => HTMLElement,
+  registry: MountRegistry,
+): HTMLElement | string | null {
+  if (value === null) {
+    if (registry.tableEmptyStateMount) {
+      registry.disposeHost(registry.tableEmptyStateMount.host);
+      registry.tableEmptyStateMount = null;
+    }
+    return null;
+  }
+  if ((value as { ɵcmp?: unknown }).ɵcmp) {
+    const existing = registry.tableEmptyStateMount;
+    if (
+      existing &&
+      existing.component === value &&
+      registry.isRegistered(existing.host)
+    ) {
+      return existing.host;
+    }
+    if (existing) {
+      registry.disposeHost(existing.host);
+      registry.tableEmptyStateMount = null;
+    }
+    const host = wrap(value as any)({});
+    registry.tableEmptyStateMount = { component: value, host };
+    return host;
+  }
+  if (registry.tableEmptyStateMount) {
+    registry.disposeHost(registry.tableEmptyStateMount.host);
+    registry.tableEmptyStateMount = null;
+  }
+  return value as HTMLElement | string;
+}
+
 export function buildVanillaConfig<TData extends AngularDefaultRowData = AngularDefaultRowData>(
   config: SimpleTableAngularProps<TData>,
   registry: MountRegistry,
   appRef: ApplicationRef,
   injector: EnvironmentInjector,
+  elementInjector?: Injector,
 ): SimpleTableConfig {
   const {
     columns: _columns,
@@ -60,8 +98,14 @@ export function buildVanillaConfig<TData extends AngularDefaultRowData = Angular
     ...rest
   } = config;
 
+  const mountOptions: AngularMountOptions = {
+    appRef,
+    envInjector: injector,
+    registry,
+    elementInjector,
+  };
   const wrap = <P extends object>(component: any) =>
-    wrapAngularRenderer<P>(component, appRef, injector, registry);
+    wrapAngularRenderer<P>(component, appRef, injector, registry, elementInjector);
 
   function transformIcons(iconsConfig: AngularIconsConfig): NonNullable<SimpleTableConfig["icons"]> {
     const result: NonNullable<SimpleTableConfig["icons"]> = {};
@@ -90,9 +134,7 @@ export function buildVanillaConfig<TData extends AngularDefaultRowData = Angular
         ? {
             rowRenderer: wrapAngularColumnEditorRowRenderer(
               rowRenderer as any,
-              appRef,
-              injector,
-              registry,
+              mountOptions,
             ) as any,
           }
         : {}),
@@ -109,9 +151,7 @@ export function buildVanillaConfig<TData extends AngularDefaultRowData = Angular
       if ((cellRenderer as any).ɵcmp) {
         transformed.cellRenderer = wrapCachedAngularRenderer(
           cellRenderer as any,
-          appRef,
-          injector,
-          registry,
+          mountOptions,
           accessor,
           "cell",
         ) as any;
@@ -123,9 +163,7 @@ export function buildVanillaConfig<TData extends AngularDefaultRowData = Angular
       if ((headerRenderer as any).ɵcmp) {
         transformed.headerRenderer = wrapCachedAngularRenderer(
           headerRenderer as any,
-          appRef,
-          injector,
-          registry,
+          mountOptions,
           accessor,
           "header",
         ) as any;
@@ -142,6 +180,7 @@ export function buildVanillaConfig<TData extends AngularDefaultRowData = Angular
         registry,
         appRef,
         injector,
+        elementInjector,
       ) as any;
     }
 
@@ -223,7 +262,11 @@ export function buildVanillaConfig<TData extends AngularDefaultRowData = Angular
   }
 
   if (tableEmptyStateRenderer !== undefined) {
-    vanillaConfig.tableEmptyStateRenderer = tableEmptyStateRenderer;
+    vanillaConfig.tableEmptyStateRenderer = resolveTableEmptyState(
+      tableEmptyStateRenderer,
+      wrap,
+      registry,
+    );
   }
 
   if (headerDropdown !== undefined) {

@@ -11,6 +11,39 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_2_3: ChangelogEntry = {
+  version: "4.2.3",
+  date: "2026-08-29",
+  title: "Faster row groups",
+  description:
+    "Opening and closing grouped rows is much quicker on large tables. Custom cells, edits, and expand carets stay on the right rows.",
+  changes: [
+    {
+      type: "improvement",
+      description:
+        "Opening or closing a row group is much faster, especially when the table has many rows and animations are off.",
+      link: "/docs/row-grouping",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Custom cells in grouped rows no longer keep the previous row's content after you expand, collapse, or scroll.",
+      link: "/docs/cell-renderer",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Editing a cell after you scroll now saves on the row you see, not an earlier row that cell was reused for.",
+    },
+    {
+      type: "improvement",
+      description:
+        "Angular tableEmptyStateRenderer can take a component class. You no longer need to wrap it with wrapAngularRenderer first.",
+      link: "/docs/empty-state",
+    },
+  ],
+};
+
 export const v4_2_2: ChangelogEntry = {
   version: "4.2.2",
   date: "2026-08-28",
@@ -2789,6 +2822,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_2_3,
   v4_2_2,
   v4_2_1,
   v4_2_0,

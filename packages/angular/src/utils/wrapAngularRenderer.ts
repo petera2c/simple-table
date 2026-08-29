@@ -2,6 +2,7 @@ import {
   ApplicationRef,
   createComponent,
   EnvironmentInjector,
+  Injector,
   reflectComponentType,
   type ComponentRef,
   type Type,
@@ -11,6 +12,15 @@ import type {
   HeaderRendererProps as VanillaHeaderRendererProps,
 } from "simple-table-core";
 import type { MountRegistry } from "../MountRegistry";
+
+/** Shared createComponent options for every Angular renderer mount. */
+export type AngularMountOptions = {
+  appRef: ApplicationRef;
+  envInjector: EnvironmentInjector;
+  registry?: MountRegistry;
+  /** Parent ElementInjector so cells see providers on ancestors of `<simple-table>`. */
+  elementInjector?: Injector;
+};
 
 const ST_RENDERER_GENERATION = Symbol.for("simple-table.rendererGeneration");
 
@@ -53,20 +63,19 @@ function applyComponentProps<P extends object>(
 function mountAngularComponent<P extends object>(
   component: Type<P>,
   props: Partial<P>,
-  appRef: ApplicationRef,
-  injector: EnvironmentInjector,
-  registry: MountRegistry | undefined,
+  options: AngularMountOptions,
   host?: HTMLElement,
 ): { host: HTMLElement; componentRef: ComponentRef<P> } {
   const el = host ?? document.createElement("div");
   const componentRef = createComponent(component, {
-    environmentInjector: injector,
+    environmentInjector: options.envInjector,
+    elementInjector: options.elementInjector,
     hostElement: el,
   });
   applyComponentProps(componentRef, props);
-  appRef.attachView(componentRef.hostView);
-  registry?.register(el, () => {
-    appRef.detachView(componentRef.hostView);
+  options.appRef.attachView(componentRef.hostView);
+  options.registry?.register(el, () => {
+    options.appRef.detachView(componentRef.hostView);
     componentRef.destroy();
   });
   return { host: el, componentRef };
@@ -85,7 +94,8 @@ function mountAngularComponent<P extends object>(
  * Pass an optional {@link MountRegistry} so core's `onRendererHostDiscard` can
  * destroy the ComponentRef (including any CDK Overlay / floating UI) when the
  * host is discarded. The table adapter always supplies a registry; the public
- * helper used for one-shot static slots (e.g. `tableEmptyStateRenderer`) may omit it.
+ * helper used for one-shot static slots may omit it. Pass `elementInjector` so
+ * dynamically created components see providers on ancestors of `<simple-table>`.
  *
  * These are injected automatically when the consumer uses
  * `provideSimpleTable()` in their application providers.
@@ -95,9 +105,16 @@ export function wrapAngularRenderer<P extends object>(
   appRef: ApplicationRef,
   injector: EnvironmentInjector,
   registry?: MountRegistry,
+  elementInjector?: Injector,
 ): (props: Partial<P>) => HTMLElement {
+  const options: AngularMountOptions = {
+    appRef,
+    envInjector: injector,
+    registry,
+    elementInjector,
+  };
   return (props: Partial<P>): HTMLElement => {
-    return mountAngularComponent(component, props, appRef, injector, registry).host;
+    return mountAngularComponent(component, props, options).host;
   };
 }
 
@@ -109,24 +126,17 @@ export function wrapAngularRenderer<P extends object>(
  */
 export function wrapAngularHeaderRenderer(
   component: Type<object>,
-  appRef: ApplicationRef,
-  injector: EnvironmentInjector,
-  registry: MountRegistry,
+  options: AngularMountOptions,
 ): (props: VanillaHeaderRendererProps) => HTMLElement {
+  const registry = options.registry;
   let host: HTMLElement | null = null;
   let componentRef: ComponentRef<object> | null = null;
   return (props: VanillaHeaderRendererProps): HTMLElement => {
-    if (host && componentRef && registry.isRegistered(host)) {
+    if (host && componentRef && registry?.isRegistered(host)) {
       applyComponentProps(componentRef, props as object);
       return host;
     }
-    const mounted = mountAngularComponent(
-      component,
-      props as object,
-      appRef,
-      injector,
-      registry,
-    );
+    const mounted = mountAngularComponent(component, props as object, options);
     host = mounted.host;
     componentRef = mounted.componentRef;
     return host;
@@ -142,12 +152,14 @@ export function wrapAngularHeaderRenderer(
  */
 export function wrapCachedAngularRenderer<P extends object>(
   component: Type<P>,
-  appRef: ApplicationRef,
-  injector: EnvironmentInjector,
-  registry: MountRegistry,
+  options: AngularMountOptions,
   accessor: string,
   kind: "cell" | "header",
 ): (props: Partial<P>) => HTMLElement {
+  const registry = options.registry;
+  if (!registry) {
+    throw new Error("wrapCachedAngularRenderer requires a MountRegistry");
+  }
   const cache = kind === "cell" ? registry.cellRendererCache : registry.headerRendererCache;
   const existing = cache.get(accessor);
   if (existing) {
@@ -175,13 +187,7 @@ export function wrapCachedAngularRenderer<P extends object>(
         applyComponentProps(componentRef, props);
         return host;
       }
-      const mounted = mountAngularComponent(
-        slot.component,
-        props,
-        appRef,
-        injector,
-        registry,
-      );
+      const mounted = mountAngularComponent(slot.component, props, options);
       host = mounted.host;
       componentRef = mounted.componentRef;
       return host;
@@ -192,7 +198,7 @@ export function wrapCachedAngularRenderer<P extends object>(
   }
 
   const wrapped = (props: Partial<P>): HTMLElement => {
-    return mountAngularComponent(slot.component, props, appRef, injector, registry).host;
+    return mountAngularComponent(slot.component, props, options).host;
   };
   slot.wrapped = wrapped;
   (wrapped as any)[ST_RENDERER_GENERATION] = 0;
@@ -206,10 +212,9 @@ export function wrapCachedAngularRenderer<P extends object>(
  */
 export function wrapAngularColumnEditorRowRenderer(
   component: Type<object>,
-  appRef: ApplicationRef,
-  injector: EnvironmentInjector,
-  registry: MountRegistry,
+  options: AngularMountOptions,
 ): (props: VanillaColumnEditorRowRendererProps) => HTMLElement {
+  const registry = options.registry;
   const mounts = new Map<
     string,
     { host: HTMLElement; componentRef: ComponentRef<object> }
@@ -217,17 +222,11 @@ export function wrapAngularColumnEditorRowRenderer(
   return (props: VanillaColumnEditorRowRendererProps): HTMLElement => {
     const key = String(props.accessor);
     const existing = mounts.get(key);
-    if (existing && registry.isRegistered(existing.host)) {
+    if (existing && registry?.isRegistered(existing.host)) {
       applyComponentProps(existing.componentRef, props as object);
       return existing.host;
     }
-    const mounted = mountAngularComponent(
-      component,
-      props as object,
-      appRef,
-      injector,
-      registry,
-    );
+    const mounted = mountAngularComponent(component, props as object, options);
     mounts.set(key, mounted);
     return mounted.host;
   };

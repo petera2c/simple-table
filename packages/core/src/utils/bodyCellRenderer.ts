@@ -11,6 +11,7 @@ import {
   untrackCellByRow,
   unregisterCellFromRegistry,
   invalidateBodyCellContentMemo,
+  rekeyBodyCellIdentity,
 } from "./bodyCell/styling";
 import { updateExpandIconState } from "./bodyCell/expansion";
 import { updateCheckboxElement } from "./columnEditor/createCheckbox";
@@ -386,6 +387,12 @@ export const renderBodyCells = (
     ? new Set(allRows.map((r) => r.position))
     : new Set(cellsToRender.map((cell) => cell.rowIndex));
 
+  // When motion is off, outgoing cells are reused for incoming rows that share
+  // the same column instead of being destroyed and recreated (a 40-row window
+  // of 10 columns is 400 creates on every group toggle).
+  const recyclePoolByAccessor = new Map<string, HTMLElement[]>();
+  const canRecycleOutgoing = !animationCoordinator || !animationCoordinator.isEnabled();
+
   // Remove cells that are no longer visible. When the coordinator wants to
   // animate a cell off-screen, we hand it off instead of removing.
   renderedCells.forEach((element, cellId) => {
@@ -394,6 +401,15 @@ export const renderBodyCells = (
       const rowIdAttr = element.getAttribute("data-row-id");
       if (rowIdAttr) {
         untrackCellByRow(rowIdAttr, element);
+      }
+
+      if (canRecycleOutgoing) {
+        const accessor = element.getAttribute("data-accessor") ?? "";
+        const pool = recyclePoolByAccessor.get(accessor);
+        if (pool) pool.push(element);
+        else recyclePoolByAccessor.set(accessor, [element]);
+        renderedCells.delete(cellId);
+        return;
       }
 
       const newPos = newCellLayout?.get(cellId);
@@ -622,6 +638,34 @@ export const renderBodyCells = (
       ) {
         return;
       }
+      const recycled = recyclePoolByAccessor.get(String(cell.header.accessor))?.pop();
+      if (recycled) {
+        rekeyBodyCellIdentity(recycled, cellId, context.cellRegistry);
+        updateBodyCellElement(recycled, cell, context);
+        const recycledRow = getOrCreateRowElement(container, bodyRowKey(cell), bodyRowIndex(cell));
+        applyRowSelectionState(recycledRow, cell);
+        applyRowTreeState(recycledRow, cell);
+        if (recycled.parentElement !== recycledRow) {
+          recycledRow.appendChild(recycled);
+        }
+        if (cell.header.expandable) {
+          const expandedDepthsSet = new Set(context.expandedDepths);
+          const currentExpandedRows = context.getExpandedRows?.() ?? context.expandedRows;
+          const currentCollapsedRows = context.getCollapsedRows?.() ?? context.collapsedRows;
+          updateExpandIconState(
+            recycled,
+            isRowExpanded(
+              expandStateKey(cell.tableRow),
+              cell.depth,
+              expandedDepthsSet,
+              currentExpandedRows,
+              currentCollapsedRows,
+            ),
+          );
+        }
+        renderedCells.set(cellId, recycled);
+        return;
+      }
       cellsToCreate.push({ cell, cellId });
     } else {
       const cellElement = renderedCells.get(cellId)!;
@@ -664,6 +708,14 @@ export const renderBodyCells = (
           updateExpandIconState(cellElement, currentIsExpanded);
         }
       }
+    }
+  });
+
+  recyclePoolByAccessor.forEach((pool) => {
+    for (const element of pool) {
+      unregisterCellFromRegistry(element, context.cellRegistry);
+      context.onRendererHostDiscard?.(element);
+      element.remove();
     }
   });
 

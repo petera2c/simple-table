@@ -234,3 +234,70 @@ describe("custom cellRenderer memoization in updateBodyCellElement", () => {
     expect(el.querySelector(".custom-content")?.textContent).toBe("Alice");
   });
 });
+
+describe("custom cellRenderer on an expandable grouping column", () => {
+  let cellRenderer: ReturnType<typeof vi.fn>;
+  let header: ColumnDef;
+
+  beforeEach(() => {
+    cellRenderer = vi.fn(({ row }: { row: Row }) => {
+      const span = document.createElement("span");
+      span.className = "custom-content";
+      span.textContent = String((row as Record<string, unknown>).name ?? "");
+      return span;
+    });
+    header = {
+      accessor: "name",
+      label: "Name",
+      width: 120,
+      expandable: true,
+      cellRenderer: cellRenderer as unknown as ColumnDef["cellRenderer"],
+    } as ColumnDef;
+  });
+
+  function groupingContext(): CellRenderContext {
+    return buildContext({ rowGrouping: ["users"] });
+  }
+
+  function groupCell(row: Row, stableRowKey: string): AbsoluteBodyCell {
+    const cell = buildCell(row, header);
+    cell.stableRowKey = stableRowKey;
+    cell.rowId = stableRowKey;
+    cell.depth = 0;
+    cell.tableRow = {
+      ...cell.tableRow,
+      stableRowKey,
+      depth: 0,
+      groupingKey: "users",
+    };
+    return cell;
+  }
+
+  const engineering = { id: "eng", name: "Engineering", users: [{ id: "u1", name: "Ada" }] } as unknown as Row;
+  const sales = { id: "sales", name: "Sales", users: [{ id: "u2", name: "Pat" }] } as unknown as Row;
+
+  it("does not re-invoke the renderer when only expand state changed", () => {
+    const ctx = groupingContext();
+    const el = createBodyCellElement(groupCell(engineering, "eng"), ctx);
+    const caret = el.querySelector(".st-expand-icon-container");
+    expect(cellRenderer).toHaveBeenCalledTimes(1);
+    expect(caret).toBeTruthy();
+
+    updateBodyCellElement(el, groupCell(engineering, "eng"), ctx);
+    expect(cellRenderer).toHaveBeenCalledTimes(1);
+    expect(el.querySelector(".st-expand-icon-container")).toBe(caret);
+    expect(el.querySelector(".custom-content")?.textContent).toBe("Engineering");
+  });
+
+  it("re-invokes the renderer when the cell is reused for a different group row", () => {
+    const ctx = groupingContext();
+    const el = createBodyCellElement(groupCell(engineering, "eng"), ctx);
+    expect(el.querySelector(".custom-content")?.textContent).toBe("Engineering");
+
+    updateBodyCellElement(el, groupCell(sales, "sales"), ctx);
+
+    expect(cellRenderer).toHaveBeenCalledTimes(2);
+    expect(el.querySelector(".custom-content")?.textContent).toBe("Sales");
+    expect(el.querySelector(".st-expand-icon-container:not(.placeholder)")).toBeTruthy();
+  });
+});

@@ -323,9 +323,10 @@ export class SectionRenderer {
     // this to the animation coordinator so cells exiting the visible band
     // can slide to their off-screen post-change position before being torn
     // down — instead of just disappearing in place.
-    const fullCellLayout = animationCoordinator
-      ? this.getFullSectionLayout(sectionKey)
-      : null;
+    const fullCellLayout =
+      animationCoordinator && animationCoordinator.isEnabled()
+        ? this.getFullSectionLayout(sectionKey)
+        : null;
 
     const dataRowCount = rows.filter((r) => !r.nestedTable && !r.stateIndicator).length;
     const maxColIndex =

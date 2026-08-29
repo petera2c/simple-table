@@ -5,6 +5,7 @@ export const DEMO_LIST = [
   { id: "value-formatter", label: "Value Formatter" },
   { id: "pagination", label: "Pagination" },
   { id: "column-pinning", label: "Column Pinning" },
+  { id: "pinned-auto-expand-resize", label: "Pinned Auto Expand Resize" },
   { id: "column-alignment", label: "Column Alignment" },
   { id: "column-width", label: "Column Width" },
   { id: "column-resizing", label: "Column Resizing" },
