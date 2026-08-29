@@ -6,7 +6,6 @@ import {
   H_SCROLL_LAYER_CLASS,
 } from "../managers/horizontalScroll/scrollLayer";
 import { getRenderedCells } from "../utils/bodyCell/eventTracking";
-import { MAX_RUBBER_PX } from "../managers/horizontalScroll/physics";
 
 const createViewport = (width = 200): HTMLElement => {
   const el = document.createElement("div");
@@ -96,87 +95,31 @@ describe("HorizontalScrollEngine", () => {
     expect(layerOf(body).style.transform).toBe("translate3d(-40px, 0px, 0px)");
   });
 
-  it("rubber-bands a wheel past the end and stays at the stretch cap", () => {
+  it("stops at the last column and still eats extra horizontal wheels", () => {
     const { body, engine } = mountPair();
     engine.setSectionScrollLeft("main", 800);
     const first = new WheelEvent("wheel", { deltaX: 40, cancelable: true, bubbles: true });
     const preventFirst = vi.spyOn(first, "preventDefault");
     body.dispatchEvent(first);
     expect(preventFirst).toHaveBeenCalled();
-    const stretched = engine.getSectionScrollLeft("main");
-    expect(stretched).toBeGreaterThan(800);
-    expect(stretched).toBeLessThan(840);
+    expect(engine.getSectionScrollLeft("main")).toBe(800);
 
-    for (let i = 0; i < 40; i++) {
-      body.dispatchEvent(new WheelEvent("wheel", { deltaX: 80, cancelable: true, bubbles: true }));
+    for (let i = 0; i < 20; i++) {
+      const extra = new WheelEvent("wheel", { deltaX: 80, cancelable: true, bubbles: true });
+      const preventExtra = vi.spyOn(extra, "preventDefault");
+      body.dispatchEvent(extra);
+      expect(preventExtra).toHaveBeenCalled();
     }
-    expect(engine.getSectionScrollLeft("main")).toBe(800 + MAX_RUBBER_PX);
+    expect(engine.getSectionScrollLeft("main")).toBe(800);
+  });
 
-    const extra = new WheelEvent("wheel", { deltaX: 40, cancelable: true, bubbles: true });
+  it("stops at the first column", () => {
+    const { body, engine } = mountPair();
+    const extra = new WheelEvent("wheel", { deltaX: -40, cancelable: true, bubbles: true });
     const preventExtra = vi.spyOn(extra, "preventDefault");
     body.dispatchEvent(extra);
     expect(preventExtra).toHaveBeenCalled();
-    expect(engine.getSectionScrollLeft("main")).toBe(800 + MAX_RUBBER_PX);
-  });
-
-  it("bounces back while leftover ticks are still arriving at the stretch cap", async () => {
-    const { body, engine } = mountPair();
-    engine.setSectionScrollLeft("main", 800);
-    for (let i = 0; i < 40; i++) {
-      body.dispatchEvent(new WheelEvent("wheel", { deltaX: 80, cancelable: true, bubbles: true }));
-    }
-    expect(engine.getSectionScrollLeft("main")).toBe(800 + MAX_RUBBER_PX);
-
-    let leftTheCap = false;
-    const leftoverUntil = Date.now() + 250;
-    while (Date.now() < leftoverUntil) {
-      if (engine.getSectionScrollLeft("main") < 800 + MAX_RUBBER_PX - 0.5) leftTheCap = true;
-      body.dispatchEvent(new WheelEvent("wheel", { deltaX: 40, cancelable: true, bubbles: true }));
-      await new Promise((r) => requestAnimationFrame(() => r(undefined)));
-    }
-    expect(leftTheCap).toBe(true);
-
-    const deadline = Date.now() + 1000;
-    while (Date.now() < deadline && engine.getSectionScrollLeft("main") !== 800) {
-      await new Promise((r) => requestAnimationFrame(() => r(undefined)));
-    }
-    expect(engine.getSectionScrollLeft("main")).toBe(800);
-  });
-
-  it("does not re-stretch from leftover after bounce returns to the end", async () => {
-    const { body, engine } = mountPair();
-    engine.setSectionScrollLeft("main", 800);
-    for (let i = 0; i < 40; i++) {
-      body.dispatchEvent(new WheelEvent("wheel", { deltaX: 80, cancelable: true, bubbles: true }));
-    }
-    expect(engine.getSectionScrollLeft("main")).toBe(800 + MAX_RUBBER_PX);
-
-    const deadline = Date.now() + 1500;
-    while (Date.now() < deadline && engine.getSectionScrollLeft("main") !== 800) {
-      body.dispatchEvent(new WheelEvent("wheel", { deltaX: 40, cancelable: true, bubbles: true }));
-      await new Promise((r) => requestAnimationFrame(() => r(undefined)));
-    }
-    expect(engine.getSectionScrollLeft("main")).toBe(800);
-
-    for (let i = 0; i < 10; i++) {
-      body.dispatchEvent(new WheelEvent("wheel", { deltaX: 40, cancelable: true, bubbles: true }));
-      await new Promise((r) => requestAnimationFrame(() => r(undefined)));
-    }
-    expect(engine.getSectionScrollLeft("main")).toBe(800);
-  });
-
-  it("springs back after a wheel past the end", async () => {
-    const { body, engine } = mountPair();
-    engine.setSectionScrollLeft("main", 800);
-    body.dispatchEvent(new WheelEvent("wheel", { deltaX: 50, cancelable: true, bubbles: true }));
-    expect(engine.getSectionScrollLeft("main")).toBeGreaterThan(800);
-
-    await new Promise((r) => setTimeout(r, 80));
-    const deadline = Date.now() + 1000;
-    while (Date.now() < deadline && engine.getSectionScrollLeft("main") !== 800) {
-      await new Promise((r) => requestAnimationFrame(() => r(undefined)));
-    }
-    expect(engine.getSectionScrollLeft("main")).toBe(800);
+    expect(engine.getSectionScrollLeft("main")).toBe(0);
   });
 
   it("runs main-section virtualization after 20px of movement", async () => {
@@ -209,6 +152,25 @@ describe("HorizontalScrollEngine", () => {
     bar.scrollLeft = 300;
     bar.dispatchEvent(new Event("scroll"));
     expect(engine.getSectionScrollLeft("main")).toBe(300);
+  });
+
+  it("does not let a bottom-bar overscroll pull the table past the last column", () => {
+    const { engine } = mountPair();
+    const bar = document.createElement("div");
+    bar.className = "st-horizontal-scrollbar-middle";
+    Object.defineProperty(bar, "scrollLeft", {
+      configurable: true,
+      writable: true,
+      value: 0,
+    });
+    Object.defineProperty(bar, "scrollWidth", { configurable: true, value: 1000 });
+    Object.defineProperty(bar, "clientWidth", { configurable: true, value: 200 });
+    document.body.appendChild(bar);
+    viewports.push(bar);
+    engine.registerPane("main", bar, "scrollbar");
+    bar.scrollLeft = 960;
+    bar.dispatchEvent(new Event("scroll"));
+    expect(engine.getSectionScrollLeft("main")).toBe(800);
   });
 
   it("does not take a bottom-bar echo as a new position", () => {
@@ -283,6 +245,18 @@ describe("HorizontalScrollEngine", () => {
     expect(engine.getSectionScrollLeft("main")).toBe(120);
     expect(layerOf(header).style.transform).toBe("translate3d(-120px, 0px, 0px)");
     expect(layerOf(body).style.transform).toBe("translate3d(-120px, 0px, 0px)");
+  });
+
+  it("does not move past the last column on a touch drag", () => {
+    const { body, engine } = mountPair();
+    let now = 1_000;
+    vi.spyOn(performance, "now").mockImplementation(() => now);
+
+    engine.setSectionScrollLeft("main", 800);
+    fireTouch(body, "touchstart", 200, 10);
+    now += 16;
+    fireTouch(body, "touchmove", 80, 10);
+    expect(engine.getSectionScrollLeft("main")).toBe(800);
   });
 });
 

@@ -5,20 +5,11 @@ import type {
   SectionScrollMetrics,
 } from "./types";
 import {
-  capRubberX,
   clampScrollX,
-  isAtRubberCap,
   maxScrollX,
-  MAX_RUBBER_PX,
   normalizeWheelDelta,
-  rubberBandX,
   stepFling,
   TOUCH_LOCK_PX,
-  unboundedFromDisplayedX,
-  LIVE_WHEEL_STRETCH_PX,
-  LEFTOVER_DX_SLACK,
-  LEFTOVER_IDLE_MS,
-  WHEEL_SPRING_IDLE_MS,
 } from "./physics";
 import { ensureHorizontalScrollLayer } from "./scrollLayer";
 import { bindHorizontalScrollEngine, unbindHorizontalScrollEngine } from "./lookup";
@@ -43,7 +34,7 @@ interface TouchSession {
   lastY: number;
   lastTime: number;
   axis: "x" | "y" | null;
-  unboundedX: number;
+  x: number;
   samples: Array<{ t: number; x: number }>;
 }
 
@@ -77,11 +68,6 @@ export class HorizontalScrollEngine {
   private lastFlingTime = 0;
   private touch: TouchSession | null = null;
   private pendingScrollbar = new Set<SectionId>();
-  private wheelSpringTimer: number | null = null;
-  private wheelSpringSection: SectionId | null = null;
-  private leftoverDir: -1 | 0 | 1 = 0;
-  private leftoverAbsDx = 0;
-  private leftoverIdleTimer: number | null = null;
 
   constructor(config: HorizontalScrollEngineConfig = {}) {
     this.config = config;
@@ -168,21 +154,11 @@ export class HorizontalScrollEngine {
     state.contentWidth = contentWidth;
     state.viewportWidth = viewportWidth;
     const maxX = this.getMaxX(sectionId);
-    if (state.x > maxX || state.x < 0) {
-      if (!unchanged) {
-        state.x = clampScrollX(state.x, maxX);
-        state.velocity = 0;
-      } else if (state.x > maxX + MAX_RUBBER_PX) {
-        state.x = maxX + MAX_RUBBER_PX;
-        state.velocity = 0;
-      } else if (state.x < -MAX_RUBBER_PX) {
-        state.x = -MAX_RUBBER_PX;
-        state.velocity = 0;
-      } else {
-        return;
-      }
-    } else if (unchanged) {
-      return;
+    const nextX = clampScrollX(state.x, maxX);
+    if (unchanged && nextX === state.x) return;
+    if (nextX !== state.x) {
+      state.x = nextX;
+      state.velocity = 0;
     }
     this.applyLayers(sectionId);
   }
@@ -220,7 +196,6 @@ export class HorizontalScrollEngine {
 
   destroy(): void {
     this.stopFling();
-    this.clearLeftover();
     this.stopScrollbarSync();
     this.stopVirtualize();
     this.touch = null;
@@ -348,44 +323,12 @@ export class HorizontalScrollEngine {
     }
     if (maxX <= 0) return;
 
-    const dir: -1 | 1 = dx < 0 ? -1 : 1;
-    if (this.leftoverDir !== 0 && this.leftoverDir !== dir) this.clearLeftover();
-
-    const overshooting = state.x < 0 || state.x > maxX;
-    const pushingDeeper = (dx < 0 && state.x < 0) || (dx > 0 && state.x > maxX);
-    const springing = this.flingRafId !== null;
-    const atCap = isAtRubberCap(state.x, dx, maxX);
-    const absDx = Math.abs(dx);
-    const decayingLeftover =
-      this.leftoverDir === dir &&
-      absDx <= this.leftoverAbsDx + LEFTOVER_DX_SLACK &&
-      ((dir < 0 && state.x === 0) || (dir > 0 && state.x === maxX));
-    const ignoreLeftover =
-      decayingLeftover ||
-      (overshooting &&
-        (springing || atCap || (pushingDeeper && absDx < LIVE_WHEEL_STRETCH_PX)));
-    if (ignoreLeftover) {
-      // Eat leftover ticks past the end without restarting the bounce timer.
-      event.preventDefault();
-      event.stopPropagation();
-      this.rememberLeftover(dx);
-      if (overshooting && !springing && this.wheelSpringTimer === null) {
-        this.scheduleSpringBack(sectionId);
-      }
-      return;
-    }
-
     event.preventDefault();
     event.stopPropagation();
     this.stopFling();
     state.velocity = 0;
-    const unbounded = unboundedFromDisplayedX(state.x, maxX) + dx;
-    state.x = capRubberX(rubberBandX(unbounded, maxX), maxX);
+    state.x = clampScrollX(state.x + dx, maxX);
     this.applyFromInput(sectionId);
-    if (state.x < 0 || state.x > maxX) {
-      this.rememberLeftover(dx);
-      this.scheduleSpringBack(sectionId);
-    }
   }
 
   private handleTouchStart(sectionId: SectionId, event: TouchEvent): void {
@@ -399,7 +342,7 @@ export class HorizontalScrollEngine {
       lastY: touch.pageY,
       lastTime: performance.now(),
       axis: null,
-      unboundedX: this.sections[sectionId].x,
+      x: this.sections[sectionId].x,
       samples: [{ t: performance.now(), x: this.sections[sectionId].x }],
     };
   }
@@ -432,13 +375,12 @@ export class HorizontalScrollEngine {
     event.stopPropagation();
 
     const maxX = this.getMaxX(sectionId);
-    session.unboundedX -= dxFinger;
-    const next = capRubberX(rubberBandX(session.unboundedX, maxX), maxX);
+    session.x = clampScrollX(session.x - dxFinger, maxX);
     const now = performance.now();
-    session.samples.push({ t: now, x: next });
+    session.samples.push({ t: now, x: session.x });
     if (session.samples.length > 5) session.samples.shift();
     session.lastTime = now;
-    this.sections[sectionId].x = next;
+    this.sections[sectionId].x = session.x;
     this.applyFromInput(sectionId);
   }
 
@@ -472,23 +414,10 @@ export class HorizontalScrollEngine {
     }
     this.stopFling();
     state.velocity = 0;
-    state.x = reported;
+    state.x = clampScrollX(reported, this.getMaxX(sectionId));
     state.lastWrittenBarX = reported;
     this.applyLayers(sectionId);
     if (sectionId === "main") this.flushVirtualize(false);
-  }
-
-  private scheduleSpringBack(sectionId: SectionId): void {
-    if (this.wheelSpringTimer !== null) {
-      window.clearTimeout(this.wheelSpringTimer);
-    }
-    this.wheelSpringSection = sectionId;
-    this.wheelSpringTimer = window.setTimeout(() => {
-      this.wheelSpringTimer = null;
-      const id = this.wheelSpringSection;
-      this.wheelSpringSection = null;
-      if (id) this.startFling(id);
-    }, WHEEL_SPRING_IDLE_MS);
   }
 
   private startFling(sectionId: SectionId): void {
@@ -513,37 +442,10 @@ export class HorizontalScrollEngine {
     this.flingRafId = requestAnimationFrame(tick);
   }
 
-  private rememberLeftover(dx: number): void {
-    this.leftoverDir = dx < 0 ? -1 : 1;
-    this.leftoverAbsDx = Math.abs(dx);
-    if (this.leftoverIdleTimer !== null) {
-      window.clearTimeout(this.leftoverIdleTimer);
-    }
-    this.leftoverIdleTimer = window.setTimeout(() => {
-      this.leftoverIdleTimer = null;
-      this.leftoverDir = 0;
-      this.leftoverAbsDx = 0;
-    }, LEFTOVER_IDLE_MS);
-  }
-
-  private clearLeftover(): void {
-    if (this.leftoverIdleTimer !== null) {
-      window.clearTimeout(this.leftoverIdleTimer);
-      this.leftoverIdleTimer = null;
-    }
-    this.leftoverDir = 0;
-    this.leftoverAbsDx = 0;
-  }
-
   private stopFling(): void {
     if (this.flingRafId !== null) {
       cancelAnimationFrame(this.flingRafId);
       this.flingRafId = null;
-    }
-    if (this.wheelSpringTimer !== null) {
-      window.clearTimeout(this.wheelSpringTimer);
-      this.wheelSpringTimer = null;
-      this.wheelSpringSection = null;
     }
   }
 

@@ -15,15 +15,9 @@ export {
   writePaneScrollX,
 } from "./lookup";
 export {
-  capRubberX,
   clampScrollX,
   isAtHorizontalEdge,
-  isAtRubberCap,
   maxScrollX,
-  MAX_RUBBER_PX,
   normalizeWheelDelta,
-  rubberBandX,
   stepFling,
-  unboundedFromDisplayedX,
-  WHEEL_SPRING_IDLE_MS,
 } from "./physics";
