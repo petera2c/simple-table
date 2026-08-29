@@ -291,7 +291,7 @@ describe("SimpleTable (React) — edit, select, scroll, live update, grouping", 
 
     findExpandIcon(host, "Engineering")!.click();
     await waitFor(() => dataCell(host, "title", "Kept after toggle") === undefined);
-    expect(dataCell(host, "name", "Sales")).toBeTruthy();
+    await waitFor(() => Boolean(dataCell(host, "name", "Sales")));
 
     findExpandIcon(host, "Engineering")!.click();
     await waitFor(() => Boolean(dataCell(host, "title", "Kept after toggle")));

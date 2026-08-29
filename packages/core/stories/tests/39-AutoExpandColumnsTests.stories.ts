@@ -7,7 +7,7 @@
 import type { Meta } from "@storybook/html";
 import { expect, userEvent } from "@storybook/test";
 import { ColumnDef, Row } from "../../src/index";
-import { waitForTable } from "./testUtils";
+import { waitForTable, waitUntil } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
 const meta: Meta = {
@@ -2513,6 +2513,7 @@ export const AutoExpandResizeDualPinnedMaxClamp = {
   },
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
     await waitForTable();
+    await waitUntil(() => Boolean(findHeaderCellByLabel(canvasElement, "Name")));
     const container = canvasElement.querySelector(
       ".st-body-container",
     ) as HTMLElement;

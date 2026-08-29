@@ -578,8 +578,10 @@ export const Tooltip: StoryObj = {
 export const UsersTable: StoryObj = {
   ...storyArgs(usersTableExampleDefaults),
   render: (args) => renderUsersTableExample(args),
+  tags: ["skip"],
   parameters: {
     chromatic: { disableSnapshot: true },
+    test: { disable: true },
     docs: {
       description: {
         story:

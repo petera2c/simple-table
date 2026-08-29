@@ -233,6 +233,7 @@ export const buildBodyCellContext = (
       }
       scheduleRender(deps.onRender);
     },
+    forceUpdate: () => deps.onRender(),
     icons: deps.resolvedIcons,
     theme: deps.config.theme ?? "modern-light",
     rowButtons: deps.config.rowButtons,

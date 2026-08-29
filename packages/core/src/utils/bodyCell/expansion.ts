@@ -128,6 +128,10 @@ export const createExpandIcon = (
       });
     }
 
+    // One paint in this click. scheduleRender would wait until after the
+    // click returns, so the new rows would not be in the DOM yet.
+    context.forceUpdate?.();
+
     // Call onRowGroupExpand callback if provided (for both expand and collapse)
     if (context.onRowGroupExpand && liveTableRow.rowIndexPath && context.rowGrouping) {
       const triggerSection = cell.header.pinned;

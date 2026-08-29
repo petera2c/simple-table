@@ -190,4 +190,47 @@ describe("grouped expand/collapse with motion off", () => {
     expect(nameCell(container, "Ops")).toBeTruthy();
     expect(expandChrome(container, "Ops")).toBe("icon");
   });
+
+  it("shows child rows before the expand click returns", async () => {
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const table = new SimpleTableVanilla(container, {
+      columns,
+      rows: [
+        {
+          id: "eng",
+          name: "Engineering",
+          users: [
+            { id: "emp-1", name: "Alice" },
+            { id: "emp-2", name: "Bob" },
+          ],
+        },
+        { id: "sales", name: "Sales", users: [{ id: "emp-3", name: "Charlie" }] },
+      ],
+      getRowId: ({ row }) => String((row as { id: string }).id),
+      height: "320px",
+      customTheme: { rowHeight: 32, headerHeight: 32 },
+      theme: "light",
+      rowGrouping: ["users"],
+      expandAll: false,
+      animations: { enabled: true, duration: 600 },
+    });
+    table.mount();
+    mounted.push({ table, container });
+
+    await waitFor(() => Boolean(findExpandIcon(container, "Engineering")));
+    const rowsBefore = new Set(
+      Array.from(container.querySelectorAll(".st-cell[data-row-index]")).map((c) =>
+        c.getAttribute("data-row-index"),
+      ),
+    ).size;
+    findExpandIcon(container, "Engineering")!.click();
+    const rowsAfter = new Set(
+      Array.from(container.querySelectorAll(".st-cell[data-row-index]")).map((c) =>
+        c.getAttribute("data-row-index"),
+      ),
+    ).size;
+    expect(rowsAfter).toBeGreaterThan(rowsBefore);
+    expect(nameCell(container, "Alice")).toBeTruthy();
+  });
 });

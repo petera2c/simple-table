@@ -162,6 +162,8 @@ export interface CellRenderContext {
   setRowStateMap: Dispatch<SetStateAction<Map<string | number, RowState>>>;
   getCollapsedRows?: () => Map<string, number>;
   getExpandedRows?: () => Map<string, number>;
+  /** Paint now. Used after a chevron click so child rows exist before the click handler returns. */
+  forceUpdate?: () => void;
 
   // UI state
   icons: IconsConfig;
