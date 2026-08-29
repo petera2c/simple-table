@@ -5,6 +5,7 @@ export {
   ensureHorizontalScrollLayer,
   getHorizontalScrollContentHost,
   getHorizontalScrollLayer,
+  getHorizontalScrollViewport,
   H_SCROLL_LAYER_CLASS,
 } from "./scrollLayer";
 export {

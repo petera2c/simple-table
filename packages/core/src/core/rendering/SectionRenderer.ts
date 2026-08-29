@@ -28,7 +28,7 @@ import {
   type NestedGridRowEntry,
   type StateRowEntry,
 } from "./sectionExtraRows";
-import { ensureHorizontalScrollLayer, getHorizontalScrollContentHost } from "../../managers/horizontalScroll";
+import { ensureHorizontalScrollLayer } from "../../managers/horizontalScroll";
 
 /** Live selection sets merged into the last header paint during horizontal scroll. */
 export interface HeaderScrollLiveSelection {
@@ -164,10 +164,7 @@ export class SectionRenderer {
     });
 
     if (filteredHeaders.length === 0) {
-      cleanupHeaderCellRendering(
-        getHorizontalScrollContentHost(section),
-        this.onRendererHostDiscard,
-      );
+      cleanupHeaderCellRendering(section, this.onRendererHostDiscard);
       section.style.display = "none";
       return section;
     }
@@ -205,13 +202,13 @@ export class SectionRenderer {
 
     const host = ensureHorizontalScrollLayer(section);
     const currentScrollLeft = scrollLeftParam;
-    renderHeaderCells(host, absoluteCells, cachedContext, currentScrollLeft);
+    renderHeaderCells(section, absoluteCells, cachedContext, currentScrollLeft);
 
     // Keep the last main-header paint so horizontal scroll can re-virtualize
     // columns without a full header render. Pass live selection sets when the
     // header has not re-rendered since selection last changed.
     if (!pinned) {
-      this.mainHeaderScrollPaint = { section: host, absoluteCells, cachedContext };
+      this.mainHeaderScrollPaint = { section, absoluteCells, cachedContext };
     }
 
     return section;
@@ -352,7 +349,7 @@ export class SectionRenderer {
     const host = ensureHorizontalScrollLayer(section);
     const currentScrollLeft = scrollLeftParam;
     renderBodyCells(
-      host,
+      section,
       absoluteCells,
       cachedContext,
       currentScrollLeft,
@@ -389,7 +386,7 @@ export class SectionRenderer {
     // Keep the last main-body paint so horizontal scroll can re-virtualize
     // columns without a full body render.
     if (!pinned) {
-      this.mainBodyScrollPaint = { section: host, absoluteCells, cachedContext, rows };
+      this.mainBodyScrollPaint = { section, absoluteCells, cachedContext, rows };
     }
 
     return section!;
@@ -444,17 +441,11 @@ export class SectionRenderer {
       this.caches.clearAll();
       // Clear rendered cell elements from all body sections
       this.bodySections.forEach((section) => {
-        cleanupBodyCellRendering(
-          getHorizontalScrollContentHost(section),
-          this.onRendererHostDiscard,
-        );
+        cleanupBodyCellRendering(section, this.onRendererHostDiscard);
       });
       // Clear rendered cell elements from all header sections
       this.headerSections.forEach((section) => {
-        cleanupHeaderCellRendering(
-          getHorizontalScrollContentHost(section),
-          this.onRendererHostDiscard,
-        );
+        cleanupHeaderCellRendering(section, this.onRendererHostDiscard);
       });
     } else if (type === "body") {
       // Only clear the calculated cells cache so we recompute the cell list (e.g. after expand/collapse).
@@ -558,10 +549,7 @@ export class SectionRenderer {
   releaseHeaderSection(sectionKey: string): boolean {
     const section = this.headerSections.get(sectionKey);
     if (!section) return false;
-    cleanupHeaderCellRendering(
-      getHorizontalScrollContentHost(section),
-      this.onRendererHostDiscard,
-    );
+    cleanupHeaderCellRendering(section, this.onRendererHostDiscard);
     section.remove();
     this.headerSections.delete(sectionKey);
     this.nextColIndexMap.delete(sectionKey);
@@ -580,10 +568,7 @@ export class SectionRenderer {
    */
   releaseBodySections(): void {
     this.bodySections.forEach((section) => {
-      cleanupBodyCellRendering(
-        getHorizontalScrollContentHost(section),
-        this.onRendererHostDiscard,
-      );
+      cleanupBodyCellRendering(section, this.onRendererHostDiscard);
       section.remove();
     });
     this.bodySections.clear();

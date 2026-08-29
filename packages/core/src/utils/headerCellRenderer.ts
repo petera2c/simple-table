@@ -24,6 +24,7 @@ import { hasCollapsibleChildren, getHeaderColspan } from "./collapseUtils";
 import { getOrCreateRowElement, reconcileRowElements } from "./ariaRowOwnership";
 import { setAbsoluteCellPosition } from "./setAbsoluteCellPosition";
 import type ColumnDef from "../types/ColumnDef";
+import { getHorizontalScrollViewport } from "../managers/horizontalScroll/scrollLayer";
 
 const iconBagIds = new WeakMap<object, number>();
 let nextIconBagId = 1;
@@ -92,15 +93,15 @@ export const renderHeaderCells = (
   context: HeaderRenderContext,
   scrollLeft: number = 0,
 ): void => {
-  // Get viewport width: for main section use the *visible* viewport width
-  // (mainSectionViewportWidth) so column virtualization filters against the
-  // visible band, NOT the full content width.
+  const viewport = getHorizontalScrollViewport(container);
+  // Visible width of the section pane. The slide layer is as wide as the
+  // full row of columns, so measuring it would treat every column as on-screen.
   const viewportWidth = context.pinned
     ? context.containerWidth
     : (context.mainSectionViewportWidth ??
       (context.containerWidth ||
-        container.parentElement?.clientWidth ||
-        container.clientWidth ||
+        viewport.parentElement?.clientWidth ||
+        viewport.clientWidth ||
         0));
 
   // For pinned sections, always render all cells (they don't scroll).
@@ -112,7 +113,7 @@ export const renderHeaderCells = (
       : getVisibleCells(absoluteCells, scrollLeft, viewportWidth);
 
   const lastHeaderIndex = getLastHeaderIndex(absoluteCells);
-  const renderedCells = getRenderedCells(container);
+  const renderedCells = getRenderedCells(viewport);
 
   // Build set of cell IDs that should be visible
   const visibleCellIds = new Set(
@@ -142,7 +143,7 @@ export const renderHeaderCells = (
   const headerRowIndex = (cell: AbsoluteCell): number =>
     (headerBandLevels.get(Math.round(cell.top)) ?? 0) + 1;
 
-  const positionCache = getHeaderPositionCache(container);
+  const positionCache = getHeaderPositionCache(viewport);
 
   // Active accordion axis for hide/show/pin/unpin renders (set by
   // SimpleTableVanilla.beginAccordionAnimation via the render context).
@@ -178,7 +179,7 @@ export const renderHeaderCells = (
         context.animationCoordinator.shrinkOutCell({
           cellId,
           element,
-          container,
+          container: viewport,
           axis: removalAccordionAxis,
         });
       } else {
@@ -192,7 +193,7 @@ export const renderHeaderCells = (
     }
   });
   if (removedAnyHeaderCell) {
-    removeFloatingHeaderTooltips(container);
+    removeFloatingHeaderTooltips(viewport);
   }
 
   const cellsToCreate: Array<{
@@ -210,7 +211,7 @@ export const renderHeaderCells = (
       // Use cached position to detect change (avoid DOM reads / layout thrash)
       const cellElement = renderedCells.get(cellId)!;
       // Keep the owning row's index in sync (cheap attr update, no reparent).
-      getOrCreateRowElement(container, headerRowKey(cell), headerRowIndex(cell));
+      getOrCreateRowElement(viewport, headerRowKey(cell), headerRowIndex(cell));
       // Keep grid column index in sync when columns reorder / pin / hide so
       // SelectionManager.syncHeaderSelectionClasses (reads aria-colindex) matches
       // body cells' data-col-index.
@@ -353,7 +354,7 @@ export const renderHeaderCells = (
 
     // Append the new header cell into its row element (creating the row on
     // first use) so it becomes a DOM descendant of a `role="row"`.
-    const rowEl = getOrCreateRowElement(container, headerRowKey(cell), headerRowIndex(cell));
+    const rowEl = getOrCreateRowElement(viewport, headerRowKey(cell), headerRowIndex(cell));
     rowEl.appendChild(cellElement);
     renderedCells.set(cellId, cellElement);
     positionCache.set(cellId, {
@@ -382,7 +383,7 @@ export const renderHeaderCells = (
 
   // Store scroll position for future reference
   if (!context.pinned) {
-    container.dataset.lastScrollLeft = String(scrollLeft);
+    viewport.dataset.lastScrollLeft = String(scrollLeft);
   }
 
   // Apply aria-rowspan for cells that span multiple header rows (covers both
@@ -400,5 +401,5 @@ export const renderHeaderCells = (
   });
 
   // Drop row elements that no longer hold any header cells.
-  reconcileRowElements(container);
+  reconcileRowElements(viewport);
 };

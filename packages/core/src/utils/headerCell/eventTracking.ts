@@ -1,5 +1,6 @@
 import ColumnDef from "../../types/ColumnDef";
 import { cleanupAriaRows } from "../ariaRowOwnership";
+import { getHorizontalScrollViewport } from "../../managers/horizontalScroll/scrollLayer";
 
 // Event listener tracking - store listeners per element
 const elementListenersMap = new WeakMap<
@@ -39,10 +40,11 @@ const renderedCellsMap = new WeakMap<HTMLElement, Map<string, HTMLElement>>();
 export const getRenderedCells = (
   container: HTMLElement,
 ): Map<string, HTMLElement> => {
-  if (!renderedCellsMap.has(container)) {
-    renderedCellsMap.set(container, new Map());
+  const viewport = getHorizontalScrollViewport(container);
+  if (!renderedCellsMap.has(viewport)) {
+    renderedCellsMap.set(viewport, new Map());
   }
-  return renderedCellsMap.get(container)!;
+  return renderedCellsMap.get(viewport)!;
 };
 
 // Cache last applied header position per cell (avoids DOM reads / layout thrash on scroll)
@@ -60,10 +62,11 @@ const headerPositionCacheMap = new WeakMap<
 export const getHeaderPositionCache = (
   container: HTMLElement,
 ): Map<string, CachedHeaderPosition> => {
-  if (!headerPositionCacheMap.has(container)) {
-    headerPositionCacheMap.set(container, new Map());
+  const viewport = getHorizontalScrollViewport(container);
+  if (!headerPositionCacheMap.has(viewport)) {
+    headerPositionCacheMap.set(viewport, new Map());
   }
-  return headerPositionCacheMap.get(container)!;
+  return headerPositionCacheMap.get(viewport)!;
 };
 
 export const REVERT_TO_PREVIOUS_HEADERS_DELAY = 150;
@@ -114,7 +117,8 @@ export const cleanupHeaderCellRendering = (
   throttleLastCallTime = 0;
 
   if (container) {
-    const renderedCells = getRenderedCells(container);
+    const viewport = getHorizontalScrollViewport(container);
+    const renderedCells = getRenderedCells(viewport);
     // Remove all rendered cell elements from the DOM
     renderedCells.forEach((element) => {
       // Tear down any renderer subtree (React portal, etc.) mounted into the
@@ -123,8 +127,8 @@ export const cleanupHeaderCellRendering = (
       element.remove();
     });
     renderedCells.clear();
-    getHeaderPositionCache(container).clear();
-    removeFloatingHeaderTooltips(container);
-    cleanupAriaRows(container);
+    getHeaderPositionCache(viewport).clear();
+    removeFloatingHeaderTooltips(viewport);
+    cleanupAriaRows(viewport);
   }
 };

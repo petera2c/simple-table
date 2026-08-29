@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { HorizontalScrollEngine } from "../managers/horizontalScroll/HorizontalScrollEngine";
-import { H_SCROLL_LAYER_CLASS } from "../managers/horizontalScroll/scrollLayer";
+import {
+  ensureHorizontalScrollLayer,
+  getHorizontalScrollViewport,
+  H_SCROLL_LAYER_CLASS,
+} from "../managers/horizontalScroll/scrollLayer";
+import { getRenderedCells } from "../utils/bodyCell/eventTracking";
 import { MAX_RUBBER_PX } from "../managers/horizontalScroll/physics";
 
 const createViewport = (width = 200): HTMLElement => {
@@ -278,5 +283,23 @@ describe("HorizontalScrollEngine", () => {
     expect(engine.getSectionScrollLeft("main")).toBe(120);
     expect(layerOf(header).style.transform).toBe("translate3d(-120px, 0px, 0px)");
     expect(layerOf(body).style.transform).toBe("translate3d(-120px, 0px, 0px)");
+  });
+});
+
+describe("getHorizontalScrollViewport", () => {
+  it("tracks cells on the section pane even when they live in the slide layer", () => {
+    const section = document.createElement("div");
+    section.className = "st-body-main";
+    document.body.appendChild(section);
+    const layer = ensureHorizontalScrollLayer(section);
+    const cell = document.createElement("div");
+
+    expect(getHorizontalScrollViewport(layer)).toBe(section);
+    expect(getHorizontalScrollViewport(section)).toBe(section);
+
+    getRenderedCells(layer).set("c1", cell);
+    expect(getRenderedCells(section).get("c1")).toBe(cell);
+
+    section.remove();
   });
 });

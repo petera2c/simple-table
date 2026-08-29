@@ -1,5 +1,13 @@
 export const H_SCROLL_LAYER_CLASS = "st-h-scroll-layer";
 
+/** The section pane that owns `element` (the pane itself, or the parent of a slide layer). */
+export const getHorizontalScrollViewport = (element: HTMLElement): HTMLElement => {
+  if (element.classList.contains(H_SCROLL_LAYER_CLASS) && element.parentElement) {
+    return element.parentElement;
+  }
+  return element;
+};
+
 export const ensureHorizontalScrollLayer = (viewport: HTMLElement): HTMLElement => {
   const existing = viewport.querySelector(`:scope > .${H_SCROLL_LAYER_CLASS}`);
   if (existing instanceof HTMLElement) return existing;

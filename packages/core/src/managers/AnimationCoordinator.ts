@@ -2,6 +2,7 @@ import { getRenderedCells as getBodyRenderedCells } from "../utils/bodyCell/even
 import { getRenderedCells as getHeaderRenderedCells } from "../utils/headerCell/eventTracking";
 import { setFlipCompensationEnabled } from "../utils/setAbsoluteCellPosition";
 import { CellSlideAnimator } from "./CellSlideAnimator";
+import { getHorizontalScrollViewport } from "./horizontalScroll/scrollLayer";
 
 const DEFAULT_DURATION = 400;
 /**
@@ -398,9 +399,10 @@ export class AnimationCoordinator {
    * mutation in the loop.
    */
   private getScrollerMetrics(container: HTMLElement): ScrollerMetrics {
-    let metrics = this.scrollerMetricsCache.get(container);
+    const pane = getHorizontalScrollViewport(container);
+    let metrics = this.scrollerMetricsCache.get(pane);
     if (!metrics) {
-      const base = readScrollerMetrics(container);
+      const base = readScrollerMetrics(pane);
       // In external/page-scroll mode the body container has no internal
       // vertical overflow, so its clientHeight/scrollHeight describe the full
       // table rather than the visible viewport. Substitute the real visible
@@ -414,7 +416,7 @@ export class AnimationCoordinator {
             scrollTop: this.externalVerticalScroll.scrollTop,
           }
         : base;
-      this.scrollerMetricsCache.set(container, metrics);
+      this.scrollerMetricsCache.set(pane, metrics);
     }
     return metrics;
   }
@@ -463,8 +465,9 @@ export class AnimationCoordinator {
 
     const next = new Map<string, CellSnapshot>();
 
-    for (const container of args.containers) {
-      if (!container) continue;
+    for (const rawContainer of args.containers) {
+      if (!rawContainer) continue;
+      const container = getHorizontalScrollViewport(rawContainer);
 
       // Read the container's page-coord origin ONCE per container per
       // capture so every cell snapshot in this container shares the same
@@ -570,7 +573,7 @@ export class AnimationCoordinator {
     const entry = this.snapshot?.get(cellId);
     if (!entry) return false;
     if (entry.sourceContainer === null) return true;
-    return entry.sourceContainer === currentContainer;
+    return entry.sourceContainer === getHorizontalScrollViewport(currentContainer);
   }
 
   /**
@@ -705,13 +708,14 @@ export class AnimationCoordinator {
     const cellRect = element.getBoundingClientRect();
     if (cellRect.width === 0 && cellRect.height === 0) return false;
 
-    const hScrollerRect = container.getBoundingClientRect();
+    const pane = getHorizontalScrollViewport(container);
+    const hScrollerRect = pane.getBoundingClientRect();
     const horizontalVisible =
       cellRect.right > hScrollerRect.left && cellRect.left < hScrollerRect.right;
 
     const vScroller = this.externalVerticalScroll
       ? null // external mode: vertical clip follows the page viewport below
-      : container.parentElement;
+      : pane.parentElement;
     if (!vScroller) {
       // Fall back to the horizontal section clip only.
       return horizontalVisible;
@@ -765,7 +769,8 @@ export class AnimationCoordinator {
     container: HTMLElement;
     newPosition: CellPosition;
   }): void {
-    const { cellId, element, container, newPosition } = args;
+    const { cellId, element, newPosition } = args;
+    const container = getHorizontalScrollViewport(args.container);
     const oldTop = parsePx(element.style.top);
     const oldLeft = parsePx(element.style.left);
 
@@ -836,7 +841,7 @@ export class AnimationCoordinator {
    * doesn't pop into existence at a clipped FLIP entry point.
    */
   claimRetainedForReuse(cellId: string, container: HTMLElement): HTMLElement | null {
-    const map = this.retainedCells.get(container);
+    const map = this.retainedCells.get(getHorizontalScrollViewport(container));
     if (!map) return null;
     const element = map.get(cellId);
     if (!element) return null;
@@ -889,7 +894,8 @@ export class AnimationCoordinator {
     container: HTMLElement;
     axis: "horizontal" | "vertical";
   }): void {
-    const { cellId, element, container, axis } = args;
+    const { cellId, element, axis } = args;
+    const container = getHorizontalScrollViewport(args.container);
     // Tear down any previous in-flight transition for this id (FLIP from a
     // prior sort, or an earlier shrink-out that's somehow still tracked) so
     // we don't leak its cleanup timeout when we overwrite the inFlight slot.
@@ -951,7 +957,7 @@ export class AnimationCoordinator {
    * we don't have two DOM nodes claiming the same logical slot.
    */
   discardRetainedIfPresent(cellId: string, container: HTMLElement): void {
-    const map = this.retainedCells.get(container);
+    const map = this.retainedCells.get(getHorizontalScrollViewport(container));
     if (!map) return;
     const element = map.get(cellId);
     if (!element) return;
@@ -1268,8 +1274,9 @@ export class AnimationCoordinator {
       seen.add(cellId);
     };
 
-    for (const container of args.containers) {
-      if (!container) continue;
+    for (const rawContainer of args.containers) {
+      if (!rawContainer) continue;
+      const container = getHorizontalScrollViewport(rawContainer);
 
       // Retained (outgoing) cells animate first so we collect them.
       const retained = this.retainedCells.get(container);

@@ -1,4 +1,5 @@
 import { cleanupAriaRows } from "../ariaRowOwnership";
+import { getHorizontalScrollViewport } from "../../managers/horizontalScroll/scrollLayer";
 
 // Event listener tracking - store listeners per element
 const elementListenersMap = new WeakMap<HTMLElement, Array<{
@@ -27,10 +28,11 @@ export const addTrackedEventListener = (
 const renderedCellsMap = new WeakMap<HTMLElement, Map<string, HTMLElement>>();
 
 export const getRenderedCells = (container: HTMLElement): Map<string, HTMLElement> => {
-  if (!renderedCellsMap.has(container)) {
-    renderedCellsMap.set(container, new Map());
+  const viewport = getHorizontalScrollViewport(container);
+  if (!renderedCellsMap.has(viewport)) {
+    renderedCellsMap.set(viewport, new Map());
   }
-  return renderedCellsMap.get(container)!;
+  return renderedCellsMap.get(viewport)!;
 };
 
 // Cleanup all event listeners
@@ -43,7 +45,8 @@ export const cleanupBodyCellRendering = (
   // and will be garbage collected when elements are removed
 
   if (container) {
-    const renderedCells = getRenderedCells(container);
+    const viewport = getHorizontalScrollViewport(container);
+    const renderedCells = getRenderedCells(viewport);
     // Remove all rendered cell elements from the DOM
     renderedCells.forEach((element) => {
       // Tear down any renderer subtree (React portal, etc.) mounted into the
@@ -52,6 +55,6 @@ export const cleanupBodyCellRendering = (
       element.remove();
     });
     renderedCells.clear();
-    cleanupAriaRows(container);
+    cleanupAriaRows(viewport);
   }
 };

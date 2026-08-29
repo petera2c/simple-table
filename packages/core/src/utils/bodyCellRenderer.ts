@@ -23,6 +23,10 @@ import { DEFAULT_CUSTOM_THEME } from "../types/CustomTheme";
 import type TableRow from "../types/TableRow";
 import type ColumnDef from "../types/ColumnDef";
 import type { AnimationCoordinator, CellPosition } from "../managers/AnimationCoordinator";
+import {
+  getHorizontalScrollContentHost,
+  getHorizontalScrollViewport,
+} from "../managers/horizontalScroll/scrollLayer";
 
 // Re-export types for backward compatibility
 export type {
@@ -41,10 +45,11 @@ export { cleanupBodyCellRendering } from "./bodyCell/eventTracking";
 const renderedSeparatorsMap = new WeakMap<HTMLElement, Map<number, HTMLElement>>();
 
 const getRenderedSeparators = (container: HTMLElement): Map<number, HTMLElement> => {
-  if (!renderedSeparatorsMap.has(container)) {
-    renderedSeparatorsMap.set(container, new Map());
+  const viewport = getHorizontalScrollViewport(container);
+  if (!renderedSeparatorsMap.has(viewport)) {
+    renderedSeparatorsMap.set(viewport, new Map());
   }
-  return renderedSeparatorsMap.get(container)!;
+  return renderedSeparatorsMap.get(viewport)!;
 };
 
 /**
@@ -108,10 +113,11 @@ interface SeparatorMetadata {
 const separatorMetadataMap = new WeakMap<HTMLElement, Map<number, SeparatorMetadata>>();
 
 const getSeparatorMetadata = (container: HTMLElement): Map<number, SeparatorMetadata> => {
-  if (!separatorMetadataMap.has(container)) {
-    separatorMetadataMap.set(container, new Map());
+  const viewport = getHorizontalScrollViewport(container);
+  if (!separatorMetadataMap.has(viewport)) {
+    separatorMetadataMap.set(viewport, new Map());
   }
-  return separatorMetadataMap.get(container)!;
+  return separatorMetadataMap.get(viewport)!;
 };
 
 // Row boundary when using full row list (e.g. including nested grid rows)
@@ -129,8 +135,10 @@ const renderRowSeparators = (
   renderedSeparators: Map<number, HTMLElement>,
   allRows?: TableRow[],
 ): void => {
+  const viewport = getHorizontalScrollViewport(container);
+  const host = getHorizontalScrollContentHost(viewport);
   // Get separator metadata cache
-  const separatorMetadata = getSeparatorMetadata(container);
+  const separatorMetadata = getSeparatorMetadata(viewport);
 
   const pinnedContentRight =
     context.pinned && cells.length > 0
@@ -142,12 +150,12 @@ const renderRowSeparators = (
       const viewportW =
         typeof context.pinnedSectionWidthPx === "number" && context.pinnedSectionWidthPx > 0
           ? context.pinnedSectionWidthPx
-          : container.clientWidth;
+          : viewport.clientWidth;
       const w = Math.max(viewportW, pinnedContentRight);
       return w > 0 ? w : undefined;
     }
     const w =
-      context.mainSectionContainerWidth ?? context.containerWidth ?? container.clientWidth ?? 0;
+      context.mainSectionContainerWidth ?? context.containerWidth ?? viewport.clientWidth ?? 0;
     return w > 0 ? w : undefined;
   })();
 
@@ -230,7 +238,7 @@ const renderRowSeparators = (
         sectionWidthPx,
       });
 
-      container.appendChild(separator);
+      host.appendChild(separator);
       renderedSeparators.set(rowIndex, separator);
 
       // Cache metadata
@@ -301,16 +309,15 @@ export const renderBodyCells = (
   animationCoordinator?: AnimationCoordinator,
   fullCellLayout?: Map<string, CellPosition>,
 ): void => {
-  // Get viewport width: for main section use the *visible* viewport width
-  // (mainSectionViewportWidth) so column virtualization filters against the
-  // visible band, NOT the full content width. Falls back to a live clientWidth
-  // read when the viewport hasn't been measured yet.
+  const viewport = getHorizontalScrollViewport(container);
+  // Visible width of the section pane. The slide layer is as wide as the
+  // full row of columns, so measuring it would treat every column as on-screen.
   const viewportWidth = context.pinned
-    ? (context.containerWidth ?? container.parentElement?.clientWidth ?? container.clientWidth ?? 0)
+    ? (context.containerWidth ?? viewport.parentElement?.clientWidth ?? viewport.clientWidth ?? 0)
     : (context.mainSectionViewportWidth ??
       context.containerWidth ??
-      container.parentElement?.clientWidth ??
-      container.clientWidth ??
+      viewport.parentElement?.clientWidth ??
+      viewport.clientWidth ??
       0);
 
   // For pinned sections, always render all cells (they don't scroll horizontally).
@@ -321,8 +328,8 @@ export const renderBodyCells = (
       ? cells
       : getVisibleBodyCells(cells, scrollLeft, viewportWidth);
 
-  const renderedCells = getRenderedCells(container);
-  const renderedSeparators = getRenderedSeparators(container);
+  const renderedCells = getRenderedCells(viewport);
+  const renderedSeparators = getRenderedSeparators(viewport);
 
   // Build set of cell IDs that should be visible.
   // We prefer `stableRowKey` so the same DOM cell survives a sort (so FLIP
@@ -430,10 +437,10 @@ export const renderBodyCells = (
             afterLeft: newPos.left,
             cellHeight,
             cellWidth,
-            container,
+            container: viewport,
           }) ||
-          animationCoordinator.isCellRenderedInScrollerViewport(element, container) ||
-          animationCoordinator.shouldRetainDomCellAtScrollExtrema(cellId, container);
+          animationCoordinator.isCellRenderedInScrollerViewport(element, viewport) ||
+          animationCoordinator.shouldRetainDomCellAtScrollExtrema(cellId, viewport);
         if (shouldAnimate) {
           // Slide the cell to its new conceptual position (which may be
           // off-screen — the body's overflow clip handles the visual cutoff)
@@ -441,7 +448,7 @@ export const renderBodyCells = (
           animationCoordinator.retainCell({
             cellId,
             element,
-            container,
+            container: viewport,
             newPosition: newPos,
           });
           renderedCells.delete(cellId);
@@ -473,7 +480,7 @@ export const renderBodyCells = (
           animationCoordinator.shrinkOutCell({
             cellId,
             element,
-            container,
+            container: viewport,
             axis: accordionAxis,
           });
           renderedCells.delete(cellId);
@@ -504,7 +511,7 @@ export const renderBodyCells = (
   // scroll-end full render caught up, and separators for never-rendered rows
   // scrolled into the band would be missing entirely (rows appearing without
   // their bottom border for ~150ms while scrolling fast).
-  const separatorMetadata = getSeparatorMetadata(container);
+  const separatorMetadata = getSeparatorMetadata(viewport);
   renderedSeparators.forEach((element, rowIndex) => {
     if (!visibleRowIndices.has(rowIndex)) {
       element.remove();
@@ -637,7 +644,7 @@ export const renderBodyCells = (
           afterLeft: cell.left,
           cellHeight: cell.height,
           cellWidth: cell.width,
-          container,
+          container: viewport,
         })
       ) {
         return;
@@ -646,7 +653,7 @@ export const renderBodyCells = (
       if (recycled) {
         rekeyBodyCellIdentity(recycled, cellId, context.cellRegistry);
         updateBodyCellElement(recycled, cell, context);
-        const recycledRow = getOrCreateRowElement(container, bodyRowKey(cell), bodyRowIndex(cell));
+        const recycledRow = getOrCreateRowElement(viewport, bodyRowKey(cell), bodyRowIndex(cell));
         applyRowSelectionState(recycledRow, cell);
         applyRowTreeState(recycledRow, cell);
         if (recycled.parentElement !== recycledRow) {
@@ -677,7 +684,7 @@ export const renderBodyCells = (
       // Keep the owning row's index in sync (cheap attr update; no reparent so
       // running cell transitions are unaffected).
       const existingRowEl = getOrCreateRowElement(
-        container,
+        viewport,
         bodyRowKey(cell),
         bodyRowIndex(cell),
       );
@@ -743,7 +750,7 @@ export const renderBodyCells = (
     // mid-flight visual position pre-render, and play() will FLIP from there
     // to the new live destination, preventing the "cell disappears, another
     // teleports in" effect when a sort fires during another sort's animation.
-    const claimed = animationCoordinator?.claimRetainedForReuse(cellId, container);
+    const claimed = animationCoordinator?.claimRetainedForReuse(cellId, viewport);
     if (claimed) {
       // Portal/content may have been discarded while this node was a ghost
       // (onHostDiscard during a prior play cleanup). Force content rebuild
@@ -753,7 +760,7 @@ export const renderBodyCells = (
       // The claimed ghost shares this cellId, so it already lives in the
       // matching (stable-keyed) row element; just refresh that row's index.
       // Avoid reparenting so the in-flight transition isn't cancelled.
-      const claimedRow = getOrCreateRowElement(container, bodyRowKey(cell), bodyRowIndex(cell));
+      const claimedRow = getOrCreateRowElement(viewport, bodyRowKey(cell), bodyRowIndex(cell));
       applyRowSelectionState(claimedRow, cell);
       applyRowTreeState(claimedRow, cell);
       if (claimed.parentElement !== claimedRow) {
@@ -797,7 +804,7 @@ export const renderBodyCells = (
 
     // Append the new cell into its row element (creating the row on first use)
     // so it becomes a DOM descendant of a `role="row"`.
-    const rowEl = getOrCreateRowElement(container, bodyRowKey(cell), bodyRowIndex(cell));
+    const rowEl = getOrCreateRowElement(viewport, bodyRowKey(cell), bodyRowIndex(cell));
     applyRowSelectionState(rowEl, cell);
     applyRowTreeState(rowEl, cell);
     rowEl.appendChild(cellElement);
@@ -830,9 +837,9 @@ export const renderBodyCells = (
   // is cheap on scroll renders: it iterates `allRows` (one viewport-sized
   // band) and only touches the DOM for separators whose top/strong-border/
   // section-width actually changed (see `SeparatorMetadata` cache).
-  renderRowSeparators(container, cellsToRender, context, renderedSeparators, allRows);
+  renderRowSeparators(viewport, cellsToRender, context, renderedSeparators, allRows);
 
   // Drop row elements that no longer hold any cells (retained animation ghosts
   // keep their row alive until they finish and remove themselves).
-  reconcileRowElements(container);
+  reconcileRowElements(viewport);
 };

@@ -21,13 +21,19 @@
  * at box size), so it provides the required `row` layer for free.
  */
 
+import {
+  getHorizontalScrollContentHost,
+  getHorizontalScrollViewport,
+} from "../managers/horizontalScroll/scrollLayer";
+
 const rowElementsMap = new WeakMap<HTMLElement, Map<string, HTMLElement>>();
 
 const getRowElements = (container: HTMLElement): Map<string, HTMLElement> => {
-  let map = rowElementsMap.get(container);
+  const viewport = getHorizontalScrollViewport(container);
+  let map = rowElementsMap.get(viewport);
   if (!map) {
     map = new Map();
-    rowElementsMap.set(container, map);
+    rowElementsMap.set(viewport, map);
   }
   return map;
 };
@@ -53,7 +59,7 @@ export const getOrCreateRowElement = (
     // the absolutely-positioned cell children keep resolving against the
     // scroll layer (their nearest positioned ancestor).
     rowEl.style.display = "contents";
-    container.appendChild(rowEl);
+    getHorizontalScrollContentHost(getHorizontalScrollViewport(container)).appendChild(rowEl);
     rowElements.set(rowKey, rowEl);
   }
   const indexStr = String(ariaRowIndex);
@@ -69,7 +75,7 @@ export const getOrCreateRowElement = (
  * so we prune purely on emptiness rather than on a live-row set.
  */
 export const reconcileRowElements = (container: HTMLElement): void => {
-  const rowElements = rowElementsMap.get(container);
+  const rowElements = rowElementsMap.get(getHorizontalScrollViewport(container));
   if (!rowElements) return;
   rowElements.forEach((el, key) => {
     if (el.childElementCount === 0) {
@@ -81,7 +87,7 @@ export const reconcileRowElements = (container: HTMLElement): void => {
 
 /** Remove every row element tracked for `container`. */
 export const cleanupAriaRows = (container: HTMLElement): void => {
-  const rowElements = rowElementsMap.get(container);
+  const rowElements = rowElementsMap.get(getHorizontalScrollViewport(container));
   if (!rowElements) return;
   rowElements.forEach((el) => el.remove());
   rowElements.clear();
