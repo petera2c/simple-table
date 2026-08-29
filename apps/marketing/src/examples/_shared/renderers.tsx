@@ -174,6 +174,52 @@ export const Avatar = ({
   );
 };
 
+/** Name row for phones: 28px circle plus a single truncated label. */
+export const CompactIdentity = ({
+  seed,
+  label,
+  text,
+  theme,
+  title,
+}: {
+  seed: string;
+  label?: string;
+  text: ReactNode;
+  theme?: string;
+  title?: string;
+}) => {
+  const c = getThemeColors(theme);
+  return (
+    <div
+      title={title}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        minWidth: 0,
+        width: "100%",
+      }}
+    >
+      <div aria-hidden="true" style={{ flexShrink: 0 }}>
+        <Avatar seed={seed} label={label} size={28} />
+      </div>
+      <span
+        style={{
+          fontWeight: 600,
+          fontSize: "13px",
+          color: c.text,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          minWidth: 0,
+        }}
+      >
+        {text}
+      </span>
+    </div>
+  );
+};
+
 export interface Segment {
   value: number;
   color: string;

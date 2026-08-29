@@ -1,14 +1,19 @@
+"use client";
+
 import type {
   ReactColumnDef,
   CellRendererProps,
   ValueGetterProps,
 } from "@simple-table/react";
+import { useIsMobile } from "@/hooks/useIsMobile";
 import {
   Avatar,
+  CompactIdentity,
   Pill,
   ProgressBar,
   getThemeColors,
   formatCompactUsd,
+  formatMobilePrice,
   formatPrice,
   formatSignedPercent,
 } from "../_shared";
@@ -17,9 +22,23 @@ import type { CryptoCoin } from "./useCryptoData";
 /** Right-aligned, color-coded percentage change. */
 const ChangeCell = (accessor: keyof CryptoCoin) => {
   function ChangeCellRenderer({ row, theme }: CellRendererProps<CryptoCoin>) {
+    const isMobile = useIsMobile();
     const value = row[accessor] as number;
     const c = getThemeColors(theme);
     const isPositive = value >= 0;
+    if (isMobile) {
+      return (
+        <span
+          style={{
+            fontWeight: 600,
+            fontSize: "13px",
+            color: isPositive ? c.up : c.down,
+          }}
+        >
+          {formatSignedPercent(value, 1)}
+        </span>
+      );
+    }
     return (
       <span
         style={{
@@ -40,7 +59,64 @@ const ChangeCell = (accessor: keyof CryptoCoin) => {
   return ChangeCellRenderer;
 };
 
+function AssetCell({ row, theme }: CellRendererProps<CryptoCoin>) {
+  const isMobile = useIsMobile();
+  const c = getThemeColors(theme);
+  const name = row.name as string;
+  const symbol = row.symbol as string;
+  const category = row.category as string;
+  if (isMobile) {
+    return (
+      <CompactIdentity
+        seed={symbol}
+        label={symbol}
+        text={symbol}
+        theme={theme}
+        title={`${name} ${symbol}`}
+      />
+    );
+  }
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <Avatar seed={symbol} label={symbol} size={34} />
+      <div style={{ display: "flex", flexDirection: "column", gap: "3px", minWidth: 0 }}>
+        <span
+          style={{
+            fontWeight: 600,
+            fontSize: "14px",
+            color: c.text,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {name} <span style={{ color: c.muted, fontWeight: 500 }}>{symbol}</span>
+        </span>
+        <Pill color="neutral" theme={theme}>
+          {category}
+        </Pill>
+      </div>
+    </div>
+  );
+}
+
+function PriceCell({ row, theme }: CellRendererProps<CryptoCoin>) {
+  const isMobile = useIsMobile();
+  const c = getThemeColors(theme);
+  const price = row.price as number;
+  return (
+    <span style={{ fontFamily: "ui-monospace, monospace", fontSize: "13px", color: c.text }}>
+      {isMobile ? formatMobilePrice(price) : formatPrice(price)}
+    </span>
+  );
+}
+
 export const MOBILE_VISIBLE_ACCESSORS = ["asset", "price", "change24h"] as const;
+
+export const MOBILE_COLUMN_OPTIONS = {
+  maxPinned: 0,
+  identityAccessors: ["asset"],
+} as const;
 
 export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
   {
@@ -68,34 +144,7 @@ export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
     editable: false,
     // Sort/filter the synthetic "asset" column by the coin name.
     valueGetter: ({ row }: ValueGetterProps) => row.name as string,
-    cellRenderer: ({ row, theme }: CellRendererProps) => {
-      const c = getThemeColors(theme);
-      const name = row.name as string;
-      const symbol = row.symbol as string;
-      const category = row.category as string;
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <Avatar seed={symbol} label={symbol} size={34} />
-          <div style={{ display: "flex", flexDirection: "column", gap: "3px", minWidth: 0 }}>
-            <span
-              style={{
-                fontWeight: 600,
-                fontSize: "14px",
-                color: c.text,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {name} <span style={{ color: c.muted, fontWeight: 500 }}>{symbol}</span>
-            </span>
-            <Pill color="neutral" theme={theme}>
-              {category}
-            </Pill>
-          </div>
-        </div>
-      );
-    },
+    cellRenderer: AssetCell,
   },
   {
     accessor: "price",
@@ -105,14 +154,7 @@ export const HEADERS: ReactColumnDef<CryptoCoin>[] = [
     type: "number",
     sortable: true,
     editable: false,
-    cellRenderer: ({ row, theme }: CellRendererProps) => {
-      const c = getThemeColors(theme);
-      return (
-        <span style={{ fontFamily: "ui-monospace, monospace", fontSize: "13px", color: c.text }}>
-          {formatPrice(row.price as number)}
-        </span>
-      );
-    },
+    cellRenderer: PriceCell,
   },
   {
     accessor: "priceHistory",

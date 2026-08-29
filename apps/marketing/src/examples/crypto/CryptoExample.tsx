@@ -1,11 +1,14 @@
+"use client";
+
 import { useRef } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { TableAPI, Theme, ReactIconsConfig } from "@simple-table/react";
 import "@simple-table/react/styles.css";
-import { HEADERS, MOBILE_VISIBLE_ACCESSORS } from "./crypto-headers";
+import { HEADERS, MOBILE_COLUMN_OPTIONS, MOBILE_VISIBLE_ACCESSORS } from "./crypto-headers";
 import { useCryptoData, type CryptoCoin } from "./useCryptoData";
 import { useCryptoTicker } from "./useCryptoTicker";
 import { useMobileExampleColumns } from "../_shared/mobileColumns";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 export default function CryptoExample({
   icons,
@@ -17,7 +20,8 @@ export default function CryptoExample({
 }) {
   const tableRef = useRef<TableAPI<CryptoCoin> | null>(null);
   const { data } = useCryptoData();
-  const columns = useMobileExampleColumns(HEADERS, MOBILE_VISIBLE_ACCESSORS);
+  const isMobile = useIsMobile();
+  const columns = useMobileExampleColumns(HEADERS, MOBILE_VISIBLE_ACCESSORS, MOBILE_COLUMN_OPTIONS);
 
   // Live "market feed" - ticks visible rows so prices, 24h change, and the
   // sparkline update in place with the built-in cell-flash animation.
@@ -32,8 +36,8 @@ export default function CryptoExample({
     <SimpleTable
       autoExpandColumns
       columnReordering
-      columnResizing
-      customTheme={{ headerHeight: 40, rowHeight: 64 }}
+      columnResizing={!isMobile}
+      customTheme={{ headerHeight: 40, rowHeight: isMobile ? 48 : 64 }}
       columns={columns}
       enableColumnEditor
       getRowId={({ row }) => row.id}

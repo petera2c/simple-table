@@ -1,9 +1,12 @@
+"use client";
+
 import type {
   ReactColumnDef,
   CellRendererProps,
   ValueGetterProps,
 } from "@simple-table/react";
-import { Avatar, Pill, ProgressBar, getThemeColors } from "../_shared";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { Avatar, CompactIdentity, Pill, ProgressBar, getThemeColors } from "../_shared";
 import type { SoccerPlayer } from "./useSoccerData";
 
 /** Centered numeric stat; emphasizes non-zero values. */
@@ -37,6 +40,62 @@ function ratingColor(rating: number, theme?: string) {
 }
 
 export const MOBILE_VISIBLE_ACCESSORS = ["player", "rating", "goals"] as const;
+
+export const MOBILE_COLUMN_OPTIONS = {
+  maxPinned: 0,
+  identityAccessors: ["player"],
+  labels: { rating: "Rtg" },
+} as const;
+
+function PlayerCell({ row, theme }: CellRendererProps) {
+  const isMobile = useIsMobile();
+  const c = getThemeColors(theme);
+  const name = row.name as string;
+  const club = row.club as string;
+  const clubShort = row.clubShort as string;
+  const flag = row.nationFlag as string;
+  if (isMobile) {
+    return (
+      <CompactIdentity seed={name} label={name} text={name} theme={theme} title={`${name} · ${club}`} />
+    );
+  }
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <Avatar seed={name} label={name} size={34} />
+      <div style={{ display: "flex", flexDirection: "column", gap: "3px", minWidth: 0 }}>
+        <span
+          style={{
+            fontWeight: 600,
+            fontSize: "14px",
+            color: c.text,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          <span style={{ marginRight: "6px" }}>{flag}</span>
+          {name}
+        </span>
+        <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <Pill color="blue" theme={theme}>
+            {clubShort}
+          </Pill>
+          <span
+            style={{
+              fontSize: "12px",
+              color: c.muted,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {club}
+          </span>
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export const HEADERS: ReactColumnDef[] = [
   {
@@ -76,49 +135,7 @@ export const HEADERS: ReactColumnDef[] = [
     sortable: true,
     editable: false,
     valueGetter: ({ row }: ValueGetterProps) => row.name as string,
-    cellRenderer: ({ row, theme }: CellRendererProps) => {
-      const c = getThemeColors(theme);
-      const name = row.name as string;
-      const club = row.club as string;
-      const clubShort = row.clubShort as string;
-      const flag = row.nationFlag as string;
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <Avatar seed={name} label={name} size={34} />
-          <div style={{ display: "flex", flexDirection: "column", gap: "3px", minWidth: 0 }}>
-            <span
-              style={{
-                fontWeight: 600,
-                fontSize: "14px",
-                color: c.text,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              <span style={{ marginRight: "6px" }}>{flag}</span>
-              {name}
-            </span>
-            <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <Pill color="blue" theme={theme}>
-                {clubShort}
-              </Pill>
-              <span
-                style={{
-                  fontSize: "12px",
-                  color: c.muted,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {club}
-              </span>
-            </span>
-          </div>
-        </div>
-      );
-    },
+    cellRenderer: PlayerCell,
   },
   {
     accessor: "position",

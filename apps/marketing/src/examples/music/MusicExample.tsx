@@ -1,8 +1,11 @@
+"use client";
+
 import { useRef } from "react";
 import { SimpleTable } from "@simple-table/react";
 import type { TableAPI, Theme, ReactIconsConfig } from "@simple-table/react";
-import { HEADERS, MOBILE_VISIBLE_ACCESSORS } from "./music-headers";
+import { HEADERS, MOBILE_COLUMN_OPTIONS, MOBILE_VISIBLE_ACCESSORS } from "./music-headers";
 import { useMobileExampleColumns } from "../_shared/mobileColumns";
+import { useIsMobile } from "@/hooks/useIsMobile";
 
 import "@simple-table/react/styles.css";
 import "./MusicTheme.css";
@@ -19,7 +22,8 @@ export default function MusicExample({
 }) {
   const tableRef = useRef<TableAPI | null>(null);
   const { data, isLoading } = useMusicData();
-  const columns = useMobileExampleColumns(HEADERS, MOBILE_VISIBLE_ACCESSORS);
+  const isMobile = useIsMobile();
+  const columns = useMobileExampleColumns(HEADERS, MOBILE_VISIBLE_ACCESSORS, MOBILE_COLUMN_OPTIONS);
 
   if (isLoading) {
     return (
@@ -43,10 +47,10 @@ export default function MusicExample({
       <SimpleTable
         autoExpandColumns
         columnReordering
-        columnResizing
+        columnResizing={!isMobile}
         customTheme={{
           headerHeight: 30,
-          rowHeight: 85,
+          rowHeight: isMobile ? 52 : 85,
         }}
         columns={columns}
         height={height ? height : "70dvh"}

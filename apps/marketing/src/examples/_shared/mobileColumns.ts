@@ -5,12 +5,23 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 
 const DEFAULT_MAX_PINNED = 1;
 const MOBILE_COLUMN_WIDTH = 110;
+const MOBILE_IDENTITY_WIDTH = 150;
+const MOBILE_METRIC_WIDTH = 82;
 
 type MobileColumnBase = {
   accessor: unknown;
+  label?: unknown;
   pinned?: "left" | "right";
   minWidth?: number | string;
   children?: readonly MobileColumnBase[];
+};
+
+export type MobileColumnOptions = {
+  maxPinned?: number;
+  /** Wider slot on phones for the name/asset column; other kept columns stay narrower. */
+  identityAccessors?: readonly string[];
+  /** Header labels to use on phones when the desktop label is too long. */
+  labels?: Readonly<Record<string, string>>;
 };
 
 /**
@@ -21,7 +32,7 @@ export function columnsForMobile<T extends MobileColumnBase>(
   columns: readonly T[],
   isMobile: boolean,
   keepAccessors: readonly string[],
-  options?: { maxPinned?: number },
+  options?: MobileColumnOptions,
 ): T[] {
   if (!isMobile) {
     return columns as T[];
@@ -31,17 +42,29 @@ export function columnsForMobile<T extends MobileColumnBase>(
   const filtered = filterToKept(columns, keep);
   const unwrapped = unwrapOrphanGroups(filtered, keep);
   const unpinned = capPinnedColumns(unwrapped, options?.maxPinned ?? DEFAULT_MAX_PINNED);
-  return compactMobileColumns(unpinned);
+  const identity = options?.identityAccessors
+    ? new Set(options.identityAccessors.map(String))
+    : undefined;
+  return compactMobileColumns(unpinned, identity, options?.labels);
 }
 
 export function useMobileExampleColumns<T extends MobileColumnBase>(
   columns: readonly T[],
   keepAccessors: readonly string[],
+  options?: MobileColumnOptions,
 ): T[] {
   const isMobile = useIsMobile();
+  const maxPinned = options?.maxPinned;
+  const identityKey = options?.identityAccessors?.join(",") ?? "";
+  const labelsKey = options?.labels ? JSON.stringify(options.labels) : "";
   return useMemo(
-    () => columnsForMobile(columns, isMobile, keepAccessors),
-    [columns, isMobile, keepAccessors],
+    () =>
+      columnsForMobile(columns, isMobile, keepAccessors, {
+        maxPinned,
+        identityAccessors: identityKey ? identityKey.split(",") : undefined,
+        labels: labelsKey ? (JSON.parse(labelsKey) as Record<string, string>) : undefined,
+      }),
+    [columns, isMobile, identityKey, keepAccessors, labelsKey, maxPinned],
   );
 }
 
@@ -151,15 +174,29 @@ function stripPinsExcept<T extends MobileColumnBase>(
   });
 }
 
-function compactMobileColumns<T extends MobileColumnBase>(columns: readonly T[]): T[] {
-  return columns.map(
-    (col) =>
-      ({
-        ...col,
-        minWidth: undefined,
-        maxWidth: undefined,
-        width: MOBILE_COLUMN_WIDTH,
-        children: col.children ? compactMobileColumns(col.children as readonly T[]) : col.children,
-      }) as T,
-  );
+function compactMobileColumns<T extends MobileColumnBase>(
+  columns: readonly T[],
+  identityAccessors?: ReadonlySet<string>,
+  labels?: Readonly<Record<string, string>>,
+): T[] {
+  return columns.map((col) => {
+    const accessor = String(col.accessor);
+    const isIdentity = identityAccessors?.has(accessor) ?? false;
+    const width = identityAccessors
+      ? isIdentity
+        ? MOBILE_IDENTITY_WIDTH
+        : MOBILE_METRIC_WIDTH
+      : MOBILE_COLUMN_WIDTH;
+    const label = labels?.[accessor];
+    return {
+      ...col,
+      minWidth: undefined,
+      maxWidth: undefined,
+      width,
+      ...(label !== undefined ? { label } : {}),
+      children: col.children
+        ? compactMobileColumns(col.children as readonly T[], identityAccessors, labels)
+        : col.children,
+    } as T;
+  });
 }

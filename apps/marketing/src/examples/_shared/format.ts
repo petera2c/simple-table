@@ -15,6 +15,15 @@ export function formatCompactUsd(value: number): string {
   return `$${formatCompact(value)}`;
 }
 
+/** Phone-width USD: $68K / $1.23M, or the full price below $1,000. */
+export function formatMobilePrice(value: number): string {
+  const abs = Math.abs(value);
+  if (abs >= 1_000) {
+    return formatCompactUsd(value).replace(/\.00([KMBT])$/, "$1");
+  }
+  return formatPrice(value);
+}
+
 /**
  * Price formatting that adapts precision to magnitude so both $68,000 and
  * $0.00004213 render sensibly.

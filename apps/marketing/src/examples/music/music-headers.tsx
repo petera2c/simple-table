@@ -1,4 +1,8 @@
+"use client";
+
 import type { ReactColumnDef, CellRendererProps } from "@simple-table/react";
+import { useIsMobile } from "@/hooks/useIsMobile";
+import { CompactIdentity } from "../_shared";
 
 // Theme-dependent color helper function
 const getThemeColors = (theme?: string) => {
@@ -229,6 +233,118 @@ const GrowthMetric = ({
 
 export const MOBILE_VISIBLE_ACCESSORS = ["artistName", "popularity", "monthlyListeners"] as const;
 
+export const MOBILE_COLUMN_OPTIONS = {
+  maxPinned: 0,
+  identityAccessors: ["artistName"],
+  labels: { monthlyListeners: "Listeners" },
+} as const;
+
+function ArtistCell({ row, theme }: CellRendererProps) {
+  const isMobile = useIsMobile();
+  const name = row.artistName as string;
+  const firstLetter = name?.charAt(0).toUpperCase() || "?";
+  const growthStatus = row.growthStatus as string;
+  const mood = row.mood as string;
+  const genre = row.genre as string;
+  const colors = getThemeColors(theme);
+
+  if (isMobile) {
+    return <CompactIdentity seed={name} label={name} text={name} theme={theme} title={name} />;
+  }
+
+  const getColorFromName = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const hue = hash % 360;
+    return `hsl(${hue}, 65%, 55%)`;
+  };
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+      <div
+        style={{
+          width: "40px",
+          height: "40px",
+          borderRadius: "50%",
+          backgroundColor: getColorFromName(name),
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "white",
+          fontSize: "16px",
+          flexShrink: 0,
+        }}
+      >
+        {firstLetter}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1 }}>
+        <span style={{ fontWeight: "500", fontSize: "14px", color: colors.gray }}>{name}</span>
+        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+          <Tag color="default" theme={theme}>
+            {growthStatus}
+          </Tag>
+          <Tag color="default" theme={theme}>
+            {mood}
+          </Tag>
+          <Tag color="default" theme={theme}>
+            {genre}
+          </Tag>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PopularityCell({ row, theme }: CellRendererProps) {
+  const isMobile = useIsMobile();
+  const score = row.popularity as number;
+  const changePercent = row.popularityChangePercent as number;
+  const isPositive = changePercent >= 0;
+  const colors = getThemeColors(theme);
+
+  if (isMobile) {
+    return <span style={{ fontSize: "13px", fontWeight: 600, color: colors.gray }}>{score}</span>;
+  }
+
+  return (
+    <div style={{ display: "flex", justifyContent: "center" }}>
+      <GrowthMetric
+        value={`${score}/100`}
+        growthPercent={changePercent}
+        isPositive={isPositive}
+        theme={theme}
+        showSign={false}
+      />
+    </div>
+  );
+}
+
+function MonthlyListenersCell({ row, theme }: CellRendererProps) {
+  const isMobile = useIsMobile();
+  const formattedValue = row.monthlyListenersFormatted as string;
+  const growth = row.monthlyListenersChange as number;
+  const growthFormatted = row.monthlyListenersChangeFormatted as string;
+  const growthPercent = row.monthlyListenersChangePercent as number;
+  const isPositive = growth >= 0;
+  const colors = getThemeColors(theme);
+
+  if (isMobile) {
+    return <span style={{ fontSize: "13px", color: colors.gray }}>{formattedValue}</span>;
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+      <div style={{ fontSize: "14px", color: colors.gray }}>{formattedValue}</div>
+      <Tag color={isPositive ? "green" : "red"} theme={theme}>
+        {isPositive ? "↑" : "↓"} {isPositive ? "+" : ""}
+        {growthFormatted} ({Math.abs(growthPercent).toFixed(2)}%)
+      </Tag>
+    </div>
+  );
+}
+
 export const HEADERS: ReactColumnDef[] = [
   {
     accessor: "rank",
@@ -249,60 +365,7 @@ export const HEADERS: ReactColumnDef[] = [
     align: "left",
     type: "string",
     pinned: "left",
-    cellRenderer: ({ row, theme }: CellRendererProps) => {
-      const name = row.artistName as string;
-      const firstLetter = name?.charAt(0).toUpperCase() || "?";
-      const growthStatus = row.growthStatus as string;
-      const mood = row.mood as string;
-      const genre = row.genre as string;
-      const colors = getThemeColors(theme);
-
-      // Generate a consistent color based on the name
-      const getColorFromName = (str: string) => {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-          hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        const hue = hash % 360;
-        return `hsl(${hue}, 65%, 55%)`;
-      };
-
-      return (
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div
-            style={{
-              width: "40px",
-              height: "40px",
-              borderRadius: "50%",
-              backgroundColor: getColorFromName(name),
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              fontSize: "16px",
-
-              flexShrink: 0,
-            }}
-          >
-            {firstLetter}
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1 }}>
-            <span style={{ fontWeight: "500", fontSize: "14px", color: colors.gray }}>{name}</span>
-            <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-              <Tag color="default" theme={theme}>
-                {growthStatus}
-              </Tag>
-              <Tag color="default" theme={theme}>
-                {mood}
-              </Tag>
-              <Tag color="default" theme={theme}>
-                {genre}
-              </Tag>
-            </div>
-          </div>
-        </div>
-      );
-    },
+    cellRenderer: ArtistCell,
   },
   {
     accessor: "artistType",
@@ -443,23 +506,7 @@ export const HEADERS: ReactColumnDef[] = [
     editable: false,
     align: "center",
     type: "number",
-    cellRenderer: ({ row, theme }: CellRendererProps) => {
-      const score = row.popularity as number;
-      const changePercent = row.popularityChangePercent as number;
-      const isPositive = changePercent >= 0;
-
-      return (
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <GrowthMetric
-            value={`${score}/100`}
-            growthPercent={changePercent}
-            isPositive={isPositive}
-            theme={theme}
-            showSign={false}
-          />
-        </div>
-      );
-    },
+    cellRenderer: PopularityCell,
   },
   {
     accessor: "playlistReachGroup",
@@ -687,24 +734,7 @@ export const HEADERS: ReactColumnDef[] = [
         sortable: true,
         editable: false,
         type: "number",
-        cellRenderer: ({ row, theme }: CellRendererProps) => {
-          const formattedValue = row.monthlyListenersFormatted as string;
-          const growth = row.monthlyListenersChange as number;
-          const growthFormatted = row.monthlyListenersChangeFormatted as string;
-          const growthPercent = row.monthlyListenersChangePercent as number;
-          const isPositive = growth >= 0;
-          const colors = getThemeColors(theme);
-
-          return (
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              <div style={{ fontSize: "14px", color: colors.gray }}>{formattedValue}</div>
-              <Tag color={isPositive ? "green" : "red"} theme={theme}>
-                {isPositive ? "↑" : "↓"} {isPositive ? "+" : ""}
-                {growthFormatted} ({Math.abs(growthPercent).toFixed(2)}%)
-              </Tag>
-            </div>
-          );
-        },
+        cellRenderer: MonthlyListenersCell,
       },
       {
         accessor: "monthlyListeners7DayGrowth",
