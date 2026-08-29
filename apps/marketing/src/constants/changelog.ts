@@ -27,7 +27,7 @@ export const v4_2_1: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "New resetText option on columnEditorConfig. Set the label on the Reset columns button, for example when you localize the editor.",
+        "resetText option on columnEditorConfig. Set the label on the Reset columns button, for example when you localize the editor.",
       link: "/docs/column-visibility",
     },
     {
@@ -108,7 +108,7 @@ export const v4_1_8: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "New modern-black theme. Near-black background, hairline borders, and the Simple Table blue for selection and charts",
+        "modern-black theme. Near-black background, hairline borders, and the Simple Table blue for selection and charts",
       link: "/docs/themes",
     },
     {
@@ -188,7 +188,7 @@ export const v4_1_6: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "New enablePivotPanel option. Open the column editor to move fields into Rows, Columns, and Values, pick how numbers are totaled, and see the table update right away.",
+        "enablePivotPanel option. Open the column editor to move fields into Rows, Columns, and Values, pick how numbers are totaled, and see the table update right away.",
       link: "/docs/pivot",
     },
     {
@@ -238,7 +238,7 @@ export const v4_1_4: ChangelogEntry = {
   changes: [
     {
       type: "feature",
-      description: "New cellClass on a column applies a CSS class to every body cell in that column.",
+      description: "cellClass on a column applies a CSS class to every body cell in that column.",
       link: "/docs/themes",
     },
   ],
@@ -294,7 +294,7 @@ export const v4_1_1: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "New getRowClass option lets you add CSS classes to a row from its data — for example to highlight a search match.",
+        "getRowClass option lets you add CSS classes to a row from its data — for example to highlight a search match.",
       link: "/docs/themes",
     },
     {
@@ -470,7 +470,7 @@ export const v4_0_3: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "New footerRenderKey refreshes a custom footer when outside state changes (for example a loading flag), without rewriting the footer function. Updating rows also refreshes the footer even if the row count stays the same.",
+        "footerRenderKey refreshes a custom footer when outside state changes (for example a loading flag), without rewriting the footer function. Updating rows also refreshes the footer even if the row count stays the same.",
       link: "/docs/footer-renderer",
     },
   ],
@@ -502,7 +502,7 @@ export const v4_0_0: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "New pivot prop and helpers (setPivot, getPivot, getPivotHeaders, getPivotedRows). Turn a flat list into rows, columns, totals, and nested headers — no drag-and-drop panel required.",
+        "pivot prop and helpers (setPivot, getPivot, getPivotHeaders, getPivotedRows). Turn a flat list into rows, columns, totals, and nested headers — no drag-and-drop panel required.",
       link: "/docs/pivot",
     },
     {
@@ -523,7 +523,7 @@ export const v3_9_9: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "New enableVirtualization (default true). Set it to false to draw every row and column, while height and maxHeight still work.",
+        "enableVirtualization (default true). Set it to false to draw every row and column, while height and maxHeight still work.",
     },
     {
       type: "bugfix",
@@ -653,7 +653,7 @@ export const v3_9_3: ChangelogEntry = {
     {
       type: "bugfix",
       description:
-        "Fixed body rows failing to remount after a filter briefly matched zero rows (e.g. typing a smart-filter negation).",
+        "body rows failing to remount after a filter briefly matched zero rows (e.g. typing a smart-filter negation).",
     },
     {
       type: "bugfix",
@@ -690,7 +690,7 @@ export const v3_9_2: ChangelogEntry = {
     },
     {
       type: "bugfix",
-      description: "Fixed blank rows after resize and scrolling back up.",
+      description: "blank rows after resize and scrolling back up.",
     },
   ],
 };
@@ -822,7 +822,7 @@ export const v3_8_6: ChangelogEntry = {
     },
     {
       type: "bugfix",
-      description: "Fixed empty cells after sorting.",
+      description: "empty cells after sorting.",
     },
   ],
 };
@@ -1043,7 +1043,7 @@ export const v3_6_3: ChangelogEntry = {
     {
       type: "feature",
       description:
-        'New footerPosition prop ("top" | "bottom", default "bottom") controls placement of the pagination footer.',
+        'footerPosition prop ("top" | "bottom", default "bottom") controls placement of the pagination footer.',
       link: "/docs/footer-renderer",
     },
     {
@@ -1085,7 +1085,7 @@ export const v3_6_0: ChangelogEntry = {
     {
       type: "feature",
       description:
-        'New scrollParent prop (HTMLElement | "window" | () => HTMLElement | null). Use it when you do not set height or maxHeight; the parent’s scroll loads rows as you move.',
+        'scrollParent prop (HTMLElement | "window" | () => HTMLElement | null). Use it when you do not set height or maxHeight; the parent’s scroll loads rows as you move.',
       link: "/docs/infinite-scroll",
     },
     {
@@ -1097,7 +1097,7 @@ export const v3_6_0: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "New infiniteScrollThreshold prop (default 200px) is how close to the bottom onLoadMore fires.",
+        "infiniteScrollThreshold prop (default 200px) is how close to the bottom onLoadMore fires.",
       link: "/docs/infinite-scroll",
     },
     {
@@ -1280,7 +1280,7 @@ export const v2_6_3: ChangelogEntry = {
   changes: [
     {
       type: "bugfix",
-      description: "Fixed copy-paste issues in table cells.",
+      description: "copy-paste issues in table cells.",
     },
   ],
 };
@@ -1343,7 +1343,7 @@ export const v2_5_7: ChangelogEntry = {
     {
       type: "bugfix",
       description:
-        "Fixed a bug where the table height was not being calculated correctly when there were no columns.",
+        "a bug where the table height was not being calculated correctly when there were no columns.",
     },
   ],
 };
@@ -1405,22 +1405,22 @@ export const v2_5_0: ChangelogEntry = {
   changes: [
     {
       type: "bugfix",
-      description: "Fixed column resizing when pinned sections reach max width",
+      description: "column resizing when pinned sections reach max width",
       link: "/docs/column-pinning",
     },
     {
       type: "bugfix",
-      description: "Fixed double-resize issue on chart columns",
+      description: "double-resize issue on chart columns",
       link: "/docs/chart-columns",
     },
     {
       type: "bugfix",
-      description: "Fixed pinned columns behavior with nested headers",
+      description: "pinned columns behavior with nested headers",
       link: "/docs/column-pinning",
     },
     {
       type: "bugfix",
-      description: "Fixed pinned columns compatibility with autoExpandColumns",
+      description: "pinned columns compatibility with autoExpandColumns",
       link: "/docs/column-pinning",
     },
     {
@@ -1430,7 +1430,7 @@ export const v2_5_0: ChangelogEntry = {
     },
     {
       type: "improvement",
-      description: "Improved resize behavior across pinned and main sections",
+      description: "resize behavior across pinned and main sections",
       link: "/docs/column-resizing",
     },
   ],
@@ -1460,12 +1460,12 @@ export const v2_4_8: ChangelogEntry = {
     },
     {
       type: "bugfix",
-      description: "Fixed hover effects on sticky parent rows",
+      description: "hover effects on sticky parent rows",
       link: "/docs/row-grouping",
     },
     {
       type: "bugfix",
-      description: "Fixed horizontal scrolling on sticky rows",
+      description: "horizontal scrolling on sticky rows",
       link: "/docs/row-grouping",
     },
     {
@@ -1484,7 +1484,7 @@ export const v2_4_4: ChangelogEntry = {
   changes: [
     {
       type: "bugfix",
-      description: "Fixed a drag/drop bug in the column editor popout.",
+      description: "a drag/drop bug in the column editor popout.",
     },
   ],
 };
@@ -1543,7 +1543,7 @@ export const v2_4_2: ChangelogEntry = {
   changes: [
     {
       type: "bugfix",
-      description: "Fixed a bug where the last row group was not being displayed correctly.",
+      description: "a bug where the last row group was not being displayed correctly.",
       link: "/docs/row-grouping",
     },
   ],
@@ -1581,7 +1581,7 @@ export const v2_4_1: ChangelogEntry = {
     {
       type: "improvement",
       description:
-        "Improved column editor UI/UX with better spacing, sticky search bar, and text overflow handling",
+        "column editor UI/UX with better spacing, sticky search bar, and text overflow handling",
     },
     {
       type: "improvement",
@@ -1612,7 +1612,7 @@ export const v2_4_0: ChangelogEntry = {
     {
       type: "bugfix",
       description:
-        "Fixed copy functionality bug when enableRowSelection is enabled. Copy operations now work correctly with row selection enabled.",
+        "copy functionality bug when enableRowSelection is enabled. Copy operations now work correctly with row selection enabled.",
       link: "/docs/row-selection",
     },
   ],
@@ -1664,7 +1664,7 @@ export const v2_3_0: ChangelogEntry = {
     {
       type: "bugfix",
       description:
-        "Fixed column visibility checkbox logic in the column editing popout. Checkboxes are now checked when columns are visible, and unchecked when hidden (previously was inverted).",
+        "column visibility checkbox logic in the column editing popout. Checkboxes are now checked when columns are visible, and unchecked when hidden (previously was inverted).",
     },
   ],
 };
@@ -1690,7 +1690,7 @@ export const v2_2_9: ChangelogEntry = {
     },
     {
       type: "bugfix",
-      description: "Fixed skeleton loaders with pagination and external sorting with row grouping.",
+      description: "skeleton loaders with pagination and external sorting with row grouping.",
       link: "/docs/loading-state",
     },
     {
@@ -1768,7 +1768,7 @@ export const v2_2_6: ChangelogEntry = {
     },
     {
       type: "bugfix",
-      description: "Fixed a data flicker when using external sort",
+      description: "a data flicker when using external sort",
       link: "/docs/column-sorting",
     },
   ],
@@ -1783,7 +1783,7 @@ export const v2_2_1: ChangelogEntry = {
     {
       type: "bugfix",
       description:
-        "Fixed bug when re-ordering columns that could cause incorrect column positions or rendering issues.",
+        "bug when re-ordering columns that could cause incorrect column positions or rendering issues.",
     },
   ],
 };
@@ -1820,7 +1820,7 @@ export const v2_1_7: ChangelogEntry = {
     {
       type: "bugfix",
       description:
-        "Fixed alignment when row grouping and siblings have children but one or more siblings does not have children - the collapse/expand icon won't show but the text in the rows will still align correctly",
+        "alignment when row grouping and siblings have children but one or more siblings does not have children - the collapse/expand icon won't show but the text in the rows will still align correctly",
     },
   ],
 };
@@ -1885,12 +1885,12 @@ export const v2_1_3: ChangelogEntry = {
   changes: [
     {
       type: "bugfix",
-      description: "Fixed enum cell editing bugs that prevented proper value selection and updates",
+      description: "enum cell editing bugs that prevented proper value selection and updates",
     },
     {
       type: "bugfix",
       description:
-        "Fixed datepicker cell editing bugs that caused incorrect date handling and display issues",
+        "datepicker cell editing bugs that caused incorrect date handling and display issues",
     },
   ],
 };
@@ -1972,7 +1972,7 @@ export const v2_0_9: ChangelogEntry = {
     {
       type: "improvement",
       description:
-        "Improved keyboard navigation - Tab and Shift+Tab now properly apply and remove filters, sorting, and other table actions",
+        "keyboard navigation - Tab and Shift+Tab now properly apply and remove filters, sorting, and other table actions",
     },
     {
       type: "improvement",
@@ -2128,7 +2128,7 @@ export const v1_9_5: ChangelogEntry = {
   changes: [
     {
       type: "bugfix",
-      description: "Fixed bug with nested data that had the same ID as the parent row",
+      description: "bug with nested data that had the same ID as the parent row",
     },
   ],
 };
@@ -2285,7 +2285,7 @@ export const v1_9_0: ChangelogEntry = {
     {
       type: "improvement",
       description:
-        "Improved OnRowGroupExpandProps documentation with detailed examples of rowIndexPath usage for direct nested data updates",
+        "OnRowGroupExpandProps documentation with detailed examples of rowIndexPath usage for direct nested data updates",
       link: "/docs/api-reference#on-row-group-expand-props",
     },
   ],
@@ -2394,7 +2394,7 @@ export const v1_8_5: ChangelogEntry = {
     {
       type: "improvement",
       description:
-        "Improved virtual scrolling performance with improved memory usage and faster rendering of large datasets.",
+        "virtual scrolling performance with improved memory usage and faster rendering of large datasets.",
     },
   ],
 };
@@ -2459,7 +2459,7 @@ export const v1_8_2: ChangelogEntry = {
   changes: [
     {
       type: "improvement",
-      description: "Improved chart width calculations for better responsive behavior",
+      description: "chart width calculations for better responsive behavior",
       link: "/docs/chart-columns",
     },
     {
@@ -2533,7 +2533,7 @@ export const v1_7_6: ChangelogEntry = {
   changes: [
     {
       type: "bugfix",
-      description: "Fixed nested data accessors (e.g., accessor: 'latest.rank') to work correctly",
+      description: "nested data accessors (e.g., accessor: 'latest.rank') to work correctly",
     },
   ],
 };
@@ -2553,12 +2553,12 @@ export const v1_7_5: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "New CSS variable --st-loading-skeleton-bg-color for customizing skeleton appearance",
+        "CSS variable --st-loading-skeleton-bg-color for customizing skeleton appearance",
       link: "/docs/custom-theme",
     },
     {
       type: "feature",
-      description: "New st-loading-skeleton CSS class for advanced styling customization",
+      description: "st-loading-skeleton CSS class for advanced styling customization",
       link: "/docs/loading-state",
     },
     {
@@ -2590,7 +2590,7 @@ export const v1_7_0: ChangelogEntry = {
     },
     {
       type: "improvement",
-      description: "Improved cell selection while scrolling for a smoother experience",
+      description: "cell selection while scrolling for a smoother experience",
       link: "/docs/cell-highlighting",
     },
     {
@@ -2625,7 +2625,7 @@ export const v1_6_6: ChangelogEntry = {
   changes: [
     {
       type: "improvement",
-      description: "Improved cell selection style for better visual feedback",
+      description: "cell selection style for better visual feedback",
       link: "/docs/cell-selection",
     },
     {
@@ -2660,7 +2660,7 @@ export const v1_6_0: ChangelogEntry = {
   changes: [
     {
       type: "bugfix",
-      description: "Fixed row numbers calculation with pagination",
+      description: "row numbers calculation with pagination",
       link: "/docs/row-selection",
     },
   ],
@@ -2745,7 +2745,7 @@ export const v1_4_7: ChangelogEntry = {
   changes: [
     {
       type: "improvement",
-      description: "Improved color contrast and readability across all themes",
+      description: "color contrast and readability across all themes",
       link: "/docs/themes",
     },
     {

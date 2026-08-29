@@ -32,6 +32,7 @@ Write for someone who uses the table, not someone who maintains it.
 - Short sentences. Everyday words.
 - Say what the user can do, or what stopped going wrong.
 - One idea per bullet.
+- The page already prefixes each bullet with New, Improved, Fix, or Breaking. Do not start the description with those words.
 - Prop names are fine when the user sets them (`columnReordering`, `enablePivotPanel`).
 - Link a docs page when the change has one.
 
