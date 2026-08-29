@@ -11,6 +11,22 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_2_2: ChangelogEntry = {
+  version: "4.2.2",
+  date: "2026-08-28",
+  title: "Widen any pinned column",
+  description:
+    "With autoExpandColumns on, you can drag any pinned column wider, not only the last one.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "With autoExpandColumns and more than one pinned column, dragging an earlier pinned column wider now grows that column. Before, only the last pinned column next to the main grid would widen.",
+      link: "/docs/column-width",
+    },
+  ],
+};
+
 export const v4_2_1: ChangelogEntry = {
   version: "4.2.1",
   date: "2026-08-28",
@@ -27,7 +43,7 @@ export const v4_2_1: ChangelogEntry = {
     {
       type: "feature",
       description:
-        "resetText option on columnEditorConfig. Set the label on the Reset columns button, for example when you localize the editor.",
+        "resetText option on columnEditorConfig. Set the label on the Reset columns button.",
       link: "/docs/column-visibility",
     },
     {
@@ -46,12 +62,6 @@ export const v4_2_1: ChangelogEntry = {
       description:
         "Turning pin controls on or off in the column editor, changing the editor row layout, or passing new icons now updates the table that is already on the page.",
       link: "/docs/column-visibility",
-    },
-    {
-      type: "bugfix",
-      description:
-        "With autoExpandColumns and more than one pinned column, dragging an earlier pinned column wider now grows that column. Before, only the last pinned column next to the main grid would widen.",
-      link: "/docs/column-width",
     },
   ],
 };
@@ -2779,6 +2789,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_2_2,
   v4_2_1,
   v4_2_0,
   v4_1_9,
