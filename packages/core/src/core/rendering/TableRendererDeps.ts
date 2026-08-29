@@ -3,7 +3,7 @@ import type { PivotConfig } from "../../types/PivotTypes";
 import { SimpleTableConfig } from "../../types/SimpleTableConfig";
 import { CustomTheme } from "../../types/CustomTheme";
 import { DimensionManager } from "../../managers/DimensionManager";
-import type { SectionScrollController } from "../../managers/SectionScrollController";
+import type { HorizontalScrollEngine } from "../../managers/horizontalScroll";
 import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
@@ -70,7 +70,7 @@ export interface TableRendererDeps {
   resolvedIcons: any;
   rowSelectionManager: RowSelectionManager | null;
   rowStateMap: Map<string | number, any>;
-  sectionScrollController: SectionScrollController | null;
+  horizontalScroll: HorizontalScrollEngine | null;
   selectionManager: SelectionManager | null;
   setCollapsedHeaders: (headers: Set<Accessor>) => void;
   setCollapsedRows: (rows: Map<string, number>) => void;

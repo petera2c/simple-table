@@ -14,7 +14,7 @@ type StateChangeCallback = (state: ScrollManagerState) => void;
 
 /**
  * Manages vertical scroll state (scrollTop, direction, isScrolling) and infinite scroll.
- * Horizontal header/body/scrollbar sync is handled by SectionScrollController.
+ * Horizontal header/body/scrollbar sync is handled by HorizontalScrollEngine.
  */
 export class ScrollManager {
   private config: ScrollManagerConfig;

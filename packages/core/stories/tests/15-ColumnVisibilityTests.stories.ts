@@ -6,7 +6,7 @@
 import type { Meta } from "@storybook/html";
 import { expect } from "@storybook/test";
 import { ColumnDef } from "../../src/index";
-import { waitForTable } from "./testUtils";
+import { waitForTable, mainContentWidth } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
 const meta: Meta = {
@@ -512,14 +512,12 @@ export const ExcludeFromRenderDoesNotInflateRowWidth = {
 
     // The body's row separator carries the body section width inline. With the
     // bug it equals VISIBLE_SUM + EXCLUDED_SUM (the excluded columns show up as
-    // empty scrollable space past the last visible column). We compare against
-    // the known visible-column sum rather than headerMain.scrollWidth: column
-    // virtualization culls off-screen header cells at scrollLeft 0, so the
-    // header's scrollWidth reflects only the rendered band, not the full content
-    // width — which would make this assertion flaky once virtualization is on.
+    // empty space past the last visible column). Compare against the known
+    // visible-column sum: virtualization culls off-screen header cells, so the
+    // header pane size is not the full content width.
     const separator = bodyMain!.querySelector(".st-row-separator") as HTMLElement | null;
     expect(separator).toBeTruthy();
-    const separatorWidth = parseFloat(separator!.style.width) || bodyMain!.scrollWidth;
+    const separatorWidth = parseFloat(separator!.style.width) || mainContentWidth(canvasElement);
 
     // Body width must track the rendered (non-excluded) columns.
     expect(separatorWidth).toBeLessThan(VISIBLE_SUM + EXCLUDED_SUM / 2);

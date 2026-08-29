@@ -1,5 +1,6 @@
 import type Cell from "../../types/Cell";
 import { isOwnedByTable, queryAllInTable, queryInTable } from "../../utils/tableDomScope";
+import { findHorizontalScrollEngine } from "../horizontalScroll";
 
 /**
  * Calculate the nearest cell to a given mouse position.
@@ -182,25 +183,26 @@ export function handleAutoScroll(
   }
 
   const mainBody = queryInTable(root, ".st-body-main");
-  if (mainBody) {
-    const maxScrollLeft = Math.max(
-      0,
-      mainBody.scrollWidth - mainBody.clientWidth,
-    );
-    if (clientX < rect.left + scrollMargin) {
-      const distance = Math.max(0, rect.left - clientX);
-      const speedMultiplier = Math.min(3, 1 + distance / 100);
-      mainBody.scrollLeft = Math.max(
-        0,
-        mainBody.scrollLeft - scrollSpeed * speedMultiplier,
-      );
-    } else if (clientX > rect.right - scrollMargin) {
-      const distance = Math.max(0, clientX - rect.right);
-      const speedMultiplier = Math.min(3, 1 + distance / 100);
-      mainBody.scrollLeft = Math.min(
-        maxScrollLeft,
-        mainBody.scrollLeft + scrollSpeed * speedMultiplier,
-      );
+  if (mainBody instanceof HTMLElement) {
+    const engine = findHorizontalScrollEngine(mainBody);
+    if (engine) {
+      const maxScrollLeft = engine.getMaxX("main");
+      const current = engine.getSectionScrollLeft("main");
+      if (clientX < rect.left + scrollMargin) {
+        const distance = Math.max(0, rect.left - clientX);
+        const speedMultiplier = Math.min(3, 1 + distance / 100);
+        engine.setSectionScrollLeft(
+          "main",
+          Math.max(0, current - scrollSpeed * speedMultiplier),
+        );
+      } else if (clientX > rect.right - scrollMargin) {
+        const distance = Math.max(0, clientX - rect.right);
+        const speedMultiplier = Math.min(3, 1 + distance / 100);
+        engine.setSectionScrollLeft(
+          "main",
+          Math.min(maxScrollLeft, current + scrollSpeed * speedMultiplier),
+        );
+      }
     }
   }
 }

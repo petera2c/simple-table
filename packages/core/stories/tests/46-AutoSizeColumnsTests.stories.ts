@@ -22,7 +22,7 @@ import {
   selectContentWidthWithOutlierClip,
 } from "../../src/utils/headerWidthUtils";
 import { expect } from "@storybook/test";
-import { waitForTable, waitUntil } from "./testUtils";
+import { waitForTable, waitUntil, setMainScrollX, getMainScrollX, mainContentWidth } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 import type { Meta } from "@storybook/html";
 
@@ -1569,7 +1569,7 @@ export const AutoSizeConsistentAcrossContainerWidths = {
 
     // Bring the narrow table's Notes column into view so its header renders.
     const narrowBody = narrow.querySelector(".st-body-main") as HTMLElement;
-    narrowBody.scrollLeft = narrowBody.scrollWidth;
+    setMainScrollX(narrow as HTMLElement, mainContentWidth(narrow as HTMLElement));
     narrowBody.dispatchEvent(new Event("scroll", { bubbles: true }));
     await wait(300);
 
@@ -1699,8 +1699,7 @@ export const AutoSizeCollapsibleHeaderReservesIconWidth = {
     await wait(100);
 
     const bodyMain = canvasElement.querySelector(".st-body-main") as HTMLElement;
-    bodyMain.scrollLeft = bodyMain.scrollWidth;
-    bodyMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+    setMainScrollX(canvasElement, mainContentWidth(canvasElement));
     await wait(300);
 
     const cell = canvasElement.querySelector(
@@ -1834,7 +1833,7 @@ export const AutoSizeLongHeaderConsistentAcrossContainerWidths = {
 
     // Scroll the narrow table so the target column paints, then compare.
     const narrowBody = narrow.querySelector(".st-body-main") as HTMLElement;
-    narrowBody.scrollLeft = narrowBody.scrollWidth;
+    setMainScrollX(narrow as HTMLElement, mainContentWidth(narrow as HTMLElement));
     narrowBody.dispatchEvent(new Event("scroll", { bubbles: true }));
     await wait(300);
 
@@ -1930,10 +1929,9 @@ export const HorizontalScrollbarShowsWhenHeaderOverflowsEmptyState = {
     expect(totalHeaderWidth).toBeGreaterThan(500);
 
     // Header remains scrollable; scrollbar must appear for the same overflow.
-    headerMain.scrollLeft = 80;
-    headerMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+    setMainScrollX(canvasElement, 80);
     await wait(30);
-    expect(headerMain.scrollLeft).toBeGreaterThan(0);
+    expect(getMainScrollX(canvasElement)).toBeGreaterThan(0);
 
     const scrollbar = canvasElement.querySelector(".st-horizontal-scrollbar-container");
     expect(
@@ -1949,7 +1947,7 @@ export const HorizontalScrollbarShowsWhenHeaderOverflowsEmptyState = {
     scrollbarMiddle!.scrollLeft = 200;
     scrollbarMiddle!.dispatchEvent(new Event("scroll", { bubbles: true }));
     await wait(40);
-    expect(headerMain.scrollLeft).toBe(200);
+    expect(getMainScrollX(canvasElement)).toBe(200);
   },
 };
 

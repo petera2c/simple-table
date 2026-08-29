@@ -109,6 +109,11 @@ export const renderBodySections = (args: {
       ? undefined
       : deps.animationCoordinator;
 
+  const scrollLeftFor = (pinned?: "left" | "right") =>
+    deps.horizontalScroll?.getSectionScrollLeft(
+      pinned === "left" ? "pinned-left" : pinned === "right" ? "pinned-right" : "main",
+    ) ?? 0;
+
   const bodySectionParams = {
     headers: deps.effectiveHeaders,
     rows: rowsToRender,
@@ -132,6 +137,7 @@ export const renderBodySections = (args: {
       pinned: "left",
       sectionWidth: widths.leftWidth,
       startColIndex: currentColIndex,
+      scrollLeft: scrollLeftFor("left"),
     });
     deps.pinnedLeftRef.current = leftSection as HTMLDivElement;
     sectionsToKeep.push(leftSection);
@@ -146,6 +152,7 @@ export const renderBodySections = (args: {
       ...bodySectionParams,
       sectionWidth: widths.mainWidth,
       startColIndex: currentColIndex,
+      scrollLeft: scrollLeftFor(),
     });
     deps.mainBodyRef.current = mainSection as HTMLDivElement;
     sectionsToKeep.push(mainSection);
@@ -166,6 +173,7 @@ export const renderBodySections = (args: {
       pinned: "right",
       sectionWidth: widths.rightWidth,
       startColIndex: currentColIndex,
+      scrollLeft: scrollLeftFor("right"),
     });
     deps.pinnedRightRef.current = rightSection as HTMLDivElement;
     sectionsToKeep.push(rightSection);
@@ -180,7 +188,7 @@ export const renderBodySections = (args: {
     processedResult.stickyParents.length > 0
   ) {
     if (stickyParentsContainer) {
-      cleanupStickyParentsContainer(stickyParentsContainer, deps.sectionScrollController ?? null);
+      cleanupStickyParentsContainer(stickyParentsContainer, deps.horizontalScroll ?? null);
       stickyParentsContainer = null;
     }
 
@@ -236,7 +244,7 @@ export const renderBodySections = (args: {
         rowHeight: deps.customTheme.rowHeight,
         heightOffsets: processedResult.paginatedHeightOffsets,
         cellRenderContext: bodyContext,
-        sectionScrollController: deps.sectionScrollController ?? null,
+        horizontalScroll: deps.horizontalScroll ?? null,
       },
     );
 
@@ -249,7 +257,7 @@ export const renderBodySections = (args: {
       }
     }
   } else if (stickyParentsContainer) {
-    cleanupStickyParentsContainer(stickyParentsContainer, deps.sectionScrollController ?? null);
+    cleanupStickyParentsContainer(stickyParentsContainer, deps.horizontalScroll ?? null);
     stickyParentsContainer = null;
   }
 

@@ -7,7 +7,7 @@
 import type { Meta } from "@storybook/html";
 import { expect, userEvent } from "@storybook/test";
 import { ColumnDef, Row } from "../../src/index";
-import { waitForTable, waitUntil } from "./testUtils";
+import { waitForTable, waitUntil, getMainScrollX, setMainScrollX, mainContentWidth, mainOverflowsX } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 
 const meta: Meta = {
@@ -614,7 +614,7 @@ export const AutoExpandWithLeftPinned = {
     expect(mainCells.length).toBe(3);
     const bodyMain = getBodySections(canvasElement).main as HTMLElement;
     if (bodyMain) {
-      expect(bodyMain.scrollWidth).toBeLessThanOrEqual(
+      expect(mainContentWidth(canvasElement)).toBeLessThanOrEqual(
         bodyMain.clientWidth + 2,
       );
     }
@@ -677,7 +677,7 @@ export const AutoExpandWithRightPinned = {
     expect(mainCells.length).toBe(3);
     const bodyMain = getBodySections(canvasElement).main as HTMLElement;
     if (bodyMain) {
-      expect(bodyMain.scrollWidth).toBeLessThanOrEqual(
+      expect(mainContentWidth(canvasElement)).toBeLessThanOrEqual(
         bodyMain.clientWidth + 2,
       );
     }
@@ -942,7 +942,7 @@ export const AutoExpandWithRowGrouping = {
     const cells = canvasElement.querySelectorAll(".st-cell");
     expect(cells.length).toBeGreaterThan(0);
     const bodyMain = getBodySections(canvasElement).main as HTMLElement;
-    if (bodyMain && bodyMain.scrollWidth <= bodyMain.clientWidth + 50) {
+    if (bodyMain && mainContentWidth(canvasElement) <= bodyMain.clientWidth + 50) {
       const totalHeaderW = headerCells.reduce(
         (s, c) => s + parsePixelWidth(getColumnWidth(c)),
         0,
@@ -1724,8 +1724,8 @@ export const AutoExpandWideContainerNoHorizontalScroll = {
       ".st-body-main",
     ) as HTMLElement;
     expect(bodyMain).toBeTruthy();
-    expect(bodyMain.scrollWidth).toBeLessThanOrEqual(bodyMain.clientWidth + 2);
-    expect(bodyMain.scrollLeft).toBe(0);
+    expect(mainOverflowsX(canvasElement)).toBe(false);
+    expect(getMainScrollX(canvasElement)).toBe(0);
   },
 };
 
@@ -1779,7 +1779,7 @@ export const AutoExpandNarrowContainerHorizontalScroll = {
       ".st-body-main",
     ) as HTMLElement;
     expect(bodyMain).toBeTruthy();
-    expect(bodyMain.scrollWidth).toBeGreaterThan(bodyMain.clientWidth);
+    expect(mainOverflowsX(canvasElement)).toBe(true);
   },
 };
 
@@ -1813,11 +1813,11 @@ export const AutoExpandHorizontalScrollHeaderBodySync = {
     ) as HTMLElement;
     expect(bodyMain).toBeTruthy();
     expect(headerMain).toBeTruthy();
-    if (bodyMain.scrollWidth > bodyMain.clientWidth) {
-      bodyMain.scrollLeft = 100;
-      bodyMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+    if (mainOverflowsX(canvasElement)) {
+      setMainScrollX(canvasElement, 100);
       await new Promise((r) => setTimeout(r, 50));
-      expect(headerMain.scrollLeft).toBe(100);
+      expect(getMainScrollX(canvasElement)).toBe(100);
+      expect(headerMain.dataset.stScrollX).toBe("100");
     }
   },
 };
@@ -1851,9 +1851,8 @@ export const AutoExpandScrollThenResizeStable = {
     const bodyMain = canvasElement.querySelector(
       ".st-body-main",
     ) as HTMLElement;
-    if (bodyMain && bodyMain.scrollWidth > bodyMain.clientWidth) {
-      bodyMain.scrollLeft = 50;
-      bodyMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+    if (bodyMain && mainOverflowsX(canvasElement)) {
+      setMainScrollX(canvasElement, 50);
     }
     const idHeader = findHeaderCellByLabel(canvasElement, "ID");
     if (idHeader) {
@@ -2387,14 +2386,13 @@ export const AutoExpandGrowPastSiblingFloorsOverflows = {
     // The excess growth overflows into horizontal scroll
     const bodyMain = canvasElement.querySelector(".st-body-main") as HTMLElement;
     expect(bodyMain).toBeTruthy();
-    expect(bodyMain.scrollWidth).toBeGreaterThan(bodyMain.clientWidth + 300);
-    expect(bodyMain.scrollWidth).toBeGreaterThan(containerWidth + 300);
+    expect(mainContentWidth(canvasElement)).toBeGreaterThan(bodyMain.clientWidth + 300);
+    expect(mainContentWidth(canvasElement)).toBeGreaterThan(containerWidth + 300);
     assertBodyMainTakesFullWidth(canvasElement);
 
     // Scroll the (virtualized) siblings into view: they shrank only down to
     // their natural (declared) widths — not to MIN_COLUMN_WIDTH
-    bodyMain.scrollLeft = bodyMain.scrollWidth;
-    bodyMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+    setMainScrollX(canvasElement, mainContentWidth(canvasElement));
     await new Promise((r) => setTimeout(r, 200));
 
     const declaredWidths: Record<string, number> = {

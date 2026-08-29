@@ -5,7 +5,7 @@
 
 import { ColumnDef, Row } from "../../src/index";
 import { expect } from "@storybook/test";
-import { waitForTable } from "./testUtils";
+import { waitForTable, mainOverflowsX } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 import type { Meta } from "@storybook/html";
 
@@ -205,7 +205,7 @@ export const AutoExpandColumnsNeverSqueezesBelowDeclaredWidth = {
     // Content overflows into horizontal scroll
     const bodyMain = canvasElement.querySelector(".st-body-main") as HTMLElement | null;
     expect(bodyMain).toBeTruthy();
-    expect(bodyMain!.scrollWidth).toBeGreaterThan(bodyMain!.clientWidth);
+    expect(mainOverflowsX(canvasElement)).toBe(true);
   },
 };
 

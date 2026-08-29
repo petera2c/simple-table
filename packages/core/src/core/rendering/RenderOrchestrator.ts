@@ -519,9 +519,6 @@ export class RenderOrchestrator {
     state: RenderState,
     mergedColumnEditorConfig: MergedColumnEditorConfig,
   ): void {
-    const savedScrollLeft =
-      context.mainBodyRef?.current?.scrollLeft ?? context.mainHeaderRef?.current?.scrollLeft ?? 0;
-
     const snapshot = this.buildRowModelSnapshot(context, state);
     if (!snapshot) return;
 
@@ -646,18 +643,21 @@ export class RenderOrchestrator {
       this.lastScrollRafPaintedRange = null;
     }
 
-    // Register header and body panes with section scroll controller, seed state from current scroll, then restore
-    this.registerSectionPanes(context);
-    const controller = context.sectionScrollController;
-    if (controller) {
-      controller.setSectionScrollLeft("main", savedScrollLeft);
-      if (context.pinnedLeftRef.current != null) {
-        controller.setSectionScrollLeft("pinned-left", context.pinnedLeftRef.current.scrollLeft);
-      }
-      if (context.pinnedRightRef.current != null) {
-        controller.setSectionScrollLeft("pinned-right", context.pinnedRightRef.current.scrollLeft);
-      }
-      controller.restoreAll();
+    const hs = context.horizontalScroll;
+    if (hs) {
+      hs.setSectionMetrics("main", {
+        contentWidth: mainWidth,
+        viewportWidth: mainSectionContainerWidth,
+      });
+      hs.setSectionMetrics("pinned-left", {
+        contentWidth: leftContentWidth,
+        viewportWidth: leftWidth,
+      });
+      hs.setSectionMetrics("pinned-right", {
+        contentWidth: rightContentWidth,
+        viewportWidth: rightWidth,
+      });
+      this.registerSectionPanes(context);
     }
 
     if (!verticalScrollFastPath) {
@@ -686,6 +686,10 @@ export class RenderOrchestrator {
         effectiveHeaders,
         context,
       );
+    }
+
+    if (hs) {
+      hs.restoreAll();
     }
   }
 
@@ -785,7 +789,7 @@ export class RenderOrchestrator {
   }
 
   private registerSectionPanes(context: RenderContext): void {
-    const controller = context.sectionScrollController;
+    const controller = context.horizontalScroll;
     if (!controller) return;
 
     if (context.pinnedLeftHeaderRef.current) {
@@ -845,7 +849,7 @@ export class RenderOrchestrator {
       pinnedLeftHeaderRef: context.pinnedLeftHeaderRef,
       pinnedRightHeaderRef: context.pinnedRightHeaderRef,
       dimensionManager: context.dimensionManager,
-      sectionScrollController: context.sectionScrollController,
+      horizontalScroll: context.horizontalScroll,
       sortManager: context.sortManager,
       filterManager: context.filterManager,
       selectionManager: context.selectionManager,

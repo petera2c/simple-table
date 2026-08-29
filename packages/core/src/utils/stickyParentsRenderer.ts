@@ -6,7 +6,11 @@ import ColumnDef, { Accessor } from "../types/ColumnDef";
 import { COLUMN_EDIT_WIDTH, ROW_SEPARATOR_WIDTH } from "../consts/general-consts";
 import { createRowSeparator } from "./rowSeparatorRenderer";
 import { CumulativeHeightMap, HeightOffsets } from "./infiniteScrollUtils";
-import type { SectionId, SectionScrollController } from "../managers/SectionScrollController";
+import {
+  ensureHorizontalScrollLayer,
+  type SectionId,
+  type HorizontalScrollEngine,
+} from "../managers/horizontalScroll";
 import { CustomTheme } from "../types/CustomTheme";
 import { createBodyCellElement } from "./bodyCell/styling";
 import { AbsoluteBodyCell, CellRenderContext } from "./bodyCell/types";
@@ -53,7 +57,7 @@ export interface StickyParentsRenderContext {
   rowHeight: number;
   heightOffsets: HeightOffsets | undefined;
   cellRenderContext: CellRenderContext;
-  sectionScrollController?: SectionScrollController | null;
+  horizontalScroll?: HorizontalScrollEngine | null;
 }
 
 // Calculate tree transition offset
@@ -217,7 +221,7 @@ interface StickySectionParams {
   pinned?: "left" | "right";
   width?: number;
   scrollSyncGroup?: string;
-  sectionScrollController?: SectionScrollController | null;
+  horizontalScroll?: HorizontalScrollEngine | null;
   /** Global column index for the first leaf in this section (same as body `startColIndex`). */
   startColIndex: number;
   /** Aligns sticky cell `rowIndex` with virtualized body rows for selection. */
@@ -240,7 +244,7 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
     pinned,
     width,
     scrollSyncGroup,
-    sectionScrollController,
+    horizontalScroll,
     startColIndex,
     resolveBodyRowIndex,
   } = params;
@@ -270,6 +274,7 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
     currentLeft += width;
   });
 
+  const host = ensureHorizontalScrollLayer(section);
   const sectionWidthPxForSeparator =
     pinned && typeof width === "number"
       ? width
@@ -328,7 +333,7 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
       rowContainer.appendChild(cellElement);
     });
 
-    section.appendChild(rowContainer);
+    host.appendChild(rowContainer);
 
     // Add separator after row
     const separatorTop =
@@ -344,18 +349,18 @@ const createStickySection = (params: StickySectionParams): HTMLElement => {
       sectionWidthPx: sectionWidthPxForSeparator,
     });
 
-    section.appendChild(separator);
+    host.appendChild(separator);
   });
 
   // Register with section scroll controller
-  if (sectionScrollController && scrollSyncGroup) {
+  if (horizontalScroll && scrollSyncGroup) {
     const sectionId: SectionId =
       scrollSyncGroup === "pinned-left"
         ? "pinned-left"
         : scrollSyncGroup === "pinned-right"
           ? "pinned-right"
           : "main";
-    sectionScrollController.registerPane(sectionId, section, "sticky");
+    horizontalScroll.registerPane(sectionId, section, "sticky");
   }
 
   return section;
@@ -426,7 +431,7 @@ export const createStickyParentsContainer = (
   // Get current headers (non-pinned)
   const currentHeaders = context.headers.filter((header) => !header.pinned);
 
-  const sectionScrollController = context.sectionScrollController;
+  const horizontalScroll = context.horizontalScroll;
 
   // Create left pinned section
   if (props.pinnedLeftColumns.length > 0) {
@@ -444,7 +449,7 @@ export const createStickyParentsContainer = (
       pinned: "left",
       width: props.pinnedLeftWidth,
       scrollSyncGroup: "pinned-left",
-      sectionScrollController,
+      horizontalScroll,
       startColIndex: stickySectionColStart.left,
       resolveBodyRowIndex,
     });
@@ -464,7 +469,7 @@ export const createStickyParentsContainer = (
     stickyHeight,
     stickyParents,
     treeTransitionOffset,
-    sectionScrollController,
+    horizontalScroll,
     startColIndex: stickySectionColStart.main,
     resolveBodyRowIndex,
   });
@@ -486,7 +491,7 @@ export const createStickyParentsContainer = (
       pinned: "right",
       width: props.pinnedRightWidth,
       scrollSyncGroup: "pinned-right",
-      sectionScrollController,
+      horizontalScroll,
       startColIndex: stickySectionColStart.right,
       resolveBodyRowIndex,
     });
@@ -499,21 +504,21 @@ export const createStickyParentsContainer = (
 // Cleanup sticky parents container
 export const cleanupStickyParentsContainer = (
   container: HTMLElement,
-  sectionScrollController?: SectionScrollController | null,
+  horizontalScroll?: HorizontalScrollEngine | null,
 ): void => {
-  if (sectionScrollController) {
+  if (horizontalScroll) {
     const leftSection = container.querySelector(".st-sticky-section-left");
     const mainSection = container.querySelector(".st-sticky-section-main");
     const rightSection = container.querySelector(".st-sticky-section-right");
 
     if (leftSection instanceof HTMLElement) {
-      sectionScrollController.unregisterPane("pinned-left", leftSection);
+      horizontalScroll.unregisterPane("pinned-left", leftSection);
     }
     if (mainSection instanceof HTMLElement) {
-      sectionScrollController.unregisterPane("main", mainSection);
+      horizontalScroll.unregisterPane("main", mainSection);
     }
     if (rightSection instanceof HTMLElement) {
-      sectionScrollController.unregisterPane("pinned-right", rightSection);
+      horizontalScroll.unregisterPane("pinned-right", rightSection);
     }
   }
 

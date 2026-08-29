@@ -306,8 +306,12 @@ export const renderBodyCells = (
   // visible band, NOT the full content width. Falls back to a live clientWidth
   // read when the viewport hasn't been measured yet.
   const viewportWidth = context.pinned
-    ? (context.containerWidth ?? container.clientWidth ?? 0)
-    : (context.mainSectionViewportWidth ?? context.containerWidth ?? container.clientWidth ?? 0);
+    ? (context.containerWidth ?? container.parentElement?.clientWidth ?? container.clientWidth ?? 0)
+    : (context.mainSectionViewportWidth ??
+      context.containerWidth ??
+      container.parentElement?.clientWidth ??
+      container.clientWidth ??
+      0);
 
   // For pinned sections, always render all cells (they don't scroll horizontally).
   // For main section, only render visible cells based on scroll position unless

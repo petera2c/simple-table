@@ -1399,7 +1399,12 @@ export class AnimationCoordinator {
           sourceContainer,
           sourceContainerLeft,
           sourceContainerTop,
-          left: rect.left - parentRect.left + parent.scrollLeft,
+          left:
+            rect.left -
+            parentRect.left +
+            (parent.dataset.stScrollX != null
+              ? Number(parent.dataset.stScrollX) || 0
+              : parent.scrollLeft),
           top: rect.top - parentRect.top + parent.scrollTop,
           styleTop,
           styleLeft,
@@ -1553,11 +1558,9 @@ type FlipAxis = "x" | "y";
  * No-op when there's no scrolling along the requested axis (small datasets,
  * pinned panes, or header sections in the vertical case).
  *
- * Vertical and horizontal use different scrollers because the table's layout
- * splits scrolling responsibilities: the body section element (`.st-body-main`
- * and pinned variants) is the *horizontal* scroller, while its parent
- * (`.st-body-container`) is the *vertical* scroller. Header sections only
- * scroll horizontally.
+ * Vertical and horizontal use different nodes: `.st-body-container` is the
+ * native vertical scroller. Horizontal offset lives on `data-st-scroll-x`
+ * on the section pane, and content width lives on `.st-h-scroll-layer`.
  */
 type ScrollerMetrics = {
   clientHeight: number;
@@ -1570,13 +1573,17 @@ type ScrollerMetrics = {
 
 const readScrollerMetrics = (container: HTMLElement): ScrollerMetrics => {
   const yScroller = container.parentElement;
+  const layer = container.querySelector(":scope > .st-h-scroll-layer");
+  const layerEl = layer instanceof HTMLElement ? layer : null;
   return {
     clientHeight: yScroller ? yScroller.clientHeight : 0,
     scrollHeight: yScroller ? yScroller.scrollHeight : 0,
     scrollTop: yScroller ? yScroller.scrollTop : 0,
     clientWidth: container.clientWidth,
-    scrollWidth: container.scrollWidth,
-    scrollLeft: container.scrollLeft,
+    scrollWidth: layerEl
+      ? Math.max(layerEl.offsetWidth, container.clientWidth)
+      : container.scrollWidth,
+    scrollLeft: Number(container.dataset.stScrollX ?? 0) || 0,
   };
 };
 

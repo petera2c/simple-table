@@ -38,6 +38,11 @@ export const renderHeaderSections = (args: {
     }
   }
 
+  const scrollLeftFor = (pinned?: "left" | "right") =>
+    deps.horizontalScroll?.getSectionScrollLeft(
+      pinned === "left" ? "pinned-left" : pinned === "right" ? "pinned-right" : "main",
+    ) ?? 0;
+
   const pinnedLeftHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "left");
   const mainHeaders = deps.effectiveHeaders.filter((h) => !h.pinned);
   const pinnedRightHeaders = deps.effectiveHeaders.filter((h) => h.pinned === "right");
@@ -66,6 +71,7 @@ export const renderHeaderSections = (args: {
       context: headerContext,
       sectionWidth: widths.leftWidth,
       startColIndex: currentColIndex,
+      scrollLeft: scrollLeftFor("left"),
     });
     deps.pinnedLeftHeaderRef.current = leftSection as HTMLDivElement;
     sectionsToKeep.push(leftSection);
@@ -84,6 +90,7 @@ export const renderHeaderSections = (args: {
       context: headerContext,
       sectionWidth: widths.mainWidth,
       startColIndex: currentColIndex,
+      scrollLeft: scrollLeftFor(),
     });
     deps.mainHeaderRef.current = mainSection as HTMLDivElement;
     sectionsToKeep.push(mainSection);
@@ -108,6 +115,7 @@ export const renderHeaderSections = (args: {
       context: headerContext,
       sectionWidth: widths.rightWidth,
       startColIndex: currentColIndex,
+      scrollLeft: scrollLeftFor("right"),
     });
     deps.pinnedRightHeaderRef.current = rightSection as HTMLDivElement;
     sectionsToKeep.push(rightSection);

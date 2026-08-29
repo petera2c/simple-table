@@ -11,6 +11,26 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_2_5: ChangelogEntry = {
+  version: "4.2.5",
+  date: "2026-08-29",
+  title: "Smoother sideways scroll",
+  description:
+    "Header and body stay lined up when you scroll sideways, even with lots of columns. The table stretches a little past the ends, then springs back.",
+  changes: [
+    {
+      type: "improvement",
+      description:
+        "Header and body stay lined up when you scroll sideways. They no longer drift apart on wide tables.",
+    },
+    {
+      type: "improvement",
+      description:
+        "On a trackpad or touch, the table stretches a little past the first or last column, then springs back.",
+    },
+  ],
+};
+
 export const v4_2_4: ChangelogEntry = {
   version: "4.2.4",
   date: "2026-08-29",
@@ -2844,6 +2864,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_2_5,
   v4_2_4,
   v4_2_3,
   v4_2_2,

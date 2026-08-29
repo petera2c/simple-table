@@ -26,6 +26,8 @@ export default defineConfig({
       "../core/src/__tests__/rowGroupToggleReuse.test.ts",
       "../core/src/__tests__/rowGroupCustomCellReuse.test.ts",
       "../core/src/__tests__/rowGroupEditSelectScroll.test.ts",
+      "../core/src/__tests__/horizontalScrollPhysics.test.ts",
+      "../core/src/__tests__/horizontalScrollEngine.test.ts",
     ],
     // The vanilla core imports a CSS bundle on load. We assert on DOM classes,
     // not computed colors, so CSS processing is unnecessary here.

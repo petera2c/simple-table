@@ -9,7 +9,7 @@ import {
 } from "../../utils/horizontalScrollbarRenderer";
 import { cleanupStickyParentsContainer } from "../../utils/stickyParentsRenderer";
 import type { CellPosition } from "../../managers/AnimationCoordinator";
-import type { SectionScrollController } from "../../managers/SectionScrollController";
+import type { HorizontalScrollEngine } from "../../managers/horizontalScroll";
 import { recalculateAllSectionWidths } from "../../utils/resizeUtils/sectionWidths";
 import { deepClone } from "../../utils/generalUtils";
 import { isColumnEditorStripVisible } from "../../consts/general-consts";
@@ -38,7 +38,7 @@ export class TableRenderer {
   };
   private scrollbarTimeoutId: number | null = null;
   private stickyParentsContainer: HTMLElement | null = null;
-  private sectionScrollController: SectionScrollController | null = null;
+  private horizontalScroll: HorizontalScrollEngine | null = null;
   private renderScheduled: boolean = false;
   private pendingRenderCallback: (() => void) | null = null;
 
@@ -437,38 +437,30 @@ export class TableRenderer {
       return;
     }
 
-    // Prefer the body scrollport when present; fall back to the header when the
-    // table is empty (empty-state clears body sections, so mainBodyRef is null
-    // even though the header remains horizontally scrollable).
+    // Prefer the body pane when present; fall back to the header when the table
+    // is empty (empty-state clears body sections, so mainBodyRef is null).
     const scrollport =
       deps.mainBodyRef.current ?? deps.mainHeaderRef.current;
     if (!scrollport) {
       return;
     }
 
-    // Viewport = visible main-section width. Prefer the live body clientWidth;
-    // when empty, derive it from the body container minus pinned sections.
-    // Do NOT use the header's clientWidth alone: header sections are often
-    // sized to content width, so clientWidth ≈ scrollWidth even when the
-    // table overflows the container.
+    // Visible main-section width. Prefer the live body clientWidth; when empty,
+    // derive it from the body container minus pinned sections.
     const viewportWidth =
       deps.mainBodyRef.current?.clientWidth ??
       Math.max(0, tableBodyContainerRef.clientWidth - pinnedLeftWidth - pinnedRightWidth);
 
-    // Content width is the sum of column widths (`mainBodyWidth`), which stays
-    // correct even when virtualization culls off-screen cells. Also accept DOM
-    // overflow on the active scrollport when it reports a larger scrollWidth.
-    const threshold = 1;
-    const contentOverflow = mainBodyWidth - viewportWidth > threshold;
-    const domOverflow = scrollport.scrollWidth - scrollport.clientWidth > threshold;
-    const isScrollable = contentOverflow || domOverflow;
+    // Overflow uses the sum of column widths (`mainBodyWidth`), which stays
+    // correct when virtualization culls off-screen cells.
+    const isScrollable = mainBodyWidth - viewportWidth > 1;
 
     // If not scrollable, remove existing scrollbar if present
     if (!isScrollable) {
       if (this.horizontalScrollbarRef.current) {
         cleanupHorizontalScrollbar(
           this.horizontalScrollbarRef.current,
-          deps.sectionScrollController,
+          deps.horizontalScroll,
         );
         this.horizontalScrollbarRef.current = null;
       }
@@ -496,7 +488,7 @@ export class TableRenderer {
           deps.config.enableColumnEditor,
           deps.config.columnEditorConfig?.showToggle,
         ),
-        sectionScrollController: deps.sectionScrollController ?? undefined,
+        horizontalScroll: deps.horizontalScroll ?? undefined,
       });
       return;
     }
@@ -536,13 +528,13 @@ export class TableRenderer {
             deps.config.enableColumnEditor,
             deps.config.columnEditorConfig?.showToggle,
           ),
-          sectionScrollController: deps.sectionScrollController ?? undefined,
+          horizontalScroll: deps.horizontalScroll ?? undefined,
         });
         this.scrollbarTimeoutId = null;
         return;
       }
 
-      this.sectionScrollController = deps.sectionScrollController ?? null;
+      this.horizontalScroll = deps.horizontalScroll ?? null;
       const scrollbar = createHorizontalScrollbar({
         mainBodyRef: liveScrollport,
         mainBodyWidth,
@@ -555,9 +547,7 @@ export class TableRenderer {
           deps.config.enableColumnEditor,
           deps.config.columnEditorConfig?.showToggle,
         ),
-        sectionScrollController: this.sectionScrollController,
-        // Force-create when content width already proved overflow (empty-state
-        // header scrollports can report scrollWidth === clientWidth).
+        horizontalScroll: this.horizontalScroll,
         forceScrollable: true,
       });
 
@@ -587,14 +577,14 @@ export class TableRenderer {
     }
 
     if (this.horizontalScrollbarRef.current) {
-      cleanupHorizontalScrollbar(this.horizontalScrollbarRef.current, this.sectionScrollController);
+      cleanupHorizontalScrollbar(this.horizontalScrollbarRef.current, this.horizontalScroll);
       this.horizontalScrollbarRef.current = null;
     }
 
     if (this.stickyParentsContainer) {
-      cleanupStickyParentsContainer(this.stickyParentsContainer, this.sectionScrollController);
+      cleanupStickyParentsContainer(this.stickyParentsContainer, this.horizontalScroll);
       this.stickyParentsContainer = null;
     }
-    this.sectionScrollController = null;
+    this.horizontalScroll = null;
   }
 }

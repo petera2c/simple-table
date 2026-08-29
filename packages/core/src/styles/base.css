@@ -225,15 +225,42 @@
 
 .st-horizontal-scrollbar-middle,
 .st-horizontal-scrollbar-left,
-.st-horizontal-scrollbar-right,
+.st-horizontal-scrollbar-right {
+  overflow: auto;
+  touch-action: auto;
+}
+
 .st-header-main,
 .st-header-pinned-left,
 .st-header-pinned-right,
 .st-body-main,
 .st-body-pinned-left,
 .st-body-pinned-right {
-  overflow: auto;
-  touch-action: auto;
+  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: hidden;
+  position: relative;
+  min-width: 0;
+}
+
+.st-body-main,
+.st-body-pinned-left,
+.st-body-pinned-right {
+  touch-action: pan-y;
+}
+
+.st-header-main,
+.st-header-pinned-left,
+.st-header-pinned-right {
+  touch-action: none;
+}
+
+.st-h-scroll-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  will-change: transform;
 }
 .st-header-main,
 .st-header-pinned-left,
@@ -264,12 +291,9 @@
   flex-grow: 1;
 }
 
-/* Header must only scroll horizontally; prevent vertical scroll (vanilla refactor removed display:grid from header sections) */
 .st-header-main,
 .st-header-pinned-left,
 .st-header-pinned-right {
-  overflow-x: auto;
-  overflow-y: hidden;
   background-color: var(--st-header-background-color);
 }
 
@@ -282,9 +306,11 @@
   flex-grow: 1;
   display: flex;
   width: 100%;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-x: clip;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  touch-action: auto;
+  touch-action: pan-y;
   height: max-content;
   background-color: var(--st-even-row-background-color);
 }
@@ -302,6 +328,8 @@
 .st-sticky-section-main,
 .st-sticky-section-right {
   overflow: hidden;
+  overflow-x: clip;
+  position: relative;
 }
 
 .st-sticky-section-left {

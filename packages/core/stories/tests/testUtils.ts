@@ -4,6 +4,12 @@
  */
 
 import { expect } from "@storybook/test";
+import {
+  findHorizontalScrollEngine,
+  getHorizontalScrollLayer,
+  readPaneScrollX,
+  writePaneScrollX,
+} from "../../src/managers/horizontalScroll";
 
 /**
  * Get unique row count from virtualized cells
@@ -175,3 +181,41 @@ export const expectPinnedSectionsDomOrder = (root: HTMLElement): void => {
   if (bLeft && bMain) expect(follows(bLeft, bMain)).toBe(true);
   if (bMain && bRight) expect(follows(bMain, bRight)).toBe(true);
 };
+
+const tableRootOf = (canvas: HTMLElement): HTMLElement => {
+  const root = canvas.classList.contains("simple-table-root")
+    ? canvas
+    : canvas.querySelector(".simple-table-root");
+  if (!(root instanceof HTMLElement)) throw new Error("Table root not found");
+  return root;
+};
+
+const mainPaneOf = (canvas: HTMLElement): HTMLElement => {
+  const pane =
+    canvas.querySelector(".st-body-main") ?? canvas.querySelector(".st-header-main");
+  if (!(pane instanceof HTMLElement)) throw new Error("Main section not found");
+  return pane;
+};
+
+/** Current horizontal offset for the main header/body pair. */
+export const getMainScrollX = (canvas: HTMLElement): number => readPaneScrollX(mainPaneOf(canvas));
+
+/** Set the main section horizontal offset (header and body stay aligned). */
+export const setMainScrollX = (canvas: HTMLElement, x: number): void => {
+  writePaneScrollX(tableRootOf(canvas), "main", x);
+};
+
+export const mainContentWidth = (canvas: HTMLElement): number => {
+  const pane = mainPaneOf(canvas);
+  const layer = getHorizontalScrollLayer(pane);
+  return layer?.offsetWidth ?? pane.clientWidth;
+};
+
+export const findTableHorizontalScroll = (canvas: HTMLElement) =>
+  findHorizontalScrollEngine(tableRootOf(canvas));
+
+export const mainOverflowsX = (canvas: HTMLElement): boolean => {
+  const pane = mainPaneOf(canvas);
+  return mainContentWidth(canvas) > pane.clientWidth + 1;
+};
+

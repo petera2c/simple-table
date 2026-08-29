@@ -11,7 +11,7 @@ export interface TableDestroyables {
   accordionController: Destroyable;
   dimensionManager: Destroyable | null | undefined;
   scrollManager: Destroyable | null | undefined;
-  sectionScrollController: Destroyable | null | undefined;
+  horizontalScroll: Destroyable | null | undefined;
   sortManager: Destroyable | null | undefined;
   filterManager: Destroyable | null | undefined;
   pivotManager: Destroyable | null | undefined;
@@ -33,7 +33,7 @@ export const destroyTableManagers = (managers: TableDestroyables): void => {
   managers.accordionController.destroy();
   managers.dimensionManager?.destroy();
   managers.scrollManager?.destroy();
-  managers.sectionScrollController?.destroy();
+  managers.horizontalScroll?.destroy();
   managers.sortManager?.destroy();
   managers.filterManager?.destroy();
   managers.pivotManager?.destroy();

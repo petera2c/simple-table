@@ -54,7 +54,7 @@ export const createVanillaRenderContext = (
     rowSelectionManager: host.getRowSelectionManager(),
     rowStateMap: host.getRowStateMap(),
     scrollManager: host.getScrollManager(),
-    sectionScrollController: host.getSectionScrollController(),
+    horizontalScroll: host.getHorizontalScroll(),
     selectionManager: host.getSelectionManager(),
     sortManager: host.getSortManager(),
     onRender: () => host.onRender("resizeHandler-onRender"),

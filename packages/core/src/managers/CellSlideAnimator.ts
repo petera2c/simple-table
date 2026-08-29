@@ -147,7 +147,7 @@ export class CellSlideAnimator {
       null;
     const hostEl = scrollHost as HTMLElement | null;
     const band: ParkBand = {
-      scrollOffset: hostEl ? hostEl.scrollLeft : 0,
+      scrollOffset: hostEl ? Number(hostEl.dataset.stScrollX ?? 0) || 0 : 0,
       clientSize: hostEl
         ? hostEl.clientWidth
         : typeof window !== "undefined"

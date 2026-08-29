@@ -6,6 +6,7 @@ import { findParentHeader } from "../collapseUtils";
 import { getCellId, isHeaderExcludedFromLayout } from "../cellUtils";
 import { getElementByIdInTable, queryAllInTable, queryInTable, resolveTableRoot, escapeTableAttrValue } from "../tableDomScope";
 import { syncHorizontalScrollbarLayout } from "../horizontalScrollbarRenderer";
+import { findHorizontalScrollEngine } from "../../managers/horizontalScroll";
 import { recalculateAllSectionWidths } from "./sectionWidths";
 
 /**
@@ -192,12 +193,26 @@ export const updateColumnWidthsInDOM = (
   const enableColumnEditor = Boolean(
     queryInTable(root, ".st-column-editor:not(.st-column-editor--no-toggle)"),
   );
-  if (
-    hScroll &&
-    mainBody &&
-    tableContainer &&
-    mainBody.scrollWidth - mainBody.clientWidth > 1
-  ) {
+  const engine = findHorizontalScrollEngine(root);
+  if (engine && mainBody) {
+    engine.setSectionMetrics("main", {
+      contentWidth: mainWidth,
+      viewportWidth: mainBody.clientWidth,
+    });
+    if (leftWidth > 0) {
+      engine.setSectionMetrics("pinned-left", {
+        contentWidth: leftContentWidth,
+        viewportWidth: leftWidth,
+      });
+    }
+    if (rightWidth > 0) {
+      engine.setSectionMetrics("pinned-right", {
+        contentWidth: rightContentWidth,
+        viewportWidth: rightWidth,
+      });
+    }
+  }
+  if (hScroll && mainBody && tableContainer) {
     syncHorizontalScrollbarLayout(hScroll, {
       mainBodyRef: mainBody,
       mainBodyWidth: mainWidth,

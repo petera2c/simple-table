@@ -17,7 +17,7 @@ import type { PivotManager } from "../../managers/PivotManager";
 import type { SelectionManager } from "../../managers/SelectionManager";
 import type { RowSelectionManager } from "../../managers/RowSelectionManager";
 import type { ScrollManager } from "../../managers/ScrollManager";
-import type { SectionScrollController } from "../../managers/SectionScrollController";
+import type { HorizontalScrollEngine } from "../../managers/horizontalScroll";
 import type { DOMManager } from "../dom/DOMManager";
 import type { RenderOrchestrator } from "../rendering/RenderOrchestrator";
 import type {
@@ -93,7 +93,7 @@ export interface VanillaLiveHost {
   getSelectionManager(): SelectionManager | null;
   getRowSelectionManager(): RowSelectionManager | null;
   getScrollManager(): ScrollManager | null;
-  getSectionScrollController(): SectionScrollController | null;
+  getHorizontalScroll(): HorizontalScrollEngine | null;
   getExternalScrollController(): ExternalScrollController;
   getExpandedDepthsManager(): ExpandedDepthsManager | null;
 

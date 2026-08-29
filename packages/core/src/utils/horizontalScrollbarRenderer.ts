@@ -1,7 +1,7 @@
 // Vanilla JS horizontal scrollbar renderer
 // Replaces TableHorizontalScrollbar.tsx React component
 
-import type { SectionScrollController } from "../managers/SectionScrollController";
+import type { HorizontalScrollEngine } from "../managers/horizontalScroll";
 import { COLUMN_EDIT_WIDTH, PINNED_BORDER_WIDTH } from "../consts/general-consts";
 
 export interface HorizontalScrollbarProps {
@@ -14,12 +14,9 @@ export interface HorizontalScrollbarProps {
   tableBodyContainerRef: HTMLDivElement;
   /** True when the column-editor toggle strip is visible and reserves horizontal space. */
   enableColumnEditor: boolean;
-  sectionScrollController?: SectionScrollController | null;
+  horizontalScroll?: HorizontalScrollEngine | null;
   /**
-   * When true, skip the DOM scrollWidth check and always build the scrollbar.
-   * Used after the caller has already verified content overflow (e.g. empty
-   * tables where the header scrollport is sized to content and reports no
-   * DOM overflow even though columns exceed the viewport).
+   * When true, skip the column-width overflow check and always build the bar.
    */
   forceScrollable?: boolean;
 }
@@ -36,19 +33,13 @@ export const createHorizontalScrollbar = (
     pinnedRightContentWidth,
     tableBodyContainerRef,
     enableColumnEditor,
-    sectionScrollController,
+    horizontalScroll,
     forceScrollable = false,
   } = props;
 
-  // Visibility uses the larger of DOM scrollWidth and the known content width
-  // (`mainBodyWidth`). Body scrollWidth alone can under-report when column
-  // virtualization culls off-screen cells, and empty tables have no body
-  // scrollport at all (callers pass the header section as `mainBodyRef`).
   if (!forceScrollable) {
     const clientWidth = mainBodyRef.clientWidth;
-    const scrollWidth = Math.max(mainBodyRef.scrollWidth, mainBodyWidth);
-    const threshold = 1;
-    if (scrollWidth - clientWidth <= threshold) {
+    if (mainBodyWidth - clientWidth <= 1) {
       return null;
     }
   }
@@ -78,7 +69,7 @@ export const createHorizontalScrollbar = (
     leftSection.appendChild(leftInner);
 
     container.appendChild(leftSection);
-    sectionScrollController?.registerPane("pinned-left", leftSection, "scrollbar");
+    horizontalScroll?.registerPane("pinned-left", leftSection, "scrollbar");
   }
 
   // Create main section
@@ -91,7 +82,7 @@ export const createHorizontalScrollbar = (
     mainSection.appendChild(mainInner);
 
     container.appendChild(mainSection);
-    sectionScrollController?.registerPane("main", mainSection, "scrollbar");
+    horizontalScroll?.registerPane("main", mainSection, "scrollbar");
   }
 
   // Create right section
@@ -105,7 +96,7 @@ export const createHorizontalScrollbar = (
     rightSection.appendChild(rightInner);
 
     container.appendChild(rightSection);
-    sectionScrollController?.registerPane("pinned-right", rightSection, "scrollbar");
+    horizontalScroll?.registerPane("pinned-right", rightSection, "scrollbar");
   }
 
   // Create editor spacer
@@ -189,21 +180,21 @@ export const syncHorizontalScrollbarLayout = (
 
 export const cleanupHorizontalScrollbar = (
   container: HTMLElement,
-  sectionScrollController?: SectionScrollController | null,
+  horizontalScroll?: HorizontalScrollEngine | null,
 ): void => {
-  if (sectionScrollController) {
+  if (horizontalScroll) {
     const leftSection = container.querySelector(".st-horizontal-scrollbar-left");
     const mainSection = container.querySelector(".st-horizontal-scrollbar-middle");
     const rightSection = container.querySelector(".st-horizontal-scrollbar-right");
 
     if (leftSection instanceof HTMLElement) {
-      sectionScrollController.unregisterPane("pinned-left", leftSection);
+      horizontalScroll.unregisterPane("pinned-left", leftSection);
     }
     if (mainSection instanceof HTMLElement) {
-      sectionScrollController.unregisterPane("main", mainSection);
+      horizontalScroll.unregisterPane("main", mainSection);
     }
     if (rightSection instanceof HTMLElement) {
-      sectionScrollController.unregisterPane("pinned-right", rightSection);
+      horizontalScroll.unregisterPane("pinned-right", rightSection);
     }
   }
 

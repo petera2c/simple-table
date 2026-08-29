@@ -25,7 +25,7 @@ import {
   type ColumnDef,
   type Row,
 } from "../../src/index";
-import { waitForTable, waitUntil } from "./testUtils";
+import { waitForTable, waitUntil, setMainScrollX, findTableHorizontalScroll } from "./testUtils";
 
 /** Slow default so mid-drag FLIP is easy to follow in the playground / continuity play. */
 const SLOW_DURATION = 1500;
@@ -459,8 +459,7 @@ const ensureLeavesInView = async (
   // usually brings the full 8-leaf set into the virtualized window.
   const candidates = [0, 120, 200, 280, 360, 480, 600, 800];
   for (const scrollLeft of candidates) {
-    bodyMain.scrollLeft = scrollLeft;
-    bodyMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+    setMainScrollX(canvasElement, scrollLeft);
     await sleep(80);
     await new Promise((r) => requestAnimationFrame(() => r(undefined)));
     if (allPresent()) return;
@@ -1666,8 +1665,7 @@ export const TrackListSlowLeftwardNoJitter = {
     await ensureLeavesInView(canvasElement, SPOTIFY_7D_LEAVES);
     const bodyMain = canvasElement.querySelector<HTMLElement>(".st-body-main");
     if (bodyMain) {
-      bodyMain.scrollLeft = 0;
-      bodyMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+      setMainScrollX(canvasElement, 0);
       await sleep(40);
     }
 
@@ -1786,24 +1784,18 @@ const isSettledLeaf = (canvasElement: HTMLElement, accessor: string): boolean =>
 
 /** Keep horizontal scroll fixed so viewport visuals aren't shifted by clamp/reflow. */
 const freezeMainScroll = (canvasElement: HTMLElement): (() => void) => {
-  const panes = [
-    canvasElement.querySelector<HTMLElement>(".st-body-main"),
-    canvasElement.querySelector<HTMLElement>(".st-header-main"),
-  ].filter((el): el is HTMLElement => !!el);
-  if (panes.length === 0) return () => undefined;
-  const locked = panes[0].scrollLeft;
-  for (const pane of panes) pane.scrollLeft = locked;
-  const onScroll = (event: Event) => {
-    const target = event.target as HTMLElement;
-    if (target.scrollLeft !== locked) target.scrollLeft = locked;
-  };
-  for (const pane of panes) pane.addEventListener("scroll", onScroll);
-  return () => {
-    for (const pane of panes) {
-      pane.removeEventListener("scroll", onScroll);
-      pane.scrollLeft = locked;
+  const engine = findTableHorizontalScroll(canvasElement);
+  if (!engine) return () => undefined;
+  const locked = engine.getSectionScrollLeft("main");
+  let raf = 0;
+  const tick = () => {
+    if (engine.getSectionScrollLeft("main") !== locked) {
+      engine.setSectionScrollLeft("main", locked);
     }
+    raf = requestAnimationFrame(tick);
   };
+  raf = requestAnimationFrame(tick);
+  return () => cancelAnimationFrame(raf);
 };
 
 /** Drop motions that have finished so later progress checks don't treat them as mid-flight. */
@@ -2044,8 +2036,7 @@ export const TrackListTenInterruptContinuity = {
     await ensureLeavesInView(canvasElement, SPOTIFY_7D_LEAVES);
     const bodyMain = canvasElement.querySelector<HTMLElement>(".st-body-main");
     if (bodyMain) {
-      bodyMain.scrollLeft = 0;
-      bodyMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+      setMainScrollX(canvasElement, 0);
       await sleep(40);
     }
 

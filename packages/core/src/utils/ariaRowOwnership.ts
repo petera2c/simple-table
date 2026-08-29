@@ -51,7 +51,7 @@ export const getOrCreateRowElement = (
     rowEl.setAttribute("role", "row");
     // `display: contents` => no box, no containing block, no layout impact, so
     // the absolutely-positioned cell children keep resolving against the
-    // section (their nearest positioned ancestor) exactly as before.
+    // scroll layer (their nearest positioned ancestor).
     rowEl.style.display = "contents";
     container.appendChild(rowEl);
     rowElements.set(rowKey, rowEl);

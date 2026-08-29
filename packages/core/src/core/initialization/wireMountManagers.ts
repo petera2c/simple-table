@@ -5,7 +5,7 @@ import type { Accessor } from "../../types/ColumnDef";
 import type { DOMRefs } from "../dom/DOMManager";
 import { DimensionManager } from "../../managers/DimensionManager";
 import { ScrollManager } from "../../managers/ScrollManager";
-import { SectionScrollController } from "../../managers/SectionScrollController";
+import { HorizontalScrollEngine } from "../../managers/horizontalScroll";
 import { AutoScaleManager } from "../../managers/AutoScaleManager";
 import { SelectionManager } from "../../managers/SelectionManager";
 import WindowResizeManager from "../../hooks/windowResize";
@@ -27,12 +27,13 @@ export interface MountManagersHost {
   onFirstDimensionPaint(): void;
   onScrollbarVisibilityChange(isScrollable: boolean, scrollbarWidth: number): void;
   onScrollbarWidthChange(scrollbarWidth: number): void;
+  attachHorizontalScroll(engine: HorizontalScrollEngine): void;
 }
 
 export interface MountManagers {
   dimensionManager: DimensionManager;
   scrollManager: ScrollManager;
-  sectionScrollController: SectionScrollController;
+  horizontalScroll: HorizontalScrollEngine;
   autoScaleManager: AutoScaleManager | null;
   scrollbarVisibilityManager: ScrollbarVisibilityManager | null;
   windowResizeManager: WindowResizeManager;
@@ -50,6 +51,23 @@ export const wireMountManagers = (host: MountManagersHost, refs: DOMRefs): Mount
   const config = host.getConfig();
   const customTheme = host.getCustomTheme();
   let scrollbarWidth = calculateScrollbarWidth(refs.tableBodyContainerRef.current);
+
+  const horizontalScroll = new HorizontalScrollEngine({
+    // Column virtualization in the main section follows this offset.
+    onMainSectionScrollLeft: (scrollLeft) => {
+      const sel = host.getSelectionManager();
+      const liveConfig = host.getConfig();
+      const liveSelection =
+        sel && (liveConfig.selectableCells || liveConfig.selectableColumns)
+          ? {
+              columnsWithSelectedCells: sel.getColumnsWithSelectedCells(),
+              selectedColumns: sel.getSelectedColumns(),
+            }
+          : undefined;
+      host.getRenderOrchestrator().virtualizeMainColumnsForScroll(scrollLeft, liveSelection);
+    },
+  });
+  host.attachHorizontalScroll(horizontalScroll);
 
   const effectiveHeaders = host
     .getRenderOrchestrator()
@@ -82,21 +100,6 @@ export const wireMountManagers = (host: MountManagersHost, refs: DOMRefs): Mount
   const scrollManager = new ScrollManager({
     onLoadMore: config.onLoadMore,
     infiniteScrollThreshold: config.infiniteScrollThreshold ?? 200,
-  });
-
-  const sectionScrollController = new SectionScrollController({
-    onMainSectionScrollLeft: (scrollLeft) => {
-      const sel = host.getSelectionManager();
-      const liveConfig = host.getConfig();
-      const liveSelection =
-        sel && (liveConfig.selectableCells || liveConfig.selectableColumns)
-          ? {
-              columnsWithSelectedCells: sel.getColumnsWithSelectedCells(),
-              selectedColumns: sel.getSelectedColumns(),
-            }
-          : undefined;
-      host.getRenderOrchestrator().virtualizeMainColumnsForScroll(scrollLeft, liveSelection);
-    },
   });
 
   let autoScaleManager: AutoScaleManager | null = null;
@@ -163,7 +166,7 @@ export const wireMountManagers = (host: MountManagersHost, refs: DOMRefs): Mount
   return {
     dimensionManager,
     scrollManager,
-    sectionScrollController,
+    horizontalScroll,
     autoScaleManager,
     scrollbarVisibilityManager,
     windowResizeManager,

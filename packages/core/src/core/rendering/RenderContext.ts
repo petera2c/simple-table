@@ -6,7 +6,7 @@ import Row from "../../types/Row";
 import RowState from "../../types/RowState";
 import { DimensionManager } from "../../managers/DimensionManager";
 import { ScrollManager } from "../../managers/ScrollManager";
-import type { SectionScrollController } from "../../managers/SectionScrollController";
+import type { HorizontalScrollEngine } from "../../managers/horizontalScroll";
 import { SortManager } from "../../managers/SortManager";
 import { FilterManager } from "../../managers/FilterManager";
 import { SelectionManager } from "../../managers/SelectionManager";
@@ -74,7 +74,7 @@ export interface RenderContext {
   rowSelectionManager: RowSelectionManager | null;
   rowStateMap: Map<string | number, RowState>;
   scrollManager: ScrollManager | null;
-  sectionScrollController: SectionScrollController | null;
+  horizontalScroll: HorizontalScrollEngine | null;
   selectionManager: SelectionManager | null;
   setCollapsedHeaders: (headers: Set<Accessor>) => void;
   setCollapsedRows: (rows: Map<string, number>) => void;

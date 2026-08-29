@@ -16,7 +16,7 @@
 
 import { ColumnDef, Row, SimpleTableVanilla } from "../../src/index";
 import { expect, userEvent } from "@storybook/test";
-import { waitForTable } from "./testUtils";
+import { waitForTable, setMainScrollX, mainContentWidth, mainOverflowsX } from "./testUtils";
 import { renderVanillaTable } from "../utils";
 import type { Meta } from "@storybook/html";
 
@@ -86,15 +86,13 @@ const bodyMainOf = (canvasElement: HTMLElement): HTMLElement => {
   return bodyMain!;
 };
 
-const hasHorizontalScroll = (canvasElement: HTMLElement): boolean => {
-  const bodyMain = bodyMainOf(canvasElement);
-  return bodyMain.scrollWidth > bodyMain.clientWidth + 2;
-};
+const hasHorizontalScroll = (canvasElement: HTMLElement): boolean =>
+  mainOverflowsX(canvasElement);
 
 /** Horizontal overflow in px (0 when the columns fit the viewport). */
 const horizontalOverflowOf = (canvasElement: HTMLElement): number => {
   const bodyMain = bodyMainOf(canvasElement);
-  return bodyMain.scrollWidth - bodyMain.clientWidth;
+  return Math.max(0, mainContentWidth(canvasElement) - bodyMain.clientWidth);
 };
 
 /** Wait (bounded) for post-drag re-renders to settle the overflow state. */
@@ -116,9 +114,7 @@ const scrollMainTo = async (
   canvasElement: HTMLElement,
   scrollLeft: number,
 ): Promise<void> => {
-  const bodyMain = bodyMainOf(canvasElement);
-  bodyMain.scrollLeft = scrollLeft;
-  bodyMain.dispatchEvent(new Event("scroll", { bubbles: true }));
+  setMainScrollX(canvasElement, scrollLeft);
   await wait(200);
 };
 
@@ -246,8 +242,7 @@ export const AutoWidthDeficitScrollsNoSqueeze = {
 
     // The last column is virtualized out of view; scroll it in and verify it
     // also kept its natural width.
-    const bodyMain = bodyMainOf(canvasElement);
-    await scrollMainTo(canvasElement, bodyMain.scrollWidth);
+    await scrollMainTo(canvasElement, mainContentWidth(canvasElement));
     expect(
       Math.abs(widthOf(canvasElement, "Department") - 300),
     ).toBeLessThanOrEqual(WIDTH_TOLERANCE);
@@ -355,7 +350,7 @@ export const AutoExpandDragIntoOverflowAndBack = {
 
     // Scroll the (virtualized) neighbors into view: both floored at their
     // natural (declared) 150s, not at the 40px hard minimum.
-    await scrollMainTo(canvasElement, bodyMainOf(canvasElement).scrollWidth);
+    await scrollMainTo(canvasElement, mainContentWidth(canvasElement));
     expect(widthOf(canvasElement, "Beta")).toBeGreaterThanOrEqual(148);
     expect(widthOf(canvasElement, "Beta")).toBeLessThanOrEqual(165);
     expect(widthOf(canvasElement, "Gamma")).toBeGreaterThanOrEqual(148);
@@ -415,7 +410,7 @@ export const AutoWidthNeighborFloorsAtMeasuredWidth = {
     expect(horizontalOverflowOf(canvasElement)).toBeGreaterThan(100);
 
     // Scroll the (virtualized) neighbors into view.
-    await scrollMainTo(canvasElement, bodyMainOf(canvasElement).scrollWidth);
+    await scrollMainTo(canvasElement, mainContentWidth(canvasElement));
 
     // The auto column floored at its measured content width (roughly 250–520
     // for `longText`), NOT at the 40px hard minimum.
@@ -582,8 +577,7 @@ export const AutoWidthDataUpdateGrowsPastThreshold = {
 
     // The last column is virtualized out of view; scroll it in and verify it
     // is back at its natural width too.
-    const bodyMain = bodyMainOf(canvasElement);
-    await scrollMainTo(canvasElement, bodyMain.scrollWidth);
+    await scrollMainTo(canvasElement, mainContentWidth(canvasElement));
     expect(Math.abs(widthOf(canvasElement, "City") - 250)).toBeLessThanOrEqual(WIDTH_TOLERANCE);
   },
 };

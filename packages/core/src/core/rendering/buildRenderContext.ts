@@ -8,7 +8,7 @@ import type { PivotConfig } from "../../types/PivotTypes";
 import type { AnimationCoordinator } from "../../managers/AnimationCoordinator";
 import type { DimensionManager } from "../../managers/DimensionManager";
 import type { ScrollManager } from "../../managers/ScrollManager";
-import type { SectionScrollController } from "../../managers/SectionScrollController";
+import type { HorizontalScrollEngine } from "../../managers/horizontalScroll";
 import type { SortManager } from "../../managers/SortManager";
 import type { FilterManager } from "../../managers/FilterManager";
 import type { SelectionManager } from "../../managers/SelectionManager";
@@ -53,7 +53,7 @@ export interface RenderContextSource {
   rowSelectionManager: RowSelectionManager | null;
   rowStateMap: Map<string | number, RowState>;
   scrollManager: ScrollManager | null;
-  sectionScrollController: SectionScrollController | null;
+  horizontalScroll: HorizontalScrollEngine | null;
   selectionManager: SelectionManager | null;
   sortManager: SortManager | null;
   onRender: () => void;
@@ -121,7 +121,7 @@ export const buildRenderContext = (source: RenderContextSource): RenderContext =
   rowSelectionManager: source.rowSelectionManager,
   rowStateMap: source.rowStateMap,
   scrollManager: source.scrollManager,
-  sectionScrollController: source.sectionScrollController,
+  horizontalScroll: source.horizontalScroll,
   selectionManager: source.selectionManager,
   sortManager: source.sortManager,
   onRender: source.onRender,

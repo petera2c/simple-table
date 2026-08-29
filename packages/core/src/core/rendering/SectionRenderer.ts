@@ -28,6 +28,7 @@ import {
   type NestedGridRowEntry,
   type StateRowEntry,
 } from "./sectionExtraRows";
+import { ensureHorizontalScrollLayer, getHorizontalScrollContentHost } from "../../managers/horizontalScroll";
 
 /** Live selection sets merged into the last header paint during horizontal scroll. */
 export interface HeaderScrollLiveSelection {
@@ -57,6 +58,8 @@ export interface HeaderSectionParams {
   context: HeaderRenderContext;
   sectionWidth?: number;
   startColIndex?: number;
+  /** Horizontal offset for column virtualization. */
+  scrollLeft?: number;
 }
 
 export interface BodySectionParams {
@@ -86,6 +89,8 @@ export interface BodySectionParams {
   /** When provided, body cell renderer hands outgoing cells to the coordinator
    * for FLIP-style out-animation instead of removing them immediately. */
   animationCoordinator?: AnimationCoordinator;
+  /** Horizontal offset for column virtualization. */
+  scrollLeft?: number;
 }
 
 export class SectionRenderer {
@@ -132,6 +137,7 @@ export class SectionRenderer {
       context,
       sectionWidth,
       startColIndex = 0,
+      scrollLeft: scrollLeftParam = 0,
     } = params;
 
     const sectionKey = pinned || "main";
@@ -158,7 +164,10 @@ export class SectionRenderer {
     });
 
     if (filteredHeaders.length === 0) {
-      cleanupHeaderCellRendering(section, this.onRendererHostDiscard);
+      cleanupHeaderCellRendering(
+        getHorizontalScrollContentHost(section),
+        this.onRendererHostDiscard,
+      );
       section.style.display = "none";
       return section;
     }
@@ -194,19 +203,15 @@ export class SectionRenderer {
       sectionWidth,
     );
 
-    // Render with current scrollLeft to preserve scroll position during re-renders
-    const currentScrollLeft = section.scrollLeft;
-    renderHeaderCells(section, absoluteCells, cachedContext, currentScrollLeft);
-    // Restore header scroll after render so the browser doesn't reset it (which would trigger header→body sync and reset body scroll)
-    if (!pinned && currentScrollLeft !== section.scrollLeft) {
-      section.scrollLeft = currentScrollLeft;
-    }
+    const host = ensureHorizontalScrollLayer(section);
+    const currentScrollLeft = scrollLeftParam;
+    renderHeaderCells(host, absoluteCells, cachedContext, currentScrollLeft);
 
     // Keep the last main-header paint so horizontal scroll can re-virtualize
     // columns without a full header render. Pass live selection sets when the
     // header has not re-rendered since selection last changed.
     if (!pinned) {
-      this.mainHeaderScrollPaint = { section, absoluteCells, cachedContext };
+      this.mainHeaderScrollPaint = { section: host, absoluteCells, cachedContext };
     }
 
     return section;
@@ -231,6 +236,7 @@ export class SectionRenderer {
       allFlattenedRows,
       pageStartIndex,
       animationCoordinator,
+      scrollLeft: scrollLeftParam = 0,
     } = params;
 
     const sectionKey = pinned || "main";
@@ -342,11 +348,11 @@ export class SectionRenderer {
       sectionWidth,
     );
 
-    // Render with current scrollLeft to preserve scroll position during re-renders.
-    // Pass full rows so separators and nested grid rows account for every row.
-    const currentScrollLeft = section.scrollLeft;
+    // Render into the slide layer so header and body share one horizontal offset.
+    const host = ensureHorizontalScrollLayer(section);
+    const currentScrollLeft = scrollLeftParam;
     renderBodyCells(
-      section,
+      host,
       absoluteCells,
       cachedContext,
       currentScrollLeft,
@@ -358,7 +364,7 @@ export class SectionRenderer {
 
     // Render nested grid rows (full-width rows that contain a nested SimpleTable) or spacers in pinned sections
     renderNestedGridRows(
-      section,
+      host,
       sectionKey,
       rows,
       pinned,
@@ -371,7 +377,7 @@ export class SectionRenderer {
     // Render state indicator rows (loading/error/empty) as full-width rows – only in main (non-pinned) section
     if (!pinned) {
       renderStateRows(
-        section,
+        host,
         sectionKey,
         rows,
         cachedContext,
@@ -383,7 +389,7 @@ export class SectionRenderer {
     // Keep the last main-body paint so horizontal scroll can re-virtualize
     // columns without a full body render.
     if (!pinned) {
-      this.mainBodyScrollPaint = { section, absoluteCells, cachedContext, rows };
+      this.mainBodyScrollPaint = { section: host, absoluteCells, cachedContext, rows };
     }
 
     return section!;
@@ -438,11 +444,17 @@ export class SectionRenderer {
       this.caches.clearAll();
       // Clear rendered cell elements from all body sections
       this.bodySections.forEach((section) => {
-        cleanupBodyCellRendering(section, this.onRendererHostDiscard);
+        cleanupBodyCellRendering(
+          getHorizontalScrollContentHost(section),
+          this.onRendererHostDiscard,
+        );
       });
       // Clear rendered cell elements from all header sections
       this.headerSections.forEach((section) => {
-        cleanupHeaderCellRendering(section, this.onRendererHostDiscard);
+        cleanupHeaderCellRendering(
+          getHorizontalScrollContentHost(section),
+          this.onRendererHostDiscard,
+        );
       });
     } else if (type === "body") {
       // Only clear the calculated cells cache so we recompute the cell list (e.g. after expand/collapse).
@@ -546,7 +558,10 @@ export class SectionRenderer {
   releaseHeaderSection(sectionKey: string): boolean {
     const section = this.headerSections.get(sectionKey);
     if (!section) return false;
-    cleanupHeaderCellRendering(section, this.onRendererHostDiscard);
+    cleanupHeaderCellRendering(
+      getHorizontalScrollContentHost(section),
+      this.onRendererHostDiscard,
+    );
     section.remove();
     this.headerSections.delete(sectionKey);
     this.nextColIndexMap.delete(sectionKey);
@@ -565,7 +580,10 @@ export class SectionRenderer {
    */
   releaseBodySections(): void {
     this.bodySections.forEach((section) => {
-      cleanupBodyCellRendering(section, this.onRendererHostDiscard);
+      cleanupBodyCellRendering(
+        getHorizontalScrollContentHost(section),
+        this.onRendererHostDiscard,
+      );
       section.remove();
     });
     this.bodySections.clear();

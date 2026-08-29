@@ -52,7 +52,7 @@
 
 import { ColumnDef, SimpleTableVanilla, Row } from "../../src/index";
 import { expect } from "@storybook/test";
-import { waitForTable } from "./testUtils";
+import { waitForTable, getMainScrollX, setMainScrollX, mainContentWidth, mainOverflowsX } from "./testUtils";
 import { addParagraph, addControlPanel } from "../utils";
 import type { Meta } from "@storybook/html";
 
@@ -767,9 +767,9 @@ export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
     const mainBody = canvasElement.querySelector<HTMLElement>(".st-body-main");
     expect(mainBody, "Need .st-body-main for viewport bounds").toBeTruthy();
     expect(
-      mainBody!.scrollWidth,
-      ".st-body-main scrollWidth should exceed clientWidth so columns virtualize",
-    ).toBeGreaterThan(mainBody!.clientWidth);
+      mainOverflowsX(canvasElement),
+      ".st-body-main content should exceed clientWidth so columns virtualize",
+    ).toBe(true);
 
     // Deterministic layout geometry: the `left` of every column is the sum of
     // the widths of the columns before it in the *current* header order. We
@@ -807,11 +807,10 @@ export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
       scrollTarget: number,
       expectedScaledSign: 1 | -1,
     ): Promise<void> => {
-      mainBody!.scrollLeft = scrollTarget;
-      mainBody!.dispatchEvent(new Event("scroll", { bubbles: true }));
+      setMainScrollX(canvasElement, scrollTarget);
       await tickFrames(4);
 
-      const scrollLeftPre = mainBody!.scrollLeft;
+      const scrollLeftPre = getMainScrollX(canvasElement);
       const clientWidth = mainBody!.clientWidth;
 
       const beforeOrder = table.getAPI().getHeaders();
@@ -936,7 +935,7 @@ export const ReorderAtScaleAnimatesFromPreviousPositionPerCell = {
     // Phase 2 — scrolled to the right edge; reversing back brings the original
     // left-side columns (now off-screen left) into the right-side band → scaled,
     // sliding RIGHT (-tx). This also restores the original column order.
-    await runReversePhase("Phase 2 (scrolled right)", mainBody!.scrollWidth, -1);
+    await runReversePhase("Phase 2 (scrolled right)", mainContentWidth(canvasElement), -1);
 
     announce(status, "Done.");
     expect(countGhosts(canvasElement)).toBe(0);
@@ -1665,7 +1664,7 @@ export const PacedSpamSortPaintedContinuity400 = {
     } => {
       const scroller = findScroller(canvasElement);
       const bandTop = scroller?.scrollTop ?? 0;
-      const bandLeft = scroller?.scrollLeft ?? 0;
+      const bandLeft = getMainScrollX(canvasElement);
       return {
         bandTop,
         bandBottom: bandTop + (scroller?.clientHeight ?? VIEWPORT_HEIGHT),
@@ -1994,23 +1993,20 @@ export const ReorderAfterHorizontalScrollRetainsExitingCellsAsGhosts = {
     await sleep(BEAT);
     const table = getTable();
 
-    // The horizontally scrollable element is .st-body-main (overflow: auto,
-    // content is wider than the viewport). Setting scrollLeft fires the
-    // scroll handler which the SectionScrollController listens for and
-    // propagates to other panes (sticky header, scrollbar).
+    // The main header and body share one horizontal offset owned by the
+    // table's scroll engine. Setting that offset re-virtualizes columns.
     const mainBody = canvasElement.querySelector<HTMLElement>(".st-body-main");
     expect(mainBody, "Need a horizontally scrollable .st-body-main").toBeTruthy();
     expect(
-      mainBody!.scrollWidth,
-      ".st-body-main scrollWidth should exceed clientWidth so it can scroll",
-    ).toBeGreaterThan(mainBody!.clientWidth);
+      mainOverflowsX(canvasElement),
+      ".st-body-main content should exceed clientWidth so it can scroll",
+    ).toBe(true);
 
-    mainBody!.scrollLeft = mainBody!.scrollWidth;
-    mainBody!.dispatchEvent(new Event("scroll", { bubbles: true }));
+    setMainScrollX(canvasElement, mainContentWidth(canvasElement));
     await tickFrames(4);
     await sleep(300);
 
-    const scrollLeftAtSnapshot = mainBody!.scrollLeft;
+    const scrollLeftAtSnapshot = getMainScrollX(canvasElement);
     expect(
       scrollLeftAtSnapshot,
       ".st-body-main should have scrolled to a meaningful right offset",

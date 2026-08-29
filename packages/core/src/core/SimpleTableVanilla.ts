@@ -22,7 +22,7 @@ import { ExternalScrollController } from "../managers/ExternalScrollController";
 import type { ExternalScrollMetrics } from "../utils/externalScroll";
 import type { ScrollManager } from "../managers/ScrollManager";
 import { ScrollRenderCoalescer } from "../managers/ScrollRenderCoalescer";
-import type { SectionScrollController } from "../managers/SectionScrollController";
+import type { HorizontalScrollEngine } from "../managers/horizontalScroll";
 import type { SortManager } from "../managers/SortManager";
 import type { FilterManager } from "../managers/FilterManager";
 import { PivotManager } from "../managers/PivotManager";
@@ -136,7 +136,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
   private autoScaleManager: AutoScaleManager | null = null;
   private dimensionManager: DimensionManager | null = null;
   private scrollManager: ScrollManager | null = null;
-  private sectionScrollController: SectionScrollController | null = null;
+  private horizontalScroll: HorizontalScrollEngine | null = null;
   private sortManager: SortManager | null = null;
   private filterManager: FilterManager | null = null;
   private pivotManager: PivotManager | null = null;
@@ -405,6 +405,10 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
         onScrollbarWidthChange: (scrollbarWidth) => {
           this.scrollbarWidth = scrollbarWidth;
         },
+        attachHorizontalScroll: (engine) => {
+          this.horizontalScroll = engine;
+          engine.bindRoot(this.getTableRoot());
+        },
       },
       refs,
     );
@@ -413,7 +417,6 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
 
     this.dimensionManager = mounted.dimensionManager;
     this.scrollManager = mounted.scrollManager;
-    this.sectionScrollController = mounted.sectionScrollController;
     this.autoScaleManager = mounted.autoScaleManager;
     this.scrollbarVisibilityManager = mounted.scrollbarVisibilityManager;
     this.windowResizeManager = mounted.windowResizeManager;
@@ -462,7 +465,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     const element = e.currentTarget as HTMLDivElement;
     this.scrollCoalescer.schedule({
       scrollTop: element.scrollTop,
-      scrollLeft: element.scrollLeft,
+      scrollLeft: 0,
       containerHeight: element.clientHeight,
       contentHeight: element.scrollHeight,
     });
@@ -692,7 +695,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       accordionController: this.accordionController,
       dimensionManager: this.dimensionManager,
       scrollManager: this.scrollManager,
-      sectionScrollController: this.sectionScrollController,
+      horizontalScroll: this.horizontalScroll,
       sortManager: this.sortManager,
       filterManager: this.filterManager,
       pivotManager: this.pivotManager,
@@ -820,7 +823,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       getSelectionManager: () => this.selectionManager,
       getRowSelectionManager: () => this.rowSelectionManager,
       getScrollManager: () => this.scrollManager,
-      getSectionScrollController: () => this.sectionScrollController,
+      getHorizontalScroll: () => this.horizontalScroll,
       getExternalScrollController: () => this.externalScrollController,
       getExpandedDepthsManager: () => this.expandedDepthsManager,
       syncPivotPipeline: (rows) => this.syncPivotPipeline(rows),

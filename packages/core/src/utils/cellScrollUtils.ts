@@ -4,6 +4,7 @@ import TableRow from "../types/TableRow";
 import { CustomTheme } from "../types/CustomTheme";
 import { rowIdToString } from "./rowUtils";
 import { queryInTable, escapeTableAttrValue } from "./tableDomScope";
+import { findHorizontalScrollEngine } from "../managers/horizontalScroll";
 
 /**
  * Fine-tunes the scroll position when a cell is already in the DOM
@@ -27,14 +28,19 @@ const fineTuneScroll = (
   }
 
   // Horizontal scrolling (if mainBody exists)
-  if (mainBody) {
+  if (mainBody instanceof HTMLElement) {
     const mainBodyRect = mainBody.getBoundingClientRect();
+    const engine = findHorizontalScrollEngine(mainBody);
     if (cellRect.left < mainBodyRect.left + scrollMargin) {
-      // Cell is left of viewport, scroll left
-      mainBody.scrollLeft -= mainBodyRect.left - cellRect.left + scrollMargin;
+      const delta = mainBodyRect.left - cellRect.left + scrollMargin;
+      if (engine) {
+        engine.setSectionScrollLeft("main", engine.getSectionScrollLeft("main") - delta);
+      }
     } else if (cellRect.right > mainBodyRect.right - scrollMargin) {
-      // Cell is right of viewport, scroll right
-      mainBody.scrollLeft += cellRect.right - mainBodyRect.right + scrollMargin;
+      const delta = cellRect.right - mainBodyRect.right + scrollMargin;
+      if (engine) {
+        engine.setSectionScrollLeft("main", engine.getSectionScrollLeft("main") + delta);
+      }
     }
   }
 };

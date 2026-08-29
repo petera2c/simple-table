@@ -3,6 +3,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 import { SimpleTable } from "../index";
 import type { ReactColumnDef } from "../index";
+import { writePaneScrollX } from "../../../core/src/managers/horizontalScroll";
 
 /**
  * Horizontal column virtualization on the main section: only columns that
@@ -10,11 +11,6 @@ import type { ReactColumnDef } from "../index";
  * the 20px virtualization threshold updates both body and header cells for
  * that band. Pinned columns stay mounted because they do not virtualize
  * horizontally.
- *
- * jsdom does not fire `scroll` when `scrollLeft` is assigned, and it clamps
- * `scrollLeft` to 0 when layout overflow is zero. The test writes an
- * unclamped `scrollLeft` and dispatches `scroll` so SectionScrollController
- * sees the new position.
  */
 
 const COLUMN_COUNT = 30;
@@ -76,14 +72,6 @@ function accessorsIn(section: Element | null, cellSelector: string): Set<string>
   );
 }
 
-function setUnclampedScrollLeft(element: HTMLElement, value: number): void {
-  Object.defineProperty(element, "scrollLeft", {
-    configurable: true,
-    writable: true,
-    value,
-  });
-}
-
 describe("SimpleTable — horizontal column virtualization on scroll", () => {
   it("moves the main body and header cell band when the main section scrolls horizontally", async () => {
     const host = document.createElement("div");
@@ -104,11 +92,13 @@ describe("SimpleTable — horizontal column virtualization on scroll", () => {
     await waitFor(() => host.querySelectorAll(".st-body-main .st-cell").length > 0);
     await flushRaf(3);
 
+    const tableRoot = host.querySelector<HTMLElement>(".simple-table-root");
     const mainBody = host.querySelector<HTMLElement>(".st-body-main");
     const mainHeader = host.querySelector<HTMLElement>(".st-header-main");
     const pinnedBody = host.querySelector<HTMLElement>(".st-body-pinned-left");
     const pinnedHeader = host.querySelector<HTMLElement>(".st-header-pinned-left");
 
+    expect(tableRoot).not.toBeNull();
     expect(mainBody).not.toBeNull();
     expect(mainHeader).not.toBeNull();
     expect(pinnedBody).not.toBeNull();
@@ -124,8 +114,7 @@ describe("SimpleTable — horizontal column virtualization on scroll", () => {
     expect(accessorsIn(pinnedBody, ".st-cell").has("id")).toBe(true);
     expect(accessorsIn(pinnedHeader, ".st-header-cell").has("id")).toBe(true);
 
-    setUnclampedScrollLeft(mainBody!, SCROLL_LEFT);
-    mainBody!.dispatchEvent(new Event("scroll"));
+    writePaneScrollX(tableRoot!, "main", SCROLL_LEFT);
     await flushRaf(2);
 
     const bodyAfter = accessorsIn(mainBody, ".st-cell");
