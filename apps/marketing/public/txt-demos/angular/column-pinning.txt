@@ -1,8 +1,9 @@
 // column-pinning-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { columnPinningConfig } from "./column-pinning.demo-data";
 import "@simple-table/angular/styles.css";
+import type { ColumnPinningEmployee } from "./column-pinning.demo-data";
 
 @Component({
   selector: "column-pinning-demo",
@@ -10,6 +11,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -22,9 +24,11 @@ export class ColumnPinningDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = columnPinningConfig.rows;
-  readonly headers: AngularColumnDef[] = columnPinningConfig.headers;
+  readonly rows: ColumnPinningEmployee[] = columnPinningConfig.rows;
+  readonly headers: AngularColumnDef<ColumnPinningEmployee>[] = columnPinningConfig.headers;
   readonly columnResizing = columnPinningConfig.tableProps.columnResizing;
+
+  getRowId = ({ row }: GetRowIdParams<ColumnPinningEmployee>) => row.id;
 }
 
 
@@ -32,8 +36,21 @@ export class ColumnPinningDemoComponent {
 // Self-contained demo table setup for this example.
 import type { AngularColumnDef } from "@simple-table/angular";
 
+export interface ColumnPinningEmployee {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+  location: string;
+  joinDate: string;
+  salary: number;
+  manager: string;
+  status: string;
+  projects: number;
+}
 
-export const columnPinningHeaders: AngularColumnDef[] = [
+export const columnPinningHeaders: AngularColumnDef<ColumnPinningEmployee>[] = [
   { accessor: "name", label: "Name", width: 132, pinned: "left", type: "string" },
   { accessor: "email", label: "Email", width: 220, type: "string" },
   { accessor: "role", label: "Role", width: 150, type: "string" },
@@ -46,7 +63,7 @@ export const columnPinningHeaders: AngularColumnDef[] = [
   { accessor: "projects", label: "Projects", width: 100, align: "right", pinned: "right", type: "number" },
 ];
 
-export const columnPinningData = [
+export const columnPinningData: ColumnPinningEmployee[] = [
   { id: 1, name: "Zara Nakamura", email: "zara.n@pixelstudio.game", role: "Lead Game Designer", department: "Game Design", location: "Tokyo", joinDate: "2019-03-12", salary: 145000, manager: "Hiroshi Tanaka", status: "Active", projects: 7 },
   { id: 2, name: "Phoenix Rodriguez", email: "phoenix.r@pixelstudio.game", role: "3D Artist", department: "Art & Animation", location: "Montreal", joinDate: "2020-11-08", salary: 98000, manager: "Elena Volkov", status: "Active", projects: 4 },
   { id: 3, name: "Kai Thompson", email: "kai.t@pixelstudio.game", role: "Senior Programmer", department: "Engineering", location: "San Francisco", joinDate: "2018-05-15", salary: 135000, manager: "Nova Singh", status: "Active", projects: 6 },
@@ -65,4 +82,4 @@ export const columnPinningConfig = {
   headers: columnPinningHeaders,
   rows: columnPinningData,
   tableProps: { columnResizing: true },
-} as const;
+};

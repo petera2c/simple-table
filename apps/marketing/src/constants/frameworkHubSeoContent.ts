@@ -45,7 +45,12 @@ export function getFrameworkHubFaqItems(id: HubFrameworkId): FrameworkHubFaqItem
       {
         question: "Can I use standalone components?",
         answer:
-          "Yes. Import SimpleTableComponent into a standalone component or NgModule as usual; peers are listed in the Install section.",
+          "Yes. Import SimpleTableImports into a standalone component or NgModule. That brings in the table plus stCell, stEmpty, and the other page-template directives. Peers are listed in the Install section.",
+      },
+      {
+        question: "How do I customize cells and empty UI?",
+        answer:
+          "Put ng-template stCell and stEmpty inside the table tag. Match stCell to the column accessor. You can still pass an Angular component as cellRenderer on the column; a matching page template wins. Bind events as (sortChange) or (cellClick).",
       },
     ],
     svelte: [
@@ -81,7 +86,7 @@ export function getFrameworkHubWhyParagraph(id: HubFrameworkId): string {
     vue:
       "Build Vue 3 or Nuxt tables with a first-class component and predictable styling. The adapter mirrors core APIs so you can share column definitions and themes across teams that also use Simple Table on other stacks.",
     angular:
-      "Drop a production-ready grid into Angular apps with familiar module or standalone patterns. Keep enterprise features—editing, pinning, nested headers—without pulling in a massive commercial bundle.",
+      "Drop a production-ready grid into Angular apps. Use page templates for cells and empty UI, and bind events the Angular way. Keep editing, pinning, and nested headers without pulling in a massive commercial bundle.",
     svelte:
       "Use a Svelte-native component that fits stores, runes, or SvelteKit layouts. Same core as React and Vue, so migrating prototypes between stacks is straightforward.",
     solid:

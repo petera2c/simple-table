@@ -1,6 +1,12 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, RowSelectionChangeProps, SvelteColumnDef } from "@simple-table/svelte";
+  import type {
+    Theme,
+    RowSelectionChangeProps,
+    SvelteColumnDef,
+    CellRendererProps,
+    GetRowIdParams,
+  } from "@simple-table/svelte";
   import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
   import type { LibraryBook } from "./row-selection.demo-data";
   import "@simple-table/svelte/styles.css";
@@ -15,23 +21,24 @@
       : "None",
   );
 
-  const headers: SvelteColumnDef[] = rowSelectionConfig.headers.map((h) => {
+  const getRowId = ({ row }: GetRowIdParams<LibraryBook>) => row.id;
+
+  const headers: SvelteColumnDef<LibraryBook>[] = rowSelectionConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-          const s = String(row.status);
-          const color = s === "Available" ? "#16a34a" : s === "Checked Out" ? "#ea580c" : "#dc2626";
-          return `<span style="color:${color};font-weight:bold">${s}</span>`;
+        cellRenderer: ({ row }: CellRendererProps<LibraryBook>) => {
+          const color = row.status === "Available" ? "#16a34a" : row.status === "Checked Out" ? "#ea580c" : "#dc2626";
+          return `<span style="color:${color};font-weight:bold">${row.status}</span>`;
         },
       };
     }
     return { ...h };
   });
 
-  function handleRowSelectionChange(props: RowSelectionChangeProps) {
+  function handleRowSelectionChange({ selectedRows }: RowSelectionChangeProps<LibraryBook>) {
     selectedBooks = rowSelectionData.filter((book) =>
-      props.selectedRows.has(String(book.id)),
+      selectedRows.has(String(book.id)),
     );
   }
 </script>
@@ -52,6 +59,7 @@
   <SimpleTable
     columns={headers}
     rows={rowSelectionConfig.rows}
+    {getRowId}
     enableRowSelection={true}
     columnResizing={true}
     columnReordering={true}

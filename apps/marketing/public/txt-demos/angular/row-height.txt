@@ -1,8 +1,9 @@
 // row-height-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { rowHeightConfig } from "./row-height.demo-data";
 import "@simple-table/angular/styles.css";
+import type { ArchitectStaff } from "./row-height.demo-data";
 
 @Component({
   selector: "row-height-demo",
@@ -10,6 +11,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -22,9 +24,11 @@ export class RowHeightDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = rowHeightConfig.rows;
-  readonly headers: AngularColumnDef[] = rowHeightConfig.headers;
+  readonly rows: ArchitectStaff[] = rowHeightConfig.rows;
+  readonly headers: AngularColumnDef<ArchitectStaff>[] = rowHeightConfig.headers;
   readonly customTheme = rowHeightConfig.tableProps.customTheme;
+
+  getRowId = ({ row }: GetRowIdParams<ArchitectStaff>) => row.id;
 }
 
 
@@ -32,8 +36,15 @@ export class RowHeightDemoComponent {
 // Self-contained demo table setup for this example.
 import type { AngularColumnDef } from "@simple-table/angular";
 
+export interface ArchitectStaff {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+}
 
-export const rowHeightHeaders: AngularColumnDef[] = [
+export const rowHeightHeaders: AngularColumnDef<ArchitectStaff>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 150, width: "1fr", type: "string" },
   { accessor: "age", label: "Age", width: 100, type: "string" },
@@ -41,7 +52,7 @@ export const rowHeightHeaders: AngularColumnDef[] = [
   { accessor: "department", label: "Department", minWidth: 180, width: "1fr", type: "string" },
 ];
 
-export const rowHeightData = [
+export const rowHeightData: ArchitectStaff[] = [
   { id: 1, name: "Valentina Romano", age: 34, role: "Principal Architect", department: "Design" },
   { id: 2, name: "Mateo Fernandez", age: 29, role: "Project Architect", department: "Design" },
   { id: 3, name: "Amira Okafor", age: 41, role: "Design Director", department: "Leadership" },
@@ -60,4 +71,4 @@ export const rowHeightConfig = {
   headers: rowHeightHeaders,
   rows: rowHeightData,
   tableProps: { customTheme: { rowHeight: 32 } },
-} as const;
+};

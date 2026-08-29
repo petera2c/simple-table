@@ -1,14 +1,17 @@
 <script lang="ts">
   import { SimpleTable } from "@simple-table/svelte";
-  import type { Theme, SvelteColumnDef } from "@simple-table/svelte";
+  import type { Theme, SvelteColumnDef, TableAPI, GetRowIdParams } from "@simple-table/svelte";
   import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
+  import type { CsvProduct } from "./csv-export.demo-data";
   import "@simple-table/svelte/styles.css";
 
   let { height = "400px", theme }: { height?: string | number; theme?: Theme } = $props();
 
-  let tableRef: any;
+  let tableRef = $state<{ getAPI: () => TableAPI<CsvProduct> | null } | null>(null);
 
-  const headers: SvelteColumnDef[] = csvExportHeaders.map((h) => {
+  const getRowId = ({ row }: GetRowIdParams<CsvProduct>) => row.id;
+
+  const headers: SvelteColumnDef<CsvProduct>[] = csvExportHeaders.map((h) => {
     if (h.accessor === "actions") {
       return {
         ...h,
@@ -28,9 +31,9 @@
     if (!api) return;
     const rows = api.getAllRows();
     const hdrs = api.getHeaders();
-    const totalRevenue = rows.reduce((sum: number, r: Record<string, unknown>) => sum + (Number(r.revenue) || 0), 0);
+    const totalRevenue = rows.reduce((sum, r) => sum + r.row.revenue, 0);
     alert(
-      `Table Info:\n• ${rows.length} rows\n• ${hdrs.length} columns\n• Columns: ${hdrs.map((h: { label: string }) => h.label).join(", ")}\n• Total Revenue: $${totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      `Table Info:\n• ${rows.length} rows\n• ${hdrs.length} columns\n• Columns: ${hdrs.map((h) => h.label).join(", ")}\n• Total Revenue: $${totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     );
   }
 </script>
@@ -43,6 +46,7 @@
   <SimpleTable
     bind:this={tableRef}
     columns={headers}
+    {getRowId}
     rows={csvExportData}
     enableColumnEditor={csvExportConfig.tableProps.enableColumnEditor}
     selectableCells={csvExportConfig.tableProps.selectableCells}

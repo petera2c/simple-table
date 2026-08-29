@@ -1,22 +1,25 @@
 // external-filter-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, TableFilterState, Theme } from "@simple-table/angular";
-import { externalFilterConfig, matchesFilter } from "./external-filter.demo-data";
+import { SimpleTableImports } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, TableFilterState, Theme } from "@simple-table/angular";
+import { externalFilterConfig, isFilterableKey, matchesFilter } from "./external-filter.demo-data";
 import "@simple-table/angular/styles.css";
+import type { FilterableEmployee } from "./external-filter.demo-data";
 
 @Component({
   selector: "external-filter-demo",
   standalone: true,
-  imports: [SimpleTableComponent],
+  imports: [SimpleTableImports],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="filteredRows"
       [columns]="headers"
       [externalFilterHandling]="true"
       [columnResizing]="true"
       [height]="height"
       [theme]="theme"
-      [onFilterChange]="handleFilterChange"
+      (filterChange)="handleFilterChange($event)"
     ></simple-table>
   `,
 })
@@ -24,36 +27,64 @@ export class ExternalFilterDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularColumnDef[] = externalFilterConfig.headers;
-  private filters: TableFilterState = {};
+  readonly headers: AngularColumnDef<FilterableEmployee>[] = externalFilterConfig.headers;
+  private filters: TableFilterState<FilterableEmployee> = {};
 
-  handleFilterChange = (newFilters: TableFilterState) => {
+  handleFilterChange = (newFilters: TableFilterState<FilterableEmployee>) => {
     this.filters = newFilters;
   };
 
-  get filteredRows(): Row[] {
+  get filteredRows(): FilterableEmployee[] {
     const entries = Object.entries(this.filters);
-    if (entries.length === 0) return externalFilterConfig.rows as Row[];
+    if (entries.length === 0) return externalFilterConfig.rows ;
 
-    return (externalFilterConfig.rows as Row[]).filter((row) =>
-      entries.every(([accessor, filter]) =>
-        matchesFilter(row[accessor] as any, filter)
-      )
+    return (externalFilterConfig.rows ).filter((row) =>
+      entries.every(([accessor, filter]) => {
+        if (!isFilterableKey(accessor)) return true;
+        return matchesFilter(row[accessor], filter);
+      }),
     );
   }
+
+  getRowId = ({ row }: GetRowIdParams<FilterableEmployee>) => row.id;
 }
 
 
 // external-filter.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef, TableFilterState } from "@simple-table/angular";
+import type { AngularColumnDef, TableFilterState, ValueFormatterProps } from "@simple-table/angular";
 
+export interface FilterableEmployee {
+  id: number;
+  name: string;
+  age: number;
+  email: string;
+  salary: number;
+  department: string;
+  active: boolean;
+  location: string;
+}
+
+type FilterableKey = keyof FilterableEmployee;
+
+export function isFilterableKey(accessor: string): accessor is FilterableKey {
+  return (
+    accessor === "id" ||
+    accessor === "name" ||
+    accessor === "age" ||
+    accessor === "email" ||
+    accessor === "salary" ||
+    accessor === "department" ||
+    accessor === "active" ||
+    accessor === "location"
+  );
+}
 
 type CellValue = string | number | boolean | null | undefined;
 
 export function matchesFilter(
   value: CellValue,
-  filter: TableFilterState[string]
+  filter: TableFilterState<FilterableEmployee>[string]
 ): boolean {
   const { operator } = filter;
 
@@ -122,7 +153,7 @@ const LOCATION_OPTIONS = [
   { label: "Moscow", value: "Moscow" },
 ];
 
-export const externalFilterData = [
+export const externalFilterData: FilterableEmployee[] = [
   { id: 1, name: "Dr. Elena Vasquez", age: 42, email: "elena.vasquez@techcorp.com", salary: 145000, department: "AI Research", active: true, location: "San Francisco" },
   { id: 2, name: "Kai Tanaka", age: 29, email: "k.tanaka@techcorp.com", salary: 95000, department: "UX Design", active: true, location: "Tokyo" },
   { id: 3, name: "Amara Okafor", age: 35, email: "amara.okafor@techcorp.com", salary: 125000, department: "DevOps", active: false, location: "Lagos" },
@@ -137,7 +168,7 @@ export const externalFilterData = [
   { id: 12, name: "Dmitri Volkov", age: 39, email: "dmitri.volkov@techcorp.com", salary: 135000, department: "DevOps", active: true, location: "Moscow" },
 ];
 
-export const externalFilterHeaders: AngularColumnDef[] = [
+export const externalFilterHeaders: AngularColumnDef<FilterableEmployee, any>[] = [
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, filterable: true, type: "string" },
   { accessor: "age", label: "Age", width: 120, filterable: true, type: "number" },
   {
@@ -164,7 +195,7 @@ export const externalFilterHeaders: AngularColumnDef[] = [
     filterable: true,
     type: "number",
     align: "right",
-    valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
+    valueFormatter: ({ value }: ValueFormatterProps<FilterableEmployee, number>) => `$${value.toLocaleString()}`,
   },
 ];
 
@@ -172,4 +203,4 @@ export const externalFilterConfig = {
   headers: externalFilterHeaders,
   rows: externalFilterData,
   tableProps: { externalFilterHandling: true, columnResizing: true },
-} as const;
+};

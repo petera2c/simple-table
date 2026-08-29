@@ -13,6 +13,7 @@ import {
   ApplicationRef,
   EnvironmentInjector,
   Injector,
+  NgZone,
   inject,
 } from "@angular/core";
 import { SimpleTableVanilla } from "simple-table-core";
@@ -198,6 +199,12 @@ export class SimpleTableComponent<
   private appRef = inject(ApplicationRef);
   private envInjector = inject(EnvironmentInjector);
   private elementInjector = inject(Injector);
+  private ngZone = inject(NgZone);
+
+  // Run table event callbacks in Angular's zone so the page template updates.
+  private inZone<T>(work: () => T): T {
+    return this.ngZone.run(work);
+  }
 
   private maybeRefitAutoSizeColumns(leftLoading: boolean): void {
     if (!this.instance) return;
@@ -438,88 +445,116 @@ export class SimpleTableComponent<
 
     if (this.onCellClick || this.cellClick.observed) {
       props.onCellClick = (event) => {
-        this.onCellClick?.(event);
-        this.cellClick.emit(event);
+        this.inZone(() => {
+          this.onCellClick?.(event);
+          this.cellClick.emit(event);
+        });
       };
     }
     if (this.onCellEdit || this.cellEdit.observed) {
       props.onCellEdit = (event) => {
-        this.onCellEdit?.(event);
-        this.cellEdit.emit(event);
+        this.inZone(() => {
+          this.onCellEdit?.(event);
+          this.cellEdit.emit(event);
+        });
       };
     }
     if (this.onSortChange || this.sortChange.observed) {
       props.onSortChange = (sort) => {
-        this.onSortChange?.(sort);
-        this.sortChange.emit(sort);
+        this.inZone(() => {
+          this.onSortChange?.(sort);
+          this.sortChange.emit(sort);
+        });
       };
     }
     if (this.onFilterChange || this.filterChange.observed) {
       props.onFilterChange = (filters) => {
-        this.onFilterChange?.(filters);
-        this.filterChange.emit(filters);
+        this.inZone(() => {
+          this.onFilterChange?.(filters);
+          this.filterChange.emit(filters);
+        });
       };
     }
     if (this.onRowSelectionChange || this.rowSelectionChange.observed) {
       props.onRowSelectionChange = (event) => {
-        this.onRowSelectionChange?.(event);
-        this.rowSelectionChange.emit(event);
+        this.inZone(() => {
+          this.onRowSelectionChange?.(event);
+          this.rowSelectionChange.emit(event);
+        });
       };
     }
     if (this.onRowGroupExpand || this.rowGroupExpand.observed) {
       props.onRowGroupExpand = (event) => {
-        const result = this.onRowGroupExpand?.(event);
-        this.rowGroupExpand.emit(event);
-        return result;
+        return this.inZone(() => {
+          const result = this.onRowGroupExpand?.(event);
+          this.rowGroupExpand.emit(event);
+          return result;
+        });
       };
     }
     if (this.onColumnOrderChange || this.columnOrderChange.observed) {
       props.onColumnOrderChange = (headers) => {
-        this.onColumnOrderChange?.(headers);
-        this.columnOrderChange.emit(headers);
+        this.inZone(() => {
+          this.onColumnOrderChange?.(headers);
+          this.columnOrderChange.emit(headers);
+        });
       };
     }
     if (this.onColumnVisibilityChange || this.columnVisibilityChange.observed) {
       props.onColumnVisibilityChange = (state) => {
-        this.onColumnVisibilityChange?.(state);
-        this.columnVisibilityChange.emit(state);
+        this.inZone(() => {
+          this.onColumnVisibilityChange?.(state);
+          this.columnVisibilityChange.emit(state);
+        });
       };
     }
     if (this.onColumnWidthChange || this.columnWidthChange.observed) {
       props.onColumnWidthChange = (headers) => {
-        this.onColumnWidthChange?.(headers);
-        this.columnWidthChange.emit(headers);
+        this.inZone(() => {
+          this.onColumnWidthChange?.(headers);
+          this.columnWidthChange.emit(headers);
+        });
       };
     }
     if (this.onPageChange || this.pageChange.observed) {
       props.onPageChange = (page) => {
-        const result = this.onPageChange?.(page);
-        this.pageChange.emit(page);
-        return result;
+        return this.inZone(() => {
+          const result = this.onPageChange?.(page);
+          this.pageChange.emit(page);
+          return result;
+        });
       };
     }
     if (this.onLoadMore || this.loadMore.observed) {
       props.onLoadMore = () => {
-        this.onLoadMore?.();
-        this.loadMore.emit();
+        this.inZone(() => {
+          this.onLoadMore?.();
+          this.loadMore.emit();
+        });
       };
     }
     if (this.onHeaderEdit || this.headerEdit.observed) {
       props.onHeaderEdit = (header, newLabel) => {
-        this.onHeaderEdit?.(header, newLabel);
-        this.headerEdit.emit({ header, newLabel });
+        this.inZone(() => {
+          this.onHeaderEdit?.(header, newLabel);
+          this.headerEdit.emit({ header, newLabel });
+        });
       };
     }
     if (this.onColumnSelect || this.columnSelect.observed) {
       props.onColumnSelect = (header) => {
-        this.onColumnSelect?.(header);
-        this.columnSelect.emit(header);
+        this.inZone(() => {
+          this.onColumnSelect?.(header);
+          this.columnSelect.emit(header);
+        });
       };
     }
     if (this.onPivotChange || this.pivotChange.observed) {
       props.onPivotChange = (pivot) => {
-        this.onPivotChange?.(pivot);
-        this.pivotChange.emit(pivot);
+        this.inZone(() => {
+          this.onPivotChange?.(pivot);
+          this.pivotChange.emit(pivot);
+        });
       };
     }
 

@@ -1,6 +1,6 @@
 import { NgIf } from "@angular/common";
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import { SimpleTableImports } from "@simple-table/angular";
 import type { AngularColumnDef, CellClickProps, GetRowIdParams, Theme } from "@simple-table/angular";
 import { cellClickingData, cellClickingHeaders, CELL_CLICKING_STATUSES } from "./cell-clicking.demo-data";
 import type { ProjectTask } from "./cell-clicking.demo-data";
@@ -12,7 +12,7 @@ import "@simple-table/angular/styles.css";
 @Component({
   selector: "cell-clicking-demo",
   standalone: true,
-  imports: [SimpleTableComponent, NgIf],
+  imports: [SimpleTableImports, NgIf],
   template: `
     <div style="display: flex; flex-direction: column; gap: 16px">
       <div [style.padding]="'12px'" [style.background-color]="isDark ? '#374151' : '#f3f4f6'" [style.border-radius]="'8px'" [style.border]="'1px solid ' + (isDark ? '#4b5563' : '#d1d5db')" [style.min-height]="'48px'" style="display: flex; align-items: center">
@@ -37,7 +37,7 @@ import "@simple-table/angular/styles.css";
         [columnResizing]="true"
         [columns]="headers"
         [height]="height"
-        [onCellClick]="handleCellClick"
+        (cellClick)="handleCellClick($event)"
         [rows]="rows"
         [theme]="theme"
       ></simple-table>

@@ -6,6 +6,7 @@ export default function CellHighlightingDemo(props: { height?: string | number; 
   return (
     <SimpleTable
       columns={cellHighlightingConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={cellHighlightingConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

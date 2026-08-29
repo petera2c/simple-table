@@ -2,6 +2,7 @@
   <SimpleTable
     :columns="cellHighlightingConfig.headers"
     :rows="cellHighlightingConfig.rows"
+    :get-row-id="getRowId"
     :height="height"
     :theme="theme"
     :selectable-cells="cellHighlightingConfig.tableProps.selectableCells"
@@ -10,11 +11,15 @@
 </template>
 
 <script setup lang="ts">
-import {SimpleTable} from "@simple-table/vue";import type { Theme } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, GetRowIdParams } from "@simple-table/vue";
 import { cellHighlightingConfig } from "./cell-highlighting.demo-data";
+import type { CellHighlightingEmployee } from "./cell-highlighting.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
+
+const getRowId = ({ row }: GetRowIdParams<CellHighlightingEmployee>) => row.id;
 </script>

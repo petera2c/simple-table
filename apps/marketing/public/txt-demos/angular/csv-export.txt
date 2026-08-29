@@ -1,8 +1,9 @@
 // csv-export-demo.component.ts
 import { Component, Input, ViewChild } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
 import "@simple-table/angular/styles.css";
+import type { CsvProduct } from "./csv-export.demo-data";
 
 @Component({
   selector: "csv-export-demo",
@@ -15,6 +16,7 @@ import "@simple-table/angular/styles.css";
         <button style="padding: 6px 16px" (click)="handleGetInfo()">Get Table Info</button>
       </div>
       <simple-table
+      [getRowId]="getRowId"
         #simpleTable
         [rows]="rows"
         [columns]="headers"
@@ -32,8 +34,8 @@ export class CsvExportDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = csvExportData;
-  readonly headers: AngularColumnDef[] = csvExportHeaders.map((h) => {
+  readonly rows: CsvProduct[] = csvExportData;
+  readonly headers: AngularColumnDef<CsvProduct>[] = csvExportHeaders.map((h) => {
     if (h.accessor === "actions") {
       return {
         ...h,
@@ -53,18 +55,34 @@ export class CsvExportDemoComponent {
     if (!api) return;
     const rows = api.getAllRows();
     const hdrs = api.getHeaders();
-    const totalRevenue = rows.reduce((sum, r) => sum + (Number((r.row as { revenue?: unknown }).revenue) || 0), 0);
+    const totalRevenue = rows.reduce((sum, r) => {
+      const revenue = r.row.revenue;
+      return sum + (typeof revenue === "number" ? revenue : 0);
+    }, 0);
     alert(
       `Table Info:\n• ${rows.length} rows\n• ${hdrs.length} columns\n• Columns: ${hdrs.map((h) => h.label).join(", ")}\n• Total Revenue: $${totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     );
   }
+
+  getRowId = ({ row }: GetRowIdParams<CsvProduct>) => row.id;
 }
 
 
 // csv-export.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
+export interface CsvProduct {
+  id: string;
+  sku: string;
+  product: string;
+  category: string;
+  price: number;
+  stock: number;
+  sold: number;
+  revenue: number;
+  actions: string;
+}
 
 const CATEGORY_CODES: Record<string, string> = {
   electronics: "ELEC",
@@ -88,7 +106,7 @@ export const csvExportData = [
   { id: "db-4003", sku: "PRD-4003", product: "Desk Lamp LED", category: "Appliances", price: 44.99, stock: 201, sold: 198, revenue: 8908.02, actions: "" },
 ];
 
-export const csvExportHeaders: AngularColumnDef[] = [
+export const csvExportHeaders: AngularColumnDef<CsvProduct, any>[] = [
   { accessor: "id", label: "Internal ID", width: 80, type: "string", excludeFromRender: true },
   { accessor: "sku", label: "SKU", width: 100, sortable: true, type: "string" },
   { accessor: "product", label: "Product Name", minWidth: 120, width: "1fr", sortable: true, type: "string" },
@@ -98,7 +116,7 @@ export const csvExportHeaders: AngularColumnDef[] = [
     width: 130,
     sortable: true,
     type: "string",
-    valueFormatter: ({ value }) => {
+    valueFormatter: ({ value }: ValueFormatterProps<CsvProduct>) => {
       const s = String(value);
       return s.charAt(0).toUpperCase() + s.slice(1);
     },
@@ -113,7 +131,7 @@ export const csvExportHeaders: AngularColumnDef[] = [
     width: 100,
     sortable: true,
     type: "number",
-    valueFormatter: ({ value }) => `$${(value as number).toFixed(2)}`,
+    valueFormatter: ({ value }: ValueFormatterProps<CsvProduct, number>) => `$${value.toFixed(2)}`,
     useFormattedValueForCSV: true,
     useFormattedValueForClipboard: true,
   },
@@ -125,8 +143,8 @@ export const csvExportHeaders: AngularColumnDef[] = [
     width: 120,
     sortable: true,
     type: "number",
-    valueFormatter: ({ value }) =>
-      `$${(value as number).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    valueFormatter: ({ value }: ValueFormatterProps<CsvProduct, number>) =>
+      `$${value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     useFormattedValueForCSV: true,
     useFormattedValueForClipboard: true,
   },
@@ -137,4 +155,4 @@ export const csvExportConfig = {
   headers: csvExportHeaders,
   rows: csvExportData,
   tableProps: { enableColumnEditor: true, selectableCells: true, customTheme: { rowHeight: 32 } },
-} as const;
+};

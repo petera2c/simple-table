@@ -1,14 +1,29 @@
 // header-demo-sort.ts
 import { signal } from "@angular/core";
+import type { HeaderEmployee } from "./header-renderer.demo-data";
 
 export type HeaderDemoSortDir = "asc" | "desc" | null;
 
+type HeaderKey = keyof HeaderEmployee;
+
+function isHeaderKey(accessor: string): accessor is HeaderKey {
+  return (
+    accessor === "id" ||
+    accessor === "name" ||
+    accessor === "email" ||
+    accessor === "role" ||
+    accessor === "salary" ||
+    accessor === "department"
+  );
+}
+
 const CYCLE: HeaderDemoSortDir[] = ["asc", "desc", null];
 
-export const headerDemoSortAccessor = signal<string | null>(null);
+export const headerDemoSortAccessor = signal<HeaderKey | null>(null);
 export const headerDemoSortDirection = signal<HeaderDemoSortDir>(null);
 
 export function cycleHeaderDemoSort(accessor: string): void {
+  if (!isHeaderKey(accessor)) return;
   const currentAcc = headerDemoSortAccessor();
   const dir = headerDemoSortDirection();
   if (currentAcc !== accessor) {
@@ -31,9 +46,10 @@ export function cycleHeaderDemoSort(accessor: string): void {
 // header-renderer-demo.component.ts
 import { Component, computed, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { headerDemoSortAccessor, headerDemoSortDirection } from "./header-demo-sort";
 import { headerRendererConfig } from "./header-renderer.demo-data";
+import type { HeaderEmployee } from "./header-renderer.demo-data";
 import { HeaderSortableHeaderComponent } from "./header-sortable-header.component";
 import "@simple-table/angular/styles.css";
 
@@ -43,6 +59,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="sortedData()"
       [columns]="headers()"
       [height]="height"
@@ -64,28 +81,38 @@ export class HeaderRendererDemoComponent {
       if (aVal === bVal) return 0;
       const cmp =
         typeof aVal === "number" && typeof bVal === "number"
-          ? (aVal as number) - (bVal as number)
+          ? aVal - bVal
           : String(aVal).localeCompare(String(bVal));
       return dir === "asc" ? cmp : -cmp;
     });
   });
 
-  readonly headers = computed((): AngularColumnDef[] =>
+  readonly headers = computed((): AngularColumnDef<HeaderEmployee>[] =>
     headerRendererConfig.headers.map((h) => ({
       ...h,
       sortable: false,
       headerRenderer: HeaderSortableHeaderComponent,
     })),
   );
+
+  getRowId = ({ row }: GetRowIdParams<HeaderEmployee>) => row.id;
 }
 
 
 // header-renderer.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef, Row } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
+export interface HeaderEmployee {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  salary: number;
+  department: string;
+}
 
-export const headerRendererData: Row[] = [
+export const headerRendererData: HeaderEmployee[] = [
   { id: 1, name: "Alice Johnson", email: "alice@example.com", role: "Engineer", salary: 125000, department: "Engineering" },
   { id: 2, name: "Bob Martinez", email: "bob@example.com", role: "Designer", salary: 98000, department: "Design" },
   { id: 3, name: "Clara Chen", email: "clara@example.com", role: "PM", salary: 115000, department: "Product" },
@@ -96,7 +123,7 @@ export const headerRendererData: Row[] = [
   { id: 8, name: "Henry Patel", email: "henry@example.com", role: "Lead", salary: 145000, department: "Engineering" },
 ];
 
-export const headerRendererHeaders: AngularColumnDef[] = [
+export const headerRendererHeaders: AngularColumnDef<HeaderEmployee>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number", sortable: true },
   { accessor: "name", label: "Employee Name", width: 180, type: "string", sortable: true },
   { accessor: "email", label: "Email Address", width: 200, type: "string" },
@@ -112,7 +139,7 @@ export const headerRendererConfig = {
     selectableCells: true,
     columnResizing: true,
   },
-} as const;
+};
 
 
 // header-sortable-header.component.ts

@@ -1,14 +1,18 @@
 // AnimationsDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
+import type { AnimationsCrewMember } from "./animations.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import { animationsConfig } from "./animations.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<AnimationsCrewMember>) => row.id;
 export function renderAnimationsDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<AnimationsCrewMember> {
   const table = new SimpleTableVanilla(container, {
+    getRowId,
     columns: animationsConfig.headers,
     rows: animationsConfig.rows,
     height: options?.height ?? "400px",
@@ -25,8 +29,15 @@ export function renderAnimationsDemo(
 // Self-contained demo table setup for this example.
 import type { ColumnDef } from "simple-table-core";
 
+export interface AnimationsCrewMember {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+}
 
-export const animationsHeaders: ColumnDef[] = [
+export const animationsHeaders: ColumnDef<AnimationsCrewMember>[] = [
   { accessor: "id", label: "ID", width: 60, sortable: true, type: "number" },
   { accessor: "name", label: "Name", minWidth: 140, width: "1fr", sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 80, align: "right", sortable: true, type: "number" },
@@ -42,7 +53,7 @@ export const animationsHeaders: ColumnDef[] = [
   },
 ];
 
-export const animationsData = [
+export const animationsData: AnimationsCrewMember[] = [
   { id: 1, name: "Captain Stella Vega", age: 38, role: "Mission Commander", department: "Flight Operations" },
   { id: 2, name: "Dr. Cosmos Rivera", age: 34, role: "Astrophysicist", department: "Science" },
   { id: 3, name: "Commander Nebula Johnson", age: 42, role: "Operations Director", department: "Mission Control" },
@@ -61,4 +72,4 @@ export const animationsConfig = {
   headers: animationsHeaders,
   rows: animationsData,
   tableProps: { columnReordering: true, enableColumnEditor: true, enableColumnEditorInitOpen: true },
-} as const;
+};

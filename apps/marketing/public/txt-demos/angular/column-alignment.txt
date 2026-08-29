@@ -1,8 +1,9 @@
 // column-alignment-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { columnAlignmentConfig } from "./column-alignment.demo-data";
 import "@simple-table/angular/styles.css";
+import type { ColumnAlignmentPlayer } from "./column-alignment.demo-data";
 
 @Component({
   selector: "column-alignment-demo",
@@ -10,6 +11,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -21,8 +23,10 @@ export class ColumnAlignmentDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = columnAlignmentConfig.rows;
-  readonly headers: AngularColumnDef[] = columnAlignmentConfig.headers;
+  readonly rows: ColumnAlignmentPlayer[] = columnAlignmentConfig.rows;
+  readonly headers: AngularColumnDef<ColumnAlignmentPlayer>[] = columnAlignmentConfig.headers;
+
+  getRowId = ({ row }: GetRowIdParams<ColumnAlignmentPlayer>) => row.id;
 }
 
 
@@ -30,8 +34,15 @@ export class ColumnAlignmentDemoComponent {
 // Self-contained demo table setup for this example.
 import type { AngularColumnDef } from "@simple-table/angular";
 
+export interface ColumnAlignmentPlayer {
+  id: number;
+  name: string;
+  score: number;
+  rating: number;
+  status: string;
+}
 
-export const columnAlignmentHeaders: AngularColumnDef[] = [
+export const columnAlignmentHeaders: AngularColumnDef<ColumnAlignmentPlayer>[] = [
   { accessor: "id", label: "ID", width: 80, align: "left", type: "number" },
   { accessor: "name", label: "Name", minWidth: 100, width: "1fr", align: "center", type: "string" },
   { accessor: "score", label: "Score", width: 120, align: "right", type: "number" },
@@ -39,7 +50,7 @@ export const columnAlignmentHeaders: AngularColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, align: "left", type: "string" },
 ];
 
-export const columnAlignmentData = [
+export const columnAlignmentData: ColumnAlignmentPlayer[] = [
   { id: 1, name: "Camila Rodriguez", score: 94, rating: 4.9, status: "Active" },
   { id: 2, name: "Enzo Silva", score: 89, rating: 4.6, status: "Active" },
   { id: 3, name: "Yuki Kim", score: 96, rating: 4.8, status: "Active" },
@@ -57,4 +68,4 @@ export const columnAlignmentData = [
 export const columnAlignmentConfig = {
   headers: columnAlignmentHeaders,
   rows: columnAlignmentData,
-} as const;
+};

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, defineComponent, h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueColumnDef, Row } from "@simple-table/vue";
+import type { Theme, VueColumnDef, GetRowIdParams } from "@simple-table/vue";
 import { headerRendererConfig } from "./header-renderer.demo-data";
+import type { HeaderEmployee } from "./header-renderer.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -20,8 +21,8 @@ const sortedData = computed(() => {
   const acc = sortAccessor.value;
   const dir = sortDirection.value;
   return [...headerRendererConfig.rows].sort((a, b) => {
-    const aVal = a[acc];
-    const bVal = b[acc];
+    const aVal = a[acc as keyof HeaderEmployee];
+    const bVal = b[acc as keyof HeaderEmployee];
     if (aVal === bVal) return 0;
     const cmp =
       typeof aVal === "number" && typeof bVal === "number"
@@ -31,7 +32,7 @@ const sortedData = computed(() => {
   });
 });
 
-function makeSortableHeader(col: VueColumnDef) {
+function makeSortableHeader(col: VueColumnDef<HeaderEmployee>) {
   return defineComponent({
     name: `SortHeader-${String(col.accessor)}`,
     setup() {
@@ -80,19 +81,22 @@ function makeSortableHeader(col: VueColumnDef) {
   });
 }
 
-const headers = computed(() =>
+const headers = computed((): VueColumnDef<HeaderEmployee>[] =>
   headerRendererConfig.headers.map((col) => ({
     ...col,
     sortable: false,
     headerRenderer: makeSortableHeader(col),
   })),
 );
+
+const getRowId = ({ row }: GetRowIdParams<HeaderEmployee>) => row.id;
 </script>
 
 <template>
   <SimpleTable
     :columns="headers"
-    :rows="sortedData as Row[]"
+    :rows="sortedData"
+    :get-row-id="getRowId"
     :height="props.height"
     :theme="props.theme"
   />

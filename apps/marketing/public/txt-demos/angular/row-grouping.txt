@@ -1,8 +1,9 @@
 // row-grouping-demo.component.ts
 import { Component, Input, ViewChild } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { rowGroupingConfig } from "./row-grouping.demo-data";
 import "@simple-table/angular/styles.css";
+import type { OrgUnit } from "./row-grouping.demo-data";
 
 @Component({
   selector: "row-grouping-demo",
@@ -37,10 +38,10 @@ export class RowGroupingDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = rowGroupingConfig.rows;
-  readonly headers: AngularColumnDef[] = rowGroupingConfig.headers;
+  readonly rows: OrgUnit[] = rowGroupingConfig.rows;
+  readonly headers: AngularColumnDef<OrgUnit>[] = rowGroupingConfig.headers;
   readonly grouping = rowGroupingConfig.tableProps.rowGrouping;
-  readonly getRowId = rowGroupingConfig.tableProps.getRowId;
+  getRowId = ({ row }: GetRowIdParams<OrgUnit>) => row.id;
 
   expandAll() { this.tableRef.getAPI()?.expandAll(); }
   collapseAll() { this.tableRef.getAPI()?.collapseAll(); }
@@ -54,8 +55,22 @@ export class RowGroupingDemoComponent {
 // Self-contained demo table setup for this example.
 import type { AngularColumnDef } from "@simple-table/angular";
 
+/** Shared metrics at every grouping depth; nesting uses rowGrouping keys. */
+export interface OrgUnit {
+  id: string;
+  organization: string;
+  employees: number;
+  budget: string;
+  performance: string;
+  location: string;
+  growthRate: string;
+  status: string;
+  established: string;
+  divisions?: OrgUnit[];
+  departments?: OrgUnit[];
+}
 
-export const rowGroupingHeaders: AngularColumnDef[] = [
+export const rowGroupingHeaders: AngularColumnDef<OrgUnit>[] = [
   { accessor: "organization", label: "Organization", width: 200, expandable: true, type: "string" },
   { accessor: "employees", label: "Employees", width: 100, type: "number" },
   { accessor: "budget", label: "Annual Budget", width: 140, type: "string" },
@@ -66,7 +81,7 @@ export const rowGroupingHeaders: AngularColumnDef[] = [
   { accessor: "established", label: "Est. Date", width: 110, type: "date" },
 ];
 
-export const rowGroupingData = [
+export const rowGroupingData: OrgUnit[] = [
   {
     id: "company-1",
     organization: "TechSolutions Inc.",
@@ -250,9 +265,8 @@ export const rowGroupingConfig = {
   headers: rowGroupingHeaders,
   rows: rowGroupingData,
   tableProps: {
-    rowGrouping: ["divisions", "departments"] as string[],
+    rowGrouping: ["divisions", "departments"],
     enableStickyParents: true,
-    getRowId: ({ row }: { row: Record<string, unknown> }) => String(row.id),
     columnResizing: true,
   },
-} as const;
+};

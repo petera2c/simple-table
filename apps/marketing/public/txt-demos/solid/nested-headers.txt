@@ -6,6 +6,7 @@ export default function NestedHeadersDemo(props: { height?: string | number; the
   return (
     <SimpleTable
       columns={nestedHeadersConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={nestedHeadersConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

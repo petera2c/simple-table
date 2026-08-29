@@ -1,6 +1,6 @@
 import { NgIf } from "@angular/common";
 import { Component, Input, OnInit } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import { SimpleTableImports } from "@simple-table/angular";
 import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
 import "@simple-table/angular/styles.css";
@@ -9,7 +9,7 @@ import type { OceanStaff } from "./column-resizing.demo-data";
 @Component({
   selector: "column-resizing-demo",
   standalone: true,
-  imports: [SimpleTableComponent, NgIf],
+  imports: [SimpleTableImports, NgIf],
   template: `
     <div style="position: relative; height: 100%">
       <div
@@ -25,7 +25,7 @@ import type { OceanStaff } from "./column-resizing.demo-data";
         [columns]="headers"
         [height]="height"
         [theme]="theme"
-        [onColumnWidthChange]="handleColumnWidthChange"
+        (columnWidthChange)="handleColumnWidthChange($event)"
       ></simple-table>
     </div>
   `,
@@ -64,4 +64,6 @@ export class ColumnResizingDemoComponent implements OnInit {
       }
     } catch { /* ignore */ }
   }
+
+  getRowId = ({ row }: GetRowIdParams<OceanStaff>) => row.id;
 }

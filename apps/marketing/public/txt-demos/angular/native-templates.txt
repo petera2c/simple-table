@@ -1,0 +1,376 @@
+// native-templates-demo.component.ts
+import { Component, Input, signal } from "@angular/core";
+import {
+  SimpleTableImports,
+  type AngularColumnDef,
+  type GetRowIdParams,
+  type RowSelectionChangeProps,
+  type SortColumn,
+  type Theme,
+} from "@simple-table/angular";
+import {
+  DIRECTORY_SEED,
+  directoryColumns,
+  type DirectoryPerson,
+  type PersonStatus,
+} from "./native-templates.demo-data";
+import "@simple-table/angular/styles.css";
+
+const STATUS_CYCLE: PersonStatus[] = ["active", "away", "offline"];
+
+const STATUS_STYLE: Record<PersonStatus, { label: string; color: string; bg: string }> = {
+  active: { label: "Active", color: "#166534", bg: "#dcfce7" },
+  away: { label: "Away", color: "#9a3412", bg: "#ffedd5" },
+  offline: { label: "Offline", color: "#334155", bg: "#e2e8f0" },
+};
+
+@Component({
+  selector: "native-templates-demo",
+  standalone: true,
+  imports: [SimpleTableImports],
+  template: `
+    <div class="nt-page">
+      <div class="nt-toolbar">
+        <div>
+          <div class="nt-title">Team directory</div>
+          <div class="nt-sub">
+            Cells, empty UI, headers, and the footer are page templates.
+            Sort and selection use Angular outputs.
+          </div>
+        </div>
+        <div class="nt-actions">
+          <button type="button" class="nt-btn" (click)="addPerson()">Add person</button>
+          <button type="button" class="nt-btn nt-btn-muted" (click)="clearPeople()">
+            Clear table
+          </button>
+        </div>
+      </div>
+
+      <div class="nt-meta">
+        <span><strong>Sort:</strong> {{ sortLabel() }}</span>
+        <span><strong>Selected:</strong> {{ selectedLabel() }}</span>
+      </div>
+
+      <simple-table
+        class="nt-host"
+        [rows]="people()"
+        [columns]="columns"
+        [getRowId]="getRowId"
+        [height]="height"
+        [theme]="theme"
+        [enableRowSelection]="true"
+        [selectRowOnClick]="true"
+        [enablePagination]="true"
+        [rowsPerPage]="4"
+        [columnResizing]="true"
+        [customTheme]="{ rowHeight: 44 }"
+        (sortChange)="onSort($event)"
+        (rowSelectionChange)="onSelect($event)"
+      >
+        <ng-template stHeader="name" let-components="components">
+          <span class="nt-head">People</span>
+          <span class="nt-sort" [stDomSlot]="components.sortIcon"></span>
+        </ng-template>
+
+        <ng-template stCell="name" let-row>
+          <button type="button" class="nt-name" (click)="ping(row); $event.stopPropagation()">
+            <span class="nt-avatar">{{ initials(row.name) }}</span>
+            {{ row.name }}
+          </button>
+        </ng-template>
+
+        <ng-template stCell="status" let-row let-value="value">
+          <button
+            type="button"
+            class="nt-badge"
+            [style.color]="statusStyle(value).color"
+            [style.background]="statusStyle(value).bg"
+            (click)="cycleStatus(row); $event.stopPropagation()"
+          >
+            {{ statusStyle(value).label }}
+          </button>
+        </ng-template>
+
+        <ng-template stEmpty>
+          <div class="nt-empty">
+            <div>No people yet.</div>
+            <button type="button" class="nt-btn" (click)="addPerson()">Add person</button>
+          </div>
+        </ng-template>
+
+        <ng-template
+          stFooter
+          let-currentPage="currentPage"
+          let-totalPages="totalPages"
+          let-startRow="startRow"
+          let-endRow="endRow"
+          let-totalRows="totalRows"
+          let-hasPrevPage="hasPrevPage"
+          let-hasNextPage="hasNextPage"
+          let-onPrevPage="onPrevPage"
+          let-onNextPage="onNextPage"
+        >
+          <div class="nt-footer">
+            <span>Showing {{ startRow }} to {{ endRow }} of {{ totalRows }}</span>
+            <div class="nt-pager">
+              <button type="button" class="nt-btn nt-btn-muted" [disabled]="!hasPrevPage" (click)="onPrevPage()">
+                Previous
+              </button>
+              <span>Page {{ currentPage }} of {{ totalPages }}</span>
+              <button type="button" class="nt-btn nt-btn-muted" [disabled]="!hasNextPage" (click)="onNextPage()">
+                Next
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </simple-table>
+
+      @if (lastPing()) {
+        <div class="nt-ping">Last name click: {{ lastPing() }}</div>
+      }
+    </div>
+  `,
+  styles: [
+    `
+      .nt-page {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        font-family: inherit;
+      }
+      .nt-toolbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .nt-title {
+        font-size: 18px;
+        font-weight: 650;
+        color: #0f172a;
+      }
+      .nt-sub {
+        margin-top: 4px;
+        font-size: 13px;
+        color: #475569;
+        max-width: 42rem;
+      }
+      .nt-actions,
+      .nt-pager {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .nt-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        padding: 10px 12px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 13px;
+        color: #334155;
+      }
+      .nt-host {
+        display: block;
+      }
+      .nt-head {
+        font-weight: 650;
+        margin-right: 6px;
+      }
+      .nt-sort {
+        display: inline-flex;
+        align-items: center;
+      }
+      .nt-name {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 0;
+        background: none;
+        padding: 0;
+        font: inherit;
+        color: #0f172a;
+        cursor: pointer;
+      }
+      .nt-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        background: #dbeafe;
+        color: #1d4ed8;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .nt-badge {
+        border: 0;
+        border-radius: 999px;
+        padding: 4px 10px;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 650;
+        cursor: pointer;
+      }
+      .nt-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 28px 16px;
+        color: #475569;
+      }
+      .nt-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        font-size: 13px;
+        color: #475569;
+        border-top: 1px solid #e2e8f0;
+      }
+      .nt-btn {
+        border: 1px solid #2563eb;
+        background: #2563eb;
+        color: #fff;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .nt-btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .nt-btn-muted {
+        background: #fff;
+        color: #1e293b;
+        border-color: #cbd5e1;
+      }
+      .nt-ping {
+        font-size: 13px;
+        color: #1d4ed8;
+      }
+    `,
+  ],
+})
+export class NativeTemplatesDemoComponent {
+  @Input() height: string | number = "360px";
+  @Input() theme?: Theme;
+
+  readonly columns: AngularColumnDef<DirectoryPerson>[] = directoryColumns;
+  readonly people = signal<DirectoryPerson[]>(DIRECTORY_SEED.map((row) => ({ ...row })));
+  readonly sortLabel = signal("None");
+  readonly selectedLabel = signal("None");
+  readonly lastPing = signal<string | null>(null);
+
+  private readonly selectedIds = new Set<number>();
+  private nextId = DIRECTORY_SEED.length + 1;
+
+  getRowId = ({ row }: GetRowIdParams<DirectoryPerson>) => row.id;
+
+  statusStyle(value: unknown) {
+    const status = String(value) as PersonStatus;
+    return STATUS_STYLE[status] ?? STATUS_STYLE.offline;
+  }
+
+  initials(name: string): string {
+    return name
+      .split(" ")
+      .slice(0, 2)
+      .map((part) => part[0] ?? "")
+      .join("")
+      .toUpperCase();
+  }
+
+  onSort(sort: SortColumn | null): void {
+    if (!sort) {
+      this.sortLabel.set("None");
+      return;
+    }
+    this.sortLabel.set(`${String(sort.key.accessor)} ${sort.direction}`);
+  }
+
+  onSelect(event: RowSelectionChangeProps<DirectoryPerson>): void {
+    if (event.isSelected) {
+      this.selectedIds.add(event.row.id);
+    } else {
+      this.selectedIds.delete(event.row.id);
+    }
+    const names = this.people()
+      .filter((row) => this.selectedIds.has(row.id))
+      .map((row) => row.name);
+    this.selectedLabel.set(names.length ? names.join(", ") : "None");
+  }
+
+  ping(row: DirectoryPerson): void {
+    this.lastPing.set(row.name);
+  }
+
+  cycleStatus(row: DirectoryPerson): void {
+    const index = STATUS_CYCLE.indexOf(row.status);
+    const next = STATUS_CYCLE[(index + 1) % STATUS_CYCLE.length];
+    this.people.update((rows) =>
+      rows.map((person) => (person.id === row.id ? { ...person, status: next } : person)),
+    );
+  }
+
+  addPerson(): void {
+    const id = this.nextId++;
+    this.people.update((rows) => [
+      ...rows,
+      {
+        id,
+        name: `New hire ${id}`,
+        role: "Engineer",
+        team: "Platform",
+        status: "active",
+      },
+    ]);
+  }
+
+  clearPeople(): void {
+    this.people.set([]);
+    this.selectedIds.clear();
+    this.selectedLabel.set("None");
+    this.lastPing.set(null);
+  }
+}
+
+
+// native-templates.demo-data.ts
+import type { AngularColumnDef } from "@simple-table/angular";
+
+export type PersonStatus = "active" | "away" | "offline";
+
+export type DirectoryPerson = {
+  id: number;
+  name: string;
+  role: string;
+  team: string;
+  status: PersonStatus;
+};
+
+export const DIRECTORY_SEED: DirectoryPerson[] = [
+  { id: 1, name: "Ada Lovelace", role: "Engineer", team: "Platform", status: "active" },
+  { id: 2, name: "Grace Hopper", role: "Engineer", team: "Runtime", status: "active" },
+  { id: 3, name: "Alan Turing", role: "Research", team: "Labs", status: "away" },
+  { id: 4, name: "Katherine Johnson", role: "Analyst", team: "Data", status: "active" },
+  { id: 5, name: "Margaret Hamilton", role: "Engineer", team: "Apollo", status: "offline" },
+  { id: 6, name: "Donald Knuth", role: "Research", team: "Labs", status: "away" },
+  { id: 7, name: "Barbara Liskov", role: "Engineer", team: "Platform", status: "active" },
+  { id: 8, name: "Edsger Dijkstra", role: "Research", team: "Labs", status: "offline" },
+];
+
+export const directoryColumns: AngularColumnDef<DirectoryPerson>[] = [
+  { accessor: "name", label: "Name", width: 180, type: "string", sortable: true },
+  { accessor: "role", label: "Role", width: 140, type: "string", sortable: true },
+  { accessor: "team", label: "Team", width: 130, type: "string", sortable: true },
+  { accessor: "status", label: "Status", width: 140, type: "string" },
+];

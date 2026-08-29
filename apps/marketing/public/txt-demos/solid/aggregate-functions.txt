@@ -9,6 +9,7 @@ export default function AggregateFunctionsDemo(props: {
   return (
     <SimpleTable
       columns={aggregateFunctionsConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={aggregateFunctionsConfig.rows}
       rowGrouping={aggregateFunctionsConfig.tableProps.rowGrouping}
       columnResizing

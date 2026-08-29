@@ -1,22 +1,47 @@
 // external-sort-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent, asRows} from "@simple-table/angular";import type { AngularColumnDef, Row, SortColumn, Theme } from "@simple-table/angular";
+import { SimpleTableImports } from "@simple-table/angular";
+import type { AngularColumnDef, ColumnType, GetRowIdParams, SortColumn, Theme } from "@simple-table/angular";
 import { externalSortConfig } from "./external-sort.demo-data";
 import "@simple-table/angular/styles.css";
+import type { SortableEmployee } from "./external-sort.demo-data";
+
+type SortableKey = keyof SortableEmployee;
+
+function isSortableKey(accessor: string): accessor is SortableKey {
+  return (
+    accessor === "id" ||
+    accessor === "name" ||
+    accessor === "age" ||
+    accessor === "email" ||
+    accessor === "salary" ||
+    accessor === "department"
+  );
+}
+
+type ActiveSort = {
+  accessor: SortableKey;
+  direction: "asc" | "desc";
+  type?: ColumnType;
+};
 
 @Component({
   selector: "external-sort-demo",
   standalone: true,
-  imports: [SimpleTableComponent],
+  imports: [SimpleTableImports],
   template: `
+    <div style="margin-bottom: 8px; font-size: 13px; color: #334155">
+      <strong>Sort:</strong> {{ sortLabel }}
+    </div>
     <simple-table
-      [rows]="sortedRows"
+      [getRowId]="getRowId"
+      [rows]="displayRows"
       [columns]="headers"
       [height]="height"
       [theme]="theme"
       [externalSortHandling]="true"
       [columnResizing]="true"
-      [onSortChange]="handleSortChange"
+      (sortChange)="handleSortChange($event)"
     ></simple-table>
   `,
 })
@@ -24,38 +49,60 @@ export class ExternalSortDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly headers: AngularColumnDef[] = externalSortConfig.headers;
-  private sortState: SortColumn | null = null;
+  readonly headers: AngularColumnDef<SortableEmployee>[] = externalSortConfig.headers;
+  sortLabel = "None";
+  displayRows: SortableEmployee[] = [...externalSortConfig.rows];
+  private activeSort: ActiveSort | null = null;
 
   handleSortChange = (sort: SortColumn | null): void => {
-    this.sortState = sort;
+    if (!sort || !isSortableKey(sort.key.accessor)) {
+      this.activeSort = null;
+      this.sortLabel = "None";
+    } else {
+      this.activeSort = {
+        accessor: sort.key.accessor,
+        direction: sort.direction,
+        type: sort.key.type,
+      };
+      this.sortLabel = `${sort.key.accessor} ${sort.direction}`;
+    }
+    this.displayRows = this.sortRows();
   };
 
-  get sortedRows(): Row[] {
-    const rows = [...asRows(externalSortConfig.rows)];
-    if (!this.sortState) return rows;
-    const accessor = this.sortState.key.accessor as string;
-    const type = this.sortState.key.type;
-    const dir = this.sortState.direction;
+  private sortRows(): SortableEmployee[] {
+    const rows = [...externalSortConfig.rows];
+    if (!this.activeSort) return rows;
+    const { accessor, type, direction } = this.activeSort;
     return rows.sort((a, b) => {
       const aVal = a[accessor];
       const bVal = b[accessor];
       if (aVal === bVal) return 0;
-      const cmp = type === "number"
-        ? (aVal as number) - (bVal as number)
-        : String(aVal).localeCompare(String(bVal));
-      return dir === "asc" ? cmp : -cmp;
+      const cmp =
+        type === "number"
+          ? (Number(aVal) || 0) - (Number(bVal) || 0)
+          : String(aVal).localeCompare(String(bVal));
+      return direction === "asc" ? cmp : -cmp;
     });
   }
+
+  getRowId = ({ row }: GetRowIdParams<SortableEmployee>) => row.id;
 }
 
 
 // external-sort.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
+export interface SortableEmployee {
+  id: number;
+  name: string;
+  age: number;
+  email: string;
+  salary: number;
+  department: string;
+}
 
-export const externalSortData = [
+export const externalSortData: SortableEmployee[] = [
   { id: 1, name: "Dr. Elena Vasquez", age: 42, email: "elena.vasquez@techcorp.com", salary: 145000, department: "AI Research" },
   { id: 2, name: "Kai Tanaka", age: 29, email: "k.tanaka@techcorp.com", salary: 95000, department: "UX Design" },
   { id: 3, name: "Amara Okafor", age: 35, email: "amara.okafor@techcorp.com", salary: 125000, department: "DevOps" },
@@ -70,7 +117,7 @@ export const externalSortData = [
   { id: 12, name: "Dmitri Volkov", age: 39, email: "dmitri.volkov@techcorp.com", salary: 135000, department: "DevOps" },
 ];
 
-export const externalSortHeaders: AngularColumnDef[] = [
+export const externalSortHeaders: AngularColumnDef<SortableEmployee, any>[] = [
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 120, sortable: true, type: "number" },
   { accessor: "department", label: "Department", width: 150, sortable: true, type: "string" },
@@ -82,7 +129,7 @@ export const externalSortHeaders: AngularColumnDef[] = [
     sortable: true,
     type: "number",
     align: "right",
-    valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
+    valueFormatter: ({ value }: ValueFormatterProps<SortableEmployee, number>) => `$${value.toLocaleString()}`,
   },
 ];
 
@@ -90,4 +137,4 @@ export const externalSortConfig = {
   headers: externalSortHeaders,
   rows: externalSortData,
   tableProps: { externalSortHandling: true, columnResizing: true },
-} as const;
+};

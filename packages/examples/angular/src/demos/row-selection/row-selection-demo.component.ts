@@ -1,14 +1,20 @@
 import { Component, Input } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import { SimpleTableImports } from "@simple-table/angular";
 import type { AngularColumnDef, GetRowIdParams, RowSelectionChangeProps, Theme } from "@simple-table/angular";
 import type { LibraryBook } from "./row-selection.demo-data";
 import { rowSelectionConfig, rowSelectionData } from "./row-selection.demo-data";
 import "@simple-table/angular/styles.css";
 
+const STATUS_COLOR: Record<string, string> = {
+  Available: "#16a34a",
+  "Checked Out": "#ea580c",
+  Reserved: "#dc2626",
+};
+
 @Component({
   selector: "row-selection-demo",
   standalone: true,
-  imports: [SimpleTableComponent],
+  imports: [SimpleTableImports],
   template: `
     <div style="display: flex; flex-direction: column; gap: 12px">
       <div style="padding: 12px; background-color: #f0f9ff; border-radius: 8px; border: 1px solid #bae6fd">
@@ -24,7 +30,7 @@ import "@simple-table/angular/styles.css";
       </div>
 
       <simple-table
-      [getRowId]="getRowId"
+        [getRowId]="getRowId"
         [rows]="rows"
         [columns]="headers"
         [height]="height"
@@ -33,8 +39,12 @@ import "@simple-table/angular/styles.css";
         [columnResizing]="true"
         [columnReordering]="true"
         [selectableCells]="true"
-        [onRowSelectionChange]="handleSelectionChange"
-      ></simple-table>
+        (rowSelectionChange)="handleSelectionChange($event)"
+      >
+        <ng-template stCell="status" let-value="value">
+          <span [style.color]="statusColor(value)" style="font-weight:bold">{{ value }}</span>
+        </ng-template>
+      </simple-table>
     </div>
   `,
 })
@@ -43,21 +53,10 @@ export class RowSelectionDemoComponent {
   @Input() theme?: Theme;
 
   readonly rows: LibraryBook[] = rowSelectionConfig.rows;
-  readonly headers: AngularColumnDef<LibraryBook>[] = rowSelectionConfig.headers.map((h) => {
-    if (h.accessor === "status") {
-      return {
-        ...h,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-          const s = String(row.status);
-          const color = s === "Available" ? "#16a34a" : s === "Checked Out" ? "#ea580c" : "#dc2626";
-          return `<span style="color:${color};font-weight:bold">${s}</span>`;
-        },
-      };
-    }
-    return { ...h };
-  });
+  readonly headers: AngularColumnDef<LibraryBook>[] = rowSelectionConfig.headers;
 
   selectedBooks: LibraryBook[] = [];
+  private readonly selectedIds = new Set<number>();
 
   get selectedTitles(): string {
     return this.selectedBooks.length > 0
@@ -65,11 +64,18 @@ export class RowSelectionDemoComponent {
       : "None";
   }
 
-  handleSelectionChange = (props: RowSelectionChangeProps<LibraryBook>): void => {
-    this.selectedBooks = rowSelectionData.filter((book) =>
-      props.selectedRows.has(String(book.id)),
-    );
-  };
+  statusColor(value: unknown): string {
+    return STATUS_COLOR[String(value)] ?? "#dc2626";
+  }
+
+  handleSelectionChange(event: RowSelectionChangeProps<LibraryBook>): void {
+    if (event.isSelected) {
+      this.selectedIds.add(event.row.id);
+    } else {
+      this.selectedIds.delete(event.row.id);
+    }
+    this.selectedBooks = rowSelectionData.filter((book) => this.selectedIds.has(book.id));
+  }
 
   getRowId = ({ row }: GetRowIdParams<LibraryBook>) => row.id;
 }

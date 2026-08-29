@@ -1,6 +1,6 @@
 {
   "name": "@simple-table/angular",
-  "version": "4.2.3",
+  "version": "4.2.4",
   "type": "module",
   "main": "./dist/fesm2022/simple-table-angular.mjs",
   "module": "./dist/fesm2022/simple-table-angular.mjs",

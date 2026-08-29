@@ -1,5 +1,6 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
+import { SimpleTableImports } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { infiniteScrollConfig, generateInfiniteScrollData } from "./infinite-scroll.demo-data";
 import "@simple-table/angular/styles.css";
 import type { InfiniteScrollEmployee } from "./infinite-scroll.demo-data";
@@ -10,7 +11,7 @@ const BATCH_SIZE = 15;
 @Component({
   selector: "infinite-scroll-demo",
   standalone: true,
-  imports: [SimpleTableComponent],
+  imports: [SimpleTableImports],
   template: `
     <div>
       <div style="margin-bottom: 8px; font-size: 13px; color: #666">
@@ -23,7 +24,7 @@ const BATCH_SIZE = 15;
         [isLoading]="loading"
         [height]="height"
         [theme]="theme"
-        [onLoadMore]="handleLoadMore"
+        (loadMore)="handleLoadMore()"
       ></simple-table>
     </div>
   `,

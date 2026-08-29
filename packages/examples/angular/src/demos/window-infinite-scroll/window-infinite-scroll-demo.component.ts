@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input, ViewChild } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
+import { SimpleTableImports } from "@simple-table/angular";
 import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import {
   generateWindowScrollRows,
@@ -28,7 +28,7 @@ const LOAD_DELAY_MS = 350;
 @Component({
   selector: "window-infinite-scroll-demo",
   standalone: true,
-  imports: [SimpleTableComponent],
+  imports: [SimpleTableImports],
   template: `
     <div #wrapper style="max-width: 1100px; margin: 0 auto">
       <h1 style="font-size: 28px; margin: 0 0 12px 0; color: #0f172a">
@@ -39,7 +39,7 @@ const LOAD_DELAY_MS = 350;
       >
         This table has no <code>height</code> or <code>maxHeight</code>. It grows to its natural
         size inside the page, and uses the outer scroll container (<code>scrollParent</code>) to
-        drive both row virtualization and <code>onLoadMore</code>. The header pins to the top of
+        drive both row virtualization and <code>(loadMore)</code>. The header pins to the top of
         the outer scroll viewport as you scroll. Scroll down — new rows stream in as you approach
         the bottom.
       </p>
@@ -60,14 +60,14 @@ const LOAD_DELAY_MS = 350;
         [getRowId]="getRowId"
         [scrollParent]="getScrollParent"
         [infiniteScrollThreshold]="400"
-        [onLoadMore]="handleLoadMore"
+        (loadMore)="handleLoadMore()"
         [isLoading]="loading && rows.length === 0"
       ></simple-table>
 
       <p
         style="font-size: 13px; color: #94a3b8; margin: 24px 0 48px 0; text-align: center"
       >
-        End of demo content. Keep scrolling near the bottom and onLoadMore will keep firing until
+        End of demo content. Keep scrolling near the bottom and (loadMore) will keep firing until
         the dataset is exhausted.
       </p>
     </div>

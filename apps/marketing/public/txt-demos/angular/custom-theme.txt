@@ -1,9 +1,10 @@
 // custom-theme-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { customThemeConfig } from "./custom-theme.demo-data";
 import "@simple-table/angular/styles.css";
 import "./custom-theme.css";
+import type { ThemeContact } from "./custom-theme.demo-data";
 
 @Component({
   selector: "custom-theme-demo",
@@ -11,6 +12,7 @@ import "./custom-theme.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -25,13 +27,15 @@ export class CustomThemeDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = customThemeConfig.rows;
-  readonly headers: AngularColumnDef[] = customThemeConfig.headers;
+  readonly rows: ThemeContact[] = customThemeConfig.rows;
+  readonly headers: AngularColumnDef<ThemeContact>[] = customThemeConfig.headers;
   readonly customThemeOverrides = customThemeConfig.tableProps.customTheme;
 
   get resolvedTheme(): Theme {
     return this.theme ?? "custom";
   }
+
+  getRowId = ({ row }: GetRowIdParams<ThemeContact>) => row.id;
 }
 
 
@@ -130,10 +134,18 @@ export class CustomThemeDemoComponent {
 
 // custom-theme.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef, Row } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
+export interface ThemeContact {
+  id: number;
+  name: string;
+  phone: string;
+  email: string;
+  city: string;
+  status: string;
+}
 
-export const customThemeData: Row[] = [
+export const customThemeData: ThemeContact[] = [
   { id: 1, name: "Alice Johnson", phone: "2125551234", email: "alice@corp.com", city: "New York", status: "active" },
   { id: 2, name: "Bob Martinez", phone: "3105559876", email: "bob@corp.com", city: "Los Angeles", status: "active" },
   { id: 3, name: "Clara Chen", phone: "4155553210", email: "clara@corp.com", city: "San Francisco", status: "inactive" },
@@ -151,7 +163,7 @@ function formatPhone(raw: string): string {
   return raw;
 }
 
-export const customThemeHeaders: AngularColumnDef[] = [
+export const customThemeHeaders: AngularColumnDef<ThemeContact, any>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 170, type: "string", sortable: true },
   {
@@ -159,7 +171,7 @@ export const customThemeHeaders: AngularColumnDef[] = [
     label: "Phone",
     width: 150,
     type: "string",
-    valueFormatter: ({ value }) => formatPhone(value as string),
+    valueFormatter: ({ value }: ValueFormatterProps<ThemeContact, string>) => formatPhone(value),
   },
   { accessor: "email", label: "Email", width: 180, type: "string" },
   { accessor: "city", label: "City", width: 140, type: "string", sortable: true },
@@ -170,10 +182,9 @@ export const customThemeConfig = {
   headers: customThemeHeaders,
   rows: customThemeData,
   tableProps: {
-    theme: "custom" as const,
     customTheme: {
       rowHeight: 40,
       headerHeight: 44,
     },
   },
-} as const;
+};

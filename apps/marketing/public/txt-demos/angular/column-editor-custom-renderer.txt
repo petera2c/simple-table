@@ -1,7 +1,7 @@
 // column-editor-custom-renderer-demo.component.ts
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnEditorConfig, AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, AngularColumnEditorConfig, GetRowIdParams, Theme } from "@simple-table/angular";
 import {
   columnEditorCustomRendererConfig,
   COLUMN_EDITOR_SEARCH_PLACEHOLDER,
@@ -9,6 +9,7 @@ import {
 } from "./column-editor-custom-renderer.demo-data";
 import { ColumnEditorCustomRowComponent } from "./column-editor-custom-row.component";
 import "@simple-table/angular/styles.css";
+import type { ColumnEditorCustomRendererEmployee } from "./column-editor-custom-renderer.demo-data";
 
 @Component({
   selector: "column-editor-custom-renderer-demo",
@@ -16,6 +17,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -29,34 +31,109 @@ export class ColumnEditorCustomRendererDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = columnEditorCustomRendererConfig.rows;
-  readonly headers: AngularColumnDef[] = columnEditorCustomRendererConfig.headers;
+  readonly rows: ColumnEditorCustomRendererEmployee[] = columnEditorCustomRendererConfig.rows;
+  readonly headers: AngularColumnDef<ColumnEditorCustomRendererEmployee>[] = columnEditorCustomRendererConfig.headers;
   readonly editorConfig: AngularColumnEditorConfig = {
     text: COLUMN_EDITOR_TEXT,
     searchEnabled: true,
     searchPlaceholder: COLUMN_EDITOR_SEARCH_PLACEHOLDER,
     rowRenderer: ColumnEditorCustomRowComponent,
   };
+
+  getRowId = ({ row }: GetRowIdParams<ColumnEditorCustomRendererEmployee>) => row.id;
 }
 
 
 // column-editor-custom-renderer.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef, Row } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
+export interface ColumnEditorCustomRendererEmployee {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  salary: number;
+  department: string;
+  status: string;
+}
 
-export const columnEditorCustomRendererData: Row[] = [
-  { id: 1, name: "Alice Johnson", email: "alice@example.com", role: "Engineer", salary: 125000, department: "Engineering", status: "active" },
-  { id: 2, name: "Bob Martinez", email: "bob@example.com", role: "Designer", salary: 98000, department: "Design", status: "active" },
-  { id: 3, name: "Clara Chen", email: "clara@example.com", role: "PM", salary: 115000, department: "Product", status: "inactive" },
-  { id: 4, name: "David Kim", email: "david@example.com", role: "Engineer", salary: 132000, department: "Engineering", status: "active" },
-  { id: 5, name: "Elena Rossi", email: "elena@example.com", role: "Analyst", salary: 89000, department: "Analytics", status: "active" },
-  { id: 6, name: "Frank Müller", email: "frank@example.com", role: "Engineer", salary: 118000, department: "Engineering", status: "inactive" },
-  { id: 7, name: "Grace Park", email: "grace@example.com", role: "Designer", salary: 105000, department: "Design", status: "active" },
-  { id: 8, name: "Henry Patel", email: "henry@example.com", role: "Lead", salary: 145000, department: "Engineering", status: "active" },
+export const columnEditorCustomRendererData: ColumnEditorCustomRendererEmployee[] = [
+  {
+    id: 1,
+    name: "Alice Johnson",
+    email: "alice@example.com",
+    role: "Engineer",
+    salary: 125000,
+    department: "Engineering",
+    status: "active",
+  },
+  {
+    id: 2,
+    name: "Bob Martinez",
+    email: "bob@example.com",
+    role: "Designer",
+    salary: 98000,
+    department: "Design",
+    status: "active",
+  },
+  {
+    id: 3,
+    name: "Clara Chen",
+    email: "clara@example.com",
+    role: "PM",
+    salary: 115000,
+    department: "Product",
+    status: "inactive",
+  },
+  {
+    id: 4,
+    name: "David Kim",
+    email: "david@example.com",
+    role: "Engineer",
+    salary: 132000,
+    department: "Engineering",
+    status: "active",
+  },
+  {
+    id: 5,
+    name: "Elena Rossi",
+    email: "elena@example.com",
+    role: "Analyst",
+    salary: 89000,
+    department: "Analytics",
+    status: "active",
+  },
+  {
+    id: 6,
+    name: "Frank Müller",
+    email: "frank@example.com",
+    role: "Engineer",
+    salary: 118000,
+    department: "Engineering",
+    status: "inactive",
+  },
+  {
+    id: 7,
+    name: "Grace Park",
+    email: "grace@example.com",
+    role: "Designer",
+    salary: 105000,
+    department: "Design",
+    status: "active",
+  },
+  {
+    id: 8,
+    name: "Henry Patel",
+    email: "henry@example.com",
+    role: "Lead",
+    salary: 145000,
+    department: "Engineering",
+    status: "active",
+  },
 ];
 
-export const columnEditorCustomRendererHeaders: AngularColumnDef[] = [
+export const columnEditorCustomRendererHeaders: AngularColumnDef<ColumnEditorCustomRendererEmployee, any>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: 170, type: "string", sortable: true },
   { accessor: "email", label: "Email", width: 200, type: "string" },
@@ -67,7 +144,7 @@ export const columnEditorCustomRendererHeaders: AngularColumnDef[] = [
     width: 130,
     type: "number",
     sortable: true,
-    valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
+    valueFormatter: ({ value }: ValueFormatterProps<ColumnEditorCustomRendererEmployee, number>) => `$${value.toLocaleString()}`,
   },
   { accessor: "department", label: "Department", width: 140, type: "string", sortable: true },
   { accessor: "status", label: "Status", width: 100, type: "string" },
@@ -79,7 +156,7 @@ export const columnEditorCustomRendererConfig = {
   tableProps: {
     enableColumnEditor: true,
   },
-} as const;
+};
 
 export const COLUMN_EDITOR_TEXT = "Manage Columns";
 export const COLUMN_EDITOR_SEARCH_PLACEHOLDER = "Search columns…";

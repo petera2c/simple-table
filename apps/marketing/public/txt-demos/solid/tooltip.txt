@@ -6,6 +6,7 @@ export default function TooltipDemo(props: { height?: string | number; theme?: T
   return (
     <SimpleTable
       columns={tooltipConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={tooltipConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

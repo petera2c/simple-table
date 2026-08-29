@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { h } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueIconsConfig } from "@simple-table/vue";
+import type { Theme, VueIconsConfig, GetRowIdParams } from "@simple-table/vue";
 import { customIconsConfig } from "./custom-icons.demo-data";
+import type { SoftwareRelease } from "./custom-icons.demo-data";
 import "@simple-table/vue/styles.css";
 
 const props = withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -26,6 +27,8 @@ function iconSvg(pathD: string, color: string, strokeWidth = "2.5") {
   );
 }
 
+const getRowId = ({ row }: GetRowIdParams<SoftwareRelease>) => row.id;
+
 const icons: VueIconsConfig = {
   sortUp: iconSvg("M12 19V5M5 12l7-7 7 7", "#6366f1"),
   sortDown: iconSvg("M12 5v14M19 12l-7 7-7-7", "#6366f1"),
@@ -40,6 +43,7 @@ const icons: VueIconsConfig = {
   <SimpleTable
     :columns="customIconsConfig.headers"
     :rows="customIconsConfig.rows"
+    :get-row-id="getRowId"
     :icons="icons"
     :height="props.height"
     :theme="props.theme"

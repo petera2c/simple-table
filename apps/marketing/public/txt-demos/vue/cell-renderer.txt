@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { h, computed } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, VueColumnDef, CellRendererProps } from "@simple-table/vue";
+import type {
+  Theme,
+  VueColumnDef,
+  VueCellRenderer,
+  CellRendererProps,
+  GetRowIdParams,
+} from "@simple-table/vue";
 import { cellRendererConfig } from "./cell-renderer.demo-data";
 import type { CellRendererEmployee } from "./cell-renderer.demo-data";
 import "@simple-table/vue/styles.css";
@@ -17,8 +23,8 @@ const getInitials = (name: string) =>
     .join("")
     .toUpperCase();
 
-const TeamCell = ({ row }: CellRendererProps) => {
-  const members = (row as CellRendererEmployee).teamMembers;
+const TeamCell = ({ row }: CellRendererProps<CellRendererEmployee>) => {
+  const members = row.teamMembers;
   return h(
     "div",
     { style: { display: "flex", alignItems: "center", gap: "6px" } },
@@ -49,7 +55,7 @@ const TeamCell = ({ row }: CellRendererProps) => {
   );
 };
 
-const WebsiteCell = ({ value }: CellRendererProps) => {
+const WebsiteCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
   const url = String(value);
   return h("span", [
     "🌐 ",
@@ -72,7 +78,7 @@ const WebsiteCell = ({ value }: CellRendererProps) => {
   ]);
 };
 
-const StatusCell = ({ value }: CellRendererProps) => {
+const StatusCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
   const status = String(value);
   const map: Record<string, { icon: string; color: string }> = {
     active: { icon: "✓", color: "#10B981" },
@@ -87,7 +93,7 @@ const StatusCell = ({ value }: CellRendererProps) => {
   );
 };
 
-const ProgressCell = ({ value }: CellRendererProps) => {
+const ProgressCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
   const pct = Number(value) || 0;
   const color = pct < 30 ? "#EF4444" : pct < 70 ? "#F59E0B" : "#10B981";
   return h("div", [
@@ -117,7 +123,7 @@ const ProgressCell = ({ value }: CellRendererProps) => {
   ]);
 };
 
-const RatingCell = ({ value }: CellRendererProps) => {
+const RatingCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
   const rating = Number(value) || 0;
   const full = Math.floor(rating);
   const hasHalf = rating % 1 >= 0.25;
@@ -136,7 +142,7 @@ const RatingCell = ({ value }: CellRendererProps) => {
   ]);
 };
 
-const VerifiedCell = ({ value }: CellRendererProps) => {
+const VerifiedCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
   const yes = Boolean(value);
   return h(
     "span",
@@ -145,7 +151,7 @@ const VerifiedCell = ({ value }: CellRendererProps) => {
   );
 };
 
-const TagsCell = ({ value }: CellRendererProps) => {
+const TagsCell = ({ value }: CellRendererProps<CellRendererEmployee>) => {
   const raw = Array.isArray(value) ? value : [];
   const tags = raw.filter((t): t is string => typeof t === "string");
   return h(
@@ -173,7 +179,7 @@ const TagsCell = ({ value }: CellRendererProps) => {
   );
 };
 
-const RENDERERS: Record<string, (p: CellRendererProps) => ReturnType<typeof h>> = {
+const RENDERERS: Partial<Record<string, VueCellRenderer<CellRendererEmployee>>> = {
   teamMembers: TeamCell,
   website: WebsiteCell,
   status: StatusCell,
@@ -183,17 +189,20 @@ const RENDERERS: Record<string, (p: CellRendererProps) => ReturnType<typeof h>> 
   tags: TagsCell,
 };
 
-const headers = computed(() =>
+const headers = computed((): VueColumnDef<CellRendererEmployee>[] =>
   cellRendererConfig.headers.map((col) => {
-    const r = RENDERERS[col.accessor as string];
-    return r ? { ...col, cellRenderer: r } : { ...col };
+    const cellRenderer = RENDERERS[String(col.accessor)];
+    return cellRenderer ? { ...col, cellRenderer } : col;
   }),
 );
+
+const getRowId = ({ row }: GetRowIdParams<CellRendererEmployee>) => row.id;
 </script>
 
 <template>
   <SimpleTable
     :columns="headers"
+    :get-row-id="getRowId"
     :rows="cellRendererConfig.rows"
     :height="height"
     :theme="theme"

@@ -1,12 +1,13 @@
 // window-infinite-scroll-demo.component.ts
 import { Component, ElementRef, Input, ViewChild } from "@angular/core";
-import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import { SimpleTableImports } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import {
   generateWindowScrollRows,
   windowScrollHeaders,
 } from "./window-infinite-scroll.demo-data";
 import "@simple-table/angular/styles.css";
+import type { WindowScrollEmployee } from "./window-infinite-scroll.demo-data";
 
 const INITIAL_ROWS = 50;
 const BATCH_SIZE = 50;
@@ -28,7 +29,7 @@ const LOAD_DELAY_MS = 350;
 @Component({
   selector: "window-infinite-scroll-demo",
   standalone: true,
-  imports: [SimpleTableComponent],
+  imports: [SimpleTableImports],
   template: `
     <div #wrapper style="max-width: 1100px; margin: 0 auto">
       <h1 style="font-size: 28px; margin: 0 0 12px 0; color: #0f172a">
@@ -39,7 +40,7 @@ const LOAD_DELAY_MS = 350;
       >
         This table has no <code>height</code> or <code>maxHeight</code>. It grows to its natural
         size inside the page, and uses the outer scroll container (<code>scrollParent</code>) to
-        drive both row virtualization and <code>onLoadMore</code>. The header pins to the top of
+        drive both row virtualization and <code>(loadMore)</code>. The header pins to the top of
         the outer scroll viewport as you scroll. Scroll down — new rows stream in as you approach
         the bottom.
       </p>
@@ -60,14 +61,14 @@ const LOAD_DELAY_MS = 350;
         [getRowId]="getRowId"
         [scrollParent]="getScrollParent"
         [infiniteScrollThreshold]="400"
-        [onLoadMore]="handleLoadMore"
+        (loadMore)="handleLoadMore()"
         [isLoading]="loading && rows.length === 0"
       ></simple-table>
 
       <p
         style="font-size: 13px; color: #94a3b8; margin: 24px 0 48px 0; text-align: center"
       >
-        End of demo content. Keep scrolling near the bottom and onLoadMore will keep firing until
+        End of demo content. Keep scrolling near the bottom and (loadMore) will keep firing until
         the dataset is exhausted.
       </p>
     </div>
@@ -82,8 +83,8 @@ export class WindowInfiniteScrollDemoComponent {
   @ViewChild("wrapper", { static: true })
   wrapperRef!: ElementRef<HTMLDivElement>;
 
-  readonly headers: AngularColumnDef[] = windowScrollHeaders;
-  rows: Row[] = generateWindowScrollRows(0, INITIAL_ROWS);
+  readonly headers: AngularColumnDef<WindowScrollEmployee>[] = windowScrollHeaders;
+  rows: WindowScrollEmployee[] = generateWindowScrollRows(0, INITIAL_ROWS);
   loading = false;
   hasMore = true;
 
@@ -99,7 +100,7 @@ export class WindowInfiniteScrollDemoComponent {
   // In a regular app outside this preview shell, pass `"window"` instead.
   getScrollParent = () => this.wrapperRef?.nativeElement?.parentElement ?? null;
 
-  getRowId = (p: { row: Row }) => String((p.row as { id?: number })?.id);
+  getRowId = ({ row }: GetRowIdParams<WindowScrollEmployee>) => String(row.id);
 
   handleLoadMore = () => {
     if (this.loading || !this.hasMore) return;
@@ -122,7 +123,17 @@ export class WindowInfiniteScrollDemoComponent {
 
 // window-infinite-scroll.demo-data.ts
 // Self-contained data + headers for the window-scroll infinite scroll example.
-import type { AngularColumnDef, Row } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
+
+export interface WindowScrollEmployee {
+  id: number;
+  name: string;
+  email: string;
+  department: string;
+  status: string;
+  tenureYears: number;
+  salary: number;
+}
 
 const FIRST_NAMES = [
   "Elena",
@@ -175,10 +186,13 @@ const DEPARTMENTS = [
   "Customer Success",
 ];
 
-const STATUSES = ["Active", "On Leave", "Remote", "Onsite"] as const;
+const STATUSES = ["Active", "On Leave", "Remote", "Onsite"];
 
-export function generateWindowScrollRows(startIndex: number, count: number): Row[] {
-  const rows: Row[] = [];
+export function generateWindowScrollRows(
+  startIndex: number,
+  count: number,
+): WindowScrollEmployee[] {
+  const rows: WindowScrollEmployee[] = [];
   for (let i = 0; i < count; i++) {
     const idx = startIndex + i;
     const first = FIRST_NAMES[idx % FIRST_NAMES.length];
@@ -196,7 +210,7 @@ export function generateWindowScrollRows(startIndex: number, count: number): Row
   return rows;
 }
 
-export const windowScrollHeaders: AngularColumnDef[] = [
+export const windowScrollHeaders: AngularColumnDef<WindowScrollEmployee, any>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number", align: "right" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 160 },
   { accessor: "email", label: "Email", width: 260 },
@@ -208,7 +222,7 @@ export const windowScrollHeaders: AngularColumnDef[] = [
     width: 110,
     type: "number",
     align: "right",
-    valueFormatter: ({ value }) => `${value} yrs`,
+    valueFormatter: ({ value }: ValueFormatterProps<WindowScrollEmployee>) => `${value} yrs`,
   },
   {
     accessor: "salary",
@@ -216,6 +230,6 @@ export const windowScrollHeaders: AngularColumnDef[] = [
     width: 140,
     type: "number",
     align: "right",
-    valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
+    valueFormatter: ({ value }: ValueFormatterProps<WindowScrollEmployee, number>) => `$${value.toLocaleString()}`,
   },
 ];

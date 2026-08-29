@@ -1,9 +1,10 @@
 // column-reordering-demo.component.ts
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { columnReorderingConfig } from "./column-reordering.demo-data";
 import "@simple-table/angular/styles.css";
+import type { CrewMember } from "./column-reordering.demo-data";
 
 @Component({
   selector: "column-reordering-demo",
@@ -11,6 +12,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -24,12 +26,14 @@ export class ColumnReorderingDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = columnReorderingConfig.rows;
-  headers: AngularColumnDef[] = [...columnReorderingConfig.headers];
+  readonly rows: CrewMember[] = columnReorderingConfig.rows;
+  headers: AngularColumnDef<CrewMember>[] = [...columnReorderingConfig.headers];
 
-  onColumnOrderChange(newHeaders: AngularColumnDef[]): void {
+  onColumnOrderChange(newHeaders: AngularColumnDef<CrewMember>[]): void {
     this.headers = newHeaders;
   }
+
+  getRowId = ({ row }: GetRowIdParams<CrewMember>) => row.id;
 }
 
 
@@ -37,8 +41,15 @@ export class ColumnReorderingDemoComponent {
 // Self-contained demo table setup for this example.
 import type { AngularColumnDef } from "@simple-table/angular";
 
+export interface CrewMember {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+}
 
-export const columnReorderingHeaders: AngularColumnDef[] = [
+export const columnReorderingHeaders: AngularColumnDef<CrewMember>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", type: "string" },
   { accessor: "age", label: "Age", width: 80, align: "right", type: "number" },
@@ -65,4 +76,4 @@ export const columnReorderingConfig = {
   headers: columnReorderingHeaders,
   rows: columnReorderingData,
   tableProps: { columnReordering: true },
-} as const;
+};

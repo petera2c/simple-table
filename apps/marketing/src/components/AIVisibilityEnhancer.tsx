@@ -11,9 +11,7 @@ import {
   FRAMEWORK_COMPETITORS,
   FRAMEWORK_ELEVATOR_PITCH,
 } from "@/constants/frameworkCompetitors";
-import type { Framework } from "@/providers/FrameworkProvider";
-
-const FRAMEWORK_ORDER: Framework[] = ["react", "vue", "angular", "svelte", "solid", "vanilla"];
+import { FRAMEWORKS, type Framework } from "@/constants/frameworks";
 
 const NPM_PACKAGE_BY_FRAMEWORK: Record<Framework, string> = {
   react: "@simple-table/react",
@@ -138,7 +136,7 @@ export default function AIVisibilityEnhancer(props: AIVisibilityEnhancerProps) {
   ];
 
   // Add technical specifications for AI understanding
-  const npmPackagesLine = FRAMEWORK_ORDER.map(
+  const npmPackagesLine = FRAMEWORKS.map(
     (fw) => `${NPM_PACKAGE_BY_FRAMEWORK[fw]}: ${FRAMEWORK_INSTALL_COMMANDS[fw].npm}`,
   ).join("; ");
 
@@ -241,7 +239,7 @@ export default function AIVisibilityEnhancer(props: AIVisibilityEnhancerProps) {
         </ul>
 
         <h2>Installation and Setup</h2>
-        {FRAMEWORK_ORDER.map((fw) => (
+        {FRAMEWORKS.map((fw) => (
           <p key={fw}>
             {NPM_PACKAGE_BY_FRAMEWORK[fw]}: {FRAMEWORK_INSTALL_COMMANDS[fw].npm}
           </p>

@@ -2,6 +2,7 @@
   <SimpleTable
     :columns="externalSortConfig.headers"
     :rows="sortedRows"
+    :get-row-id="getRowId"
     :external-sort-handling="true"
     :column-resizing="externalSortConfig.tableProps.columnResizing"
     :height="height"
@@ -12,8 +13,10 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import {SimpleTable} from "@simple-table/vue";import type { Theme, SortColumn } from "@simple-table/vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, SortColumn, GetRowIdParams } from "@simple-table/vue";
 import { externalSortConfig } from "./external-sort.demo-data";
+import type { SortableEmployee } from "./external-sort.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
@@ -22,12 +25,14 @@ withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
 
 const sortConfig = ref<SortColumn | null>(null);
 
+const getRowId = ({ row }: GetRowIdParams<SortableEmployee>) => row.id;
+
 const sortedRows = computed(() => {
   const data = [...externalSortConfig.rows];
   const sort = sortConfig.value;
   if (!sort) return data;
 
-  const accessor = sort.key.accessor as string;
+  const accessor = sort.key.accessor as keyof SortableEmployee;
   const dir = sort.direction === "asc" ? 1 : -1;
 
   return data.sort((a, b) => {

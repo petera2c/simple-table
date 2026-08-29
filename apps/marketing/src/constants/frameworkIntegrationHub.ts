@@ -57,8 +57,8 @@ import "@simple-table/vue/styles.css";`,
     stylesImport: `import "@simple-table/angular/styles.css";`,
     examplesMonorepoPath: "packages/examples/angular",
     featureDocsPath: "/docs/quick-start",
-    minimalSnippet: `import { SimpleTableComponent } from "@simple-table/angular";
-import "@simple-table/angular/styles.css";`,
+    minimalSnippet: `import { SimpleTableImports } from "@simple-table/angular";
+import "@simple-table/angular/styles.css";`
   },
   {
     id: "svelte",

@@ -163,7 +163,7 @@ export default function SimpleTableVsAgGridAngularPage() {
         {
           question: "Does Simple Table support Angular 17+ standalone components?",
           answer:
-            "Yes. @simple-table/angular ships SimpleTableComponent as a standalone component you import directly, so you don't need an NgModule wrapper.",
+            "Yes. Import SimpleTableImports on a standalone component or NgModule. That brings in the table and the page-template directives. You do not need an NgModule wrapper.",
         },
         {
           question: "How big is the bundle compared to AG Grid Angular?",

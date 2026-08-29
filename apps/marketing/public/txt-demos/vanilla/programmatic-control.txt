@@ -1,16 +1,19 @@
 // ProgrammaticControlDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, ColumnDef } from "simple-table-core";
+import type { ProgrammaticControlProduct } from "./programmatic-control.demo-data";
+import type { Theme, ColumnDef, CellRendererProps, GetRowIdParams } from "simple-table-core";
 import {
   programmaticControlConfig,
   PROGRAMMATIC_CONTROL_STATUS_COLORS,
 } from "./programmatic-control.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<ProgrammaticControlProduct>) => row.id;
 export function renderProgrammaticControlDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
-): SimpleTableVanilla {
+): SimpleTableVanilla<ProgrammaticControlProduct> {
   const wrapper = document.createElement("div");
 
   const banner = document.createElement("div");
@@ -22,11 +25,11 @@ export function renderProgrammaticControlDemo(
   const controls = document.createElement("div");
   controls.style.cssText = "margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap";
 
-  const headers: ColumnDef[] = programmaticControlConfig.headers.map((h) => {
+  const headers: ColumnDef<ProgrammaticControlProduct>[] = programmaticControlConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
+        cellRenderer: ({ row }: CellRendererProps<ProgrammaticControlProduct>) => {
           const s = String(row.status);
           const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? {
             bg: "#f3f4f6",
@@ -39,7 +42,7 @@ export function renderProgrammaticControlDemo(
     return { ...h };
   });
 
-  let table: SimpleTableVanilla;
+  let table: SimpleTableVanilla<ProgrammaticControlProduct>;
 
   function setStatus(msg: string) {
     banner.textContent = msg;
@@ -83,7 +86,7 @@ export function renderProgrammaticControlDemo(
         const sortState = api.getSortState();
         const filterState = api.getFilterState();
         const totalValue = allRows.reduce(
-          (sum, r) => sum + (r.row.price as number) * (r.row.stock as number),
+          (sum, r) => sum + Number(r.row.price) * Number(r.row.stock),
           0,
         );
         const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
@@ -109,6 +112,7 @@ export function renderProgrammaticControlDemo(
   container.appendChild(wrapper);
 
   table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: headers,
     rows: programmaticControlConfig.rows,
     height: options?.height ?? "400px",
@@ -123,6 +127,14 @@ export function renderProgrammaticControlDemo(
 // Self-contained demo table setup for this example.
 import type { ColumnDef } from "simple-table-core";
 
+export interface ProgrammaticControlProduct {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  status: string;
+}
 
 export const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   Available: { bg: "#dcfce7", color: "#166534" },
@@ -130,7 +142,7 @@ export const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   "Out of Stock": { bg: "#fee2e2", color: "#991b1b" },
 };
 
-export const programmaticControlData = [
+export const programmaticControlData: ProgrammaticControlProduct[] = [
   { id: 1, name: "Wireless Keyboard", category: "Electronics", price: 49.99, stock: 145, status: "Available" },
   { id: 2, name: "Ergonomic Mouse", category: "Electronics", price: 29.99, stock: 12, status: "Low Stock" },
   { id: 3, name: "USB-C Hub", category: "Electronics", price: 39.99, stock: 234, status: "Available" },
@@ -145,7 +157,7 @@ export const programmaticControlData = [
   { id: 12, name: "Desk Lamp LED", category: "Appliances", price: 44.99, stock: 0, status: "Out of Stock" },
 ];
 
-export const programmaticControlHeaders: ColumnDef[] = [
+export const programmaticControlHeaders: ColumnDef<ProgrammaticControlProduct>[] = [
   { accessor: "id", label: "ID", width: 70, type: "number", sortable: true, filterable: true },
   { accessor: "name", label: "Product Name", width: "1fr", minWidth: 150, type: "string", sortable: true, filterable: true },
   {
@@ -157,7 +169,16 @@ export const programmaticControlHeaders: ColumnDef[] = [
     filterable: true,
     enumOptions: ["Electronics", "Furniture", "Stationery", "Appliances"].map((v) => ({ label: v, value: v })),
   },
-  { accessor: "price", label: "Price", width: 110, align: "right", type: "number", sortable: true, filterable: true, valueFormatter: ({ value }) => `$${(value as number).toFixed(2)}` },
+  {
+    accessor: "price",
+    label: "Price",
+    width: 110,
+    align: "right",
+    type: "number",
+    sortable: true,
+    filterable: true,
+    valueFormatter: ({ value }) => `$${Number(value).toFixed(2)}`,
+  },
   { accessor: "stock", label: "Stock", width: 100, align: "right", type: "number", sortable: true, filterable: true },
   {
     accessor: "status",
@@ -173,6 +194,6 @@ export const programmaticControlHeaders: ColumnDef[] = [
 export const programmaticControlConfig = {
   headers: programmaticControlHeaders,
   rows: programmaticControlData,
-} as const;
+};
 
 export { STATUS_COLORS as PROGRAMMATIC_CONTROL_STATUS_COLORS };

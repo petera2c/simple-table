@@ -6,6 +6,7 @@ export default function ColumnAlignmentDemo(props: { height?: string | number; t
   return (
     <SimpleTable
       columns={columnAlignmentConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={columnAlignmentConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

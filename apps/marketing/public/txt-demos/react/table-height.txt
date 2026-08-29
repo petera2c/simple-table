@@ -7,7 +7,7 @@ const heights = ["200px", "300px", "400px"] as const;
 
 const TableHeightDemo = ({
   height: _height,
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -29,7 +29,7 @@ const TableHeightDemo = ({
               color: selectedHeight === h ? "#fff" : "#374151",
               cursor: "pointer",
               fontSize: 14,
-              fontWeight: 500,
+              fontWeight: 500
             }}
           >
             {h}
@@ -41,6 +41,7 @@ const TableHeightDemo = ({
         rows={tableHeightConfig.rows}
         height={selectedHeight}
         theme={theme}
+        getRowId={({ row }) => row.id}
       />
     </div>
   );

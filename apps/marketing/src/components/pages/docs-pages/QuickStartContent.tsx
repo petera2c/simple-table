@@ -23,6 +23,7 @@ import { trackCopyAiSetupPrompt } from "@/lib/analytics";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
 import { useFramework } from "@/providers/FrameworkProvider";
+import type { Framework } from "@/constants/frameworks";
 
 const TABLE_PROPS: PropInfo[] = [
   {
@@ -115,64 +116,86 @@ height="100%"`,
   },
 ];
 
-const QUICK_START_STEPS: DocsStep[] = [
-  {
-    title: "Install",
-    body: (
-      <>
-        Full install options (yarn, pnpm) are on the{" "}
-        <Link
-          href="/docs/installation"
-          className="text-blue-600 dark:text-blue-400 hover:underline"
-        >
-          Installation
-        </Link>{" "}
-        page.
-      </>
-    ),
-    codeByFramework: installSnippets(),
-    language: "bash",
-  },
-  {
-    title: "Import",
-    body: "Import the table component and its CSS styles.",
-    codeByFramework: IMPORT_SNIPPETS,
-    language: "typescript",
-  },
-  {
-    title: "Define columns",
-    body: (
-      <>
-        Each column needs an{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-          accessor
-        </code>{" "}
-        that matches a property on your row objects.
-      </>
-    ),
-    codeByFramework: COLUMNS_SNIPPETS,
-    language: "typescript",
-  },
-  {
-    title: "Define rows",
-    body: "Provide an array of objects — one object per row.",
-    codeByFramework: forAllFrameworks(ROWS_SNIPPET),
-    language: "typescript",
-  },
-  {
-    title: "Render the table",
-    body: (
-      <>
-        Pass columns and rows to the table. Set{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
-          height
-        </code>{" "}
-        so the table scrolls with a sticky header.
-      </>
-    ),
-    codeByFramework: tableSnippets({ height: "400px" }),
-  },
-];
+function getQuickStartSteps(framework: Framework): DocsStep[] {
+  return [
+    {
+      title: "Install",
+      body: (
+        <>
+          Full install options (yarn, pnpm) are on the{" "}
+          <Link
+            href="/docs/installation"
+            className="text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            Installation
+          </Link>{" "}
+          page.
+        </>
+      ),
+      codeByFramework: installSnippets(),
+      language: "bash",
+    },
+    {
+      title: "Import",
+      body:
+        framework === "angular"
+          ? "Import SimpleTableImports (the table plus template directives) and the CSS styles."
+          : "Import the table component and its CSS styles.",
+      codeByFramework: IMPORT_SNIPPETS,
+      language: "typescript",
+    },
+    {
+      title: "Define columns",
+      body: (
+        <>
+          Each column needs an{" "}
+          <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+            accessor
+          </code>{" "}
+          that matches a property on your row objects.
+        </>
+      ),
+      codeByFramework: COLUMNS_SNIPPETS,
+      language: "typescript",
+    },
+    {
+      title: "Define rows",
+      body: "Provide an array of objects, one object per row.",
+      codeByFramework: forAllFrameworks(ROWS_SNIPPET),
+      language: "typescript",
+    },
+    {
+      title: "Render the table",
+      body:
+        framework === "angular" ? (
+          <>
+            Pass columns and rows. Custom cells and empty UI go inside the tag as{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+              stCell
+            </code>{" "}
+            and{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+              stEmpty
+            </code>{" "}
+            templates. Set{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+              height
+            </code>{" "}
+            so the table scrolls with a sticky header.
+          </>
+        ) : (
+          <>
+            Pass columns and rows to the table. Set{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-gray-800 dark:text-gray-200">
+              height
+            </code>{" "}
+            so the table scrolls with a sticky header.
+          </>
+        ),
+      codeByFramework: tableSnippets({ height: "400px" }),
+    },
+  ];
+}
 
 const QuickStartContent = () => {
   const { framework } = useFramework();
@@ -239,7 +262,7 @@ const QuickStartContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.25 }}
       >
-        <DocsSteps steps={QUICK_START_STEPS} />
+        <DocsSteps steps={getQuickStartSteps(framework)} />
       </motion.div>
 
       <motion.h2

@@ -72,13 +72,13 @@ export default function AngularDataGridPillarPage() {
         {
           icon: faGears,
           title: "Standalone-ready",
-          body: "SimpleTableComponent is a standalone Angular component—drop it into the imports array of any Angular 17+ component. No NgModule rewrite, no providers tree to thread, no DI gymnastics.",
+          body: "Import SimpleTableImports on any Angular 17+ standalone component or NgModule. That brings in the table plus stCell, stEmpty, and the other page-template directives. No providers tree to thread.",
           tone: "blue",
         },
         {
           icon: faPalette,
           title: "Angular-native renderers",
-          body: "Use real Angular components for cell renderers, headers, footers, and editors. Inputs and outputs work the way Angular developers expect; types ship from @simple-table/angular.",
+          body: "Put custom cells, headers, and empty UI in the page with stCell, stHeader, and stEmpty. You can still pass Angular component classes as cellRenderer. Inputs and outputs work the way Angular developers expect; types ship from @simple-table/angular.",
           tone: "purple",
         },
         {
@@ -161,7 +161,7 @@ export default function AngularDataGridPillarPage() {
       }}
       install={{
         heading: "Get up and running in a standalone Angular component",
-        intro: "Install the package, import the stylesheet from your global styles or main.ts, and add SimpleTableComponent to your standalone component's imports array. No NgModule edits required.",
+        intro: "Install the package, import the stylesheet from your global styles or main.ts, and add SimpleTableImports to your standalone component's imports array. No NgModule edits required.",
         installCommand: "npm install @simple-table/angular",
       }}
       faqs={[
@@ -178,7 +178,7 @@ export default function AngularDataGridPillarPage() {
         {
           question: "Can I use Angular components as cell renderers?",
           answer:
-            "Yes. Cell renderers, header renderers, footer renderers, and column editors all accept Angular components, so you keep dependency injection, change detection, and the Angular lifecycle inside your renderers.",
+            "Yes. Put an stCell template on the page, matched to the column accessor. You can also pass an Angular component as cellRenderer on the column. A matching page template wins. Header, footer, and empty UI work the same way with stHeader, stFooter, and stEmpty.",
         },
         {
           question: "How does it compare with ngx-datatable?",
@@ -206,7 +206,7 @@ export default function AngularDataGridPillarPage() {
       cta={{
         title: "Ready to ship the Angular data grid users love?",
         description:
-          "Install @simple-table/angular, drop SimpleTableComponent into your standalone component, and ship sorting, filtering, virtualization, pinning, grouping, and editing in your next Angular release.",
+          "Install @simple-table/angular, import SimpleTableImports, and ship sorting, filtering, virtualization, pinning, grouping, and editing in your next Angular release.",
         primaryHref: "/frameworks/angular",
         primaryLabel: "Angular setup hub",
         secondaryHref: "/docs/installation",

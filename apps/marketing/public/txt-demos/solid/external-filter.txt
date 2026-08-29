@@ -1,10 +1,15 @@
 import { createSignal, createMemo } from "solid-js";
-import {SimpleTable} from "@simple-table/solid";import type { Theme, TableFilterState } from "@simple-table/solid";
-import { externalFilterConfig, matchesFilter } from "./external-filter.demo-data";
+import { SimpleTable } from "@simple-table/solid";
+import type { Theme, TableFilterState } from "@simple-table/solid";
+import {
+  externalFilterConfig,
+  matchesFilter,
+  type FilterableEmployee,
+} from "./external-filter.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function ExternalFilterDemo(props: { height?: string | number; theme?: Theme }) {
-  const [filters, setFilters] = createSignal<TableFilterState>({});
+  const [filters, setFilters] = createSignal<TableFilterState<FilterableEmployee>>({});
 
   const filteredData = createMemo(() => {
     const entries = Object.entries(filters());
@@ -12,14 +17,15 @@ export default function ExternalFilterDemo(props: { height?: string | number; th
 
     return externalFilterConfig.rows.filter((row) =>
       entries.every(([accessor, filter]) =>
-        matchesFilter(row[accessor as keyof typeof row] as any, filter)
-      )
+        matchesFilter(row[accessor as keyof FilterableEmployee], filter),
+      ),
     );
   });
 
   return (
     <SimpleTable
       columns={externalFilterConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={filteredData()}
       onFilterChange={setFilters}
       externalFilterHandling

@@ -1,13 +1,16 @@
 // ColumnResizingDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme, ColumnDef } from "simple-table-core";
+import type { OceanStaff } from "./column-resizing.demo-data";
+import type { Theme, ColumnDef, GetRowIdParams } from "simple-table-core";
 import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<OceanStaff>) => row.id;
 export function renderColumnResizingDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme },
-): SimpleTableVanilla {
+): SimpleTableVanilla<OceanStaff> {
   const wrapper = document.createElement("div");
   wrapper.style.position = "relative";
   wrapper.style.height = "100%";
@@ -24,7 +27,7 @@ export function renderColumnResizingDemo(
   wrapper.appendChild(tableContainer);
   container.appendChild(wrapper);
 
-  let headers: ColumnDef[] = [...columnResizingHeaders];
+  let headers: ColumnDef<OceanStaff>[] = [...columnResizingHeaders];
   try {
     const saved = localStorage.getItem(COLUMN_RESIZING_STORAGE_KEY);
     if (saved) {
@@ -34,12 +37,13 @@ export function renderColumnResizingDemo(
   } catch { /* ignore */ }
 
   const table = new SimpleTableVanilla(tableContainer, {
+    getRowId,
     columns: headers,
     rows: columnResizingData,
     height: options?.height ?? "400px",
     theme: options?.theme,
     columnResizing: true,
-    onColumnWidthChange: (updatedHeaders: ColumnDef[]) => {
+    onColumnWidthChange: (updatedHeaders: ColumnDef<OceanStaff>[]) => {
       try {
         const widthMap: Record<string, unknown> = {};
         for (const h of updatedHeaders) widthMap[h.accessor] = h.width;
@@ -63,10 +67,18 @@ export function renderColumnResizingDemo(
 // Self-contained demo table setup for this example.
 import type { ColumnDef } from "simple-table-core";
 
+export interface OceanStaff {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+  startDate: string;
+}
 
 export const COLUMN_RESIZING_STORAGE_KEY = "columnResizingDemo_widths";
 
-export const columnResizingHeaders: ColumnDef[] = [
+export const columnResizingHeaders: ColumnDef<OceanStaff>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "First Name", width: "1fr", minWidth: 100, type: "string" },
   { accessor: "age", label: "Age", width: "1fr", minWidth: 50, type: "string" },
@@ -93,4 +105,4 @@ export const columnResizingData = [
 export const columnResizingConfig = {
   headers: columnResizingHeaders,
   rows: columnResizingData,
-} as const;
+};

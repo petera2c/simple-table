@@ -117,6 +117,36 @@ class BothBindingsPage {
   }
 }
 
+@Component({
+  standalone: true,
+  selector: "st-consumer-output-label-page",
+  imports: [SimpleTableImports],
+  template: `
+    <p>Picked: {{ picked }}</p>
+    <simple-table
+      [rows]="rows"
+      [columns]="columns"
+      [getRowId]="getRowId"
+      [enableRowSelection]="true"
+      [selectRowOnClick]="true"
+      height="250px"
+      theme="light"
+      [animations]="{ enabled: false }"
+      (rowSelectionChange)="onSelect($event)"
+    ></simple-table>
+  `,
+})
+class OutputLabelPage {
+  rows = makeRows();
+  columns = columns;
+  getRowId = ({ row }: { row: Person }) => String(row.id);
+  picked = "none";
+
+  onSelect(event: RowSelectionChangeProps<Person>): void {
+    this.picked = event.row.name;
+  }
+}
+
 function findNameHeader(scope: HTMLElement): HTMLElement {
   const labels = Array.from(scope.querySelectorAll<HTMLElement>(".st-header-label"));
   const label = labels.find((el) => el.textContent?.includes("Name"));
@@ -149,6 +179,14 @@ describe("Angular consumer outputs", () => {
     await wait(50);
     expect(page.edits.length).toBeGreaterThan(0);
     expect(page.edits[0]?.newValue).toBe("Ada");
+  });
+
+  it("refreshes page template text from (rowSelectionChange)", async () => {
+    mounted = await mountConsumer(OutputLabelPage);
+    await waitForText(mounted.el, "Picked: none");
+    const cell = await waitForElement(mounted.el, '.st-cell[data-accessor="name"]');
+    cell.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    await waitForText(mounted.el, "Picked: Alice");
   });
 
   it("runs both [onSortChange] and (sortChange) when both are bound", async () => {

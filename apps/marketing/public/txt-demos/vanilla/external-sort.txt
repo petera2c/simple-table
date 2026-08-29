@@ -1,21 +1,41 @@
 // ExternalSortDemo.ts
-import { SimpleTableVanilla, asRows } from "simple-table-core";
-import type { Theme, SortColumn, Row } from "simple-table-core";
+import { SimpleTableVanilla } from "simple-table-core";
+import type { SortableEmployee } from "./external-sort.demo-data";
+import type { Theme, SortColumn, GetRowIdParams, ColumnType } from "simple-table-core";
 import { externalSortConfig } from "./external-sort.demo-data";
 import "simple-table-core/styles.css";
 
+const getRowId = ({ row }: GetRowIdParams<SortableEmployee>) => row.id;
+
+type SortableKey = keyof SortableEmployee;
+
+function isSortableKey(accessor: string): accessor is SortableKey {
+  return (
+    accessor === "id" ||
+    accessor === "name" ||
+    accessor === "age" ||
+    accessor === "email" ||
+    accessor === "salary" ||
+    accessor === "department"
+  );
+}
+
+type ActiveSort = {
+  accessor: SortableKey;
+  direction: "asc" | "desc";
+  type?: ColumnType;
+};
+
 export function renderExternalSortDemo(
   container: HTMLElement,
-  options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
-  let currentSort: SortColumn | null = null;
+  options?: { height?: string | number; theme?: Theme },
+): SimpleTableVanilla<SortableEmployee> {
+  let currentSort: ActiveSort | null = null;
 
-  function getSortedRows(): Row[] {
-    const rows = [...asRows(externalSortConfig.rows)];
+  function getSortedRows(): SortableEmployee[] {
+    const rows = [...externalSortConfig.rows];
     if (!currentSort) return rows;
-    const accessor = currentSort.key.accessor as string;
-    const type = currentSort.key.type;
-    const dir = currentSort.direction;
+    const { accessor, type, direction } = currentSort;
     return rows.sort((a, b) => {
       const aVal = a[accessor];
       const bVal = b[accessor];
@@ -24,19 +44,28 @@ export function renderExternalSortDemo(
         type === "number"
           ? (Number(aVal) || 0) - (Number(bVal) || 0)
           : String(aVal).localeCompare(String(bVal));
-      return dir === "asc" ? cmp : -cmp;
+      return direction === "asc" ? cmp : -cmp;
     });
   }
 
   const table = new SimpleTableVanilla(container, {
+    getRowId,
     columns: externalSortConfig.headers,
-    rows: asRows(externalSortConfig.rows),
+    rows: externalSortConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
     externalSortHandling: true,
     columnResizing: true,
-    onSortChange: (sort) => {
-      currentSort = sort;
+    onSortChange: (sort: SortColumn | null) => {
+      if (!sort || !isSortableKey(sort.key.accessor)) {
+        currentSort = null;
+      } else {
+        currentSort = {
+          accessor: sort.key.accessor,
+          direction: sort.direction,
+          type: sort.key.type,
+        };
+      }
       table.update({ rows: getSortedRows() });
     },
   });
@@ -48,8 +77,16 @@ export function renderExternalSortDemo(
 // Self-contained demo table setup for this example.
 import type { ColumnDef } from "simple-table-core";
 
+export interface SortableEmployee {
+  id: number;
+  name: string;
+  age: number;
+  email: string;
+  salary: number;
+  department: string;
+}
 
-export const externalSortData = [
+export const externalSortData: SortableEmployee[] = [
   { id: 1, name: "Dr. Elena Vasquez", age: 42, email: "elena.vasquez@techcorp.com", salary: 145000, department: "AI Research" },
   { id: 2, name: "Kai Tanaka", age: 29, email: "k.tanaka@techcorp.com", salary: 95000, department: "UX Design" },
   { id: 3, name: "Amara Okafor", age: 35, email: "amara.okafor@techcorp.com", salary: 125000, department: "DevOps" },
@@ -64,7 +101,7 @@ export const externalSortData = [
   { id: 12, name: "Dmitri Volkov", age: 39, email: "dmitri.volkov@techcorp.com", salary: 135000, department: "DevOps" },
 ];
 
-export const externalSortHeaders: ColumnDef[] = [
+export const externalSortHeaders: ColumnDef<SortableEmployee>[] = [
   { accessor: "name", label: "Name", width: "1fr", minWidth: 120, sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 120, sortable: true, type: "number" },
   { accessor: "department", label: "Department", width: 150, sortable: true, type: "string" },
@@ -76,7 +113,7 @@ export const externalSortHeaders: ColumnDef[] = [
     sortable: true,
     type: "number",
     align: "right",
-    valueFormatter: ({ value }) => `$${(value as number).toLocaleString()}`,
+    valueFormatter: ({ value }) => `$${Number(value).toLocaleString()}`,
   },
 ];
 
@@ -84,4 +121,4 @@ export const externalSortConfig = {
   headers: externalSortHeaders,
   rows: externalSortData,
   tableProps: { externalSortHandling: true, columnResizing: true },
-} as const;
+};

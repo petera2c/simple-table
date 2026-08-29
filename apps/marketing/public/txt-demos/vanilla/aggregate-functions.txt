@@ -1,14 +1,18 @@
 // AggregateFunctionsDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
+import type { AggregateFunctionsRow } from "./aggregate-functions.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import { aggregateFunctionsConfig } from "./aggregate-functions.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<AggregateFunctionsRow>) => row.id;
 export function renderAggregateFunctionsDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<AggregateFunctionsRow> {
   const table = new SimpleTableVanilla(container, {
+    getRowId,
     columns: aggregateFunctionsConfig.headers,
     rows: aggregateFunctionsConfig.rows,
     rowGrouping: aggregateFunctionsConfig.tableProps.rowGrouping,
@@ -24,8 +28,21 @@ export function renderAggregateFunctionsDemo(
 // Self-contained demo table setup for this example.
 import type { ColumnDef } from "simple-table-core";
 
+/** Platform → category → creator nesting used by rowGrouping. */
+export type AggregateFunctionsRow = {
+  id: number;
+  name: string;
+  status: string;
+  followers?: number;
+  revenue?: string;
+  rating?: number;
+  contentCount?: number;
+  avgViewTime?: number;
+  categories?: AggregateFunctionsRow[];
+  creators?: AggregateFunctionsRow[];
+};
 
-export const aggregateFunctionsHeaders: ColumnDef[] = [
+export const aggregateFunctionsHeaders: ColumnDef<AggregateFunctionsRow>[] = [
   { accessor: "name", label: "Name", width: 200, expandable: true, type: "string" },
   {
     accessor: "followers",
@@ -89,7 +106,7 @@ export const aggregateFunctionsHeaders: ColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, type: "string" },
 ];
 
-export const aggregateFunctionsData = [
+export const aggregateFunctionsData: AggregateFunctionsRow[] = [
   {
     id: 1,
     name: "StreamFlix",
@@ -210,7 +227,7 @@ export const aggregateFunctionsConfig = {
   headers: aggregateFunctionsHeaders,
   rows: aggregateFunctionsData,
   tableProps: {
-    rowGrouping: ["categories", "creators"] as string[],
+    rowGrouping: ["categories", "creators"],
     columnResizing: true,
   },
-} as const;
+};

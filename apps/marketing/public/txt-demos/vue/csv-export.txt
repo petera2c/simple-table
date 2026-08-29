@@ -8,6 +8,7 @@
       ref="tableRef"
       :columns="headers"
       :rows="csvExportData"
+      :get-row-id="getRowId"
       :enable-column-editor="csvExportConfig.tableProps.enableColumnEditor"
       :selectable-cells="csvExportConfig.tableProps.selectableCells"
       :custom-theme="csvExportConfig.tableProps.customTheme"
@@ -20,25 +21,27 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { SimpleTable } from "@simple-table/vue";
-import type { Theme, TableAPI, VueColumnDef } from "@simple-table/vue";
+import type { Theme, VueColumnDef, GetRowIdParams, SimpleTableExposed } from "@simple-table/vue";
 import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
+import type { CsvProduct } from "./csv-export.demo-data";
 import "@simple-table/vue/styles.css";
 
 withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
   height: "400px",
 });
 
-const tableRef = ref<{ getAPI: () => TableAPI | null } | null>(null);
+const tableRef = ref<SimpleTableExposed<CsvProduct> | null>(null);
+const getRowId = ({ row }: GetRowIdParams<CsvProduct>) => row.id;
 
-const headers: VueColumnDef[] = csvExportHeaders.map((h) => {
-  if (h.accessor === "actions") {
+const headers: VueColumnDef<CsvProduct>[] = csvExportHeaders.map((col) => {
+  if (col.accessor === "actions") {
     return {
-      ...h,
+      ...col,
       cellRenderer: () =>
         `<button style="background:#3b82f6;color:white;border:none;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:bold">View</button>`,
     };
   }
-  return { ...h };
+  return { ...col };
 });
 
 function handleExport() {

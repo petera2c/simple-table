@@ -1,0 +1,248 @@
+// PinnedAutoExpandResizeDemo.tsx
+import type { Theme } from "@simple-table/react";
+import "@simple-table/react/styles.css";
+import { PinnedAutoExpandResizeSandbox } from "./PinnedAutoExpandResizeSandbox";
+
+const PinnedAutoExpandResizeDemo = ({
+  height = "360px",
+  theme,
+}: {
+  height?: string | number;
+  theme?: Theme;
+}) => {
+  return <PinnedAutoExpandResizeSandbox height={height} theme={theme} />;
+};
+
+export default PinnedAutoExpandResizeDemo;
+
+
+// PinnedAutoExpandResizeSandbox.tsx
+import { useEffect, useMemo, useRef, useState } from "react";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme } from "@simple-table/react";
+import {
+  COLUMN_DEFS,
+  DEFAULT_PINNED_COUNT,
+  GROWTH_EPSILON,
+  PINNED_COUNT_OPTIONS,
+  SAMPLE_INTERVAL,
+  START_WIDTH,
+  capRatio,
+  isAtCap,
+  makeColumns,
+  readLayout,
+  readWidths,
+  rows,
+  type ArtistRow,
+  type Layout,
+  type Measurement,
+} from "./pinned-auto-expand-resize.demo-data";
+
+/**
+ * Bolt repro: with autoExpandColumns and two or more pinned columns, only the
+ * last pinned column can be widened. The readout compares each header to
+ * START_WIDTH (140px). A second clamp is the hardcoded pinned-section cap.
+ */
+export function PinnedAutoExpandResizeSandbox({
+  theme,
+}: {
+  height?: string | number;
+  theme?: Theme;
+}) {
+  const [pinnedCount, setPinnedCount] = useState<number>(DEFAULT_PINNED_COUNT);
+  const [autoExpand, setAutoExpand] = useState(true);
+  const [remountKey, setRemountKey] = useState(0);
+  const [measurements, setMeasurements] = useState<Measurement[]>([]);
+  const [layout, setLayout] = useState<Layout | null>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const maxSeenRef = useRef(new Map<string, number>());
+
+  const columns = useMemo(() => makeColumns(pinnedCount), [pinnedCount]);
+
+  useEffect(() => {
+    maxSeenRef.current = new Map();
+    setMeasurements([]);
+  }, [pinnedCount, autoExpand, remountKey]);
+
+  useEffect(() => {
+    const sample = () => {
+      const widths = readWidths(rootRef.current);
+      if (widths.size === 0) return;
+      setLayout(readLayout(rootRef.current));
+
+      setMeasurements(
+        COLUMN_DEFS.map((column, index) => {
+          const accessor = column.accessor as string;
+          const width = widths.get(accessor) ?? START_WIDTH;
+          const max = Math.max(maxSeenRef.current.get(accessor) ?? 0, width);
+          maxSeenRef.current.set(accessor, max);
+          return {
+            accessor,
+            label: column.label,
+            pinned: index < pinnedCount,
+            isLastPinned: index === pinnedCount - 1,
+            width,
+            max,
+          };
+        }),
+      );
+    };
+
+    sample();
+    const id = window.setInterval(sample, SAMPLE_INTERVAL);
+    return () => window.clearInterval(id);
+  }, [pinnedCount, autoExpand, remountKey]);
+
+  const pinned = measurements.filter((measurement) => measurement.pinned);
+  const grew = (measurement: Measurement) => measurement.max > START_WIDTH + GROWTH_EPSILON;
+  const stuck = pinned.filter((measurement) => !grew(measurement));
+  const expectedStuck = autoExpand && pinnedCount > 1;
+  const atCap = isAtCap(layout);
+
+  return (
+    <div style={{ fontFamily: "system-ui, sans-serif", padding: 24 }}>
+      <h2 style={{ fontSize: 18, margin: "0 0 4px" }}>
+        With two pinned columns, only the last one can be widened
+      </h2>
+      <p
+        style={{
+          margin: "0 0 12px",
+          color: "#555",
+          fontSize: 13,
+          maxWidth: 820,
+        }}
+      >
+        Drag each pinned column&apos;s right-hand resize handle outward. Every pinned column
+        except the last one refuses to grow (it may pick up ~1px from rounding) while all of
+        them shrink normally. Shrink one and the neighbour to its right absorbs the space,
+        which is the only way to get the first column back to its original width. Set{" "}
+        <code>pinned columns = 1</code>, or turn <code>autoExpandColumns</code> off, and
+        widening works again.
+      </p>
+      <p
+        style={{
+          margin: "0 0 16px",
+          color: "#555",
+          fontSize: 13,
+          maxWidth: 820,
+        }}
+      >
+        There is a <strong>second, independent clamp</strong>: a pinned section may never
+        exceed 40-60% of the table container (25-40% when both sides are pinned), hardcoded
+        with no prop to override it. At that cap <em>no</em> pinned column grows, with or
+        without <code>autoExpandColumns</code>. Narrow the window until the readout below
+        turns amber to see it. That is a different failure from the one this demo is about.
+      </p>
+
+      <div
+        style={{
+          display: "flex",
+          gap: 16,
+          alignItems: "center",
+          marginBottom: 16,
+          fontSize: 13,
+        }}
+      >
+        <label style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          pinned columns
+          <select
+            value={pinnedCount}
+            onChange={(event) => setPinnedCount(Number(event.target.value))}
+          >
+            {PINNED_COUNT_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <input
+            type="checkbox"
+            checked={autoExpand}
+            onChange={(event) => setAutoExpand(event.target.checked)}
+          />
+          autoExpandColumns (CMTable always sets this)
+        </label>
+        <button type="button" onClick={() => setRemountKey((key) => key + 1)}>
+          reset widths
+        </button>
+      </div>
+
+      <div
+        style={{
+          padding: "10px 12px",
+          marginBottom: 16,
+          border: "1px solid",
+          borderColor: atCap
+            ? "#b8860b"
+            : expectedStuck && stuck.length
+              ? "#c0392b"
+              : "#ccc",
+          background: atCap
+            ? "#fdf6e3"
+            : expectedStuck && stuck.length
+              ? "#fdecea"
+              : "#f7f7f7",
+          fontSize: 13,
+        }}
+      >
+        <strong>
+          {atCap
+            ? "clamp B. pinned section is at the policy cap, nothing here grows in either mode (widen the window)"
+            : expectedStuck && stuck.length
+              ? `clamp A REPRODUCED. ${stuck.length} of ${pinned.length} pinned column(s) never grew past ${START_WIDTH}px`
+              : `${pinned.length - stuck.length} of ${pinned.length} pinned column(s) grew past ${START_WIDTH}px`}
+        </strong>
+        {layout ? (
+          <div
+            style={{
+              marginTop: 6,
+              fontSize: 12,
+              fontFamily: "ui-monospace, Menlo, monospace",
+              color: "#666",
+            }}
+          >
+            container {layout.container}px · pinned section {layout.section}px · cap {layout.cap}
+            px ({Math.round(capRatio(layout.container) * 100)}%)
+          </div>
+        ) : null}
+        <table style={{ marginTop: 8, borderSpacing: "12px 2px", fontSize: 12 }}>
+          <tbody>
+            {measurements.map((measurement) => (
+              <tr key={measurement.accessor}>
+                <td style={{ color: "#666" }}>
+                  {measurement.label}
+                  {measurement.pinned
+                    ? measurement.isLastPinned
+                      ? " (pinned, last)"
+                      : " (pinned)"
+                    : ""}
+                </td>
+                <td>
+                  {measurement.pinned ? (grew(measurement) ? "grew" : "never grew") : ""}
+                </td>
+                <td style={{ fontFamily: "ui-monospace, Menlo, monospace" }}>
+                  now {measurement.width}px · max seen {measurement.max}px
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div ref={rootRef}>
+        <SimpleTable<ArtistRow>
+          key={`${pinnedCount}-${autoExpand}-${remountKey}`}
+          columns={columns}
+          rows={rows}
+          getRowId={({ row }) => row.id}
+          height="420px"
+          theme={theme}
+          autoExpandColumns={autoExpand}
+          columnResizing
+        />
+      </div>
+    </div>
+  );
+}

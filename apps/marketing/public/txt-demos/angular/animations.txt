@@ -1,9 +1,10 @@
 // animations-demo.component.ts
 import { Component, Input } from "@angular/core";
 import { SimpleTableComponent } from "@simple-table/angular";
-import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { animationsConfig } from "./animations.demo-data";
 import "@simple-table/angular/styles.css";
+import type { AnimationsCrewMember } from "./animations.demo-data";
 
 @Component({
   selector: "animations-demo",
@@ -11,6 +12,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -26,12 +28,14 @@ export class AnimationsDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = animationsConfig.rows;
-  headers: AngularColumnDef[] = [...animationsConfig.headers];
+  readonly rows: AnimationsCrewMember[] = animationsConfig.rows;
+  headers: AngularColumnDef<AnimationsCrewMember>[] = [...animationsConfig.headers];
 
-  onColumnOrderChange(newHeaders: AngularColumnDef[]): void {
+  onColumnOrderChange(newHeaders: AngularColumnDef<AnimationsCrewMember>[]): void {
     this.headers = newHeaders;
   }
+
+  getRowId = ({ row }: GetRowIdParams<AnimationsCrewMember>) => row.id;
 }
 
 
@@ -39,8 +43,15 @@ export class AnimationsDemoComponent {
 // Self-contained demo table setup for this example.
 import type { AngularColumnDef } from "@simple-table/angular";
 
+export interface AnimationsCrewMember {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+}
 
-export const animationsHeaders: AngularColumnDef[] = [
+export const animationsHeaders: AngularColumnDef<AnimationsCrewMember>[] = [
   { accessor: "id", label: "ID", width: 60, sortable: true, type: "number" },
   { accessor: "name", label: "Name", minWidth: 140, width: "1fr", sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 80, align: "right", sortable: true, type: "number" },
@@ -56,7 +67,7 @@ export const animationsHeaders: AngularColumnDef[] = [
   },
 ];
 
-export const animationsData = [
+export const animationsData: AnimationsCrewMember[] = [
   { id: 1, name: "Captain Stella Vega", age: 38, role: "Mission Commander", department: "Flight Operations" },
   { id: 2, name: "Dr. Cosmos Rivera", age: 34, role: "Astrophysicist", department: "Science" },
   { id: 3, name: "Commander Nebula Johnson", age: 42, role: "Operations Director", department: "Mission Control" },
@@ -75,4 +86,4 @@ export const animationsConfig = {
   headers: animationsHeaders,
   rows: animationsData,
   tableProps: { columnReordering: true, enableColumnEditor: true, enableColumnEditorInitOpen: true },
-} as const;
+};

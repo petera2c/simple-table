@@ -1,11 +1,12 @@
 import { createSignal, onMount, onCleanup } from "solid-js";
-import {SimpleTable} from "@simple-table/solid";import type { Theme, Row } from "@simple-table/solid";
-import { loadingStateConfig } from "./loading-state.demo-data";
+import { SimpleTable } from "@simple-table/solid";
+import type { Theme } from "@simple-table/solid";
+import { loadingStateConfig, type LoadingStateEmployee } from "./loading-state.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function LoadingStateDemo(props: { height?: string | number; theme?: Theme }) {
   const [isLoading, setIsLoading] = createSignal(true);
-  const [data, setData] = createSignal<Row[]>([]);
+  const [data, setData] = createSignal<LoadingStateEmployee[]>([]);
   let timer: ReturnType<typeof setTimeout> | null = null;
 
   const loadData = () => {
@@ -13,13 +14,15 @@ export default function LoadingStateDemo(props: { height?: string | number; them
     setData([]);
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
-      setData(loadingStateConfig.rows as Row[]);
+      setData([...loadingStateConfig.rows]);
       setIsLoading(false);
     }, 2000);
   };
 
   onMount(() => loadData());
-  onCleanup(() => { if (timer) clearTimeout(timer); });
+  onCleanup(() => {
+    if (timer) clearTimeout(timer);
+  });
 
   return (
     <div>
@@ -34,6 +37,7 @@ export default function LoadingStateDemo(props: { height?: string | number; them
       </div>
       <SimpleTable
         columns={loadingStateConfig.headers}
+        getRowId={({ row }) => row.id}
         rows={data()}
         isLoading={isLoading()}
         height={props.height ?? "400px"}

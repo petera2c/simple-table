@@ -1,20 +1,24 @@
 // ColumnSortingDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
+import type { FacultyMember } from "./column-sorting.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import { columnSortingConfig } from "./column-sorting.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<FacultyMember>) => row.id;
 export function renderColumnSortingDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<FacultyMember> {
   const table = new SimpleTableVanilla(container, {
+    getRowId,
     columns: columnSortingConfig.headers,
     rows: columnSortingConfig.rows,
     height: options?.height ?? "400px",
     theme: options?.theme,
-    initialSortColumn: columnSortingConfig.tableProps.initialSortColumn,
-    initialSortDirection: columnSortingConfig.tableProps.initialSortDirection,
+    initialSortColumn: "age",
+    initialSortDirection: "desc",
   });
   return table;
 }
@@ -22,11 +26,18 @@ export function renderColumnSortingDemo(
 
 // column-sorting.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { Row } from "simple-table-core";
 import type { ColumnDef } from "simple-table-core";
 
+export interface FacultyMember {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+  startDate: string;
+}
 
-export const COLUMN_SORTING_DATA: Row[] = [
+export const COLUMN_SORTING_DATA: FacultyMember[] = [
   {
     id: 1,
     name: "Dr. Elena Vasquez",
@@ -126,7 +137,7 @@ export const COLUMN_SORTING_DATA: Row[] = [
 ];
 
 
-export const columnSortingHeaders: ColumnDef[] = [
+export const columnSortingHeaders: ColumnDef<FacultyMember>[] = [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   { accessor: "name", label: "Name", width: 180, sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 80, sortable: true, type: "number" },
@@ -138,7 +149,8 @@ export const columnSortingHeaders: ColumnDef[] = [
     sortable: true,
     type: "string",
     valueFormatter: ({ value }) => {
-      return (value as string).charAt(0).toUpperCase() + (value as string).slice(1);
+      const department = String(value);
+      return department.charAt(0).toUpperCase() + department.slice(1);
     },
   },
   {
@@ -163,8 +175,5 @@ export const columnSortingHeaders: ColumnDef[] = [
 export const columnSortingConfig = {
   headers: columnSortingHeaders,
   rows: COLUMN_SORTING_DATA,
-  tableProps: {
-    initialSortColumn: "age",
-    initialSortDirection: "desc" as const,
-  },
-} as const;
+};
+

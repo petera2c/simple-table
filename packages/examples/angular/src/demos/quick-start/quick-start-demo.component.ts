@@ -1,5 +1,6 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
+import { SimpleTableImports } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { quickStartConfig } from "./quick-start.demo-data";
 import "@simple-table/angular/styles.css";
 import type { QuickStartEmployee } from "./quick-start.demo-data";
@@ -7,7 +8,7 @@ import type { QuickStartEmployee } from "./quick-start.demo-data";
 @Component({
   selector: "quick-start-demo",
   standalone: true,
-  imports: [SimpleTableComponent],
+  imports: [SimpleTableImports],
   template: `
     <simple-table
       [getRowId]="getRowId"

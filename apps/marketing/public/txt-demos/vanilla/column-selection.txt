@@ -1,14 +1,18 @@
 // ColumnSelectionDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
+import type { TeamMember } from "./column-selection.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import { columnSelectionConfig } from "./column-selection.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<TeamMember>) => row.id;
 export function renderColumnSelectionDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<TeamMember> {
   const table = new SimpleTableVanilla(container, {
+    getRowId,
     columns: columnSelectionConfig.headers,
     rows: columnSelectionConfig.rows,
     height: options?.height ?? "400px",
@@ -23,8 +27,16 @@ export function renderColumnSelectionDemo(
 // Self-contained demo table setup for this example.
 import type { ColumnDef } from "simple-table-core";
 
+export interface TeamMember {
+  id: number;
+  name: string;
+  age: number;
+  role: string;
+  department: string;
+  email: string;
+}
 
-export const columnSelectionHeaders: ColumnDef[] = [
+export const columnSelectionHeaders: ColumnDef<TeamMember>[] = [
   { accessor: "id", label: "ID", width: 80, sortable: true, type: "number" },
   { accessor: "name", label: "Name", minWidth: 120, width: "1fr", sortable: true, type: "string" },
   { accessor: "age", label: "Age", width: 100, sortable: true, type: "number" },
@@ -52,4 +64,4 @@ export const columnSelectionConfig = {
   headers: columnSelectionHeaders,
   rows: columnSelectionData,
   tableProps: { selectableColumns: true },
-} as const;
+};

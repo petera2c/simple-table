@@ -17,6 +17,7 @@ import {
   cellRendererSnippets,
   type CodeByFramework,
 } from "@/constants/docsSnippets";
+import { useFramework } from "@/providers/FrameworkProvider";
 
 type RendererPattern = {
   title: string;
@@ -39,7 +40,11 @@ const RENDERER_PATTERNS: RendererPattern[] = [
         >
           valueFormatter
         </Link>{" "}
-        for plain text formatting.
+        for plain text formatting. In Angular, prefer an{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">stCell</code> template on
+        the page (it wins over{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">cellRenderer</code> on
+        that column).
       </>
     ),
     codeByFramework: cellRendererSnippets(),
@@ -66,7 +71,7 @@ const CELL_RENDERER_PROPS: PropInfo[] = [
     name: "ColumnDef.cellRenderer",
     required: false,
     description:
-      "Custom cell content. Framework adapters accept components or render functions; vanilla returns string/number/null or a DOM Node.",
+      "Custom cell content. Framework adapters accept components or render functions; vanilla returns string/number/null or a DOM Node. In Angular, prefer an stCell template on the page; a matching template wins over cellRenderer on that column.",
     type: "(props: CellRendererProps) => …",
     link: "/docs/api-reference#cell-renderer-props",
     example: `cellRenderer: StatusCell`,
@@ -74,6 +79,7 @@ const CELL_RENDERER_PROPS: PropInfo[] = [
 ];
 
 const CellRendererContent = () => {
+  const { framework } = useFramework();
   return (
     <PageWrapper>
       <motion.div
@@ -94,8 +100,21 @@ const CellRendererContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Render custom cell UI — badges, links, progress bars, and other interactive content — with{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">cellRenderer</code>.
+        {framework === "angular" ? (
+          <>
+            Render custom cell UI with an{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">stCell</code>{" "}
+            template, or pass an Angular component as{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">cellRenderer</code>{" "}
+            on the column.
+          </>
+        ) : (
+          <>
+            Render custom cell UI: badges, links, progress bars, and other interactive content,
+            with{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">cellRenderer</code>.
+          </>
+        )}
       </motion.p>
 
       <motion.div

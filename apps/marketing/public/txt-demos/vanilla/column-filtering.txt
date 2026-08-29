@@ -1,14 +1,18 @@
 // ColumnFilteringDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
+import type { ColumnFilteringEmployee } from "./column-filtering.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import { columnFilteringConfig } from "./column-filtering.demo-data";
 import "simple-table-core/styles.css";
 
+
+const getRowId = ({ row }: GetRowIdParams<ColumnFilteringEmployee>) => row.id;
 export function renderColumnFilteringDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<ColumnFilteringEmployee> {
   const table = new SimpleTableVanilla(container, {
+    getRowId,
     columns: columnFilteringConfig.headers,
     rows: columnFilteringConfig.rows,
     height: options?.height ?? "400px",
@@ -20,11 +24,19 @@ export function renderColumnFilteringDemo(
 
 // column-filtering.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { Row } from "simple-table-core";
-import type { ColumnDef } from "simple-table-core";
+import type { ColumnDef, CellRendererProps } from "simple-table-core";
 
+export interface ColumnFilteringEmployee {
+  id: number;
+  name: string;
+  department: string;
+  role: string;
+  salary: number;
+  startDate: string;
+  isActive: boolean;
+}
 
-export const COLUMN_FILTERING_DATA: Row[] = [
+export const COLUMN_FILTERING_DATA: ColumnFilteringEmployee[] = [
   {
     id: 1,
     name: "Bianca Rossi",
@@ -169,7 +181,7 @@ export const DEPARTMENT_OPTIONS = [
   { label: "Quality Assurance", value: "Quality Assurance" },
 ];
 
-export const columnFilteringHeaders: ColumnDef[] = [
+export const columnFilteringHeaders: ColumnDef<ColumnFilteringEmployee>[] = [
   {
     accessor: "id",
     label: "ID",
@@ -213,8 +225,8 @@ export const columnFilteringHeaders: ColumnDef[] = [
     type: "number",
     sortable: true,
     filterable: true,
-    cellRenderer: ({ row }) => {
-      const salary = row.salary as number;
+    cellRenderer: ({ row }: CellRendererProps<ColumnFilteringEmployee>) => {
+      const salary = row.salary;
       return `$${salary.toLocaleString()}`;
     },
   },
@@ -240,4 +252,4 @@ export const columnFilteringHeaders: ColumnDef[] = [
 export const columnFilteringConfig = {
   headers: columnFilteringHeaders,
   rows: COLUMN_FILTERING_DATA,
-} as const;
+};

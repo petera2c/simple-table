@@ -1,14 +1,16 @@
 /**
  * Framework constants shared between server and client code. Keep this module free of
  * "use client" so server components (e.g. demo snippet loading) can import it.
+ *
+ * Order is most used first. The header dropdown, homepage chips, and docs picker follow this list.
  */
-export const FRAMEWORKS = ["react", "vue", "angular", "svelte", "solid", "vanilla"] as const;
+export const FRAMEWORKS = ["react", "angular", "vue", "svelte", "solid", "vanilla"] as const;
 export type Framework = (typeof FRAMEWORKS)[number];
 
 export const FRAMEWORK_LABELS: Record<Framework, string> = {
   react: "React",
-  vue: "Vue",
   angular: "Angular",
+  vue: "Vue",
   svelte: "Svelte",
   solid: "Solid",
   vanilla: "Vanilla",

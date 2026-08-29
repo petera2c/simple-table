@@ -1,13 +1,16 @@
 // RowGroupingDemo.ts
 import { SimpleTableVanilla } from "simple-table-core";
-import type { Theme } from "simple-table-core";
+import type { OrgUnit } from "./row-grouping.demo-data";
+import type { Theme, GetRowIdParams } from "simple-table-core";
 import { rowGroupingConfig } from "./row-grouping.demo-data";
 import "simple-table-core/styles.css";
+
+const getRowId = ({ row }: GetRowIdParams<OrgUnit>) => row.id;
 
 export function renderRowGroupingDemo(
   container: HTMLElement,
   options?: { height?: string | number; theme?: Theme }
-): SimpleTableVanilla {
+): SimpleTableVanilla<OrgUnit> {
   const wrapper = document.createElement("div");
   wrapper.style.cssText = "display:flex;flex-direction:column;gap:12px";
 
@@ -31,7 +34,7 @@ export function renderRowGroupingDemo(
     theme: options?.theme,
     rowGrouping: rowGroupingConfig.tableProps.rowGrouping,
     enableStickyParents: true,
-    getRowId: rowGroupingConfig.tableProps.getRowId,
+    getRowId,
     columnResizing: true,
   });
 
@@ -61,8 +64,22 @@ export function renderRowGroupingDemo(
 // Self-contained demo table setup for this example.
 import type { ColumnDef } from "simple-table-core";
 
+/** Shared metrics at every grouping depth; nesting uses rowGrouping keys. */
+export interface OrgUnit {
+  id: string;
+  organization: string;
+  employees: number;
+  budget: string;
+  performance: string;
+  location: string;
+  growthRate: string;
+  status: string;
+  established: string;
+  divisions?: OrgUnit[];
+  departments?: OrgUnit[];
+}
 
-export const rowGroupingHeaders: ColumnDef[] = [
+export const rowGroupingHeaders: ColumnDef<OrgUnit>[] = [
   { accessor: "organization", label: "Organization", width: 200, expandable: true, type: "string" },
   { accessor: "employees", label: "Employees", width: 100, type: "number" },
   { accessor: "budget", label: "Annual Budget", width: 140, type: "string" },
@@ -73,7 +90,7 @@ export const rowGroupingHeaders: ColumnDef[] = [
   { accessor: "established", label: "Est. Date", width: 110, type: "date" },
 ];
 
-export const rowGroupingData = [
+export const rowGroupingData: OrgUnit[] = [
   {
     id: "company-1",
     organization: "TechSolutions Inc.",
@@ -257,9 +274,8 @@ export const rowGroupingConfig = {
   headers: rowGroupingHeaders,
   rows: rowGroupingData,
   tableProps: {
-    rowGrouping: ["divisions", "departments"] as string[],
+    rowGrouping: ["divisions", "departments"],
     enableStickyParents: true,
-    getRowId: ({ row }: { row: Record<string, unknown> }) => String(row.id),
     columnResizing: true,
   },
-} as const;
+};

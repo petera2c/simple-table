@@ -19,7 +19,7 @@ export const IMPORT_SNIPPETS: Record<Framework, string> = {
 import "@simple-table/react/styles.css";`,
   vue: `import { SimpleTable, type VueColumnDef } from "@simple-table/vue";
 import "@simple-table/vue/styles.css";`,
-  angular: `import { SimpleTableComponent, type AngularColumnDef } from "@simple-table/angular";
+  angular: `import { SimpleTableImports, type AngularColumnDef } from "@simple-table/angular";
 import "@simple-table/angular/styles.css";`,
   svelte: `import { SimpleTable, type SvelteColumnDef } from "@simple-table/svelte";
 import "@simple-table/svelte/styles.css";`,
@@ -330,7 +330,7 @@ ${PERSIST_HANDLER}
   [columnResizing]="true"
   [columns]="columns"
   [rows]="rows"
-  [onColumnWidthChange]="handleColumnWidthChange"
+  (columnWidthChange)="handleColumnWidthChange($event)"
 ></simple-table>`,
     svelte: `<script>
   ${PERSIST_HANDLER}
@@ -548,7 +548,7 @@ export function externalSortSnippets(): Record<Framework, string> {
   [externalSortHandling]="true"
   [columns]="columns"
   [rows]="sortedRows"
-  [onSortChange]="handleSortChange"
+  (sortChange)="handleSortChange($event)"
 ></simple-table>`,
     svelte: `<SimpleTable
   externalSortHandling={true}
@@ -595,7 +595,7 @@ export function externalFilterSnippets(): Record<Framework, string> {
   [externalFilterHandling]="true"
   [columns]="columns"
   [rows]="filteredRows"
-  [onFilterChange]="handleFilterChange"
+  (filterChange)="handleFilterChange($event)"
 ></simple-table>`,
     svelte: `<SimpleTable
   externalFilterHandling={true}
@@ -642,7 +642,7 @@ export function columnSelectionSnippets(): Record<Framework, string> {
   [selectableColumns]="true"
   [columns]="columns"
   [rows]="rows"
-  [onColumnSelect]="handleColumnSelect"
+  (columnSelect)="handleColumnSelect($event)"
 ></simple-table>`,
     svelte: `<SimpleTable
   selectableColumns={true}
@@ -716,7 +716,7 @@ function rowSelectionLines(
     if (showRowSelectionColumn === false) lines.push('[showRowSelectionColumn]="false"');
     if (selectableCells === false) lines.push('[selectableCells]="false"');
     lines.push('[getRowId]="getRowId"');
-    if (includeOnChange) lines.push('[onRowSelectionChange]="handleRowSelectionChange"');
+    if (includeOnChange) lines.push('(rowSelectionChange)="handleRowSelectionChange($event)"');
     return lines;
   }
 
@@ -962,7 +962,7 @@ export function onRowGroupExpandSnippets(): Record<Framework, string> {
   [rows]="rows"
   [rowGrouping]="['stores', 'products']"
   [getRowId]="getRowId"
-  [onRowGroupExpand]="handleRowGroupExpand"
+  (rowGroupExpand)="handleRowGroupExpand($event)"
 ></simple-table>`,
     svelte: `<SimpleTable
   {columns}
@@ -1352,20 +1352,17 @@ const StatusCell = ({ value }) => {
 const columns: VueColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, cellRenderer: StatusCell },
 ];`,
-    angular: `// status-cell.component.ts
-@Component({
-  standalone: true,
-  selector: "app-status-cell",
-  template: \`<span [style.color]="color" style="font-weight:600">{{ status }}</span>\`,
-})
-export class StatusCellComponent {
-  @Input() value!: unknown;
-  get status() { return String(this.value); }
-  get color() { return this.status === "active" ? "#10B981" : "#6B7280"; }
-}
+    angular: `<simple-table [columns]="columns" [rows]="rows">
+  <ng-template stCell="status" let-value="value">
+    <span
+      [style.color]="value === 'active' ? '#10B981' : '#6B7280'"
+      style="font-weight:600"
+    >{{ value }}</span>
+  </ng-template>
+</simple-table>
 
-// column def
-{ accessor: "status", label: "Status", width: 120, cellRenderer: StatusCellComponent }`,
+// Or pass an Angular component class on the column:
+// { accessor: "status", cellRenderer: StatusCellComponent }`,
     svelte: `<!-- StatusCell.svelte -->
 <script lang="ts">
   import type { CellRendererProps } from "@simple-table/svelte";
@@ -2059,7 +2056,7 @@ handleLoadMore = async () => {
   [columns]="columns"
   [rows]="rows"
   height="400px"
-  [onLoadMore]="handleLoadMore"
+  (loadMore)="handleLoadMore()"
   [isLoading]="isLoading"
 ></simple-table>`,
     svelte: `<script>
@@ -2125,7 +2122,7 @@ export function infiniteScrollWindowSnippets(): Record<Framework, string> {
   [columns]="columns"
   [rows]="rows"
   scrollParent="window"
-  [onLoadMore]="handleLoadMore"
+  (loadMore)="handleLoadMore()"
   [isLoading]="isLoading"
 ></simple-table>`,
     svelte: `<SimpleTable
@@ -2182,19 +2179,13 @@ const emptyState = h(
   :rows="[]"
   :table-empty-state-renderer="emptyState"
 />`,
-    angular: `// empty-state.component.ts — template: "No data available"
-
-emptyStateEl = wrapAngularRenderer(
-  EmptyStateComponent,
-  this.appRef,
-  this.envInjector,
-)({});
-
-<simple-table
-  [columns]="columns"
-  [rows]="[]"
-  [tableEmptyStateRenderer]="emptyStateEl"
-></simple-table>`,
+    angular: `<simple-table [columns]="columns" [rows]="[]">
+  <ng-template stEmpty>
+    <div style="padding: 48px; text-align: center; color: #6b7280">
+      No data available
+    </div>
+  </ng-template>
+</simple-table>`,
     svelte: `<!-- EmptyState.svelte -->
 <div style="padding: 48px; text-align: center; color: #6b7280">
   No data available
@@ -2372,7 +2363,7 @@ handlePageChange = async (page: number) => {
   [rowsPerPage]="25"
   [totalRowCount]="1000"
   [isLoading]="isLoading"
-  [onPageChange]="handlePageChange"
+  (pageChange)="handlePageChange($event)"
 ></simple-table>`,
     svelte: `<script>
   let rows = $state([]);
@@ -2765,15 +2756,20 @@ export function cellRendererFormattedValueSnippets(): Record<Framework, string> 
     typeof value === "number" ? \`$\${value.toLocaleString()}\` : "",
   cellRenderer: ({ formattedValue }) => h("strong", String(formattedValue ?? "")),
 }`,
-    angular: `// Prefer formatting in the cell component, or pass formattedValue via @Input()
+    angular: `// Format in the column, then wrap the result in the page template.
 {
   accessor: "salary",
   label: "Salary",
   type: "number",
   valueFormatter: ({ value }) =>
     typeof value === "number" ? \`$\${value.toLocaleString()}\` : "",
-  cellRenderer: SalaryCellComponent, // @Input() formattedValue
-}`,
+}
+
+<simple-table [columns]="columns" [rows]="rows">
+  <ng-template stCell="salary" let-formattedValue="formattedValue">
+    <strong>{{ formattedValue }}</strong>
+  </ng-template>
+</simple-table>`,
     svelte: `{
   accessor: "salary",
   label: "Salary",
@@ -2994,7 +2990,7 @@ ${CELL_CLICK_HANDLER}
 <simple-table
   [columns]="columns"
   [rows]="rows"
-  [onCellClick]="handleCellClick"
+  (cellClick)="handleCellClick($event)"
 ></simple-table>`,
     svelte: `<script>
   ${CELL_CLICK_HANDLER}

@@ -1,11 +1,12 @@
-import {SimpleTable} from "@simple-table/solid";import type { Theme, TableAPI, SolidColumnDef } from "@simple-table/solid";
-import { csvExportHeaders, csvExportData, csvExportConfig } from "./csv-export.demo-data";
+import { SimpleTable } from "@simple-table/solid";
+import type { Theme, TableAPI, SolidColumnDef } from "@simple-table/solid";
+import { csvExportHeaders, csvExportData, csvExportConfig, type CsvProduct } from "./csv-export.demo-data";
 import "@simple-table/solid/styles.css";
 
 export default function CsvExportDemo(props: { height?: string | number; theme?: Theme }) {
-  let tableRef: TableAPI | undefined;
+  let tableRef: TableAPI<CsvProduct> | undefined;
 
-  const headers: SolidColumnDef[] = csvExportHeaders.map((h) => {
+  const headers: SolidColumnDef<CsvProduct>[] = csvExportHeaders.map((h) => {
     if (h.accessor === "actions") {
       return {
         ...h,
@@ -39,10 +40,10 @@ export default function CsvExportDemo(props: { height?: string | number; theme?:
     if (!tableRef) return;
     const rows = tableRef.getAllRows();
     const hdrs = tableRef.getHeaders();
-    const totalRevenue = rows.reduce(
-      (sum, r) => sum + (Number((r.row as { revenue?: unknown }).revenue) || 0),
-      0,
-    );
+    const totalRevenue = rows.reduce((sum, r) => {
+      const revenue = r.row.revenue;
+      return sum + (typeof revenue === "number" ? revenue : Number(revenue) || 0);
+    }, 0);
     alert(
       `Table Info:\n• ${rows.length} rows\n• ${hdrs.length} columns\n• Columns: ${hdrs.map((h) => h.label).join(", ")}\n• Total Revenue: $${totalRevenue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     );
@@ -61,6 +62,7 @@ export default function CsvExportDemo(props: { height?: string | number; theme?:
       <SimpleTable
         ref={(api) => (tableRef = api)}
         columns={headers}
+        getRowId={({ row }) => row.id}
         rows={csvExportData}
         enableColumnEditor={csvExportConfig.tableProps.enableColumnEditor}
         selectableCells={csvExportConfig.tableProps.selectableCells}

@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
-import {SimpleTable} from "@simple-table/solid";import type { Theme, OnRowGroupExpandProps } from "@simple-table/solid";
+import { SimpleTable } from "@simple-table/solid";
+import type { Theme, OnRowGroupExpandProps } from "@simple-table/solid";
 import {
   dynamicNestedTablesConfig,
   dynamicNestedTablesData,
@@ -19,14 +20,13 @@ export default function DynamicNestedTablesDemo(props: { height?: string | numbe
     setLoading,
     setError,
     setEmpty,
-  }: OnRowGroupExpandProps) => {
+  }: OnRowGroupExpandProps<DynamicCompany>) => {
     if (!isExpanded) return;
     try {
       if (groupingKey === "divisions") {
-        const company = row as DynamicCompany;
-        if (company.divisions && company.divisions.length > 0) return;
+        if (row.divisions && row.divisions.length > 0) return;
         setLoading(true);
-        const divisions = await fetchDivisionsForCompany(company.id);
+        const divisions = await fetchDivisionsForCompany(row.id);
         if (divisions.length === 0) {
           setEmpty(true, "No divisions found for this company");
           return;
@@ -50,7 +50,7 @@ export default function DynamicNestedTablesDemo(props: { height?: string | numbe
       expandAll={dynamicNestedTablesConfig.tableProps.expandAll}
       height={props.height ?? "500px"}
       rowGrouping={dynamicNestedTablesConfig.tableProps.rowGrouping}
-      getRowId={dynamicNestedTablesConfig.tableProps.getRowId}
+      getRowId={({ row }) => row.id}
       rows={rows()}
       onRowGroupExpand={handleCompanyExpand}
       theme={props.theme}

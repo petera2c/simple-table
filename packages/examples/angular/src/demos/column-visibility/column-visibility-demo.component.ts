@@ -1,5 +1,6 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, ColumnVisibilityState, GetRowIdParams, Theme } from "@simple-table/angular";
+import { SimpleTableImports } from "@simple-table/angular";
+import type { AngularColumnDef, ColumnVisibilityState, GetRowIdParams, Theme } from "@simple-table/angular";
 import { columnVisibilityConfig, getColumnVisibilityDemoHeaders, loadColumnVisibilityDemoSaved, saveColumnVisibilityDemoState } from "./column-visibility.demo-data";
 import { MarketingColumnEditorRowComponent } from "./marketing-column-editor-row.component";
 import "@simple-table/angular/styles.css";
@@ -8,7 +9,7 @@ import type { VisibilityEmployee } from "./column-visibility.demo-data";
 @Component({
   selector: "column-visibility-demo",
   standalone: true,
-  imports: [SimpleTableComponent],
+  imports: [SimpleTableImports],
   template: `
     <simple-table
       [getRowId]="getRowId"
@@ -19,7 +20,7 @@ import type { VisibilityEmployee } from "./column-visibility.demo-data";
       [enableColumnEditor]="tableProps.enableColumnEditor"
       [enableColumnEditorInitOpen]="tableProps.enableColumnEditorInitOpen"
       [columnEditorConfig]="columnEditorConfig"
-      [onColumnVisibilityChange]="onVisibilityChange"
+      (columnVisibilityChange)="onVisibilityChange($event)"
     ></simple-table>
   `,
 })

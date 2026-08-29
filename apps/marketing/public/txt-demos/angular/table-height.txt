@@ -1,8 +1,9 @@
 // table-height-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { tableHeightConfig } from "./table-height.demo-data";
 import "@simple-table/angular/styles.css";
+import type { HeightDemoEmployee } from "./table-height.demo-data";
 
 @Component({
   selector: "table-height-demo",
@@ -28,6 +29,7 @@ import "@simple-table/angular/styles.css";
         }
       </div>
       <simple-table
+      [getRowId]="getRowId"
         [rows]="rows"
         [columns]="headers"
         [height]="selectedHeight"
@@ -40,10 +42,12 @@ export class TableHeightDemoComponent {
   @Input() height: string | number = "400px";
   @Input() theme?: Theme;
 
-  readonly rows: Row[] = tableHeightConfig.rows;
-  readonly headers: AngularColumnDef[] = tableHeightConfig.headers;
+  readonly rows: HeightDemoEmployee[] = tableHeightConfig.rows;
+  readonly headers: AngularColumnDef<HeightDemoEmployee>[] = tableHeightConfig.headers;
   readonly heights = ["200px", "300px", "400px"];
   selectedHeight = "400px";
+
+  getRowId = ({ row }: GetRowIdParams<HeightDemoEmployee>) => row.id;
 }
 
 
@@ -51,8 +55,16 @@ export class TableHeightDemoComponent {
 // Self-contained demo table setup for this example.
 import type { AngularColumnDef } from "@simple-table/angular";
 
+export interface HeightDemoEmployee {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+  status: string;
+}
 
-export const tableHeightHeaders: AngularColumnDef[] = [
+export const tableHeightHeaders: AngularColumnDef<HeightDemoEmployee>[] = [
   { accessor: "id", label: "ID", width: 80, type: "number" },
   { accessor: "name", label: "Name", minWidth: 150, width: "1fr", type: "string" },
   { accessor: "email", label: "Email", minWidth: 200, width: "1fr", type: "string" },
@@ -61,7 +73,7 @@ export const tableHeightHeaders: AngularColumnDef[] = [
   { accessor: "status", label: "Status", width: 120, type: "string" },
 ];
 
-export const tableHeightData = [
+export const tableHeightData: HeightDemoEmployee[] = [
   { id: 1, name: "Alice Chen", email: "alice@example.com", role: "Senior Engineer", department: "Engineering", status: "Active" },
   { id: 2, name: "Bob Martinez", email: "bob@example.com", role: "Product Manager", department: "Product", status: "Active" },
   { id: 3, name: "Carol Williams", email: "carol@example.com", role: "Designer", department: "Design", status: "Active" },
@@ -82,4 +94,4 @@ export const tableHeightData = [
 export const tableHeightConfig = {
   headers: tableHeightHeaders,
   rows: tableHeightData,
-} as const;
+};

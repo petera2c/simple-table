@@ -1,8 +1,9 @@
 // programmatic-control-demo.component.ts
 import { Component, Input, ViewChild } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularCellRenderer, AngularColumnDef, CellRendererProps, GetRowIdParams, Theme } from "@simple-table/angular";
 import { programmaticControlConfig, PROGRAMMATIC_CONTROL_STATUS_COLORS } from "./programmatic-control.demo-data";
 import "@simple-table/angular/styles.css";
+import type { ProgrammaticControlProduct } from "./programmatic-control.demo-data";
 
 @Component({
   selector: "programmatic-control-demo",
@@ -21,6 +22,7 @@ import "@simple-table/angular/styles.css";
         <button (click)="getInfo()">Get Table Info</button>
       </div>
       <simple-table
+      [getRowId]="getRowId"
         #simpleTable
         [rows]="rows"
         [columns]="headers"
@@ -36,13 +38,13 @@ export class ProgrammaticControlDemoComponent {
   @Input() theme?: Theme;
 
   statusMessage = "No status message";
-  readonly rows: Row[] = programmaticControlConfig.rows;
-  readonly headers: AngularColumnDef[] = programmaticControlConfig.headers.map((h) => {
+  readonly rows: ProgrammaticControlProduct[] = programmaticControlConfig.rows;
+  readonly headers: AngularColumnDef<ProgrammaticControlProduct>[] = programmaticControlConfig.headers.map((h) => {
     if (h.accessor === "status") {
       return {
         ...h,
-        cellRenderer: ({ row }: { row: Record<string, unknown> }) => {
-          const s = String(row.status);
+        cellRenderer: ({ row }: CellRendererProps<ProgrammaticControlProduct>) => {
+          const s = row.status;
           const colors = PROGRAMMATIC_CONTROL_STATUS_COLORS[s] ?? { bg: "#f3f4f6", color: "#374151" };
           return `<span style="background:${colors.bg};color:${colors.color};padding:4px 8px;border-radius:4px;font-size:12px;font-weight:bold">${s}</span>`;
         },
@@ -79,8 +81,9 @@ export class ProgrammaticControlDemoComponent {
     const sortState = api.getSortState();
     const filterState = api.getFilterState();
     const totalValue = allRows.reduce((sum, r) => {
-      const data = r.row as { price?: number; stock?: number };
-      return sum + (Number(data.price) || 0) * (Number(data.stock) || 0);
+      const price = r.row.price;
+      const stock = r.row.stock;
+      return sum + (typeof price === "number" ? price : 0) * (typeof stock === "number" ? stock : 0);
     }, 0);
     const sortInfo = sortState ? `${sortState.key.label} (${sortState.direction})` : "None";
     alert(
@@ -88,13 +91,23 @@ export class ProgrammaticControlDemoComponent {
     );
     this.statusMessage = "Table info displayed";
   }
+
+  getRowId = ({ row }: GetRowIdParams<ProgrammaticControlProduct>) => row.id;
 }
 
 
 // programmatic-control.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef } from "@simple-table/angular";
+import type { AngularColumnDef, ValueFormatterProps } from "@simple-table/angular";
 
+export interface ProgrammaticControlProduct {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  status: string;
+}
 
 export const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   Available: { bg: "#dcfce7", color: "#166534" },
@@ -102,7 +115,7 @@ export const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   "Out of Stock": { bg: "#fee2e2", color: "#991b1b" },
 };
 
-export const programmaticControlData = [
+export const programmaticControlData: ProgrammaticControlProduct[] = [
   { id: 1, name: "Wireless Keyboard", category: "Electronics", price: 49.99, stock: 145, status: "Available" },
   { id: 2, name: "Ergonomic Mouse", category: "Electronics", price: 29.99, stock: 12, status: "Low Stock" },
   { id: 3, name: "USB-C Hub", category: "Electronics", price: 39.99, stock: 234, status: "Available" },
@@ -117,7 +130,7 @@ export const programmaticControlData = [
   { id: 12, name: "Desk Lamp LED", category: "Appliances", price: 44.99, stock: 0, status: "Out of Stock" },
 ];
 
-export const programmaticControlHeaders: AngularColumnDef[] = [
+export const programmaticControlHeaders: AngularColumnDef<ProgrammaticControlProduct, any>[] = [
   { accessor: "id", label: "ID", width: 70, type: "number", sortable: true, filterable: true },
   { accessor: "name", label: "Product Name", width: "1fr", minWidth: 150, type: "string", sortable: true, filterable: true },
   {
@@ -129,7 +142,7 @@ export const programmaticControlHeaders: AngularColumnDef[] = [
     filterable: true,
     enumOptions: ["Electronics", "Furniture", "Stationery", "Appliances"].map((v) => ({ label: v, value: v })),
   },
-  { accessor: "price", label: "Price", width: 110, align: "right", type: "number", sortable: true, filterable: true, valueFormatter: ({ value }) => `$${(value as number).toFixed(2)}` },
+  { accessor: "price", label: "Price", width: 110, align: "right", type: "number", sortable: true, filterable: true, valueFormatter: ({ value }: ValueFormatterProps<ProgrammaticControlProduct, number>) => `$${value.toFixed(2)}` },
   { accessor: "stock", label: "Stock", width: 100, align: "right", type: "number", sortable: true, filterable: true },
   {
     accessor: "status",
@@ -145,6 +158,6 @@ export const programmaticControlHeaders: AngularColumnDef[] = [
 export const programmaticControlConfig = {
   headers: programmaticControlHeaders,
   rows: programmaticControlData,
-} as const;
+};
 
 export { STATUS_COLORS as PROGRAMMATIC_CONTROL_STATUS_COLORS };

@@ -11,6 +11,28 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_2_4: ChangelogEntry = {
+  version: "4.2.4",
+  date: "2026-08-29",
+  title: "Angular templates and events",
+  description:
+    "Angular apps can put custom cells, empty UI, and table events in the page template, like other Angular libraries.",
+  changes: [
+    {
+      type: "feature",
+      description:
+        "Angular: import SimpleTableImports and write stCell, stEmpty, and stHeader in the page template. Columns stay in TypeScript. Buttons in the empty state stay clickable.",
+      link: "/docs/cell-renderer",
+    },
+    {
+      type: "feature",
+      description:
+        "Listen with (sortChange), (rowSelectionChange), (cellClick), and the other Angular outputs. The older [onSortChange] inputs still work.",
+      link: "/docs/column-sorting",
+    },
+  ],
+};
+
 export const v4_2_3: ChangelogEntry = {
   version: "4.2.3",
   date: "2026-08-29",
@@ -2822,6 +2844,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_2_4,
   v4_2_3,
   v4_2_2,
   v4_2_1,

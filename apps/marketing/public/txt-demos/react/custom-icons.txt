@@ -32,12 +32,12 @@ const customIcons: ReactIconsConfig = {
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
       <path d="M15 19l-7-7 7-7" />
     </svg>
-  ),
+  )
 };
 
 const CustomIconsDemo = ({
   height = "400px",
-  theme,
+  theme
 }: {
   height?: string | number;
   theme?: Theme;
@@ -49,6 +49,7 @@ const CustomIconsDemo = ({
       icons={customIcons}
       height={height}
       theme={theme}
+      getRowId={({ row }) => row.id}
     />
   );
 };

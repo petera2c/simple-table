@@ -6,6 +6,7 @@ export default function ColumnPinningDemo(props: { height?: string | number; the
   return (
     <SimpleTable
       columns={columnPinningConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={columnPinningConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

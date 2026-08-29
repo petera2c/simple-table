@@ -9,6 +9,7 @@ export default function QuickStartDemo(props: {
   return (
     <SimpleTable
       columns={quickStartConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={quickStartConfig.rows}
       height={props.height ?? "300px"}
       theme={props.theme}

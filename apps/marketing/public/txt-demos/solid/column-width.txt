@@ -22,6 +22,7 @@ export default function ColumnWidthDemo(props: { height?: string | number; theme
       autoExpandColumns={!isMobile()}
       columnResizing
       columns={columnWidthConfig.headers}
+      getRowId={({ row }) => row.id}
       height={props.height ?? "400px"}
       rows={columnWidthConfig.rows}
       theme={props.theme}

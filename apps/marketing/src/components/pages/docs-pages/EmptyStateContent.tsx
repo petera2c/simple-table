@@ -12,6 +12,7 @@ import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
 import EmptyStateDemo from "@/components/demos/EmptyStateDemo";
 import { tableEmptyStateSnippets, type CodeByFramework } from "@/constants/docsSnippets";
+import { useFramework } from "@/providers/FrameworkProvider";
 
 type EmptyPattern = {
   title: string;
@@ -30,7 +31,9 @@ const EMPTY_PATTERNS: EmptyPattern[] = [
         </code>{" "}
         to replace the blank body when{" "}
         <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">rows</code> is empty
-        (no data or filters match nothing).
+        (no data or filters match nothing). In Angular, put an{" "}
+        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">stEmpty</code> template
+        inside the table tag instead.
       </>
     ),
     codeByFramework: tableEmptyStateSnippets(),
@@ -43,13 +46,14 @@ const EMPTY_STATE_PROPS: PropInfo[] = [
     name: "tableEmptyStateRenderer",
     required: false,
     description:
-      "Custom content shown in the table body when there are no rows. Framework adapters accept components or elements; vanilla accepts a string or DOM node.",
+      "Custom content shown in the table body when there are no rows. Framework adapters accept components or elements; vanilla accepts a string or DOM node. In Angular, prefer an stEmpty template on the table.",
     type: "ReactNode | HTMLElement | string | null",
     example: `tableEmptyStateRenderer={<EmptyState />}`,
   },
 ];
 
 const EmptyStateContent = () => {
+  const { framework } = useFramework();
   return (
     <PageWrapper>
       <motion.div
@@ -70,11 +74,21 @@ const EmptyStateContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Customize what users see when the table has no rows with{" "}
-        <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
-          tableEmptyStateRenderer
-        </code>
-        .
+        {framework === "angular" ? (
+          <>
+            Customize what users see when the table has no rows with an{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">stEmpty</code>{" "}
+            template inside the table tag.
+          </>
+        ) : (
+          <>
+            Customize what users see when the table has no rows with{" "}
+            <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded">
+              tableEmptyStateRenderer
+            </code>
+            .
+          </>
+        )}
       </motion.p>
 
       <motion.div

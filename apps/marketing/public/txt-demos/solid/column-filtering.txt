@@ -9,6 +9,7 @@ export default function ColumnFilteringDemo(props: {
   return (
     <SimpleTable
       columns={columnFilteringConfig.headers}
+      getRowId={({ row }) => row.id}
       rows={columnFilteringConfig.rows}
       height={props.height ?? "400px"}
       theme={props.theme}

@@ -1,8 +1,9 @@
 // pagination-demo.component.ts
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, Row, Theme } from "@simple-table/angular";
+import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
 import { paginationConfig, paginationData, PAGINATION_ROWS_PER_PAGE } from "./pagination.demo-data";
 import "@simple-table/angular/styles.css";
+import type { HotelStaff } from "./pagination.demo-data";
 
 @Component({
   selector: "pagination-demo",
@@ -10,6 +11,7 @@ import "@simple-table/angular/styles.css";
   imports: [SimpleTableComponent],
   template: `
     <simple-table
+      [getRowId]="getRowId"
       [rows]="rows"
       [columns]="headers"
       [height]="height"
@@ -25,9 +27,9 @@ export class PaginationDemoComponent {
   @Input() height: string | number = "auto";
   @Input() theme?: Theme;
 
-  readonly headers: AngularColumnDef[] = paginationConfig.headers;
+  readonly headers: AngularColumnDef<HotelStaff>[] = paginationConfig.headers;
   readonly rowsPerPage = PAGINATION_ROWS_PER_PAGE;
-  rows: Row[] = paginationData.slice(0, PAGINATION_ROWS_PER_PAGE);
+  rows: HotelStaff[] = paginationData.slice(0, PAGINATION_ROWS_PER_PAGE);
   isLoading = false;
 
   onNextPage = async (pageIndex: number): Promise<boolean> => {
@@ -47,17 +49,27 @@ export class PaginationDemoComponent {
     this.isLoading = false;
     return true;
   };
+
+  getRowId = ({ row }: GetRowIdParams<HotelStaff>) => row.id;
 }
 
 
 // pagination.demo-data.ts
 // Self-contained demo table setup for this example.
-import type { AngularColumnDef, Row } from "@simple-table/angular";
+import type { AngularColumnDef } from "@simple-table/angular";
 
+export interface HotelStaff {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  department: string;
+  status: string;
+}
 
 export const PAGINATION_ROWS_PER_PAGE = 9;
 
-export const paginationHeaders: AngularColumnDef[] = [
+export const paginationHeaders: AngularColumnDef<HotelStaff>[] = [
   { accessor: "id", label: "ID", width: 60, type: "number" },
   { accessor: "name", label: "Name", width: "1fr", minWidth: 100, type: "string" },
   { accessor: "email", label: "Email", width: 200, type: "string" },
@@ -66,7 +78,7 @@ export const paginationHeaders: AngularColumnDef[] = [
   { accessor: "status", label: "Status", width: 110, type: "string" },
 ];
 
-export const paginationData: Row[] = [
+export const paginationData: HotelStaff[] = [
   { id: 1, name: "Miguel Santos", email: "miguel.santos@grandhotel.com", role: "Guest Relations Manager", department: "Front Office", status: "Active" },
   { id: 2, name: "Carmen Delacroix", email: "carmen.d@grandhotel.com", role: "Head Concierge", department: "Concierge", status: "Active" },
   { id: 3, name: "Dimitri Petrov", email: "dimitri.p@grandhotel.com", role: "Executive Chef", department: "Culinary", status: "Active" },
@@ -103,4 +115,4 @@ export const paginationConfig = {
     rowsPerPage: PAGINATION_ROWS_PER_PAGE,
     enablePagination: true,
   },
-} as const;
+};

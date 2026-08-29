@@ -1,5 +1,6 @@
 import { Component, Input } from "@angular/core";
-import {SimpleTableComponent} from "@simple-table/angular";import type { AngularColumnDef, GetRowIdParams, TableFilterState, Theme } from "@simple-table/angular";
+import { SimpleTableImports } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, TableFilterState, Theme } from "@simple-table/angular";
 import { externalFilterConfig, isFilterableKey, matchesFilter } from "./external-filter.demo-data";
 import "@simple-table/angular/styles.css";
 import type { FilterableEmployee } from "./external-filter.demo-data";
@@ -7,7 +8,7 @@ import type { FilterableEmployee } from "./external-filter.demo-data";
 @Component({
   selector: "external-filter-demo",
   standalone: true,
-  imports: [SimpleTableComponent],
+  imports: [SimpleTableImports],
   template: `
     <simple-table
       [getRowId]="getRowId"
@@ -17,7 +18,7 @@ import type { FilterableEmployee } from "./external-filter.demo-data";
       [columnResizing]="true"
       [height]="height"
       [theme]="theme"
-      [onFilterChange]="handleFilterChange"
+      (filterChange)="handleFilterChange($event)"
     ></simple-table>
   `,
 })
