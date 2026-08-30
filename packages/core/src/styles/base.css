@@ -119,6 +119,7 @@
 /* Wrapper for the table */
 .st-wrapper {
   position: relative;
+  width: 100%;
   border: var(--st-border-width) solid var(--st-border-color);
   border-radius: var(--st-border-radius);
   overflow: hidden;

@@ -5,6 +5,8 @@ import { CellSlideAnimator } from "./CellSlideAnimator";
 import { getHorizontalScrollViewport } from "./horizontalScroll/scrollLayer";
 
 const DEFAULT_DURATION = 400;
+/** After the last window resize, skip cell motion for this long. */
+const LAYOUT_BUSY_MS = 250;
 /**
  * Easing for incoming + persistent cells. Decelerating curve: the cell
  * approaches its final position smoothly. The visible portion of an
@@ -208,6 +210,11 @@ export class AnimationCoordinator {
   /** Outgoing cells the renderer handed off; keyed per container so play() finds them. */
   private retainedCells: Map<HTMLElement, Map<string, HTMLElement>> = new Map();
   private prefersReducedMotion: boolean;
+  /** Skip cell motion while the window or parent size is still changing. */
+  private layoutBusyUntil = 0;
+  private onWindowResize = (): void => {
+    this.noteLayoutBusy();
+  };
   /**
    * Per-render cache of scroller layout metrics. Reading
    * `scrollHeight`/`clientHeight`/etc. after a style mutation forces a sync
@@ -269,6 +276,9 @@ export class AnimationCoordinator {
     this.easing = opts.easing ?? DEFAULT_EASING;
     this.prefersReducedMotion = readPrefersReducedMotion();
     this.cellSlideAnimator.setDuration(this.duration);
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", this.onWindowResize, { passive: true });
+    }
   }
 
   /**
@@ -301,7 +311,24 @@ export class AnimationCoordinator {
   }
 
   isEnabled(): boolean {
+    if (this.isLayoutBusy()) return false;
     return this.enabled && !this.prefersReducedMotion;
+  }
+
+  isLayoutBusy(): boolean {
+    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+    return now < this.layoutBusyUntil;
+  }
+
+  noteLayoutBusy(): void {
+    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+    this.layoutBusyUntil = now + LAYOUT_BUSY_MS;
+  }
+
+  /** Drop a pending snapshot so a later render does not slide cells from a stale layout. */
+  discardPendingMotion(): void {
+    this.snapshot = null;
+    this.incomingOrigins = null;
   }
 
   /**
@@ -1382,6 +1409,9 @@ export class AnimationCoordinator {
   }
 
   destroy(): void {
+    if (typeof window !== "undefined") {
+      window.removeEventListener("resize", this.onWindowResize);
+    }
     this.setColumnReordering(false);
     this.cellSlideAnimator.destroy();
     this.cancel();

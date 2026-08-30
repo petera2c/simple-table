@@ -323,7 +323,7 @@ const SupportDropdown = ({
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
-  const isMobile = useIsMobile();
+  const isMobile = useIsMobile(1280);
   const { theme, toggleTheme } = useThemeContext();
   const headerRef = useRef<HTMLElement>(null);
 
@@ -408,7 +408,7 @@ const Header = () => {
             </div>
 
             {/* Mobile menu button */}
-            <div className="md:hidden flex items-center gap-4">
+            <div className="nav:hidden flex items-center gap-4">
               <button
                 onClick={toggleTheme}
                 className="text-muted hover:text-accent focus:outline-none transition-colors"
@@ -426,7 +426,7 @@ const Header = () => {
             </div>
 
             {/* Desktop navigation */}
-            <div className="hidden md:flex items-center gap-3 lg:gap-4">
+            <div className="hidden nav:flex items-center gap-3 lg:gap-4">
               <div className="flex items-center gap-3 lg:gap-4">
                 {navLinks.map((link) => (
                   <LinkButton key={link.href} {...link} />

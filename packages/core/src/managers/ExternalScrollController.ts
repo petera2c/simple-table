@@ -21,7 +21,6 @@ export interface ExternalScrollHost {
   getDimensionManager(): DimensionManager | null;
   onInternalScroll(e: Event): void;
   onExternalScroll(metrics: ExternalScrollMetrics): void;
-  onExternalResize(): void;
 }
 
 /**
@@ -36,6 +35,12 @@ export class ExternalScrollController {
   private externalWindowResizeListener: (() => void) | null = null;
   private externalParentResizeObserver: ResizeObserver | null = null;
   private externalViewportHeight: number = 0;
+  private layoutBusyUntil = 0;
+  private windowLayoutBusyListening = false;
+  private markLayoutBusy = (): void => {
+    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+    this.layoutBusyUntil = now + 250;
+  };
   private externalScrollRetryRaf: number | null = null;
   private externalScrollRetryCount: number = 0;
   private bodyScrollListenerAttached: boolean = false;
@@ -59,14 +64,22 @@ export class ExternalScrollController {
     return this.resolvedScrollParent;
   }
 
+  isLayoutBusy(): boolean {
+    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+    return now < this.layoutBusyUntil;
+  }
+
   getViewportHeight(): number {
     return this.externalViewportHeight;
   }
 
-  setViewportHeight(next: number): void {
+  setViewportHeight(next: number, notify: "immediate" | "debounce" = "immediate"): void {
     if (next === this.externalViewportHeight) return;
     this.externalViewportHeight = next;
-    this.host.getDimensionManager()?.updateConfig({ externalViewportHeight: next });
+    this.host.getDimensionManager()?.updateConfig(
+      { externalViewportHeight: next },
+      { debounceNotify: notify === "debounce" },
+    );
   }
 
   /**
@@ -119,7 +132,7 @@ export class ExternalScrollController {
     }
   }
 
-  recomputeViewportHeight(): void {
+  recomputeViewportHeight(notify: "immediate" | "debounce" = "immediate"): void {
     if (!this.resolvedScrollParent) return;
     const tableRoot = this.host.getRootElement() ?? this.host.getFallbackRoot();
     const metrics = getExternalScrollMetrics(this.resolvedScrollParent, tableRoot);
@@ -131,7 +144,7 @@ export class ExternalScrollController {
       next = getParentViewportHeight(this.resolvedScrollParent);
     }
     if (next <= 0 || next === this.externalViewportHeight) return;
-    this.setViewportHeight(next);
+    this.setViewportHeight(next, notify);
   }
 
   getVerticalScrollMetrics(): {
@@ -212,6 +225,10 @@ export class ExternalScrollController {
 
     this.recomputePaddingTop();
     this.applyOverscrollContainment(parent);
+    if (typeof window !== "undefined" && !this.windowLayoutBusyListening) {
+      window.addEventListener("resize", this.markLayoutBusy, { passive: true });
+      this.windowLayoutBusyListening = true;
+    }
   }
 
   private detachExternalWiring(): void {
@@ -244,6 +261,10 @@ export class ExternalScrollController {
     }
 
     this.restoreOverscrollBehavior();
+    if (this.windowLayoutBusyListening && typeof window !== "undefined") {
+      window.removeEventListener("resize", this.markLayoutBusy);
+      this.windowLayoutBusyListening = false;
+    }
   }
 
   private applyOverscrollContainment(parent: ResolvedScrollParent): void {
@@ -279,9 +300,9 @@ export class ExternalScrollController {
   }
 
   private handleExternalResize(): void {
-    this.recomputeViewportHeight();
+    this.markLayoutBusy();
+    this.recomputeViewportHeight("debounce");
     this.recomputePaddingTop();
-    this.host.onExternalResize();
   }
 
   private handleExternalScroll(_e: Event): void {

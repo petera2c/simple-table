@@ -5,12 +5,17 @@
 export class WindowResizeManager {
   private callbacks: Set<() => void> = new Set();
   private isListening: boolean = false;
+  private rafId: number | null = null;
 
   /**
-   * Handles the window resize event
+   * Run at most one resize callback per animation frame.
    */
   private handleResize = (): void => {
-    this.callbacks.forEach(callback => callback());
+    if (this.rafId !== null) return;
+    this.rafId = requestAnimationFrame(() => {
+      this.rafId = null;
+      this.callbacks.forEach((callback) => callback());
+    });
   };
 
   /**
@@ -20,16 +25,13 @@ export class WindowResizeManager {
    */
   addCallback(callback: () => void): () => void {
     this.callbacks.add(callback);
-    
-    // Start listening if this is the first callback
+
     if (!this.isListening) {
       this.startListening();
     }
-    
+
     return () => {
       this.callbacks.delete(callback);
-      
-      // Stop listening if no more callbacks
       if (this.callbacks.size === 0) {
         this.stopListening();
       }
@@ -50,6 +52,10 @@ export class WindowResizeManager {
    * Stops listening to window resize events
    */
   stopListening(): void {
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
     if (this.isListening) {
       window.removeEventListener("resize", this.handleResize);
       this.isListening = false;

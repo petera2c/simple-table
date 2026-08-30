@@ -11,6 +11,30 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_2_7: ChangelogEntry = {
+  version: "4.2.7",
+  date: "2026-08-30",
+  title: "Smoother window resize",
+  description:
+    "Resizing the window no longer lags the table or slides cells around while the size is still changing.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Resizing the window or the table's parent no longer lags. Columns settle with the layout instead of jumping after you stop.",
+    },
+    {
+      type: "bugfix",
+      description: "Cells no longer slide around while you are still resizing.",
+    },
+    {
+      type: "improvement",
+      description:
+        "The table fills its parent width, so you do not get a leftover gap or overlapping columns when the layout grows or shrinks.",
+    },
+  ],
+};
+
 export const v4_2_6: ChangelogEntry = {
   version: "4.2.6",
   date: "2026-08-29",
@@ -2859,6 +2883,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_2_7,
   v4_2_6,
   v4_2_4,
   v4_2_3,

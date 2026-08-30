@@ -28,6 +28,7 @@ export interface MountManagersHost {
   onScrollbarVisibilityChange(isScrollable: boolean, scrollbarWidth: number): void;
   onScrollbarWidthChange(scrollbarWidth: number): void;
   attachHorizontalScroll(engine: HorizontalScrollEngine): void;
+  noteLayoutBusy(): void;
 }
 
 export interface MountManagers {
@@ -86,6 +87,7 @@ export const wireMountManagers = (host: MountManagersHost, refs: DOMRefs): Mount
         ? customTheme.footerHeight
         : undefined,
     containerElement: refs.tableBodyContainerRef.current,
+    onResizeActivity: () => host.noteLayoutBusy(),
   });
 
   let firstPaint = true;
@@ -138,12 +140,14 @@ export const wireMountManagers = (host: MountManagersHost, refs: DOMRefs): Mount
 
   const windowResizeManager = new WindowResizeManager();
   windowResizeManager.addCallback(() => {
-    if (refs.tableBodyContainerRef.current) {
-      const newScrollbarWidth = calculateScrollbarWidth(refs.tableBodyContainerRef.current);
-      scrollbarWidth = newScrollbarWidth;
-      scrollbarVisibilityManager?.setScrollbarWidth(newScrollbarWidth);
-      host.onScrollbarWidthChange(newScrollbarWidth);
-    }
+    const body = refs.tableBodyContainerRef.current;
+    if (!body) return;
+    const newScrollbarWidth = calculateScrollbarWidth(body);
+    // Redraw only when the scrollbar thickness changed.
+    if (newScrollbarWidth === scrollbarWidth) return;
+    scrollbarWidth = newScrollbarWidth;
+    scrollbarVisibilityManager?.setScrollbarWidth(newScrollbarWidth);
+    host.onScrollbarWidthChange(newScrollbarWidth);
     host.onRender("scrollbarWidth-change");
   });
 

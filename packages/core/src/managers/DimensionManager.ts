@@ -15,6 +15,8 @@ export interface DimensionManagerConfig {
    * Drives virtualization when neither `height` nor `maxHeight` is set.
    */
   externalViewportHeight?: number;
+  /** Called when the table's parent width changes. */
+  onResizeActivity?: () => void;
 }
 
 export interface DimensionManagerState {
@@ -205,35 +207,47 @@ export class DimensionManager {
     }, CONTAINER_RESIZE_NOTIFY_DEBOUNCE_MS);
   }
 
+  private scheduleContainerWidthFlush(containerElement: HTMLElement): void {
+    // Defer notification to the next animation frame to prevent ResizeObserver
+    // loop errors in Chromium. Without this, a synchronous render triggered by
+    // the ResizeObserver callback can modify the observed element's layout within
+    // the same frame, causing Chromium to fire a window error with event.error=null.
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+    }
+    this.rafId = requestAnimationFrame(() => {
+      this.rafId = null;
+      const newWidth = containerElement.clientWidth;
+      const widthChanged = newWidth !== this.state.containerWidth;
+      // A 0-wide box is hidden or mid-layout; keep the last real width.
+      if (newWidth <= 0) {
+        return;
+      }
+      if (widthChanged) {
+        this.state = {
+          ...this.state,
+          containerWidth: newWidth,
+        };
+        this.config.onResizeActivity?.();
+      }
+      if (this.initialNotifyPending) {
+        this.initialNotifyPending = false;
+        this.cancelPendingResizeNotify();
+        this.notifySubscribers();
+      } else if (widthChanged) {
+        this.scheduleResizeNotify();
+      }
+    });
+  }
+
   private observeContainer(containerElement: HTMLElement): void {
     const updateContainerWidth = () => {
-      // Defer notification to the next animation frame to prevent ResizeObserver
-      // loop errors in Chromium. Without this, a synchronous render triggered by
-      // the ResizeObserver callback can modify the observed element's layout within
-      // the same frame, causing Chromium to fire a window error with event.error=null.
-      if (this.rafId !== null) {
-        cancelAnimationFrame(this.rafId);
-      }
-      this.rafId = requestAnimationFrame(() => {
-        this.rafId = null;
-        const newWidth = containerElement.clientWidth;
-        const widthChanged = newWidth !== this.state.containerWidth;
-        if (widthChanged) {
-          this.state = {
-            ...this.state,
-            containerWidth: newWidth,
-          };
-        }
-        if (this.initialNotifyPending) {
-          this.initialNotifyPending = false;
-          this.cancelPendingResizeNotify();
-          this.notifySubscribers();
-        } else if (widthChanged) {
-          this.scheduleResizeNotify();
-        }
-      });
+      this.scheduleContainerWidthFlush(containerElement);
     };
 
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
     this.resizeObserver = new ResizeObserver(updateContainerWidth);
     this.resizeObserver.observe(containerElement);
 
@@ -258,13 +272,17 @@ export class DimensionManager {
     }
   }
 
-  updateConfig(config: Partial<DimensionManagerConfig>): void {
+  updateConfig(
+    config: Partial<DimensionManagerConfig>,
+    options?: { debounceNotify?: boolean },
+  ): void {
     const oldHeaders = this.config.effectiveHeaders;
     const oldContainerElement = this.config.containerElement;
 
     this.config = { ...this.config, ...config };
 
-    let needsUpdate = false;
+    let needsImmediate = false;
+    let needsDebounced = false;
 
     if (config.effectiveHeaders && config.effectiveHeaders !== oldHeaders) {
       const maxHeaderDepth = this.calculateMaxHeaderDepth();
@@ -274,7 +292,7 @@ export class DimensionManager {
         maxHeaderDepth,
         calculatedHeaderHeight,
       };
-      needsUpdate = true;
+      needsImmediate = true;
     }
 
     if (
@@ -284,11 +302,17 @@ export class DimensionManager {
       config.externalViewportHeight !== undefined
     ) {
       const contentHeight = this.calculateContentHeight();
-      this.state = {
-        ...this.state,
-        contentHeight,
-      };
-      needsUpdate = true;
+      if (contentHeight !== this.state.contentHeight) {
+        this.state = {
+          ...this.state,
+          contentHeight,
+        };
+        if (options?.debounceNotify) {
+          needsDebounced = true;
+        } else {
+          needsImmediate = true;
+        }
+      }
     }
 
     if (config.containerElement && config.containerElement !== oldContainerElement) {
@@ -296,7 +320,7 @@ export class DimensionManager {
         this.resizeObserver.unobserve(oldContainerElement);
       }
       this.observeContainer(config.containerElement);
-      needsUpdate = true;
+      needsImmediate = true;
     }
 
     // Row / header / footer pixel sizes affect header band height and scroll viewport math.
@@ -312,11 +336,14 @@ export class DimensionManager {
         calculatedHeaderHeight,
         contentHeight,
       };
-      needsUpdate = true;
+      needsImmediate = true;
     }
 
-    if (needsUpdate) {
+    if (needsImmediate) {
+      this.cancelPendingResizeNotify();
       this.notifySubscribers();
+    } else if (needsDebounced) {
+      this.scheduleResizeNotify();
     }
   }
 

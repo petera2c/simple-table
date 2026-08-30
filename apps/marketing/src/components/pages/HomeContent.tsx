@@ -17,7 +17,8 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useGitHubStars } from "@/hooks/useGitHubStars";
-import { Suspense, useState } from "react";
+import { useMinWidth } from "@/hooks/useIsMobile";
+import { Suspense, useLayoutEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import InfrastructureExample from "@/examples/infrastructure/InfrastructureExample";
@@ -94,6 +95,11 @@ export default function HomeContent() {
   const [promptCopied, setPromptCopied] = useState(false);
   const { framework, setFramework } = useFramework();
   const tableIcons = getTableIcons(iconLibrary);
+  const isDesktopHero = useMinWidth(1024);
+  const [heroReady, setHeroReady] = useState(false);
+  useLayoutEffect(() => {
+    setHeroReady(true);
+  }, []);
 
   // Map theme: if user selected a theme, use it; otherwise use modern version of website theme
   const tableTheme = selectedTheme ? selectedTheme : mapWebsiteThemeToTableTheme(theme);
@@ -282,12 +288,14 @@ export default function HomeContent() {
           ) : (
             <div className="h-[60dvh]">
               <Suspense fallback={<div className="h-full" aria-hidden />}>
-                <InfrastructureExample
-                  key={iconLibrary}
-                  theme={tableTheme}
-                  icons={tableIcons}
-                  hideNameColumn
-                />
+                {heroReady && !isDesktopHero && (
+                  <InfrastructureExample
+                    key={iconLibrary}
+                    theme={tableTheme}
+                    icons={tableIcons}
+                    hideNameColumn
+                  />
+                )}
               </Suspense>
             </div>
           )}
@@ -407,12 +415,14 @@ export default function HomeContent() {
               >
                 <div className="rounded-lg overflow-hidden border border-line bg-surface">
                   <Suspense fallback={<div className="h-full" aria-hidden />}>
-                    <InfrastructureExample
-                      theme={tableTheme}
-                      icons={tableIcons}
-                      height="60vh"
-                      hideNameColumn
-                    />
+                    {heroReady && isDesktopHero && (
+                      <InfrastructureExample
+                        theme={tableTheme}
+                        icons={tableIcons}
+                        height="60vh"
+                        hideNameColumn
+                      />
+                    )}
                   </Suspense>
                 </div>
               </motion.div>

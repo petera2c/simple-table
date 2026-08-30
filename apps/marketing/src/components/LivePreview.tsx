@@ -77,7 +77,7 @@ const LivePreview = ({
 
         {/* Both views stay mounted: the code block is server-rendered for SEO/LLM crawlers
             and the demo keeps its state when toggling. */}
-        <div style={{ height }}>
+        <div style={{ height }} className="w-full min-w-0">
           <div className={`h-full ${isCodeVisible ? "hidden" : ""}`}>
             <PreviewHost render={Preview} height={demoHeight || height} theme={currentTheme} />
           </div>

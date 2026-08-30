@@ -28,9 +28,15 @@ export function useCryptoTicker(
 ) {
   useEffect(() => {
     let isActive = true;
+    let lastResizeAt = 0;
+    const onResize = () => {
+      lastResizeAt = Date.now();
+    };
+    window.addEventListener("resize", onResize, { passive: true });
 
     const tick = () => {
       if (!isActive) return;
+      if (Date.now() - lastResizeAt < 250) return;
       const api = tableRef.current;
       if (!api) return;
 
@@ -64,6 +70,7 @@ export function useCryptoTicker(
     return () => {
       isActive = false;
       clearInterval(intervalId);
+      window.removeEventListener("resize", onResize);
     };
   }, [tableRef]);
 }

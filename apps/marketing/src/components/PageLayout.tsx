@@ -1,7 +1,6 @@
 "use client";
 
 import React, { ReactNode } from "react";
-import { motion } from "framer-motion";
 
 interface PageLayoutProps {
   sidebar?: ReactNode;
@@ -22,19 +21,16 @@ const PageLayout: React.FC<PageLayoutProps> = ({ sidebar, children, overflowVisi
   return (
     <>
       <div className="relative z-10 site-shell">
-        <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-6">
+        <div className="flex w-full flex-col md:flex-row justify-center gap-4 md:gap-6">
           {sidebar}
 
-          <motion.div
-            className={`flex flex-col grow ${overflowVisible ? "overflow-visible min-w-0" : "overflow-auto"} bg-surface text-ink 
+          <div
+            className={`flex flex-col grow w-full min-w-0 ${overflowVisible ? "overflow-visible" : "overflow-auto"} bg-surface text-ink 
               rounded-lg my-2 sm:my-3 md:my-4 p-2 sm:p-3 md:p-4 min-h-[calc(100dvh-var(--header-height)-1.5rem)] 
               border border-line`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
           >
             {children}
-          </motion.div>
+          </div>
         </div>
       </div>
     </>

@@ -210,7 +210,6 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       getDimensionManager: () => this.dimensionManager,
       onInternalScroll: (e) => this.handleScroll(e),
       onExternalScroll: (metrics) => this.handleExternalScrollMetrics(metrics),
-      onExternalResize: () => this.render("external-scroll-resize"),
     });
 
     this.accordionController = new AccordionController({
@@ -405,6 +404,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
         onScrollbarWidthChange: (scrollbarWidth) => {
           this.scrollbarWidth = scrollbarWidth;
         },
+        noteLayoutBusy: () => this.animationCoordinator.noteLayoutBusy(),
         attachHorizontalScroll: (engine) => {
           this.horizontalScroll = engine;
           engine.bindRoot(this.getTableRoot());
@@ -455,7 +455,10 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
         Math.max(0, metrics.distanceFromTableBottom),
       afterApply: () => {
         if (metrics.visibleViewportHeight !== this.externalScrollController.getViewportHeight()) {
-          this.externalScrollController.setViewportHeight(metrics.visibleViewportHeight);
+          this.externalScrollController.setViewportHeight(
+            metrics.visibleViewportHeight,
+            this.externalScrollController.isLayoutBusy() ? "debounce" : "immediate",
+          );
         }
       },
     });
@@ -630,16 +633,14 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     this.accordionController.clearPendingAxis();
     this.accordionController.rememberRenderedHeaders(this.headers);
 
-    // FLIP play step. No-op when no snapshot is armed or when scroll-driven.
-    // Position-only scroll renders deliberately skip play so out-going /
-    // in-coming cells aren't FLIP-tweened during vertical scrolls. Live-sort
-    // reorders (from updateData) also skip play so they don't interrupt an
-    // in-flight user sort or thrash retained-cell cleanup every tick.
-    // Column-drag commits through CellSlideAnimator after left writes.
+    // Position-only scroll and live-sort skip play. While the parent size is
+    // still changing, drop any pending snapshot instead of sliding cells.
     if (source !== "scroll-raf" && source !== "live-sort") {
       if (columnDragging || this.animationCoordinator.isColumnReordering()) {
         const root = elements.rootElement ?? this.container;
         this.animationCoordinator.commitColumnReorder(root);
+      } else if (this.animationCoordinator.isLayoutBusy()) {
+        this.animationCoordinator.discardPendingMotion();
       } else {
         this.accordionController.play();
       }
