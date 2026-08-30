@@ -71,7 +71,7 @@ export class AccordionController {
 
   begin(axis: AccordionAxis): void {
     const { animationCoordinator } = this.host;
-    if (!animationCoordinator.isEnabled()) return;
+    if (!animationCoordinator.areAnimationsOn()) return;
     if (axis === null) return;
     if (axis === "vertical" && (this.host.getEffectiveRowGrouping()?.length ?? 0) > 0) return;
 

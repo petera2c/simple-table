@@ -51,9 +51,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
           cache: "pnpm"
+
+      - name: Install latest npm
+        run: npm install -g npm@latest
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -104,15 +107,13 @@ jobs:
       - name: "[core] Publish"
         if: steps.core-check.outputs.changed == 'true'
         working-directory: packages/core
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
             TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
-            pnpm publish --no-git-checks --access public --provenance --tag "$TAG"
+            npm publish --access public --provenance --tag "$TAG"
           else
-            pnpm publish --no-git-checks --access public --provenance
+            npm publish --access public --provenance
           fi
 
       - name: "[core] Create Git tag"
@@ -158,15 +159,13 @@ jobs:
       - name: "[react] Publish"
         if: steps.react-check.outputs.changed == 'true'
         working-directory: packages/react
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
             TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
-            pnpm publish --no-git-checks --provenance --tag "$TAG"
+            npm publish --access public --provenance --tag "$TAG"
           else
-            pnpm publish --no-git-checks --provenance
+            npm publish --access public --provenance
           fi
 
       - name: "[react] Create Git tag"
@@ -212,15 +211,13 @@ jobs:
       - name: "[vue] Publish"
         if: steps.vue-check.outputs.changed == 'true'
         working-directory: packages/vue
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
             TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
-            pnpm publish --no-git-checks --provenance --tag "$TAG"
+            npm publish --access public --provenance --tag "$TAG"
           else
-            pnpm publish --no-git-checks --provenance
+            npm publish --access public --provenance
           fi
 
       - name: "[vue] Create Git tag"
@@ -266,15 +263,13 @@ jobs:
       - name: "[svelte] Publish"
         if: steps.svelte-check.outputs.changed == 'true'
         working-directory: packages/svelte
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
             TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
-            pnpm publish --no-git-checks --provenance --tag "$TAG"
+            npm publish --access public --provenance --tag "$TAG"
           else
-            pnpm publish --no-git-checks --provenance
+            npm publish --access public --provenance
           fi
 
       - name: "[svelte] Create Git tag"
@@ -320,15 +315,13 @@ jobs:
       - name: "[solid] Publish"
         if: steps.solid-check.outputs.changed == 'true'
         working-directory: packages/solid
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
             TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
-            pnpm publish --no-git-checks --provenance --tag "$TAG"
+            npm publish --access public --provenance --tag "$TAG"
           else
-            pnpm publish --no-git-checks --provenance
+            npm publish --access public --provenance
           fi
 
       - name: "[solid] Create Git tag"
@@ -374,15 +367,13 @@ jobs:
       - name: "[angular] Publish"
         if: steps.angular-check.outputs.changed == 'true'
         working-directory: packages/angular
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           if [[ "$VERSION" == *"-"* ]]; then
             TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
-            pnpm publish --no-git-checks --provenance --tag "$TAG"
+            npm publish --access public --provenance --tag "$TAG"
           else
-            pnpm publish --no-git-checks --provenance
+            npm publish --access public --provenance
           fi
 
       - name: "[angular] Create Git tag"

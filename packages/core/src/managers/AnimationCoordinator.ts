@@ -310,9 +310,14 @@ export class AnimationCoordinator {
     }
   }
 
+  /** True when animations are on and reduced motion is off. */
+  areAnimationsOn(): boolean {
+    return this.enabled && !this.prefersReducedMotion;
+  }
+
   isEnabled(): boolean {
     if (this.isLayoutBusy()) return false;
-    return this.enabled && !this.prefersReducedMotion;
+    return this.areAnimationsOn();
   }
 
   isLayoutBusy(): boolean {
