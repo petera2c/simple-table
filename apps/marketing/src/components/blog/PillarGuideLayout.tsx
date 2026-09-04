@@ -38,7 +38,7 @@ export default function PillarGuideLayout({ post, hubId, children }: Props) {
       />
       {/* Hero sits above the article body */}
       <div className="site-shell pt-6 md:pt-8 pb-2">
-        <header className="max-w-4xl rounded-xl bg-linear-to-r from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-950 p-6 md:p-8 shadow-sm border border-gray-100/80 dark:border-gray-800">
+        <header className="mx-auto max-w-4xl rounded-xl bg-linear-to-r from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-950 p-6 md:p-8 shadow-sm border border-gray-100/80 dark:border-gray-800">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
             {post.createdAt} · {fw.label} · Integration guide
           </p>
