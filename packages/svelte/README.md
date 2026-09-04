@@ -5,7 +5,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/petera2c/simple-table.svg)](https://github.com/petera2c/simple-table)
 [![License](https://img.shields.io/npm/l/@simple-table/svelte.svg)](LICENSE)
 
-**Simple Table** is the Svelte data grid and Svelte table component for fast UIs: Svelte 5+, reactive components, idiomatic templates, and full Svelte component support for cell renderers, headers, and footers. It is a **lightweight**, **high-performance** data grid with a **simple API**, **completely free features** for qualifying use, and strong TypeScript typings for data-heavy Svelte apps.
+Simple Table is a lightweight Svelte data grid. Flat pricing (not per developer), backed by real-person support. Use Svelte components for cells, headers, and footers.
 
 <div align="center">
   <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Simple Table Infrastructure Dashboard" width="800" />

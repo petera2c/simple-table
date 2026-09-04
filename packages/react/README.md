@@ -5,7 +5,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/petera2c/simple-table.svg)](https://github.com/petera2c/simple-table)
 [![License](https://img.shields.io/npm/l/@simple-table/react.svg)](LICENSE)
 
-**Simple Table** is the React data grid and React table component for modern web apps: JSX, React 18+, hooks-friendly patterns, and full React component support for cell renderers, headers, and footers. It is a **lightweight**, **high-performance** data grid with a **simple API**, **completely free features** for qualifying use, and strong TypeScript typings for production dashboards and admin UIs.
+Simple Table is a lightweight React data grid. Flat pricing (not per developer), backed by real-person support. Use React components for cells, headers, and footers.
 
 <div align="center">
   <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Simple Table Infrastructure Dashboard" width="800" />

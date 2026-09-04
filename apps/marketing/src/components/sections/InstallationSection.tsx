@@ -35,11 +35,10 @@ export default function InstallationSection() {
           />
         </div>
         <h2 className="text-3xl font-bold mb-4 text-ink">
-          Get Full Integration In Minutes
+          Install Simple Table
         </h2>
         <p className="text-muted max-w-2xl mx-auto">
-          Works with React, Vue, Angular, Svelte, Solid, and vanilla TypeScript. Simple Table fits
-          right into your {label} project.
+          Add it to your {label} project.
         </p>
       </div>
 

@@ -88,7 +88,7 @@
       "path": "dist/cjs/index.js"
     }
   ],
-  "description": "Simple Table: A lightweight, free framework-agnostic data grid and table component with TypeScript support, sorting, filtering, and virtualization. Works with vanilla JS/TypeScript, React, Vue, Angular, Svelte, and Solid.",
+  "description": "A lightweight data grid. Flat pricing (not per developer), backed by real-person support. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.",
   "repository": {
     "type": "git",
     "url": "https://github.com/petera2c/simple-table.git"

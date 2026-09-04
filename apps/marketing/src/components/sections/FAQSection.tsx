@@ -57,7 +57,7 @@ export default function FAQSection() {
               {
                 icon: faTable,
                 question: "What is Simple Table?",
-                answer: `Simple Table is a lightweight JavaScript data grid library (only ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}) with adapters for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript. It provides cell editing, column management, sorting, filtering, row grouping, pivot tables, and full TypeScript support. Perfect for dashboards, admin panels, and data-heavy applications in any framework.`,
+                answer: `Simple Table is a lightweight data grid (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}). Flat pricing (not per developer), backed by real-person support. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.`,
               },
               {
                 icon: faDownload,

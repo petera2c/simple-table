@@ -37,7 +37,7 @@ const faqSchema = {
       name: "What is Simple Table?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: `Simple Table is a lightweight JavaScript data grid and table library that's only ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} in size. It works with React, Vue, Angular, Svelte, Solid, and vanilla JavaScript or TypeScript (simple-table-core), providing comprehensive features like cell editing, column management, sorting, filtering, and full TypeScript support.`,
+        text: `Simple Table is a lightweight data grid (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}). Flat pricing (not per developer), backed by real-person support. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.`,
       },
     },
     {

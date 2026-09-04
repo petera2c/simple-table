@@ -5,7 +5,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/petera2c/simple-table.svg)](https://github.com/petera2c/simple-table)
 [![License](https://img.shields.io/npm/l/@simple-table/solid.svg)](LICENSE)
 
-**Simple Table** is the SolidJS data grid and Solid table component for fine-grained reactive UIs: Solid components, JSX, signals-friendly workflows, and full Solid component support for cell renderers, headers, and footers. It is a **lightweight**, **high-performance** data grid with a **simple API**, **completely free features** for qualifying use, and strong TypeScript typings for Solid apps.
+Simple Table is a lightweight Solid data grid. Flat pricing (not per developer), backed by real-person support. Use Solid components for cells, headers, and footers.
 
 <div align="center">
   <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Simple Table Infrastructure Dashboard" width="800" />

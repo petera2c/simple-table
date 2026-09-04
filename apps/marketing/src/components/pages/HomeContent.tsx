@@ -165,41 +165,17 @@ export default function HomeContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.05 }}
             >
-              Big grid energy. Featherweight build.
+              An objectively better way to show data
             </motion.h1>
 
             <motion.p
-              className="text-lg md:text-xl text-muted mb-4 max-w-3xl mx-auto"
+              className="text-lg md:text-xl text-muted mb-8 max-w-3xl mx-auto"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.1 }}
             >
-              A lightweight data grid packed with 30+ features, dropped into React, Vue, Angular,
-              Svelte, Solid, or vanilla TypeScript in minutes. Flat pricing (not per developer),
-              backed by real-person support.
-            </motion.p>
-
-            <motion.p
-              className="text-sm md:text-base text-muted mb-8 max-w-3xl mx-auto"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.12 }}
-            >
-              Comparing options? See{" "}
-              <Link
-                href="/blog/ag-grid-alternatives-free-react-data-grids"
-                className="text-accent hover:underline font-medium"
-              >
-                free AG Grid alternatives
-              </Link>
-              {" · "}
-              <Link
-                href="/blog/best-vanilla-js-data-grid-2026"
-                className="text-accent hover:underline font-medium"
-              >
-                best JavaScript table libraries
-              </Link>
-              .
+              A lightweight data grid. Flat pricing (not per developer), backed by real-person
+              support. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.
             </motion.p>
 
             <motion.div
@@ -341,9 +317,7 @@ export default function HomeContent() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.05 }}
                 >
-                  Big grid energy.
-                  <br />
-                  Featherweight build.
+                  An objectively better way to show data
                 </motion.h1>
 
                 <div className="flex flex-col gap-3 2xl:gap-4 mb-10 2xl:mb-14 max-w-md 2xl:max-w-lg">
@@ -353,32 +327,8 @@ export default function HomeContent() {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.4, delay: 0.1 }}
                   >
-                    A lightweight data grid packed with 30+ features, dropped into React, Vue,
-                    Angular, Svelte, Solid, or vanilla TypeScript in minutes. Flat pricing (not per
-                    developer), backed by real-person support.
-                  </motion.p>
-
-                  <motion.p
-                    className="text-sm 2xl:text-base text-muted leading-relaxed"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.4, delay: 0.12 }}
-                  >
-                    Comparing options? See{" "}
-                    <Link
-                      href="/blog/ag-grid-alternatives-free-react-data-grids"
-                      className="text-accent hover:underline font-medium"
-                    >
-                      free AG Grid alternatives
-                    </Link>
-                    {" · "}
-                    <Link
-                      href="/blog/best-vanilla-js-data-grid-2026"
-                      className="text-accent hover:underline font-medium"
-                    >
-                      best JavaScript table libraries
-                    </Link>
-                    .
+                    A lightweight data grid. Flat pricing (not per developer), backed by real-person
+                    support. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.
                   </motion.p>
                 </div>
 
