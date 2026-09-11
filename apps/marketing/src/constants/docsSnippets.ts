@@ -233,9 +233,10 @@ export function tableSnippet(framework: Framework, options: TablePropOptions = {
     pushRowsPerPageProp(framework, lines, rowsPerPage);
     pushSortProps(framework, lines, options);
     pushTableBoolProps(framework, lines, options);
-    return `new SimpleTableVanilla(container, {
+    return `const table = new SimpleTableVanilla(container, {
   ${lines.join(",\n  ")},
-});`;
+});
+table.mount();`;
   }
 
   if (framework === "vue") {
