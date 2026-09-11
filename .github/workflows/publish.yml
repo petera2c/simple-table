@@ -61,6 +61,31 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      # npm publish does not rewrite workspace:*. pnpm publish used to.
+      - name: Rewrite workspace protocol for npm publish
+        run: |
+          node <<'EOF'
+          const fs = require("fs");
+          const path = require("path");
+          const coreVersion = JSON.parse(
+            fs.readFileSync("packages/core/package.json", "utf8")
+          ).version;
+          for (const dir of ["react", "vue", "svelte", "solid", "angular"]) {
+            const file = path.join("packages", dir, "package.json");
+            const pkg = JSON.parse(fs.readFileSync(file, "utf8"));
+            for (const field of [
+              "dependencies",
+              "peerDependencies",
+              "optionalDependencies",
+            ]) {
+              if (pkg[field]?.["simple-table-core"] === "workspace:*") {
+                pkg[field]["simple-table-core"] = coreVersion;
+              }
+            }
+            fs.writeFileSync(file, JSON.stringify(pkg, null, 2) + "\n");
+          }
+          EOF
+
       # ─── simple-table-core ───────────────────────────────────────────────────
 
       - name: "[core] Check version needs publishing"

@@ -11,6 +11,21 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_2_8: ChangelogEntry = {
+  version: "4.2.8",
+  date: "2026-09-10",
+  title: "npm install works again",
+  description:
+    "You can install the latest Simple Table packages with npm again.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "npm install works for the React, Vue, Svelte, Solid, and Angular packages. 4.2.7 could not be installed with npm.",
+    },
+  ],
+};
+
 export const v4_2_7: ChangelogEntry = {
   version: "4.2.7",
   date: "2026-08-30",
@@ -2883,6 +2898,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_2_8,
   v4_2_7,
   v4_2_6,
   v4_2_4,
