@@ -274,6 +274,10 @@ const calculateBodyCellClasses = (cell: AbsoluteBodyCell, context: CellRenderCon
     isSubCell ? "st-sub-cell" : "",
     context.oddEvenRowBackground ? (isOdd ? "st-cell-even-row" : "st-cell-odd-row") : "",
     context.isRowSelected?.(rowId) ? "st-cell-selected-row" : "",
+    context.hoverRowBackground &&
+    currentHoveredRowIds.get(context.hoverScopeId) === String(rowId)
+      ? "st-row-hovered"
+      : "",
     context.activeRowId != null && String(context.activeRowId) === String(rowId)
       ? "st-row-active"
       : "",
@@ -694,14 +698,14 @@ export const updateBodyCellElement = (
     cellElement.setAttribute("role", desiredRole);
   }
 
-  // Re-key the row hover map when this cell is reused for a different row
-  // (happens after a sort because the cell DOM node now survives via
-  // `stableRowKey`). Without this, hovering would highlight the wrong row.
+  // Keep this cell in the current row's hover set. Move it if the row id changed.
   const previousRowId = cellElement.getAttribute("data-row-id");
   const nextRowId = String(rowId);
+  const scopeId = cellHoverScopeMap.get(cellElement) ?? context.hoverScopeId;
   if (previousRowId && previousRowId !== nextRowId) {
-    const scopeId = cellHoverScopeMap.get(cellElement) ?? context.hoverScopeId;
     untrackCellByRow(previousRowId, cellElement);
+  }
+  if (context.hoverRowBackground) {
     trackCellByRow(nextRowId, cellElement, scopeId);
   }
   cellElement.setAttribute("data-row-id", nextRowId);

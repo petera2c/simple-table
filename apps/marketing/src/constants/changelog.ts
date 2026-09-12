@@ -11,6 +11,21 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_2_9: ChangelogEntry = {
+  version: "4.2.9",
+  date: "2026-09-12",
+  title: "Row hover on the last column",
+  description:
+    "Hovering a row now highlights every cell, including the last column.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Hovering a row now fills the last column too. That cell used to keep the normal background.",
+    },
+  ],
+};
+
 export const v4_2_8: ChangelogEntry = {
   version: "4.2.8",
   date: "2026-09-10",
@@ -2898,6 +2913,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_2_9,
   v4_2_8,
   v4_2_7,
   v4_2_6,
