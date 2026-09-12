@@ -1,0 +1,133 @@
+import { useRef, useEffect } from "react";
+import { SimpleTable } from "@simple-table/react";
+import type { Theme, TableAPI } from "@simple-table/react";
+import {
+  liveUpdateConfig,
+  liveUpdateData,
+  type LiveUpdateProduct
+} from "./live-update.demo-data";
+import "@simple-table/react/styles.css";
+
+const LiveUpdateDemo = ({
+  height = "400px",
+  theme
+}: {
+  height?: string | number;
+  theme?: Theme;
+}) => {
+  const tableRef = useRef<TableAPI<LiveUpdateProduct>>(null);
+
+  useEffect(() => {
+    const currentData: LiveUpdateProduct[] = JSON.parse(JSON.stringify(liveUpdateData));
+    const timerMap = new Map<number, ReturnType<typeof setTimeout>>();
+    const currentPeriodSales = new Map<number, number>();
+    let isActive = true;
+
+    const UPDATE_CONFIG = { minInterval: 300, maxInterval: 1000 };
+
+    const createRowTimer = (rowId: number) => {
+      const scheduleUpdate = () => {
+        if (!isActive) return;
+        const interval =
+          UPDATE_CONFIG.minInterval +
+          Math.random() * (UPDATE_CONFIG.maxInterval - UPDATE_CONFIG.minInterval);
+
+        const timerId = setTimeout(() => {
+          if (!isActive || !tableRef.current) return;
+          const actualRowIndex = currentData.findIndex((row) => row.id === rowId);
+          if (actualRowIndex === -1) return;
+          const product = currentData[actualRowIndex];
+
+          const newPrice = parseFloat((product.price * (0.95 + Math.random() * 0.1)).toFixed(2));
+          currentData[actualRowIndex].price = newPrice;
+          tableRef.current?.updateData({ accessor: "price", rowId, newValue: newPrice });
+
+          const newStock = Math.max(0, product.stock + Math.floor((Math.random() - 0.5) * 6));
+          currentData[actualRowIndex].stock = newStock;
+          tableRef.current?.updateData({ accessor: "stock", rowId, newValue: newStock });
+          if (product.stockHistory.length > 0) {
+            const updatedStockHistory = [...product.stockHistory.slice(1), newStock];
+            currentData[actualRowIndex].stockHistory = updatedStockHistory;
+            tableRef.current?.updateData({
+              accessor: "stockHistory",
+              rowId,
+              newValue: updatedStockHistory
+            });
+          }
+
+          if (Math.random() < 0.6) {
+            const salesIncrement = Math.floor(Math.random() * 3) + 1;
+            const newSales = product.sales + salesIncrement;
+            currentData[actualRowIndex].sales = newSales;
+            tableRef.current?.updateData({ accessor: "sales", rowId, newValue: newSales });
+            currentPeriodSales.set(rowId, (currentPeriodSales.get(rowId) || 0) + salesIncrement);
+          }
+
+          scheduleUpdate();
+        }, interval);
+        timerMap.set(rowId, timerId);
+      };
+      scheduleUpdate();
+    };
+
+    const syncTimers = () => {
+      if (!tableRef.current) return;
+      const visibleRows = tableRef.current.getVisibleRows();
+      const visibleRowIds = new Set(
+        visibleRows.map((vr) => vr.row.id).filter((id): id is number => typeof id === "number"),
+      );
+      timerMap.forEach((timerId, rowId) => {
+        if (!visibleRowIds.has(rowId)) {
+          clearTimeout(timerId);
+          timerMap.delete(rowId);
+        }
+      });
+      visibleRows.forEach((visibleRow) => {
+        const rowId = visibleRow.row.id;
+        if (typeof rowId === "number" && !timerMap.has(rowId)) createRowTimer(rowId);
+      });
+    };
+
+    const salesRotateInterval = setInterval(() => {
+      if (!tableRef.current || !isActive) return;
+      currentData.forEach((row, rowIndex) => {
+        if (row.salesHistory.length > 0) {
+          const rowId = row.id;
+          const salesInPeriod = currentPeriodSales.get(rowId) || 0;
+          const updatedSalesHistory = [...row.salesHistory.slice(1), salesInPeriod];
+          currentData[rowIndex].salesHistory = updatedSalesHistory;
+          tableRef.current?.updateData({
+            accessor: "salesHistory",
+            rowId,
+            newValue: updatedSalesHistory
+          });
+          currentPeriodSales.set(rowId, 0);
+        }
+      });
+    }, 2000);
+
+    syncTimers();
+    const syncInterval = setInterval(syncTimers, 500);
+
+    return () => {
+      isActive = false;
+      clearInterval(syncInterval);
+      clearInterval(salesRotateInterval);
+      timerMap.forEach((timerId) => clearTimeout(timerId));
+      timerMap.clear();
+    };
+  }, []);
+
+  return (
+    <SimpleTable
+      columns={liveUpdateConfig.headers}
+      rows={liveUpdateConfig.rows}
+      ref={tableRef}
+      getRowId={({ row }) => row.id}
+      height={height}
+      theme={theme}
+    />
+  );
+};
+
+export default LiveUpdateDemo;
