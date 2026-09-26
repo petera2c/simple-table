@@ -34,6 +34,7 @@ import {
   createLoadingPlaceholderRows,
   wrapGetRowIdForLoadingPlaceholders,
 } from "../../utils/loadingPlaceholderUtils";
+import type RowState from "../../types/RowState";
 import type { RenderContext, RenderState } from "./RenderContext";
 
 export type { RenderContext, RenderState } from "./RenderContext";
@@ -51,6 +52,8 @@ interface FlattenedRowsCache {
     expandedRowsSize: number;
     collapsedRowsSize: number;
     expandedDepthsSize: number;
+    /** Loading, error, and empty flags. A new map changes which child rows are shown. */
+    rowStateMap: Map<string | number, RowState>;
     rowStateMapSize: number;
     sortKey: string;
     filterKey: string;
@@ -286,7 +289,7 @@ export class RenderOrchestrator {
       this.flattenedRowsCache.deps.expandedRowsSize === context.expandedRows.size &&
       this.flattenedRowsCache.deps.collapsedRowsSize === context.collapsedRows.size &&
       this.flattenedRowsCache.deps.expandedDepthsSize === context.expandedDepths.size &&
-      this.flattenedRowsCache.deps.rowStateMapSize === context.rowStateMap.size &&
+      this.flattenedRowsCache.deps.rowStateMap === context.rowStateMap &&
       this.flattenedRowsCache.deps.sortKey === sortKey &&
       this.flattenedRowsCache.deps.filterKey === filterKey;
 
@@ -383,6 +386,7 @@ export class RenderOrchestrator {
           expandedRowsSize: context.expandedRows.size,
           collapsedRowsSize: context.collapsedRows.size,
           expandedDepthsSize: context.expandedDepths.size,
+          rowStateMap: context.rowStateMap,
           rowStateMapSize: context.rowStateMap.size,
           sortKey,
           filterKey,

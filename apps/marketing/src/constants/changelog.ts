@@ -11,6 +11,22 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_3_0: ChangelogEntry = {
+  version: "4.3.0",
+  date: "2026-09-26",
+  title: "Lazy row groups after loading",
+  description:
+    "When you load child rows on expand, they show up even if you clear the loading spinner after you save the new rows.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Lazy-loaded row group children now appear when you update the rows and then call setLoading(false), including the usual try/finally pattern. The spinner used to stay up and hide the children.",
+      link: "/docs/row-grouping",
+    },
+  ],
+};
+
 export const v4_2_9: ChangelogEntry = {
   version: "4.2.9",
   date: "2026-09-12",
@@ -2913,6 +2929,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_3_0,
   v4_2_9,
   v4_2_8,
   v4_2_7,
