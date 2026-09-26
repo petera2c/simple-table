@@ -165,7 +165,7 @@ export default function HomeContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.05 }}
             >
-              An objectively better way to show data
+              A better way to show data
             </motion.h1>
 
             <motion.p
@@ -317,7 +317,7 @@ export default function HomeContent() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.05 }}
                 >
-                  An objectively better way to show data
+                  A better way to show data
                 </motion.h1>
 
                 <div className="flex flex-col gap-3 2xl:gap-4 mb-10 2xl:mb-14 max-w-md 2xl:max-w-lg">
