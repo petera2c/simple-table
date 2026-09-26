@@ -168,15 +168,17 @@ export default function HomeContent() {
               A better way to show data
             </motion.h1>
 
-            <motion.p
-              className="text-lg md:text-xl text-muted mb-8 max-w-3xl mx-auto"
+            <motion.ul
+              className="text-lg md:text-xl text-muted mb-8 max-w-3xl mx-auto pl-4"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.1 }}
             >
-              A lightweight data grid. Flat pricing (not per developer), backed by real-person
-              support. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.
-            </motion.p>
+              <li className="list-disc text-left">Lightweight</li>
+              <li className="list-disc text-left">Flat pricing (not per developer)</li>
+              <li className="list-disc text-left">Real-person support</li>
+              <li className="list-disc text-left">Multi framework support React, Angular, Vue, Svelte, Solid, and vanilla JS.</li>
+            </motion.ul>
 
             <motion.div
               className="flex flex-col sm:flex-row justify-center gap-4"
@@ -321,15 +323,17 @@ export default function HomeContent() {
                 </motion.h1>
 
                 <div className="flex flex-col gap-3 2xl:gap-4 mb-10 2xl:mb-14 max-w-md 2xl:max-w-lg">
-                  <motion.p
-                    className="text-base 2xl:text-lg text-muted leading-[1.65] 2xl:leading-[1.7]"
+                  <motion.ul
+                    className="text-base 2xl:text-lg text-muted leading-[1.65] 2xl:leading-[1.7] pl-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.4, delay: 0.1 }}
                   >
-                    A lightweight data grid. Flat pricing (not per developer), backed by real-person
-                    support. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.
-                  </motion.p>
+                      <li className="list-disc">Lightweight</li>
+                      <li className="list-disc">Flat pricing (not per developer)</li>
+                      <li className="list-disc">Real-person support</li>
+                      <li className="list-disc">Multi framework support React, Angular, Vue, Svelte, Solid, and vanilla JS.</li>
+                  </motion.ul>
                 </div>
 
                 <motion.div
