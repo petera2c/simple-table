@@ -1,0 +1,61 @@
+<template>
+  <div>
+    <div style="margin-bottom: 12px">
+      <button
+        @click="addColumn"
+        style="background-color: #007bff; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 13px;"
+      >
+        + Add Column
+      </button>
+      <span v-if="lastAdded" style="margin-left: 12px; color: #64748b; font-size: 13px;">
+        Added: {{ lastAdded }}
+      </span>
+    </div>
+    <SimpleTable
+      :columns="headers"
+      :rows="columnEditingData"
+      :get-row-id="getRowId"
+      :height="height"
+      :theme="theme"
+      :enable-header-editing="true"
+      :selectable-columns="true"
+      :on-header-edit="handleHeaderEdit"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import { SimpleTable } from "@simple-table/vue";
+import type { Theme, VueColumnDef, GetRowIdParams } from "@simple-table/vue";
+import { columnEditingData, columnEditingHeaders } from "./column-editing.demo-data";
+import type { ColumnEditingEmployee } from "./column-editing.demo-data";
+import "@simple-table/vue/styles.css";
+
+withDefaults(defineProps<{ height?: string | number; theme?: Theme }>(), {
+  height: "400px",
+});
+
+const additionalColumns = ref<VueColumnDef<ColumnEditingEmployee>[]>([]);
+const lastAdded = ref("");
+
+const headers = computed(() => [...columnEditingHeaders, ...additionalColumns.value]);
+
+const getRowId = ({ row }: GetRowIdParams<ColumnEditingEmployee>) => row.id;
+
+function addColumn() {
+  const n = additionalColumns.value.length + 1;
+  const col: VueColumnDef<ColumnEditingEmployee> = {
+    accessor: `custom-${n}`,
+    label: `Custom ${n}`,
+    width: 120,
+    type: "string",
+  };
+  additionalColumns.value = [...additionalColumns.value, col];
+  lastAdded.value = col.label;
+}
+
+function handleHeaderEdit(_header: VueColumnDef<ColumnEditingEmployee>, newLabel: string) {
+  lastAdded.value = `Renamed to: ${newLabel}`;
+}
+</script>
