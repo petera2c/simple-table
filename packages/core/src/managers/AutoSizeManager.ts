@@ -24,11 +24,17 @@ export interface AutoSizeMeasureContext {
  * Content-fit column sizing (`width: "auto"`). Distinct from AutoScaleManager,
  * which stretches already-measured natural widths to fill surplus container space.
  */
+const MAX_UNSETTLED_PASSES = 4;
+
 export class AutoSizeManager {
   private autoSizeAccessors: Set<Accessor> = new Set();
   private pendingAutoSize: Set<Accessor> = new Set();
   private naturalWidths: Map<string, number> = new Map();
   private isAutoSizing: boolean = false;
+  private unsettledPasses = 0;
+  private parkedHosts = new Map<string, HTMLElement[]>();
+  private sandbox: HTMLDivElement | null = null;
+  private hostDiscard?: (host: HTMLElement) => void;
 
   getAccessors(): Set<Accessor> {
     return this.autoSizeAccessors;
@@ -45,10 +51,36 @@ export class AutoSizeManager {
   recomputeAccessors(headers: ColumnDef[], collapsedHeaders: Set<Accessor>): void {
     this.autoSizeAccessors = computeAutoSizeAccessors(headers, collapsedHeaders);
     this.pendingAutoSize = new Set(this.autoSizeAccessors);
+    this.unsettledPasses = 0;
+    this.discardAllParked();
   }
 
   queuePendingFromAccessors(): void {
     this.autoSizeAccessors.forEach((accessor) => this.pendingAutoSize.add(accessor));
+    this.unsettledPasses = 0;
+  }
+
+  /** Drop parked renderer samples so the next measure reads the current rows. */
+  discardParkedSamples(): void {
+    this.discardAllParked();
+  }
+
+  /**
+   * A drag chose this column's width. Later content re-measures skip it until
+   * the column definitions are applied again.
+   */
+  releaseAccessors(accessors: Iterable<Accessor>): void {
+    for (const accessor of accessors) {
+      this.autoSizeAccessors.delete(accessor);
+      this.pendingAutoSize.delete(accessor);
+      this.discardParked(String(accessor));
+    }
+  }
+
+  dispose(): void {
+    this.discardAllParked();
+    this.sandbox?.remove();
+    this.sandbox = null;
   }
 
   clearNaturalWidths(): void {
@@ -109,15 +141,19 @@ export class AutoSizeManager {
     if (!ready) return null;
 
     this.isAutoSizing = true;
+    this.hostDiscard = ctx.onRendererHostDiscard;
     try {
       const leaves = getAllVisibleLeafHeaders(ctx.headers, ctx.collapsedHeaders);
       const leafByAccessor = new Map(leaves.map((leaf) => [leaf.accessor, leaf]));
 
       const widths = new Map<Accessor, number>();
+      const unsettled = new Set<Accessor>();
+      const forceSettle = this.unsettledPasses >= MAX_UNSETTLED_PASSES;
       for (const accessor of this.pendingAutoSize) {
         const leaf = leafByAccessor.get(accessor);
         if (!leaf) continue;
-        const { width } = calculateHeaderContentWidth(accessor, {
+        const key = String(accessor);
+        const { width, settled } = calculateHeaderContentWidth(accessor, {
           rows: ctx.rows,
           header: leaf,
           styleRoot,
@@ -127,11 +163,32 @@ export class AutoSizeManager {
           filterIcon: ctx.icons.filter,
           expandIcon: ctx.icons.expand,
           onRendererHostDiscard: ctx.onRendererHostDiscard,
+          parkedHosts: this.parkedHosts.get(key),
+          parkAsyncHost: (host) => this.parkHost(key, host),
+          discardParkedHosts: () => this.discardParked(key, ctx.onRendererHostDiscard),
+          forceSettle,
         });
+        if (!settled) {
+          unsettled.add(accessor);
+          continue;
+        }
         widths.set(accessor, width);
       }
 
       this.pendingAutoSize.clear();
+      if (unsettled.size > 0) {
+        this.unsettledPasses += 1;
+        if (this.unsettledPasses <= MAX_UNSETTLED_PASSES) {
+          unsettled.forEach((accessor) => this.pendingAutoSize.add(accessor));
+        } else {
+          this.unsettledPasses = 0;
+          unsettled.forEach((accessor) =>
+            this.discardParked(String(accessor), ctx.onRendererHostDiscard),
+          );
+        }
+      } else {
+        this.unsettledPasses = 0;
+      }
       if (widths.size === 0) return null;
 
       let changed = false;
@@ -152,6 +209,45 @@ export class AutoSizeManager {
     } finally {
       this.isAutoSizing = false;
     }
+  }
+
+  private ensureSandbox(): HTMLDivElement {
+    if (this.sandbox?.isConnected) return this.sandbox;
+    const sandbox = document.createElement("div");
+    sandbox.setAttribute("data-st-autosize-sandbox", "");
+    sandbox.style.position = "absolute";
+    sandbox.style.left = "-99999px";
+    sandbox.style.top = "0";
+    sandbox.style.visibility = "hidden";
+    sandbox.style.pointerEvents = "none";
+    document.body.appendChild(sandbox);
+    this.sandbox = sandbox;
+    return sandbox;
+  }
+
+  private parkHost(accessor: string, host: HTMLElement): void {
+    this.ensureSandbox().appendChild(host);
+    const list = this.parkedHosts.get(accessor) ?? [];
+    list.push(host);
+    this.parkedHosts.set(accessor, list);
+  }
+
+  private discardParked(
+    accessor: string,
+    onDiscard?: (host: HTMLElement) => void,
+  ): void {
+    const list = this.parkedHosts.get(accessor);
+    if (!list) return;
+    const discard = onDiscard ?? this.hostDiscard;
+    for (const host of list) {
+      discard?.(host);
+      host.remove();
+    }
+    this.parkedHosts.delete(accessor);
+  }
+
+  private discardAllParked(): void {
+    this.parkedHosts.forEach((_hosts, accessor) => this.discardParked(accessor));
   }
 }
 

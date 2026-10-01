@@ -11,6 +11,34 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_3_1: ChangelogEntry = {
+  version: "4.3.1",
+  date: "2026-09-30",
+  title: "Auto width for custom cells",
+  description:
+    "Columns that size themselves to the content now do that for custom cells too, and a width you drag stays put.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "A column with width \"auto\" and a custom cell now matches a plain column with the same text. Hiding and showing it, changing page, adding rows, or finishing loading used to leave it at the header width.",
+      link: "/docs/column-width#content-fit-auto",
+    },
+    {
+      type: "bugfix",
+      description:
+        "Dragging an auto-width column wider now keeps that width when you change page.",
+      link: "/docs/column-width#content-fit-auto",
+    },
+    {
+      type: "feature",
+      description:
+        "refitAutoSizeColumns() on the table API measures auto columns again after your own cells have painted.",
+      link: "/docs/programmatic-control",
+    },
+  ],
+};
+
 export const v4_3_0: ChangelogEntry = {
   version: "4.3.0",
   date: "2026-09-26",
@@ -2929,6 +2957,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_3_1,
   v4_3_0,
   v4_2_9,
   v4_2_8,

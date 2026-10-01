@@ -490,6 +490,10 @@ export class TableAPIImpl {
         return context.getPivotedRows();
       },
 
+      refitAutoSizeColumns: () => {
+        context.refitAutoSizeColumns();
+      },
+
       toggleColumnEditor: (open?: boolean) => {
         if (!context.config.enableColumnEditor) return;
         context.setColumnEditorOpen(open !== undefined ? open : !context.columnEditorOpen);

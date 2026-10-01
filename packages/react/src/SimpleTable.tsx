@@ -168,32 +168,15 @@ function SimpleTableInner<TData extends ReactDefaultRowData = ReactDefaultRowDat
   }, [reactProps]);
 
   const portals = useTablePortals(bridge);
-  const hasPortals = Array.isArray(portals) && portals.length > 0;
 
-  // Re-fit auto columns from real portal DOM once — not on every portals
-  // array identity change (that re-enters measure/render and loops easily).
-  // A second pass runs only when leaving `isLoading`, when skeleton cells
-  // are replaced by real renderer output.
-  const didInitialAutoSizeRef = useRef(false);
-  const wasLoadingRef = useRef(Boolean(reactProps.isLoading));
+  // Measure renderer columns that are still waiting once their portal output
+  // is in the DOM. Settled columns are not waiting, so later portal updates
+  // do not measure them again.
   useLayoutEffect(() => {
     const instance = instanceRef.current;
-    if (!instance) return;
-
-    const isLoading = Boolean(reactProps.isLoading);
-    const leftLoading = wasLoadingRef.current && !isLoading;
-    wasLoadingRef.current = isLoading;
-
-    if (leftLoading) {
-      instance.refitAutoSizeColumns?.();
-      return;
-    }
-
-    if (!didInitialAutoSizeRef.current && hasPortals) {
-      didInitialAutoSizeRef.current = true;
-      instance.refitAutoSizeColumns?.();
-    }
-  }, [hasPortals, reactProps.isLoading]);
+    if (!instance?.hasPendingAutoSize?.()) return;
+    instance.retryPendingAutoSize?.();
+  }, [portals, reactProps.isLoading]);
 
   return (
     <>

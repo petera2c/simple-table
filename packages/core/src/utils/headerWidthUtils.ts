@@ -609,6 +609,12 @@ const measureHeaderIconWidth = (
   return width + AUTO_SIZE_HEADER_ICON_PADDING;
 };
 
+/** True when an async renderer host has something other than an empty shell. */
+const rendererHostHasContent = (el: HTMLElement): boolean => {
+  if (el.querySelector(".st-loading-skeleton")) return false;
+  return (el.textContent ?? "").trim().length > 0;
+};
+
 const headerContainsAriaLabelPrefix = (
   headerCell: HTMLElement | null,
   prefix: string,
@@ -625,9 +631,9 @@ const headerContainsAriaLabelPrefix = (
  *   measurable yet (async portal / loading skeleton), `settled` is false and
  *   the width is provisional (header / minWidth only — never `valueFormatter`
  *   or plain `label` as a stand-in for renderer output). Callers should apply
- *   that provisional width once and re-measure later via an explicit refit
- *   (rows / isLoading / `refitAutoSizeColumns`) — not by leaving the column
- *   pending across every render.
+ *   that provisional width is not applied. The column stays pending until a later
+ *   pass can measure the renderer output (painted cells, or hosts parked from
+ *   an earlier sample).
  */
 export const calculateHeaderContentWidth = (
   accessor: Accessor,
@@ -674,6 +680,17 @@ export const calculateHeaderContentWidth = (
      * without this, autofit sampling leaks those registrations.
      */
     onRendererHostDiscard?: (host: HTMLElement) => void;
+    /**
+     * Hosts produced by an earlier sample of an async renderer. When present,
+     * they are measured instead of calling `cellRenderer` again.
+     */
+    parkedHosts?: HTMLElement[];
+    /** Keep an async renderer host mounted so a later pass can measure it. */
+    parkAsyncHost?: (host: HTMLElement) => void;
+    /** Drop parked hosts after their content has been measured. */
+    discardParkedHosts?: () => void;
+    /** Measure whatever is available and stop waiting for renderer output. */
+    forceSettle?: boolean;
   },
 ): { width: number; settled: boolean } => {
   const {
@@ -692,6 +709,10 @@ export const calculateHeaderContentWidth = (
     filterIcon,
     expandIcon,
     onRendererHostDiscard,
+    parkedHosts,
+    parkAsyncHost,
+    discardParkedHosts,
+    forceSettle = false,
   } = options || {};
   const headSize = headSampleSize ?? sampleSize ?? AUTO_SIZE_HEAD_SAMPLE_SIZE;
   const stridedSize =
@@ -926,13 +947,37 @@ export const calculateHeaderContentWidth = (
     };
 
     const sampleIndices = buildHybridSampleIndices(rows.length, headSize, stridedSize);
-    // Once a framework adapter returns an async portal/mount host, further
-    // cellRenderer calls only thrash the bridge (content is never measurable
-    // off-screen). Skip them and use painted cells instead.
+    // Async renderer hosts measure as empty until the framework paints them.
+    // The first pass keeps those hosts; the next pass measures them. Painted
+    // cells alone miss sampled rows that are outside the viewport.
     let skipAsyncCellRenderer = false;
     let sawMeasurableRendererContent = false;
+    let waitingOnAsyncHosts = false;
+    let skipSampling = false;
+
+    const parked = header?.cellRenderer ? (parkedHosts ?? []) : [];
+    if (parked.length > 0) {
+      const ready = parked.filter(rendererHostHasContent);
+      if (ready.length === 0 && !forceSettle) {
+        waitingOnAsyncHosts = true;
+        cellRendererSettled = false;
+      } else {
+        for (const el of parked) {
+          if (!rendererHostHasContent(el)) continue;
+          const naturalWidth = measureCellContentClone(el, domQueryRoot);
+          if (naturalWidth > 0) {
+            sampleWidths.push(naturalWidth + cellPaddingLeft + cellPaddingRight);
+            sawMeasurableRendererContent = true;
+          }
+        }
+        discardParkedHosts?.();
+        cellRendererSettled = true;
+      }
+      skipSampling = true;
+    }
 
     for (const i of sampleIndices) {
+      if (skipSampling || (skipAsyncCellRenderer && header?.cellRenderer)) break;
       const row = rows[i];
 
       // Resolve the raw value (valueGetter or nested accessor)
@@ -986,14 +1031,18 @@ export const calculateHeaderContentWidth = (
                 !!rendered.querySelector?.("[data-st-portal-id], [data-st-mount-id]"));
 
             // Framework adapters register portals/mounts synchronously but fill
-            // content asynchronously — off-screen measure is ~0. Dispose the
-            // registration immediately so autofit sampling cannot leak entries
-            // into the host bridge, then wait for painted cells.
+            // content asynchronously. Keep every sampled host for the next
+            // pass. Without a park callback, drop the host and use painted cells.
             if (isAsyncRendererHost) {
-              if (rendered instanceof HTMLElement) {
-                onRendererHostDiscard?.(rendered);
+              if (parkAsyncHost && rendered instanceof HTMLElement) {
+                parkAsyncHost(rendered);
+                waitingOnAsyncHosts = true;
+              } else {
+                if (rendered instanceof HTMLElement) {
+                  onRendererHostDiscard?.(rendered);
+                }
+                skipAsyncCellRenderer = true;
               }
-              skipAsyncCellRenderer = true;
               measured = -1;
             } else {
               tempDiv.textContent = "";
@@ -1041,7 +1090,9 @@ export const calculateHeaderContentWidth = (
     // deterministic off-screen pass; folding in DOM-dependent samples for them
     // would make the width vary with which rows happen to be rendered
     // (i.e. with the container size).
-    if (header?.cellRenderer) {
+    if (waitingOnAsyncHosts && !forceSettle) {
+      cellRendererSettled = false;
+    } else if (header?.cellRenderer && !cellRendererSettled) {
       const renderedCells = queryAllInTable(
         domQueryRoot,
         `.st-cell[data-accessor="${escapeTableAttrValue(String(accessor))}"] .st-cell-content`,

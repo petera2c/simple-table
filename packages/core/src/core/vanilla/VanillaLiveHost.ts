@@ -104,6 +104,7 @@ export interface VanillaLiveHost {
   getEffectiveRowGrouping(): Accessor[] | undefined;
   applyPivot(pivot: PivotConfig | null): void;
   onRender(source: string): void;
+  refitAutoSizeColumns(): void;
   isCellAnimating(cellId: string): boolean;
   hasAnimatingCells(): boolean;
   runWithoutAnimationSnapshot(fn: () => void): void;

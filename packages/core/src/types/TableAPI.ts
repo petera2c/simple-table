@@ -90,4 +90,9 @@ export type TableAPI<TData extends RowData = Row> = {
    * that are not part of consumer `TData`.
    */
   getPivotedRows: () => Row[];
+  /**
+   * Measure `width: "auto"` columns again. Call this after custom cell content
+   * has painted if a column is still waiting on its renderer.
+   */
+  refitAutoSizeColumns: () => void;
 };

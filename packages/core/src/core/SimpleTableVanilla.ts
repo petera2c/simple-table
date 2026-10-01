@@ -567,6 +567,9 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       icons: this.resolvedIcons,
       onRendererHostDiscard: this.config.onRendererHostDiscard,
     });
+    if (this.autoSizeManager.hasPending()) {
+      this.scheduleAutoSizeRetry();
+    }
     if (!nextHeaders) return;
 
     this.headers = nextHeaders;
@@ -585,6 +588,28 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
     }
 
     this.config.onColumnWidthChange?.(this.headers);
+  }
+
+  private autoSizeRetryHandle: number | null = null;
+
+  /** Measure again on the next frame when renderer output was not ready. */
+  private scheduleAutoSizeRetry(): void {
+    if (this.autoSizeRetryHandle != null) return;
+    this.autoSizeRetryHandle = requestAnimationFrame(() => {
+      this.autoSizeRetryHandle = null;
+      if (!this.mounted || !this.autoSizeManager.hasPending()) return;
+      this.render("auto-size-retry");
+    });
+  }
+
+  public hasPendingAutoSize(): boolean {
+    return this.autoSizeManager.hasPending();
+  }
+
+  /** Re-measure columns that are still waiting on renderer output. */
+  public retryPendingAutoSize(): void {
+    if (!this.mounted || !this.autoSizeManager.hasPending()) return;
+    this.render("auto-size-retry");
   }
 
   public refitAutoSizeColumns(): void {
@@ -675,6 +700,11 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
   }
 
   destroy(): void {
+    if (this.autoSizeRetryHandle != null) {
+      cancelAnimationFrame(this.autoSizeRetryHandle);
+      this.autoSizeRetryHandle = null;
+    }
+    this.autoSizeManager.dispose();
     this.mounted = false;
     this.firstRenderDone = false;
     this.liveHost = null;
@@ -755,6 +785,15 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       },
       getCurrentPage: () => this.currentPage,
       setCurrentPage: (page) => {
+        if (
+          page !== this.currentPage &&
+          this.config.enablePagination &&
+          !this.config.serverSidePagination &&
+          this.autoSizeManager.getAccessors().size > 0
+        ) {
+          this.autoSizeManager.discardParkedSamples();
+          this.autoSizeManager.queuePendingFromAccessors();
+        }
         this.currentPage = page;
       },
       getFirstRenderDone: () => this.firstRenderDone,
@@ -834,6 +873,7 @@ export class SimpleTableVanilla<TData extends RowData = Row> {
       getEffectiveRowGrouping: () => this.getEffectiveRowGrouping(),
       applyPivot: (pivot) => this.applyPivot(pivot),
       onRender: (source) => this.render(source),
+      refitAutoSizeColumns: () => this.refitAutoSizeColumns(),
       isCellAnimating: (cellId) => this.animationCoordinator.isInFlight(cellId),
       hasAnimatingCells: () => this.animationCoordinator.hasInFlight(),
       runWithoutAnimationSnapshot: (fn) => {

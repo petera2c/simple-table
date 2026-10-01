@@ -67,6 +67,7 @@ export const createVanillaRenderContext = (
           host.getPristineDefaultHeaders(),
         ),
     onAutoExpandNaturalWidths: (widths) => host.getAutoSizeManager().recordNaturalWidths(widths),
+    onUserColumnResize: (accessors) => host.getAutoSizeManager().releaseAccessors(accessors),
     setIsResizing: (value) => {
       host.setIsResizing(value);
       const autoScaleManager = host.getAutoScaleManager();
@@ -113,13 +114,6 @@ export const createVanillaRenderContext = (
     getRowStateMap: () => host.getRowStateMap(),
     setColumnEditorOpen: (open) => host.setColumnEditorOpen(open),
     setCurrentPage: (page) => {
-      if (
-        page !== host.getCurrentPage() &&
-        host.getConfig().enablePagination &&
-        !host.getConfig().serverSidePagination
-      ) {
-        host.getAutoSizeManager().queuePendingFromAccessors();
-      }
       host.setCurrentPage(page);
     },
   });

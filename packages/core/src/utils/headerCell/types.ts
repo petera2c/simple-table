@@ -43,6 +43,8 @@ export interface HeaderRenderContext {
   getShrinkFloors?: () => Map<string, number>;
   /** Persist user-set widths (drag / double-click auto-fit) as natural widths. */
   onAutoExpandNaturalWidths?: (widths: Map<string, number>) => void;
+  /** Drag finished. Those columns keep the widths the pointer left them at. */
+  onUserColumnResize?: (accessors: Accessor[]) => void;
   handleApplyFilter: (filter: FilterCondition) => void;
   handleClearFilter: (accessor: Accessor) => void;
   handleSelectAll?: (checked: boolean) => void;

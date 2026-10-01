@@ -54,6 +54,7 @@ export const buildHeaderCellContext = (
     autoExpandColumns: deps.config.autoExpandColumns ?? false,
     getShrinkFloors: deps.getShrinkFloors,
     onAutoExpandNaturalWidths: deps.onAutoExpandNaturalWidths,
+    onUserColumnResize: deps.onUserColumnResize,
     essentialAccessors: deps.essentialAccessors,
     selectableColumns: deps.config.selectableColumns,
     headers: deps.effectiveHeaders,

@@ -93,6 +93,10 @@ export interface TableInstance {
   getAPI(): TableAPI;
   /** Re-measure auto-size columns (used after async React renderers mount). */
   refitAutoSizeColumns?(): void;
+  /** True while a custom renderer column is still waiting to be measured. */
+  hasPendingAutoSize?(): boolean;
+  /** Measure columns that are still waiting on renderer output. */
+  retryPendingAutoSize?(): void;
 }
 
 // ─── Icon overrides ──────────────────────────────────────────────────────────
