@@ -179,6 +179,7 @@ const CellRendererDemo = ({
       rows={cellRendererConfig.rows}
       height={height}
       theme={theme}
+      columnResizing
       selectableCells={cellRendererConfig.tableProps.selectableCells}
       customTheme={cellRendererConfig.tableProps.customTheme}
     />

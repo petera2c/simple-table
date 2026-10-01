@@ -52,6 +52,7 @@ export interface TableAPIContextHost {
   getPivot(): PivotConfig | null;
   getPivotHeaders(): ColumnDef[];
   getPivotedRows(): Row[];
+  refitAutoSizeColumns(): void;
   onRender(): void;
   invalidateRowsCache(): void;
   runWithoutAnimationSnapshot(fn: () => void): void;
@@ -129,6 +130,7 @@ export const buildTableAPIContext = (host: TableAPIContextHost): TableAPIContext
   getPivot: () => host.getPivot(),
   getPivotHeaders: () => host.getPivotHeaders(),
   getPivotedRows: () => host.getPivotedRows(),
+  refitAutoSizeColumns: () => host.refitAutoSizeColumns(),
   onRender: () => host.onRender(),
   invalidateRowsCache: () => host.invalidateRowsCache(),
   runWithoutAnimationSnapshot: (fn: () => void) => host.runWithoutAnimationSnapshot(fn),

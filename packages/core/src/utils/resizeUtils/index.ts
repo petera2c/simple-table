@@ -98,6 +98,7 @@ export const handleResizeStart = ({
   mainBodyRef,
   onColumnWidthChange,
   onAutoExpandNaturalWidths,
+  onUserColumnResize,
   reverse = false,
   setHeaders,
   setIsResizing,
@@ -374,6 +375,7 @@ export const handleResizeStart = ({
       handleMove(lastClientX, true); // true = update React state
 
       setIsResizing(false);
+      onUserColumnResize?.(childrenToResize.map((h) => h.accessor));
 
       // Notify consumer of width change
       if (onColumnWidthChange) {
@@ -402,6 +404,7 @@ export const handleResizeStart = ({
       handleMove(lastClientX, true); // true = update React state
 
       setIsResizing(false);
+      onUserColumnResize?.(childrenToResize.map((h) => h.accessor));
 
       // Notify consumer of width change
       if (onColumnWidthChange) {

@@ -41,6 +41,7 @@ export const toTableAPIContextHost = (host: VanillaLiveHost): TableAPIContextHos
     if (state?.active) return state.headers;
     return host.getHeaders();
   },
+  refitAutoSizeColumns: () => host.refitAutoSizeColumns(),
   getPivotedRows: () => {
     const state = host.getPivotManager()?.getState();
     if (state?.active) return state.pivotedRows;

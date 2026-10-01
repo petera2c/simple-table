@@ -863,6 +863,7 @@ export class RenderOrchestrator {
       onRender: context.onRender,
       getShrinkFloors: context.getShrinkFloors,
       onAutoExpandNaturalWidths: context.onAutoExpandNaturalWidths,
+      onUserColumnResize: context.onUserColumnResize,
       setIsResizing: context.setIsResizing,
       setHeaders: context.setHeaders,
       setCollapsedHeaders: context.setCollapsedHeaders,

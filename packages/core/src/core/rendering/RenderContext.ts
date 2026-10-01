@@ -66,6 +66,8 @@ export interface RenderContext {
   getShrinkFloors?: () => Map<string, number>;
   /** Persist user-set widths (drag / double-click auto-fit) as natural widths. */
   onAutoExpandNaturalWidths?: (widths: Map<string, number>) => void;
+  /** Drag finished. Those columns keep the widths the pointer left them at. */
+  onUserColumnResize?: (accessors: Accessor[]) => void;
   pinnedLeftHeaderRef: { current: HTMLDivElement | null };
   pinnedLeftRef: { current: HTMLDivElement | null };
   pinnedRightHeaderRef: { current: HTMLDivElement | null };

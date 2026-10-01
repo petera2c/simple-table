@@ -16,6 +16,8 @@ export type HandleResizeStartProps = {
   onColumnWidthChange?: (headers: ColumnDef[]) => void;
   /** Persist the dragged column(s)' final widths as their natural widths (autoExpandColumns). */
   onAutoExpandNaturalWidths?: (widths: Map<string, number>) => void;
+  /** Drag finished. The columns keep the widths the pointer left them at. */
+  onUserColumnResize?: (accessors: Accessor[]) => void;
   pinnedLeftRef: RefObject<HTMLDivElement>;
   pinnedRightRef: RefObject<HTMLDivElement>;
   reverse: boolean;

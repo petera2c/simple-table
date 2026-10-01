@@ -14,6 +14,7 @@ export default defineConfig({
     globals: true,
     include: [
       "src/__tests__/**/*.{test,spec}.{ts,tsx}",
+      "../core/src/__tests__/autoSizeCellRenderer.test.ts",
       "../core/src/__tests__/autoExpandResizePinned.test.ts",
       "../core/src/__tests__/columnOwnership.test.ts",
       "../core/src/__tests__/headerCellReuse.test.ts",

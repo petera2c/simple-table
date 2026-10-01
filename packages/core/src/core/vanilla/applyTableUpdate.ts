@@ -50,6 +50,7 @@ export const applyTableUpdate = <TData extends RowData = Row>(
       filterManager.updateConfig({ rows: host.getLocalRows() });
     }
     host.syncPivotPipeline(filterManager?.getFilteredRows() ?? host.getLocalRows());
+    host.getAutoSizeManager().discardParkedSamples();
     host.getAutoSizeManager().queuePendingFromAccessors();
   }
 
@@ -97,6 +98,7 @@ export const applyTableUpdate = <TData extends RowData = Row>(
     const wasLoading = host.getInternalIsLoading();
     host.setInternalIsLoading(config.isLoading);
     if (wasLoading && !config.isLoading && host.getAutoSizeManager().getAccessors().size > 0) {
+      host.getAutoSizeManager().discardParkedSamples();
       host.getAutoSizeManager().queuePendingFromAccessors();
     }
   }

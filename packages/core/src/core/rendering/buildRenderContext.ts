@@ -59,6 +59,7 @@ export interface RenderContextSource {
   onRender: () => void;
   getShrinkFloors: () => Map<string, number>;
   onAutoExpandNaturalWidths: (widths: Map<string, number>) => void;
+  onUserColumnResize?: (accessors: Accessor[]) => void;
   setIsResizing: (value: boolean) => void;
   setHeaders: (headers: ColumnDef[]) => void;
   setCollapsedHeaders: (headers: Set<Accessor>) => void;
@@ -127,6 +128,7 @@ export const buildRenderContext = (source: RenderContextSource): RenderContext =
   onRender: source.onRender,
   getShrinkFloors: source.getShrinkFloors,
   onAutoExpandNaturalWidths: source.onAutoExpandNaturalWidths,
+  onUserColumnResize: source.onUserColumnResize,
   setIsResizing: source.setIsResizing,
   setHeaders: source.setHeaders,
   setCollapsedHeaders: source.setCollapsedHeaders,

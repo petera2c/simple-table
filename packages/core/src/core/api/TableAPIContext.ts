@@ -70,4 +70,5 @@ export interface TableAPIContext {
   getPivot: () => PivotConfig | null;
   getPivotHeaders: () => ColumnDef[];
   getPivotedRows: () => Row[];
+  refitAutoSizeColumns: () => void;
 }
