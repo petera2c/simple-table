@@ -1,0 +1,69 @@
+import { NgIf } from "@angular/common";
+import { Component, Input, OnInit } from "@angular/core";
+import { SimpleTableImports } from "@simple-table/angular";
+import type { AngularColumnDef, GetRowIdParams, Theme } from "@simple-table/angular";
+import { columnResizingHeaders, columnResizingData, COLUMN_RESIZING_STORAGE_KEY } from "./column-resizing.demo-data";
+import "@simple-table/angular/styles.css";
+import type { OceanStaff } from "./column-resizing.demo-data";
+
+@Component({
+  selector: "column-resizing-demo",
+  standalone: true,
+  imports: [SimpleTableImports, NgIf],
+  template: `
+    <div style="position: relative; height: 100%">
+      <div
+        *ngIf="saveMessage"
+        style="position: absolute; top: 8px; right: 8px; background: #10b981; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.15);"
+      >
+        {{ saveMessage }}
+      </div>
+      <simple-table
+      [getRowId]="getRowId"
+        [columnResizing]="true"
+        [rows]="rows"
+        [columns]="headers"
+        [height]="height"
+        [theme]="theme"
+        (columnWidthChange)="handleColumnWidthChange($event)"
+      ></simple-table>
+    </div>
+  `,
+})
+export class ColumnResizingDemoComponent implements OnInit {
+  @Input() height: string | number = "400px";
+  @Input() theme?: Theme;
+
+  readonly rows: OceanStaff[] = columnResizingData;
+  headers: AngularColumnDef<OceanStaff>[] = [...columnResizingHeaders];
+  saveMessage = "";
+
+  handleColumnWidthChange = (updatedHeaders: AngularColumnDef<OceanStaff>[]) => {
+    try {
+      const widthMap: Record<string, unknown> = {};
+      for (const h of updatedHeaders) widthMap[h.accessor] = h.width;
+      localStorage.setItem(COLUMN_RESIZING_STORAGE_KEY, JSON.stringify(widthMap));
+      this.headers = updatedHeaders;
+      this.saveMessage = "Column widths saved!";
+      setTimeout(() => { this.saveMessage = ""; }, 2000);
+    } catch {
+      this.saveMessage = "Failed to save widths";
+      setTimeout(() => { this.saveMessage = ""; }, 2000);
+    }
+  };
+
+  ngOnInit() {
+    try {
+      const saved = localStorage.getItem(COLUMN_RESIZING_STORAGE_KEY);
+      if (saved) {
+        const widthMap = JSON.parse(saved) as Record<string, number | string | undefined>;
+        this.headers = columnResizingHeaders.map((h) => ({
+          ...h,
+          width: widthMap[h.accessor] ?? h.width,
+        }));
+      }
+    } catch { /* ignore */ }
+  }
+
+  getRowId = ({ row }: GetRowIdParams<OceanStaff>) => row.id;
+}

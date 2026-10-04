@@ -1,0 +1,17 @@
+import {SimpleTable} from "@simple-table/solid";import type { Theme } from "@simple-table/solid";
+import { singleRowChildrenConfig } from "./single-row-children.demo-data";
+import "@simple-table/solid/styles.css";
+
+export default function SingleRowChildrenDemo(props: { height?: string | number; theme?: Theme }) {
+  return (
+    <SimpleTable
+      columns={singleRowChildrenConfig.headers}
+      getRowId={({ row }) => row.id}
+      rows={singleRowChildrenConfig.rows}
+      columnResizing={singleRowChildrenConfig.tableProps.columnResizing}
+      selectableCells={singleRowChildrenConfig.tableProps.selectableCells}
+      height={props.height ?? "400px"}
+      theme={props.theme}
+    />
+  );
+}
