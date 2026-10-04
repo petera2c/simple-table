@@ -43,7 +43,7 @@ const PLAN_CAPACITY_NOTE = "MIT license. Unlimited products and users.";
 const PLANS: Plan[] = [
   {
     name: "FREE",
-    subtitle: "Anyone, including companies",
+    subtitle: "Free to use",
     price: SIMPLE_TABLE_PRICING.freeDisplay,
     billingCycle: "forever",
     description: "The full library. Free to use in any product.",
@@ -53,7 +53,8 @@ const PLANS: Plan[] = [
       { text: "Community Discord support", included: true, highlight: true },
     ],
     cta: "Install free",
-    ctaVariant: "default",
+    ctaVariant: "primary",
+    recommended: true,
   },
   {
     name: "PRO",
@@ -65,8 +66,7 @@ const PLANS: Plan[] = [
       { text: "Support", included: true, highlight: true },
     ],
     cta: "Start Pro",
-    ctaVariant: "primary",
-    recommended: true,
+    ctaVariant: "default",
   },
   {
     name: "ENTERPRISE",

@@ -3,10 +3,10 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "MIT License | Simple Table",
   description:
-    "Simple Table is MIT licensed. Anyone can use, modify, and distribute it, including companies. Paid plans are for support, not for permission to use the library.",
+    "Simple Table is MIT licensed. Anyone can use, modify, and distribute it. Paid plans are for support, not for permission to use the library.",
   openGraph: {
     title: "MIT License | Simple Table",
-    description: "Simple Table is MIT licensed and free to use, including at companies that make money.",
+    description: "Simple Table is MIT licensed and free to use.",
   },
 };
 
@@ -24,7 +24,7 @@ export default function LicensePage() {
               </h2>
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 Simple Table is distributed under the <strong>MIT License</strong>. Anyone can use
-                it, including a company that makes money. You do not need to buy a license. Paid
+                it. You do not need to buy a license. Paid
                 plans on the{" "}
                 <a href="/pricing" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
                   pricing page
@@ -54,7 +54,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
               <ul className="space-y-2 text-gray-700 dark:text-gray-300">
                 <li className="flex items-start">
                   <span className="text-green-500 mr-2">✓</span>
-                  <span>Use it in any product, including at a company that makes money</span>
+                  <span>Use it in any product</span>
                 </li>
                 <li className="flex items-start">
                   <span className="text-green-500 mr-2">✓</span>

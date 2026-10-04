@@ -51,7 +51,7 @@ export default function SvelteKitDataTablePillarPage() {
       introHeading="The Svelte / SvelteKit data table landscape in 2026"
       introParagraphs={[
         "Svelte and SvelteKit teams ship admin tools, dashboards, and SaaS UIs that need real data tables—not just basic <table> tags. The choices today are limited: svelte-headless-table is great for headless logic but hands you no UI; SVAR DataGrid is a polished commercial option; Flowbite-Svelte and Skeleton ship table primitives without virtualization or grouping. There's no obvious 'free, batteries-included, virtualized, editable' Svelte data grid.",
-        "Simple Table for Svelte fills that gap. A single Svelte component drops into Svelte 4, Svelte 5 (runes), and SvelteKit projects with full sorting, filtering, virtualization, column pinning, row grouping, nested headers, cell editing, and theming—free for everyone, including companies under the MIT license. It's powered by simple-table-core, the same engine the React, Vue, Angular, Solid, and vanilla adapters share, so the API and behavior match across stacks.",
+        "Simple Table for Svelte fills that gap. A single Svelte component drops into Svelte 4, Svelte 5 (runes), and SvelteKit projects with full sorting, filtering, virtualization, column pinning, row grouping, nested headers, cell editing, and theming—free for everyone under the MIT license. It's powered by simple-table-core, the same engine the React, Vue, Angular, Solid, and vanilla adapters share, so the API and behavior match across stacks.",
         "This pillar guide explains when Simple Table is the right Svelte data table, how it compares with svelte-headless-table, SVAR DataGrid, and Flowbite-Svelte, and exactly how to install and use it in a SvelteKit page.",
       ]}
       whatYoullLearn={[
@@ -84,7 +84,7 @@ export default function SvelteKitDataTablePillarPage() {
         {
           icon: faShieldHalved,
           title: "Free for everyone, simple licensing for revenue",
-          body: "Free for everyone, including companies under the MIT license. Pro is $850 a month for support and bug fixes—no per-developer fees.",
+          body: "Free for everyone under the MIT license. Pro is $850 a month for support and bug fixes—no per-developer fees.",
           tone: "amber",
         },
       ]}
@@ -182,7 +182,7 @@ export default function SvelteKitDataTablePillarPage() {
         {
           question: "How does it compare with SVAR DataGrid?",
           answer:
-            "SVAR DataGrid is a polished, feature-rich commercial Svelte grid. Simple Table covers the same broad surface area (virtualization, pinning, grouping, editing) under the MIT license for everyone, including companies, with optional Pro support at $850 a month.",
+            "SVAR DataGrid is a polished, feature-rich commercial Svelte grid. Simple Table covers the same broad surface area (virtualization, pinning, grouping, editing) under the MIT license for everyone, with optional Pro support at $850 a month.",
         },
       ]}
       conclusionHeading="The verdict for Svelte and SvelteKit teams"

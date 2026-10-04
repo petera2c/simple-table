@@ -161,13 +161,13 @@ See Simple Table in action across different industries:
 
 ## Pricing
 
-The library is free under the MIT license. Anyone can use it, including companies. Pay only if you want support.
+The library is free under the MIT license. Anyone can use it. Pay only if you want support.
 
 ### FREE
 
 **$0**
 
-The full library, MIT licensed. Use it in any product, including at a company that makes money.
+The full library, MIT licensed. Use it in any product.
 
 ### PRO
 
@@ -194,7 +194,7 @@ Join our growing community to ask questions or share feedback:
 
 **MIT License**
 
-Simple Table is MIT licensed. Anyone can use, modify, and distribute it, including companies. See [LICENSE](LICENSE).
+Simple Table is MIT licensed. Anyone can use, modify, and distribute it. See [LICENSE](LICENSE).
 
 Paid plans are for support, not a separate software license. Support terms are in [EULA.txt](../core/EULA.txt).
 

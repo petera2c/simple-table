@@ -52,7 +52,7 @@ Simple Table is positioned as a feature-complete free alternative to AG Grid (En
 
 ## License
 
-- MIT license. Free for everyone, including companies.
+- MIT license. Free for everyone.
 - Pro: $850/month for support and bug fixes. The license stays MIT.
 - Enterprise: contact us for direct access to core developers and custom features.
 - License: https://www.simple-table.com/legal/license

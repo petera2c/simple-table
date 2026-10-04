@@ -53,7 +53,7 @@ export default function SimpleTableVsAgGridAngularPage() {
       ]}
       introParagraphs={[
         "AG Grid Angular is the de-facto enterprise data grid for Angular: deep feature surface, mature pivoting, and decades of refinement. Community includes core grid features such as column pinning, sorting, filtering, and the Infinite Row Model. AG Grid Enterprise (per-developer commercial license) unlocks grouping, aggregations, tree data, pivoting, integrated charts, status bar, master/detail, and the Server-Side Row Model.",
-        "Simple Table for Angular ships those same headline features (virtualization for 1M+ rows, pinning, row grouping with aggregations, inline cell editing, custom renderers, themes) under the MIT license, free for everyone, including companies. It's published as @simple-table/angular and supports Angular 17+ standalone components, signals, Ivy AOT, and TypeScript strict mode out of the box.",
+        "Simple Table for Angular ships those same headline features (virtualization for 1M+ rows, pinning, row grouping with aggregations, inline cell editing, custom renderers, themes) under the MIT license, free for everyone. It's published as @simple-table/angular and supports Angular 17+ standalone components, signals, Ivy AOT, and TypeScript strict mode out of the box.",
         "If you're choosing an Angular data grid in 2026 without an enterprise budget, this comparison covers exactly when each library is the right call.",
       ]}
       whyChooseSimpleTable={[

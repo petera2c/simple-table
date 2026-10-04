@@ -268,7 +268,7 @@ export default function FAQSection() {
                 icon: faCheck,
                 question: "Is Simple Table free to use?",
                 answer:
-                  "Yes. Simple Table is MIT licensed and free to use, including at a company that makes money. Pro is $850 a month for support and bug fixes. See the pricing page for details.",
+                  "Yes. Simple Table is MIT licensed and free to use. Pro is $850 a month for support and bug fixes. See the pricing page for details.",
               },
               {
                 icon: faShieldAlt,

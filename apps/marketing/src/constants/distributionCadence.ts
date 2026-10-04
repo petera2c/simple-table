@@ -72,7 +72,7 @@ export const DISTRIBUTION_CADENCE: CadenceItem[] = [
     channel: "discord",
     action: "Pin install + pricing FAQ answers; invite from support threads",
     draft:
-      "Free = MIT, including companies. Pro = $850/month for support and bug fixes. Features are the same. See /pricing.",
+      "Free = MIT. Pro = $850/month for support and bug fixes. Features are the same. See /pricing.",
     linkTarget: "/pricing",
   },
   {

@@ -4,7 +4,7 @@ Effective Date: October 4, 2026
 
 This Support Agreement ("Agreement") is a contract between you ("you" or "your") and Simple Table Software ("we," "us," or "our") for optional paid support. It does not limit your right to use the software.
 
-The Simple Table software is licensed under the MIT License (see the LICENSE file). Anyone may use, copy, modify, and distribute it, including companies that make money. You do not need a paid plan to use the software.
+The Simple Table software is licensed under the MIT License (see the LICENSE file). Anyone may use, copy, modify, and distribute it. You do not need a paid plan to use the software.
 
 1. Definitions
 

@@ -53,7 +53,7 @@ const faqSchema = {
       name: "Is Simple Table free to use?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes. Simple Table is MIT licensed and free to use, including at a company that makes money. You can install it with npm and start building immediately. Pro is $850 a month if you want support and bug fixes.",
+        text: "Yes. Simple Table is MIT licensed and free to use. You can install it with npm and start building immediately. Pro is $850 a month if you want support and bug fixes.",
       },
     },
     {
@@ -110,7 +110,7 @@ const softwareSchema = {
       name: "Free Plan",
       price: "0",
       priceCurrency: "USD",
-      description: "Free for everyone, including companies",
+      description: "Free for everyone",
     },
     {
       "@type": "Offer",

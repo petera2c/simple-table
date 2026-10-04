@@ -51,7 +51,7 @@ export default function VanillaTypeScriptDataGridPillarPage() {
       introHeading="The vanilla JavaScript / TypeScript data grid landscape in 2026"
       introParagraphs={[
         "Not every project lives inside a React, Vue, Angular, Svelte, or Solid tree. Plenty of teams ship admin tools, embedded dashboards, internal microsites, and side-rendered widgets in plain HTML/TypeScript or as web components. The free vanilla data grid options today are familiar—Tabulator, Grid.js, jSpreadsheet, Handsontable Community—and each makes its own trade-off between bundle size, license, and feature surface.",
-        "simple-table-core is the headless engine behind every Simple Table framework adapter. It also ships a vanilla constructor (SimpleTableVanilla) you can drop into any HTML page or web component. Full sorting, filtering, virtualization, column pinning, row grouping, nested headers, and inline editing—free under the MIT license for everyone, including companies, with optional Pro support at $850 a month.",
+        "simple-table-core is the headless engine behind every Simple Table framework adapter. It also ships a vanilla constructor (SimpleTableVanilla) you can drop into any HTML page or web component. Full sorting, filtering, virtualization, column pinning, row grouping, nested headers, and inline editing—free under the MIT license for everyone, with optional Pro support at $850 a month.",
         "This pillar guide covers when simple-table-core is the right vanilla data grid, how it compares with Tabulator, jSpreadsheet, Grid.js, and Handsontable, and exactly how to wire it up in a vanilla TypeScript project or a web component.",
       ]}
       whatYoullLearn={[
@@ -84,7 +84,7 @@ export default function VanillaTypeScriptDataGridPillarPage() {
         {
           icon: faShieldHalved,
           title: "Free for everyone, simple licensing for revenue",
-          body: "Free for everyone, including companies under the MIT license. Pro is $850 a month for support and bug fixes—no per-developer fees and no per-row pricing.",
+          body: "Free for everyone under the MIT license. Pro is $850 a month for support and bug fixes—no per-developer fees and no per-row pricing.",
           tone: "amber",
         },
       ]}
@@ -173,7 +173,7 @@ export default function VanillaTypeScriptDataGridPillarPage() {
         {
           question: "How does it compare with Handsontable?",
           answer:
-            "Handsontable Hobby is free for non-commercial use only; paid tiers start at Standard ($999/developer/year). simple-table-core is free for everyone, including companies under the MIT license, with optional Pro support at $850 a month.",
+            "Handsontable Hobby is free for non-commercial use only; paid tiers start at Standard ($999/developer/year). simple-table-core is free for everyone under the MIT license, with optional Pro support at $850 a month.",
         },
         {
           question: "How does it compare with jSpreadsheet?",
@@ -188,7 +188,7 @@ export default function VanillaTypeScriptDataGridPillarPage() {
       ]}
       conclusionHeading="The verdict for vanilla TypeScript teams"
       conclusionParagraphs={[
-        "If you're building a vanilla TypeScript app, an embeddable widget, a web component, or a custom-framework UI that needs more than a basic table—simple-table-core is the strongest free choice in the vanilla JS/TS data grid space in 2026. It ships the same feature surface as Tabulator with stronger TypeScript ergonomics, and unlike Handsontable Community, the MIT license terms are unambiguous for everyone, including companies.",
+        "If you're building a vanilla TypeScript app, an embeddable widget, a web component, or a custom-framework UI that needs more than a basic table—simple-table-core is the strongest free choice in the vanilla JS/TS data grid space in 2026. It ships the same feature surface as Tabulator with stronger TypeScript ergonomics, and unlike Handsontable Community, the MIT license terms are unambiguous for everyone.",
         "Better still, simple-table-core is the engine behind every framework adapter Simple Table publishes. If you later ship a React, Vue, Angular, Svelte, or Solid version of the same UI, the data, headers, and behavior carry over—no rewrite, no second mental model.",
       ]}
       relatedBlogs={[
@@ -223,7 +223,7 @@ export default function VanillaTypeScriptDataGridPillarPage() {
                 <li>You need row + column virtualization, pinning, grouping, or inline editing</li>
                 <li>You want strict TypeScript types out-of-the-box</li>
                 <li>You may later wrap the same engine in React/Vue/Angular/Svelte/Solid</li>
-                <li>You want clear MIT-licensed licensing for everyone, including companies</li>
+                <li>You want clear MIT-licensed licensing for everyone</li>
               </ul>
               <p className="mb-3 text-gray-700 dark:text-gray-300">
                 <strong>Pick something else if:</strong>

@@ -33,8 +33,7 @@ export default function EULAPage() {
               <a href="/legal/license" className="text-blue-600 dark:text-blue-400 hover:underline">
                 MIT License
               </a>
-              . Anyone may use, copy, modify, and distribute it, including companies that make
-              money. You do not need a paid plan to use the software.
+              . Anyone may use, copy, modify, and distribute it. You do not need a paid plan to use the software.
             </p>
 
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mt-8 mb-4">

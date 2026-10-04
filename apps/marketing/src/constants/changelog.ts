@@ -16,12 +16,12 @@ export const v4_3_2: ChangelogEntry = {
   date: "2026-10-04",
   title: "MIT license",
   description:
-    "Simple Table is MIT. Anyone can use it for free, including companies.",
+    "Simple Table is MIT. Anyone can use it for free.",
   changes: [
     {
       type: "improvement",
       description:
-        "Simple Table is now MIT. You can use it in any product, including at a company that makes money.",
+        "Simple Table is now MIT. You can use it in any product.",
       link: "/legal/license",
     },
     {

@@ -83,8 +83,8 @@ export default function AngularDataGridPillarPage() {
         },
         {
           icon: faShieldHalved,
-          title: "Free for everyone, including companies",
-          body: "MIT licensed and free for everyone, including companies. Pro is $850 a month for support and bug fixes. No per-seat fees that scale with your engineering org.",
+          title: "Free for everyone",
+          body: "MIT licensed and free for everyone. Pro is $850 a month for support and bug fixes. No per-seat fees that scale with your engineering org.",
           tone: "amber",
         },
       ]}

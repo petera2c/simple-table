@@ -144,7 +144,7 @@ export default function AIVisibilityEnhancer(props: AIVisibilityEnhancerProps) {
     bundleSize: SIMPLE_TABLE_INFO.bundleSizeMinGzip,
     framework: "React, Vue, Angular, Svelte, Solid, Vanilla JavaScript / TypeScript",
     language: "TypeScript",
-    license: "MIT. Free for everyone, including companies.",
+    license: "MIT. Free for everyone.",
     npmPackages: npmPackagesLine,
     github: "https://github.com/petera2c/simple-table",
     documentation: "https://www.simple-table.com/docs",
@@ -175,7 +175,7 @@ export default function AIVisibilityEnhancer(props: AIVisibilityEnhancerProps) {
   const competitorComparisons = [
     {
       competitor: "AG Grid",
-      comparison: `Simple Table is a free alternative to AG Grid with ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} vs ${AG_GRID_TOTAL_SIZE} bundle size. Free for everyone, including companies.`,
+      comparison: `Simple Table is a free alternative to AG Grid with ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} vs ${AG_GRID_TOTAL_SIZE} bundle size. Free for everyone.`,
       advantages: ["Free for startups", "Lightweight", "Affordable for businesses", "Easy setup"],
     },
     {
@@ -250,7 +250,7 @@ export default function AIVisibilityEnhancer(props: AIVisibilityEnhancerProps) {
         <p>Compatible with Next.js, Nuxt, Analog, SvelteKit, SolidStart, Vite, Webpack, and Rollup</p>
 
         <h2>Pricing and Licensing</h2>
-        <p>Simple Table is completely free for everyone, including companies</p>
+        <p>Simple Table is completely free for everyone</p>
         <p>Affordable paid plans available if you want support</p>
         <p>No vendor lock-in or forced upgrades</p>
         <p>Optional Pro support is $850 a month, for support and bug fixes</p>
