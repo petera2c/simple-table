@@ -179,8 +179,8 @@ export default function FreeAlternativeToAgGridPage() {
                 So, I decided to build my own solution:{" "}
                 <span className="font-bold text-blue-600 dark:text-blue-400">Simple Table</span>, a
                 lightweight ({SIMPLE_TABLE_INFO.bundleSizeMinGzip}) React data grid that&apos;s free
-                for pre-revenue teams under the Simple Table Community License (source-available),
-                with Pro/Enterprise for revenue-generating use.
+                for any team under the MIT license,
+                with Pro/Enterprise if you want support.
               </p>
 
               <p className="mb-2 text-gray-700 dark:text-gray-300">
@@ -208,8 +208,8 @@ export default function FreeAlternativeToAgGridPage() {
                   </span>
                 </div>
                 <p className="text-green-700 dark:text-green-300">
-                  At just {SIMPLE_TABLE_INFO.bundleSizeMinGzip} and free for pre-revenue use under
-                  the Community License, Simple Table is designed to be accessible for developers
+                  At just {SIMPLE_TABLE_INFO.bundleSizeMinGzip} and free for everyone under
+                  the MIT license, Simple Table is designed to be accessible for developers
                   like me who can&apos;t afford pricey Enterprise licenses.
                 </p>
               </div>

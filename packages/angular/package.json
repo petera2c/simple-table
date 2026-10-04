@@ -1,6 +1,6 @@
 {
   "name": "@simple-table/angular",
-  "version": "4.3.1",
+  "version": "4.3.2",
   "type": "module",
   "main": "./dist/fesm2022/simple-table-angular.mjs",
   "module": "./dist/fesm2022/simple-table-angular.mjs",
@@ -30,7 +30,7 @@
       "default": "./dist/styles.css"
     }
   },
-  "license": "Community",
+  "license": "MIT",
   "publishConfig": {
     "access": "public"
   },

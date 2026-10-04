@@ -1,4 +1,7 @@
-// Payment Links from Stripe Dashboard (Pro)
+// Payment Links from Stripe Dashboard.
+// The Pro monthly link was created for the old $85/month commercial license.
+// Replace it with an $850/month support subscription before publishing this pricing change.
+// The annual links are the old $850/year plan and are not used by the pricing page.
 export const STRIPE_PAYMENT_LINKS = {
   monthly: "https://buy.stripe.com/4gMdR95g4bTigCi1m21sQ01",
   annual: "https://buy.stripe.com/28EbJ14c0aPegCi3ua1sQ00",

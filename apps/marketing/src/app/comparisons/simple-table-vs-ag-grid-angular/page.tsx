@@ -9,7 +9,7 @@ import {
 
 const TITLE = "Simple Table vs AG Grid Angular: Free Angular Data Grid Comparison";
 const DESCRIPTION =
-  "Compare Simple Table for Angular against AG Grid Angular: features, pricing, bundle size, standalone-component support, and migration paths. The source-available alternative for Angular 17+ teams.";
+  "Compare Simple Table for Angular against AG Grid Angular: features, pricing, bundle size, standalone-component support, and migration paths. The MIT-licensed alternative for Angular 17+ teams.";
 const CANONICAL = "/comparisons/simple-table-vs-ag-grid-angular";
 
 export const metadata: Metadata = {
@@ -48,18 +48,18 @@ export default function SimpleTableVsAgGridAngularPage() {
       heroBadges={[
         { icon: faTrophy, label: "Best for Angular 17+" },
         { icon: faBolt, label: "1M+ rows virtualization" },
-        { icon: faDollarSign, label: "Free for pre-revenue teams" },
+        { icon: faDollarSign, label: "Free for everyone" },
         { icon: faShieldHalved, label: "Standalone components" },
       ]}
       introParagraphs={[
         "AG Grid Angular is the de-facto enterprise data grid for Angular: deep feature surface, mature pivoting, and decades of refinement. Community includes core grid features such as column pinning, sorting, filtering, and the Infinite Row Model. AG Grid Enterprise (per-developer commercial license) unlocks grouping, aggregations, tree data, pivoting, integrated charts, status bar, master/detail, and the Server-Side Row Model.",
-        "Simple Table for Angular ships those same headline features (virtualization for 1M+ rows, pinning, row grouping with aggregations, inline cell editing, custom renderers, themes) under the Simple Table Community License, free for pre-revenue and bootstrapped teams. It's published as @simple-table/angular and supports Angular 17+ standalone components, signals, Ivy AOT, and TypeScript strict mode out of the box.",
+        "Simple Table for Angular ships those same headline features (virtualization for 1M+ rows, pinning, row grouping with aggregations, inline cell editing, custom renderers, themes) under the MIT license, free for everyone, including companies. It's published as @simple-table/angular and supports Angular 17+ standalone components, signals, Ivy AOT, and TypeScript strict mode out of the box.",
         "If you're choosing an Angular data grid in 2026 without an enterprise budget, this comparison covers exactly when each library is the right call.",
       ]}
       whyChooseSimpleTable={[
         "You ship Angular 17+ standalone components and want a data grid that's a single import—no module wiring.",
         "You don't have an AG Grid Enterprise license and don't want the per-developer renewal.",
-        "You need virtualization, pinning, grouping, and editing free for pre-revenue teams (source-available).",
+        "You need virtualization, pinning, grouping, and editing free for everyone (MIT).",
         `You want a small bundle (${SIMPLE_TABLE_INFO.bundleSizeMinGzip} gzipped) instead of a typical AG Grid Enterprise install (${AG_GRID_TOTAL_SIZE} gzipped).`,
         "You want a single library that also covers your React, Vue, Svelte, Solid, and vanilla TS apps via @simple-table adapters.",
       ]}
@@ -82,7 +82,7 @@ export default function SimpleTableVsAgGridAngularPage() {
         },
         {
           feature: "Column pinning (left / right)",
-          simpleTable: { verdict: "yes", note: "Source-available, free for pre-revenue teams." },
+          simpleTable: { verdict: "yes", note: "MIT, free for everyone." },
           competitor: {
             verdict: "yes",
             note: "Column pinning is Community. lockPinned menu controls are Enterprise-oriented.",
@@ -90,7 +90,7 @@ export default function SimpleTableVsAgGridAngularPage() {
         },
         {
           feature: "Row grouping with aggregations",
-          simpleTable: { verdict: "yes", note: "Built-in (source-available)." },
+          simpleTable: { verdict: "yes", note: "Built-in (MIT)." },
           competitor: { verdict: "no", note: "Enterprise-only." },
         },
         {
@@ -125,18 +125,18 @@ export default function SimpleTableVsAgGridAngularPage() {
         },
         {
           feature: "License",
-          simpleTable: { verdict: "yes", note: "Community License (free for pre-revenue). Pro / Enterprise tiers for revenue-generating teams." },
+          simpleTable: { verdict: "yes", note: "MIT. Free for everyone. Pro is optional support." },
           competitor: { verdict: "partial", note: "AG Grid Community is MIT; AG Grid Enterprise is per-developer commercial." },
         },
       ]}
       pricingRows={[
         {
           tier: "Free / OSS",
-          simpleTable: "Source-available, full feature surface (Community License for pre-revenue)",
+          simpleTable: "MIT, full feature surface, free for everyone",
           competitor:
             "Community MIT (pinning, Infinite Row Model, core grid). Enterprise for grouping, aggregations, tree data, pivoting, charts",
         },
-        { tier: "Single dev / startup", simpleTable: "Free for pre-revenue teams", competitor: "AG Grid Enterprise: per-developer license" },
+        { tier: "Single dev / startup", simpleTable: "Free for everyone", competitor: "AG Grid Enterprise: per-developer license" },
         { tier: "Team license", simpleTable: "Pro tier (predictable, team pricing)", competitor: "AG Grid Enterprise scales per dev" },
       ]}
       bundleSizeNote={
@@ -158,7 +158,7 @@ export default function SimpleTableVsAgGridAngularPage() {
         {
           question: "Is Simple Table really a free alternative to AG Grid Angular?",
           answer:
-            "Yes for pre-revenue teams under the Community License. Simple Table includes column pinning, row grouping with aggregations, virtualization, and inline editing. On AG Grid, pinning and core grid features are Community; grouping, aggregations, tree data, and pivoting require Enterprise. Simple Table Pro/Enterprise is per product rather than per developer.",
+            "Yes for any team under the MIT license. Simple Table includes column pinning, row grouping with aggregations, virtualization, and inline editing. On AG Grid, pinning and core grid features are Community; grouping, aggregations, tree data, and pivoting require Enterprise. Simple Table Pro/Enterprise is per product rather than per developer.",
         },
         {
           question: "Does Simple Table support Angular 17+ standalone components?",
@@ -185,7 +185,7 @@ export default function SimpleTableVsAgGridAngularPage() {
           <p>
             For most Angular 17+ teams without a budget for AG Grid Enterprise, Simple Table for
             Angular delivers the headline features—virtualization, pinning, grouping, inline
-            editing, custom renderers—source-available, with idiomatic standalone-component ergonomics
+            editing, custom renderers—MIT-licensed, with idiomatic standalone-component ergonomics
             and a fraction of the bundle.
           </p>
           <p>

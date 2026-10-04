@@ -123,7 +123,7 @@ const ContactModal = ({
             icon={isQuote ? faFileInvoice : faEnvelope}
             className="text-blue-600"
           />
-          <span>{isQuote ? "Get a license quote" : "Contact Us"}</span>
+          <span>{isQuote ? "Contact us" : "Contact Us"}</span>
         </div>
       }
       open={isOpen}
@@ -147,8 +147,9 @@ const ContactModal = ({
       <div className="space-y-4 py-4">
         {isQuote ? (
           <p className="text-sm text-gray-600 dark:text-gray-400 -mt-1 mb-2">
-            Tell us about your product and we&apos;ll send Pro pricing or an Enterprise quote, AG
-            Grid cost comparison, and next steps, usually within a day.
+            The library is MIT and free to use, including at a company that makes money. Tell us
+            if you want Pro support ($850/month) or something custom, and we&apos;ll follow up,
+            usually within a day.
           </p>
         ) : null}
 

@@ -426,7 +426,7 @@ export const rsuiteTableVsSimpleTablePost: BlogPostMetadata = {
 
 export const devextremeGridVsSimpleTablePost: BlogPostMetadata = {
   title: "DevExtreme React Grid vs Simple Table: $899/year Enterprise vs Free Open-Source",
-  description: `DevExtreme React Grid costs $899/year with 80+ premium components. Simple Table is free for pre-revenue teams (source-available) at 42KB with zero dependencies and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial enterprise features vs source-available flexibility.`,
+  description: `DevExtreme React Grid costs $899/year with 80+ premium components. Simple Table is free for everyone (MIT) at 42KB with zero dependencies and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial enterprise features vs MIT-licensed flexibility.`,
   slug: "devextreme-grid-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "pricing"],
   createdAt: "2026-02-05",
@@ -435,7 +435,7 @@ export const devextremeGridVsSimpleTablePost: BlogPostMetadata = {
 
 export const kendoreactGridVsSimpleTablePost: BlogPostMetadata = {
   title: "KendoReact Grid vs Simple Table: $649/year Premium vs Free Open-Source",
-  description: `KendoReact Grid (by Progress/Telerik) costs $649-$1,199/year with 120+ components. Simple Table is free for pre-revenue teams (source-available) at 42KB with official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial licensing vs source-available freedom for React data grids.`,
+  description: `KendoReact Grid (by Progress/Telerik) costs $649-$1,199/year with 120+ components. Simple Table is free for everyone (MIT) at 42KB with official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial licensing vs MIT-licensed freedom for React data grids.`,
   slug: "kendoreact-grid-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "pricing"],
   createdAt: "2026-02-05",
@@ -444,7 +444,7 @@ export const kendoreactGridVsSimpleTablePost: BlogPostMetadata = {
 
 export const smartGridVsSimpleTablePost: BlogPostMetadata = {
   title: "Smart React Grid vs Simple Table: $399 Commercial vs Free Open-Source",
-  description: `Smart React Grid (HTML Elements) costs $399-$1,499 with enterprise features. Simple Table is free for pre-revenue teams (source-available) at 42KB with zero dependencies and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial vs source-available React data grids.`,
+  description: `Smart React Grid (HTML Elements) costs $399-$1,499 with enterprise features. Simple Table is free for everyone (MIT) at 42KB with zero dependencies and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare commercial vs MIT-licensed React data grids.`,
   slug: "smart-grid-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "pricing"],
   createdAt: "2026-02-05",
@@ -509,7 +509,7 @@ export const vanillaDataGridPillarPost: BlogPostMetadata = {
 export const simpleTableVsAgGridAngularPost: BlogPostMetadata = {
   title: "Simple Table vs AG Grid Angular: Free Source-Available Data Grid for Angular 17/18/19",
   description:
-    "AG Grid Angular charges per developer for grouping, pivoting, and master-detail. Simple Table for Angular ships virtualization, pinning, grouping, and editing free for pre-revenue teams (source-available)—with idiomatic standalone-component support.",
+    "AG Grid Angular charges per developer for grouping, pivoting, and master-detail. Simple Table for Angular ships virtualization, pinning, grouping, and editing free for everyone (MIT)—with idiomatic standalone-component support.",
   slug: "simple-table-vs-ag-grid-angular",
   tags: ["angular", "comparison", "alternatives", "ag-grid"],
   createdAt: "2026-04-26",
@@ -519,7 +519,7 @@ export const simpleTableVsAgGridAngularPost: BlogPostMetadata = {
 export const simpleTableVsNgxDatatablePost: BlogPostMetadata = {
   title: "Simple Table vs ngx-datatable: A Modern Alternative for Angular 17+",
   description:
-    "ngx-datatable's Angular 17+ standalone story is dated. Simple Table for Angular is signals-friendly, source-available, and ships pinning, grouping with aggregations, virtualization, and inline editing in the box.",
+    "ngx-datatable's Angular 17+ standalone story is dated. Simple Table for Angular is signals-friendly, MIT-licensed, and ships pinning, grouping with aggregations, virtualization, and inline editing in the box.",
   slug: "simple-table-vs-ngx-datatable",
   tags: ["angular", "comparison", "alternatives"],
   createdAt: "2026-04-26",
@@ -529,7 +529,7 @@ export const simpleTableVsNgxDatatablePost: BlogPostMetadata = {
 export const simpleTableVsPrimeNgTablePost: BlogPostMetadata = {
   title: "Simple Table vs PrimeNG Table: Lightweight Angular Data Grid Comparison",
   description:
-    "PrimeNG Table is great if you already use PrimeNG. Simple Table for Angular is a smaller, focused alternative when DataTable is your only PrimeNG component—same virtualization, pinning, grouping, and editing, free for pre-revenue teams (source-available).",
+    "PrimeNG Table is great if you already use PrimeNG. Simple Table for Angular is a smaller, focused alternative when DataTable is your only PrimeNG component—same virtualization, pinning, grouping, and editing, free for everyone (MIT).",
   slug: "simple-table-vs-primeng-table",
   tags: ["angular", "comparison", "alternatives"],
   createdAt: "2026-04-26",
@@ -539,7 +539,7 @@ export const simpleTableVsPrimeNgTablePost: BlogPostMetadata = {
 export const simpleTableVsAngularMaterialTablePost: BlogPostMetadata = {
   title: "Simple Table vs Angular Material Table (mat-table): Beyond MDC Primitives",
   description:
-    "Angular Material's mat-table is composable but you build virtualization, pinning, grouping, and editing yourself. Simple Table for Angular ships all of that free for pre-revenue teams (source-available)—works alongside Material themes via CSS variables.",
+    "Angular Material's mat-table is composable but you build virtualization, pinning, grouping, and editing yourself. Simple Table for Angular ships all of that free for everyone (MIT)—works alongside Material themes via CSS variables.",
   slug: "simple-table-vs-angular-material-table",
   tags: ["angular", "comparison", "alternatives"],
   createdAt: "2026-04-26",
@@ -549,7 +549,7 @@ export const simpleTableVsAngularMaterialTablePost: BlogPostMetadata = {
 export const simpleTableVsKendoGridAngularPost: BlogPostMetadata = {
   title: "Simple Table vs Kendo Grid for Angular: $649+ Commercial vs Free Source-Available",
   description:
-    "Kendo Grid for Angular costs $649+ per developer per year. Simple Table for Angular is free for pre-revenue teams (source-available) with virtualization, pinning, grouping, and editing built in—no license keys, no commercial paperwork.",
+    "Kendo Grid for Angular costs $649+ per developer per year. Simple Table for Angular is free for everyone (MIT) with virtualization, pinning, grouping, and editing built in—no license keys, no commercial paperwork.",
   slug: "simple-table-vs-kendo-grid-angular",
   tags: ["angular", "comparison", "alternatives", "pricing"],
   createdAt: "2026-04-26",
@@ -570,7 +570,7 @@ export const agGridAlternativesAngularPost: BlogPostMetadata = {
 export const simpleTableVsVuetifyDataTablePost: BlogPostMetadata = {
   title: "Simple Table vs Vuetify v-data-table: Focused Vue 3 Data Grid Comparison",
   description:
-    "Vuetify v-data-table requires the full Vuetify runtime + Material theme. Simple Table for Vue is a focused source-available data grid that works in Composition API + <script setup>, Nuxt 3/4, and Vite without a design system tax.",
+    "Vuetify v-data-table requires the full Vuetify runtime + Material theme. Simple Table for Vue is a focused MIT-licensed data grid that works in Composition API + <script setup>, Nuxt 3/4, and Vite without a design system tax.",
   slug: "simple-table-vs-vuetify-data-table",
   tags: ["vue", "comparison", "alternatives"],
   createdAt: "2026-04-26",
@@ -590,7 +590,7 @@ export const simpleTableVsPrimeVueDatatablePost: BlogPostMetadata = {
 export const simpleTableVsVueGoodTablePost: BlogPostMetadata = {
   title: "Simple Table vs Vue Good Table Next: Vue 3 Data Grid Comparison",
   description:
-    "Vue Good Table is straightforward but doesn't ship row virtualization or column pinning. Simple Table for Vue covers those plus grouping with aggregations and inline editing—free for pre-revenue teams (source-available), modern Composition API.",
+    "Vue Good Table is straightforward but doesn't ship row virtualization or column pinning. Simple Table for Vue covers those plus grouping with aggregations and inline editing—free for everyone (MIT), modern Composition API.",
   slug: "simple-table-vs-vue-good-table",
   tags: ["vue", "comparison", "alternatives"],
   createdAt: "2026-04-26",
@@ -610,7 +610,7 @@ export const simpleTableVsElementPlusTablePost: BlogPostMetadata = {
 export const simpleTableVsNaiveUiTablePost: BlogPostMetadata = {
   title: "Simple Table vs Naive UI Data Table: Focused Vue 3 Data Grid",
   description:
-    "Naive UI's data-table is a great component-library grid. Simple Table for Vue is a smaller, focused source-available alternative with built-in virtualization, pinning, grouping with aggregations, and inline editing.",
+    "Naive UI's data-table is a great component-library grid. Simple Table for Vue is a smaller, focused MIT-licensed alternative with built-in virtualization, pinning, grouping with aggregations, and inline editing.",
   slug: "simple-table-vs-naive-ui-table",
   tags: ["vue", "comparison", "alternatives"],
   createdAt: "2026-04-26",
@@ -631,7 +631,7 @@ export const agGridAlternativesVuePost: BlogPostMetadata = {
 export const simpleTableVsSvelteHeadlessTablePost: BlogPostMetadata = {
   title: "Simple Table vs svelte-headless-table: Batteries-Included vs Headless Svelte Grid",
   description:
-    "svelte-headless-table is great primitives. Simple Table for Svelte is batteries-included: virtualization, pinning, grouping with aggregations, and inline editing in one source-available package—Svelte 4 and Svelte 5 ready.",
+    "svelte-headless-table is great primitives. Simple Table for Svelte is batteries-included: virtualization, pinning, grouping with aggregations, and inline editing in one MIT-licensed package—Svelte 4 and Svelte 5 ready.",
   slug: "simple-table-vs-svelte-headless-table",
   tags: ["svelte", "comparison", "alternatives"],
   createdAt: "2026-04-26",
@@ -641,7 +641,7 @@ export const simpleTableVsSvelteHeadlessTablePost: BlogPostMetadata = {
 export const simpleTableVsSvarDatagridPost: BlogPostMetadata = {
   title: "Simple Table vs SVAR DataGrid: Free Source-Available Svelte Data Grid Comparison",
   description:
-    "SVAR DataGrid for Svelte is feature-rich but bundles in SVAR's component ecosystem. Simple Table for Svelte is a smaller, focused source-available alternative with virtualization, pinning, grouping, and editing built in.",
+    "SVAR DataGrid for Svelte is feature-rich but bundles in SVAR's component ecosystem. Simple Table for Svelte is a smaller, focused MIT-licensed alternative with virtualization, pinning, grouping, and editing built in.",
   slug: "simple-table-vs-svar-datagrid",
   tags: ["svelte", "comparison", "alternatives"],
   createdAt: "2026-04-26",
@@ -734,7 +734,7 @@ export const simpleTableVsHandsontableVanillaPost: BlogPostMetadata = {
   title:
     "simple-table-core vs Handsontable (Vanilla JS): Source-Available Data Grid vs Commercial Spreadsheet",
   description:
-    "Handsontable's non-commercial license blocks production SaaS use. simple-table-core is source-available—free for pre-revenue teams, with Pro/Enterprise tiers for revenue-generating use—and ships virtualization, pinning, grouping, and editing in vanilla TypeScript.",
+    "Handsontable's non-commercial license blocks production SaaS use. simple-table-core is MIT-licensed—free for everyone, with Pro/Enterprise tiers if you want support—and ships virtualization, pinning, grouping, and editing in vanilla TypeScript.",
   slug: "simple-table-vs-handsontable-vanilla",
   tags: ["vanilla", "comparison", "alternatives", "handsontable"],
   createdAt: "2026-04-26",

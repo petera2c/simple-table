@@ -1,15 +1,13 @@
 /**
- * Simple Table public prices — keep in sync with PricingContent (/pricing).
- * Used by the pricing UI, package metadata, and anywhere amounts must not drift.
+ * Simple Table public prices. Keep in sync with the pricing page.
+ * The library is MIT and free to use. Pro is optional support.
  */
 
 export const SIMPLE_TABLE_PRICING = {
   freeDisplay: "$0",
-  proMonthly: "$85",
-  proAnnual: "$850",
-  proAnnualStrikethrough: "$1,020",
+  proMonthly: "$850",
   enterpriseDisplay: "Contact us",
 } as const;
 
-/** Published annual range (free through Pro). Enterprise is custom — contact us. */
-export const SIMPLE_TABLE_ANNUAL_COST_RANGE = `$0–${SIMPLE_TABLE_PRICING.proAnnual}/year`;
+/** What it costs to use the library. Support is optional. */
+export const SIMPLE_TABLE_SOFTWARE_COST = "Free (MIT)";

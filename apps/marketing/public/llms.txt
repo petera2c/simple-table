@@ -1,6 +1,6 @@
 # Simple Table
 
-> A source-available data grid for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript, free for pre-revenue teams under the Simple Table Community License. One shared simple-table-core engine; six official npm adapters. Ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, inline cell editing, custom renderers, and themeable CSS variables.
+> An MIT-licensed data grid for React, Vue, Angular, Svelte, Solid, and vanilla TypeScript, free for everyone under the MIT license. One shared simple-table-core engine; six official npm adapters. Ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, inline cell editing, custom renderers, and themeable CSS variables.
 
 Simple Table is positioned as a feature-complete free alternative to AG Grid (Enterprise), MUI X Data Grid (Pro), Handsontable, Tabulator, and TanStack Table. The core engine is framework-agnostic and runs the same logic across every adapter.
 
@@ -52,8 +52,8 @@ Simple Table is positioned as a feature-complete free alternative to AG Grid (En
 
 ## License
 
-- Source-available under the Simple Table Community License, free for pre-revenue and bootstrapped projects.
-- Pro: $85/month or $850/year for revenue-generating teams (one license per product, no per-seat fees).
+- MIT license. Free for everyone, including companies.
+- Pro: $850/month for support and bug fixes. The license stays MIT.
 - Enterprise: contact us for direct access to core developers and custom features.
 - License: https://www.simple-table.com/legal/license
 - Pricing: https://www.simple-table.com/pricing

@@ -66,7 +66,7 @@ const FAQS: { question: string; answer: string }[] = [
   {
     question: "Is there a free alternative that already includes a UI?",
     answer:
-      "Yes. Simple Table is a source-available React data grid that ships a complete UI plus virtualization, column pinning, row grouping, and inline editing in roughly 84.6 kB. It's free for pre-revenue teams under the Community License; commercial/revenue products need Pro. You get AG Grid-style features without building the UI yourself like with TanStack Table.",
+      "Yes. Simple Table is an MIT-licensed React data grid that ships a complete UI plus virtualization, column pinning, row grouping, and inline editing in roughly 84.6 kB. It's free for everyone under the MIT license; Pro is optional support. You get AG Grid-style features without building the UI yourself like with TanStack Table.",
   },
 ];
 
@@ -215,7 +215,7 @@ export default function TanStackVsAgGridPage() {
                       Community MIT · Enterprise from $999/dev
                     </td>
                     <td className="p-3 text-green-600 dark:text-green-400">
-                      Community (pre-revenue)
+                      MIT
                     </td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -726,7 +726,7 @@ export default function TanStackVsAgGridPage() {
                 <strong>Key Insight:</strong> TanStack Table has the features but you build the UI.
                 AG Grid Community covers core grid features (including column pinning); grouping,
                 pivots, and Excel export need Enterprise. Simple Table includes UI plus grouping
-                and editing under a Community License (free while pre-revenue); CSV export is built
+                and editing under the MIT license (free for everyone); CSV export is built
                 in—Excel export is not.
               </p>
             </div>
@@ -920,7 +920,7 @@ export default function TanStackVsAgGridPage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      You want a UI-included grid free while pre-revenue (Pro when you earn)
+                      You want a UI-included grid that is free for everyone (Pro is optional support)
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -1116,7 +1116,7 @@ export default function TanStackVsAgGridPage() {
                     <li className="flex items-center gap-2">
                       <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />
                       <span>
-                        <strong>Free for pre-revenue</strong> under Community License (unlike AG
+                        <strong>Free for everyone</strong> under the MIT license (unlike AG
                         Grid Enterprise)
                       </span>
                     </li>

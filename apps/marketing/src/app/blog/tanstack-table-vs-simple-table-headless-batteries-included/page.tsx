@@ -103,7 +103,7 @@ export default function TanStackVsSimpleTablePage() {
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                Both TanStack Table (MIT) and Simple Table (source-available, free for pre-revenue
+                Both TanStack Table (MIT) and Simple Table (MIT-licensed, free for everyone
                 teams) are excellent options with strong TypeScript support (both have generous free
                 tiers). But they serve different needs
                 and come with very different development experiences. Choosing the wrong approach
@@ -1113,7 +1113,7 @@ export function SimpleTableExample({ data, columns }) {
       {/* Call to Action */}
       <CallToActionCard
         title="Skip the UI busywork. Start with Simple Table's FREE tier."
-        description={`Get a production-ready table in hours, not weeks. Built-in virtualization, sorting, filtering, grouping, and themes. FREE tier includes all core features. Optional PRO ($85/mo) for priority support. Save ~$7,600 in dev time per project vs building on TanStack from scratch. Official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
+        description={`Get a production-ready table in hours, not weeks. Built-in virtualization, sorting, filtering, grouping, and themes. FREE tier includes all core features. Optional PRO ($850/month for support) for priority support. Save ~$7,600 in dev time per project vs building on TanStack from scratch. Official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "Start Free",
           href: "/docs/installation",

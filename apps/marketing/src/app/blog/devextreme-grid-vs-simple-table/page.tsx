@@ -20,7 +20,7 @@ import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
 import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, DEVEXTREME_GRID_INFO } from "@/constants/packageInfo";
-import { SIMPLE_TABLE_ANNUAL_COST_RANGE, SIMPLE_TABLE_PRICING } from "@/constants/simpleTablePricing";
+import { SIMPLE_TABLE_SOFTWARE_COST, SIMPLE_TABLE_PRICING } from "@/constants/simpleTablePricing";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -68,7 +68,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
 
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
           DevExtreme React Grid (by DevExpress) costs $899/year with 80+ premium components and
-          enterprise support. Simple Table is free for pre-revenue teams (source-available) at 84.6 kB with zero dependencies. This
+          enterprise support. Simple Table is free for everyone (MIT) at 84.6 kB with zero dependencies. This
           comparison helps you decide if premium features justify the annual cost.
         </p>
         <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
@@ -120,8 +120,8 @@ export default function DevExtremeGridVsSimpleTablePage() {
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                <strong>Simple Table</strong> offers a free tier for zero-revenue companies
-                (source-available under the Simple Table Community License) and a Pro plan ($85/month or $850/year) for revenue-generating businesses.
+                <strong>Simple Table</strong> offers a free tier for everyone
+                (MIT licensed) and an optional Pro plan ($850/month) for support and bug fixes.
                 At 84.6 kB with zero dependencies, it delivers core data grid features—virtualization,
                 sorting, filtering, pagination, grouping, column pinning—at a fraction of enterprise
                 costs. For broader context,{" "}
@@ -174,7 +174,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                       Commercial ($899/year)
                     </td>
                     <td className="p-3 text-green-600 dark:text-green-400">
-                      {`Source-available free tier; Pro ${SIMPLE_TABLE_PRICING.proAnnual}/yr; Enterprise ${SIMPLE_TABLE_PRICING.enterpriseDisplay}`}
+                      {`MIT, free for everyone; Pro ${SIMPLE_TABLE_PRICING.proMonthly}/month for support; Enterprise ${SIMPLE_TABLE_PRICING.enterpriseDisplay}`}
                     </td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -183,7 +183,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                     </td>
                     <td className="p-3 text-red-600 dark:text-red-400">$4,495/year (5 devs)</td>
                     <td className="p-3 text-green-600 dark:text-green-400 font-bold">
-                      {SIMPLE_TABLE_ANNUAL_COST_RANGE}
+                      {SIMPLE_TABLE_SOFTWARE_COST}
                     </td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
@@ -329,7 +329,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>FREE:</strong> $0 for zero-revenue companies (Simple Table Community License)
+                      <strong>FREE:</strong> $0 for everyone (MIT license)
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -338,7 +338,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>PRO:</strong> $85/month or $850/year for revenue-generating companies
+                      <strong>PRO:</strong> $850/month if you want support
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -399,8 +399,8 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   <strong>DevExtreme justifies its cost if:</strong> You need the full 80+ component
                   suite, require guaranteed support SLAs, or want a single vendor for all UI needs.{" "}
                   <strong>Simple Table wins if:</strong> You only need a data grid and want
-                  dramatically lower costs—$850/year vs $4,495/year for a 5-dev team. For startups
-                  with zero revenue, Simple Table's FREE tier eliminates licensing costs entirely.
+                  dramatically lower costs: $0 to use the library vs $4,495/year for a 5-dev team. The
+                  library is free for every company, so there is no grid license to buy.
                 </p>
               </div>
             </div>
@@ -907,14 +907,14 @@ export default function DevExtremeGridVsSimpleTablePage() {
                   Simple Table: Affordable Open-Source
                 </h3>
                 <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                  <li>✓ FREE for zero-revenue companies (Simple Table Community License)</li>
+                  <li>✓ FREE for everyone (MIT license)</li>
                   <li>
-                    ✓ PRO: $850/year for commercial use (vs $4,495/year for DevExtreme 5-dev team)
+                    ✓ PRO: optional support at $850/month (vs $4,495/year for DevExtreme 5-dev team)
                   </li>
                   <li>✓ 84.6 kB bundle, zero dependencies</li>
                   <li>✓ Core features (virtualization, grouping, pinning, filtering)</li>
                   <li>✓ No vendor lock-in, open-source freedom</li>
-                  <li>✓ Saves $11,937 over 3 years vs DevExtreme (commercial use)</li>
+                  <li>✓ No per-developer license</li>
                   <li>△ Community support (FREE) or Priority support (PRO)</li>
                 </ul>
               </div>
@@ -923,7 +923,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
                 <strong>Our recommendation:</strong> DevExtreme justifies its cost if you need the
                 full 80+ component suite, require vendor support SLAs, or have budget for enterprise
                 tooling. But for most teams—especially startups and cost-conscious projects—Simple
-                Table's flexible pricing ($0 for startups, $850/year for commercial use) delivers
+                Table's flexible pricing ($0 for startups, optional support at $850/month) delivers
                 everything you need at a fraction of DevExtreme's $4,495/year cost for a 5-dev team.
                 Invest the $11,937 savings over 3 years in custom features, more developers, or
                 other priorities.
@@ -987,7 +987,7 @@ export default function DevExtremeGridVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Get enterprise features without enterprise pricing"
-        description={`Simple Table delivers virtualization, row grouping, column pinning, and more in ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}. FREE for zero-revenue companies, or $850/year for commercial use. Save $11,937+ over 3 years vs DevExtreme while keeping open-source freedom. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
+        description={`Simple Table delivers virtualization, row grouping, column pinning, and more in ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}. FREE for everyone, or optional support at $850/month. The library is free under the MIT license. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

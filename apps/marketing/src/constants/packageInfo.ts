@@ -5,8 +5,6 @@
  * Bundle sizes: minified + gzipped from Bundlephobia (reviewed 2026-07-24).
  */
 
-import { SIMPLE_TABLE_ANNUAL_COST_RANGE } from "@/constants/simpleTablePricing";
-
 export interface PackageInfo {
   name: string;
   npmPackage: string;
@@ -36,8 +34,7 @@ export const SIMPLE_TABLE_INFO: PackageInfo = {
   bundleSizeMinGzipKB: 84.6,
   bundlePhobiaUrl: "https://bundlephobia.com/package/simple-table-core@3.9.9",
   pricing: {
-    free: false,
-    cost: SIMPLE_TABLE_ANNUAL_COST_RANGE,
+    free: true,
     hasFreeTier: true,
   },
   officialWebsite: "https://www.simple-table.com",

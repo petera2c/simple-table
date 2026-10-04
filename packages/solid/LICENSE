@@ -1,82 +1,21 @@
-Simple Table Community License
+MIT License
 
 Copyright (c) 2025 Simple Table Software
 
-This is a source-available license. It is NOT an Open Source Initiative
-(OSI) approved license and it is NOT the MIT License. Please read the grant
-and limitations below carefully before using the Software.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-1. Definitions
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-   "Software" means the Simple Table source code, object code, and associated
-   documentation files distributed under this license, including all official
-   framework adapter packages (for React, Vue, Angular, Svelte, Solid, and
-   vanilla TypeScript).
-
-   "Licensor" means Simple Table Software.
-
-   "You" (or "Your") means the individual or legal entity exercising rights
-   under this license, together with all entities that control, are
-   controlled by, or are under common control with that entity.
-
-   "Revenue" means gross income of any kind realized by You or Your products,
-   services, or organization, from any source, including but not limited to
-   sales, subscriptions, licensing, advertising, donations tied to a product,
-   grants, or investment proceeds applied to commercial operations.
-
-   "Product" means a single software application, website, or service
-   developed by You that incorporates the Software.
-
-2. Grant of License (Community)
-
-   Subject to Your full and ongoing compliance with this license, Licensor
-   grants You a worldwide, royalty-free, non-exclusive, non-transferable,
-   revocable license to use, copy, modify, merge, publish, and distribute the
-   Software, and to incorporate the Software into Your Product, for as long as
-   You and Your Product generate ZERO Revenue (pre-revenue use).
-
-   This Community grant permits an unlimited number of Users per Product.
-
-3. Revenue Limitation (the condition that makes this not MIT)
-
-   The Community grant in Section 2 is available ONLY while You and Your
-   Product have zero Revenue. If You or Your Product generate ANY Revenue
-   whatsoever, the Community grant immediately terminates, and continued use
-   of the Software requires a paid Pro or Enterprise license under the
-   End-User License Agreement (EULA) distributed with the Software (EULA.txt)
-   and described at https://www.simple-table.com/pricing.
-
-   For the avoidance of doubt: the broad permissions in Section 2 do not
-   authorize any use by a revenue-generating person, product, or
-   organization. Such use is governed exclusively by the EULA.
-
-4. Conditions
-
-   The above copyright notice, this permission notice, and the Revenue
-   Limitation in Section 3 shall be included in all copies or substantial
-   portions of the Software. You may not remove or alter any proprietary
-   notices contained in the Software.
-
-5. Commercial Use
-
-   Commercial use by any revenue-generating person, product, or organization
-   requires a Pro or Enterprise license. See EULA.txt and
-   https://www.simple-table.com/pricing for complete terms and pricing.
-
-6. Termination
-
-   Any use outside the scope of the Community grant, including use after You
-   or Your Product begin generating Revenue without obtaining a Pro or
-   Enterprise license, automatically terminates the rights granted under this
-   license. Upon termination of the Community grant You must either obtain a
-   paid license or cease all use of the Software and destroy all copies.
-
-7. Disclaimer of Warranty and Limitation of Liability
-
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-   AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-   DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

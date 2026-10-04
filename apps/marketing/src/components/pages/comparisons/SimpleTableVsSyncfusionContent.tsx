@@ -47,8 +47,8 @@ const SimpleVsSyncfusion = () => {
       >
         {SYNCFUSION_GRID_INFO.bundleSizeMinGzip}
       </Link>{" "}
-      (minified + gzipped), Simple Table delivers core data grid features under a Community License
-      for pre-revenue teams (Pro when you earn revenue). This comparison examines whether you can
+      (minified + gzipped), Simple Table delivers core data grid features under the MIT license
+      for any team (optional Pro support if you want it). This comparison examines whether you can
       achieve your data grid goals without Syncfusion suite lock-in, custom-quote licensing, and
       DataGrid bundle overhead.
     </>
@@ -60,7 +60,7 @@ const SimpleVsSyncfusion = () => {
         <Text className="text-lg text-inherit" strong>
           Simple Table
         </Text>{" "}
-        is a lightweight alternative to Syncfusion DataGrid—Community License for pre-revenue
+        is a lightweight alternative to Syncfusion DataGrid—MIT license, free for everyone
         teams—offering virtualization, infinite scroll, row grouping, and advanced filtering, with a
         significantly smaller bundle size (
         <Link
@@ -91,7 +91,7 @@ const SimpleVsSyncfusion = () => {
         Syncfusion.
       </Text>
       <Text className="text-lg block text-inherit">
-        If you want a focused grid with a Community License for pre-revenue use,{" "}
+        If you want a focused MIT-licensed grid,{" "}
         <Link className="text-[length:inherit]" href="https://www.simple-table.com">
           try Simple Table
         </Link>

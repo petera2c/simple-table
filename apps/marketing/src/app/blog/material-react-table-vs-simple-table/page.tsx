@@ -168,7 +168,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">License</td>
                     <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
-                    <td className="p-3 text-green-600 dark:text-green-400">Community License</td>
+                    <td className="p-3 text-green-600 dark:text-green-400">MIT</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
@@ -964,7 +964,7 @@ export default function MaterialReactTableVsSimpleTablePage() {
                 lock-in, Simple Table's lightweight approach wins. For Material-UI apps where
                 consistency trumps bundle size, Material React Table is excellent. Both are
                 production-ready—Material React Table is MIT licensed and Simple Table is
-                source-available (free for pre-revenue teams)—choose based on your constraints, not arbitrary
+                MIT-licensed (free for everyone)—choose based on your constraints, not arbitrary
                 preferences. For more context on choosing the right table library,{" "}
                 <Link
                   href="/blog/best-free-react-data-grid-2026"

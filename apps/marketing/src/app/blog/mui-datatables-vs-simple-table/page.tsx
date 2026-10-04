@@ -175,7 +175,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">License</td>
                     <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
-                    <td className="p-3 text-green-600 dark:text-green-400">Community License</td>
+                    <td className="p-3 text-green-600 dark:text-green-400">MIT</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
@@ -820,8 +820,8 @@ export default function MuiDatatablesVsSimpleTablePage() {
                 </Link>{" "}
                 is the modern successor to MUI-Datatables. For standalone flexibility, Simple Table
                 is your best choice. Both are actively maintained and production-ready—the
-                successor is MIT licensed and Simple Table is source-available (free for
-                pre-revenue teams). For more context,{" "}
+                successor is MIT licensed and Simple Table is MIT-licensed (free for
+                any team). For more context,{" "}
                 <Link
                   href="/blog/best-free-react-data-grid-2026"
                   className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"

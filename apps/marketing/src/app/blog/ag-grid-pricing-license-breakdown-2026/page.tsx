@@ -648,7 +648,7 @@ export default function AgGridPricingPage() {
 
             <p className="mb-6 text-gray-700 dark:text-gray-300">
               Before committing to AG Grid Enterprise, consider these lower-cost alternatives
-              (including free and Community License options):
+              (including free and MIT-licensed options):
             </p>
 
             <div className="space-y-6">
@@ -668,8 +668,8 @@ export default function AgGridPricingPage() {
 
                 <p className="text-gray-700 dark:text-gray-300 mb-4">
                   A lightweight ({SIMPLE_TABLE_INFO.bundleSizeMinGzip}), batteries-included React
-                  data grid—free for pre-revenue teams under the Simple Table Community License
-                  (source-available), with Pro/Enterprise for revenue-generating use.
+                  data grid—free for everyone under the MIT license
+                  (MIT), with Pro/Enterprise if you want support.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -865,7 +865,7 @@ export default function AgGridPricingPage() {
                   <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                     <li>
                       • You need row grouping, aggregation, column pinning, and other "enterprise"
-                      features under a Community License (free for pre-revenue teams)
+                      features under the MIT license (free for everyone)
                     </li>
                     <li>• You're building customer-facing apps where performance matters</li>
                     <li>• You want quick setup without configuration complexity</li>
@@ -933,7 +933,7 @@ export default function AgGridPricingPage() {
       <CallToActionCard
         location="blog_ag_grid_pricing"
         title="Skip the $25K+ AG Grid bill. Start with Simple Table's FREE tier."
-        description="Install free for pre-revenue teams (same features). Upgrade to Pro for a commercial EULA + priority support when you earn revenue — per product, not per developer."
+        description="Install free for everyone (same features). Upgrade to Pro for a commercial EULA + priority support if you want support — per product, not per developer."
         primaryButton={{
           text: "Get started",
           href: "/docs/installation",

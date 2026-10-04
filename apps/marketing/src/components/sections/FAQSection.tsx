@@ -268,7 +268,7 @@ export default function FAQSection() {
                 icon: faCheck,
                 question: "Is Simple Table free to use?",
                 answer:
-                  "Yes! Simple Table is completely free for pre-revenue startups, side projects, and bootstrapped companies. For revenue-generating businesses, we offer affordable commercial licenses starting at just a fraction of AG Grid's enterprise pricing. Check our pricing page for details.",
+                  "Yes. Simple Table is MIT licensed and free to use, including at a company that makes money. Pro is $850 a month for support and bug fixes. See the pricing page for details.",
               },
               {
                 icon: faShieldAlt,
@@ -281,8 +281,8 @@ export default function FAQSection() {
                 question: "What kind of support do you offer?",
                 answer: (
                   <>
-                    Docs, Discord, and GitHub for day-to-day questions. Commercial licenses include
-                    priority email/Discord support. If your team is still evaluating grids, you can{" "}
+                    Docs, Discord, and GitHub for day-to-day questions. Pro ($850/month) adds support
+                    and bug fixes. If your team is still evaluating grids, you can{" "}
                     <a
                       href={TECHNICAL_STRINGS.links.calendly}
                       target="_blank"

@@ -144,25 +144,25 @@ See Simple Table in action across different industries:
 
 ## Pricing
 
-Simple, transparent pricing that never changes based on your revenue or team size:
+The library is free under the MIT license. Anyone can use it, including companies. Pay only if you want support.
 
-### FREE - For Individuals & Startups
+### FREE
 
-**$0/forever**
+**$0**
 
-Free for side projects and companies that aren't making money yet. You get the full library — same features as Pro. Once your company earns revenue, switch to Pro or Enterprise.
+The full library, MIT licensed. Use it in any product, including at a company that makes money.
 
-### PRO - For Growing Businesses
+### PRO
 
-**$85/month** or **$850/year**
+**$850/month**
 
-For companies that make money. Priority email and Discord support, help with production bugs, and a commercial license. One license covers your whole product — no per-seat fees.
+Support and bug fixes. The license stays MIT. You are paying for help, not for permission to use the library.
 
-### ENTERPRISE - For teams that need hands-on support
+### ENTERPRISE
 
 **Contact us**
 
-Direct access to core developers and custom features. Same commercial license as Pro — one license per product, no seat fees.
+Custom help, depending on what you need.
 
 **[View Detailed Pricing](https://www.simple-table.com/pricing)**
 
@@ -175,11 +175,10 @@ Join our growing community to ask questions or share feedback:
 
 ## License
 
-**Dual Licensed:**
+**MIT License**
 
-- **Free Tier**: Simple Table Community License (source-available) for zero-revenue individuals, startups, and organizations — see [LICENSE](LICENSE)
-- **Pro and Enterprise**: Commercial EULA for revenue-generating companies — see [EULA.txt](EULA.txt)
+Simple Table is MIT licensed. Anyone can use, modify, and distribute it, including companies. See [LICENSE](LICENSE).
 
-By using Simple Table, you agree to the terms in [EULA.txt](EULA.txt) where applicable.
+Paid plans are for support, not a separate software license. Support terms are in [EULA.txt](EULA.txt).
 
 **[View Detailed Pricing & Licensing](https://www.simple-table.com/pricing)**

@@ -242,13 +242,13 @@ export default function ChartMetricCaseStudyPage() {
                   upgrades.
                 </p>
                 <p>
-                  In contrast, <strong>Simple Table Pro</strong> costs just{" "}
-                  <strong className="text-green-600 dark:text-green-400">$850 per year</strong> for
-                  the whole team. That's a{" "}
+                  In contrast, <strong>Simple Table</strong> is MIT licensed, so the library is free
+                  for the whole team. Support, if you want it, is a flat monthly fee rather than a
+                  per-engineer license. That is a{" "}
                   <strong className="text-green-600 dark:text-green-400">
-                    first-year savings of over $19K — about 95% lower cost
+                    first-year license cost of $0 instead of $19,980
                   </strong>
-                  , and the savings grow as the team expands.
+                  , and you still do not pay per engineer as the team grows.
                 </p>
               </div>
             }

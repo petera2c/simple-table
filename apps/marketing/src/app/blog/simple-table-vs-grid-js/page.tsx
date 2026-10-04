@@ -42,7 +42,7 @@ export default function Page() {
         "This article walks through when Grid.js is enough and when you've outgrown it.",
       ]}
       comparisonRows={[
-        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
         { feature: "Type of component", competitor: { value: "Read-first table", tone: "neutral" }, simpleTable: { value: "Full data grid", tone: "good" } },
         { feature: "TypeScript-first", competitor: { value: "Definitions exist", tone: "neutral" }, simpleTable: { value: "Yes (strict)", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "~25 kB", tone: "good" }, simpleTable: { value: "84.6 kB", tone: "neutral" } },
@@ -111,7 +111,7 @@ export default function Page() {
         { href: "/frameworks/vanilla", label: "Vanilla TypeScript hub" },
       ]}
       ctaTitle="Outgrew Grid.js?"
-      ctaDescription="simple-table-core ships virtualization, pinning, grouping, and editing in one source-available package—84.6 kB gzipped, TypeScript-first, framework-agnostic."
+      ctaDescription="simple-table-core ships virtualization, pinning, grouping, and editing in one MIT-licensed package—84.6 kB gzipped, TypeScript-first, framework-agnostic."
     />
   );
 }

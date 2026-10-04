@@ -709,7 +709,7 @@ export default function HandsontablePricingPage() {
 
             <p className="mb-6 text-gray-700 dark:text-gray-300">
               Before committing to Handsontable, consider these lower-cost alternatives (including
-              MIT-licensed libraries and Community License options free for pre-revenue teams):
+              MIT-licensed libraries, free for everyone):
             </p>
 
             <div className="space-y-6">
@@ -729,8 +729,8 @@ export default function HandsontablePricingPage() {
 
                 <p className="text-gray-700 dark:text-gray-300 mb-4">
                   A lightweight ({SIMPLE_TABLE_INFO.bundleSizeMinGzip}), batteries-included React
-                  data grid—free for pre-revenue teams under the Simple Table Community License
-                  (source-available), with Pro/Enterprise for revenue-generating use.
+                  data grid—free for everyone under the MIT license
+                  (MIT), with Pro/Enterprise if you want support.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -922,7 +922,7 @@ export default function HandsontablePricingPage() {
                     <li>• You want to avoid vendor lock-in and recurring costs</li>
                     <li>• Your team is 1-10 developers</li>
                     <li>
-                      • You want Community License pricing (free for pre-revenue) instead of
+                      • You want an MIT license (free for everyone) instead of
                       per-developer spreadsheet licenses
                     </li>
                   </ul>
@@ -986,7 +986,7 @@ export default function HandsontablePricingPage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Skip the $22K+ Handsontable bill. Start with Simple Table's FREE tier."
-        description="Install free for pre-revenue teams (same features). Upgrade to Pro for a commercial EULA + priority support when you earn revenue — per product, not per developer."
+        description="Install free for everyone (same features). Upgrade to Pro for a commercial EULA + priority support if you want support — per product, not per developer."
         primaryButton={{
           text: "Get started",
           href: "/docs/installation",

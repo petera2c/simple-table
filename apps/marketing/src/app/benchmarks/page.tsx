@@ -143,8 +143,7 @@ export default function BenchmarksPage() {
             Prefer a smaller grid bill and bundle?
           </h2>
           <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
-            Install Simple Table free for pre-revenue use, or see Pro pricing when your product
-            earns revenue.
+            Install Simple Table free under the MIT license, or see Pro if you want support.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/docs/installation">

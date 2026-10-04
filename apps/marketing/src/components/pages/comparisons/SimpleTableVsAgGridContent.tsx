@@ -53,7 +53,7 @@ const SimpleVsAgGrid = () => {
       package install, minified + gzipped), Simple Table delivers blazing-fast performance with core
       data grid
       features that rival AG Grid's Community edition—and cover many Enterprise paywalled
-      capabilities—under a Community License for pre-revenue teams (Pro when you earn revenue). This
+      capabilities—under the MIT license for any team (optional Pro support if you want it). This
       comparison examines whether you can achieve your data grid goals without the complexity,
       per-developer licensing costs, and bundle overhead that AG Grid Enterprise demands. We'll break down the true cost of ownership and help you determine
       if Simple Table can deliver the enterprise-level functionality your application needs. For a
@@ -81,7 +81,7 @@ const SimpleVsAgGrid = () => {
         <Text className="text-lg text-inherit" strong>
           Simple Table
         </Text>{" "}
-        is a lightweight alternative to AG Grid—Community License for pre-revenue teams—offering
+        is a lightweight MIT-licensed alternative to AG Grid, free for any team, offering
         essential features like virtualization, infinite scroll, and column filters, with a smaller
         bundle size (
         <Link
@@ -118,10 +118,10 @@ const SimpleVsAgGrid = () => {
         (typically {AG_GRID_TOTAL_SIZE} gzipped for the Enterprise package on Bundlephobia) at{" "}
         {getPricingString(AG_GRID_ENTERPRISE_INFO)}. Bundle size and steeper learning curve make it
         better suited for complex, enterprise-level applications. Simple Table includes declarative
-        matrix pivoting under the Community License for pre-revenue teams.
+        matrix pivoting under the MIT license for any team.
       </Text>
       <Text className="text-lg block text-inherit mb-4">
-        If you want a lightweight grid with a Community License for pre-revenue use,{" "}
+        If you want a lightweight MIT-licensed grid,{" "}
         <Link className="text-[length:inherit]" href="https://www.simple-table.com">
           try Simple Table
         </Link>

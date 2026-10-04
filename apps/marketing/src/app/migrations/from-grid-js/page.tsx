@@ -30,7 +30,7 @@ export default function FromGridJsPage() {
       competitorPackage="grid-js"
       introParagraphs={[
         "Grid.js is a small, friendly vanilla-JS grid—great for read-only tables. Once you start needing virtualization, pinning, grouping, or inline editing, you outgrow it quickly.",
-        "simple-table-core is a TypeScript-first vanilla data grid that ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing—free for pre-revenue teams (source-available).",
+        "simple-table-core is a TypeScript-first vanilla data grid that ships virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline editing—free for everyone (MIT).",
         "This guide walks you from a Grid.js setup to simple-table-core without changing your data layer.",
       ]}
       whyMigrate={[

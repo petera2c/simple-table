@@ -22,7 +22,7 @@ import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
 import { SIMPLE_TABLE_FRAMEWORKS_SHORT } from "@/constants/frameworkIntegrationHub";
 import { SIMPLE_TABLE_INFO, SMART_GRID_INFO } from "@/constants/packageInfo";
-import { SIMPLE_TABLE_ANNUAL_COST_RANGE } from "@/constants/simpleTablePricing";
+import { SIMPLE_TABLE_SOFTWARE_COST } from "@/constants/simpleTablePricing";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -74,7 +74,7 @@ export default function SmartGridVsSimpleTablePage() {
 
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
           Smart React Grid (by HTML Elements) costs $399-$1,499 with AI-powered filtering and
-          enterprise features. Simple Table is free for pre-revenue teams (source-available) at 84.6 kB with zero dependencies. This
+          enterprise features. Simple Table is free for everyone (MIT) at 84.6 kB with zero dependencies. This
           comparison helps you decide if AI features and commercial support justify the cost.
         </p>
         <p className="text-base max-w-3xl mx-auto text-center text-gray-600 dark:text-gray-400 mt-4">
@@ -136,8 +136,8 @@ export default function SmartGridVsSimpleTablePage() {
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                <strong>Simple Table</strong> offers a free tier for zero-revenue companies
-                (source-available under the Simple Table Community License) and a Pro plan ($85/month or $850/year) for revenue-generating businesses.
+                <strong>Simple Table</strong> offers a free tier for everyone
+                (MIT licensed) and an optional Pro plan ($850/month) for support and bug fixes.
                 At 84.6 kB with zero dependencies, it delivers core data grid
                 functionality—virtualization, grouping, pinning, filtering, sorting—at a fraction of
                 Smart Grid's cost. For broader context,{" "}
@@ -187,7 +187,7 @@ export default function SmartGridVsSimpleTablePage() {
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">License</td>
                     <td className="p-3 text-red-600 dark:text-red-400">Commercial ($399-$1,499)</td>
-                    <td className="p-3 text-green-600 dark:text-green-400">Community License</td>
+                    <td className="p-3 text-green-600 dark:text-green-400">MIT</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">Free Tier</td>
@@ -314,7 +314,7 @@ export default function SmartGridVsSimpleTablePage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>FREE:</strong> $0 for zero-revenue companies (Simple Table Community License)
+                      <strong>FREE:</strong> $0 for everyone (MIT license)
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -323,7 +323,7 @@ export default function SmartGridVsSimpleTablePage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>PRO:</strong> $85/month or $850/year for revenue-generating companies
+                      <strong>PRO:</strong> $850/month if you want support
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -342,7 +342,7 @@ export default function SmartGridVsSimpleTablePage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>Initial cost:</strong> {SIMPLE_TABLE_ANNUAL_COST_RANGE} (vs $1,499 for
+                      <strong>Initial cost:</strong> {SIMPLE_TABLE_SOFTWARE_COST} (vs $1,499 for
                       Smart Grid Team License)
                     </span>
                   </li>
@@ -717,14 +717,14 @@ export default function SmartGridVsSimpleTablePage() {
                   Simple Table: Affordable Open-Source
                 </h3>
                 <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                  <li>✓ FREE for zero-revenue companies (Simple Table Community License)</li>
+                  <li>✓ FREE for everyone (MIT license)</li>
                   <li>
-                    ✓ PRO: $850/year for commercial use (vs $1,499 for Smart Grid Team License)
+                    ✓ PRO: optional support at $850/month (vs $1,499 for Smart Grid Team License)
                   </li>
                   <li>✓ 84.6 kB bundle, zero dependencies, native React</li>
                   <li>✓ All core features (virtualization, grouping, pinning, filtering)</li>
                   <li>✓ No vendor lock-in, open-source freedom</li>
-                  <li>✓ Saves $649 vs Smart Grid (for commercial use)</li>
+                  <li>✓ No commercial license required</li>
                   <li>△ Community support (FREE) or Priority support (PRO), no AI filtering</li>
                 </ul>
               </div>
@@ -732,9 +732,9 @@ export default function SmartGridVsSimpleTablePage() {
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 <strong>Our recommendation:</strong> Smart Grid justifies its cost if AI-powered
                 filtering is a core requirement, you're building multi-framework applications, or
-                you need vendor support. But for most React developers—especially those who don't
-                need AI features—Simple Table's flexible pricing ($0 for startups, $850/year for
-                commercial use vs $1,499 for Smart Grid) delivers all essential data grid
+                you need vendor support. For most React developers who don't need AI features,
+                Simple Table is MIT licensed, so the library is free. Optional support is $850 a
+                month. It delivers all essential data grid
                 functionality at lower cost. Standard filtering, sorting, and grouping handle 99% of
                 use cases without AI.
               </p>
@@ -797,7 +797,7 @@ export default function SmartGridVsSimpleTablePage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Get enterprise features without licensing fees"
-        description={`Simple Table delivers virtualization, row grouping, column pinning, and filtering in ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}. FREE for zero-revenue companies, or $850/year for commercial use. Save $649 vs Smart Grid while keeping full open-source freedom. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
+        description={`Simple Table delivers virtualization, row grouping, column pinning, and filtering in ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}. FREE for everyone, or optional support at $850/month. The library is free under the MIT license. Same core and adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}.`}
         primaryButton={{
           text: "View Documentation",
           href: "/docs/installation",

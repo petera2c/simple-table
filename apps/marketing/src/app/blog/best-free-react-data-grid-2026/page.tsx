@@ -608,8 +608,8 @@ export default function BestFreeReactDataGrid2026Page() {
               </p>
 
               <p className="text-gray-700 dark:text-gray-300 mb-0">
-                Ready to try it? Install free for pre-revenue use under the Community License, or
-                see pricing for revenue-generating products.
+                Ready to try it? Install it free under the MIT license, or see Pro if you want
+                support.
               </p>
             </div>
           </div>
@@ -619,7 +619,7 @@ export default function BestFreeReactDataGrid2026Page() {
       {/* Call to Action */}
       <CallToActionCard
         title="Ready to try the best free React data grid of 2026?"
-        description="Simple Table is lightweight and free for pre-revenue teams under the Community License—with Pro/Enterprise when you earn revenue. Same features either way."
+        description="Simple Table is lightweight and free for everyone under the MIT license—with Pro/Enterprise if you want support. Same features either way."
         primaryButton={{
           text: "Get started",
           href: "/docs/installation",

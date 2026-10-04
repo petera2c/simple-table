@@ -44,14 +44,14 @@ export default function AngularDataGridPillarPage() {
       hubId="angular"
       heroBadges={[
         { icon: faTrophy, label: "Best for Angular 17+", tone: "yellow" },
-        { icon: faDollarSign, label: "Free for pre-revenue teams", tone: "green" },
+        { icon: faDollarSign, label: "Free for everyone", tone: "green" },
         { icon: faCode, label: "Angular & TypeScript", tone: "blue" },
         { icon: faRocket, label: "Standalone-ready", tone: "purple" },
       ]}
       introHeading="The Angular data grid landscape in 2026"
       introParagraphs={[
         "Angular teams shipping internal tools, admin dashboards, fintech apps, and operations consoles all hit the same wall: most full-featured Angular data grids are either expensive (AG Grid Enterprise, Kendo UI for Angular, DevExtreme) or thin wrappers around table primitives (ngx-datatable, Angular Material's MatTable, PrimeNG Table). You either pay per-developer for features you barely use, or you assemble sorting, filtering, virtualization, pinning, and grouping by hand.",
-        "Simple Table for Angular gives you a single standalone component that drops into Angular 17+ apps with full sorting, filtering, virtualization, column pinning, row grouping, nested headers, cell editing, and theming—free for pre-revenue teams under the Simple Table Community License, with Pro/Enterprise for revenue-generating use. It's powered by simple-table-core (the same engine the React, Vue, Svelte, Solid, and vanilla adapters share), so you get the full feature set without an enterprise contract.",
+        "Simple Table for Angular gives you a single standalone component that drops into Angular 17+ apps with full sorting, filtering, virtualization, column pinning, row grouping, nested headers, cell editing, and theming—free for everyone under the MIT license, with Pro/Enterprise if you want support. It's powered by simple-table-core (the same engine the React, Vue, Svelte, Solid, and vanilla adapters share), so you get the full feature set without an enterprise contract.",
         "This pillar guide covers when Simple Table is the right Angular data grid, how it compares with the popular incumbents, and exactly how to install and use it in a standalone Angular app.",
       ]}
       whatYoullLearn={[
@@ -83,8 +83,8 @@ export default function AngularDataGridPillarPage() {
         },
         {
           icon: faShieldHalved,
-          title: "Free for hobby and pre-revenue, friendly for everyone else",
-          body: "Source-available and free for pre-revenue teams under the Simple Table Community License, simple per-product Pro/Enterprise pricing for revenue-generating teams—no per-seat AG-Grid-style fees that scale with your engineering org.",
+          title: "Free for everyone, including companies",
+          body: "MIT licensed and free for everyone, including companies. Pro is $850 a month for support and bug fixes. No per-seat fees that scale with your engineering org.",
           tone: "amber",
         },
       ]}
@@ -188,7 +188,7 @@ export default function AngularDataGridPillarPage() {
         {
           question: "How does it compare with AG Grid Angular?",
           answer:
-            "AG Grid Community covers a similar surface area for free; AG Grid Enterprise adds row grouping, aggregation, pivoting, and pinning behind a paid license. Simple Table includes those capabilities free for pre-revenue teams under the Simple Table Community License (source-available), with simple per-product Pro/Enterprise pricing for revenue-generating teams.",
+            "AG Grid Community covers a similar surface area for free; AG Grid Enterprise adds row grouping, aggregation, pivoting, and pinning behind a paid license. Simple Table includes those capabilities free for everyone under the MIT license. Pro is $850 a month for support and bug fixes.",
         },
       ]}
       conclusionHeading="The verdict for Angular teams"

@@ -11,6 +11,28 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_3_2: ChangelogEntry = {
+  version: "4.3.2",
+  date: "2026-10-04",
+  title: "MIT license",
+  description:
+    "Simple Table is MIT. Anyone can use it for free, including companies.",
+  changes: [
+    {
+      type: "improvement",
+      description:
+        "Simple Table is now MIT. You can use it in any product, including at a company that makes money.",
+      link: "/legal/license",
+    },
+    {
+      type: "improvement",
+      description:
+        "Pro is $850 a month for support and bug fixes. The library itself stays free.",
+      link: "/pricing",
+    },
+  ],
+};
+
 export const v4_3_1: ChangelogEntry = {
   version: "4.3.1",
   date: "2026-09-30",
@@ -2957,6 +2979,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_3_2,
   v4_3_1,
   v4_3_0,
   v4_2_9,

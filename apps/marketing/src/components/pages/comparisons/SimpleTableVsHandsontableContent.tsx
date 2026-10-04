@@ -96,7 +96,7 @@ const SimpleTableVsHandsontableContent = () => {
           difference)
         </Text>
         <Text className="text-base mb-4 block text-inherit">
-          • Prefer a Community License for pre-revenue teams (Pro when you earn revenue) over
+          • Prefer an MIT license (optional Pro support if you want it) over
           per-developer commercial spreadsheet licensing
         </Text>
       </div>
@@ -105,7 +105,7 @@ const SimpleTableVsHandsontableContent = () => {
         <Text className="text-lg text-inherit" strong>
           Simple Table
         </Text>{" "}
-        is a lightweight alternative to Handsontable—free for pre-revenue teams under the Community
+        is a lightweight alternative to Handsontable—free for everyone under the Community
         License—offering essential features like virtualization, cell editing, and column
         management. It's ideal for projects that need basic spreadsheet-like functionality without
         Handsontable's commercial per-developer licensing.

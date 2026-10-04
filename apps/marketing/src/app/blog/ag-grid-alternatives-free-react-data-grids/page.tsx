@@ -122,7 +122,7 @@ export default function AgGridAlternativesPage() {
                 For projects with budget constraints or those that don't need the full enterprise
                 feature set, you might be looking for alternatives. The good news? The React
                 ecosystem offers several excellent options—including MIT-licensed libraries and
-                Community License products free for pre-revenue teams—that may better fit your
+                MIT-licensed products, free for everyone—that may better fit your
                 specific needs. Curious why we built one of them? Read the{" "}
                 <Link
                   href="/blog/free-alternative-to-ag-grid"
@@ -423,7 +423,7 @@ export default function AgGridAlternativesPage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>Free for pre-revenue teams:</strong> source-available under the Simple Table Community License; Pro/Enterprise for revenue-generating use
+                      <strong>Free for everyone:</strong> MIT licensed; Pro/Enterprise if you want support
                     </span>
                   </li>
                 </ul>
@@ -467,7 +467,7 @@ export default function AgGridAlternativesPage() {
                       License
                     </span>
                     <span className="text-sm font-bold text-green-600 dark:text-green-400">
-                      Community License
+                      MIT
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -489,8 +489,8 @@ export default function AgGridAlternativesPage() {
               </h4>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 Simple Table offers the core features most projects need with an intuitive API and
-                small bundle size—free for pre-revenue teams under the Community License
-                (source-available).
+                small bundle size—free for everyone under the MIT license
+                (MIT).
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
                 <Link href="/docs/installation">
@@ -1028,7 +1028,7 @@ export default function AgGridAlternativesPage() {
                     <td className="p-3 text-green-600 dark:text-green-400 font-bold">
                       {SIMPLE_TABLE_INFO.bundleSizeMinGzip}
                     </td>
-                    <td className="p-3 text-gray-700 dark:text-gray-300">Community License</td>
+                    <td className="p-3 text-gray-700 dark:text-gray-300">MIT</td>
                     <td className="p-3 text-gray-700 dark:text-gray-300">
                       Quick setup, full features
                     </td>

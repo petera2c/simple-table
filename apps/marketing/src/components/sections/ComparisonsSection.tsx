@@ -42,8 +42,8 @@ export default function ComparisonsSection() {
       </h2>
 
       <p className="text-lg text-center text-muted mb-6 max-w-3xl mx-auto">
-        See how Simple Table stacks up against other popular data grid solutions. Free for startups
-        and side projects, a fraction of enterprise pricing for everyone else, with official
+        See how Simple Table stacks up against other popular data grid solutions. MIT licensed and
+        free for everyone, including companies, with official
         adapters for {SIMPLE_TABLE_FRAMEWORKS_SHORT}.
       </p>
 

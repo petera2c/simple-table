@@ -1,6 +1,6 @@
 {
   "name": "simple-table-core",
-  "version": "4.3.1",
+  "version": "4.3.2",
   "main": "dist/cjs/index.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
@@ -32,7 +32,7 @@
     "./styles/base.css": "./src/styles/base.css",
     "./styles/themes/*.css": "./src/styles/themes/*.css"
   },
-  "license": "Community",
+  "license": "MIT",
   "files": [
     "dist",
     "src/styles",

@@ -52,7 +52,7 @@ const FAQS: { question: string; answer: string }[] = [
   {
     question: "What is the best free alternative to Handsontable for React?",
     answer:
-      "For most React teams, Simple Table is the closest drop-in: it delivers spreadsheet-style editing, sorting, filtering, virtualization, and row grouping in roughly 84.6 kB (about 3.4× lighter than Handsontable) and is source-available with a free tier for pre-revenue teams. React Data Grid (Adazzle) and TanStack Table are solid MIT-licensed options too.",
+      "For most React teams, Simple Table is the closest drop-in: it delivers spreadsheet-style editing, sorting, filtering, virtualization, and row grouping in roughly 84.6 kB (about 3.4× lighter than Handsontable) and is MIT-licensed with a free tier for any team. React Data Grid (Adazzle) and TanStack Table are solid MIT-licensed options too.",
   },
   {
     question: "Why do developers migrate away from Handsontable?",
@@ -62,7 +62,7 @@ const FAQS: { question: string; answer: string }[] = [
   {
     question: "Does Handsontable have a true open-source license?",
     answer:
-      "Handsontable is source-available but not permissively licensed for commercial use. If you need a true MIT or permissive license, React Data Grid and TanStack Table qualify; Simple Table is source-available with a free community tier for pre-revenue teams.",
+      "Handsontable is MIT-licensed but not permissively licensed for commercial use. If you need a true MIT or permissive license, React Data Grid and TanStack Table qualify; Simple Table is MIT-licensed with a free community tier for any team.",
   },
   {
     question: "How hard is it to migrate from Handsontable to Simple Table?",
@@ -408,7 +408,7 @@ export default function HandsontableAlternativesPage() {
               Simple Table is a solid Handsontable alternative for teams who want spreadsheet-like
               functionality with a permissive license. At {SIMPLE_TABLE_INFO.bundleSizeMinGzip},
               it's about <strong>3.4× lighter than Handsontable</strong> while providing the core
-              editing features most applications need—all source-available and free for pre-revenue teams.
+              editing features most applications need—all MIT-licensed and free for everyone.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -424,8 +424,8 @@ export default function HandsontableAlternativesPage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>Free for pre-revenue teams:</strong> source-available under the Simple
-                      Table Community License; Pro/Enterprise for revenue-generating use
+                      <strong>Free for everyone:</strong> MIT-licensed under the Simple
+                      Table MIT license. Pro is optional support
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -540,7 +540,7 @@ export default function HandsontableAlternativesPage() {
                       License
                     </span>
                     <span className="text-sm font-bold text-green-600 dark:text-green-400">
-                      Community License
+                      MIT
                     </span>
                   </div>
                   <div className="flex items-center justify-between mb-2">
@@ -595,7 +595,7 @@ export default function HandsontableAlternativesPage() {
                   <div className="flex items-center justify-between mb-2 pb-2 border-b border-gray-200 dark:border-gray-700">
                     <span className="text-gray-700 dark:text-gray-300">License</span>
                     <div>
-                      <span className="text-green-600 dark:text-green-400 font-bold">Community License</span>
+                      <span className="text-green-600 dark:text-green-400 font-bold">MIT</span>
                       <span className="text-gray-500 dark:text-gray-400 ml-2 text-xs">
                         vs Commercial
                       </span>
@@ -620,8 +620,8 @@ export default function HandsontableAlternativesPage() {
                 Escape Handsontable's licensing nightmare
               </h4>
               <p className="text-gray-700 dark:text-gray-300 mb-4">
-                Get comparable features with Simple Table's source-available license and{" "}
-                {SIMPLE_TABLE_INFO.bundleSizeMinGzip} bundle. Free for pre-revenue teams; Pro/Enterprise for revenue-generating use.
+                Get comparable features with Simple Table's MIT-licensed license and{" "}
+                {SIMPLE_TABLE_INFO.bundleSizeMinGzip} bundle. Free for everyone; Pro/Enterprise if you want support.
               </p>
               <div className="flex gap-4 justify-center flex-wrap">
                 <Link href="/docs/installation">
@@ -929,7 +929,7 @@ export default function HandsontableAlternativesPage() {
                     <td className="p-3 text-green-600 dark:text-green-400 font-bold">
                       {SIMPLE_TABLE_INFO.bundleSizeMinGzip}
                     </td>
-                    <td className="p-3 text-green-600 dark:text-green-400">Community License</td>
+                    <td className="p-3 text-green-600 dark:text-green-400">MIT</td>
                     <td className="p-3 text-green-600 dark:text-green-400 font-bold">$0</td>
                     <td className="p-3 text-gray-700 dark:text-gray-300">✓ Built-in</td>
                   </tr>
@@ -1092,7 +1092,7 @@ export default function HandsontableAlternativesPage() {
                     className="text-green-500 mt-1 shrink-0"
                   />
                   <span>
-                    <strong>Freedom:</strong> source-available; free for pre-revenue teams, Pro/Enterprise for revenue-generating use
+                    <strong>Freedom:</strong> MIT-licensed; free for everyone, Pro/Enterprise if you want support
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
@@ -1235,7 +1235,7 @@ export default function HandsontableAlternativesPage() {
       <CallToActionCard
         location="blog_handsontable_alternatives"
         title="Replace Handsontable with Simple Table today"
-        description={`Escape license fees and bundle bloat. Simple Table gives you spreadsheet-like features in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—about 3.4× lighter than Handsontable—source-available and free for pre-revenue teams. Try the live demo, then see pricing.`}
+        description={`Escape license fees and bundle bloat. Simple Table gives you spreadsheet-like features in just ${SIMPLE_TABLE_INFO.bundleSizeMinGzip}—about 3.4× lighter than Handsontable—MIT-licensed and free for everyone. Try the live demo, then see pricing.`}
         primaryButton={{
           text: "Try the live demo",
           href: "/examples/crypto",

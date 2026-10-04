@@ -43,7 +43,7 @@ export default function Page() {
       ]}
       comparisonRows={[
         { feature: "Type of library", competitor: { value: "UI primitives (dialogs, popovers, etc.)", tone: "neutral" }, simpleTable: { value: "Full data grid", tone: "good" } },
-        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "Community License", tone: "good" } },
+        { feature: "License", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
         { feature: "Solid signals integration", competitor: { value: "Yes (primitives)", tone: "good" }, simpleTable: { value: "Yes (grid)", tone: "good" } },
         { feature: "Built-in data grid", competitor: { value: "No", tone: "bad" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Built-in row virtualization", competitor: { value: "No", tone: "bad" }, simpleTable: { value: "Yes", tone: "good" } },
@@ -100,7 +100,7 @@ export default function Page() {
       ]}
       conclusionParagraphs={[
         "Kobalte and Simple Table for Solid aren't competitors—they're complementary. Use Kobalte for accessible UI primitives, use Simple Table for the data grid.",
-        "Kobalte is MIT and Simple Table for Solid is source-available (free for pre-revenue teams); both are Solid-native. They play well together.",
+        "Kobalte is MIT and Simple Table for Solid is MIT-licensed (free for everyone); both are Solid-native. They play well together.",
       ]}
       relatedLinks={[
         { href: "/blog/solidjs-data-grid-simple-table", label: "Pillar guide: the best free SolidJS data grid in 2026" },
@@ -108,7 +108,7 @@ export default function Page() {
         { href: "/frameworks/solid", label: "Solid integration hub" },
       ]}
       ctaTitle="Need a Solid data grid?"
-      ctaDescription="Simple Table for Solid ships virtualization, pinning, grouping, and editing in one source-available package—signals-native, 84.6 kB gzipped."
+      ctaDescription="Simple Table for Solid ships virtualization, pinning, grouping, and editing in one MIT-licensed package—signals-native, 84.6 kB gzipped."
     />
   );
 }

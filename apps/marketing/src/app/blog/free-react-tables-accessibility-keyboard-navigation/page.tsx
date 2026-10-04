@@ -980,7 +980,7 @@ export default function AccessibilityComparisonPage() {
                 <p className="text-gray-700 dark:text-gray-300 mb-4">
                   <strong>For most teams:</strong> Simple Table offers the best combination of
                   accessibility, performance, and ease of use. It's accessible by default,
-                  source-available, and requires zero accessibility expertise to use correctly.
+                  MIT-licensed, and requires zero accessibility expertise to use correctly.
                 </p>
                 <div className="flex gap-3 flex-wrap text-sm">
                   <Link
@@ -1011,7 +1011,7 @@ export default function AccessibilityComparisonPage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Ship accessible tables without the accessibility expertise."
-        description="Simple Table is built with WCAG 2.1 AAA compliance, keyboard navigation, screen reader support, and mobile optimization—all built-in. FREE tier includes all accessibility features. Optional PRO plan ($85/mo) for priority support. Zero configuration. Zero accessibility debt."
+        description="Simple Table is built with WCAG 2.1 AAA compliance, keyboard navigation, screen reader support, and mobile optimization—all built-in. FREE tier includes all accessibility features. Optional PRO plan ($850/month for support) for priority support. Zero configuration. Zero accessibility debt."
         primaryButton={{
           text: "Start Free",
           href: "/docs/installation",

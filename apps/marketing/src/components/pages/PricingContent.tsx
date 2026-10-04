@@ -5,14 +5,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PageWrapper from "@/components/PageWrapper";
 import {
   faCheck,
-  faGift,
   faCreditCard,
   faCalendarCheck,
   faFileInvoice,
 } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "antd";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { openStripeCheckout } from "@/utils/stripe";
 import { STRIPE_CUSTOMER_PORTAL_URL } from "@/constants/stripe";
 import { SIMPLE_TABLE_PRICING } from "@/constants/simpleTablePricing";
@@ -39,10 +38,50 @@ interface Plan {
   recommended?: boolean;
 }
 
-const PLAN_CAPACITY_NOTE = "One license per product · unlimited users";
+const PLAN_CAPACITY_NOTE = "MIT license. Unlimited products and users.";
+
+const PLANS: Plan[] = [
+  {
+    name: "FREE",
+    subtitle: "Anyone, including companies",
+    price: SIMPLE_TABLE_PRICING.freeDisplay,
+    billingCycle: "forever",
+    description: "The full library. Free to use in any product.",
+    features: [
+      { text: "All grid features", included: true, highlight: true },
+      { text: "Official adapters for every framework", included: true, highlight: true },
+      { text: "Community Discord support", included: true, highlight: true },
+    ],
+    cta: "Install free",
+    ctaVariant: "default",
+  },
+  {
+    name: "PRO",
+    subtitle: "Support and bug fixes",
+    price: SIMPLE_TABLE_PRICING.proMonthly,
+    billingCycle: "per month",
+    description: "Same MIT license. You are paying for help, not for permission to use the library.",
+    features: [
+      { text: "Support", included: true, highlight: true },
+    ],
+    cta: "Start Pro",
+    ctaVariant: "primary",
+    recommended: true,
+  },
+  {
+    name: "ENTERPRISE",
+    subtitle: "Custom help",
+    price: SIMPLE_TABLE_PRICING.enterpriseDisplay,
+    description: "Scoped to what you need.",
+    features: [
+      { text: "Direct access to the people who build Simple Table", included: true, highlight: true },
+    ],
+    cta: "Contact us",
+    ctaVariant: "default",
+  },
+];
 
 const PricingContent: React.FC = () => {
-  const [isAnnual, setIsAnnual] = useState(true);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const [quotePlanInterest, setQuotePlanInterest] = useState<PlanInterest>("pro");
 
@@ -65,7 +104,7 @@ const PricingContent: React.FC = () => {
   const openLicenseQuote = (
     planInterest: PlanInterest = "unsure",
     ctaId?: string,
-    ctaText = "Get a license quote",
+    ctaText = "Contact us",
   ) => {
     trackCtaClick({
       cta_id: ctaId ?? `pricing_license_quote_${planInterest}`,
@@ -76,57 +115,6 @@ const PricingContent: React.FC = () => {
     setQuotePlanInterest(planInterest);
     setIsQuoteModalOpen(true);
   };
-
-  const plans: Plan[] = useMemo(
-    () => [
-      {
-        name: "FREE",
-        subtitle: "Side projects & early teams",
-        price: SIMPLE_TABLE_PRICING.freeDisplay,
-        billingCycle: "forever",
-        description: "Full library. Free until your company makes money.",
-        features: [
-          { text: "All grid features (same as Pro)", included: true, highlight: true },
-          { text: "Official adapters for every framework", included: true, highlight: true },
-          { text: "Community Discord support", included: true, highlight: true },
-          { text: "When you earn revenue → Pro", included: true, highlight: false },
-        ],
-        cta: "Install free",
-        ctaVariant: "default",
-      },
-      {
-        name: "PRO",
-        subtitle: "Most teams · any revenue",
-        price: isAnnual ? SIMPLE_TABLE_PRICING.proAnnual : SIMPLE_TABLE_PRICING.proMonthly,
-        originalPrice: isAnnual ? SIMPLE_TABLE_PRICING.proAnnualStrikethrough : undefined,
-        billingCycle: isAnnual ? "per year" : "per month",
-        description: "Commercial license + priority support. No per-seat fees as you hire.",
-        features: [
-          { text: "Commercial license for products that make money", included: true, highlight: true },
-          { text: "Priority email & Discord support", included: true, highlight: true },
-          { text: "Production bug coverage", included: true, highlight: true },
-          { text: "Same full library as Free", included: true, highlight: true },
-        ],
-        cta: "Start Pro",
-        ctaVariant: "primary",
-        recommended: true,
-      },
-      {
-        name: "ENTERPRISE",
-        subtitle: "Hands-on support",
-        price: SIMPLE_TABLE_PRICING.enterpriseDisplay,
-        description: "Everything in Pro, plus direct access to core developers.",
-        features: [
-          { text: "Everything in Pro", included: true, highlight: true },
-          { text: "Direct access to core developers", included: true, highlight: true },
-          { text: "Custom features", included: true, highlight: true },
-        ],
-        cta: "Contact us",
-        ctaVariant: "default",
-      },
-    ],
-    [isAnnual],
-  );
 
   const handleGetStarted = (planName: Plan["name"]) => {
     if (planName === "FREE") {
@@ -150,7 +138,7 @@ const PricingContent: React.FC = () => {
       location: "pricing_page",
     });
     try {
-      openStripeCheckout("pro", isAnnual);
+      openStripeCheckout("pro", false);
     } catch (error) {
       console.error("Error starting checkout:", error);
       alert("There was an error starting the checkout process. Please try again.");
@@ -180,46 +168,11 @@ const PricingContent: React.FC = () => {
           transition={{ duration: 0.6 }}
         >
           <h1 className="text-4xl md:text-5xl font-bold text-ink mb-3">
-            Simple Pricing
+            Simple pricing
           </h1>
-          <p className="text-lg md:text-xl text-muted max-w-2xl mx-auto mb-4">
-            Free until you earn revenue
+          <p className="text-lg md:text-xl text-muted max-w-2xl mx-auto mb-8">
+            The library is free under the MIT license. Pay only if you want support.
           </p>
-
-          <div className="relative inline-flex items-center gap-4 mb-8">
-            <span
-              className={`text-base ${
-                !isAnnual ? "font-semibold text-ink" : "text-muted"
-              }`}
-            >
-              Monthly
-            </span>
-            <button
-              type="button"
-              className={`relative w-16 h-8 rounded-full transition-colors duration-200 ${
-                isAnnual ? "bg-accent" : "bg-line"
-              }`}
-              onClick={() => setIsAnnual(!isAnnual)}
-              aria-label={isAnnual ? "Switch to monthly billing" : "Switch to annual billing"}
-            >
-              <div
-                className={`absolute w-6 h-6 bg-white rounded-full top-1 transition-transform duration-200 ${
-                  isAnnual ? "translate-x-9" : "translate-x-1"
-                }`}
-              />
-            </button>
-            <span
-              className={`text-base ${
-                isAnnual ? "font-semibold text-ink" : "text-muted"
-              }`}
-            >
-              Annual
-            </span>
-            <span className="border border-line text-muted px-3 py-1 rounded-full text-sm font-medium inline-flex items-center gap-1">
-              <FontAwesomeIcon icon={faGift} />
-              Save 17% yearly
-            </span>
-          </div>
         </motion.section>
 
         <motion.section
@@ -228,7 +181,7 @@ const PricingContent: React.FC = () => {
           initial="hidden"
           animate="visible"
         >
-          {plans.map((plan) => (
+          {PLANS.map((plan) => (
             <motion.div
               key={plan.name}
               className={`relative flex h-full flex-col rounded-lg p-6 border ${
@@ -307,12 +260,12 @@ const PricingContent: React.FC = () => {
 
               <div className="mt-auto shrink-0 border-t border-line pt-4">
                 <a
-                  href={plan.name === "FREE" ? "/legal/license" : "/legal/eula"}
+                  href="/legal/license"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-accent hover:underline"
                 >
-                  {plan.name === "FREE" ? "Community License" : "Commercial license"}
+                  MIT License
                 </a>
               </div>
             </motion.div>
@@ -327,12 +280,12 @@ const PricingContent: React.FC = () => {
           viewport={{ once: true }}
         >
           <p className="text-sm text-muted">
-            ChartMetric chose Simple Table over AG Grid:{" "}
+            ChartMetric chose Simple Table over AG Grid and skipped a{" "}
             <Link
               href="/case-studies/chartmetric"
               className="text-accent font-medium hover:underline"
             >
-              $19K+ first-year savings (~95% for their team)
+              $19K+ per-engineer license
             </Link>
             .
           </p>
@@ -347,8 +300,8 @@ const PricingContent: React.FC = () => {
         >
           <h3 className="text-xl font-bold text-ink mb-2">Not sure?</h3>
           <p className="text-muted mb-6 text-sm max-w-lg mx-auto">
-            Prefer a quote without checkout, or want to talk through your setup? We&apos;ll help for
-            free, even if Simple Table isn&apos;t the fit.
+            Want support, or something custom? We&apos;ll help you figure out the fit, even if
+            Simple Table isn&apos;t it.
           </p>
           <div className="mb-10 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Button
@@ -358,7 +311,7 @@ const PricingContent: React.FC = () => {
               className="h-11 px-8"
             >
               <FontAwesomeIcon icon={faFileInvoice} className="mr-2" />
-              Get a license quote
+              Contact us
             </Button>
             <Button
               size="large"

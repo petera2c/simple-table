@@ -908,8 +908,8 @@ export default function BundleSizeComparisonPage() {
                 When bundle size is a priority,{" "}
                 <strong>Simple Table at {SIMPLE_TABLE_INFO.bundleSizeMinGzip}</strong> offers an
                 excellent balance of size and features. It&apos;s about 3x smaller than AG Grid
-                while providing the core functionality most applications need—free for pre-revenue
-                teams under the Community License (source-available).
+                while providing the core functionality most applications need, free for everyone
+                under the MIT license.
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">

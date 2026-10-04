@@ -40,7 +40,7 @@ export const DISTRIBUTION_CADENCE: CadenceItem[] = [
     channel: "reddit",
     action: "Answer an AG Grid alternative / pricing thread in r/reactjs or r/webdev",
     draft:
-      "If budget is the issue: AG Grid Enterprise is per-developer; we ship a batteries-included grid at ~85KB with free for pre-revenue and per-product Pro. Live CRM demo + vs AG Grid comparison linked in replies if useful.",
+      "If budget is the issue: AG Grid Enterprise is per-developer; we ship a batteries-included grid at ~85KB with an MIT license, free for everyone. Pro is $850/month for support. Live CRM demo + vs AG Grid comparison linked in replies if useful.",
     linkTarget: "/comparisons/simple-table-vs-ag-grid",
   },
   {
@@ -72,7 +72,7 @@ export const DISTRIBUTION_CADENCE: CadenceItem[] = [
     channel: "discord",
     action: "Pin install + pricing FAQ answers; invite from support threads",
     draft:
-      "Free = Community License (zero revenue). Pro = commercial EULA + priority support. Features are the same — see /pricing.",
+      "Free = MIT, including companies. Pro = $850/month for support and bug fixes. Features are the same. See /pricing.",
     linkTarget: "/pricing",
   },
   {
@@ -80,7 +80,7 @@ export const DISTRIBUTION_CADENCE: CadenceItem[] = [
     channel: "x",
     action: "Migration tip for leaving AG Grid",
     draft:
-      "Migrating off AG Grid? Start with one screen, keep virtualization, swap pricing model to per-product. Migration guides: simple-table.com/migrations",
+      "Migrating off AG Grid? Start with one screen, keep virtualization, the library is MIT, so you do not need a per-developer license. Migration guides: simple-table.com/migrations",
     linkTarget: "/migrations/from-ag-grid-angular",
   },
   {
@@ -88,7 +88,7 @@ export const DISTRIBUTION_CADENCE: CadenceItem[] = [
     channel: "indieHackers",
     action: "Launch-style update: pricing vs AG Grid + multi-framework story",
     draft:
-      "Built a lightweight data grid alternative to AG Grid/Handsontable. Free for pre-revenue, Pro per product (not per seat). Looking for feedback from indie SaaS builders shipping admin/CRM tables.",
+      "Built a lightweight data grid alternative to AG Grid/Handsontable. Free for everyone, Pro per product (not per seat). Looking for feedback from indie SaaS builders shipping admin/CRM tables.",
     linkTarget: "/pricing",
   },
   {

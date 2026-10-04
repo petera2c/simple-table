@@ -107,7 +107,7 @@ export default function ReactTableInfiniteScrollPage() {
                 >
                   Simple Table
                 </Link>
-                , a free, source-available React data grid with these features built in.
+                , a free, MIT-licensed React data grid with these features built in.
               </p>
             </div>
           </div>

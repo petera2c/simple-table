@@ -27,7 +27,7 @@ export const BUNDLE_BENCHMARK_ROWS: BundleBenchmarkRow[] = [
     sizeKB: SIMPLE_TABLE_INFO.bundleSizeMinGzipKB,
     notes: "Batteries-included grid; adapters share this core",
     bundlePhobiaUrl: SIMPLE_TABLE_INFO.bundlePhobiaUrl,
-    pricingNote: "Free (zero revenue) / Pro per product",
+    pricingNote: "Free (MIT). Support is $850/month",
   },
   {
     library: "TanStack Table",

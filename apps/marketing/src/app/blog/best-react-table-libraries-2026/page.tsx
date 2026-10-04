@@ -191,7 +191,7 @@ export default function BestReactTableLibraries2026Page() {
                       1. Simple Table
                     </td>
                     <td className="p-3 text-green-600 dark:text-green-400">
-                      Community (pre-revenue)
+                      MIT
                     </td>
                     <td className="p-3 text-green-600 dark:text-green-400">Yes</td>
                     <td className="p-3 text-green-600 dark:text-green-400 font-bold">
@@ -276,8 +276,8 @@ export default function BestReactTableLibraries2026Page() {
             <p className="mb-6 text-gray-700 dark:text-gray-300">
               Simple Table is a compact, UI-included grid ({SIMPLE_TABLE_INFO.bundleSizeMinGzip})
               aimed at dashboards and admin CRUD. You configure columns with props instead of
-              building a headless UI layer. Free for pre-revenue teams under the Community License;
-              Pro when you earn revenue.
+              building a headless UI layer. Free for everyone under the MIT license;
+              optional Pro support if you want it.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">

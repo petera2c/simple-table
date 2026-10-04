@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Row selection drives bulk actions: delete, archive, export, assign. Get it wrong and users misclick or struggle on touch screens.",
         "This tutorial walks through single, multi, and checkbox selection patterns for the Angular data grid landscape—and shows the Simple Table for Angular setup with signals.",
-        "If you also need pinned columns, virtualization, and grouping with aggregations alongside selection, Simple Table for Angular is the focused source-available pick.",
+        "If you also need pinned columns, virtualization, and grouping with aggregations alongside selection, Simple Table for Angular is the focused MIT-licensed pick.",
       ]}
       whyItMatters={[
         { title: "Bulk actions", body: "Selection enables archive, delete, export, assign, etc. Without it, users repeat per-row actions." },
@@ -83,7 +83,7 @@ export default function Page() {
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Add row selection to your Angular grid"
-      ctaDescription="Simple Table for Angular ships single, multi, and checkbox selection in one source-available package—free for pre-revenue teams, 84.6 kB gzipped, signals-native, accessible."
+      ctaDescription="Simple Table for Angular ships single, multi, and checkbox selection in one MIT-licensed package—free for everyone, 84.6 kB gzipped, signals-native, accessible."
       docsHref="/docs/row-selection"
     />
   );

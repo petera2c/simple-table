@@ -177,7 +177,7 @@ export default function TabulatorAlternativesReactPage() {
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">License</td>
                     <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
-                    <td className="p-3 text-green-600 dark:text-green-400">Community License</td>
+                    <td className="p-3 text-green-600 dark:text-green-400">MIT</td>
                     <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
                     <td className="p-3 text-red-600 dark:text-red-400">MIT + $999+/year</td>
                   </tr>
@@ -820,7 +820,7 @@ table.setData(newData);`}
                     </li>
                     <li className="flex items-center gap-2">
                       <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />
-                      <span>Free for pre-revenue (Community License)</span>
+                      <span>Free for everyone (MIT)</span>
                     </li>
                   </ul>
                 </div>

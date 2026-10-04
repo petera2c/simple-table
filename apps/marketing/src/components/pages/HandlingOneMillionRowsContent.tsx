@@ -398,7 +398,7 @@ export default function PerformanceDemo() {
         {/* Call to Action */}
         <CallToActionCard
           title="Ready to scale your data grids?"
-          description="Simple Table makes it easy to handle large datasets with lightning-fast performance. Install free for pre-revenue teams, or see Pro pricing when you earn revenue."
+          description="Simple Table makes it easy to handle large datasets with lightning-fast performance. Install free for everyone, or see Pro pricing if you want support."
           primaryButton={{
             text: "Install from docs",
             href: "/docs/installation",

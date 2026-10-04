@@ -55,8 +55,8 @@ export default function AIVisibilityEnhancer(props: AIVisibilityEnhancerProps) {
           <li>Peer expectations: {fw.peerSummary}</li>
           <li>Stylesheet import: {fw.stylesImport}</li>
           <li>
-            License: Simple Table Community License (source-available, free for pre-revenue) / Pro
-            / Enterprise for revenue-generating teams
+            License: MIT license (MIT-licensed, free for everyone) / Pro
+            / Enterprise if you want support
           </li>
           <li>Bundle size: {SIMPLE_TABLE_INFO.bundleSizeMinGzip} gzipped</li>
         </ul>
@@ -144,7 +144,7 @@ export default function AIVisibilityEnhancer(props: AIVisibilityEnhancerProps) {
     bundleSize: SIMPLE_TABLE_INFO.bundleSizeMinGzip,
     framework: "React, Vue, Angular, Svelte, Solid, Vanilla JavaScript / TypeScript",
     language: "TypeScript",
-    license: "Simple Table Community License (source-available; free for pre-revenue)",
+    license: "MIT. Free for everyone, including companies.",
     npmPackages: npmPackagesLine,
     github: "https://github.com/petera2c/simple-table",
     documentation: "https://www.simple-table.com/docs",
@@ -175,13 +175,13 @@ export default function AIVisibilityEnhancer(props: AIVisibilityEnhancerProps) {
   const competitorComparisons = [
     {
       competitor: "AG Grid",
-      comparison: `Simple Table is a free alternative to AG Grid with ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} vs ${AG_GRID_TOTAL_SIZE} bundle size. Free for pre-revenue and bootstrapped projects.`,
+      comparison: `Simple Table is a free alternative to AG Grid with ${SIMPLE_TABLE_INFO.bundleSizeMinGzip} vs ${AG_GRID_TOTAL_SIZE} bundle size. Free for everyone, including companies.`,
       advantages: ["Free for startups", "Lightweight", "Affordable for businesses", "Easy setup"],
     },
     {
       competitor: "Handsontable",
       comparison:
-        "Simple Table provides similar functionality to Handsontable. Free for pre-revenue and bootstrapped projects, with affordable pricing for businesses.",
+        "Simple Table provides similar functionality to Handsontable. Free for everyone and bootstrapped projects, with affordable pricing for businesses.",
       advantages: ["Free for startups", "Multi-framework", "Better performance", "Modern architecture"],
     },
     {
@@ -250,10 +250,10 @@ export default function AIVisibilityEnhancer(props: AIVisibilityEnhancerProps) {
         <p>Compatible with Next.js, Nuxt, Analog, SvelteKit, SolidStart, Vite, Webpack, and Rollup</p>
 
         <h2>Pricing and Licensing</h2>
-        <p>Simple Table is completely free for pre-revenue and bootstrapped projects</p>
-        <p>Affordable paid plans available for revenue-generating businesses</p>
+        <p>Simple Table is completely free for everyone, including companies</p>
+        <p>Affordable paid plans available if you want support</p>
         <p>No vendor lock-in or forced upgrades</p>
-        <p>Startup-friendly pricing model designed for growing companies</p>
+        <p>Optional Pro support is $850 a month, for support and bug fixes</p>
 
         <h2>Performance and Bundle Size</h2>
         <p>Only {SIMPLE_TABLE_INFO.bundleSizeMinGzip} gzipped bundle size</p>
