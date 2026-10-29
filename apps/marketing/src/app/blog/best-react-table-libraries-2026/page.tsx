@@ -283,6 +283,20 @@ export default function BestReactTableLibraries2026Page() {
           </div>
         </section>
 
+        <aside className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+          <p className="text-gray-700 dark:text-gray-300">
+            <strong>Only want free options?</strong> Our{" "}
+            <Link
+              href="/blog/best-free-react-data-grid-2026"
+              className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+            >
+              best free React data grids of 2026
+            </Link>{" "}
+            guide compares MIT licensed grids only, and shows exactly where AG Grid Community and MUI
+            X stop being free.
+          </p>
+        </aside>
+
         {/* Simple Table Section */}
         <section id="simple-table">
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">

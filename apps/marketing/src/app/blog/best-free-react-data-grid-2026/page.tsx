@@ -212,6 +212,60 @@ export default function BestFreeReactDataGrid2026Page() {
           </div>
         </section>
 
+        {/* Quick Picks Section */}
+        <section id="quick-picks">
+          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
+            <h2 className="mb-4 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
+              Free React Data Grids in 2026: Quick Picks
+            </h2>
+            <p className="mb-4 text-gray-700 dark:text-gray-300">
+              Every option below has a free, MIT licensed package you can ship in a commercial app.
+              Some of them also sell paid tiers, which we call out so you know where the free line
+              is.
+            </p>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-gray-200 dark:border-gray-700 text-sm">
+                <thead className="bg-gray-50 dark:bg-gray-900">
+                  <tr>
+                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Library</th>
+                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Type</th>
+                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">What is free</th>
+                    <th className="border border-gray-200 dark:border-gray-700 p-3 text-left">Best for</th>
+                  </tr>
+                </thead>
+                <tbody className="text-gray-700 dark:text-gray-300">
+                  {[
+                    ["Simple Table", "Ready-made grid", "Everything (MIT), including grouping, aggregation, pivoting and tree data", "Teams that want a full grid without a license"],
+                    ["TanStack Table", "Headless", "Everything (MIT); you build the markup", "Custom design systems, shadcn/ui and Tailwind tables"],
+                    ["AG Grid Community", "Ready-made grid", "Core grid (MIT); grouping, pivoting, tree data and Excel export are Enterprise", "Teams that may later buy Enterprise"],
+                    ["MUI X Data Grid", "Ready-made grid", "Community tier (MIT); Pro and Premium add advanced features", "Apps already built on Material UI"],
+                    ["react-data-grid", "Ready-made grid", "Everything (MIT)", "Spreadsheet-like editing with a small footprint"],
+                    ["Glide Data Grid", "Canvas grid", "Everything (MIT)", "Very large datasets rendered on canvas"],
+                  ].map(([name, type, free, best]) => (
+                    <tr key={name}>
+                      <td className="border border-gray-200 dark:border-gray-700 p-3 font-semibold">{name}</td>
+                      <td className="border border-gray-200 dark:border-gray-700 p-3">{type}</td>
+                      <td className="border border-gray-200 dark:border-gray-700 p-3">{free}</td>
+                      <td className="border border-gray-200 dark:border-gray-700 p-3">{best}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-4 text-sm text-gray-700 dark:text-gray-300">
+              Weighing AG Grid Enterprise? Read the{" "}
+              <Link href="/blog/ag-grid-pricing-license-breakdown-2026" className="text-blue-600 dark:text-blue-400 hover:underline">
+                AG Grid license and pricing breakdown
+              </Link>
+              . Building in Angular instead? See the{" "}
+              <Link href="/blog/best-angular-data-grids-2026" className="text-blue-600 dark:text-blue-400 hover:underline">
+                best Angular data grids of 2026
+              </Link>
+              .
+            </p>
+          </div>
+        </section>
+
         {/* Detailed Comparison Section */}
         <section id="detailed-comparison">
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">

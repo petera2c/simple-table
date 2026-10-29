@@ -37,13 +37,13 @@ export default function Page() {
       datePublished={agGridAlternativesAngularPost.createdAt}
       dateModified={agGridAlternativesAngularPost.updatedAt}
       introParagraphs={[
-        "AG Grid is dominant for a reason: it's powerful, well-documented, and feature-complete. But the Enterprise tier ($999+/dev/year) puts the most-used features—grouping with aggregations, pivoting, master/detail, tree data, integrated charts—behind a paywall. For Angular teams looking for a free or lighter-weight alternative in 2026, here's the field.",
+        "AG Grid is dominant for a reason: it's powerful, well-documented, and feature-complete. But the Enterprise tier ($999 per developer, perpetual) puts the most-used features—grouping with aggregations, pivoting, master/detail, tree data, integrated charts—behind a paywall. For Angular teams looking for a free or lighter-weight alternative in 2026, here's the field.",
         "We'll compare the best free Angular data grids in 2026: Simple Table for Angular, ngx-datatable, PrimeNG Table, Angular Material's mat-table, and the commercial Kendo Grid for context. Each has a sweet spot. The right pick depends on your bundle constraints, feature mix, design system, and willingness to pay for commercial support.",
         "Spoiler: Simple Table for Angular is what we ship and the focused MIT-licensed alternative we recommend for most new Angular projects. But every Angular team's situation is a little different, so we'll walk through who each library is for.",
       ]}
       comparisonRows={[
         { feature: "License", competitor: { value: "Mixed (MIT + commercial Enterprise)", tone: "neutral" }, simpleTable: { value: "MIT", tone: "good" } },
-        { feature: "Per-developer fees", competitor: { value: "AG Enterprise: $999+; Kendo: $649+", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
+        { feature: "Per-developer fees", competitor: { value: "AG Enterprise: $999/dev; Kendo: $649+", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
         { feature: "Standalone components", competitor: { value: "All viable options support it", tone: "good" }, simpleTable: { value: "First-class", tone: "good" } },
         { feature: "Signals-native API", competitor: { value: "Mixed", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Built-in virtualization", competitor: { value: "AG / Kendo: yes; mat-table: via CDK", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
@@ -121,6 +121,7 @@ export default function Page() {
         "If you're committed to a design system (Material, PrimeNG) or enterprise vendor (Kendo, AG Grid Enterprise), stay where you are and let your teammates know what's possible elsewhere when they hit a feature wall.",
       ]}
       relatedLinks={[
+        { href: "/blog/best-angular-data-grids-2026", label: "Best Angular data grids 2026 (ranked)" },
         { href: "/blog/simple-table-vs-ag-grid-angular", label: "Simple Table vs AG Grid Angular" },
         { href: "/blog/simple-table-vs-ngx-datatable", label: "Simple Table vs ngx-datatable" },
         { href: "/blog/simple-table-vs-primeng-table", label: "Simple Table vs PrimeNG Table" },
