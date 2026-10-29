@@ -139,7 +139,7 @@ export default function HandsontableAlternativesPage() {
           </span>
           <span className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
             <FontAwesomeIcon icon={faShieldAlt} />
-            Source-Available
+            MIT Licensed
           </span>
           <span className="bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
             <FontAwesomeIcon icon={faFeather} />

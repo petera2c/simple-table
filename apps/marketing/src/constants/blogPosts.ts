@@ -517,7 +517,7 @@ export const vanillaDataGridPillarPost: BlogPostMetadata = {
 
 // Angular
 export const simpleTableVsAgGridAngularPost: BlogPostMetadata = {
-  title: "Simple Table vs AG Grid Angular: Free Source-Available Data Grid for Angular 17/18/19",
+  title: "Simple Table vs AG Grid Angular: Free MIT Data Grid for Angular 17/18/19",
   description:
     "AG Grid Angular charges per developer for grouping, pivoting, and master-detail. Simple Table for Angular ships virtualization, pinning, grouping, and editing free for everyone (MIT)—with idiomatic standalone-component support.",
   slug: "simple-table-vs-ag-grid-angular",
@@ -557,7 +557,7 @@ export const simpleTableVsAngularMaterialTablePost: BlogPostMetadata = {
 };
 
 export const simpleTableVsKendoGridAngularPost: BlogPostMetadata = {
-  title: "Simple Table vs Kendo Grid for Angular: $649+ Commercial vs Free Source-Available",
+  title: "Simple Table vs Kendo Grid for Angular: $649+ Commercial vs Free MIT",
   description:
     "Kendo Grid for Angular costs $649+ per developer per year. Simple Table for Angular is free for everyone (MIT) with virtualization, pinning, grouping, and editing built in—no license keys, no commercial paperwork.",
   slug: "simple-table-vs-kendo-grid-angular",
@@ -649,7 +649,7 @@ export const simpleTableVsSvelteHeadlessTablePost: BlogPostMetadata = {
 };
 
 export const simpleTableVsSvarDatagridPost: BlogPostMetadata = {
-  title: "Simple Table vs SVAR DataGrid: Free Source-Available Svelte Data Grid Comparison",
+  title: "Simple Table vs SVAR DataGrid: Free MIT Svelte Data Grid Comparison",
   description:
     "SVAR DataGrid for Svelte is feature-rich but bundles in SVAR's component ecosystem. Simple Table for Svelte is a smaller, focused MIT-licensed alternative with virtualization, pinning, grouping, and editing built in.",
   slug: "simple-table-vs-svar-datagrid",
@@ -742,7 +742,7 @@ export const simpleTableVsGridJsPost: BlogPostMetadata = {
 
 export const simpleTableVsHandsontableVanillaPost: BlogPostMetadata = {
   title:
-    "simple-table-core vs Handsontable (Vanilla JS): Source-Available Data Grid vs Commercial Spreadsheet",
+    "simple-table-core vs Handsontable (Vanilla JS): MIT Data Grid vs Commercial Spreadsheet",
   description:
     "Handsontable's non-commercial license blocks production SaaS use. simple-table-core is MIT-licensed—free for everyone, with Pro/Enterprise tiers if you want support—and ships virtualization, pinning, grouping, and editing in vanilla TypeScript.",
   slug: "simple-table-vs-handsontable-vanilla",

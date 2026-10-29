@@ -87,7 +87,7 @@ export default function AgGridAlternativesPage() {
           </span>
           <span className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
             <FontAwesomeIcon icon={faTrophy} />
-            Source-Available
+            MIT Licensed
           </span>
         </div>
 
