@@ -65,8 +65,8 @@ export const SEO_STRINGS = {
   site: {
     url: "https://www.simple-table.com",
     name: "Simple Table",
-    title: "Simple Table: Multi-Framework JavaScript Data Grid | Free Plan",
-    description: `Simple Table is a lightweight data grid (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}). Free and MIT licensed, with optional paid support from the people who build it. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.`,
+    title: "Simple Table: Free MIT Data Grid for React, Vue, Angular, Svelte & Solid",
+    description: `Simple Table is a free, MIT-licensed data grid for React, Vue, Angular, Svelte, Solid, and vanilla JS (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}). Virtualization, pinning, grouping, and editing built in, with optional paid support.`,
     defaultKeywords:
       "simple-table, simple-table-core, @simple-table/react, @simple-table/vue, @simple-table/angular, @simple-table/svelte, @simple-table/solid, react data grid, vue data grid, angular data grid, svelte data grid, solidjs table, vanilla js data grid, multi-framework data grid, ag grid alternative, handsontable alternative, tanstack table alternative, free data grid, lightweight data grid",
     creator: "@simpletable",
@@ -78,8 +78,8 @@ export const SEO_STRINGS = {
     },
   },
   home: {
-    title: "Simple Table: Multi-Framework JavaScript Data Grid | Free Plan",
-    description: `Simple Table is a lightweight data grid (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}). Free and MIT licensed, with optional paid support from the people who build it. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.`,
+    title: "Simple Table: Free MIT Data Grid for React, Vue, Angular, Svelte & Solid",
+    description: `Simple Table is a free, MIT-licensed data grid for React, Vue, Angular, Svelte, Solid, and vanilla JS (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}). Virtualization, pinning, grouping, and editing built in, with optional paid support.`,
     keywords:
       "simple-table, simple-table-core, @simple-table/react, @simple-table/vue, @simple-table/angular, @simple-table/svelte, @simple-table/solid, react data grid, vue data grid, angular data grid, svelte data grid, solidjs table, vanilla js data grid, multi-framework data grid, ag grid alternative, handsontable alternative, tanstack table alternative, free data grid, lightweight data grid",
   },

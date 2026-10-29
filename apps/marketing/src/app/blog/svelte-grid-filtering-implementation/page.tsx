@@ -37,7 +37,7 @@ export default function Page() {
       dateModified={svelteGridFilteringPost.updatedAt}
       introParagraphs={[
         "Filtering is the bread-and-butter feature users hit before sorting or even rendering all rows. Get the typing wrong (string vs number vs date) and your filter UX feels broken.",
-        "This tutorial walks through column filters, a global quick filter, and custom predicates for the Svelte data grid landscape and shows the Simple Table for Svelte setup with both Svelte 4 stores and Svelte 5 runes.",
+        "This tutorial walks through column filters, a global quick filter, and custom predicates for the Svelte data grid landscape and shows the Simple Table for Svelte setup with Svelte 5 runes (and writable stores, which Svelte 5 still supports).",
         "If you also need pinning, virtualization, and grouping with aggregations alongside filtering, Simple Table for Svelte ships them all in one MIT-licensed package.",
       ]}
       whyItMatters={[
@@ -65,7 +65,7 @@ export default function Page() {
       ]}
       faqs={[
         { question: "Can I filter server-side?", answer: "Yes. Use SvelteKit's load function to fetch filtered rows; mirror filter state to URL search params for shareable links." },
-        { question: "Does it work with Svelte 4 stores?", answer: "Yes. Replace $state with writable() and bind:value still works." },
+        { question: "Can I use writable stores instead of runes?", answer: "Yes, on Svelte 5. Simple Table for Svelte requires Svelte 5 (svelte >=5.0.0), which still supports stores: replace $state with writable() and bind:value still works. Svelte 4 is not supported." },
         { question: "Does filtering combine with virtualization?", answer: "Yes. The filtered row set is what the virtualizer renders, so 1M-row datasets remain smooth after filtering." },
       ]}
       conclusionParagraphs={[

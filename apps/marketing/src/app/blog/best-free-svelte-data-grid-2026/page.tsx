@@ -44,7 +44,7 @@ export default function Page() {
       comparisonRows={[
         { feature: "License", competitor: { value: "MIT (most options)", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
         { feature: "Approach", competitor: { value: "Headless / suite / styled <table>", tone: "neutral" }, simpleTable: { value: "Batteries-included", tone: "good" } },
-        { feature: "Svelte 4 support", competitor: { value: "All viable options", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
+        { feature: "Svelte 4 support", competitor: { value: "Varies by library", tone: "neutral" }, simpleTable: { value: "No (requires Svelte 5)", tone: "bad" } },
         { feature: "Svelte 5 / runes support", competitor: { value: "Mixed", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "20–200+ kB depending on choice", tone: "neutral" }, simpleTable: { value: "84.6 kB", tone: "good" } },
         { feature: "Built-in row virtualization", competitor: { value: "Mixed (none / yes / suite-tied)", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
@@ -84,7 +84,7 @@ export default function Page() {
           title: "Custom design system, headless preferred",
           body: "Want pixel-perfect control over markup.",
           recommendation: "competitor",
-          recommendationLabel: "Stay on svelte-headless-table—best fit for hand-built UI.",
+          recommendationLabel: "Stay on svelte-headless-table: best fit for hand-built UI on Svelte 4.",
         },
         {
           emoji: "📊",
@@ -103,7 +103,7 @@ export default function Page() {
       ]}
       faqs={[
         { question: "What's the best Svelte data grid in 2026?", answer: "For most teams, Simple Table for Svelte. It's MIT-licensed (free for everyone), batteries-included, runes-ready, and 84.6 kB gzipped. Stay headless if you want full UI control; use suite grids if you've adopted that suite." },
-        { question: "Is svelte-headless-table dead?", answer: "No, but it's evolved more slowly than the broader Svelte ecosystem. Runes support is community-led." },
+        { question: "Is svelte-headless-table still maintained?", answer: "As of October 2026, its latest npm release is 0.18.3 (October 28, 2024), which declares svelte ^4.0.0 as its peer dependency. Check its GitHub repository for current activity before choosing it for a Svelte 5 app." },
         { question: "Does Simple Table for Svelte support SvelteKit SSR?", answer: "Yes. ESM-first, SSR-friendly, works with @sveltejs/adapter-* out of the box." },
       ]}
       conclusionParagraphs={[
@@ -112,13 +112,15 @@ export default function Page() {
       ]}
       relatedLinks={[
         { href: "/blog/sveltekit-data-table-simple-table", label: "Pillar guide: the best free SvelteKit data table in 2026" },
-        { href: "/blog/simple-table-vs-svelte-headless-table", label: "Simple Table vs svelte-headless-table" },
+        { href: "/blog/simple-table-vs-svelte-headless-table", label: "Simple Table vs svelte-headless-table: headless vs batteries-included" },
+        { href: "/comparisons/simple-table-vs-svelte-headless-table", label: "Feature matrix: svelte-headless-table vs Simple Table" },
+        { href: "/migrations/from-svelte-headless-table", label: "Migration guide: from svelte-headless-table on Svelte 5" },
         { href: "/blog/simple-table-vs-svar-datagrid", label: "Simple Table vs SVAR DataGrid" },
         { href: "/blog/simple-table-vs-flowbite-svelte-table", label: "Simple Table vs Flowbite Svelte Table" },
         { href: "/frameworks/svelte", label: "Svelte integration hub" },
       ]}
       ctaTitle="Pick the right Svelte data grid for 2026"
-      ctaDescription="Simple Table for Svelte ships virtualization, pinning, grouping, and editing in one MIT-licensed package—runes-ready, 84.6 kB gzipped."
+      ctaDescription="Simple Table for Svelte ships virtualization, pinning, grouping, and editing in one MIT-licensed package, built for Svelte 5 and 84.6 kB gzipped."
     />
   );
 }

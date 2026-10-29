@@ -73,6 +73,21 @@ export default function ReactTableColumnResizingGuidePage() {
           columns in React tables, compare the best libraries, and discover why proper column
           resizing is harder than it looks.
         </p>
+        <p className="mt-3 text-sm text-center text-gray-600 dark:text-gray-400">
+          Last updated October 28, 2026 (Simple Table 4.3.2, TanStack Table 9.3.1, AG Grid 36.2.0).
+          See also:{" "}
+          <Link href="/docs/column-resizing" className="underline">
+            Simple Table column resizing docs
+          </Link>
+          {" · "}
+          <Link href="/blog/tanstack-table-vs-ag-grid-comparison" className="underline">
+            AG Grid vs TanStack Table
+          </Link>
+          {" · "}
+          <Link href="/blog/best-react-table-libraries-2026" className="underline">
+            Best React table libraries in 2026
+          </Link>
+        </p>
       </section>
 
       {/* Main Content */}
@@ -730,7 +745,9 @@ export default function ResponsiveTable({ data }) {
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 TanStack Table provides a Column Sizing API, but you need to build the UI yourself.
-                Here's what that looks like:
+                Here's what that looks like with the TanStack Table v8 API. Version 9 (released
+                August 2026) changed parts of the table setup, so check the v9 column sizing docs
+                if you are on 9.x:
               </p>
 
               <CodeBlock
@@ -913,11 +930,13 @@ export default function AGGridResizableTable({ data }) {
                 </p>
                 <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1 list-disc list-inside">
                   <li>
-                    <strong>$999/developer/year</strong> for AG Grid Enterprise
+                    AG Grid Enterprise is a <strong>paid, per-developer licence</strong> (perpetual,
+                    with 1 year of updates)
                   </li>
                   <li>Advanced column features (grouping, pivoting) are enterprise-only</li>
                   <li>
-                    For a 5-developer team: <strong>$4,995/year</strong>
+                    Every front-end developer on the project needs a licence, and customer-facing
+                    apps are quoted by AG Grid sales
                   </li>
                 </ul>
                 <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
@@ -1147,7 +1166,7 @@ export default function AGGridResizableTable({ data }) {
                   </h3>
                   <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1 list-disc list-inside">
                     <li>You need enterprise features like pivoting and advanced grouping</li>
-                    <li>Your company has budget for $999/developer/year licenses</li>
+                    <li>Your company has budget for an AG Grid Enterprise licence per front-end developer</li>
                     <li>You're building a complex financial or analytics dashboard</li>
                     <li>You need Excel-like functionality with enterprise support</li>
                   </ul>

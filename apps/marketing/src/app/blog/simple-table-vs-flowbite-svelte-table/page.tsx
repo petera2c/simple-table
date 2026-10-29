@@ -50,7 +50,7 @@ export default function Page() {
         { feature: "Row grouping + aggregations", competitor: { value: "No", tone: "bad" }, simpleTable: { value: "Built-in", tone: "good" } },
         { feature: "Inline cell editing", competitor: { value: "No", tone: "bad" }, simpleTable: { value: "Built-in", tone: "good" } },
         { feature: "Sorting / filtering", competitor: { value: "Manual", tone: "neutral" }, simpleTable: { value: "Built-in", tone: "good" } },
-        { feature: "Svelte 4 + Svelte 5", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
+        { feature: "Svelte 5", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (requires Svelte 5)", tone: "good" } },
       ]}
       whyChoose={{
         competitor: {

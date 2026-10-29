@@ -37,7 +37,7 @@ export default function Page() {
       dateModified={svelteGridColumnPinningPost.updatedAt}
       introParagraphs={[
         "Wide tables with 20+ columns become unusable without pinning. Users lose context as they scroll horizontally—what row am I on? Pin the identifier column on the left and an actions column on the right and the UX clicks back into place.",
-        "This tutorial walks through column pinning patterns for Svelte data grids and shows the Simple Table for Svelte setup with both Svelte 4 stores and Svelte 5 runes.",
+        "This tutorial walks through column pinning patterns for Svelte data grids and shows the Simple Table for Svelte setup with Svelte 5 runes (and writable stores, which Svelte 5 still supports).",
         "If you also need virtualization, grouping with aggregations, and inline editing alongside pinning, Simple Table for Svelte is the focused MIT-licensed pick.",
       ]}
       whyItMatters={[
@@ -65,7 +65,7 @@ export default function Page() {
       ]}
       faqs={[
         { question: "Can users reorder pinned columns?", answer: "Yes—Simple Table supports column reordering, including across the pinned/unpinned boundary. Set columnReordering={true}." },
-        { question: "Does this work with Svelte 4 stores?", answer: "Yes. Replace $state with writable() and the pinning logic still works." },
+        { question: "Can I use writable stores instead of runes?", answer: "Yes, on Svelte 5. Simple Table for Svelte requires Svelte 5 (svelte >=5.0.0), which still supports stores: replace $state with writable() and the pinning logic still works. Svelte 4 is not supported." },
         { question: "Does pinning work with virtualization?", answer: "Yes. The pinned columns are rendered separately from the virtualized scroll area; performance is unchanged for 1M rows." },
       ]}
       conclusionParagraphs={[

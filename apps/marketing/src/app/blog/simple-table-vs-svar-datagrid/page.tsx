@@ -38,13 +38,13 @@ export default function Page() {
       dateModified={simpleTableVsSvarDatagridPost.updatedAt}
       introParagraphs={[
         "SVAR (Webix) ships a polished suite of Svelte components, of which DataGrid is the flagship. It's feature-rich and well-supported, but adopting it tends to mean adopting the rest of SVAR's ecosystem and styling conventions.",
-        "Simple Table for Svelte is a focused alternative: an MIT-licensed Svelte data grid (free for everyone) that doesn't assume any larger design system, ships virtualization and grouping built in, and works on Svelte 4 today and Svelte 5 with runes ready.",
+        "Simple Table for Svelte is a focused alternative: an MIT-licensed Svelte data grid (free for everyone) that doesn't assume any larger design system, ships virtualization and grouping built in, and is built for Svelte 5 with runes.",
         "This article compares both on bundle, virtualization, grouping, editing, and standalone fit.",
       ]}
       comparisonRows={[
         { feature: "License (DataGrid)", competitor: { value: "MIT", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
         { feature: "Standalone usage", competitor: { value: "Assumes SVAR ecosystem", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
-        { feature: "Svelte 4 support", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
+        { feature: "Svelte 5 support", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes (requires Svelte 5)", tone: "good" } },
         { feature: "Svelte 5 / runes support", competitor: { value: "Mixed / evolving", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "100–200+ kB (suite)", tone: "neutral" }, simpleTable: { value: "84.6 kB", tone: "good" } },
         { feature: "Built-in row virtualization", competitor: { value: "Yes", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },

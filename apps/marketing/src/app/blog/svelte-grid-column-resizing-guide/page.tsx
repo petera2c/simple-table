@@ -30,14 +30,14 @@ export default function Page() {
     <FrameworkTutorialLayout
       slug={svelteGridColumnResizingPost.slug}
       title={svelteGridColumnResizingPost.title}
-      subtitle="Resizable columns are essential for data-heavy SvelteKit apps. This guide walks through implementation, library trade-offs, and pitfalls—with Svelte 4 + Svelte 5 / runes code samples for Simple Table for Svelte and a comparison to svelte-headless-table, SVAR DataGrid, and Flowbite."
+      subtitle="Resizable columns are essential for data-heavy SvelteKit apps. This guide walks through implementation, library trade-offs, and pitfalls, with Svelte 5 runes code samples for Simple Table for Svelte and a comparison to svelte-headless-table, SVAR DataGrid, and Flowbite."
       framework="svelte"
       heroBadges={["Svelte", "Tutorial", "Column Resizing"]}
       datePublished={svelteGridColumnResizingPost.createdAt}
       dateModified={svelteGridColumnResizingPost.updatedAt}
       introParagraphs={[
         "Column resizing is one of those features users miss only when it's gone. The moment a content cell truncates with an ellipsis, somebody reaches for the column edge and tries to drag.",
-        "This tutorial walks through column resizing patterns for the Svelte data grid landscape—svelte-headless-table, SVAR DataGrid, Flowbite—and shows the Simple Table for Svelte setup with both Svelte 4 stores and Svelte 5 runes.",
+        "This tutorial walks through column resizing patterns for the Svelte data grid landscape (svelte-headless-table, SVAR DataGrid, Flowbite) and shows the Simple Table for Svelte setup with Svelte 5 runes (and writable stores, which Svelte 5 still supports).",
         "If you also need pinning, virtualization, and grouping with aggregations, Simple Table for Svelte ships them all in one MIT-licensed package.",
       ]}
       whyItMatters={[
@@ -47,7 +47,7 @@ export default function Page() {
         { title: "Persisting widths", body: "Many teams need user-customized layouts persisted to localStorage or the server." },
       ]}
       libraryRows={[
-        { library: "Simple Table for Svelte", support: { value: "Built-in", tone: "good" }, notes: "columnResizing={true} prop; works with Svelte 4 stores and Svelte 5 runes." },
+        { library: "Simple Table for Svelte", support: { value: "Built-in", tone: "good" }, notes: "columnResizing={true} prop; works with Svelte 5 runes and writable stores; requires Svelte 5." },
         { library: "svelte-headless-table", support: { value: "Manual (plugin)", tone: "neutral" }, notes: "Headless—you build the resize handles and rendering yourself." },
         { library: "SVAR DataGrid (Svelte)", support: { value: "Built-in (commercial)", tone: "neutral" }, notes: "Resize built-in but commercial license required for production." },
         { library: "Flowbite Svelte Table", support: { value: "Manual", tone: "bad" }, notes: "Markup-only utilities; resize is DIY with CSS + drag handlers." },
@@ -64,7 +64,7 @@ export default function Page() {
         { title: "Widths lost on hydration", problem: "Server-rendered widths flicker on hydration.", solution: "Apply persisted widths inside $effect, after hydration completes." },
       ]}
       faqs={[
-        { question: "Does this work with Svelte 4 stores?", answer: "Yes. Replace $state with writable() stores and bind:headers still works—Simple Table is store-compatible." },
+        { question: "Can I use writable stores instead of runes?", answer: "Yes, on Svelte 5. Simple Table for Svelte requires Svelte 5 (peer dependency svelte >=5.0.0), which still supports stores: replace $state with writable() and bind:headers still works. Svelte 4 is not supported." },
         { question: "Can I disable resizing per column?", answer: "Yes—set isResizable: false on individual ColumnDef entries." },
         { question: "Does it work with virtualization?", answer: "Yes. Virtualized 1M-row tables resize columns at 60fps." },
       ]}

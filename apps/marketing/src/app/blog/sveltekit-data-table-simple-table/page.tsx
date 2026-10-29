@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBolt,
@@ -51,7 +52,7 @@ export default function SvelteKitDataTablePillarPage() {
       introHeading="The Svelte / SvelteKit data table landscape in 2026"
       introParagraphs={[
         "Svelte and SvelteKit teams ship admin tools, dashboards, and SaaS UIs that need real data tables—not just basic <table> tags. The choices today are limited: svelte-headless-table is great for headless logic but hands you no UI; SVAR DataGrid is a polished commercial option; Flowbite-Svelte and Skeleton ship table primitives without virtualization or grouping. There's no obvious 'free, batteries-included, virtualized, editable' Svelte data grid.",
-        "Simple Table for Svelte fills that gap. A single Svelte component drops into Svelte 4, Svelte 5 (runes), and SvelteKit projects with full sorting, filtering, virtualization, column pinning, row grouping, nested headers, cell editing, and theming—free for everyone under the MIT license. It's powered by simple-table-core, the same engine the React, Vue, Angular, Solid, and vanilla adapters share, so the API and behavior match across stacks.",
+        "Simple Table for Svelte fills that gap. A single Svelte component drops into Svelte 5 (runes) and SvelteKit projects with full sorting, filtering, virtualization, column pinning, row grouping, nested headers, cell editing, and theming, free for everyone under the MIT license. It's powered by simple-table-core, the same engine the React, Vue, Angular, Solid, and vanilla adapters share, so the API and behavior match across stacks.",
         "This pillar guide explains when Simple Table is the right Svelte data table, how it compares with svelte-headless-table, SVAR DataGrid, and Flowbite-Svelte, and exactly how to install and use it in a SvelteKit page.",
       ]}
       whatYoullLearn={[
@@ -66,7 +67,7 @@ export default function SvelteKitDataTablePillarPage() {
         {
           icon: faRocket,
           title: "Svelte 5 and runes friendly",
-          body: "Works with Svelte 4 reactive declarations and Svelte 5 runes ($state, $derived). Pass plain arrays for headers/rows; the grid keeps itself in sync without you wiring up reactivity.",
+          body: "Built for Svelte 5 runes ($state, $derived), and writable stores still work. Pass plain arrays for headers/rows; the grid keeps itself in sync without you wiring up reactivity.",
           tone: "green",
         },
         {
@@ -162,7 +163,7 @@ export default function SvelteKitDataTablePillarPage() {
         {
           question: "Does Simple Table for Svelte work with Svelte 5 and runes?",
           answer:
-            "Yes. The adapter is built against Svelte 5 and works with $state, $derived, and store-based data sources. Svelte 4 is also supported as a peer (>=4.0.0).",
+            "Yes. The adapter is built against Svelte 5 and works with $state, $derived, and store-based data sources. It requires Svelte 5 (peer dependency svelte >=5.0.0); Svelte 4 is not supported.",
         },
         {
           question: "Is the Svelte adapter built on top of svelte-headless-table?",
@@ -196,6 +197,8 @@ export default function SvelteKitDataTablePillarPage() {
         { slug: "solidjs-data-grid-simple-table", title: "Solid.js data grid: Simple Table with signals" },
         { slug: "vanilla-typescript-data-grid-simple-table-core", title: "Vanilla TypeScript data grid with simple-table-core" },
         { slug: "tanstack-table-vs-simple-table-headless-batteries-included", title: "Headless vs batteries-included: TanStack Table vs Simple Table" },
+        { slug: "simple-table-vs-svelte-headless-table", title: "svelte-headless-table alternative? Headless vs batteries-included" },
+        { slug: "best-free-svelte-data-grid-2026", title: "Best free Svelte data grids in 2026" },
       ]}
       cta={{
         title: "Ready to ship the SvelteKit data table users love?",
@@ -229,8 +232,19 @@ export default function SvelteKitDataTablePillarPage() {
               </p>
               <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-1">
                 <li>You want full UI control and svelte-headless-table is already wired into your design system.</li>
-                <li>You're rendering &lt;100 rows with no editing or grouping—plain Tailwind/HTML is enough.</li>
+                <li>You're rendering &lt;100 rows with no editing or grouping: plain Tailwind/HTML is enough.</li>
               </ul>
+              <p className="mt-4 text-gray-700 dark:text-gray-300">
+                Moving off svelte-headless-table during a Svelte 5 upgrade? Follow the{" "}
+                <Link href="/migrations/from-svelte-headless-table" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  svelte-headless-table migration guide
+                </Link>{" "}
+                or check the{" "}
+                <Link href="/comparisons/simple-table-vs-svelte-headless-table" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  feature matrix
+                </Link>
+                .
+              </p>
             </div>
           </div>
         </section>

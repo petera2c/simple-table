@@ -88,7 +88,7 @@ export default function FAQSection() {
                 icon: faCodeBranch,
                 question: "Which frameworks and versions are supported?",
                 answer:
-                  "Simple Table supports React (16.8+, 18, 19), Vue 3, Angular 16+, Svelte 4+, Solid, and vanilla TypeScript. It works with Next.js, Nuxt, Analog, SvelteKit, SolidStart, and any modern bundler (Vite, Webpack, Rollup). You can also use it without a framework at all — just plain TypeScript or JavaScript.",
+                  "Simple Table supports React (16.8+, 18, 19), Vue 3, Angular 16+, Svelte 5+, Solid, and vanilla TypeScript. It works with Next.js, Nuxt, Analog, SvelteKit, SolidStart, and any modern bundler (Vite, Webpack, Rollup). You can also use it without a framework at all, in plain TypeScript or JavaScript.",
               },
             ].map((faq, index) => (
               <motion.details

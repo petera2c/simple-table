@@ -111,13 +111,13 @@ export const mobileCompatibilityReactTablesPost: BlogPostMetadata = {
 };
 
 export const bestReactTableLibraries2026Post: BlogPostMetadata = {
-  title: "Best React Table Library 2026: Compared & Ranked",
+  title: "Best React Table Libraries 2026: 7 Ranked & Compared",
   description:
-    "Best React table library picks for 2026 — Simple Table, TanStack Table, AG Grid, MUI, and more. Compare features, bundle size, pricing, and which React table to choose.",
+    "The best React table libraries for 2026, updated October: Simple Table, TanStack Table v9, AG Grid 36, Handsontable, Material React Table, and more, compared on license, bundle size, and fit.",
   slug: "best-react-table-libraries-2026",
   tags: ["react", "comparison", "alternatives"],
   createdAt: "2025-10-07",
-  updatedAt: "2026-08-06",
+  updatedAt: "2026-10-28",
 };
 
 export const customFooterRenderersPost: BlogPostMetadata = {
@@ -162,13 +162,13 @@ export const bundleSizeComparisonPost: BlogPostMetadata = {
 };
 
 export const tanstackVsAgGridPost: BlogPostMetadata = {
-  title: "TanStack Table vs AG Grid: Complete Comparison (2026)",
+  title: "AG Grid vs TanStack Table (2026): Features, License & Cost",
   description:
-    "TanStack Table or AG Grid? We break down features, performance, pricing, and developer experience to help you choose the right React data grid for your project.",
+    "AG Grid 36 vs TanStack Table v9: headless vs batteries-included, what AG Grid's MIT Community and paid Enterprise licences cover, who needs a licence, and when each one wins.",
   slug: "tanstack-table-vs-ag-grid-comparison",
   tags: ["react", "comparison", "tanstack-table", "ag-grid"],
   createdAt: "2025-11-15",
-  updatedAt: "2026-06-22",
+  updatedAt: "2026-10-28",
 };
 
 export const handsontableAlternativesPost: BlogPostMetadata = {
@@ -310,13 +310,13 @@ export const autoExpandColumnsReactTablesPost: BlogPostMetadata = {
 };
 
 export const reactTableColumnResizingGuidePost: BlogPostMetadata = {
-  title: "React Table Column Resizing Guide (2026)",
+  title: "React Table Column Resizing (2026): TanStack, AG Grid & Simple Table",
   description:
-    "Add resizable columns to a React table with step-by-step code. Plus how Simple Table, TanStack Table, and AG Grid compare on column resizing and auto-expand.",
+    "How to add resizable columns to a React table, with code for TanStack Table, AG Grid, and Simple Table, plus min and max widths, auto-expand, and which features AG Grid charges for.",
   slug: "react-table-column-resizing-guide",
   tags: ["react", "column-resizing", "tutorials", "comparison", "features"],
   createdAt: "2026-01-13",
-  updatedAt: "2026-06-22",
+  updatedAt: "2026-10-28",
 };
 
 export const editableReactDataGridsPost: BlogPostMetadata = {
@@ -488,7 +488,7 @@ export const sveltekitDataTablePillarPost: BlogPostMetadata = {
   slug: "sveltekit-data-table-simple-table",
   tags: ["svelte", "data-grid", "tutorials"],
   createdAt: "2026-04-18",
-  updatedAt: "2026-04-18",
+  updatedAt: "2026-10-28",
 };
 
 export const solidjsDataGridPillarPost: BlogPostMetadata = {
@@ -639,13 +639,13 @@ export const agGridAlternativesVuePost: BlogPostMetadata = {
 
 // Svelte
 export const simpleTableVsSvelteHeadlessTablePost: BlogPostMetadata = {
-  title: "Simple Table vs svelte-headless-table: Batteries-Included vs Headless Svelte Grid",
+  title: "svelte-headless-table Alternative? Headless vs Batteries-Included (2026)",
   description:
-    "svelte-headless-table is great primitives. Simple Table for Svelte is batteries-included: virtualization, pinning, grouping with aggregations, and inline editing in one MIT-licensed package—Svelte 4 and Svelte 5 ready.",
+    "Should you build your Svelte grid from svelte-headless-table primitives or install one that ships virtualization, pinning, grouping, and editing? Trade-offs, use cases, and Svelte 5 status.",
   slug: "simple-table-vs-svelte-headless-table",
   tags: ["svelte", "comparison", "alternatives"],
   createdAt: "2026-04-26",
-  updatedAt: "2026-04-26",
+  updatedAt: "2026-10-28",
 };
 
 export const simpleTableVsSvarDatagridPost: BlogPostMetadata = {
@@ -675,7 +675,7 @@ export const bestFreeSvelteDataGridPost: BlogPostMetadata = {
   slug: "best-free-svelte-data-grid-2026",
   tags: ["svelte", "comparison", "alternatives", "best-practices"],
   createdAt: "2026-04-26",
-  updatedAt: "2026-06-22",
+  updatedAt: "2026-10-28",
 };
 
 // Solid
@@ -870,7 +870,7 @@ export const vueTreeDataTablesPost: BlogPostMetadata = {
 export const svelteGridColumnResizingPost: BlogPostMetadata = {
   title: "Svelte Grid Column Resizing: Implementation Guide & Best Libraries (2026)",
   description:
-    "Add resizable columns to your SvelteKit data grid. Compare svelte-headless-table, SVAR DataGrid, and Simple Table for Svelte—with Svelte 4 and Svelte 5 / runes examples.",
+    "Add resizable columns to your SvelteKit data grid. Compare svelte-headless-table, SVAR DataGrid, and Simple Table for Svelte, with Svelte 5 runes examples.",
   slug: "svelte-grid-column-resizing-guide",
   tags: ["svelte", "tutorials", "features", "column-resizing"],
   createdAt: "2026-04-26",

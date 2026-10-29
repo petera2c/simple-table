@@ -37,7 +37,7 @@ export default function Page() {
       dateModified={svelteGridRowSelectionPost.updatedAt}
       introParagraphs={[
         "Row selection drives bulk actions: delete, archive, export, assign. Get it wrong and users misclick or struggle on touch screens.",
-        "This tutorial walks through single, multi, and checkbox selection patterns for Svelte / SvelteKit and shows the Simple Table for Svelte setup with both Svelte 4 stores and Svelte 5 runes.",
+        "This tutorial walks through single, multi, and checkbox selection patterns for Svelte / SvelteKit and shows the Simple Table for Svelte setup with Svelte 5 runes (and writable stores, which Svelte 5 still supports).",
         "If you also need pinning, virtualization, and grouping with aggregations alongside selection, Simple Table for Svelte is the focused MIT-licensed pick.",
       ]}
       whyItMatters={[
@@ -64,7 +64,7 @@ export default function Page() {
         { title: "Lost selection on data refetch", problem: "After polling refresh, selection clears.", solution: "Reapply your stable-id Set after data refresh." },
       ]}
       faqs={[
-        { question: "Does this work with Svelte 4 stores?", answer: "Yes. Replace $state with writable() and the event handler still works." },
+        { question: "Can I use writable stores instead of runes?", answer: "Yes, on Svelte 5. Simple Table for Svelte requires Svelte 5 (svelte >=5.0.0), which still supports stores: replace $state with writable() and the event handler still works. Svelte 4 is not supported." },
         { question: "Can I support Shift-click range selection?", answer: "Yes—Simple Table handles range selection out of the box for selectableCells=\"row\"." },
         { question: "Is selection accessible?", answer: "Yes. Simple Table sets aria-selected on rows and supports keyboard navigation." },
       ]}

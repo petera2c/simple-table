@@ -80,6 +80,10 @@ export default function BestReactTableLibraries2026Page() {
           Looking for the best React table library in 2026? This guide compares seven React table
           options on license, bundle size, UI completeness, and when each fits.
         </p>
+        <p className="mt-3 text-sm text-center text-gray-600 dark:text-gray-400">
+          Last updated October 28, 2026. Versions checked on npm that day: Simple Table 4.3.2,
+          TanStack Table 9.3.1, AG Grid 36.2.0, Handsontable 18.1.2, Material React Table 3.2.1.
+        </p>
       </section>
 
       {/* Main Content */}
@@ -91,7 +95,7 @@ export default function BestReactTableLibraries2026Page() {
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 Choosing a React table library usually comes down to license, bundle size, and how
                 much UI you want built in. Rankings below prioritize shipping speed and a complete
-                UI for typical CRUD and dashboard grids—not enterprise pivot/Excel depth. Looking
+                UI for typical CRUD and dashboard grids, not enterprise pivot/Excel depth. Looking
                 for{" "}
                 <Link
                   href="/blog/ag-grid-alternatives-free-react-data-grids"
@@ -111,7 +115,21 @@ export default function BestReactTableLibraries2026Page() {
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
                 Simple Table ranks #1 here for teams that want a batteries-included grid without an
-                AG Grid-style license. Skim the matrix, then read the notes for each library.
+                AG Grid-style license: since 4.3.2 it is{" "}
+                <Link
+                  href="/blog/simple-table-is-mit-licensed"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  MIT licensed and free for everyone
+                </Link>
+                . Deciding between the two most popular options? Read{" "}
+                <Link
+                  href="/blog/tanstack-table-vs-ag-grid-comparison"
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                >
+                  AG Grid vs TanStack Table
+                </Link>
+                . Skim the matrix, then read the notes for each library.
               </p>
             </div>
           </div>
@@ -488,8 +506,16 @@ export default function BestReactTableLibraries2026Page() {
 
             <p className="mb-6 text-gray-700 dark:text-gray-300">
               AG Grid is the enterprise-heavy option: Community is free MIT for core features;
-              Enterprise (from $999/dev, perpetual + 1yr updates) unlocks grouping, pivots, Excel
-              export, and charts. Powerful, but larger and more complex to configure.
+              Enterprise (paid per developer, perpetual + 1 year of updates; price shown when you
+              configure a licence on ag-grid.com) unlocks grouping, pivots, Excel export, and
+              charts. See our{" "}
+              <Link
+                href="/blog/ag-grid-pricing-license-breakdown-2026"
+                className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+              >
+                AG Grid license breakdown
+              </Link>
+              . Powerful, but larger and more complex to configure.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -662,9 +688,10 @@ export default function BestReactTableLibraries2026Page() {
             </h2>
 
             <p className="mb-6 text-gray-700 dark:text-gray-300">
-              Material React Table (MRT) combines TanStack Table's power with Material-UI's polish—a
-              best-of-both-worlds solution for Material Design projects needing advanced data grid
-              features.
+              Material React Table (MRT) combines TanStack Table's power with Material-UI's polish,
+              a best-of-both-worlds solution for Material Design projects needing advanced data
+              grid features. Note that MRT 3.2.1 still depends on TanStack Table v8 (8.20.6), not
+              the v9 release from August 2026.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">

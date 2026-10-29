@@ -65,7 +65,7 @@ import "@simple-table/angular/styles.css";`
     label: "Svelte",
     npmPackage: "@simple-table/svelte",
     installPackages: "@simple-table/svelte",
-    peerSummary: "Svelte 4+",
+    peerSummary: "Svelte 5+",
     stylesImport: `import "@simple-table/svelte/styles.css";`,
     examplesMonorepoPath: "packages/examples/svelte",
     featureDocsPath: "/docs/quick-start",

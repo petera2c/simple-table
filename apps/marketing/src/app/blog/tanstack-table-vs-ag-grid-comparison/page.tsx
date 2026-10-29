@@ -41,12 +41,12 @@ const FAQS: { question: string; answer: string }[] = [
   {
     question: "Is TanStack Table free?",
     answer:
-      "Yes. TanStack Table (formerly React Table v8) is MIT-licensed and completely free, including for commercial use, with no per-developer fees or feature tiers. The cost is development time: it is headless, so you build the table UI and add virtualization yourself.",
+      "Yes. TanStack Table (the successor to React Table; v9 shipped in August 2026) is MIT-licensed and completely free, including for commercial use, with no per-developer fees or feature tiers. The cost is development time: it is headless, so you build the table UI and add virtualization yourself.",
   },
   {
     question: "Is AG Grid free?",
     answer:
-      "Partly. AG Grid Community is free and MIT-licensed, but advanced features such as row grouping, aggregation, pivoting, Excel export, master/detail, and integrated charts require an AG Grid Enterprise license starting at $999 per developer (perpetual license with 1 year of updates).",
+      "Partly. AG Grid Community is free and MIT-licensed, but advanced features such as row grouping, aggregation, pivoting, Excel export, master/detail, and integrated charts require an AG Grid Enterprise licence: a perpetual, per-developer licence with 1 year of updates. As of October 2026, AG Grid's pricing page shows the price once you configure a licence (1 to 10 developers, internal apps); customer-facing apps and larger teams get a quote from sales.",
   },
   {
     question: "What is the main difference between TanStack Table and AG Grid?",
@@ -61,7 +61,7 @@ const FAQS: { question: string; answer: string }[] = [
   {
     question: "Does AG Grid require a paid license for commercial use?",
     answer:
-      "Only for Enterprise features. AG Grid Community can be used commercially for free. The moment you use any Enterprise feature in production you need a commercial license, currently from $999 per developer (perpetual + 1 year of updates).",
+      "Only for Enterprise features. AG Grid Community can be used commercially for free. The moment you use any Enterprise feature in production you need a commercial licence for every front-end developer on the project, including developers who do not touch the grid directly (per AG Grid's pricing FAQ). Customer-facing apps require a quote from AG Grid sales.",
   },
   {
     question: "Is there a free alternative that already includes a UI?",
@@ -128,7 +128,7 @@ export default function TanStackVsAgGridPage() {
       {/* Hero Section */}
       <section className="bg-linear-to-r from-blue-50 to-purple-50 dark:from-blue-900 dark:to-purple-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
-          TanStack Table (React Table) vs AG Grid: Complete Comparison (2026)
+          AG Grid vs TanStack Table (React Table): Complete Comparison (2026)
         </h1>
 
         <div className="flex justify-center mb-4 gap-2 flex-wrap">
@@ -150,6 +150,21 @@ export default function TanStackVsAgGridPage() {
           TanStack Table (formerly React Table) or AG Grid? We break down features, performance,
           pricing, and developer experience to help you choose the right React data grid.
         </p>
+        <p className="mt-3 text-sm text-center text-gray-600 dark:text-gray-400">
+          Last updated October 28, 2026. Checked against TanStack Table 9.3.1 and AG Grid 36.2.0
+          on npm, and AG Grid&apos;s pricing page. Related:{" "}
+          <Link href="/blog/ag-grid-pricing-license-breakdown-2026" className="underline">
+            AG Grid license and pricing breakdown
+          </Link>
+          {" · "}
+          <Link href="/comparisons/simple-table-vs-ag-grid" className="underline">
+            Simple Table vs AG Grid
+          </Link>
+          {" · "}
+          <Link href="/blog/best-react-table-libraries-2026" className="underline">
+            Best React table libraries in 2026
+          </Link>
+        </p>
       </section>
 
       {/* Main Content */}
@@ -159,7 +174,7 @@ export default function TanStackVsAgGridPage() {
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
             <div className="prose prose-gray dark:prose-invert max-w-none">
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                TanStack Table (formerly known as React Table, now at v8) and AG Grid represent two
+                TanStack Table (formerly known as React Table, now at v9) and AG Grid (now at v36) represent two
                 fundamentally different philosophies for building data grids in React. TanStack
                 Table (React Table) is the minimalist's choice—a headless, logic-only library that
                 gives you complete UI control. AG Grid is the maximalist's toolbox—a feature-packed,
@@ -212,7 +227,7 @@ export default function TanStackVsAgGridPage() {
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">License</td>
                     <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
                     <td className="p-3 text-gray-700 dark:text-gray-300">
-                      Community MIT · Enterprise from $999/dev
+                      Community MIT · Enterprise paid per developer
                     </td>
                     <td className="p-3 text-green-600 dark:text-green-400">
                       MIT
@@ -306,7 +321,7 @@ export default function TanStackVsAgGridPage() {
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 mb-4">
                   <strong>Philosophy:</strong> "We handle the logic, you handle the UI." (Formerly
-                  React Table, now TanStack Table v8)
+                  React Table, now TanStack Table v9)
                 </p>
                 <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                   <li className="flex items-start gap-2">
@@ -470,17 +485,18 @@ export default function TanStackVsAgGridPage() {
                   </div>
 
                   <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">Enterprise:</div>
-                  <div className="text-2xl font-bold text-red-600 dark:text-red-400">$999+</div>
+                  <div className="text-2xl font-bold text-red-600 dark:text-red-400">Paid</div>
                   <div className="text-xs text-gray-600 dark:text-gray-400">
-                    per developer (perpetual + 1yr updates)
+                    per developer (perpetual + 1yr updates). Price shown after you configure a
+                    licence on ag-grid.com; customer-facing apps are quoted by sales.
                   </div>
                 </div>
                 <div className="bg-white dark:bg-gray-800 rounded p-3 border border-red-300 dark:border-red-700">
                   <p className="text-xs text-gray-700 dark:text-gray-300 mb-2">
-                    <strong>For a team of 5:</strong>
+                    <strong>Who needs a licence:</strong>
                   </p>
-                  <p className="text-lg font-bold text-red-600 dark:text-red-400">
-                    ~$5,000 to license (+ optional renewals)
+                  <p className="text-sm font-bold text-red-600 dark:text-red-400">
+                    Every front-end developer on the project, even those who never touch the grid
                   </p>
                 </div>
                 <div className="mt-3 text-xs text-gray-600 dark:text-gray-400">
@@ -499,7 +515,7 @@ export default function TanStackVsAgGridPage() {
                   </h4>
                   <p className="text-sm text-gray-700 dark:text-gray-300">
                     Many teams start with AG Grid Community, then hit a paywall when they need
-                    enterprise features. By then, they're locked in—migration becomes expensive and
+                    enterprise features. By then, they're locked in, and migration becomes expensive and
                     time-consuming.
                   </p>
                 </div>
@@ -999,7 +1015,7 @@ export default function TanStackVsAgGridPage() {
                       icon={faCheckCircle}
                       className="text-red-500 mt-1 shrink-0"
                     />
-                    <span>You have budget for enterprise licenses ($5K+/year)</span>
+                    <span>You have budget for an Enterprise licence for every front-end developer</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon

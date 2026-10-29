@@ -65,7 +65,7 @@ export default function Page() {
       ]}
       faqs={[
         { question: "Does Simple Table for Svelte have a separate TreeTable?", answer: "No—the same SimpleTable component handles flat and hierarchical data. Provide depth and expansion information per the nested tables docs to render a tree." },
-        { question: "Does this work with Svelte 4 stores?", answer: "Yes. Replace $state with writable() and the same patterns work." },
+        { question: "Can I use writable stores instead of runes?", answer: "Yes, on Svelte 5. Simple Table for Svelte requires Svelte 5 (svelte >=5.0.0), which still supports stores: replace $state with writable() and the same patterns work. Svelte 4 is not supported." },
         { question: "Can I use tree data with column pinning and grouping?", answer: "Yes. Tree data, pinning, virtualization, sorting, and filtering all combine in the same component." },
       ]}
       conclusionParagraphs={[
