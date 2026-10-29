@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import { getAllDocPages, getPathToLabelMap } from "@/constants/docsNavigation";
+import { trackQuickStartNextStep } from "@/lib/analytics";
+import { useFramework } from "@/providers/FrameworkProvider";
 
 // Get the navigation structure and labels from shared config
 const docNavigation = getAllDocPages();
@@ -18,6 +20,7 @@ const pathToLabel = getPathToLabelMap();
  */
 const DocNavigationButtons = () => {
   const pathname = usePathname();
+  const { framework } = useFramework();
 
   const { prevPage, nextPage } = useMemo(() => {
     const currentIndex = docNavigation.findIndex((item) => item.path === pathname);
@@ -63,7 +66,15 @@ const DocNavigationButtons = () => {
       )}
 
       {nextPage && (
-        <Link href={nextPage.path} className="w-full sm:w-auto">
+        <Link
+          href={nextPage.path}
+          className="w-full sm:w-auto"
+          onClick={() => {
+            if (pathname === "/docs/quick-start") {
+              trackQuickStartNextStep({ framework, destination: nextPage.path });
+            }
+          }}
+        >
           <Button
             type="primary"
             className="flex items-center w-full sm:w-auto justify-center sm:justify-start"

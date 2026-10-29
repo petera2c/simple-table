@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button, message } from "antd";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -19,7 +19,7 @@ import {
   tableSnippets,
 } from "@/constants/docsSnippets";
 import { getAiSetupPrompt } from "@/constants/aiTablePrompt";
-import { trackCopyAiSetupPrompt } from "@/lib/analytics";
+import { trackCopyAiSetupPrompt, trackQuickStartComplete } from "@/lib/analytics";
 import LivePreview from "@/components/LivePreview";
 import PropTable, { type PropInfo } from "@/components/PropTable";
 import { useFramework } from "@/providers/FrameworkProvider";
@@ -200,6 +200,27 @@ function getQuickStartSteps(framework: Framework): DocsStep[] {
 const QuickStartContent = () => {
   const { framework } = useFramework();
   const [promptCopied, setPromptCopied] = useState(false);
+  const endRef = useRef<HTMLDivElement>(null);
+  const frameworkRef = useRef(framework);
+
+  useEffect(() => {
+    frameworkRef.current = framework;
+  }, [framework]);
+
+  // Fire quick_start_complete once when the reader scrolls to the end of the guide.
+  useEffect(() => {
+    const node = endRef.current;
+    if (!node || typeof IntersectionObserver === "undefined") return;
+    let fired = false;
+    const observer = new IntersectionObserver((entries) => {
+      if (fired || !entries.some((entry) => entry.isIntersecting)) return;
+      fired = true;
+      trackQuickStartComplete({ framework: frameworkRef.current });
+      observer.disconnect();
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   const copySetupPrompt = async () => {
     try {
@@ -338,6 +359,7 @@ const QuickStartContent = () => {
 
       <PropTable props={TABLE_PROPS} title="Main Component Props" />
 
+      <div ref={endRef} aria-hidden="true" />
       <DocNavigationButtons />
     </PageWrapper>
   );

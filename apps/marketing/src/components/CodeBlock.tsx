@@ -14,20 +14,15 @@ import {
   type Framework,
 } from "@/constants/frameworks";
 import type { CodeByFramework } from "@/constants/docsSnippets";
-import { trackCopyInstallCommand } from "@/lib/analytics";
+import {
+  detectPackageManager,
+  trackCopyExampleCode,
+  trackCopyInstallCommand,
+} from "@/lib/analytics";
 
 export type { CodeByFramework };
 
 type ThemeType = "dark" | "light";
-
-function detectPackageManager(code: string): string | null {
-  const trimmed = code.trim().toLowerCase();
-  if (trimmed.startsWith("npm install") || trimmed.startsWith("npm i ")) return "npm";
-  if (trimmed.startsWith("yarn add") || trimmed.startsWith("yarn install")) return "yarn";
-  if (trimmed.startsWith("pnpm add") || trimmed.startsWith("pnpm install")) return "pnpm";
-  if (trimmed.startsWith("bun add") || trimmed.startsWith("bun install")) return "bun";
-  return null;
-}
 
 interface CodeBlockProps {
   className?: string;
@@ -78,6 +73,7 @@ const CodePane = ({
   theme,
   onToggleTheme,
   framework,
+  demoId,
 }: {
   code: string;
   language: string;
@@ -87,6 +83,7 @@ const CodePane = ({
   theme: ThemeType;
   onToggleTheme: () => void;
   framework?: Framework;
+  demoId?: string;
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -98,6 +95,13 @@ const CodePane = ({
           package_manager: packageManager,
           framework,
           code_preview: code.trim(),
+        });
+      } else {
+        trackCopyExampleCode({
+          framework,
+          demo_id: demoId,
+          language,
+          line_count: code.trim().split("\n").length,
         });
       }
       setCopied(true);
@@ -245,6 +249,7 @@ const CodeBlock = ({
                   theme={theme}
                   onToggleTheme={toggleTheme}
                   framework={fw}
+                  demoId={demoId}
                 />
               </div>
             );
@@ -271,6 +276,7 @@ const CodeBlock = ({
         theme={theme}
         onToggleTheme={toggleTheme}
         framework={framework}
+        demoId={demoId}
       />
     </div>
   );

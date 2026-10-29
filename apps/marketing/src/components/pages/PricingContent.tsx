@@ -16,7 +16,12 @@ import { openStripeCheckout } from "@/utils/stripe";
 import { STRIPE_CUSTOMER_PORTAL_URL } from "@/constants/stripe";
 import { SIMPLE_TABLE_PRICING } from "@/constants/simpleTablePricing";
 import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
-import { trackBookACall, trackCtaClick, trackViewPricing } from "@/lib/analytics";
+import {
+  trackBookACall,
+  trackCtaClick,
+  trackPricingCtaClick,
+  trackViewPricing,
+} from "@/lib/analytics";
 import ContactModal, { type PlanInterest } from "@/components/ContactModal";
 
 interface PlanFeature {
@@ -98,6 +103,12 @@ const PricingContent: React.FC = () => {
       destination: calendlyUrl,
       location: "pricing_page",
     });
+    trackPricingCtaClick({
+      plan: "unsure",
+      cta_id: ctaId,
+      cta_text: ctaText,
+      destination: calendlyUrl,
+    });
     window.open(calendlyUrl, "_blank", "noopener,noreferrer");
   };
 
@@ -112,6 +123,12 @@ const PricingContent: React.FC = () => {
       destination: "license_quote_modal",
       location: "pricing_page",
     });
+    trackPricingCtaClick({
+      plan: planInterest === "enterprise" || planInterest === "pro" ? planInterest : "unsure",
+      cta_id: ctaId ?? `pricing_license_quote_${planInterest}`,
+      cta_text: ctaText,
+      destination: "license_quote_modal",
+    });
     setQuotePlanInterest(planInterest);
     setIsQuoteModalOpen(true);
   };
@@ -123,6 +140,12 @@ const PricingContent: React.FC = () => {
         cta_text: "Install free",
         destination: "/docs/installation",
         location: "pricing_page",
+      });
+      trackPricingCtaClick({
+        plan: "free",
+        cta_id: "pricing_install_free",
+        cta_text: "Install free",
+        destination: "/docs/installation",
       });
       window.location.assign("/docs/installation");
       return;
@@ -136,6 +159,12 @@ const PricingContent: React.FC = () => {
       cta_text: "Start Pro",
       destination: "stripe_checkout",
       location: "pricing_page",
+    });
+    trackPricingCtaClick({
+      plan: "pro",
+      cta_id: "pricing_start_pro",
+      cta_text: "Start Pro",
+      destination: "stripe_checkout",
     });
     try {
       openStripeCheckout("pro", false);

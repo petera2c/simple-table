@@ -1,5 +1,6 @@
 // Do not f***ing add a use client to this file. It will break SEO metadata
 import { Analytics } from "../components/Analytics";
+import OutboundLinkTracker from "../components/OutboundLinkTracker";
 import { Nunito } from "next/font/google";
 import ClientLayout from "../components/ClientLayout";
 import ChunkErrorHandler from "../components/ChunkErrorHandler";
@@ -79,6 +80,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ChunkErrorHandler />
           <ClientLayout>{children}</ClientLayout>
           <Analytics />
+          <OutboundLinkTracker />
         </AntdRegistry>
       </body>
     </html>

@@ -101,15 +101,136 @@ export function trackLicenseQuoteSubmit(params: {
   });
 }
 
+/** Current path for the `location` param. Empty string on the server. */
+export function getPageLocation(): string {
+  if (typeof window === "undefined") return "";
+  return window.location.pathname;
+}
+
+const INSTALL_COMMAND_PATTERN = /^(npm (install|i)|yarn (add|install)|pnpm (add|install|i)|bun (add|install))\b/i;
+
+/** "npm" | "yarn" | "pnpm" | "bun" when the snippet is an install command, else null. */
+export function detectPackageManager(code: string): string | null {
+  const trimmed = code.trim();
+  const match = trimmed.match(INSTALL_COMMAND_PATTERN);
+  if (!match) return null;
+  return match[1].split(" ")[0].toLowerCase();
+}
+
+/** Packages named in an install command, for example "@simple-table/react". */
+export function parseInstallPackages(code: string): string {
+  const firstLine = code.trim().split("\n")[0] ?? "";
+  return firstLine
+    .split(/\s+/)
+    .slice(2)
+    .filter((token) => token && !token.startsWith("-"))
+    .join(" ");
+}
+
 export function trackCopyInstallCommand(params: {
   package_manager: string;
   framework?: string;
   code_preview?: string;
+  location?: string;
 }): void {
   trackEvent("copy_install_command", {
     package_manager: params.package_manager,
     framework: params.framework,
+    package: params.code_preview ? parseInstallPackages(params.code_preview) : undefined,
+    location: params.location ?? getPageLocation(),
     code_preview: params.code_preview?.slice(0, 80),
+  });
+}
+
+/** Someone copied a code example (docs snippet, live demo source, blog example). */
+export function trackCopyExampleCode(params: {
+  framework?: string;
+  demo_id?: string;
+  language?: string;
+  line_count?: number;
+  location?: string;
+}): void {
+  trackEvent("copy_example_code", {
+    framework: params.framework,
+    demo_id: params.demo_id,
+    language: params.language,
+    line_count: params.line_count,
+    location: params.location ?? getPageLocation(),
+  });
+}
+
+export type OutboundTarget = "github" | "npm";
+
+/** Classifies a link as a GitHub or npm destination. Returns null for anything else. */
+export function classifyOutboundUrl(
+  href: string,
+): { target: OutboundTarget; package?: string } | null {
+  let url: URL;
+  try {
+    url = new URL(href, "https://www.simple-table.com");
+  } catch {
+    return null;
+  }
+  const host = url.hostname.replace(/^www\./, "");
+  if (host === "github.com") {
+    return { target: "github" };
+  }
+  if (host === "npmjs.com" || host === "npmjs.org") {
+    const match = url.pathname.match(/^\/package\/((@[^/]+\/)?[^/]+)/);
+    return { target: "npm", package: match ? decodeURIComponent(match[1]) : undefined };
+  }
+  return null;
+}
+
+/** Outbound click to GitHub (`github_click`) or npm (`npm_click`). */
+export function trackOutboundClick(params: {
+  target: OutboundTarget;
+  link_url: string;
+  link_text?: string;
+  location?: string;
+  package?: string;
+}): void {
+  trackEvent(params.target === "github" ? "github_click" : "npm_click", {
+    link_url: params.link_url,
+    link_text: params.link_text?.slice(0, 80),
+    location: params.location ?? getPageLocation(),
+    package: params.package,
+  });
+}
+
+/** Reader reached the end of the Quick Start page. */
+export function trackQuickStartComplete(params: { framework: string }): void {
+  trackEvent("quick_start_complete", {
+    framework: params.framework,
+    location: "quick_start",
+  });
+}
+
+/** Reader clicked the next step at the bottom of the Quick Start page. */
+export function trackQuickStartNextStep(params: {
+  framework?: string;
+  destination: string;
+}): void {
+  trackEvent("quick_start_next_step", {
+    framework: params.framework,
+    destination: params.destination,
+    location: "quick_start",
+  });
+}
+
+/** Any plan button on /pricing (free install, Pro checkout, contact, book a call). */
+export function trackPricingCtaClick(params: {
+  plan: "free" | "pro" | "enterprise" | "unsure";
+  cta_id: string;
+  cta_text: string;
+  destination: string;
+}): void {
+  trackEvent("pricing_cta_click", {
+    plan: params.plan,
+    cta_id: params.cta_id,
+    cta_text: params.cta_text,
+    destination: params.destination,
+    location: "pricing_page",
   });
 }
 
