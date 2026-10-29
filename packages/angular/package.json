@@ -64,7 +64,7 @@
     "vitest": "^2.1.9",
     "zone.js": "^0.15.0"
   },
-  "description": "Angular adapter for simple-table-core \u2014 use the Simple Table data grid with full Angular component support for renderers.",
+  "description": "Free, MIT licensed Angular data grid (Angular 17+, standalone). Sorting, filtering, pinning, tree data, editing, virtualization. AG Grid / PrimeNG table alternative.",
   "repository": {
     "type": "git",
     "url": "https://github.com/petera2c/simple-table.git"
@@ -107,6 +107,9 @@
     "angular material table alternative",
     "material table alternative",
     "free angular data grid",
-    "typescript data grid"
+    "typescript data grid",
+    "mit",
+    "mit license",
+    "open source data grid"
   ]
 }

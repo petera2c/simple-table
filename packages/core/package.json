@@ -88,7 +88,7 @@
       "path": "dist/cjs/index.js"
     }
   ],
-  "description": "A lightweight data grid. Flat pricing (not per developer), backed by real-person support. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.",
+  "description": "Free, MIT licensed, lightweight data grid for vanilla JS, React, Vue, Angular, Svelte and Solid. Sorting, filtering, pinning, tree data, editing and virtualization built in.",
   "repository": {
     "type": "git",
     "url": "https://github.com/petera2c/simple-table.git"
@@ -130,6 +130,9 @@
     "sorting filtering grid",
     "row pinning",
     "column pinning",
-    "tree data grid"
+    "tree data grid",
+    "mit",
+    "mit license",
+    "open source data grid"
   ]
 }

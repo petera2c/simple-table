@@ -62,7 +62,7 @@
     "vite-plugin-solid": "^2.11.11",
     "vitest": "^2.1.9"
   },
-  "description": "Solid.js adapter for simple-table-core \u2014 use the Simple Table data grid with full Solid component support for renderers.",
+  "description": "Free, MIT licensed SolidJS data grid. Sorting, filtering, pinning, tree data, editing, virtualization. Lightweight AG Grid / TanStack Table alternative.",
   "repository": {
     "type": "git",
     "url": "https://github.com/petera2c/simple-table.git"
@@ -101,6 +101,9 @@
     "kobalte alternative",
     "ag-grid alternative",
     "free solid data grid",
-    "typescript data grid"
+    "typescript data grid",
+    "mit",
+    "mit license",
+    "open source data grid"
   ]
 }

@@ -58,7 +58,7 @@
     "vitest": "^2.1.9",
     "vue": "^3.0.0"
   },
-  "description": "Vue 3 adapter for simple-table-core \u2014 use the Simple Table data grid with full Vue component support for renderers.",
+  "description": "Free, MIT licensed Vue 3 data grid (Nuxt ready). Sorting, filtering, pinning, tree data, editing, virtualization. Lightweight AG Grid / PrimeVue DataTable alternative.",
   "repository": {
     "type": "git",
     "url": "https://github.com/petera2c/simple-table.git"
@@ -106,6 +106,9 @@
     "ag-grid vue alternative",
     "ag-grid alternative",
     "free vue data grid",
-    "typescript data grid"
+    "typescript data grid",
+    "mit",
+    "mit license",
+    "open source data grid"
   ]
 }

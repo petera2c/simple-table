@@ -61,7 +61,7 @@
     "typescript": "^5.0.0",
     "vitest": "^2.1.9"
   },
-  "description": "React adapter for simple-table-core \u2014 use the Simple Table data grid with full React component support for renderers.",
+  "description": "Free, MIT licensed React data grid (React 18/19, Next.js). Sorting, filtering, pinning, tree data, editing, virtualization. Lightweight AG Grid / MUI DataGrid alternative.",
   "repository": {
     "type": "git",
     "url": "https://github.com/petera2c/simple-table.git"
@@ -102,6 +102,9 @@
     "kendo react grid alternative",
     "react-data-grid alternative",
     "free react data grid",
-    "typescript data grid"
+    "typescript data grid",
+    "mit",
+    "mit license",
+    "open source data grid"
   ]
 }

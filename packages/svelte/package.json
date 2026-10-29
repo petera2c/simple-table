@@ -62,7 +62,7 @@
     "vite": "^5.0.0",
     "vitest": "^2.1.9"
   },
-  "description": "Svelte adapter for simple-table-core \u2014 use the Simple Table data grid with full Svelte component support for renderers.",
+  "description": "Free, MIT licensed Svelte 5 data grid (SvelteKit ready). Sorting, filtering, pinning, tree data, editing, virtualization. svelte-headless-table alternative.",
   "repository": {
     "type": "git",
     "url": "https://github.com/petera2c/simple-table.git"
@@ -102,6 +102,9 @@
     "carbon svelte table alternative",
     "ag-grid alternative",
     "free svelte data grid",
-    "typescript data grid"
+    "typescript data grid",
+    "mit",
+    "mit license",
+    "open source data grid"
   ]
 }

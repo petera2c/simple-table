@@ -7,6 +7,8 @@
 
 Simple Table is a lightweight Svelte data grid. Free and MIT licensed, with optional paid support from the people who build it. Use Svelte components for cells, headers, and footers.
 
+**[Live demos](https://www.simple-table.com/examples) · [Docs](https://www.simple-table.com/docs/quick-start) · [Why it is MIT again](https://www.simple-table.com/blog/simple-table-is-mit-licensed)**
+
 <div align="center">
   <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Simple Table Infrastructure Dashboard" width="800" />
 </div>
