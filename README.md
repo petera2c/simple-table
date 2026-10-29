@@ -5,7 +5,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/petera2c/simple-table.svg)](https://github.com/petera2c/simple-table)
 [![License](https://img.shields.io/npm/l/simple-table-core.svg)](packages/core/LICENSE)
 
-Simple Table is a lightweight data grid. Flat pricing (not per developer), backed by real-person support. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.
+Simple Table is a lightweight data grid. Free and MIT licensed, with optional paid support from the people who build it. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.
 
 <div align="center">
   <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Simple Table Infrastructure Dashboard" width="800" />

@@ -181,6 +181,16 @@ export const handsontableAlternativesPost: BlogPostMetadata = {
   updatedAt: "2026-06-22",
 };
 
+export const simpleTableMitLicensePost: BlogPostMetadata = {
+  title: "Simple Table Is MIT Licensed: Free for Everyone Since 4.3.2",
+  description:
+    "Simple Table moved back to the MIT license in version 4.3.2. Every feature and framework adapter is free for any project, including commercial ones. Paid plans are optional support.",
+  slug: "simple-table-is-mit-licensed",
+  tags: ["react", "pricing", "article"],
+  createdAt: "2026-10-28",
+  updatedAt: "2026-10-28",
+};
+
 export const agGridPricing2026Post: BlogPostMetadata = {
   title: "AG Grid Enterprise License Cost 2026: $999/Developer",
   description:
@@ -1011,6 +1021,7 @@ export const vanillaTreeDataTablesPost: BlogPostMetadata = {
 
 // Array of all blog posts using the individual objects
 export const BLOG_POSTS: BlogPostMetadata[] = [
+  simpleTableMitLicensePost,
   // Tier 2 framework-specific competitor comparisons
   simpleTableVsAgGridAngularPost,
   simpleTableVsNgxDatatablePost,

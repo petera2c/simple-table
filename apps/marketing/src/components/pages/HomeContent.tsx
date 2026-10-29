@@ -175,7 +175,7 @@ export default function HomeContent() {
               transition={{ duration: 0.4, delay: 0.1 }}
             >
               <li className="list-disc text-left">Lightweight</li>
-              <li className="list-disc text-left">Flat pricing (not per developer)</li>
+              <li className="list-disc text-left">Free and MIT licensed</li>
               <li className="list-disc text-left">Real-person support</li>
               <li className="list-disc text-left">Multi framework support React, Angular, Vue, Svelte, Solid, and vanilla JS.</li>
             </motion.ul>
@@ -330,7 +330,7 @@ export default function HomeContent() {
                     transition={{ duration: 0.4, delay: 0.1 }}
                   >
                       <li className="list-disc">Lightweight</li>
-                      <li className="list-disc">Flat pricing (not per developer)</li>
+                      <li className="list-disc">Free and MIT licensed</li>
                       <li className="list-disc">Real-person support</li>
                       <li className="list-disc">Multi framework support React, Angular, Vue, Svelte, Solid, and vanilla JS.</li>
                   </motion.ul>

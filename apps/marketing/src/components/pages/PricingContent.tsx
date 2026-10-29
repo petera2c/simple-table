@@ -202,6 +202,22 @@ const PricingContent: React.FC = () => {
           <p className="text-lg md:text-xl text-muted max-w-2xl mx-auto mb-8">
             The library is free under the MIT license. Pay only if you want support.
           </p>
+          <div className="mx-auto grid max-w-3xl gap-4 text-left sm:grid-cols-2 mb-4">
+            <div className="rounded-lg border border-line bg-surface p-4">
+              <h2 className="mb-2 text-base font-semibold text-ink">Free under MIT</h2>
+              <p className="text-sm text-muted">
+                Every feature and every framework adapter. Use it in commercial products, change
+                it, and ship it. No license key and no per-developer fees.
+              </p>
+            </div>
+            <div className="rounded-lg border border-line bg-surface p-4">
+              <h2 className="mb-2 text-base font-semibold text-ink">Paid (optional)</h2>
+              <p className="text-sm text-muted">
+                Pro is support and bug fixes. Enterprise is custom help. Neither unlocks features
+                or changes your license.
+              </p>
+            </div>
+          </div>
         </motion.section>
 
         <motion.section

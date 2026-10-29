@@ -83,8 +83,8 @@ export default function SolidJsDataGridPillarPage() {
         },
         {
           icon: faShieldHalved,
-          title: "Free for everyone, simple licensing for revenue",
-          body: "Free for everyone under the MIT license. Pro is $850 a month for support and bug fixes—no per-developer fees.",
+          title: "Free and MIT licensed",
+          body: "Free for everyone under the MIT license. Pro is $850 a month if you want support and bug fixes. No per-developer fees.",
           tone: "amber",
         },
       ]}

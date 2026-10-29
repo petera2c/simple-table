@@ -136,8 +136,8 @@ export default function SmartGridVsSimpleTablePage() {
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                <strong>Simple Table</strong> offers a free tier for everyone
-                (MIT licensed) and an optional Pro plan ($850/month) for support and bug fixes.
+                <strong>Simple Table</strong> is free for everyone
+                (MIT licensed), with an optional Pro plan ($850/month) for support and bug fixes.
                 At 84.6 kB with zero dependencies, it delivers core data grid
                 functionality—virtualization, grouping, pinning, filtering, sorting—at a fraction of
                 Smart Grid's cost. For broader context,{" "}

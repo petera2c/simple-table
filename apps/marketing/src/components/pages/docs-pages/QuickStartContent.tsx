@@ -254,7 +254,11 @@ const QuickStartContent = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Add Simple Table to your app in about 60 seconds.
+        Add Simple Table to your app in about 60 seconds. It is free and{" "}
+        <Link href="/legal/license" className="text-blue-600 dark:text-blue-400 hover:underline">
+          MIT licensed
+        </Link>
+        , so there is no license key to set up.
       </motion.p>
 
       <motion.div

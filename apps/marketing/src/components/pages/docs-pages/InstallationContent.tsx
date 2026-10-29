@@ -57,6 +57,14 @@ const InstallationContent = () => {
         process and help you set up the library in your {label} project.
       </motion.p>
 
+      <p className="text-gray-700 dark:text-gray-300 mb-6">
+        Simple Table is free and{" "}
+        <Link href="/legal/license" className="text-blue-600 dark:text-blue-400 hover:underline">
+          MIT licensed
+        </Link>
+        . Use it in any project, including commercial ones. No license key, no sign-up.
+      </p>
+
       <motion.div
         className="flex flex-col gap-2 mb-8 max-w-md"
         initial={{ opacity: 0 }}

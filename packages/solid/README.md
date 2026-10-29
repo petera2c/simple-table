@@ -5,7 +5,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/petera2c/simple-table.svg)](https://github.com/petera2c/simple-table)
 [![License](https://img.shields.io/npm/l/@simple-table/solid.svg)](LICENSE)
 
-Simple Table is a lightweight Solid data grid. Flat pricing (not per developer), backed by real-person support. Use Solid components for cells, headers, and footers.
+Simple Table is a lightweight Solid data grid. Free and MIT licensed, with optional paid support from the people who build it. Use Solid components for cells, headers, and footers.
 
 <div align="center">
   <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Simple Table Infrastructure Dashboard" width="800" />

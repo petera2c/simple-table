@@ -5,7 +5,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/petera2c/simple-table.svg)](https://github.com/petera2c/simple-table)
 [![License](https://img.shields.io/npm/l/@simple-table/angular.svg)](LICENSE)
 
-Simple Table is a lightweight Angular data grid. Flat pricing (not per developer), backed by real-person support. Use Angular components for cells, headers, and footers.
+Simple Table is a lightweight Angular data grid. Free and MIT licensed, with optional paid support from the people who build it. Use Angular components for cells, headers, and footers.
 
 <div align="center">
   <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Simple Table Infrastructure Dashboard" width="800" />

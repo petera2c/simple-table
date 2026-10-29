@@ -39,5 +39,4 @@ Sitemap: https://www.simple-table.com/sitemap.xml
 Disallow: /admin/
 Disallow: /private/
 Disallow: /api/
-Disallow: /_next/
 Disallow: /node_modules/ 

@@ -723,7 +723,7 @@ export default function HandsontablePricingPage() {
                     Simple Table
                   </h3>
                   <span className="ml-auto text-lg font-bold text-green-600 dark:text-green-400">
-                    Free tier available
+                    Free (MIT)
                   </span>
                 </div>
 
@@ -762,18 +762,18 @@ export default function HandsontablePricingPage() {
                         <span className="font-bold text-red-600 dark:text-red-400">$24,975</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-700 dark:text-gray-300">Simple Table FREE:</span>
+                        <span className="text-gray-700 dark:text-gray-300">Simple Table (MIT):</span>
                         <span className="font-bold text-green-600 dark:text-green-400">$0</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-700 dark:text-gray-300">
-                          Simple Table PRO (optional):
+                          Optional Pro support:
                         </span>
-                        <span className="font-bold text-blue-600 dark:text-blue-400">$5,100</span>
+                        <span className="font-bold text-blue-600 dark:text-blue-400">$850/month</span>
                       </div>
                       <div className="pt-2 border-t border-gray-300 dark:border-gray-600 flex justify-between">
                         <span className="font-semibold text-gray-900 dark:text-gray-100">
-                          You Save (FREE tier):
+                          You save (free, MIT):
                         </span>
                         <span className="font-bold text-green-600 dark:text-green-400 text-lg">
                           $24,975
@@ -985,8 +985,8 @@ export default function HandsontablePricingPage() {
 
       {/* Call to Action */}
       <CallToActionCard
-        title="Skip the $22K+ Handsontable bill. Start with Simple Table's FREE tier."
-        description="Install free for everyone (same features). Upgrade to Pro for a commercial EULA + priority support if you want support — per product, not per developer."
+        title="Skip the $22K+ Handsontable bill. Start with Simple Table, free under MIT."
+        description="Simple Table is free under the MIT license, with every feature included. Pro is optional support and bug fixes. It never unlocks features."
         primaryButton={{
           text: "Get started",
           href: "/docs/installation",

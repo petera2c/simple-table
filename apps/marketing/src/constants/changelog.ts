@@ -22,7 +22,7 @@ export const v4_3_2: ChangelogEntry = {
       type: "improvement",
       description:
         "Simple Table is now MIT. You can use it in any product.",
-      link: "/legal/license",
+      link: "/blog/simple-table-is-mit-licensed",
     },
     {
       type: "improvement",

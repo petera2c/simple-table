@@ -1011,7 +1011,7 @@ export default function AccessibilityComparisonPage() {
       {/* Call to Action */}
       <CallToActionCard
         title="Ship accessible tables without the accessibility expertise."
-        description="Simple Table is built with WCAG 2.1 AAA compliance, keyboard navigation, screen reader support, and mobile optimization—all built-in. FREE tier includes all accessibility features. Optional PRO plan ($850/month for support) for priority support. Zero configuration. Zero accessibility debt."
+        description="Simple Table is built with WCAG 2.1 AAA compliance, keyboard navigation, screen reader support, and mobile optimization, all built in. Free under the MIT license, with every accessibility feature included. Pro ($850/month) is optional support. Zero configuration. Zero accessibility debt."
         primaryButton={{
           text: "Start Free",
           href: "/docs/installation",

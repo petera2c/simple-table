@@ -37,7 +37,7 @@ const faqSchema = {
       name: "What is Simple Table?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: `Simple Table is a lightweight data grid (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}). Flat pricing (not per developer), backed by real-person support. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.`,
+        text: `Simple Table is a lightweight data grid (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}). Free and MIT licensed, with optional paid support from the people who build it. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.`,
       },
     },
     {

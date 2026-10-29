@@ -257,7 +257,7 @@ export default function Footer() {
                       isActive("/legal/eula") ? "text-footer-ink font-medium" : ""
                     }`}
                   >
-                    EULA
+                    Support Agreement
                   </Link>
                 </li>
                 <li>

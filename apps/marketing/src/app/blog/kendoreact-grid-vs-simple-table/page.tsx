@@ -135,8 +135,8 @@ export default function KendoReactGridVsSimpleTablePage() {
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                <strong>Simple Table</strong> offers a free tier for everyone
-                (MIT licensed) and an optional Pro plan ($850/month) for support and bug fixes.
+                <strong>Simple Table</strong> is free for everyone
+                (MIT licensed), with an optional Pro plan ($850/month) for support and bug fixes.
                 At 84.6 kB with zero dependencies, it provides core data grid
                 functionality—virtualization, grouping, pinning, filtering, sorting—at dramatically
                 lower costs than KendoReact. For broader comparisons,{" "}
@@ -357,8 +357,8 @@ export default function KendoReactGridVsSimpleTablePage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>3-year savings:</strong> $7,185-$15,435 vs KendoReact (per product,
-                      not per-developer)
+                      <strong>3-year savings:</strong> $7,185-$15,435 vs KendoReact (Simple Table
+                      itself is free under MIT)
                     </span>
                   </li>
                   <li className="flex items-start gap-2">

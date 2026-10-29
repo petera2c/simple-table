@@ -120,8 +120,8 @@ export default function DevExtremeGridVsSimpleTablePage() {
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
-                <strong>Simple Table</strong> offers a free tier for everyone
-                (MIT licensed) and an optional Pro plan ($850/month) for support and bug fixes.
+                <strong>Simple Table</strong> is free for everyone
+                (MIT licensed), with an optional Pro plan ($850/month) for support and bug fixes.
                 At 84.6 kB with zero dependencies, it delivers core data grid features—virtualization,
                 sorting, filtering, pagination, grouping, column pinning—at a fraction of enterprise
                 costs. For broader context,{" "}
@@ -357,8 +357,8 @@ export default function DevExtremeGridVsSimpleTablePage() {
                       className="text-green-500 mt-1 shrink-0"
                     />
                     <span>
-                      <strong>Per-product licensing:</strong> No per-developer fees (unlimited users
-                      per product)
+                      <strong>MIT license:</strong> Free for every developer and every product, no
+                      per-developer fees
                     </span>
                   </li>
                   <li className="flex items-start gap-2">

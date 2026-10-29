@@ -204,7 +204,7 @@ export default async function FrameworkHubDetailPage({ params }: PageProps) {
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
               If you have evaluated any of the libraries below, Simple Table is a drop-in
               MIT-licensed alternative that ships virtualization, pinning, grouping, and inline
-              editing without a Pro license:
+              editing for free:
             </p>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700 dark:text-gray-300">
               {competitors.map((name) => (
