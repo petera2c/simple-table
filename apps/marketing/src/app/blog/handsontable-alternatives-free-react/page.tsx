@@ -825,7 +825,7 @@ export default function HandsontableAlternativesPage() {
 
             <p className="mb-6 text-gray-700 dark:text-gray-300">
               AG Grid Community offers basic spreadsheet functionality for free, but advanced
-              editing features require a paid Enterprise license ($999+/year per developer).
+              editing features require a paid Enterprise license ($999 per developer, perpetual).
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -877,7 +877,7 @@ export default function HandsontableAlternativesPage() {
                       icon={faExclamationTriangle}
                       className="text-red-500 mt-1 shrink-0"
                     />
-                    <span>Advanced features require $999+/year per dev</span>
+                    <span>Advanced features require $999 per dev (Enterprise)</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <FontAwesomeIcon
@@ -964,7 +964,7 @@ export default function HandsontableAlternativesPage() {
                       {AG_GRID_ENTERPRISE_INFO.bundleSizeMinGzip}
                     </td>
                     <td className="p-3 text-red-600 dark:text-red-400">Commercial</td>
-                    <td className="p-3 text-red-600 dark:text-red-400 font-bold">$999+/dev/yr</td>
+                    <td className="p-3 text-red-600 dark:text-red-400 font-bold">$999/dev (perpetual)</td>
                     <td className="p-3 text-gray-700 dark:text-gray-300">✓ Advanced</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700 bg-red-50 dark:bg-red-900/20">

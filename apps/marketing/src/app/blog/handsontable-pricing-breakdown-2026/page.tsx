@@ -832,7 +832,7 @@ export default function HandsontablePricingPage() {
 
                 <p className="text-gray-700 dark:text-gray-300 mb-3">
                   MIT-licensed version of AG Grid with basic features. Enterprise features require
-                  paid license ($999+/dev/year).
+                  paid license ($999 per developer, perpetual).
                 </p>
 
                 <div className="grid grid-cols-2 gap-4 text-sm">

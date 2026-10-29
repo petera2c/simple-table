@@ -37,14 +37,14 @@ export default function Page() {
       datePublished={simpleTableVsAgGridAngularPost.createdAt}
       dateModified={simpleTableVsAgGridAngularPost.updatedAt}
       introParagraphs={[
-        "Angular teams choosing a data grid in 2026 keep landing on the same question: do we live with AG Grid's bundle size and Enterprise license fees, or pick something lighter? AG Grid is genuinely powerful, but a lot of the features Angular shops want—row grouping with aggregations, pivoting, master/detail, integrated charts—live behind the $999+/developer/year Enterprise tier.",
+        "Angular teams choosing a data grid in 2026 keep landing on the same question: do we live with AG Grid's bundle size and Enterprise license fees, or pick something lighter? AG Grid is genuinely powerful, but a lot of the features Angular shops want—row grouping with aggregations, pivoting, master/detail, integrated charts—live behind the Enterprise tier ($999 per developer, perpetual).",
         "Simple Table for Angular is the MIT-licensed alternative built around modern Angular. It ships as @simple-table/angular, runs natively in standalone components, plays well with signals, and supports Angular 17, 18, and 19 without zone-tweak workarounds. You get virtualization for 1M+ rows, column pinning, row grouping with aggregations, and inline cell editing in a single 84.6 kB gzipped package—free for everyone, with Pro/Enterprise if you want support.",
         "This article is the side-by-side that helps Angular teams decide. We break down license cost, bundle size, idiomatic Angular API, virtualization behavior, grouping/aggregation parity, and the migration path so you can confidently pick the right grid for your stack.",
         "If you're skimming, the executive summary is: AG Grid Angular is the safer pick if your team already uses it heavily and depends on Enterprise-only features like pivoting or integrated charts. For everyone else—new Angular projects, teams that want signals-friendly ergonomics, or teams trying to escape Enterprise renewals—Simple Table for Angular wins on cost, bundle size, and developer experience.",
       ]}
       comparisonRows={[
         { feature: "License", competitor: { value: "MIT (Community) + commercial Enterprise", tone: "neutral" }, simpleTable: { value: "MIT", tone: "good" } },
-        { feature: "Per-developer cost", competitor: { value: "$999+ /year (Enterprise)", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
+        { feature: "Per-developer cost", competitor: { value: "$999 per developer (Enterprise, perpetual)", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
         { feature: "Bundle size (gzipped, typical app)", competitor: { value: "200–400+ kB", tone: "bad" }, simpleTable: { value: "84.6 kB", tone: "good" } },
         { feature: "Standalone components", competitor: { value: "Supported", tone: "neutral" }, simpleTable: { value: "First-class", tone: "good" } },
         { feature: "Signals-native API", competitor: { value: "Partial", tone: "neutral" }, simpleTable: { value: "Yes", tone: "good" } },

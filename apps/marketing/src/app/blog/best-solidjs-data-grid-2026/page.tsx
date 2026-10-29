@@ -43,7 +43,7 @@ export default function Page() {
       ]}
       comparisonRows={[
         { feature: "License", competitor: { value: "MIT (TanStack/Kobalte) / Mixed (AG Grid)", tone: "neutral" }, simpleTable: { value: "MIT", tone: "good" } },
-        { feature: "Per-developer fees", competitor: { value: "AG Enterprise: $999+", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
+        { feature: "Per-developer fees", competitor: { value: "AG Enterprise: $999/dev", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
         { feature: "Approach", competitor: { value: "Headless / primitives / commercial", tone: "neutral" }, simpleTable: { value: "Batteries-included", tone: "good" } },
         { feature: "Solid signals integration", competitor: { value: "Yes (most options)", tone: "good" }, simpleTable: { value: "First-class", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "14–400+ kB depending on choice", tone: "neutral" }, simpleTable: { value: "84.6 kB", tone: "good" } },

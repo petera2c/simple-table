@@ -124,7 +124,7 @@ export default function FreeAlternativeToAgGridPage() {
                   </span>
                 </div>
                 <p className="text-amber-700 dark:text-amber-300 mb-3">
-                  About $999 per developer per year for AG Grid Enterprise—that was way out of my
+                  About $999 per developer for an AG Grid Enterprise licence. That was way out of my
                   budget of $0.00.
                 </p>
                 <p className="text-amber-700 dark:text-amber-300">

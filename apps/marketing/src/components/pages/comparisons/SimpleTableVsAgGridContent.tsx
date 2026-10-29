@@ -18,7 +18,7 @@ const SimpleVsAgGrid = () => {
     <>
       In the enterprise data grid landscape, AG Grid has established itself as the go-to solution
       for companies willing to invest heavily in advanced table functionality. With its two-tier
-      pricing model—free Community edition and $999/developer Enterprise license—AG Grid represents
+      pricing model (a free Community edition and a $999 per developer perpetual Enterprise license), AG Grid represents
       a significant financial commitment. However, many development teams find themselves
       questioning whether they truly need the Enterprise features that justify this cost, especially
       when much of their functionality is locked behind the paywall. This is where{" "}

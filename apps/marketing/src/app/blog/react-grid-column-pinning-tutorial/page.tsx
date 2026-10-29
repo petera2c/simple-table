@@ -776,7 +776,7 @@ export default function ConfigurableTable({ data }) {
                         N/A
                       </td>
                       <td className="border border-gray-300 dark:border-gray-600 p-3 text-center text-red-600 dark:text-red-400">
-                        $999+/dev/year
+                        $999/dev (perpetual)
                       </td>
                     </tr>
                     <tr>

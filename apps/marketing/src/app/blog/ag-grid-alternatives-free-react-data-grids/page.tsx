@@ -108,7 +108,7 @@ export default function AgGridAlternativesPage() {
                 virtually any data grid use case. It's well-documented, actively maintained, and
                 trusted by thousands of companies. However, advanced features like row grouping,
                 aggregation, and Excel export require an Enterprise license starting at $999 per
-                developer annually. See our{" "}
+                developer (perpetual, with one year of updates). See our{" "}
                 <Link
                   href="/blog/ag-grid-pricing-license-breakdown-2026"
                   className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
@@ -166,8 +166,8 @@ export default function AgGridAlternativesPage() {
                     </h4>
                   </div>
                   <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    Enterprise features start at $999 per developer annually. For a team of 5,
-                    that's $5,000+ per year—forever.
+                    Enterprise features start at $999 per developer. For a team of 5,
+                    that is about $5,000 upfront, plus renewals for ongoing updates.
                   </p>
                 </div>
 
@@ -1064,7 +1064,7 @@ export default function AgGridAlternativesPage() {
                     <td className="p-3 text-red-600 dark:text-red-400">
                       {AG_GRID_ENTERPRISE_INFO.bundleSizeMinGzip}
                     </td>
-                    <td className="p-3 text-red-600 dark:text-red-400 font-bold">$999+/dev/year</td>
+                    <td className="p-3 text-red-600 dark:text-red-400 font-bold">$999/dev (perpetual)</td>
                     <td className="p-3 text-gray-700 dark:text-gray-300">
                       Complex enterprise needs
                     </td>

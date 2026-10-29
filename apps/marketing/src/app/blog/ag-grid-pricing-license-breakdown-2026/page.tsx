@@ -1,34 +1,10 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faDollarSign,
-  faCheckCircle,
-  faExclamationTriangle,
-  faCalculator,
-  faShieldAlt,
-  faUsers,
-  faChartLine,
-  faBolt,
-  faCrown,
-  faLightbulb,
-  faTrophy,
-  faBalanceScale,
-  faTimesCircle,
-  faMoneyBillWave,
-  faClock,
-  faInfinity,
-} from "@fortawesome/free-solid-svg-icons";
 import { Metadata } from "next";
+import Link from "next/link";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import CallToActionCard from "@/components/CallToActionCard";
 import { TECHNICAL_STRINGS } from "@/constants/strings/technical";
-import Link from "next/link";
-import {
-  SIMPLE_TABLE_INFO,
-  AG_GRID_COMMUNITY_INFO,
-  AG_GRID_ENTERPRISE_INFO,
-} from "@/constants/packageInfo";
 
 export const metadata: Metadata = {
   title: SEO_STRINGS.blogPosts.agGridPricing2026.title,
@@ -53,896 +29,239 @@ export const metadata: Metadata = {
   },
 };
 
+const LAST_CHECKED = "October 29, 2026";
+
+const summaryRows: { label: string; community: string; enterprise: string; bundle: string }[] = [
+  { label: "License", community: "MIT (open source)", enterprise: "Commercial EULA", bundle: "Commercial EULA" },
+  { label: "List price", community: "Free", enterprise: "$999 USD per developer", bundle: "$1,498 USD per developer" },
+  { label: "Billing model", community: "None", enterprise: "Perpetual licence, 1 year of support and updates included", bundle: "Perpetual licence, 1 year of support and updates included" },
+  { label: "Production use", community: "Yes, free", enterprise: "Yes, with a licence", bundle: "Yes, with a licence" },
+  { label: "Buy online", community: "Not needed", enterprise: "1 to 10 developers, internal apps only", bundle: "1 to 10 developers, internal apps only" },
+  { label: "Customer-facing apps or 10+ developers", community: "Free", enterprise: "Contact AG Grid sales", bundle: "Contact AG Grid sales" },
+  { label: "Support", community: "GitHub community", enterprise: "Zendesk support", bundle: "Zendesk support" },
+  { label: "Integrated Charts", community: "No", enterprise: "No", bundle: "Yes" },
+];
+
+const featureRows: { feature: string; community: boolean; simpleTable: boolean }[] = [
+  { feature: "Sorting, text/number/date filters, pagination", community: true, simpleTable: true },
+  { feature: "Column pinning, resizing, reordering", community: true, simpleTable: true },
+  { feature: "Cell editing", community: true, simpleTable: true },
+  { feature: "CSV export", community: true, simpleTable: true },
+  { feature: "Row grouping", community: false, simpleTable: true },
+  { feature: "Aggregation", community: false, simpleTable: true },
+  { feature: "Pivoting", community: false, simpleTable: true },
+  { feature: "Tree data", community: false, simpleTable: true },
+  { feature: "Excel export", community: false, simpleTable: false },
+  { feature: "Set filter, Advanced filter", community: false, simpleTable: false },
+  { feature: "Context menu, column menu, tool panels", community: false, simpleTable: false },
+];
+
+const th = "border border-gray-300 dark:border-gray-600 p-3 text-left font-semibold";
+const td = "border border-gray-300 dark:border-gray-600 p-3 align-top";
+
 export default function AgGridPricingPage() {
   return (
     <BlogLayout>
-      {/* Hero Section */}
-      <section className="bg-linear-to-r from-red-50 to-orange-50 dark:from-red-900 dark:to-orange-900 rounded-xl p-4 md:p-8 mb-8">
+      <section className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
-          AG Grid Enterprise License Cost 2026: $999/Developer
+          AG Grid License &amp; Pricing 2026: Community vs Enterprise
         </h1>
-
-        <div className="flex justify-center mb-4 gap-2 flex-wrap">
-          <span className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
-            <FontAwesomeIcon icon={faDollarSign} />
-            Cost Analysis
-          </span>
-          <span className="bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
-            <FontAwesomeIcon icon={faCalculator} />
-            2026 Pricing
-          </span>
-          <span className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
-            <FontAwesomeIcon icon={faShieldAlt} />
-            License Guide
-          </span>
-        </div>
-
         <p className="text-lg max-w-3xl mx-auto text-center text-gray-700 dark:text-gray-300">
-          AG Grid Enterprise is $999 per developer per year. Here&apos;s the full 2026 license cost
-          breakdown—Community vs Enterprise, renewals, team totals, and free alternatives.
+          AG Grid Community is free under MIT. AG Grid Enterprise lists at $999 per developer as a
+          perpetual licence with one year of support and updates. Here is what each tier includes,
+          who needs a licence, and what a team actually pays.
+        </p>
+        <p className="text-sm text-center text-gray-500 dark:text-gray-400 mt-3">
+          Prices checked against ag-grid.com on {LAST_CHECKED}. Always confirm on the{" "}
+          <a
+            href="https://www.ag-grid.com/license-pricing/"
+            className="underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            official AG Grid pricing page
+          </a>{" "}
+          before you buy.
         </p>
       </section>
 
-      {/* Main Content */}
-      <article className="space-y-8">
-        {/* Introduction */}
-        <section id="introduction">
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
-            <div className="prose prose-gray dark:prose-invert max-w-none">
-              <p className="mb-4 text-gray-700 dark:text-gray-300">
-                AG Grid&apos;s license model is the first thing most teams need to understand:{" "}
-                <strong>Community is free</strong> (with a smaller feature set), while{" "}
-                <strong>Enterprise is $999 per developer per year</strong>. AG Grid is one of the
-                most powerful data grids for React, Angular, and Vue—but pricing and renewals are
-                easy to underestimate until you&apos;ve already committed.
-              </p>
-
-              <p className="mb-4 text-gray-700 dark:text-gray-300">
-                In this guide, we break down AG Grid&apos;s 2026 license cost and pricing structure,
-                show what real teams pay, and help you decide whether Enterprise is worth it—or if
-                there are{" "}
-                <Link
-                  href="/blog/ag-grid-alternatives-free-react-data-grids"
-                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-                >
-                  better free alternatives
-                </Link>
-                .
-              </p>
-
-              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4 mt-6">
-                <div className="flex items-start gap-3">
-                  <FontAwesomeIcon icon={faLightbulb} className="text-amber-500 mt-1" />
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                      TL;DR: What Will AG Grid Actually Cost You?
-                    </h4>
-                    <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                      <li>• Community Edition: Free, but missing critical features</li>
-                      <li>• Single Developer: $999/year minimum</li>
-                      <li>• 5-Developer Team: $4,995/year ($416/month)</li>
-                      <li>• 10-Developer Team: $9,990/year ($832/month)</li>
-                      <li>• Enterprise (unlimited): Custom pricing (typically $20K-$50K+/year)</li>
-                      <li className="pt-2 border-t border-amber-300 dark:border-amber-700">
-                        💡{" "}
-                        <Link
-                          href="/blog/ag-grid-alternatives-free-react-data-grids"
-                          className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-                        >
-                          See 7 free alternatives
-                        </Link>{" "}
-                        that could save you $25K+
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <article className="space-y-8 text-gray-700 dark:text-gray-300">
+        <section id="summary">
+          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+            AG Grid pricing at a glance
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
+              <thead className="bg-gray-100 dark:bg-gray-800">
+                <tr>
+                  <th className={th}></th>
+                  <th className={th}>Community</th>
+                  <th className={th}>Enterprise</th>
+                  <th className={th}>Enterprise Bundle (Grid + Charts)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {summaryRows.map((row) => (
+                  <tr key={row.label}>
+                    <td className={`${td} font-semibold`}>{row.label}</td>
+                    <td className={td}>{row.community}</td>
+                    <td className={td}>{row.enterprise}</td>
+                    <td className={td}>{row.bundle}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
 
-        {/* Licensing Tiers */}
-        <section id="licensing-tiers">
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
-            <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
-              <FontAwesomeIcon icon={faShieldAlt} className="text-blue-500" />
-              AG Grid Licensing Tiers: What's Available?
-            </h2>
+        <section id="how-licensing-works">
+          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+            How the AG Grid license works
+          </h2>
+          <ul className="list-disc pl-6 space-y-2">
+            <li>
+              <strong>Community is MIT.</strong> You can use it in production for free, including in
+              commercial products.
+            </li>
+            <li>
+              <strong>Enterprise is perpetual, not a yearly subscription.</strong> You keep using the
+              version you licensed. The first year of support and updates is included. Renewing is
+              optional, but you need it to get new releases and continued support. AG Grid does not
+              publish renewal prices.
+            </li>
+            <li>
+              <strong>Every front-end developer on the project needs a licence</strong>, according to
+              AG Grid, including developers who never touch the grid directly.
+            </li>
+            <li>
+              <strong>Licences are per developer and per deployment.</strong> Online checkout covers
+              1 to 10 developers building internal applications. Customer-facing applications and
+              larger teams go through AG Grid sales, so there is no public list price for those.
+            </li>
+            <li>
+              <strong>Enterprise is free to try locally</strong>, and AG Grid offers a 30-day trial
+              for production testing.
+            </li>
+          </ul>
+        </section>
 
-            <div className="space-y-6">
-              {/* Community Edition */}
-              <div className="border border-green-200 dark:border-green-700 rounded-lg p-6 bg-green-50 dark:bg-green-900/20">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                    Community Edition
-                  </h3>
-                  <div className="text-3xl font-bold text-green-600 dark:text-green-400">$0</div>
-                </div>
-
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
-                  MIT-licensed, free for commercial and non-commercial use. Includes the basic
-                  features most developers expect from a data grid.
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-semibold text-green-700 dark:text-green-400 mb-2 flex items-center gap-2 text-sm">
-                      <FontAwesomeIcon icon={faCheckCircle} />
-                      What's Included
-                    </h4>
-                    <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
-                      <li>• Sorting & filtering</li>
-                      <li>• Column resizing & reordering</li>
-                      <li>• Pagination</li>
-                      <li>• Cell rendering & editing</li>
-                      <li>• Basic virtualization</li>
-                      <li>• CSV export</li>
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold text-red-700 dark:text-red-400 mb-2 flex items-center gap-2 text-sm">
-                      <FontAwesomeIcon icon={faTimesCircle} />
-                      What's Missing
-                    </h4>
-                    <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
-                      <li>• Row grouping</li>
-                      <li>• Aggregation functions</li>
-                      <li>• Tree data</li>
-                      <li>• Excel export</li>
-                      <li>• Advanced filtering</li>
-                      <li>• Master/detail views</li>
-                      <li>• Column pinning (frozen columns)</li>
-                      <li>• Pivot mode</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded border border-amber-300 dark:border-amber-700">
-                  <p className="text-xs text-gray-700 dark:text-gray-300">
-                    <FontAwesomeIcon icon={faExclamationTriangle} className="text-amber-500 mr-2" />
-                    <strong>The Trap:</strong> Most teams start with Community, only to discover
-                    they need Enterprise features later. By then, migration costs and technical debt
-                    make switching difficult.
-                  </p>
-                </div>
-              </div>
-
-              {/* Enterprise Edition */}
-              <div className="border border-red-200 dark:border-red-700 rounded-lg p-6 bg-red-50 dark:bg-red-900/20">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                    <FontAwesomeIcon icon={faCrown} className="text-red-500" />
-                    Enterprise Edition
-                  </h3>
-                  <div className="text-right">
-                    <div className="text-3xl font-bold text-red-600 dark:text-red-400">$999+</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      per developer per year
-                    </div>
-                  </div>
-                </div>
-
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
-                  Commercial license required. Includes all Community features plus advanced
-                  enterprise capabilities. This is where the real power (and cost) of AG Grid lives.
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <h4 className="font-semibold text-green-700 dark:text-green-400 mb-2 flex items-center gap-2 text-sm">
-                      <FontAwesomeIcon icon={faCheckCircle} />
-                      Enterprise Features
-                    </h4>
-                    <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
-                      <li>• Row grouping & tree data</li>
-                      <li>• Aggregation functions (sum, avg, etc.)</li>
-                      <li>• Excel export (with styles)</li>
-                      <li>• Advanced filtering (set, multi filters)</li>
-                      <li>• Master/detail (expandable rows)</li>
-                      <li>• Column pinning (left/right)</li>
-                      <li>• Pivot mode & charts</li>
-                      <li>• Range selection</li>
-                      <li>• Clipboard operations</li>
-                      <li>• Server-side row model</li>
-                      <li>• Status bar & tool panels</li>
-                    </ul>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold text-blue-700 dark:text-blue-400 mb-2 flex items-center gap-2 text-sm">
-                      <FontAwesomeIcon icon={faShieldAlt} />
-                      License Terms
-                    </h4>
-                    <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
-                      <li>• Per-developer pricing</li>
-                      <li>• Perpetual license with 1 year of updates</li>
-                      <li>• Renew for continued updates & support</li>
-                      <li>• Development + production use</li>
-                      <li>• Covers all projects</li>
-                      <li>• Named developer licenses</li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="bg-white dark:bg-gray-800 rounded p-4 border border-red-300 dark:border-red-700">
-                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                    What "Per Developer" Actually Means
-                  </h4>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    You need a license for every developer who works with AG Grid code—not just
-                    those actively developing it. This includes:
-                  </p>
-                  <ul className="text-sm text-gray-700 dark:text-gray-300 mt-2 space-y-1">
-                    <li>
-                      • Frontend developers building/maintaining the grid ✓ (obviously counts)
-                    </li>
-                    <li>
-                      • Developers who might touch grid configuration ✓ (counts according to AG
-                      Grid)
-                    </li>
-                    <li>• Backend developers? ✗ (typically doesn't count)</li>
-                    <li>• QA/testers? ✗ (doesn't count)</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+        <section id="team-cost">
+          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+            What a team pays at list price
+          </h2>
+          <p className="mb-4">
+            For internal apps bought online, the upfront cost is the number of front-end developers
+            times the list price. Renewals for later years are extra and quoted by AG Grid.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
+              <thead className="bg-gray-100 dark:bg-gray-800">
+                <tr>
+                  <th className={th}>Front-end developers</th>
+                  <th className={th}>Enterprise (upfront)</th>
+                  <th className={th}>Enterprise Bundle (upfront)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[1, 3, 5, 10].map((n) => (
+                  <tr key={n}>
+                    <td className={td}>{n}</td>
+                    <td className={td}>${(n * 999).toLocaleString("en-US")}</td>
+                    <td className={td}>${(n * 1498).toLocaleString("en-US")}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
 
-        {/* Actual Cost Calculator */}
-        <section id="cost-calculator">
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
-            <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
-              <FontAwesomeIcon icon={faCalculator} className="text-green-500" />
-              What You'll Actually Pay: Real Numbers
-            </h2>
-
-            <p className="mb-6 text-gray-700 dark:text-gray-300">
-              Let's break down the actual costs for different team sizes. These are 2026 prices
-              based on AG Grid's standard licensing (prices may vary for volume/enterprise deals).
-            </p>
-
-            <div className="space-y-4">
-              {/* Solo Developer */}
-              <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                      Solo Developer / Freelancer
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">1 developer license</p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">$999</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">per year</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500">~$83/month</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                  <FontAwesomeIcon icon={faCalculator} className="text-gray-500" />
-                  <span>
-                    Total 3-year cost:{" "}
-                    <strong className="text-red-600 dark:text-red-400">$2,997</strong>
-                  </span>
-                </div>
-              </div>
-
-              {/* Small Team */}
-              <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                      Small Team / Startup
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      3-5 frontend developers
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-3xl font-bold text-orange-600 dark:text-orange-400">
-                      $4,995
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">per year</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500">~$416/month</div>
-                  </div>
-                </div>
-                <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                  <div className="flex items-center gap-2">
-                    <FontAwesomeIcon icon={faCalculator} className="text-orange-500" />
-                    <span>
-                      Total 3-year cost:{" "}
-                      <strong className="text-red-600 dark:text-red-400">$14,985</strong>
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <FontAwesomeIcon icon={faUsers} className="text-orange-500" />
-                    <span>
-                      Cost per developer: <strong>$999/year each</strong>
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Medium Team */}
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                      Medium Team / Growing Company
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      10 frontend developers
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-3xl font-bold text-red-600 dark:text-red-400">$9,990</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">per year</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500">~$832/month</div>
-                  </div>
-                </div>
-                <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                  <div className="flex items-center gap-2">
-                    <FontAwesomeIcon icon={faCalculator} className="text-red-500" />
-                    <span>
-                      Total 3-year cost:{" "}
-                      <strong className="text-red-600 dark:text-red-400">$29,970</strong>
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <FontAwesomeIcon icon={faChartLine} className="text-red-500" />
-                    <span>
-                      Same as hiring a senior dev for <strong>~3-4 months/year</strong>
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Enterprise Team */}
-              <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                      Large Team / Enterprise
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      20+ developers or unlimited license
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                      Custom Pricing
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Contact sales</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500">
-                      Typically $20K-$50K+/year
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                  <div className="flex items-start gap-2">
-                    <FontAwesomeIcon icon={faShieldAlt} className="text-purple-500 mt-1" />
-                    <span>
-                      Includes: Unlimited developers, priority support, SLA guarantees, dedicated
-                      account manager
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <section id="community-vs-enterprise">
+          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+            Which features need Enterprise?
+          </h2>
+          <p className="mb-4">
+            AG Grid Community covers the basics well. The features most teams end up paying for are
+            grouping, aggregation, pivoting, tree data, master/detail, Excel export, clipboard
+            operations, range selection, and the menus and tool panels. Here is how Community
+            compares with Simple Table, which is also MIT licensed.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-sm">
+              <thead className="bg-gray-100 dark:bg-gray-800">
+                <tr>
+                  <th className={th}>Feature</th>
+                  <th className={th}>AG Grid Community (free)</th>
+                  <th className={th}>Simple Table (free, MIT)</th>
+                </tr>
+              </thead>
+              <tbody>
+                {featureRows.map((row) => (
+                  <tr key={row.feature}>
+                    <td className={td}>{row.feature}</td>
+                    <td className={td}>{row.community ? "Yes" : "Enterprise only"}</td>
+                    <td className={td}>{row.simpleTable ? "Yes" : "No"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+          <p className="mt-4 text-sm">
+            If you rely on Excel export, set filters, or AG Grid&apos;s tool panels, Enterprise is the
+            honest answer. If what you need is grouping, aggregation, pivoting, or tree data,
+            Simple Table gives you those under MIT.
+          </p>
         </section>
 
-        {/* Hidden Costs */}
-        <section id="hidden-costs">
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
-            <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
-              <FontAwesomeIcon icon={faExclamationTriangle} className="text-amber-500" />
-              Hidden Costs & Gotchas You Should Know
-            </h2>
-
-            <div className="space-y-4">
-              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-                  <FontAwesomeIcon icon={faClock} className="text-amber-500" />
-                  1. Annual Update Renewal
-                </h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  AG Grid Enterprise is a perpetual license with 1 year of updates and support.
-                  After that year, you can keep using the version you have, but you need to renew
-                  to get new updates and support. Ongoing costs still scale with your team size.
-                </p>
-              </div>
-
-              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-                  <FontAwesomeIcon icon={faUsers} className="text-amber-500" />
-                  2. Team Growth = License Growth
-                </h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  Hire 2 more frontend developers? That's an extra $1,998/year. As your team scales,
-                  so does your AG Grid bill. A 20-person team costs 20x more than a solo developer.
-                </p>
-              </div>
-
-              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-                  <FontAwesomeIcon icon={faInfinity} className="text-amber-500" />
-                  3. Implementation Time Costs
-                </h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                  AG Grid's powerful API comes with complexity. Budget for:
-                </p>
-                <ul className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                  <li>• Initial setup & learning: 1-2 weeks for first implementation</li>
-                  <li>• Custom styling/theming: 3-5 days to match your design system</li>
-                  <li>• Complex features (pivot, master-detail): 1-2 weeks each</li>
-                </ul>
-              </div>
-
-              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-                  <FontAwesomeIcon icon={faMoneyBillWave} className="text-amber-500" />
-                  4. Migration Costs (if you switch later)
-                </h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  Start with Community, realize you need Enterprise features, and now you're facing:
-                  License fees + refactoring time. Or worse: you want to leave AG Grid entirely
-                  after 2 years. Migration cost: 2-6 months of dev time depending on complexity.
-                </p>
-              </div>
-
-              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-                  <FontAwesomeIcon icon={faBolt} className="text-amber-500" />
-                  5. Performance Overhead
-                </h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300">
-                  AG Grid Community is {AG_GRID_COMMUNITY_INFO.bundleSizeMinGzip} min+gzip.
-                  Enterprise is {AG_GRID_ENTERPRISE_INFO.bundleSizeMinGzip}. For mobile users or
-                  performance-sensitive apps, this impacts load times and Core Web Vitals. You
-                  might need to invest in performance optimization.
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 text-lg">
-                True Total Cost of Ownership (5-Year Horizon)
-              </h3>
-              <div className="text-sm text-gray-700 dark:text-gray-300 space-y-2">
-                <p>
-                  <strong>5-developer team:</strong>
-                </p>
-                <ul className="ml-4 space-y-1">
-                  <li>• Licenses: $24,975 (5 years × $4,995)</li>
-                  <li>• Initial implementation: ~$15,000 (3 weeks × $5K/week)</li>
-                  <li>• Maintenance/updates: ~$5,000/year = $25,000</li>
-                  <li className="pt-2 border-t border-red-300 dark:border-red-700">
-                    <strong className="text-red-600 dark:text-red-400">
-                      Total: $64,975+ over 5 years
-                    </strong>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Is It Worth It */}
         <section id="is-it-worth-it">
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
-            <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
-              <FontAwesomeIcon icon={faBalanceScale} className="text-purple-500" />
-              Is AG Grid Enterprise Worth the Cost?
-            </h2>
-
-            <div className="prose prose-gray dark:prose-invert max-w-none">
-              <p className="mb-4 text-gray-700 dark:text-gray-300">
-                The honest answer: <strong>it depends</strong>. AG Grid Enterprise is worth it for
-                specific use cases but overkill for many others.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="border border-green-200 dark:border-green-700 rounded-lg p-6 bg-green-50 dark:bg-green-900/20">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-                    <FontAwesomeIcon icon={faCheckCircle} className="text-green-500" />
-                    AG Grid IS Worth It When:
-                  </h3>
-                  <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                    <li className="flex items-start gap-2">
-                      <FontAwesomeIcon
-                        icon={faCheckCircle}
-                        className="text-green-500 mt-1 shrink-0"
-                      />
-                      <span>You need Excel-like features (pivot tables, complex aggregations)</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <FontAwesomeIcon
-                        icon={faCheckCircle}
-                        className="text-green-500 mt-1 shrink-0"
-                      />
-                      <span>You're building internal enterprise tools (not customer-facing)</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <FontAwesomeIcon
-                        icon={faCheckCircle}
-                        className="text-green-500 mt-1 shrink-0"
-                      />
-                      <span>You have a substantial software budget ($10K+/year for tools)</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <FontAwesomeIcon
-                        icon={faCheckCircle}
-                        className="text-green-500 mt-1 shrink-0"
-                      />
-                      <span>Bundle size isn't critical (internal apps, desktop-first users)</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <FontAwesomeIcon
-                        icon={faCheckCircle}
-                        className="text-green-500 mt-1 shrink-0"
-                      />
-                      <span>You need their specific features that no free alternative offers</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="border border-red-200 dark:border-red-700 rounded-lg p-6 bg-red-50 dark:bg-red-900/20">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center gap-2">
-                    <FontAwesomeIcon icon={faTimesCircle} className="text-red-500" />
-                    Consider Free Alternatives When:
-                  </h3>
-                  <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                    <li className="flex items-start gap-2">
-                      <FontAwesomeIcon
-                        icon={faExclamationTriangle}
-                        className="text-red-500 mt-1 shrink-0"
-                      />
-                      <span>You're a startup or small team with limited budget</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <FontAwesomeIcon
-                        icon={faExclamationTriangle}
-                        className="text-red-500 mt-1 shrink-0"
-                      />
-                      <span>
-                        You need basic to intermediate grid features (sorting, filtering, etc.)
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <FontAwesomeIcon
-                        icon={faExclamationTriangle}
-                        className="text-red-500 mt-1 shrink-0"
-                      />
-                      <span>Bundle size and performance are priorities</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <FontAwesomeIcon
-                        icon={faExclamationTriangle}
-                        className="text-red-500 mt-1 shrink-0"
-                      />
-                      <span>You're building customer-facing applications</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <FontAwesomeIcon
-                        icon={faExclamationTriangle}
-                        className="text-red-500 mt-1 shrink-0"
-                      />
-                      <span>You want to avoid vendor lock-in</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
+          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">
+            Is AG Grid Enterprise worth it?
+          </h2>
+          <p className="mb-4">
+            For a large app built around spreadsheet-style workflows, often yes. AG Grid is mature,
+            well documented, and the licence is perpetual. It is harder to justify when you only need
+            one or two Enterprise features, when your app is customer-facing and the price is not
+            published, or when every front-end developer has to be licensed.
+          </p>
+          <p>
+            Compare options in{" "}
+            <Link href="/blog/ag-grid-alternatives-free-react-data-grids" className="text-blue-600 dark:text-blue-400 hover:underline">
+              free AG Grid alternatives for React
+            </Link>
+            ,{" "}
+            <Link href="/blog/best-angular-data-grids-2026" className="text-blue-600 dark:text-blue-400 hover:underline">
+              the best Angular data grids
+            </Link>
+            , the{" "}
+            <Link href="/comparisons/simple-table-vs-ag-grid" className="text-blue-600 dark:text-blue-400 hover:underline">
+              Simple Table vs AG Grid comparison
+            </Link>
+            , or the{" "}
+            <Link href="/blog/best-free-react-data-grid-2026" className="text-blue-600 dark:text-blue-400 hover:underline">
+              best free React data grids
+            </Link>
+            .
+          </p>
         </section>
 
-        {/* Free Alternatives */}
-        <section id="free-alternatives">
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm">
-            <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
-              <FontAwesomeIcon icon={faTrophy} className="text-green-500" />
-              Free Alternatives That Could Save You $25K+ Over 5 Years
-            </h2>
-
-            <p className="mb-6 text-gray-700 dark:text-gray-300">
-              Before committing to AG Grid Enterprise, consider these lower-cost alternatives
-              (including free and MIT-licensed options):
-            </p>
-
-            <div className="space-y-6">
-              {/* Simple Table */}
-              <div className="bg-linear-to-br from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-2 border-blue-300 dark:border-blue-700 rounded-lg p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="bg-gold-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                    RECOMMENDED
-                  </span>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                    Simple Table
-                  </h3>
-                  <span className="ml-auto text-lg font-bold text-green-600 dark:text-green-400">
-                    Free (MIT)
-                  </span>
-                </div>
-
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
-                  A lightweight ({SIMPLE_TABLE_INFO.bundleSizeMinGzip}), batteries-included React
-                  data grid—free for everyone under the MIT license
-                  (MIT), with Pro/Enterprise if you want support.
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <h4 className="font-semibold text-sm text-gray-900 dark:text-gray-100 mb-2">
-                      What You Get Free:
-                    </h4>
-                    <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
-                      <li>✓ Sorting & filtering</li>
-                      <li>✓ Column pinning (frozen columns)</li>
-                      <li>✓ Row grouping & aggregation</li>
-                      <li>✓ Cell editing</li>
-                      <li>✓ Built-in virtualization</li>
-                      <li>✓ CSV export</li>
-                      <li>✓ Custom renderers</li>
-                      <li>✓ Excellent TypeScript support</li>
-                    </ul>
-                  </div>
-
-                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-blue-300 dark:border-blue-700">
-                    <h4 className="font-semibold text-sm text-gray-900 dark:text-gray-100 mb-3">
-                      5-Year Cost Comparison:
-                    </h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-700 dark:text-gray-300">AG Grid (5 devs):</span>
-                        <span className="font-bold text-red-600 dark:text-red-400">$24,975</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-700 dark:text-gray-300">Simple Table (MIT):</span>
-                        <span className="font-bold text-green-600 dark:text-green-400">$0</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-700 dark:text-gray-300">
-                          Optional Pro support:
-                        </span>
-                        <span className="font-bold text-blue-600 dark:text-blue-400">$850/month</span>
-                      </div>
-                      <div className="pt-2 border-t border-gray-300 dark:border-gray-600 flex justify-between">
-                        <span className="font-semibold text-gray-900 dark:text-gray-100">
-                          You save (free, MIT):
-                        </span>
-                        <span className="font-bold text-green-600 dark:text-green-400 text-lg">
-                          $24,975
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-              {/* TanStack Table */}
-              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-gray-50 dark:bg-gray-900">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                    TanStack Table (React Table v8)
-                  </h3>
-                  <span className="text-lg font-bold text-green-600 dark:text-green-400">
-                    $0 Forever
-                  </span>
-                </div>
-
-                <p className="text-gray-700 dark:text-gray-300 mb-3">
-                  Headless table library with powerful features but requires you to build the UI
-                  yourself. Great if you need complete control over rendering.{" "}
-                  <Link
-                    href="/blog/tanstack-table-vs-simple-table-headless-batteries-included"
-                    className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-                  >
-                    Compare TanStack vs Simple Table
-                  </Link>
-                  .
-                </p>
-
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-green-600 dark:text-green-400">✓</span> All features
-                    included free
-                  </div>
-                  <div>
-                    <span className="text-green-600 dark:text-green-400">✓</span> Excellent
-                    TypeScript
-                  </div>
-                  <div>
-                    <span className="text-amber-600 dark:text-amber-400">△</span> No UI (you build
-                    it)
-                  </div>
-                  <div>
-                    <span className="text-amber-600 dark:text-amber-400">△</span> Steeper learning
-                    curve
-                  </div>
-                </div>
-                <div className="mt-3 pt-3 border-t border-gray-300 dark:border-gray-600">
-                  <Link
-                    href="/comparisons/simple-table-vs-tanstack"
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    View detailed comparison →
-                  </Link>
-                </div>
-              </div>
-
-              {/* MUI X Data Grid */}
-              <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-gray-50 dark:bg-gray-900">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                    MUI X Data Grid
-                  </h3>
-                  <span className="text-lg font-bold text-amber-600 dark:text-amber-400">
-                    Free + Paid Tiers
-                  </span>
-                </div>
-
-                <p className="text-gray-700 dark:text-gray-300 mb-3">
-                  Material-UI's official data grid. Free version for basic features, Pro ($249/dev)
-                  and Premium tiers for advanced functionality.
-                </p>
-
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-green-600 dark:text-green-400">✓</span> Beautiful Material
-                    Design
-                  </div>
-                  <div>
-                    <span className="text-green-600 dark:text-green-400">✓</span> Official MUI
-                    component
-                  </div>
-                  <div>
-                    <span className="text-red-600 dark:text-red-400">✗</span> Advanced features
-                    require Pro ($249/dev)
-                  </div>
-                  <div>
-                    <span className="text-amber-600 dark:text-amber-400">△</span> Large bundle size
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                <FontAwesomeIcon icon={faLightbulb} className="text-blue-500 mr-2" />
-                <strong>Pro tip:</strong> Most teams don't need AG Grid's enterprise features. Start
-                with a free alternative and only upgrade if you hit a specific limitation. You can
-                always migrate later if needed—but you probably won't. Read our{" "}
-                <Link
-                  href="/blog/ag-grid-alternatives-free-react-data-grids"
-                  className="text-blue-600 dark:text-blue-400 hover:underline font-semibold"
-                >
-                  complete guide to AG Grid alternatives
-                </Link>
-                .
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Decision Framework */}
-        <section id="decision-framework">
-          <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 md:p-6 shadow-sm mb-8">
-            <h2 className="mb-4 flex items-center gap-2 text-gray-900 dark:text-gray-100 text-2xl font-semibold">
-              <FontAwesomeIcon icon={faLightbulb} className="text-blue-500" />
-              Decision Framework: Should You Pay for AG Grid?
-            </h2>
-
-            <div className="prose prose-gray dark:prose-invert max-w-none">
-              <p className="mb-6 text-gray-700 dark:text-gray-300">
-                Use this simple framework to decide:
-              </p>
-
-              <div className="space-y-4">
-                <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                    ✅ Choose AG Grid Enterprise If:
-                  </h3>
-                  <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                    <li>
-                      • You need specific features like pivot tables or advanced master-detail that
-                      free alternatives don't offer
-                    </li>
-                    <li>
-                      • You're building internal enterprise tools where bundle size doesn't matter
-                    </li>
-                    <li>• Your company has budget allocated for commercial software licenses</li>
-                    <li>• You need enterprise support and SLA guarantees</li>
-                  </ul>
-                </div>
-
-                <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                    ✅ Choose Simple Table If:
-                  </h3>
-                  <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                    <li>
-                      • You need row grouping, aggregation, column pinning, and other "enterprise"
-                      features under the MIT license (free for everyone)
-                    </li>
-                    <li>• You're building customer-facing apps where performance matters</li>
-                    <li>• You want quick setup without configuration complexity</li>
-                    <li>• You want to avoid per-developer renewal costs</li>
-                    <li>• Your team is 1-10 developers</li>
-                  </ul>
-                </div>
-
-                <div className="bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-500 p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                    ✅ Choose TanStack Table If:
-                  </h3>
-                  <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-                    <li>
-                      • You need absolute control over UI/UX and are willing to build components
-                      from scratch
-                    </li>
-                    <li>• You have complex, highly custom design requirements</li>
-                    <li>• Your team has experience with headless libraries</li>
-                    <li>• You might need to support multiple frameworks</li>
-                  </ul>
-                </div>
-              </div>
-
-              <div className="mt-6 bg-linear-to-r from-green-50 to-blue-50 dark:from-green-900/30 dark:to-blue-900/30 border-2 border-green-300 dark:border-green-700 rounded-lg p-6">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-3">
-                  Bottom Line: Start Free, Upgrade Only If Necessary
-                </h3>
-                <p className="text-gray-700 dark:text-gray-300 mb-3">
-                  For <strong>90% of React applications</strong>, an alternative like Simple Table
-                  provides everything you need. Start there, save thousands, and only consider AG
-                  Grid Enterprise if you hit a specific feature wall. Your CFO (and your team) will
-                  thank you.
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-4">
-                  Related:{" "}
-                  <Link
-                    href="/comparisons/simple-table-vs-ag-grid"
-                    className="text-gray-700 dark:text-gray-300 underline hover:no-underline"
-                  >
-                    feature comparison
-                  </Link>
-                  {" · "}
-                  <Link
-                    href="/blog/ag-grid-alternatives-free-react-data-grids"
-                    className="text-gray-700 dark:text-gray-300 underline hover:no-underline"
-                  >
-                    AG Grid alternatives
-                  </Link>
-                  {" · "}
-                  <Link
-                    href="/blog/react-data-grid-bundle-size-comparison"
-                    className="text-gray-700 dark:text-gray-300 underline hover:no-underline"
-                  >
-                    bundle size comparison
-                  </Link>
-                </p>
-              </div>
-            </div>
-          </div>
+        <section id="faq">
+          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-gray-100">FAQ</h2>
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100">Is AG Grid free for commercial use?</h3>
+          <p className="mb-4">Yes, AG Grid Community is MIT licensed and free in production. Enterprise features need a paid licence.</p>
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100">How much is an AG Grid Enterprise license?</h3>
+          <p className="mb-4">$999 USD per developer at list price, perpetual, with one year of support and updates. The Grid + Charts bundle is $1,498 per developer.</p>
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100">Is AG Grid Enterprise a yearly subscription?</h3>
+          <p className="mb-4">No. The licence is perpetual. Renewal is optional and buys another period of updates and support.</p>
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100">Do I need a licence for every developer?</h3>
+          <p>AG Grid says all front-end developers on the project need one, even those who do not work on the grid.</p>
         </section>
       </article>
 
-      {/* Call to Action */}
       <CallToActionCard
         location="blog_ag_grid_pricing"
-        title="Skip the $25K+ AG Grid bill. Start with Simple Table, free under MIT."
-        description="Simple Table is free under the MIT license, with every feature included. Pro is optional support and bug fixes. It never unlocks features."
-        primaryButton={{
-          text: "Get started",
-          href: "/docs/installation",
-        }}
-        secondaryButton={{
-          text: "Book a free call",
-          href: TECHNICAL_STRINGS.links.calendly,
-          external: true,
-        }}
+        title="Need grouping, pivoting, or tree data without a licence?"
+        description="Simple Table is free under the MIT license with every feature included. Pro is optional support and bug fixes. It never unlocks features."
+        primaryButton={{ text: "Get started", href: "/docs/installation" }}
+        secondaryButton={{ text: "Book a free call", href: TECHNICAL_STRINGS.links.calendly, external: true }}
       />
     </BlogLayout>
   );

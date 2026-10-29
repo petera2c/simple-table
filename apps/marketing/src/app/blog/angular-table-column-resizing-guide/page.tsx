@@ -66,7 +66,7 @@ export default function Page() {
       alternativeSection={{
         headline: "Implementation: AG Grid Angular",
         intro: "AG Grid is powerful but the API is verbose and Enterprise features are paywalled. Here's the basic resize setup for comparison.",
-                note: "AG Grid Community covers basic resize, but row grouping, master/detail, and pivoting require AG Grid Enterprise ($999+/dev/year).",
+                note: "AG Grid Community covers basic resize, but row grouping, master/detail, and pivoting require AG Grid Enterprise ($999 per developer, perpetual).",
       }}
       pitfalls={[
         { title: "Forgot to set minWidth", problem: "Users shrink columns to 10px, content becomes unreadable.", solution: "Always set minWidth (50–100px for text, 30–50px for numbers/icons)." },

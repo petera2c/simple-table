@@ -179,7 +179,7 @@ export default function TabulatorAlternativesReactPage() {
                     <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
                     <td className="p-3 text-green-600 dark:text-green-400">MIT</td>
                     <td className="p-3 text-green-600 dark:text-green-400">MIT (Free)</td>
-                    <td className="p-3 text-red-600 dark:text-red-400">MIT + $999+/year</td>
+                    <td className="p-3 text-red-600 dark:text-red-400">MIT + $999/dev Enterprise</td>
                   </tr>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <td className="p-3 font-medium text-gray-900 dark:text-gray-100">
@@ -427,7 +427,7 @@ table.setData(newData);`}
 
                 <p className="text-gray-700 dark:text-gray-300 mb-4">
                   Feature-rich data grid with free Community edition and paid Enterprise edition
-                  ($999+/dev/year). More features than Tabulator but heavier and more complex.
+                  ($999 per developer, perpetual). More features than Tabulator but heavier and more complex.
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -451,7 +451,7 @@ table.setData(newData);`}
                     </h4>
                     <ul className="space-y-1 text-sm text-gray-700 dark:text-gray-300">
                       <li>✗ Large bundle size ({AG_GRID_COMMUNITY_INFO.bundleSizeMinGzip})</li>
-                      <li>✗ Enterprise features cost $999+/dev</li>
+                      <li>✗ Enterprise features cost $999 per developer</li>
                       <li>✗ Steep learning curve</li>
                       <li>✗ Complex API</li>
                     </ul>

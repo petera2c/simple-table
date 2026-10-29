@@ -37,13 +37,13 @@ export default function Page() {
       datePublished={agGridAlternativesVuePost.createdAt}
       dateModified={agGridAlternativesVuePost.updatedAt}
       introParagraphs={[
-        "AG Grid Vue is powerful but its Enterprise tier ($999+/dev/year) puts grouping with aggregations, pivoting, master/detail, and integrated charts behind a paywall. For Vue 3 / Nuxt teams looking for a free or lighter-weight alternative in 2026, here's the field.",
+        "AG Grid Vue is powerful but its Enterprise tier ($999 per developer, perpetual) puts grouping with aggregations, pivoting, master/detail, and integrated charts behind a paywall. For Vue 3 / Nuxt teams looking for a free or lighter-weight alternative in 2026, here's the field.",
         "We'll compare Simple Table for Vue, Vuetify's v-data-table, PrimeVue DataTable, Vue Good Table Next, Element Plus el-table, and Naive UI n-data-table on bundle size, virtualization, grouping, editing, design system fit, and idiomatic Composition API ergonomics.",
         "Each has a sweet spot. The right pick depends on your design system, dataset size, feature mix, and whether you want a focused grid or a full UI suite.",
       ]}
       comparisonRows={[
         { feature: "License", competitor: { value: "MIT (most viable options)", tone: "good" }, simpleTable: { value: "MIT", tone: "good" } },
-        { feature: "Per-developer fees", competitor: { value: "AG Enterprise: $999+", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
+        { feature: "Per-developer fees", competitor: { value: "AG Enterprise: $999/dev", tone: "bad" }, simpleTable: { value: "$0", tone: "good" } },
         { feature: "Vue 3 + Composition API", competitor: { value: "All viable options", tone: "good" }, simpleTable: { value: "Idiomatic", tone: "good" } },
         { feature: "Nuxt 3 / Nuxt 4 SSR", competitor: { value: "Most options", tone: "good" }, simpleTable: { value: "Yes", tone: "good" } },
         { feature: "Bundle size (gzipped)", competitor: { value: "50–400+ kB depending on choice", tone: "neutral" }, simpleTable: { value: "84.6 kB", tone: "good" } },

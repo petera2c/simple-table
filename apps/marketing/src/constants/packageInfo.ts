@@ -19,6 +19,8 @@ export interface PackageInfo {
     paidTier?: {
       name: string;
       pricePerDeveloperPerYear: number;
+      /** True when the price is a one-time perpetual licence rather than a yearly fee. */
+      perpetual?: boolean;
       additionalInfo?: string;
     };
   };
@@ -65,6 +67,7 @@ export const AG_GRID_ENTERPRISE_INFO: PackageInfo = {
     paidTier: {
       name: "Enterprise",
       pricePerDeveloperPerYear: 999,
+      perpetual: true,
       additionalInfo: "Per-developer license; perpetual with 1 year of updates (see AG Grid pricing)",
     },
   },
@@ -310,7 +313,10 @@ export function getPricingString(packageInfo: PackageInfo): string {
     return "Free";
   }
   if (packageInfo.pricing.paidTier) {
-    return `$${packageInfo.pricing.paidTier.pricePerDeveloperPerYear}/developer/year`;
+    const tier = packageInfo.pricing.paidTier;
+    return tier.perpetual
+      ? `$${tier.pricePerDeveloperPerYear}/developer (perpetual)`
+      : `$${tier.pricePerDeveloperPerYear}/developer/year`;
   }
   if (packageInfo.pricing.cost) {
     return packageInfo.pricing.cost;

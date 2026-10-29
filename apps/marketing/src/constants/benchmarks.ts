@@ -63,7 +63,7 @@ export const BUNDLE_BENCHMARK_ROWS: BundleBenchmarkRow[] = [
     sizeKB: AG_GRID_TOTAL_SIZE_KB,
     notes: "Typical Enterprise install path",
     bundlePhobiaUrl: AG_GRID_ENTERPRISE_INFO.bundlePhobiaUrl,
-    pricingNote: "$999/developer/year (Enterprise)",
+    pricingNote: "$999/developer, perpetual (Enterprise)",
   },
 ];
 

@@ -38,7 +38,7 @@ export default function Page() {
       introParagraphs={[
         "Org charts, file systems, BOMs, ledger structures—real-world data is rarely flat. Tree-data tables let users expand and collapse rows in place to drill down without losing context.",
         "This tutorial covers tree-data patterns in Angular: parent/child rendering, lazy loading children, and expand-all / collapse-all controls. We compare PrimeNG TreeTable, AG Grid (Enterprise) and Simple Table for Angular.",
-        "Note: AG Grid Tree Data is an Enterprise-tier feature ($999+/dev/year). Simple Table for Angular ships tree data free for everyone (MIT).",
+        "Note: AG Grid Tree Data is an Enterprise-tier feature ($999 per developer, perpetual). Simple Table for Angular ships tree data free for everyone (MIT).",
       ]}
       whyItMatters={[
         { title: "Drill-down without losing context", body: "Users see parent and children in the same surface; no modal or detail-page round-trips." },
