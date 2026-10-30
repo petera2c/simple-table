@@ -1,0 +1,57 @@
+<script lang="ts">
+  import { SimpleTable } from "@simple-table/svelte";
+  import type { Theme, OnRowGroupExpandProps, GetRowIdParams } from "@simple-table/svelte";
+  import {
+    dynamicNestedTablesConfig,
+    dynamicNestedTablesData,
+    fetchDivisionsForCompany,
+  } from "./dynamic-nested-tables.demo-data";
+  import type { DynamicCompany } from "./dynamic-nested-tables.demo-data";
+  import "@simple-table/svelte/styles.css";
+
+  let { height = "500px", theme }: { height?: string | number; theme?: Theme } = $props();
+
+  let rows = $state<DynamicCompany[]>([...dynamicNestedTablesData]);
+  const getRowId = ({ row }: GetRowIdParams<DynamicCompany>) => row.id;
+
+  async function handleCompanyExpand({
+    row,
+    groupingKey,
+    isExpanded,
+    rowIndexPath,
+    setLoading,
+    setError,
+    setEmpty,
+  }: OnRowGroupExpandProps<DynamicCompany>) {
+    if (!isExpanded) return;
+    try {
+      if (groupingKey === "divisions") {
+        if (row.divisions && row.divisions.length > 0) return;
+        setLoading(true);
+        const divisions = await fetchDivisionsForCompany(row.id);
+        if (divisions.length === 0) {
+          setEmpty(true, "No divisions found for this company");
+          return;
+        }
+        const newRows = [...rows];
+        newRows[rowIndexPath[0]] = { ...newRows[rowIndexPath[0]], divisions };
+        rows = newRows;
+      }
+    } catch (error) {
+      setLoading(false);
+      setError(error instanceof Error ? error.message : "Failed to load divisions");
+    }
+  }
+</script>
+
+<SimpleTable
+  autoExpandColumns={dynamicNestedTablesConfig.tableProps.autoExpandColumns}
+  columns={dynamicNestedTablesConfig.headers}
+  expandAll={dynamicNestedTablesConfig.tableProps.expandAll}
+  {getRowId}
+  {height}
+  rowGrouping={dynamicNestedTablesConfig.tableProps.rowGrouping}
+  rows={rows}
+  onRowGroupExpand={handleCompanyExpand}
+  {theme}
+/>
