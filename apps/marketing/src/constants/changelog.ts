@@ -11,6 +11,21 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_3_3: ChangelogEntry = {
+  version: "4.3.3",
+  date: "2026-10-29",
+  title: "Clearer npm package info",
+  description:
+    "No code changes. The npm descriptions, keywords and READMEs now say clearly that Simple Table is free and MIT licensed.",
+  changes: [
+    {
+      type: "improvement",
+      description:
+        "Updated package descriptions, keywords and README links to demos, docs and the MIT announcement.",
+    },
+  ],
+};
+
 export const v4_3_2: ChangelogEntry = {
   version: "4.3.2",
   date: "2026-10-04",
@@ -2979,6 +2994,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_3_3,
   v4_3_2,
   v4_3_1,
   v4_3_0,
