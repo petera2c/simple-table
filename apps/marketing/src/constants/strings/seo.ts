@@ -79,7 +79,7 @@ export const SEO_STRINGS = {
   },
   home: {
     title: "Simple Table: Free MIT Data Grid for React, Vue & Angular",
-    description: `Simple Table is a free, MIT-licensed data grid for React, Vue, Angular, Svelte, Solid, and vanilla JS (${SIMPLE_TABLE_INFO.bundleSizeMinGzip}). Virtualization, pinning, grouping, and editing built in, with optional paid support.`,
+    description: `Simple Table is a free, MIT licensed table library and data grid for React, Vue, Angular, Svelte and Solid. Sorting, filtering, pinning and 1M+ row virtualization. Install in 1 minute.`,
     keywords:
       "simple-table, simple-table-core, @simple-table/react, @simple-table/vue, @simple-table/angular, @simple-table/svelte, @simple-table/solid, react data grid, vue data grid, angular data grid, svelte data grid, solidjs table, vanilla js data grid, multi-framework data grid, ag grid alternative, handsontable alternative, tanstack table alternative, free data grid, lightweight data grid",
   },
