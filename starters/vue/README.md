@@ -17,7 +17,7 @@ This starter demonstrates:
 
 ### Online
 
-Try this starter instantly in your browser:
+Try this starter in your browser:
 
 - **StackBlitz**: [Open in StackBlitz](https://stackblitz.com/github/petera2c/simple-table/tree/main/starters/vue)
 - **CodeSandbox**: [Open in CodeSandbox](https://codesandbox.io/p/github/petera2c/simple-table/main?file=/starters/vue/README.md)
