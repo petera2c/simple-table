@@ -52,6 +52,16 @@ npm install simple-table-core
 
 **[Follow our Quick Start Guide](https://www.simple-table.com/docs/quick-start)** for step-by-step instructions and live examples.
 
+### Starter Templates
+
+Get up and running fast with our ready-to-use starters:
+
+- **[React Starter](starters/react)** - Modern React 18 + TypeScript + Vite
+- **[Vue Starter](starters/vue)** - Vue 3 + Composition API + TypeScript + Vite
+- **[Svelte Starter](starters/svelte)** - Svelte 5 + Runes + TypeScript + Vite
+
+Each starter includes sorting, filtering, and column editing out of the box. [View all starters →](starters/)
+
 ## Features
 
 ### Column Features

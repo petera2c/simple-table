@@ -1,0 +1,24 @@
+{
+  "name": "simple-table-svelte-starter",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Simple Table Svelte 5 starter template",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "@simple-table/svelte": "^4.3.3",
+    "svelte": "^5.2.9"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.0.2",
+    "@tsconfig/svelte": "^5.0.4",
+    "svelte-check": "^4.0.8",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "simple-table-vue-starter",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Simple Table Vue 3 starter template",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@simple-table/vue": "^4.3.3",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11",
+    "vue-tsc": "^2.1.10"
+  }
+}
