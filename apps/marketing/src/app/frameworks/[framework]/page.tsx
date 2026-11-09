@@ -216,13 +216,21 @@ export default async function FrameworkHubDetailPage({ params }: PageProps) {
                 </li>
               ))}
             </ul>
-            <p className="mt-4 text-sm">
+            <p className="mt-4 text-sm space-x-4">
               <Link
                 href={pillarHref}
                 className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
               >
                 See the full {fw.label} comparison →
               </Link>
+              {raw === "angular" && (
+                <Link
+                  href="/blog/ag-grid-alternatives-free-angular-data-grids-2026"
+                  className="text-blue-600 dark:text-blue-400 font-medium hover:underline"
+                >
+                  Best free Angular data grids (AG Grid alternatives) →
+                </Link>
+              )}
             </p>
           </section>
 

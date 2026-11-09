@@ -30,16 +30,16 @@ export default function Page() {
     <CompetitorBlogLayout
       slug={agGridAlternativesAngularPost.slug}
       title={agGridAlternativesAngularPost.title}
-      subtitle="Hunting for AG Grid Angular alternatives in 2026? Compare Simple Table for Angular, ngx-datatable, PrimeNG Table, Angular Material mat-table, and Kendo Grid—free, signals-friendly options without enterprise licensing."
+      subtitle="Hunting for free, MIT-licensed AG Grid alternatives for Angular in 2026? Compare Simple Table for Angular, ngx-datatable, PrimeNG Table, and Angular Material mat-table. Signals support, no enterprise fees, no per-developer licensing."
       competitorName="AG Grid (and the field)"
       framework="angular"
       heroBadges={["Roundup", "Decision Guide", "2026"]}
       datePublished={agGridAlternativesAngularPost.createdAt}
       dateModified={agGridAlternativesAngularPost.updatedAt}
       introParagraphs={[
-        "AG Grid is dominant for a reason: it's powerful, well-documented, and feature-complete. But the Enterprise tier ($999 per developer, perpetual) puts the most-used features—grouping with aggregations, pivoting, master/detail, tree data, integrated charts—behind a paywall. For Angular teams looking for a free or lighter-weight alternative in 2026, here's the field.",
-        "We'll compare the best free Angular data grids in 2026: Simple Table for Angular, ngx-datatable, PrimeNG Table, Angular Material's mat-table, and the commercial Kendo Grid for context. Each has a sweet spot. The right pick depends on your bundle constraints, feature mix, design system, and willingness to pay for commercial support.",
-        "Spoiler: Simple Table for Angular is what we ship and the focused MIT-licensed alternative we recommend for most new Angular projects. But every Angular team's situation is a little different, so we'll walk through who each library is for.",
+        "AG Grid is dominant for a reason: it's powerful, well-documented, and feature-complete. But the Enterprise tier ($999 per developer, perpetual) puts the most-used features (grouping with aggregations, pivoting, master/detail, tree data, integrated charts) behind a paywall. For Angular teams looking for a free, MIT-licensed alternative in 2026 without per-developer fees, here's the field.",
+        "This guide focuses on free alternatives to AG Grid's paid features. (For a complete ranking of all Angular data grids, commercial and free, see our Best Angular Data Grids 2026 roundup.) We'll compare the best free, MIT-licensed Angular data grids in 2026: Simple Table for Angular, ngx-datatable, PrimeNG Table, and Angular Material's mat-table. Each has a sweet spot. The right pick depends on your bundle constraints, feature mix, design system, and whether you need grouping or pivoting without a commercial license.",
+        "Spoiler: Simple Table for Angular is what we ship and the focused MIT-licensed alternative we recommend for most new Angular projects that need AG Grid Enterprise features without the per-developer cost. But every Angular team's situation is a little different, so we'll walk through who each free library is for.",
       ]}
       comparisonRows={[
         { feature: "License", competitor: { value: "Mixed (MIT + commercial Enterprise)", tone: "neutral" }, simpleTable: { value: "MIT", tone: "good" } },
@@ -68,7 +68,7 @@ export default function Page() {
             "You want grouping with aggregations free for everyone (MIT).",
             "You're starting greenfield with Angular 17/18/19, standalone components, and signals.",
             "You want a single engine across React / Vue / Svelte / Solid / Vanilla.",
-            "Bundle size matters—84.6 kB gzipped beats every commercial option.",
+            "Bundle size matters: 84.6 kB gzipped beats every commercial option.",
             "You don't want to manage license renewals.",
           ],
         },
@@ -79,7 +79,7 @@ export default function Page() {
           title: "Greenfield Angular 19 SaaS, no legacy",
           body: "Brand-new project, signals-first, lean bundle is critical.",
           recommendation: "simpleTable",
-          recommendationLabel: "Pick Simple Table for Angular—best fit for modern Angular and lightest bundle.",
+          recommendationLabel: "Pick Simple Table for Angular: best fit for modern Angular and lightest bundle.",
         },
         {
           emoji: "🎨",
@@ -100,37 +100,36 @@ export default function Page() {
           title: "Internal admin tools across stacks (Angular + React)",
           body: "Platform team wants one shared grid engine for both apps.",
           recommendation: "simpleTable",
-          recommendationLabel: "Pick Simple Table—same engine ships in @simple-table/react and @simple-table/angular.",
+          recommendationLabel: "Pick Simple Table: same engine ships in @simple-table/react and @simple-table/angular.",
         },
         {
           emoji: "🧱",
           title: "Stable ngx-datatable codebase, basic features",
           body: "Three internal tables, sort + paginate only.",
           recommendation: "competitor",
-          recommendationLabel: "Stay on ngx-datatable—migration cost isn't worth it for basic usage.",
+          recommendationLabel: "Stay on ngx-datatable: migration cost isn't worth it for basic usage.",
         },
       ]}
       faqs={[
-        { question: "What's the best free Angular data grid in 2026?", answer: "For most new Angular projects, Simple Table for Angular—it's MIT-licensed (free for everyone), signals-native, 84.6 kB gzipped, and ships virtualization, pinning, grouping, and editing in one package. PrimeNG Table is the better fit if you've already adopted PrimeNG; mat-table is fine for basic features." },
-        { question: "Is AG Grid Community enough?", answer: "It depends. AG Grid Community covers virtualization, pinning, sort, and filter—but row grouping with aggregations, pivoting, and tree data are Enterprise-only. Many teams discover the gap mid-project." },
+        { question: "What's the best free Angular data grid in 2026?", answer: "For most new Angular projects, Simple Table for Angular: it's MIT-licensed (free for everyone), signals-native, 84.6 kB gzipped, and ships virtualization, pinning, grouping, and editing in one package. PrimeNG Table is the better fit if you've already adopted PrimeNG; mat-table is fine for basic features." },
+        { question: "Is AG Grid Community enough?", answer: "It depends. AG Grid Community covers virtualization, pinning, sort, and filter, but row grouping with aggregations, pivoting, and tree data are Enterprise-only. Many teams discover the gap mid-project." },
         { question: "Which alternative has the best signals support?", answer: "Simple Table for Angular is built around signals as a primary input pattern. PrimeNG and Kendo support signals; ngx-datatable's support is workable but not idiomatic." },
         { question: "Should I switch from ngx-datatable?", answer: "If you're modernizing to standalone components and signals or you've outgrown ngx-datatable's basic feature set, yes. If you're stable and your needs are basic, the migration cost may not be worth it." },
       ]}
       conclusionParagraphs={[
-        "There's no single right answer for every Angular team. The fastest decision: if your needs include grouping with aggregations or pinning, you don't have a Kendo / PrimeNG dependency, and you don't want to pay AG Grid Enterprise—pick Simple Table for Angular.",
+        "There's no single right answer for every Angular team. The fastest decision: if your needs include grouping with aggregations or pinning, you don't have a Kendo / PrimeNG dependency, and you don't want to pay AG Grid Enterprise, pick Simple Table for Angular.",
         "If you're committed to a design system (Material, PrimeNG) or enterprise vendor (Kendo, AG Grid Enterprise), stay where you are and let your teammates know what's possible elsewhere when they hit a feature wall.",
       ]}
       relatedLinks={[
-        { href: "/blog/best-angular-data-grids-2026", label: "Best Angular data grids 2026 (ranked)" },
+        { href: "/blog/best-angular-data-grids-2026", label: "Best Angular data grids 2026 (overall ranking with commercial options)" },
         { href: "/blog/simple-table-vs-ag-grid-angular", label: "Simple Table vs AG Grid Angular" },
         { href: "/blog/simple-table-vs-ngx-datatable", label: "Simple Table vs ngx-datatable" },
         { href: "/blog/simple-table-vs-primeng-table", label: "Simple Table vs PrimeNG Table" },
         { href: "/blog/simple-table-vs-angular-material-table", label: "Simple Table vs Angular Material mat-table" },
-        { href: "/blog/simple-table-vs-kendo-grid-angular", label: "Simple Table vs Kendo Grid for Angular" },
         { href: "/frameworks/angular", label: "Angular integration hub" },
       ]}
       ctaTitle="Pick the right Angular data grid for 2026"
-      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and editing in one MIT-licensed package—84.6 kB gzipped, signals-native, free for everyone."
+      ctaDescription="Simple Table for Angular ships virtualization, pinning, grouping, and editing in one MIT-licensed package: 84.6 kB gzipped, signals-native, free for everyone."
     />
   );
 }

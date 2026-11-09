@@ -119,8 +119,8 @@ export default function Page() {
         "If budget is not a constraint and you need every spreadsheet feature, AG Grid Enterprise is hard to beat. If you are already invested in a component suite, use its grid. If you want advanced grid features for free in a modern Angular app, try Simple Table for Angular.",
       ]}
       relatedLinks={[
+        { href: "/blog/ag-grid-alternatives-free-angular-data-grids-2026", label: "Best free Angular data grids 2026 (MIT alternatives to AG Grid)" },
         { href: "/blog/ag-grid-pricing-license-breakdown-2026", label: "AG Grid license and pricing 2026" },
-        { href: "/blog/ag-grid-alternatives-free-angular-data-grids-2026", label: "Free AG Grid alternatives for Angular" },
         { href: "/blog/simple-table-vs-primeng-table", label: "Simple Table vs PrimeNG Table" },
         { href: "/blog/simple-table-vs-ngx-datatable", label: "Simple Table vs ngx-datatable" },
         { href: "/blog/simple-table-vs-kendo-grid-angular", label: "Simple Table vs Kendo Grid for Angular" },
