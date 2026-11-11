@@ -193,6 +193,20 @@ Join our growing community to ask questions or share feedback:
 - **Discord**: [Join us on Discord](https://discord.gg/RvKHCfg3PC)
 - **GitHub**: [Report bugs or suggest features](https://github.com/petera2c/simple-table/issues)
 
+## Contributing
+
+Bug reports and pull requests are welcome. Open an issue or a pull request at [github.com/petera2c/simple-table](https://github.com/petera2c/simple-table/issues).
+
+This is a pnpm monorepo. Node.js 22 or later is required.
+
+```bash
+pnpm install
+pnpm build
+pnpm test
+```
+
+`pnpm install` installs workspace dependencies. `pnpm build` builds the packages except the marketing site. `pnpm test` runs the test suite.
+
 ## License
 
 **MIT License**
