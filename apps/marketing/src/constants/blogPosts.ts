@@ -547,13 +547,13 @@ export const simpleTableVsPrimeNgTablePost: BlogPostMetadata = {
 };
 
 export const simpleTableVsAngularMaterialTablePost: BlogPostMetadata = {
-  title: "Simple Table vs Angular Material Table (mat-table): Beyond MDC Primitives",
+  title: "Angular mat-table Alternative: Free MIT Data Grid (2026)",
   description:
-    "Angular Material's mat-table is composable but you build virtualization, pinning, grouping, and editing yourself. Simple Table for Angular ships all of that free for everyone (MIT)—works alongside Material themes via CSS variables.",
+    "Using Angular Material mat-table? Compare it with Simple Table, a free MIT Angular grid with built-in virtual scroll, sticky columns, grouping and editing.",
   slug: "simple-table-vs-angular-material-table",
   tags: ["angular", "comparison", "alternatives"],
   createdAt: "2026-04-26",
-  updatedAt: "2026-04-26",
+  updatedAt: "2026-11-16",
 };
 
 export const simpleTableVsKendoGridAngularPost: BlogPostMetadata = {

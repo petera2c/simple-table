@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: simpleTableVsAngularMaterialTablePost.title,
   description: simpleTableVsAngularMaterialTablePost.description,
   keywords:
-    "angular material table alternative, mat-table replacement, angular data grid, angular standalone components grid, simple table angular, mat-table vs simple table",
+    "mat table, mat-table, angular material table, angular material table alternative, mat-table replacement, angular data grid, angular standalone components grid, simple table angular, mat-table vs simple table",
   openGraph: {
     title: simpleTableVsAngularMaterialTablePost.title,
     description: simpleTableVsAngularMaterialTablePost.description,
@@ -33,7 +33,7 @@ export default function Page() {
       subtitle="Angular Material's mat-table is composable but you build virtualization, pinning, grouping, and inline editing yourself. Simple Table for Angular ships all of that—and still themes against Material via CSS variables."
       competitorName="Angular Material mat-table"
       framework="angular"
-      heroBadges={["Comparison", "Material UI", "Decision Guide"]}
+      heroBadges={["mat-table Alternative", "Angular Material", "Decision Guide"]}
       datePublished={simpleTableVsAngularMaterialTablePost.createdAt}
       dateModified={simpleTableVsAngularMaterialTablePost.updatedAt}
       introParagraphs={[
