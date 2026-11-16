@@ -31,6 +31,29 @@ export interface CreateDropdownOptions {
   allowDescendantOverflow?: boolean;
 }
 
+/**
+ * Maps each dropdown panel to a getter for its current anchor. Fixed dropdowns are portaled to the
+ * table root, so a nested menu (e.g. the operator CustomSelect inside a filter popover) is a DOM
+ * sibling of its parent panel, not a descendant. This lets a parent panel recognize interactions
+ * in such nested menus as "inside" by following panel → anchor links.
+ */
+const dropdownAnchors = new WeakMap<Element, () => HTMLElement | undefined>();
+
+/** True when `target` is in `panel`, or in a dropdown (transitively) anchored inside `panel`. */
+const isWithinDropdownTree = (panel: HTMLElement, target: Node | null): boolean => {
+  const visited = new Set<Element>();
+  let node: Node | null = target;
+  while (node) {
+    if (panel.contains(node)) return true;
+    const el = node instanceof Element ? node : node.parentElement;
+    const ownerPanel = el?.closest(".st-dropdown-content");
+    if (!ownerPanel || visited.has(ownerPanel)) return false;
+    visited.add(ownerPanel);
+    node = dropdownAnchors.get(ownerPanel)?.() ?? null;
+  }
+  return false;
+};
+
 export const createDropdown = (options: CreateDropdownOptions) => {
   let {
     children,
@@ -77,6 +100,7 @@ export const createDropdown = (options: CreateDropdownOptions) => {
   dropdownElement.appendChild(children);
 
   let anchorElement: HTMLElement | undefined = anchorOption;
+  dropdownAnchors.set(dropdownElement, () => anchorElement);
 
   /** Table root when the trigger is in the document; otherwise `document.body`. */
   const portalRoot = (): HTMLElement =>
@@ -203,7 +227,7 @@ export const createDropdown = (options: CreateDropdownOptions) => {
     if (!open) return;
 
     const target = event.target as Node;
-    if (dropdownElement && !dropdownElement.contains(target)) {
+    if (dropdownElement && !isWithinDropdownTree(dropdownElement, target)) {
       setOpen(false);
       onClose?.();
     }
@@ -211,7 +235,7 @@ export const createDropdown = (options: CreateDropdownOptions) => {
 
   const handleClickOutside = (event: MouseEvent | KeyboardEvent) => {
     const target = event.target as Node;
-    if (dropdownElement.contains(target)) return;
+    if (isWithinDropdownTree(dropdownElement, target)) return;
 
     if (anchorElement?.contains(target)) return;
 
