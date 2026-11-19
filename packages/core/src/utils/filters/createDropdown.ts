@@ -9,6 +9,31 @@
 
 import { resolveTableRoot } from "../tableDomScope";
 
+/**
+ * Anchor (trigger) of every dropdown panel. Nested menus (e.g. the operator custom-select inside
+ * the filter popover) are portaled as siblings of their parent panel, so DOM containment alone
+ * cannot tell that a click in the nested menu belongs to the parent. Walking panel -> anchor
+ * links recovers that logical nesting.
+ */
+const dropdownAnchors = new WeakMap<HTMLElement, HTMLElement>();
+
+/**
+ * True when `target` is inside `panel` itself or inside a dropdown opened from within it,
+ * at any depth (panel > nested menu > nested menu ...).
+ */
+const isWithinDropdownTree = (panel: HTMLElement, target: Node | null): boolean => {
+  let node: Node | null = target;
+  // Bounded walk: each hop moves from a nested panel to its anchor, so depth is tiny in practice.
+  for (let depth = 0; node && depth < 32; depth++) {
+    if (panel.contains(node)) return true;
+    const element: Element | null = node instanceof Element ? node : node.parentElement;
+    const nestedPanel = element?.closest(".st-dropdown-content") as HTMLElement | null;
+    if (!nestedPanel || nestedPanel === panel) return false;
+    node = dropdownAnchors.get(nestedPanel) ?? null;
+  }
+  return false;
+};
+
 export interface CreateDropdownOptions {
   children: HTMLElement;
   containerRef?: HTMLElement;
@@ -77,6 +102,15 @@ export const createDropdown = (options: CreateDropdownOptions) => {
   dropdownElement.appendChild(children);
 
   let anchorElement: HTMLElement | undefined = anchorOption;
+
+  const syncAnchorRegistration = () => {
+    if (anchorElement) {
+      dropdownAnchors.set(dropdownElement, anchorElement);
+    } else {
+      dropdownAnchors.delete(dropdownElement);
+    }
+  };
+  syncAnchorRegistration();
 
   /** Table root when the trigger is in the document; otherwise `document.body`. */
   const portalRoot = (): HTMLElement =>
@@ -203,7 +237,8 @@ export const createDropdown = (options: CreateDropdownOptions) => {
     if (!open) return;
 
     const target = event.target as Node;
-    if (dropdownElement && !dropdownElement.contains(target)) {
+    // Scrolling a nested menu (e.g. a long operator list) is not a scroll outside this panel.
+    if (dropdownElement && !isWithinDropdownTree(dropdownElement, target)) {
       setOpen(false);
       onClose?.();
     }
@@ -211,7 +246,9 @@ export const createDropdown = (options: CreateDropdownOptions) => {
 
   const handleClickOutside = (event: MouseEvent | KeyboardEvent) => {
     const target = event.target as Node;
-    if (dropdownElement.contains(target)) return;
+    // Includes nested menus portaled outside this panel (issue #136: clicking an operator
+    // option closed the whole filter popover on mousedown, before the option's click fired).
+    if (isWithinDropdownTree(dropdownElement, target)) return;
 
     if (anchorElement?.contains(target)) return;
 
@@ -266,6 +303,7 @@ export const createDropdown = (options: CreateDropdownOptions) => {
   const update = (newOptions: Partial<CreateDropdownOptions>) => {
     if (newOptions.anchorElement !== undefined) {
       anchorElement = newOptions.anchorElement;
+      syncAnchorRegistration();
     }
     if (newOptions.open !== undefined) {
       setOpen(newOptions.open);

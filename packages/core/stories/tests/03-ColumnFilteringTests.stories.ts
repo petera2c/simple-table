@@ -816,3 +816,100 @@ export const LimitFilterOperatorsFallbackDefault = {
     expect(optionLabels).toEqual(["Starts with", "Ends with"]);
   },
 };
+
+// ============================================================================
+// TEST 12: MOUSE-SELECTING AN OPERATOR KEEPS THE FILTER POPUP OPEN (issue #136)
+// ============================================================================
+
+const getOpenFilterShell = (): HTMLElement | null =>
+  (Array.from(
+    document.body.querySelectorAll(".st-dropdown-content:not(.st-custom-select-dropdown)"),
+  ) as HTMLElement[]).find(
+    (el) => el.style.display !== "none" && el.querySelector(".st-custom-select-trigger"),
+  ) ?? null;
+
+const getOpenOperatorMenu = (): HTMLElement | null =>
+  (Array.from(document.body.querySelectorAll(".st-custom-select-dropdown")) as HTMLElement[]).find(
+    (el) => el.style.display !== "none",
+  ) ?? null;
+
+const waitFor = async (check: () => boolean, timeoutMs = 2000) => {
+  const start = Date.now();
+  while (!check()) {
+    if (Date.now() - start > timeoutMs) return false;
+    await new Promise((r) => setTimeout(r, 25));
+  }
+  return true;
+};
+
+export const OperatorSelectMouseKeepsFilterOpen = {
+  render: () => {
+    const headers: ColumnDef<FilterableTestRow>[] = [
+      { accessor: "id", label: "ID", width: 80, type: "number" },
+      { accessor: "name", label: "Name", width: 200, type: "string", filterable: true },
+      { accessor: "age", label: "Age", width: 120, type: "number", filterable: true },
+      { accessor: "joinDate", label: "Join Date", width: 150, type: "date", filterable: true },
+    ];
+    const { wrapper, h2 } = renderVanillaTable<FilterableTestRow>(headers, createFilterableData(), { height: "400px" });
+    h2.textContent = "Operator Select Mouse Selection";
+    addParagraph(wrapper, "Clicking an operator option with the mouse must keep the filter popup open");
+    return wrapper;
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    await waitForTable();
+    const user = userEvent.setup();
+
+    const cases = [
+      { accessor: "name", from: "Contains", to: "Equals" },
+      { accessor: "age", from: "Equals", to: "Not equals" },
+      { accessor: "joinDate", from: "Equals", to: "Not equals" },
+    ];
+
+    for (const { accessor, from, to } of cases) {
+      const filterIcon = canvasElement.querySelector(
+        `.st-header-cell[data-accessor="${accessor}"] .st-icon-container`,
+      ) as HTMLElement | null;
+      expect(filterIcon).toBeTruthy();
+      await user.click(filterIcon!);
+      expect(await waitFor(() => getOpenFilterShell() !== null)).toBe(true);
+
+      const shell = getOpenFilterShell()!;
+      const trigger = shell.querySelector(".st-custom-select-trigger") as HTMLButtonElement;
+      expect(trigger.textContent?.trim()).toBe(from);
+
+      await user.click(trigger);
+      expect(await waitFor(() => getOpenOperatorMenu() !== null)).toBe(true);
+      const menu = getOpenOperatorMenu()!;
+
+      // Scrolling inside the operator menu must not close the filter popup either.
+      menu.dispatchEvent(new Event("scroll"));
+      expect(shell.style.display).not.toBe("none");
+
+      const option = (Array.from(menu.querySelectorAll(".st-custom-select-option")) as HTMLElement[]).find(
+        (el) => el.textContent?.trim() === to,
+      );
+      expect(option).toBeTruthy();
+
+      // Real pointer sequence: pointerdown/mousedown, then pointerup/mouseup/click.
+      await user.click(option!);
+      await new Promise((r) => setTimeout(r, 100));
+
+      expect(shell.style.display).not.toBe("none");
+      expect(trigger.textContent?.trim()).toBe(to);
+      expect(getOpenOperatorMenu()).toBeNull();
+
+      // Click outside still closes the filter popup.
+      await user.click(canvasElement.querySelector("h2")!);
+      expect(await waitFor(() => getOpenFilterShell() === null)).toBe(true);
+    }
+
+    // Escape still closes the filter popup.
+    const nameIcon = canvasElement.querySelector(
+      '.st-header-cell[data-accessor="name"] .st-icon-container',
+    ) as HTMLElement;
+    await user.click(nameIcon);
+    expect(await waitFor(() => getOpenFilterShell() !== null)).toBe(true);
+    await user.keyboard("{Escape}");
+    expect(await waitFor(() => getOpenFilterShell() === null)).toBe(true);
+  },
+};
