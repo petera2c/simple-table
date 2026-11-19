@@ -11,6 +11,22 @@ export interface ChangelogEntry {
   }[];
 }
 
+export const v4_3_4: ChangelogEntry = {
+  version: "4.3.4",
+  date: "2026-11-19",
+  title: "Filter operator mouse fix",
+  description:
+    "Picking a filter operator with the mouse no longer closes the filter popup.",
+  changes: [
+    {
+      type: "bugfix",
+      description:
+        "Clicking an option in a column filter's operator dropdown (like Not equals) now selects it instead of closing the popup.",
+      link: "https://github.com/petera2c/simple-table/issues/136",
+    },
+  ],
+};
+
 export const v4_3_3: ChangelogEntry = {
   version: "4.3.3",
   date: "2026-10-29",
@@ -2994,6 +3010,7 @@ export const v1_4_4: ChangelogEntry = {
 
 // Array of all changelog entries (newest first)
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  v4_3_4,
   v4_3_3,
   v4_3_2,
   v4_3_1,
