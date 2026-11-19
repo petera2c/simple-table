@@ -1,0 +1,68 @@
+import { SimpleTableVanilla } from "simple-table-core";
+import type { Theme, GetRowIdParams } from "simple-table-core";
+import { emptyStateConfig } from "./empty-state.demo-data";
+import type { EmptyEmployee } from "./empty-state.demo-data";
+import "simple-table-core/styles.css";
+
+const getRowId = ({ row }: GetRowIdParams<EmptyEmployee>) => row.id;
+
+function buildEmptyStateElement(): HTMLElement {
+  const root = document.createElement("div");
+  Object.assign(root.style, {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "48px 24px",
+    color: "#64748b",
+    gap: "12px",
+  });
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("width", "48");
+  svg.setAttribute("height", "48");
+  svg.setAttribute("viewBox", "0 0 24 24");
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("stroke", "#94a3b8");
+  svg.setAttribute("stroke-width", "1.5");
+
+  for (const d of [
+    "M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7",
+    "M16 3H8L3 7h18l-5-4z",
+  ]) {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", d);
+    svg.appendChild(path);
+  }
+  const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  line.setAttribute("x1", "10");
+  line.setAttribute("y1", "12");
+  line.setAttribute("x2", "14");
+  line.setAttribute("y2", "12");
+  svg.appendChild(line);
+
+  const title = document.createElement("div");
+  Object.assign(title.style, { fontSize: "16px", fontWeight: "600" });
+  title.textContent = "No data available";
+
+  const subtitle = document.createElement("div");
+  Object.assign(subtitle.style, { fontSize: "13px" });
+  subtitle.textContent = "Try adjusting your filters or adding new records.";
+
+  root.append(svg, title, subtitle);
+  return root;
+}
+
+export function renderEmptyStateDemo(
+  container: HTMLElement,
+  options?: { height?: string | number; theme?: Theme },
+): SimpleTableVanilla<EmptyEmployee> {
+  return new SimpleTableVanilla(container, {
+    getRowId,
+    columns: emptyStateConfig.headers,
+    rows: emptyStateConfig.rows,
+    height: options?.height ?? "400px",
+    theme: options?.theme,
+    tableEmptyStateRenderer: buildEmptyStateElement(),
+  });
+}

@@ -1,0 +1,163 @@
+<script lang="ts">
+  import { SimpleTable } from "@simple-table/svelte";
+  import type { SvelteColumnDef, CellChangeProps, GetRowIdParams } from "@simple-table/svelte";
+  import { crmData } from "./crm.demo-data";
+  import type { CRMLead, CrmShellTheme } from "./crm.demo-data";
+  import { syncCrmDemoPalette, crmRowsPerPage } from "./crm-demo-stores";
+  import CrmContactCell from "./CrmContactCell.svelte";
+  import CrmSignalCell from "./CrmSignalCell.svelte";
+  import CrmAiScoreCell from "./CrmAiScoreCell.svelte";
+  import CrmEmailCell from "./CrmEmailCell.svelte";
+  import CrmTimeAgoCell from "./CrmTimeAgoCell.svelte";
+  import CrmListCell from "./CrmListCell.svelte";
+  import CrmFitCell from "./CrmFitCell.svelte";
+  import CrmContactNowCell from "./CrmContactNowCell.svelte";
+  import CrmFooter from "./CrmFooter.svelte";
+  import "@simple-table/svelte/styles.css";
+  import "./crm-custom-theme.css";
+
+  let { height = "400px", theme }: { height?: string | number; theme?: CrmShellTheme } = $props();
+
+  let data = $state<CRMLead[]>([...crmData]);
+
+  const isDark = $derived(
+    theme === "custom-dark" || theme === "dark" || theme === "modern-dark" || theme === "modern-black",
+  );
+
+  $effect.pre(() => {
+    syncCrmDemoPalette(isDark);
+  });
+
+  const getRowId = ({ row }: GetRowIdParams<CRMLead>) => row.id;
+
+  const headers = $derived.by(
+    (): SvelteColumnDef<CRMLead>[] => [
+      {
+        accessor: "name",
+        label: "CONTACT",
+        width: "auto",
+        minWidth: 290,
+        sortable: true,
+        editable: true,
+        type: "string",
+        cellRenderer: CrmContactCell,
+      },
+      {
+        accessor: "signal",
+        label: "SIGNAL",
+        width: "auto",
+        minWidth: 340,
+        sortable: true,
+        editable: true,
+        type: "string",
+        cellRenderer: CrmSignalCell,
+      },
+      {
+        accessor: "aiScore",
+        label: "AI SCORE",
+        width: "auto",
+        minWidth: 100,
+        sortable: true,
+        align: "center",
+        type: "number",
+        cellRenderer: CrmAiScoreCell,
+      },
+      {
+        accessor: "emailStatus",
+        label: "EMAIL",
+        width: "auto",
+        minWidth: 210,
+        sortable: true,
+        align: "center",
+        type: "enum",
+        enumOptions: [
+          { label: "Enrich", value: "Enrich" },
+          { label: "Verified", value: "Verified" },
+          { label: "Pending", value: "Pending" },
+          { label: "Bounced", value: "Bounced" },
+        ],
+        cellRenderer: CrmEmailCell,
+      },
+      {
+        accessor: "timeAgo",
+        label: "IMPORT",
+        width: "auto",
+        minWidth: 100,
+        sortable: true,
+        align: "center",
+        type: "string",
+        cellRenderer: CrmTimeAgoCell,
+      },
+      {
+        accessor: "list",
+        label: "LIST",
+        width: "auto",
+        minWidth: 160,
+        sortable: true,
+        align: "center",
+        type: "enum",
+        enumOptions: [
+          { label: "Leads", value: "Leads" },
+          { label: "Hot Leads", value: "Hot Leads" },
+          { label: "Warm Leads", value: "Warm Leads" },
+          { label: "Cold Leads", value: "Cold Leads" },
+          { label: "Enterprise", value: "Enterprise" },
+          { label: "SMB", value: "SMB" },
+          { label: "Nurture", value: "Nurture" },
+        ],
+        valueGetter: ({ row }) => {
+          const list = String(row.list);
+          const m: Record<string, number> = {
+            "Hot Leads": 1,
+            "Warm Leads": 2,
+            Enterprise: 3,
+            Leads: 4,
+            SMB: 5,
+            "Cold Leads": 6,
+            Nurture: 7,
+          };
+          return m[list] || 999;
+        },
+        cellRenderer: CrmListCell,
+      },
+      {
+        accessor: "_fit",
+        label: "Fit",
+        width: "auto",
+        align: "center",
+        minWidth: 120,
+        cellRenderer: CrmFitCell,
+      },
+      {
+        accessor: "_contactNow",
+        label: "",
+        width: "auto",
+        minWidth: 160,
+        cellRenderer: CrmContactNowCell,
+      },
+    ],
+  );
+
+  function handleCellEdit({ accessor, newValue, row }: CellChangeProps<CRMLead>) {
+    data = data.map((item) => (item.id === row.id ? { ...item, [accessor]: newValue } : item));
+  }
+</script>
+
+<div class={`custom-theme-container theme-${isDark ? "custom-dark" : "custom-light"}`}>
+  <SimpleTable
+    autoExpandColumns={true}
+    columnReordering={true}
+    columnResizing={true}
+    customTheme={{ headerHeight: 48, rowHeight: 92 }}
+    columns={headers}
+    enableRowSelection={true}
+    footerRenderer={CrmFooter}
+    {getRowId}
+    {height}
+    onCellEdit={handleCellEdit}
+    rows={data}
+    rowsPerPage={$crmRowsPerPage}
+    enablePagination={true}
+    theme="custom"
+  />
+</div>
