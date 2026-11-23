@@ -399,12 +399,13 @@ export const mantineDatatableVsSimpleTablePost: BlogPostMetadata = {
 };
 
 export const muiDatatablesVsSimpleTablePost: BlogPostMetadata = {
-  title: "MUI-Datatables vs Simple Table: Material-UI v4 Legacy vs Modern Standalone Grid",
-  description: `MUI-Datatables is a mature Material-UI table component with 88KB footprint but hasn't been updated in 3 years. Simple Table is actively maintained at 42KB with official adapters for ${SIMPLE_TABLE_FRAMEWORKS_SHORT}. Compare features, maintenance status, and migration paths.`,
+  title: "MUI Table Alternative: mui-datatables vs Simple Table (2026)",
+  description:
+    "mui-datatables has had no release since January 2023 (v4.3.0). Compare it with Simple Table, a free MIT React grid with virtual scroll, pinning, grouping and editing.",
   slug: "mui-datatables-vs-simple-table",
   tags: ["react", "comparison", "alternatives", "material-ui"],
   createdAt: "2026-02-05",
-  updatedAt: "2026-02-05",
+  updatedAt: "2026-11-23",
 };
 
 export const reactDataTableComponentVsSimpleTablePost: BlogPostMetadata = {

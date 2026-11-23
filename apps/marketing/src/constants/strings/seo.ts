@@ -815,6 +815,10 @@ export const SEO_STRINGS = {
       title: muiDatatablesVsSimpleTablePost.title,
       description: muiDatatablesVsSimpleTablePost.description,
       keywords: [
+        "mui table",
+        "mui datatable",
+        "mui data table",
+        "material ui datatable",
         "mui-datatables",
         "mui-datatables vs simple table",
         "material-ui datatables",

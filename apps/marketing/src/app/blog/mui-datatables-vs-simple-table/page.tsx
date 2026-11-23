@@ -48,7 +48,7 @@ export default function MuiDatatablesVsSimpleTablePage() {
       {/* Hero Section */}
       <section className="bg-linear-to-r from-orange-50 to-amber-50 dark:from-orange-900 dark:to-amber-900 rounded-xl p-4 md:p-8 mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center text-gray-900 dark:text-gray-100">
-          MUI-Datatables vs Simple Table: Material-UI v4 Legacy vs Modern Standalone Grid
+          MUI Table Alternative: mui-datatables vs Simple Table (2026)
         </h1>
 
         <div className="flex justify-center mb-4 gap-2 flex-wrap">
