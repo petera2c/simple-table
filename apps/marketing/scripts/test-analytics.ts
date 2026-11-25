@@ -49,6 +49,17 @@ async function main(): Promise<void> {
     ["pnpm", "react", "@simple-table/react", "/docs/installation"],
   );
 
+  // Framework is inferred from the package when the caller does not pass one.
+  analytics.trackCopyInstallCommand({
+    package_manager: "npm",
+    code_preview: "npm install @simple-table/svelte@4.3.4",
+  });
+  e = lastEvent();
+  assert.equal(e.params.framework, "svelte");
+  assert.equal(e.params.package, "@simple-table/svelte@4.3.4");
+  assert.equal(analytics.inferFrameworkFromPackages("simple-table-core"), "vanilla");
+  assert.equal(analytics.inferFrameworkFromPackages("lodash"), undefined);
+
   analytics.trackCopyExampleCode({ framework: "vue", demo_id: "quick-start", line_count: 12 });
   e = lastEvent();
   assert.equal(e.name, "copy_example_code");
@@ -63,6 +74,12 @@ async function main(): Promise<void> {
     analytics.classifyOutboundUrl("https://www.npmjs.com/package/@simple-table/react"),
     { target: "npm", package: "@simple-table/react" },
   );
+  assert.deepEqual(
+    analytics.classifyOutboundUrl(
+      "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/vue/quick-start",
+    ),
+    { target: "stackblitz", demo: "vue/quick-start" },
+  );
   assert.equal(analytics.classifyOutboundUrl("https://www.simple-table.com/docs"), null);
   assert.equal(analytics.classifyOutboundUrl("/pricing"), null);
 
@@ -74,6 +91,20 @@ async function main(): Promise<void> {
   e = lastEvent();
   assert.equal(e.name, "github_click");
   assert.equal(e.params.location, "header");
+  const generic = calls[calls.length - 2];
+  assert.equal(generic[1], "outbound_click");
+  assert.equal((generic[2] as Record<string, unknown>).destination, "github");
+
+  analytics.trackOutboundClick({
+    target: "stackblitz",
+    link_url: "https://stackblitz.com/github/petera2c/simple-table/tree/stackblitz-examples/react/pagination",
+    demo: "react/pagination",
+  });
+  e = lastEvent();
+  assert.equal(e.name, "stackblitz_click");
+  assert.equal(e.params.destination, "stackblitz");
+  assert.equal(e.params.demo, "react/pagination");
+  assert.equal(calls[calls.length - 2][1], "outbound_click");
 
   analytics.trackOutboundClick({
     target: "npm",

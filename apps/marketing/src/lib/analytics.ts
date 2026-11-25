@@ -127,16 +127,37 @@ export function parseInstallPackages(code: string): string {
     .join(" ");
 }
 
+const PACKAGE_FRAMEWORK: Record<string, string> = {
+  "@simple-table/react": "react",
+  "@simple-table/vue": "vue",
+  "@simple-table/angular": "angular",
+  "@simple-table/svelte": "svelte",
+  "@simple-table/solid": "solid",
+  "simple-table-core": "vanilla",
+};
+
+/** Framework implied by the Simple Table package in an install command, if any. */
+export function inferFrameworkFromPackages(packages: string): string | undefined {
+  for (const token of packages.split(/\s+/)) {
+    // Drop a version or tag suffix: "@simple-table/react@4.3.4" -> "@simple-table/react".
+    const name = token.replace(/(.)@[^/]*$/, "$1");
+    const framework = PACKAGE_FRAMEWORK[name];
+    if (framework) return framework;
+  }
+  return undefined;
+}
+
 export function trackCopyInstallCommand(params: {
   package_manager: string;
   framework?: string;
   code_preview?: string;
   location?: string;
 }): void {
+  const packages = params.code_preview ? parseInstallPackages(params.code_preview) : undefined;
   trackEvent("copy_install_command", {
     package_manager: params.package_manager,
-    framework: params.framework,
-    package: params.code_preview ? parseInstallPackages(params.code_preview) : undefined,
+    framework: params.framework ?? (packages ? inferFrameworkFromPackages(packages) : undefined),
+    package: packages,
     location: params.location ?? getPageLocation(),
     code_preview: params.code_preview?.slice(0, 80),
   });
@@ -159,12 +180,12 @@ export function trackCopyExampleCode(params: {
   });
 }
 
-export type OutboundTarget = "github" | "npm";
+export type OutboundTarget = "github" | "npm" | "stackblitz";
 
-/** Classifies a link as a GitHub or npm destination. Returns null for anything else. */
+/** Classifies a link as a GitHub, npm, or StackBlitz destination. Returns null for anything else. */
 export function classifyOutboundUrl(
   href: string,
-): { target: OutboundTarget; package?: string } | null {
+): { target: OutboundTarget; package?: string; demo?: string } | null {
   let url: URL;
   try {
     url = new URL(href, "https://www.simple-table.com");
@@ -179,23 +200,43 @@ export function classifyOutboundUrl(
     const match = url.pathname.match(/^\/package\/((@[^/]+\/)?[^/]+)/);
     return { target: "npm", package: match ? decodeURIComponent(match[1]) : undefined };
   }
+  if (host === "stackblitz.com") {
+    // https://stackblitz.com/github/<owner>/<repo>/tree/stackblitz-examples/<framework>/<demo>
+    const match = url.pathname.match(/\/tree\/stackblitz-examples\/([^/]+)\/([^/?#]+)/);
+    return match ? { target: "stackblitz", demo: `${match[1]}/${match[2]}` } : { target: "stackblitz" };
+  }
   return null;
 }
 
-/** Outbound click to GitHub (`github_click`) or npm (`npm_click`). */
+const OUTBOUND_EVENT_NAMES: Record<OutboundTarget, string> = {
+  github: "github_click",
+  npm: "npm_click",
+  stackblitz: "stackblitz_click",
+};
+
+/**
+ * Outbound click to GitHub, npm, or StackBlitz. Sends one generic `outbound_click`
+ * (with `destination`) for a single key event, plus the per-destination event
+ * (`github_click`, `npm_click`, `stackblitz_click`) so older reports keep working.
+ */
 export function trackOutboundClick(params: {
   target: OutboundTarget;
   link_url: string;
   link_text?: string;
   location?: string;
   package?: string;
+  demo?: string;
 }): void {
-  trackEvent(params.target === "github" ? "github_click" : "npm_click", {
+  const eventParams = {
+    destination: params.target,
     link_url: params.link_url,
     link_text: params.link_text?.slice(0, 80),
     location: params.location ?? getPageLocation(),
     package: params.package,
-  });
+    demo: params.demo,
+  };
+  trackEvent("outbound_click", eventParams);
+  trackEvent(OUTBOUND_EVENT_NAMES[params.target], eventParams);
 }
 
 /** Reader reached the end of the Quick Start page. */

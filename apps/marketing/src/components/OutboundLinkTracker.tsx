@@ -12,8 +12,9 @@ function getLinkLocation(anchor: HTMLAnchorElement): string {
 }
 
 /**
- * One delegated listener that sends `github_click` / `npm_click` for every link to
- * GitHub or npm, so individual links do not need their own handlers.
+ * One delegated listener that sends `outbound_click` (plus `github_click`, `npm_click`
+ * or `stackblitz_click`) for every link to GitHub, npm, or StackBlitz, so individual
+ * links do not need their own handlers.
  */
 export default function OutboundLinkTracker() {
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function OutboundLinkTracker() {
       trackOutboundClick({
         target: match.target,
         package: match.package,
+        demo: match.demo,
         link_url: anchor.href,
         link_text: (anchor.textContent || anchor.getAttribute("aria-label") || "").trim(),
         location: getLinkLocation(anchor),
