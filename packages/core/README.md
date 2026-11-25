@@ -7,7 +7,7 @@
 
 Simple Table is a lightweight data grid. Free and MIT licensed, with optional paid support from the people who build it. Works with React, Angular, Vue, Svelte, Solid, and vanilla JS.
 
-**[Live demos](https://www.simple-table.com/examples) · [Docs](https://www.simple-table.com/docs/quick-start) · [Why it is MIT again](https://www.simple-table.com/blog/simple-table-is-mit-licensed)**
+**[Live demos](https://www.simple-table.com/examples?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core) · [Docs](https://www.simple-table.com/docs/quick-start?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core) · [Why it is MIT again](https://www.simple-table.com/blog/simple-table-is-mit-licensed?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)**
 
 <div align="center">
   <img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Simple Table Infrastructure Dashboard" width="800" />
@@ -54,57 +54,57 @@ npm install @simple-table/solid
 npm install simple-table-core
 ```
 
-**[Follow our Quick Start Guide](https://www.simple-table.com/docs/quick-start)** for step-by-step instructions and live examples.
+**[Follow our Quick Start Guide](https://www.simple-table.com/docs/quick-start?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** for step-by-step instructions and live examples.
 
 ## Features
 
 ### Column Features
 
-- **[Column Sorting](https://www.simple-table.com/docs/column-sorting)** - Sort data by any column in ascending or descending order
-- **[Column Filtering](https://www.simple-table.com/docs/column-filtering)** - Filter data with built-in text, number, and date filters
-- **[Column Resizing](https://www.simple-table.com/docs/column-resizing)** - Drag column borders to resize on the fly
-- **[Column Pinning](https://www.simple-table.com/docs/column-pinning)** - Pin important columns to the left or right
-- **[Column Reordering](https://www.simple-table.com/docs/column-reordering)** - Drag and drop columns to rearrange
-- **[Column Visibility](https://www.simple-table.com/docs/column-visibility)** - Show or hide columns dynamically
-- **[Column Alignment](https://www.simple-table.com/docs/column-alignment)** - Align content left, center, or right
-- **[Column Selection](https://www.simple-table.com/docs/column-selection)** - Select entire columns for bulk operations
-- **[Nested Headers](https://www.simple-table.com/docs/nested-headers)** - Create multi-level header hierarchies
-- **[Collapsible Columns](https://www.simple-table.com/docs/collapsible-columns)** - Expand and collapse column groups
+- **[Column Sorting](https://www.simple-table.com/docs/column-sorting?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Sort data by any column in ascending or descending order
+- **[Column Filtering](https://www.simple-table.com/docs/column-filtering?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Filter data with built-in text, number, and date filters
+- **[Column Resizing](https://www.simple-table.com/docs/column-resizing?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Drag column borders to resize on the fly
+- **[Column Pinning](https://www.simple-table.com/docs/column-pinning?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Pin important columns to the left or right
+- **[Column Reordering](https://www.simple-table.com/docs/column-reordering?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Drag and drop columns to rearrange
+- **[Column Visibility](https://www.simple-table.com/docs/column-visibility?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Show or hide columns dynamically
+- **[Column Alignment](https://www.simple-table.com/docs/column-alignment?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Align content left, center, or right
+- **[Column Selection](https://www.simple-table.com/docs/column-selection?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Select entire columns for bulk operations
+- **[Nested Headers](https://www.simple-table.com/docs/nested-headers?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Create multi-level header hierarchies
+- **[Collapsible Columns](https://www.simple-table.com/docs/collapsible-columns?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Expand and collapse column groups
 
 ### Row Features
 
-- **[Row Selection](https://www.simple-table.com/docs/row-selection)** - Select single or multiple rows with checkboxes
-- **[Row Grouping](https://www.simple-table.com/docs/row-grouping)** - Group and organize rows by any column
-- **[Nested Tables](https://www.simple-table.com/docs/nested-tables)** - Hierarchical data with independent columns per nesting level
-- **[Aggregate Functions](https://www.simple-table.com/docs/aggregate-functions)** - Calculate Sum, Average, Count, and more
-- **[Pivot Tables](https://www.simple-table.com/docs/pivot)** - Matrix pivots with row/column dimensions, aggregations, and totals
-- **[Row Height](https://www.simple-table.com/docs/row-height)** - Customize row height for optimal display
+- **[Row Selection](https://www.simple-table.com/docs/row-selection?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Select single or multiple rows with checkboxes
+- **[Row Grouping](https://www.simple-table.com/docs/row-grouping?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Group and organize rows by any column
+- **[Nested Tables](https://www.simple-table.com/docs/nested-tables?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Hierarchical data with independent columns per nesting level
+- **[Aggregate Functions](https://www.simple-table.com/docs/aggregate-functions?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Calculate Sum, Average, Count, and more
+- **[Pivot Tables](https://www.simple-table.com/docs/pivot?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Matrix pivots with row/column dimensions, aggregations, and totals
+- **[Row Height](https://www.simple-table.com/docs/row-height?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Customize row height for optimal display
 
 ### Cell Features
 
-- **[Cell Editing](https://www.simple-table.com/docs/cell-editing)** - Edit cells inline with custom editors
-- **[Cell Highlighting](https://www.simple-table.com/docs/cell-highlighting)** - Highlight cells based on conditions
-- **[Cell Renderer](https://www.simple-table.com/docs/cell-renderer)** - Custom cell rendering for any data type
-- **[Value Formatter](https://www.simple-table.com/docs/value-formatter)** - Format cell values for display without changing the underlying data
-- **[Chart Columns](https://www.simple-table.com/docs/chart-columns)** - Inline bar and line/area charts in cells
-- **[Cell Clicking](https://www.simple-table.com/docs/cell-clicking)** - Handle cell click events with ease
+- **[Cell Editing](https://www.simple-table.com/docs/cell-editing?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Edit cells inline with custom editors
+- **[Cell Highlighting](https://www.simple-table.com/docs/cell-highlighting?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Highlight cells based on conditions
+- **[Cell Renderer](https://www.simple-table.com/docs/cell-renderer?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Custom cell rendering for any data type
+- **[Value Formatter](https://www.simple-table.com/docs/value-formatter?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Format cell values for display without changing the underlying data
+- **[Chart Columns](https://www.simple-table.com/docs/chart-columns?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Inline bar and line/area charts in cells
+- **[Cell Clicking](https://www.simple-table.com/docs/cell-clicking?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Handle cell click events with ease
 
 ### Advanced Features
 
-- **[Quick Filter](https://www.simple-table.com/docs/quick-filter)** - Global search across all columns with simple or smart modes
-- **[Pagination](https://www.simple-table.com/docs/pagination)** - Server-side and client-side pagination support
-- **[Infinite Scroll](https://www.simple-table.com/docs/infinite-scroll)** - Fetch and display data as you scroll, with row and column virtualization
-- **[Live Updates](https://www.simple-table.com/docs/live-updates)** - Real-time data updates and websocket integration
-- **[CSV Export](https://www.simple-table.com/docs/csv-export)** - One-click CSV download of grid data
-- **[Animations](https://www.simple-table.com/docs/animations)** - Smooth FLIP animations for sort, reorder, and visibility changes
-- **[Header Renderer](https://www.simple-table.com/docs/header-renderer)** - Custom header rendering for advanced layouts
-- **[Footer Renderer](https://www.simple-table.com/docs/footer-renderer)** - Custom footer rendering for summaries and controls
-- **[Programmatic Control](https://www.simple-table.com/docs/programmatic-control)** - Control sorting, filtering, selection, and more via the TableAPI
+- **[Quick Filter](https://www.simple-table.com/docs/quick-filter?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Global search across all columns with simple or smart modes
+- **[Pagination](https://www.simple-table.com/docs/pagination?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Server-side and client-side pagination support
+- **[Infinite Scroll](https://www.simple-table.com/docs/infinite-scroll?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Fetch and display data as you scroll, with row and column virtualization
+- **[Live Updates](https://www.simple-table.com/docs/live-updates?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Real-time data updates and websocket integration
+- **[CSV Export](https://www.simple-table.com/docs/csv-export?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - One-click CSV download of grid data
+- **[Animations](https://www.simple-table.com/docs/animations?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Smooth FLIP animations for sort, reorder, and visibility changes
+- **[Header Renderer](https://www.simple-table.com/docs/header-renderer?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Custom header rendering for advanced layouts
+- **[Footer Renderer](https://www.simple-table.com/docs/footer-renderer?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Custom footer rendering for summaries and controls
+- **[Programmatic Control](https://www.simple-table.com/docs/programmatic-control?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Control sorting, filtering, selection, and more via the TableAPI
 
 ### Customization
 
-- **[Themes](https://www.simple-table.com/docs/themes)** - Apply built-in themes or create your own
-- **[Custom Icons](https://www.simple-table.com/docs/custom-icons)** - Replace default icons with your own
+- **[Themes](https://www.simple-table.com/docs/themes?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Apply built-in themes or create your own
+- **[Custom Icons](https://www.simple-table.com/docs/custom-icons?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)** - Replace default icons with your own
 
 ## Examples
 
@@ -112,37 +112,37 @@ See Simple Table in action across different industries:
 
 <div align="center">
 
-**[CRM Leads](https://www.simple-table.com/examples/crm)**
+**[CRM Leads](https://www.simple-table.com/examples/crm?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)**
 
 <br />
 <br />
 
-[<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/crm-light.png?raw=true" alt="CRM Leads" width="800">](https://www.simple-table.com/examples/crm)
+[<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/crm-light.png?raw=true" alt="CRM Leads" width="800">](https://www.simple-table.com/examples/crm?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)
 
-**[Infrastructure](https://www.simple-table.com/examples/infrastructure)**
+**[Infrastructure](https://www.simple-table.com/examples/infrastructure?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)**
 
-[<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Infrastructure Dashboard" width="800">](https://www.simple-table.com/examples/infrastructure)
-
-<br />
-<br />
-
-**[HR Dashboard](https://www.simple-table.com/examples/hr)**
-
-[<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/HR-dark.png?raw=true" alt="HR Dashboard" width="800">](https://www.simple-table.com/examples/hr)
+[<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/infrastructure-light.png?raw=true" alt="Infrastructure Dashboard" width="800">](https://www.simple-table.com/examples/infrastructure?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)
 
 <br />
 <br />
 
-**[Manufacturing](https://www.simple-table.com/examples/manufacturing)**
+**[HR Dashboard](https://www.simple-table.com/examples/hr?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)**
 
-[<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/manufacturing-light.png?raw=true" alt="Manufacturing Dashboard" width="800">](https://www.simple-table.com/examples/manufacturing)
+[<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/HR-dark.png?raw=true" alt="HR Dashboard" width="800">](https://www.simple-table.com/examples/hr?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)
+
+<br />
+<br />
+
+**[Manufacturing](https://www.simple-table.com/examples/manufacturing?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)**
+
+[<img src="https://github.com/petera2c/simple-table-marketing/blob/main/src/assets/manufacturing-light.png?raw=true" alt="Manufacturing Dashboard" width="800">](https://www.simple-table.com/examples/manufacturing?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)
 
 </div>
 
 ## Resources
 
-- **Website**: [simple-table.com](https://www.simple-table.com/)
-- **Documentation**: [Complete Documentation](https://www.simple-table.com/docs/installation)
+- **Website**: [simple-table.com](https://www.simple-table.com/?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)
+- **Documentation**: [Complete Documentation](https://www.simple-table.com/docs/installation?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)
 
 ## Pricing
 
@@ -166,7 +166,7 @@ Support and bug fixes. The license stays MIT. You are paying for help, not for p
 
 Custom help, depending on what you need.
 
-**[View Detailed Pricing](https://www.simple-table.com/pricing)**
+**[View Detailed Pricing](https://www.simple-table.com/pricing?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)**
 
 ## Community & Support
 
@@ -183,4 +183,4 @@ Simple Table is MIT licensed. Anyone can use, modify, and distribute it. See [LI
 
 Paid plans are for support, not a separate software license. Support terms are in [EULA.txt](EULA.txt).
 
-**[View Detailed Pricing & Licensing](https://www.simple-table.com/pricing)**
+**[View Detailed Pricing & Licensing](https://www.simple-table.com/pricing?utm_source=npm&utm_medium=readme&utm_campaign=simple-table-core)**
