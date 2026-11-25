@@ -131,6 +131,13 @@ const SimpleVsAgGrid = () => {
       <Text className="text-base block text-inherit">
         <strong>Related reading:</strong>{" "}
         <NextLink
+          href="/migrations/from-ag-grid"
+          className="text-blue-600 dark:text-blue-400 hover:underline"
+        >
+          Migrating from AG Grid (step-by-step guide)
+        </NextLink>
+        {" • "}
+        <NextLink
           href="/blog/ag-grid-pricing-license-breakdown-2026"
           className="text-blue-600 dark:text-blue-400 hover:underline"
         >

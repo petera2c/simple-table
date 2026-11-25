@@ -235,6 +235,18 @@ export default function FreeAlternativeToAgGridPage() {
               </p>
 
               <p className="mb-4 text-gray-700 dark:text-gray-300">
+                Already on AG Grid? The{" "}
+                <a
+                  href="/migrations/from-ag-grid"
+                  className="font-medium text-blue-600 dark:text-blue-400 underline hover:no-underline"
+                >
+                  AG Grid to Simple Table migration guide
+                </a>{" "}
+                maps columnDefs, sorting, filtering, and pinning to Simple Table with before and after
+                code.
+              </p>
+
+              <p className="mb-4 text-gray-700 dark:text-gray-300">
                 If you're currently evaluating AG Grid or considering alternatives, I've put
                 together a{" "}
                 <a
