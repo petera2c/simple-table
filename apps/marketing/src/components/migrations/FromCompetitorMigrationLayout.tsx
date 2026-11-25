@@ -8,6 +8,8 @@ import {
   faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 import BlogLayout from "@/components/BlogLayout";
+import InstallCommandBox from "@/components/InstallCommandBox";
+import { getStackBlitzUrl } from "@/utils/getStackBlitzUrl";
 import {
   buildBreadcrumbListJsonLd,
   buildFaqPageJsonLd,
@@ -16,6 +18,7 @@ import {
 import {
   FRAMEWORK_HUB_BY_ID,
   type HubFrameworkId,
+  getNpmPackageUrl,
 } from "@/constants/frameworkIntegrationHub";
 
 export interface MappingRow {
@@ -152,9 +155,14 @@ export default function FromCompetitorMigrationLayout(props: FromCompetitorMigra
             <FontAwesomeIcon icon={faTerminal} className="text-green-500" aria-hidden="true" />
             Install
           </h3>
-          <pre className="rounded-lg bg-gray-900 text-gray-100 p-4 text-sm overflow-x-auto">
-            <code>{props.installCommand}</code>
-          </pre>
+          <InstallCommandBox
+            command={props.installCommand}
+            framework={props.framework}
+            stackBlitzUrl={getStackBlitzUrl("quick-start", props.framework)}
+            stackBlitzLabel={`Try the ${fw.label} quick start in StackBlitz`}
+            npmUrl={getNpmPackageUrl(fw.npmPackage)}
+            analyticsLocation="migration_guide_install"
+          />
         </section>
 
         {props.beforeSnippet || props.afterSnippet ? (
@@ -162,7 +170,7 @@ export default function FromCompetitorMigrationLayout(props: FromCompetitorMigra
             {props.beforeSnippet ? (
               <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
                 <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                  Before — {props.competitorName}
+                  Before: {props.competitorName}
                 </h2>
                 <pre className="rounded-lg bg-gray-900 text-gray-100 p-4 text-xs overflow-x-auto">
                   <code>{props.beforeSnippet}</code>
@@ -172,7 +180,7 @@ export default function FromCompetitorMigrationLayout(props: FromCompetitorMigra
             {props.afterSnippet ? (
               <div className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-6">
                 <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                  After — Simple Table for {fw.label}
+                  After: Simple Table for {fw.label}
                 </h2>
                 <pre className="rounded-lg bg-gray-900 text-gray-100 p-4 text-xs overflow-x-auto">
                   <code>{props.afterSnippet}</code>

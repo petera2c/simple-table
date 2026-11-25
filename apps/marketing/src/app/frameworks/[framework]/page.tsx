@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBook, faBox, faTerminal } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faBox } from "@fortawesome/free-solid-svg-icons";
 import {
   FRAMEWORK_HUB_BY_ID,
   FRAMEWORK_HUB_IDS,
@@ -20,6 +20,7 @@ import { getStackBlitzUrl } from "@/utils/getStackBlitzUrl";
 import { SEO_STRINGS } from "@/constants/strings/seo";
 import BlogLayout from "@/components/BlogLayout";
 import AIVisibilityEnhancer from "@/components/AIVisibilityEnhancer";
+import InstallCommandBox from "@/components/InstallCommandBox";
 import { buildFaqPageJsonLd, buildFrameworkHubSoftwareJsonLd } from "@/utils/structuredData";
 
 type PageProps = { params: Promise<{ framework: string }> };
@@ -129,11 +130,31 @@ export default async function FrameworkHubDetailPage({ params }: PageProps) {
           </h1>
           <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl">
             Install line, peers, styles, and a minimal import for {fw.label}. Live docs demos open
-            in StackBlitz in one click—no local clone required.
+            in StackBlitz in one click, no local clone required.
           </p>
         </header>
 
         <div className="space-y-8">
+          <section
+            id="install"
+            className="rounded-xl border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20 p-6 shadow-sm"
+          >
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-1">
+              Install {fw.npmPackage}
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Free and MIT licensed. Peer expectations: {fw.peerSummary}
+            </p>
+            <InstallCommandBox
+              command={installCmd}
+              framework={raw}
+              stackBlitzUrl={stackBlitzQuickStartUrl}
+              stackBlitzLabel={`Try the ${fw.label} quick start in StackBlitz`}
+              npmUrl={getNpmPackageUrl(fw.npmPackage)}
+              analyticsLocation="framework_hub_install"
+            />
+          </section>
+
           <section className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3">
               Why Simple Table on {fw.label}
@@ -146,27 +167,6 @@ export default async function FrameworkHubDetailPage({ params }: PageProps) {
               >
                 Read the {fw.label} pillar guide →
               </Link>
-            </p>
-          </section>
-
-          <section className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Install</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-              Peer expectations: {fw.peerSummary}
-            </p>
-            <div className="flex items-start gap-3 rounded-lg bg-gray-900 text-gray-100 p-4 font-mono text-sm overflow-x-auto">
-              <FontAwesomeIcon icon={faTerminal} className="mt-0.5 shrink-0 text-green-400" />
-              <code>{installCmd}</code>
-            </div>
-            <p className="mt-3 text-sm">
-              <a
-                href={getNpmPackageUrl(fw.npmPackage)}
-                className="text-blue-600 dark:text-blue-400 hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View on npm →
-              </a>
             </p>
           </section>
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button, message } from "antd";
 import { motion } from "framer-motion";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faCopy, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faBox, faCheck, faCopy, faDownload } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import CodeBlock from "@/components/CodeBlock";
 import PageWrapper from "@/components/PageWrapper";
@@ -13,6 +13,7 @@ import { getAiSetupPrompt } from "@/constants/aiTablePrompt";
 import { FRAMEWORK_INSTALL_COMMANDS, FRAMEWORK_REQUIREMENTS } from "@/constants/strings/technical";
 import { trackCopyAiSetupPrompt } from "@/lib/analytics";
 import { useFramework, FRAMEWORK_LABELS } from "@/providers/FrameworkProvider";
+import { getStackBlitzUrl } from "@/utils/getStackBlitzUrl";
 
 const InstallationContent = () => {
   const { framework } = useFramework();
@@ -87,7 +88,19 @@ const InstallationContent = () => {
 
       <CodeBlock className="mb-4" code={commands.npm} language="bash" />
       <CodeBlock className="mb-4" code={commands.yarn} language="bash" />
-      <CodeBlock className="mb-8" code={commands.pnpm} language="bash" />
+      <CodeBlock className="mb-4" code={commands.pnpm} language="bash" />
+
+      <p className="text-gray-700 dark:text-gray-300 mb-8 flex flex-wrap items-center gap-3">
+        <span>Want to try it before installing?</span>
+        <Button
+          href={getStackBlitzUrl("quick-start", framework)}
+          target="_blank"
+          rel="noopener noreferrer"
+          icon={<FontAwesomeIcon icon={faBox} />}
+        >
+          Open the {label} quick start in StackBlitz
+        </Button>
+      </p>
 
       <motion.h2
         className="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700"
